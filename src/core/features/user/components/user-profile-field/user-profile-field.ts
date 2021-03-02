@@ -48,13 +48,13 @@ export class CoreUserProfileFieldComponent implements OnInit {
             return;
         }
 
-        this.componentClass = await CoreUserProfileFieldDelegate.instance.getComponent(this.field, this.signup);
+        this.componentClass = await CoreUserProfileFieldDelegate.getComponent(this.field, this.signup);
 
         this.data.field = this.field;
-        this.data.edit = CoreUtils.instance.isTrueOrOne(this.edit);
+        this.data.edit = CoreUtils.isTrueOrOne(this.edit);
         if (this.edit) {
-            this.data.signup = CoreUtils.instance.isTrueOrOne(this.signup);
-            this.data.disabled = CoreUtils.instance.isTrueOrOne(this.field.locked);
+            this.data.signup = CoreUtils.isTrueOrOne(this.signup);
+            this.data.disabled = CoreUtils.isTrueOrOne(this.field.locked);
             this.data.form = this.form;
             this.data.registerAuth = this.registerAuth;
             this.data.contextLevel = this.contextLevel;

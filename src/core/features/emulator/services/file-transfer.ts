@@ -146,12 +146,12 @@ export class FileTransferObjectMock extends FileTransferObject {
                     return;
                 }
 
-                const basePath = CoreFile.instance.getBasePathInstant();
+                const basePath = CoreFile.getBasePathInstant();
                 target = target.replace(basePath, ''); // Remove basePath from the target.
                 target = target.replace(/%20/g, ' '); // Replace all %20 with spaces.
 
                 // eslint-disable-next-line promise/catch-or-return
-                CoreFile.instance.writeFile(target, response).then(resolve, reject);
+                CoreFile.writeFile(target, response).then(resolve, reject);
             };
 
             xhr.send();
@@ -254,7 +254,7 @@ export class FileTransferObjectMock extends FileTransferObject {
             responseText = response;
         }
 
-        return CoreTextUtils.instance.parseJSON(responseText, '');
+        return CoreTextUtils.parseJSON(responseText, '');
     }
 
     /**
@@ -325,8 +325,8 @@ export class FileTransferObjectMock extends FileTransferObject {
             delete headers['Content-Type'];
 
             // Get the file to upload.
-            CoreFile.instance.getFile(fileUrl).then((fileEntry) =>
-                CoreFile.instance.getFileObjectFromFileEntry(fileEntry)).then((file) => {
+            CoreFile.getFile(fileUrl).then((fileEntry) =>
+                CoreFile.getFileObjectFromFileEntry(fileEntry)).then((file) => {
                 // Use XMLHttpRequest instead of HttpClient to support onprogress and abort.
                 const xhr = new XMLHttpRequest();
                 xhr.open(httpMethod || 'POST', url);

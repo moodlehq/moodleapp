@@ -46,12 +46,12 @@ export class AddonNotificationsHelperProvider {
         const formattedPreferences: AddonNotificationsPreferencesFormatted = preferences;
 
         formattedPreferences.processors.forEach((processor) => {
-            processor.supported = AddonMessageOutputDelegate.instance.hasHandler(processor.name, true);
+            processor.supported = AddonMessageOutputDelegate.hasHandler(processor.name, true);
         });
 
         formattedPreferences.components.forEach((component) => {
             component.notifications.forEach((notification) => {
-                notification.processorsByName = CoreUtils.instance.arrayToObject(notification.processors, 'name');
+                notification.processorsByName = CoreUtils.arrayToObject(notification.processors, 'name');
             });
         });
 
@@ -73,18 +73,18 @@ export class AddonNotificationsHelperProvider {
         notifications = notifications || [];
         options = options || {};
         options.limit = options.limit || AddonNotificationsProvider.LIST_LIMIT;
-        options.siteId = options.siteId || CoreSites.instance.getCurrentSiteId();
+        options.siteId = options.siteId || CoreSites.getCurrentSiteId();
 
-        const available = await AddonNotifications.instance.isPopupAvailable(options.siteId);
+        const available = await AddonNotifications.isPopupAvailable(options.siteId);
 
         if (available) {
-            return AddonNotifications.instance.getPopupNotifications(notifications.length, options);
+            return AddonNotifications.getPopupNotifications(notifications.length, options);
         }
 
         // Fallback to get_messages. We need 2 calls, one for read and the other one for unread.
         const unreadFrom = notifications.reduce((total, current) => total + (current.read ? 0 : 1), 0);
 
-        const unread = await AddonNotifications.instance.getUnreadNotifications(unreadFrom, options);
+        const unread = await AddonNotifications.getUnreadNotifications(unreadFrom, options);
 
         let newNotifications = unread;
 
@@ -95,7 +95,7 @@ export class AddonNotificationsHelperProvider {
             const readOptions = Object.assign({}, options, { limit: readLimit });
 
             try {
-                const read = await AddonNotifications.instance.getReadNotifications(readFrom, readOptions);
+                const read = await AddonNotifications.getReadNotifications(readFrom, readOptions);
 
                 newNotifications = unread.concat(read);
             } catch (error) {
@@ -179,7 +179,7 @@ export class AddonNotificationsHelperProvider {
 
 }
 
-export class AddonNotificationsHelper extends makeSingleton(AddonNotificationsHelperProvider) {}
+export const AddonNotificationsHelper = makeSingleton(AddonNotificationsHelperProvider);
 
 /**
  * Preferences with some calculated data.

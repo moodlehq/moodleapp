@@ -50,4 +50,4 @@ export class AddonModQuizAccessIpAddressHandlerService implements AddonModQuizAc
 
 }
 
-export class AddonModQuizAccessIpAddressHandler extends makeSingleton(AddonModQuizAccessIpAddressHandlerService) {}
+export const AddonModQuizAccessIpAddressHandler = makeSingleton(AddonModQuizAccessIpAddressHandlerService);

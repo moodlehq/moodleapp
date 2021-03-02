@@ -81,7 +81,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      * @return Promise resolved when the events are synced or if it doesn't need to be synced.
      */
     async syncEventsIfNeeded(siteId?: string): Promise<AddonCalendarSyncEvents | undefined> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const needed = await this.isSyncNeeded(AddonCalendarSyncProvider.SYNC_ID, siteId);
 
@@ -97,7 +97,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      * @return Promise resolved if sync is successful, rejected otherwise.
      */
     async syncEvents(siteId?: string): Promise<AddonCalendarSyncEvents> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (this.isSyncing(AddonCalendarSyncProvider.SYNC_ID, siteId)) {
             // There's already a sync ongoing for this site, return the promise.
@@ -127,32 +127,32 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             updated: false,
         };
 
-        const eventIds: number[] = await CoreUtils.instance.ignoreErrors(AddonCalendarOffline.instance.getAllEventsIds(siteId), []);
+        const eventIds: number[] = await CoreUtils.ignoreErrors(AddonCalendarOffline.getAllEventsIds(siteId), []);
 
         if (eventIds.length > 0) {
-            if (!CoreApp.instance.isOnline()) {
+            if (!CoreApp.isOnline()) {
                 // Cannot sync in offline.
                 throw new CoreNetworkError();
             }
 
             const promises = eventIds.map((eventId) => this.syncOfflineEvent(eventId, result, siteId));
 
-            await CoreUtils.instance.allPromises(promises);
+            await CoreUtils.allPromises(promises);
 
             if (result.updated) {
 
                 // Data has been sent to server. Now invalidate the WS calls.
                 const promises = [
-                    AddonCalendar.instance.invalidateEventsList(siteId),
-                    AddonCalendarHelper.instance.refreshAfterChangeEvents(result.toinvalidate, siteId),
+                    AddonCalendar.invalidateEventsList(siteId),
+                    AddonCalendarHelper.refreshAfterChangeEvents(result.toinvalidate, siteId),
                 ];
 
-                await CoreUtils.instance.ignoreErrors(Promise.all(promises));
+                await CoreUtils.ignoreErrors(Promise.all(promises));
             }
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.instance.ignoreErrors(this.setSyncTime(AddonCalendarSyncProvider.SYNC_ID, siteId));
+        await CoreUtils.ignoreErrors(this.setSyncTime(AddonCalendarSyncProvider.SYNC_ID, siteId));
 
         // All done, return the result.
         return result;
@@ -169,21 +169,21 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
     protected async syncOfflineEvent(eventId: number, result: AddonCalendarSyncEvents, siteId?: string): Promise<void> {
 
         // Verify that event isn't blocked.
-        if (CoreSync.instance.isBlocked(AddonCalendarProvider.COMPONENT, eventId, siteId)) {
+        if (CoreSync.isBlocked(AddonCalendarProvider.COMPONENT, eventId, siteId)) {
             this.logger.debug('Cannot sync event ' + eventId + ' because it is blocked.');
 
-            throw new CoreSyncBlockedError(Translate.instance.instant(
+            throw new CoreSyncBlockedError(Translate.instant(
                 'core.errorsyncblocked',
-                { $a: Translate.instance.instant('addon.calendar.calendarevent') },
+                { $a: Translate.instant('addon.calendar.calendarevent') },
             ));
         }
 
         // First of all, check if the event has been deleted.
         try {
-            const data = await AddonCalendarOffline.instance.getDeletedEvent(eventId, siteId);
+            const data = await AddonCalendarOffline.getDeletedEvent(eventId, siteId);
             // Delete the event.
             try {
-                await AddonCalendar.instance.deleteEventOnline(data.id, !!data.repeat, siteId);
+                await AddonCalendar.deleteEventOnline(data.id, !!data.repeat, siteId);
 
                 result.updated = true;
                 result.deleted.push(eventId);
@@ -191,13 +191,13 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
                 // Event sent, delete the offline data.
                 const promises: Promise<void>[] = [];
 
-                promises.push(AddonCalendarOffline.instance.unmarkDeleted(eventId, siteId));
-                promises.push(AddonCalendarOffline.instance.deleteEvent(eventId, siteId).catch(() => {
+                promises.push(AddonCalendarOffline.unmarkDeleted(eventId, siteId));
+                promises.push(AddonCalendarOffline.deleteEvent(eventId, siteId).catch(() => {
                     // Ignore errors, maybe there was no edit data.
                 }));
 
                 // We need the event data to invalidate it. Get it from local DB.
-                promises.push(AddonCalendar.instance.getEventFromLocalDb(eventId, siteId).then((event) => {
+                promises.push(AddonCalendar.getEventFromLocalDb(eventId, siteId).then((event) => {
                     result.toinvalidate.push({
                         id: event.id,
                         repeatid: event.repeatid,
@@ -213,7 +213,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
                 await Promise.all(promises);
             } catch (error) {
 
-                if (!CoreUtils.instance.isWebServiceError(error)) {
+                if (!CoreUtils.isWebServiceError(error)) {
                     // Local error, reject.
                     throw error;
                 }
@@ -223,17 +223,17 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
 
                 const promises: Promise<void>[] = [];
 
-                promises.push(AddonCalendarOffline.instance.unmarkDeleted(eventId, siteId));
-                promises.push(AddonCalendarOffline.instance.deleteEvent(eventId, siteId).catch(() => {
+                promises.push(AddonCalendarOffline.unmarkDeleted(eventId, siteId));
+                promises.push(AddonCalendarOffline.deleteEvent(eventId, siteId).catch(() => {
                     // Ignore errors, maybe there was no edit data.
                 }));
 
                 await Promise.all(promises);
                 // Event deleted, add a warning.
-                result.warnings.push(Translate.instance.instant('core.warningofflinedatadeleted', {
-                    component: Translate.instance.instant('addon.calendar.calendarevent'),
+                result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
+                    component: Translate.instant('addon.calendar.calendarevent'),
                     name: data.name,
-                    error: CoreTextUtils.instance.getErrorMessageFromError(error),
+                    error: CoreTextUtils.getErrorMessageFromError(error),
                 }));
             }
 
@@ -243,11 +243,11 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
         }
 
         // Not deleted. Now get the event data.
-        const event = await AddonCalendarOffline.instance.getEvent(eventId, siteId);
+        const event = await AddonCalendarOffline.getEvent(eventId, siteId);
 
         // Try to send the data.
         const data: AddonCalendarSubmitCreateUpdateFormDataWSParams = Object.assign(
-            CoreUtils.instance.clone(event),
+            CoreUtils.clone(event),
             {
                 description: {
                     text: event.description || '',
@@ -257,7 +257,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
         ); // Clone the object because it will be modified in the submit function.
 
         try {
-            const newEvent = await AddonCalendar.instance.submitEventOnline(eventId > 0 ? eventId : 0, data, siteId);
+            const newEvent = await AddonCalendar.submitEventOnline(eventId > 0 ? eventId : 0, data, siteId);
 
             result.updated = true;
             result.events.push(newEvent);
@@ -274,10 +274,10 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             });
 
             // Event sent, delete the offline data.
-            return AddonCalendarOffline.instance.deleteEvent(event.id!, siteId);
+            return AddonCalendarOffline.deleteEvent(event.id!, siteId);
 
         } catch (error) {
-            if (!CoreUtils.instance.isWebServiceError(error)) {
+            if (!CoreUtils.isWebServiceError(error)) {
                 // Local error, reject.
                 throw error;
             }
@@ -285,19 +285,19 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             // The WebService has thrown an error, this means that the event cannot be created. Delete it.
             result.updated = true;
 
-            await AddonCalendarOffline.instance.deleteEvent(event.id!, siteId);
+            await AddonCalendarOffline.deleteEvent(event.id!, siteId);
             // Event deleted, add a warning.
-            result.warnings.push(Translate.instance.instant('core.warningofflinedatadeleted', {
-                component: Translate.instance.instant('addon.calendar.calendarevent'),
+            result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
+                component: Translate.instant('addon.calendar.calendarevent'),
                 name: event.name,
-                error: CoreTextUtils.instance.getErrorMessageFromError(error),
+                error: CoreTextUtils.getErrorMessageFromError(error),
             }));
         }
     }
 
 }
 
-export class AddonCalendarSync extends makeSingleton(AddonCalendarSyncProvider) {}
+export const AddonCalendarSync = makeSingleton(AddonCalendarSyncProvider, ['component', 'syncInterval']);
 
 export type AddonCalendarSyncEvents = {
     warnings: string[];

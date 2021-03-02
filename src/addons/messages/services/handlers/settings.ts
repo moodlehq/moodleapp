@@ -35,9 +35,9 @@ export class AddonMessagesSettingsHandlerService implements CoreSettingsHandler 
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
-        const messagingEnabled = await AddonMessages.instance.isPluginEnabled();
+        const messagingEnabled = await AddonMessages.isPluginEnabled();
 
-        return messagingEnabled && AddonMessages.instance.isMessagePreferencesEnabled();
+        return messagingEnabled && AddonMessages.isMessagePreferencesEnabled();
     }
 
     /**
@@ -56,5 +56,4 @@ export class AddonMessagesSettingsHandlerService implements CoreSettingsHandler 
 
 }
 
-export class AddonMessagesSettingsHandler extends makeSingleton(AddonMessagesSettingsHandlerService) {}
-
+export const AddonMessagesSettingsHandler = makeSingleton(AddonMessagesSettingsHandlerService);

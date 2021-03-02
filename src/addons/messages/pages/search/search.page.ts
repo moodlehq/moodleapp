@@ -96,7 +96,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
                     }
                 });
             },
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
     }
 
@@ -108,9 +108,9 @@ export class AddonMessagesSearchPage implements OnDestroy {
         this.displayResults = false;
 
         // Empty details.
-        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/search/discussion');
+        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/search/discussion');
         if (splitViewLoaded) {
-            CoreNavigator.instance.navigate('../');
+            CoreNavigator.navigate('../');
         }
     }
 
@@ -123,7 +123,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
      * @return Resolved when done.
      */
     async search(query: string, loadMore?: 'contacts' | 'noncontacts' | 'messages', infiniteComplete?: () => void): Promise<void> {
-        CoreApp.instance.closeKeyboard();
+        CoreApp.closeKeyboard();
 
         this.query = query;
         this.disableSearch = true;
@@ -149,7 +149,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
             }
 
             promises.push(
-                AddonMessages.instance.searchUsers(query, limitFrom, limitNum).then((result) => {
+                AddonMessages.searchUsers(query, limitFrom, limitNum).then((result) => {
                     if (!loadMore || loadMore == 'contacts') {
                         newContacts = result.contacts;
                         canLoadMoreContacts = result.canLoadMoreContacts;
@@ -172,7 +172,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
             }
 
             promises.push(
-                AddonMessages.instance.searchMessages(query, undefined, limitFrom).then((result) => {
+                AddonMessages.searchMessages(query, undefined, limitFrom).then((result) => {
                     newMessages = result.messages;
                     canLoadMoreMessages = result.canLoadMore;
 
@@ -220,7 +220,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
                 }
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingusers', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingusers', true);
 
             if (loadMore == 'messages') {
                 this.messages.loadMoreError = true;
@@ -248,7 +248,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
      * @param onInit Whether the tser was selected on initial load.
      */
     openConversation(result: AddonMessagesConversationMember | AddonMessagesMessageAreaContact, onInit: boolean = false): void {
-        if (!onInit || CoreScreen.instance.isTablet) {
+        if (!onInit || CoreScreen.isTablet) {
             this.selectedResult = result;
 
             const params: Params = {};
@@ -258,9 +258,9 @@ export class AddonMessagesSearchPage implements OnDestroy {
                 params.userId = result.id;
             }
 
-            const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/search/discussion');
+            const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/search/discussion');
             const path = (splitViewLoaded ? '../' : '') + 'discussion';
-            CoreNavigator.instance.navigate(path, { params });
+            CoreNavigator.navigate(path, { params });
         }
     }
 

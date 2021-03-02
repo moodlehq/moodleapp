@@ -88,23 +88,23 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        const course = CoreNavigator.instance.getRouteParam<CoreCourseAnyCourseData>('course');
+        const course = CoreNavigator.getRouteParam<CoreCourseAnyCourseData>('course');
 
         if (!course) {
-            CoreDomUtils.instance.showErrorModal('Missing required course parameter.');
-            CoreNavigator.instance.back();
+            CoreDomUtils.showErrorModal('Missing required course parameter.');
+            CoreNavigator.back();
 
             return;
         }
 
         this.course = course;
-        this.sectionId = CoreNavigator.instance.getRouteNumberParam('sectionId');
-        this.sectionNumber = CoreNavigator.instance.getRouteNumberParam('sectionNumber');
-        this.moduleId = CoreNavigator.instance.getRouteNumberParam('moduleId');
+        this.sectionId = CoreNavigator.getRouteNumberParam('sectionId');
+        this.sectionNumber = CoreNavigator.getRouteNumberParam('sectionNumber');
+        this.moduleId = CoreNavigator.getRouteNumberParam('moduleId');
 
-        this.displayEnableDownload = !CoreSites.instance.getCurrentSite()?.isOfflineDisabled() &&
-            CoreCourseFormatDelegate.instance.displayEnableDownload(this.course);
-        this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
+        this.displayEnableDownload = !CoreSites.getCurrentSite()?.isOfflineDisabled() &&
+            CoreCourseFormatDelegate.displayEnableDownload(this.course);
+        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
 
         this.initListeners();
 
@@ -127,11 +127,11 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
                 if (data.courseId == this.course.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
                     this.updateCourseStatus(data.status);
                 }
-            }, CoreSites.instance.getCurrentSiteId());
+            }, CoreSites.getCurrentSiteId());
         }
 
         // Check if the course format requires the view to be refreshed when completion changes.
-        const shouldRefresh = await CoreCourseFormatDelegate.instance.shouldRefreshWhenCompletionChanges(this.course);
+        const shouldRefresh = await CoreCourseFormatDelegate.shouldRefreshWhenCompletionChanges(this.course);
         if (!shouldRefresh) {
             return;
         }
@@ -153,7 +153,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
             this.refreshAfterCompletionChange(false);
 
             if (data.warnings && data.warnings[0]) {
-                CoreDomUtils.instance.showErrorModal(data.warnings[0]);
+                CoreDomUtils.showErrorModal(data.warnings[0]);
             }
         });
     }
@@ -177,17 +177,17 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         }
 
         // Course is being downloaded. Get the download promise.
-        const promise = CoreCourseHelper.instance.getCourseDownloadPromise(this.course.id);
+        const promise = CoreCourseHelper.getCourseDownloadPromise(this.course.id);
         if (promise) {
             // There is a download promise. Show an error if it fails.
             promise.catch((error) => {
                 if (!this.isDestroyed) {
-                    CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                    CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
                 }
             });
         } else {
             // No download, this probably means that the app was closed while downloading. Set previous status.
-            const status = await CoreCourse.instance.setCoursePreviousStatus(this.course.id);
+            const status = await CoreCourse.setCoursePreviousStatus(this.course.id);
 
             this.updateCourseStatus(status);
         }
@@ -202,7 +202,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      */
     protected async loadData(refresh?: boolean, sync?: boolean): Promise<void> {
         // First of all, get the course because the data might have changed.
-        const result = await CoreUtils.instance.ignoreErrors(CoreCourseHelper.instance.getCourse(this.course.id));
+        const result = await CoreUtils.ignoreErrors(CoreCourseHelper.getCourse(this.course.id));
 
         if (result) {
             if (this.course.id === result.course.id && 'displayname' in this.course && !('displayname' in result.course)) {
@@ -214,9 +214,9 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         if (sync) {
             // Try to synchronize the course data.
             // For now we don't allow manual syncing, so ignore errors.
-            const result = await CoreUtils.instance.ignoreErrors(CoreCourseSync.instance.syncCourse(this.course.id));
+            const result = await CoreUtils.ignoreErrors(CoreCourseSync.syncCourse(this.course.id));
             if (result?.warnings?.length) {
-                CoreDomUtils.instance.showErrorModal(result.warnings[0]);
+                CoreDomUtils.showErrorModal(result.warnings[0]);
             }
         }
 
@@ -227,7 +227,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
                 this.loadCourseFormatOptions(),
             ]);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
         }
     }
 
@@ -239,13 +239,13 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      */
     protected async loadSections(refresh?: boolean): Promise<void> {
         // Get all the sections.
-        const sections = await CoreCourse.instance.getSections(this.course.id, false, true);
+        const sections = await CoreCourse.getSections(this.course.id, false, true);
 
         if (refresh) {
             // Invalidate the recently downloaded module list. To ensure info can be prefetched.
-            const modules = CoreCourse.instance.getSectionsModules(sections);
+            const modules = CoreCourse.getSectionsModules(sections);
 
-            await CoreCourseModulePrefetchDelegate.instance.invalidateModules(modules, this.course.id);
+            await CoreCourseModulePrefetchDelegate.invalidateModules(modules, this.course.id);
         }
 
         let completionStatus: Record<string, CoreCourseCompletionActivityStatus> = {};
@@ -256,10 +256,10 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
 
             if (sectionWithModules && typeof sectionWithModules.modules[0].completion != 'undefined') {
                 // The module already has completion (3.6 onwards). Load the offline completion.
-                await CoreUtils.instance.ignoreErrors(CoreCourseHelper.instance.loadOfflineCompletion(this.course.id, sections));
+                await CoreUtils.ignoreErrors(CoreCourseHelper.loadOfflineCompletion(this.course.id, sections));
             } else {
-                const fetchedData = await CoreUtils.instance.ignoreErrors(
-                    CoreCourse.instance.getActivitiesCompletionStatus(this.course.id),
+                const fetchedData = await CoreUtils.ignoreErrors(
+                    CoreCourse.getActivitiesCompletionStatus(this.course.id),
                 );
 
                 completionStatus = fetchedData || completionStatus;
@@ -267,7 +267,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         }
 
         // Add handlers
-        const result = CoreCourseHelper.instance.addHandlerDataForModules(
+        const result = CoreCourseHelper.addHandlerDataForModules(
             sections,
             this.course.id,
             completionStatus,
@@ -276,13 +276,13 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         );
         this.sections = result.sections;
 
-        if (CoreCourseFormatDelegate.instance.canViewAllSections(this.course)) {
+        if (CoreCourseFormatDelegate.canViewAllSections(this.course)) {
             // Add a fake first section (all sections).
-            this.sections.unshift(CoreCourseHelper.instance.createAllSectionsSection());
+            this.sections.unshift(CoreCourseHelper.createAllSectionsSection());
         }
 
         // Get whether to show the refresher now that we have sections.
-        this.displayRefresher = CoreCourseFormatDelegate.instance.displayRefresher(this.course, this.sections);
+        this.displayRefresher = CoreCourseFormatDelegate.displayRefresher(this.course, this.sections);
     }
 
     /**
@@ -292,7 +292,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadMenuHandlers(refresh?: boolean): Promise<void> {
-        this.courseMenuHandlers = await CoreCourseOptionsDelegate.instance.getMenuHandlersToDisplay(this.course, refresh);
+        this.courseMenuHandlers = await CoreCourseOptionsDelegate.getMenuHandlersToDisplay(this.course, refresh);
     }
 
     /**
@@ -303,23 +303,23 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     protected async loadCourseFormatOptions(): Promise<void> {
 
         // Load the course format options when course completion is enabled to show completion progress on sections.
-        if (!this.course.enablecompletion || !CoreCourses.instance.isGetCoursesByFieldAvailable()) {
+        if (!this.course.enablecompletion || !CoreCourses.isGetCoursesByFieldAvailable()) {
             return;
         }
 
         if ('courseformatoptions' in this.course && this.course.courseformatoptions) {
             // Already loaded.
-            this.formatOptions = CoreUtils.instance.objectToKeyValueMap(this.course.courseformatoptions, 'name', 'value');
+            this.formatOptions = CoreUtils.objectToKeyValueMap(this.course.courseformatoptions, 'name', 'value');
 
             return;
         }
 
-        const course = await CoreUtils.instance.ignoreErrors(CoreCourses.instance.getCourseByField('id', this.course.id));
+        const course = await CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', this.course.id));
 
         course && Object.assign(this.course, course);
 
         if (course?.courseformatoptions) {
-            this.formatOptions = CoreUtils.instance.objectToKeyValueMap(course.courseformatoptions, 'name', 'value');
+            this.formatOptions = CoreUtils.objectToKeyValueMap(course.courseformatoptions, 'name', 'value');
         }
     }
 
@@ -330,7 +330,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async doRefresh(refresher?: CustomEvent<IonRefresher>): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(this.invalidateData());
+        await CoreUtils.ignoreErrors(this.invalidateData());
 
         try {
             await this.loadData(true, true);
@@ -338,7 +338,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
             // Do not call doRefresh on the format component if the refresher is defined in the format component
             // to prevent an inifinite loop.
             if (this.displayRefresher && this.formatComponent) {
-                await CoreUtils.instance.ignoreErrors(this.formatComponent.doRefresh(refresher));
+                await CoreUtils.ignoreErrors(this.formatComponent.doRefresh(refresher));
             }
 
             refresher?.detail.complete();
@@ -358,7 +358,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
             return;
         }
 
-        await CoreUtils.instance.ignoreErrors(this.invalidateData());
+        await CoreUtils.ignoreErrors(this.invalidateData());
 
         await this.refreshAfterCompletionChange(true);
     }
@@ -371,12 +371,12 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     protected async invalidateData(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCourse.instance.invalidateSections(this.course.id));
-        promises.push(CoreCourses.instance.invalidateUserCourses());
-        promises.push(CoreCourseFormatDelegate.instance.invalidateData(this.course, this.sections || []));
+        promises.push(CoreCourse.invalidateSections(this.course.id));
+        promises.push(CoreCourses.invalidateUserCourses());
+        promises.push(CoreCourseFormatDelegate.invalidateData(this.course, this.sections || []));
 
         if (this.sections) {
-            promises.push(CoreCourseModulePrefetchDelegate.instance.invalidateCourseUpdates(this.course.id));
+            promises.push(CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(this.course.id));
         }
 
         await Promise.all(promises);
@@ -417,7 +417,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async determineCoursePrefetchIcon(): Promise<void> {
-        this.prefetchCourseData = await CoreCourseHelper.instance.getCourseStatusIconAndTitle(this.course.id);
+        this.prefetchCourseData = await CoreCourseHelper.getCourseStatusIconAndTitle(this.course.id);
     }
 
     /**
@@ -425,7 +425,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      */
     async prefetchCourse(): Promise<void> {
         try {
-            await CoreCourseHelper.instance.confirmAndPrefetchCourse(
+            await CoreCourseHelper.confirmAndPrefetchCourse(
                 this.prefetchCourseData,
                 this.course,
                 this.sections,
@@ -437,7 +437,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
                 return;
             }
 
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
         }
     }
 
@@ -455,14 +455,14 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @param status Status to show.
      */
     protected updateCourseStatus(status: string): void {
-        this.prefetchCourseData = CoreCourseHelper.instance.getCourseStatusIconAndTitleFromStatus(status);
+        this.prefetchCourseData = CoreCourseHelper.getCourseStatusIconAndTitleFromStatus(status);
     }
 
     /**
      * Open the course summary
      */
     openCourseSummary(): void {
-        CoreNavigator.instance.navigateToSitePath('/courses/preview', { params: { course: this.course, avoidOpenCourse: true } });
+        CoreNavigator.navigateToSitePath('/courses/preview', { params: { course: this.course, avoidOpenCourse: true } });
     }
 
     /**
@@ -472,7 +472,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      */
     openMenuItem(item: CoreCourseOptionsMenuHandlerToDisplay): void {
         const params = Object.assign({ course: this.course }, item.data.pageParams);
-        CoreNavigator.instance.navigateToSitePath(item.data.page, { params });
+        CoreNavigator.navigateToSitePath(item.data.page, { params });
     }
 
     /**

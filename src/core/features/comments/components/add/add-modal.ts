@@ -48,12 +48,12 @@ export class CoreCommentsAddComponent {
         e.preventDefault();
         e.stopPropagation();
 
-        CoreApp.instance.closeKeyboard();
-        const loadingModal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        CoreApp.closeKeyboard();
+        const loadingModal = await CoreDomUtils.showModalLoading('core.sending', true);
         // Freeze the add comment button.
         this.processing = true;
         try {
-            const commentsResponse = await CoreComments.instance.addComment(
+            const commentsResponse = await CoreComments.addComment(
                 this.content,
                 this.contextLevel,
                 this.instanceId,
@@ -62,21 +62,21 @@ export class CoreCommentsAddComponent {
                 this.area,
             );
 
-            CoreDomUtils.instance.triggerFormSubmittedEvent(
+            CoreDomUtils.triggerFormSubmittedEvent(
                 this.formElement,
                 !!commentsResponse,
-                CoreSites.instance.getCurrentSiteId(),
+                CoreSites.getCurrentSiteId(),
             );
 
-            ModalController.instance.dismiss({ comment: commentsResponse }).finally(() => {
-                CoreDomUtils.instance.showToast(
+            ModalController.dismiss({ comment: commentsResponse }).finally(() => {
+                CoreDomUtils.showToast(
                     commentsResponse ? 'core.comments.eventcommentcreated' : 'core.datastoredoffline',
                     true,
                     3000,
                 );
             });
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
             this.processing = false;
         } finally {
             loadingModal.dismiss();
@@ -87,8 +87,8 @@ export class CoreCommentsAddComponent {
      * Close modal.
      */
     closeModal(): void {
-        CoreDomUtils.instance.triggerFormCancelledEvent(this.formElement, CoreSites.instance.getCurrentSiteId());
-        ModalController.instance.dismiss();
+        CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        ModalController.dismiss();
     }
 
 }

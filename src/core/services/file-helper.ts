@@ -53,7 +53,7 @@ export class CoreFileHelperProvider {
         onProgress?: CoreFileHelperOnProgress,
         siteId?: string,
     ): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const fileUrl = file.fileurl;
         const timemodified = this.getFileTimemodified(file);
@@ -68,28 +68,28 @@ export class CoreFileHelperProvider {
             return;
         }
 
-        if (!CoreUrlUtils.instance.isLocalFileUrl(url)) {
+        if (!CoreUrlUtils.isLocalFileUrl(url)) {
             /* In iOS, if we use the same URL in embedded browser and background download then the download only
                downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
             url = url + '#moodlemobile-embedded';
 
             try {
-                await CoreUtils.instance.openOnlineFile(url);
+                await CoreUtils.openOnlineFile(url);
 
                 return;
             } catch (error) {
                 // Error opening the file, some apps don't allow opening online files.
-                if (!CoreFile.instance.isAvailable()) {
+                if (!CoreFile.isAvailable()) {
                     throw error;
                 }
 
                 // Get the state.
                 if (!state) {
-                    state = await CoreFilepool.instance.getFileStateByUrl(siteId, fileUrl, timemodified);
+                    state = await CoreFilepool.getFileStateByUrl(siteId, fileUrl, timemodified);
                 }
 
                 if (state == CoreConstants.DOWNLOADING) {
-                    throw new CoreError(Translate.instance.instant('core.erroropenfiledownloading'));
+                    throw new CoreError(Translate.instant('core.erroropenfiledownloading'));
                 }
 
                 if (state === CoreConstants.NOT_DOWNLOADED) {
@@ -97,12 +97,12 @@ export class CoreFileHelperProvider {
                     url = await this.downloadFile(fileUrl, component, componentId, timemodified, onProgress, file, siteId);
                 } else {
                     // File is outdated and can't be opened in online, return the local URL.
-                    url = await CoreFilepool.instance.getInternalUrlByUrl(siteId, fileUrl);
+                    url = await CoreFilepool.getInternalUrlByUrl(siteId, fileUrl);
                 }
             }
         }
 
-        return CoreUtils.instance.openFile(url);
+        return CoreUtils.openFile(url);
     }
 
     /**
@@ -128,28 +128,28 @@ export class CoreFileHelperProvider {
         onProgress?: CoreFileHelperOnProgress,
         siteId?: string,
     ): Promise<string> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const fixedUrl = await site.checkAndFixPluginfileURL(fileUrl);
 
-        if (!CoreFile.instance.isAvailable()) {
+        if (!CoreFile.isAvailable()) {
             // Use the online URL.
             return fixedUrl;
         }
 
         if (!state) {
             // Calculate the state.
-            state = await CoreFilepool.instance.getFileStateByUrl(siteId, fileUrl, timemodified);
+            state = await CoreFilepool.getFileStateByUrl(siteId, fileUrl, timemodified);
         }
 
         // The file system is available.
-        const isWifi = CoreApp.instance.isWifi();
-        const isOnline = CoreApp.instance.isOnline();
+        const isWifi = CoreApp.isWifi();
+        const isOnline = CoreApp.isOnline();
 
         if (state == CoreConstants.DOWNLOADED) {
             // File is downloaded, get the local file URL.
-            return CoreFilepool.instance.getUrlByUrl(siteId, fileUrl, component, componentId, timemodified, false, false, file);
+            return CoreFilepool.getUrlByUrl(siteId, fileUrl, component, componentId, timemodified, false, false, file);
         } else {
             if (!isOnline && !this.isStateDownloaded(state)) {
                 // Not downloaded and user is offline, reject.
@@ -161,7 +161,7 @@ export class CoreFileHelperProvider {
                 onProgress({ calculating: true });
             }
 
-            const shouldDownloadFirst = await CoreFilepool.instance.shouldDownloadFileBeforeOpen(fixedUrl, file.filesize || 0);
+            const shouldDownloadFirst = await CoreFilepool.shouldDownloadFileBeforeOpen(fixedUrl, file.filesize || 0);
             if (shouldDownloadFirst) {
                 // Download the file first.
                 if (state == CoreConstants.DOWNLOADING) {
@@ -183,7 +183,7 @@ export class CoreFileHelperProvider {
                 return fixedUrl;
             } else {
                 // Outdated but offline, so we return the local URL.
-                return CoreFilepool.instance.getUrlByUrl(
+                return CoreFilepool.getUrlByUrl(
                     siteId,
                     fileUrl,
                     component,
@@ -218,17 +218,17 @@ export class CoreFileHelperProvider {
         file?: CoreWSExternalFile,
         siteId?: string,
     ): Promise<string> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Get the site and check if it can download files.
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         if (!site.canDownloadFiles()) {
-            throw new CoreError(Translate.instance.instant('core.cannotdownloadfiles'));
+            throw new CoreError(Translate.instant('core.cannotdownloadfiles'));
         }
 
         try {
-            return await CoreFilepool.instance.downloadUrl(
+            return await CoreFilepool.downloadUrl(
                 siteId,
                 fileUrl,
                 false,
@@ -241,10 +241,10 @@ export class CoreFileHelperProvider {
             );
         } catch (error) {
             // Download failed, check the state again to see if the file was downloaded before.
-            const state = await CoreFilepool.instance.getFileStateByUrl(siteId, fileUrl, timemodified);
+            const state = await CoreFilepool.getFileStateByUrl(siteId, fileUrl, timemodified);
 
             if (this.isStateDownloaded(state)) {
-                return CoreFilepool.instance.getInternalUrlByUrl(siteId, fileUrl);
+                return CoreFilepool.getInternalUrlByUrl(siteId, fileUrl);
             } else {
                 throw error;
             }
@@ -338,16 +338,16 @@ export class CoreFileHelperProvider {
             const fileUrl = file.fileurl;
 
             try {
-                const siteId = CoreSites.instance.getCurrentSiteId();
+                const siteId = CoreSites.getCurrentSiteId();
 
-                const path = await CoreFilepool.instance.getFilePathByUrl(siteId, fileUrl);
-                const fileEntry = await CoreFile.instance.getFile(path);
-                const fileObject = await CoreFile.instance.getFileObjectFromFileEntry(fileEntry);
+                const path = await CoreFilepool.getFilePathByUrl(siteId, fileUrl);
+                const fileEntry = await CoreFile.getFile(path);
+                const fileObject = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 
                 return fileObject.size;
             } catch (error) {
                 // Error getting the file, maybe it's not downloaded. Get remote size.
-                const size = await CoreWS.instance.getRemoteFileSize(fileUrl);
+                const size = await CoreWS.getRemoteFileSize(fileUrl);
 
                 if (size === -1) {
                     throw new CoreError(`Couldn't determine file size: ${fileUrl}`);
@@ -359,7 +359,7 @@ export class CoreFileHelperProvider {
 
         // If it's a local file, get its size.
         if ('name' in file) {
-            const fileObject = await CoreFile.instance.getFileObjectFromFileEntry(file);
+            const fileObject = await CoreFile.getFileObjectFromFileEntry(file);
 
             return fileObject.size;
         }
@@ -392,10 +392,10 @@ export class CoreFileHelperProvider {
      * @return Promise resolved if confirmed, rejected otherwise.
      */
     showConfirmOpenUnsupportedFile(onlyDownload?: boolean): Promise<void> {
-        const message = Translate.instance.instant('core.cannotopeninapp' + (onlyDownload ? 'download' : ''));
-        const okButton = Translate.instance.instant(onlyDownload ? 'core.downloadfile' : 'core.openfile');
+        const message = Translate.instant('core.cannotopeninapp' + (onlyDownload ? 'download' : ''));
+        const okButton = Translate.instant(onlyDownload ? 'core.downloadfile' : 'core.openfile');
 
-        return CoreDomUtils.instance.showConfirm(message, undefined, okButton, undefined, { cssClass: 'core-modal-force-on-top' });
+        return CoreDomUtils.showConfirm(message, undefined, okButton, undefined, { cssClass: 'core-modal-force-on-top' });
     }
 
     /**
@@ -405,7 +405,7 @@ export class CoreFileHelperProvider {
      * @return bool.
      */
     isFileTypeExcludedInApp(fileType: string): boolean {
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
         const fileTypeExcludeList = currentSite?.getStoredConfig('tool_mobile_filetypeexclusionlist');
 
         if (!fileTypeExcludeList) {
@@ -419,6 +419,6 @@ export class CoreFileHelperProvider {
 
 }
 
-export class CoreFileHelper extends makeSingleton(CoreFileHelperProvider) {}
+export const CoreFileHelper = makeSingleton(CoreFileHelperProvider);
 
 export type CoreFileHelperOnProgress = (event?: ProgressEvent | { calculating: true }) => void;

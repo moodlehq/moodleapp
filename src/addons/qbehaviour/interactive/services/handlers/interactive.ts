@@ -39,7 +39,7 @@ export class AddonQbehaviourInteractiveHandlerService implements CoreQuestionBeh
      */
     handleQuestion(question: CoreQuestionQuestionParsed): void {
         // Just extract the button, it doesn't need any specific component.
-        CoreQuestionHelper.instance.extractQbehaviourButtons(question);
+        CoreQuestionHelper.extractQbehaviourButtons(question);
     }
 
     /**
@@ -53,4 +53,4 @@ export class AddonQbehaviourInteractiveHandlerService implements CoreQuestionBeh
 
 }
 
-export class AddonQbehaviourInteractiveHandler extends makeSingleton(AddonQbehaviourInteractiveHandlerService) {}
+export const AddonQbehaviourInteractiveHandler = makeSingleton(AddonQbehaviourInteractiveHandlerService);

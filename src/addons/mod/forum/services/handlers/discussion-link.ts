@@ -69,7 +69,7 @@ export class AddonModForumDiscussionLinkHandlerService extends CoreContentLinksH
                     pageParams.parent = parseInt(params.parent);
                 }
 
-                CoreNavigator.instance.navigateToSitePath(
+                CoreNavigator.navigateToSitePath(
                     `${AddonModForumModuleHandlerService.PAGE_NAME}/discussion/${discussionId}`,
                     { siteId, params: pageParams },
                 );
@@ -93,4 +93,4 @@ export class AddonModForumDiscussionLinkHandlerService extends CoreContentLinksH
 
 }
 
-export class AddonModForumDiscussionLinkHandler extends makeSingleton(AddonModForumDiscussionLinkHandlerService) {}
+export const AddonModForumDiscussionLinkHandler = makeSingleton(AddonModForumDiscussionLinkHandlerService);

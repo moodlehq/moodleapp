@@ -42,7 +42,7 @@ export class CoreContentLinksChooseSitePage implements OnInit {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        const url = CoreNavigator.instance.getRouteParam<string>('url');
+        const url = CoreNavigator.getRouteParam<string>('url');
         if (!url) {
             return this.leaveView();
         }
@@ -52,7 +52,7 @@ export class CoreContentLinksChooseSitePage implements OnInit {
 
         try {
             // Check if it's the root URL.
-            const data = await CoreSites.instance.isStoredRootURL(this.url);
+            const data = await CoreSites.isStoredRootURL(this.url);
             if (data.site) {
                 // It's the root URL.
                 this.isRootURL = true;
@@ -60,21 +60,21 @@ export class CoreContentLinksChooseSitePage implements OnInit {
                 siteIds = data.siteIds;
             } else if (data.siteIds.length) {
                 // Not root URL, but the URL belongs to at least 1 site. Check if there is any action to treat the link.
-                this.action = await CoreContentLinksHelper.instance.getFirstValidActionFor(this.url);
+                this.action = await CoreContentLinksHelper.getFirstValidActionFor(this.url);
                 if (!this.action) {
-                    throw new CoreError(Translate.instance.instant('core.contentlinks.errornoactions'));
+                    throw new CoreError(Translate.instant('core.contentlinks.errornoactions'));
                 }
 
                 siteIds = this.action.sites;
             } else {
                 // No sites to treat the URL.
-                throw new CoreError(Translate.instance.instant('core.contentlinks.errornosites'));
+                throw new CoreError(Translate.instant('core.contentlinks.errornosites'));
             }
 
             // Get the sites that can perform the action.
-            this.sites = await CoreSites.instance.getSites(siteIds);
+            this.sites = await CoreSites.getSites(siteIds);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.contentlinks.errornosites', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.contentlinks.errornosites', true);
             this.leaveView();
         }
 
@@ -95,7 +95,7 @@ export class CoreContentLinksChooseSitePage implements OnInit {
      */
     siteClicked(siteId: string): void {
         if (this.isRootURL) {
-            CoreNavigator.instance.navigateToSiteHome({ siteId });
+            CoreNavigator.navigateToSiteHome({ siteId });
         } else if (this.action) {
             this.action.action(siteId);
         }
@@ -106,9 +106,9 @@ export class CoreContentLinksChooseSitePage implements OnInit {
      */
     protected async leaveView(): Promise<void> {
         try {
-            await CoreSites.instance.logout();
+            await CoreSites.logout();
         } finally {
-            await CoreNavigator.instance.navigate('/login/sites', { reset: true });
+            await CoreNavigator.navigate('/login/sites', { reset: true });
         }
     }
 

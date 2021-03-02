@@ -164,7 +164,7 @@ export class AddonModAssignProvider {
         value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModAssignAssign> {
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModAssignGetAssignmentsWSParams = {
             courseids: [courseId],
@@ -175,7 +175,7 @@ export class AddonModAssignProvider {
             cacheKey: this.getAssignmentCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
             component: AddonModAssignProvider.COMPONENT,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         let response: AddonModAssignGetAssignmentsWSResponse;
@@ -238,7 +238,7 @@ export class AddonModAssignProvider {
             return -1;
         }
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModAssignGetUserMappingsWSParams = {
             assignmentids: [assignId],
@@ -248,7 +248,7 @@ export class AddonModAssignProvider {
             updateFrequency: CoreSite.FREQUENCY_OFTEN,
             component: AddonModAssignProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy),
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
         const response = await site.read<AddonModAssignGetUserMappingsWSResponse>('mod_assign_get_user_mappings', params, preSets);
@@ -285,7 +285,7 @@ export class AddonModAssignProvider {
      * @return Resolved with requested info when done.
      */
     async getAssignmentGrades(assignId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModAssignGrade[]> {
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModAssignGetGradesWSParams = {
             assignmentids: [assignId],
@@ -294,7 +294,7 @@ export class AddonModAssignProvider {
             cacheKey: this.getAssignmentGradesCacheKey(assignId),
             component: AddonModAssignProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy),
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
         const response = await site.read<AddonModAssignGetGradesWSResponse>('mod_assign_get_grades', params, preSets);
@@ -430,7 +430,7 @@ export class AddonModAssignProvider {
         });
 
         if (!keepUrls && submissionPlugin.fileareas && submissionPlugin.fileareas[0]) {
-            text = CoreTextUtils.instance.replacePluginfileUrls(text, submissionPlugin.fileareas[0].files || []);
+            text = CoreTextUtils.replacePluginfileUrls(text, submissionPlugin.fileareas[0].files || []);
         }
 
         return text;
@@ -447,7 +447,7 @@ export class AddonModAssignProvider {
         assignId: number,
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<{ canviewsubmissions: boolean; submissions?: AddonModAssignSubmission[] }> {
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params: ModAssignGetSubmissionsWSParams = {
             assignmentids: [assignId],
@@ -457,7 +457,7 @@ export class AddonModAssignProvider {
             updateFrequency: CoreSite.FREQUENCY_OFTEN,
             component: AddonModAssignProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy),
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
         const response = await site.read<AddonModAssignGetSubmissionsWSResponse>('mod_assign_get_submissions', params, preSets);
 
@@ -497,7 +497,7 @@ export class AddonModAssignProvider {
         assignId: number,
         options: AddonModAssignSubmissionStatusOptions = {},
     ): Promise<AddonModAssignGetSubmissionStatusWSResponse> {
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         options = {
             filter: true,
@@ -528,7 +528,7 @@ export class AddonModAssignProvider {
             // Don't cache when getting text without filters.
             // @todo Change this to support offline editing.
             saveToCache: options.filter,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy),
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
         return site.read<AddonModAssignGetSubmissionStatusWSResponse>('mod_assign_get_submission_status', params, preSets);
@@ -613,7 +613,7 @@ export class AddonModAssignProvider {
     async getUnsupportedEditPlugins(plugins: AddonModAssignPlugin[]): Promise<string[]> {
         const notSupported: string[] = [];
         const promises = plugins.map((plugin) =>
-            AddonModAssignSubmissionDelegate.instance.isPluginSupportedForEdit(plugin.type).then((enabled) => {
+            AddonModAssignSubmissionDelegate.isPluginSupportedForEdit(plugin.type).then((enabled) => {
                 if (!enabled) {
                     notSupported.push(plugin.name);
                 }
@@ -642,7 +642,7 @@ export class AddonModAssignProvider {
 
         groupId = groupId || 0;
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
         if (!site.wsAvailable('mod_assign_list_participants')) {
             // Silently fail if is not available. (needs Moodle version >= 3.2)
             throw new CoreError('mod_assign_list_participants WS is only available 3.2 onwards');
@@ -659,7 +659,7 @@ export class AddonModAssignProvider {
             updateFrequency: CoreSite.FREQUENCY_OFTEN,
             component: AddonModAssignProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy),
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
         return site.read<AddonModAssignListParticipantsWSResponse>('mod_assign_list_participants', params, preSets);
@@ -694,7 +694,7 @@ export class AddonModAssignProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAllSubmissionData(assignId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getSubmissionsCacheKey(assignId));
     }
@@ -707,7 +707,7 @@ export class AddonModAssignProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentData(courseId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getAssignmentCacheKey(courseId));
     }
@@ -720,7 +720,7 @@ export class AddonModAssignProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentUserMappingsData(assignId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getAssignmentUserMappingsCacheKey(assignId));
     }
@@ -733,7 +733,7 @@ export class AddonModAssignProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentGradesData(assignId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getAssignmentGradesCacheKey(assignId));
     }
@@ -748,7 +748,7 @@ export class AddonModAssignProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const assign = await this.getAssignment(courseId, moduleId, { siteId });
         const promises: Promise<void>[] = [];
@@ -757,9 +757,9 @@ export class AddonModAssignProvider {
         promises.push(this.invalidateAssignmentUserMappingsData(assign.id, siteId));
         promises.push(this.invalidateAssignmentGradesData(assign.id, siteId));
         promises.push(this.invalidateListParticipantsData(assign.id, siteId));
-        promises.push(CoreComments.instance.invalidateCommentsByInstance('module', assign.id, siteId));
+        promises.push(CoreComments.invalidateCommentsByInstance('module', assign.id, siteId));
         promises.push(this.invalidateAssignmentData(courseId, siteId));
-        promises.push(CoreGrades.instance.invalidateAllCourseGradesData(courseId));
+        promises.push(CoreGrades.invalidateAllCourseGradesData(courseId));
 
 
         await Promise.all(promises);
@@ -772,8 +772,8 @@ export class AddonModAssignProvider {
      * @return Promise resolved when the files are invalidated.
      */
     async invalidateFiles(moduleId: number): Promise<void> {
-        await CoreFilepool.instance.invalidateFilesByComponent(
-            CoreSites.instance.getCurrentSiteId(),
+        await CoreFilepool.invalidateFilesByComponent(
+            CoreSites.getCurrentSiteId(),
             AddonModAssignProvider.COMPONENT,
             moduleId,
         );
@@ -787,7 +787,7 @@ export class AddonModAssignProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateSubmissionData(assignId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getSubmissionsCacheKey(assignId));
     }
@@ -809,7 +809,7 @@ export class AddonModAssignProvider {
         isBlind = false,
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const fixedParams = this.fixSubmissionStatusParams(site, userId, groupId, isBlind);
 
         await site.invalidateWsCacheForKey(this.getSubmissionStatusCacheKey(
@@ -828,7 +828,7 @@ export class AddonModAssignProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateListParticipantsData(assignId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.listParticipantsPrefixCacheKey(assignId));
     }
@@ -840,13 +840,13 @@ export class AddonModAssignProvider {
      * @return Promise resolved with boolean: whether grading offline is enabled.
      */
     protected async isGradingOfflineEnabled(siteId?: string): Promise<boolean> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (typeof this.gradingOfflineEnabled[siteId] != 'undefined') {
             return this.gradingOfflineEnabled[siteId];
         }
 
-        this.gradingOfflineEnabled[siteId] = await CoreGrades.instance.isGradeItemsAvalaible(siteId);
+        this.gradingOfflineEnabled[siteId] = await CoreGrades.isGradeItemsAvalaible(siteId);
 
         return this.gradingOfflineEnabled[siteId];
     }
@@ -859,7 +859,7 @@ export class AddonModAssignProvider {
      * @since 3.2
      */
     async isOutcomesEditEnabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.wsAvailable('mod_assign_submit_grading_form');
     }
@@ -886,7 +886,7 @@ export class AddonModAssignProvider {
             return false;
         }
 
-        const time = CoreTimeUtils.instance.timestamp();
+        const time = CoreTimeUtils.timestamp();
         const lastAttempt = submissionStatus.lastattempt;
         const submission = this.getSubmissionObjectFromAttempt(assign, lastAttempt);
 
@@ -944,7 +944,7 @@ export class AddonModAssignProvider {
             assignid,
         };
 
-        await CoreCourseLogHelper.instance.logSingle(
+        await CoreCourseLogHelper.logSingle(
             'mod_assign_view_submission_status',
             params,
             AddonModAssignProvider.COMPONENT,
@@ -969,7 +969,7 @@ export class AddonModAssignProvider {
             assignid,
         };
 
-        await CoreCourseLogHelper.instance.logSingle(
+        await CoreCourseLogHelper.logSingle(
             'mod_assign_view_grading_table',
             params,
             AddonModAssignProvider.COMPONENT,
@@ -994,7 +994,7 @@ export class AddonModAssignProvider {
             assignid,
         };
 
-        await CoreCourseLogHelper.instance.logSingle(
+        await CoreCourseLogHelper.logSingle(
             'mod_assign_view_assign',
             params,
             AddonModAssignProvider.COMPONENT,
@@ -1063,11 +1063,11 @@ export class AddonModAssignProvider {
         siteId?: string,
     ): Promise<boolean> {
 
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Function to store the submission to be synchronized later.
         const storeOffline = async (): Promise<boolean> => {
-            await AddonModAssignOffline.instance.saveSubmission(
+            await AddonModAssignOffline.saveSubmission(
                 assignId,
                 courseId,
                 pluginData,
@@ -1080,19 +1080,19 @@ export class AddonModAssignProvider {
             return false;
         };
 
-        if (allowOffline && !CoreApp.instance.isOnline()) {
+        if (allowOffline && !CoreApp.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }
 
         try {
             // If there's already a submission to be sent to the server, discard it first.
-            await AddonModAssignOffline.instance.deleteSubmission(assignId, userId, siteId);
+            await AddonModAssignOffline.deleteSubmission(assignId, userId, siteId);
             await this.saveSubmissionOnline(assignId, pluginData, siteId);
 
             return true;
         } catch (error) {
-            if (allowOffline && error && !CoreUtils.instance.isWebServiceError(error)) {
+            if (allowOffline && error && !CoreUtils.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {
@@ -1111,7 +1111,7 @@ export class AddonModAssignProvider {
      * @return Promise resolved when saved, rejected otherwise.
      */
     async saveSubmissionOnline(assignId: number, pluginData: AddonModAssignSavePluginData, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const params: AddonModAssignSaveSubmissionWSParams = {
             assignmentid: assignId,
             plugindata: pluginData,
@@ -1144,11 +1144,11 @@ export class AddonModAssignProvider {
         siteId?: string,
     ): Promise<boolean> {
 
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Function to store the submission to be synchronized later.
         const storeOffline = async (): Promise<boolean> => {
-            await AddonModAssignOffline.instance.markSubmitted(
+            await AddonModAssignOffline.markSubmitted(
                 assignId,
                 courseId,
                 true,
@@ -1161,19 +1161,19 @@ export class AddonModAssignProvider {
             return false;
         };
 
-        if (forceOffline || !CoreApp.instance.isOnline()) {
+        if (forceOffline || !CoreApp.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }
 
         try {
             // If there's already a submission to be sent to the server, discard it first.
-            await AddonModAssignOffline.instance.deleteSubmission(assignId, undefined, siteId);
+            await AddonModAssignOffline.deleteSubmission(assignId, undefined, siteId);
             await this.submitForGradingOnline(assignId, acceptStatement, siteId);
 
             return true;
         } catch (error) {
-            if (error && !CoreUtils.instance.isWebServiceError(error)) {
+            if (error && !CoreUtils.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {
@@ -1192,7 +1192,7 @@ export class AddonModAssignProvider {
      * @return Promise resolved when submitted, rejected otherwise.
      */
     async submitForGradingOnline(assignId: number, acceptStatement: boolean, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonModAssignSubmitForGradingWSParams = {
             assignmentid: assignId,
@@ -1237,11 +1237,11 @@ export class AddonModAssignProvider {
         siteId?: string,
     ): Promise<boolean> {
 
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Function to store the grading to be synchronized later.
         const storeOffline = async (): Promise<boolean> => {
-            await AddonModAssignOffline.instance.submitGradingForm(
+            await AddonModAssignOffline.submitGradingForm(
                 assignId,
                 userId,
                 courseId,
@@ -1277,14 +1277,14 @@ export class AddonModAssignProvider {
             return true;
         }
 
-        if (!CoreApp.instance.isOnline()) {
+        if (!CoreApp.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }
 
         try {
             // If there's already a grade to be sent to the server, discard it first.
-            await AddonModAssignOffline.instance.deleteSubmissionGrade(assignId, userId, siteId);
+            await AddonModAssignOffline.deleteSubmissionGrade(assignId, userId, siteId);
             await this.submitGradingFormOnline(
                 assignId,
                 userId,
@@ -1300,7 +1300,7 @@ export class AddonModAssignProvider {
 
             return true;
         } catch (error)  {
-            if (error && !CoreUtils.instance.isWebServiceError(error)) {
+            if (error && !CoreUtils.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {
@@ -1339,7 +1339,7 @@ export class AddonModAssignProvider {
         siteId?: string,
     ): Promise<void> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
         if (site.wsAvailable('mod_assign_submit_grading_form')) {

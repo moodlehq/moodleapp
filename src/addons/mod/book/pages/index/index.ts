@@ -39,9 +39,9 @@ export class AddonModBookIndexPage implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.module = CoreNavigator.instance.getRouteParam('module');
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId');
-        this.chapterId = CoreNavigator.instance.getRouteNumberParam('chapterId');
+        this.module = CoreNavigator.getRouteParam('module');
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+        this.chapterId = CoreNavigator.getRouteNumberParam('chapterId');
         this.title = this.module?.name;
     }
 

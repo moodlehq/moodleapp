@@ -53,14 +53,14 @@ export class AddonModBookTocComponent implements OnInit {
      * @param id ID of the clicked chapter.
      */
     loadChapter(id: number): void {
-        ModalController.instance.dismiss(id);
+        ModalController.dismiss(id);
     }
 
     /**
      * Close modal.
      */
     closeModal(): void {
-        ModalController.instance.dismiss();
+        ModalController.dismiss();
     }
 
 }

@@ -40,7 +40,7 @@ import { SITE_SCHEMA } from './services/database/password';
             multi: true,
             deps: [],
             useFactory: () => () => {
-                AddonModQuizAccessRuleDelegate.instance.registerHandler(AddonModQuizAccessPasswordHandler.instance);
+                AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessPasswordHandler.instance);
             },
         },
     ],

@@ -42,7 +42,7 @@ export class AddonQtypeGapSelectComponent extends CoreQuestionBaseComponent impl
      * The question has been rendered.
      */
     questionRendered(): void {
-        CoreQuestionHelper.instance.treatCorrectnessIconsClicks(
+        CoreQuestionHelper.treatCorrectnessIconsClicks(
             this.hostElement,
             this.component,
             this.componentId,

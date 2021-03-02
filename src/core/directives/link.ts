@@ -54,7 +54,7 @@ export class CoreLinkDirective implements OnInit {
      * Function executed when the component is initialized.
      */
     ngOnInit(): void {
-        this.inApp = typeof this.inApp == 'undefined' ? this.inApp : CoreUtils.instance.isTrueOrOne(this.inApp);
+        this.inApp = typeof this.inApp == 'undefined' ? this.inApp : CoreUtils.isTrueOrOne(this.inApp);
 
         // @todo: Handle split view?
 
@@ -65,7 +65,7 @@ export class CoreLinkDirective implements OnInit {
 
             let href = this.href || this.element.getAttribute('href') || this.element.getAttribute('xlink:href');
 
-            if (!href || CoreUrlUtils.instance.getUrlScheme(href) == 'javascript') {
+            if (!href || CoreUrlUtils.getUrlScheme(href) == 'javascript') {
                 return;
             }
 
@@ -74,10 +74,10 @@ export class CoreLinkDirective implements OnInit {
 
             const openIn = this.element.getAttribute('data-open-in');
 
-            if (CoreUtils.instance.isTrueOrOne(this.capture)) {
-                href = CoreTextUtils.instance.decodeURI(href);
+            if (CoreUtils.isTrueOrOne(this.capture)) {
+                href = CoreTextUtils.decodeURI(href);
 
-                const treated = await CoreContentLinksHelper.instance.handleLink(href, undefined, true, true);
+                const treated = await CoreContentLinksHelper.handleLink(href, undefined, true, true);
 
                 if (!treated) {
                     this.navigate(href, openIn);
@@ -97,14 +97,14 @@ export class CoreLinkDirective implements OnInit {
      */
     protected async navigate(href: string, openIn?: string | null): Promise<void> {
 
-        if (CoreUrlUtils.instance.isLocalFileUrl(href)) {
+        if (CoreUrlUtils.isLocalFileUrl(href)) {
             return this.openLocalFile(href);
         }
 
         if (href.charAt(0) == '#') {
             // Look for id or name.
             href = href.substr(1);
-            CoreDomUtils.instance.scrollToElementBySelector(
+            CoreDomUtils.scrollToElementBySelector(
                 this.element.closest('ion-content'),
                 this.content,
                 `#${href}, [name='${href}']`,
@@ -127,18 +127,18 @@ export class CoreLinkDirective implements OnInit {
     protected async openLocalFile(path: string): Promise<void> {
         const filename = path.substr(path.lastIndexOf('/') + 1);
 
-        if (!CoreFileHelper.instance.isOpenableInApp({ filename })) {
+        if (!CoreFileHelper.isOpenableInApp({ filename })) {
             try {
-                await CoreFileHelper.instance.showConfirmOpenUnsupportedFile();
+                await CoreFileHelper.showConfirmOpenUnsupportedFile();
             } catch (error) {
                 return; // Cancelled, stop.
             }
         }
 
         try {
-            await CoreUtils.instance.openFile(path);
+            await CoreUtils.openFile(path);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
         }
     }
 
@@ -151,38 +151,38 @@ export class CoreLinkDirective implements OnInit {
      */
     protected async openExternalLink(href: string, openIn?: string | null): Promise<void> {
         // It's an external link, we will open with browser. Check if we need to auto-login.
-        if (!CoreSites.instance.isLoggedIn()) {
+        if (!CoreSites.isLoggedIn()) {
             // Not logged in, cannot auto-login.
             if (this.inApp) {
-                CoreUtils.instance.openInApp(href);
+                CoreUtils.openInApp(href);
             } else {
-                CoreUtils.instance.openInBrowser(href);
+                CoreUtils.openInBrowser(href);
             }
 
             return;
         }
 
         // Check if URL does not have any protocol, so it's a relative URL.
-        if (!CoreUrlUtils.instance.isAbsoluteURL(href)) {
+        if (!CoreUrlUtils.isAbsoluteURL(href)) {
             // Add the site URL at the begining.
             if (href.charAt(0) == '/') {
-                href = CoreSites.instance.getCurrentSite()!.getURL() + href;
+                href = CoreSites.getCurrentSite()!.getURL() + href;
             } else {
-                href = CoreSites.instance.getCurrentSite()!.getURL() + '/' + href;
+                href = CoreSites.getCurrentSite()!.getURL() + '/' + href;
             }
         }
 
         if (this.autoLogin == 'yes') {
             if (this.inApp) {
-                await CoreSites.instance.getCurrentSite()!.openInAppWithAutoLogin(href);
+                await CoreSites.getCurrentSite()!.openInAppWithAutoLogin(href);
             } else {
-                await CoreSites.instance.getCurrentSite()!.openInBrowserWithAutoLogin(href);
+                await CoreSites.getCurrentSite()!.openInBrowserWithAutoLogin(href);
             }
         } else if (this.autoLogin == 'no') {
             if (this.inApp) {
-                CoreUtils.instance.openInApp(href);
+                CoreUtils.openInApp(href);
             } else {
-                CoreUtils.instance.openInBrowser(href);
+                CoreUtils.openInBrowser(href);
             }
         } else {
             // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > data-open-in HTML attribute.
@@ -196,9 +196,9 @@ export class CoreLinkDirective implements OnInit {
             }
 
             if (openInApp) {
-                await CoreSites.instance.getCurrentSite()!.openInAppWithAutoLoginIfSameSite(href);
+                await CoreSites.getCurrentSite()!.openInAppWithAutoLoginIfSameSite(href);
             } else {
-                await CoreSites.instance.getCurrentSite()!.openInBrowserWithAutoLoginIfSameSite(href);
+                await CoreSites.getCurrentSite()!.openInBrowserWithAutoLoginIfSameSite(href);
             }
         }
     }

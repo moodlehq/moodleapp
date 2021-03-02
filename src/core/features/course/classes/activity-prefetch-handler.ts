@@ -82,9 +82,9 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
         downloadFunction: () => Promise<string>,
         siteId?: string,
     ): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (!CoreApp.instance.isOnline()) {
+        if (!CoreApp.isOnline()) {
             // Cannot prefetch in offline.
             throw new CoreNetworkError();
         }
@@ -119,9 +119,9 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
 
             // Package marked as downloading, get module info to be able to handle links. Get module filters too.
             await Promise.all([
-                CoreCourse.instance.getModuleBasicInfo(module.id, siteId),
-                CoreCourse.instance.getModule(module.id, courseId, undefined, false, true, siteId),
-                CoreFilterHelper.instance.getFilters('module', module.id, { courseId }),
+                CoreCourse.getModuleBasicInfo(module.id, siteId),
+                CoreCourse.getModule(module.id, courseId, undefined, false, true, siteId),
+                CoreFilterHelper.getFilters('module', module.id, { courseId }),
             ]);
 
             // Call the download function.
@@ -151,9 +151,9 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      * @return Promise resolved when done.
      */
     setDownloaded(id: number, siteId?: string, extra?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        return CoreFilepool.instance.storePackageStatus(siteId, CoreConstants.DOWNLOADED, this.component, id, extra);
+        return CoreFilepool.storePackageStatus(siteId, CoreConstants.DOWNLOADED, this.component, id, extra);
     }
 
     /**
@@ -164,9 +164,9 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      * @return Promise resolved when done.
      */
     setDownloading(id: number, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        return CoreFilepool.instance.storePackageStatus(siteId, CoreConstants.DOWNLOADING, this.component, id);
+        return CoreFilepool.storePackageStatus(siteId, CoreConstants.DOWNLOADING, this.component, id);
     }
 
     /**
@@ -177,9 +177,9 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      * @return Rejected promise.
      */
     async setPreviousStatus(id: number, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        await CoreFilepool.instance.setPackagePreviousStatus(siteId, this.component, id);
+        await CoreFilepool.setPackagePreviousStatus(siteId, this.component, id);
     }
 
     /**
@@ -192,9 +192,9 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      * @deprecated since 3.9.5. Use setPreviousStatus instead.
      */
     async setPreviousStatusAndReject(id: number, error?: Error, siteId?: string): Promise<never> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        await CoreFilepool.instance.setPackagePreviousStatus(siteId, this.component, id);
+        await CoreFilepool.setPackagePreviousStatus(siteId, this.component, id);
 
         throw error;
     }

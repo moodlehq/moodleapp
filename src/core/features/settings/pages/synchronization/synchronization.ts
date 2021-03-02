@@ -40,10 +40,10 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
 
     constructor() {
 
-        this.currentSiteId = CoreSites.instance.getCurrentSiteId();
+        this.currentSiteId = CoreSites.getCurrentSiteId();
 
         this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async (data: CoreEventSiteUpdatedData) => {
-            const site = await CoreSites.instance.getSite(data.siteId);
+            const site = await CoreSites.getSite(data.siteId);
 
             const siteEntry = this.sites.find((siteEntry) => siteEntry.id == site.id);
             if (siteEntry) {
@@ -64,21 +64,21 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         try {
-            this.sites = await CoreSites.instance.getSortedSites();
+            this.sites = await CoreSites.getSortedSites();
         } catch {
             // Ignore errors.
         }
 
         this.sitesLoaded = true;
 
-        this.syncOnlyOnWifi = await CoreConfig.instance.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, true);
+        this.syncOnlyOnWifi = await CoreConfig.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, true);
     }
 
     /**
      * Called when sync only on wifi setting is enabled or disabled.
      */
     syncOnlyOnWifiChanged(): void {
-        CoreConfig.instance.set(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, this.syncOnlyOnWifi ? 1 : 0);
+        CoreConfig.set(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, this.syncOnlyOnWifi ? 1 : 0);
     }
 
     /**
@@ -89,13 +89,13 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
     async synchronize(siteId: string): Promise<void> {
         // Using syncOnlyOnWifi false to force manual sync.
         try {
-            await CoreSettingsHelper.instance.synchronizeSite(false, siteId);
+            await CoreSettingsHelper.synchronizeSite(false, siteId);
         } catch (error) {
             if (this.isDestroyed) {
                 return;
             }
 
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.settings.errorsyncsite', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.settings.errorsyncsite', true);
         }
     }
 
@@ -106,16 +106,16 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
      * @return True if site is beeing synchronized, false otherwise.
      */
     isSynchronizing(siteId: string): boolean {
-        return !!CoreSettingsHelper.instance.getSiteSyncPromise(siteId);
+        return !!CoreSettingsHelper.getSiteSyncPromise(siteId);
     }
 
     /**
      * Show information about sync actions.
      */
     showInfo(): void {
-        CoreDomUtils.instance.showAlert(
-            Translate.instance.instant('core.help'),
-            Translate.instance.instant('core.settings.synchronizenowhelp'),
+        CoreDomUtils.showAlert(
+            Translate.instant('core.help'),
+            Translate.instant('core.settings.synchronizenowhelp'),
         );
     }
 

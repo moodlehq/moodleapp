@@ -44,4 +44,4 @@ export class AddonBlockNewsItemsHandlerService extends CoreBlockBaseHandler {
 
 }
 
-export class AddonBlockNewsItemsHandler extends makeSingleton(AddonBlockNewsItemsHandlerService) {}
+export const AddonBlockNewsItemsHandler = makeSingleton(AddonBlockNewsItemsHandlerService);

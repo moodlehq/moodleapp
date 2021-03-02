@@ -39,7 +39,7 @@ export class AddonCalendarOfflineProvider {
      * @return Promise resolved if deleted, rejected if failure.
      */
     async deleteEvent(eventId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const conditions: SQLiteDBRecordValues = {
             id: eventId,
@@ -62,7 +62,7 @@ export class AddonCalendarOfflineProvider {
 
         const result = await Promise.all(promises);
 
-        return CoreUtils.instance.mergeArraysWithoutDuplicates(result[0], result[1]);
+        return CoreUtils.mergeArraysWithoutDuplicates(result[0], result[1]);
     }
 
     /**
@@ -72,7 +72,7 @@ export class AddonCalendarOfflineProvider {
      * @return Promise resolved with all the events deleted in offline.
      */
     async getAllDeletedEvents(siteId?: string): Promise<AddonCalendarOfflineDeletedEventDBRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return await site.getDb().getRecords(DELETED_EVENTS_TABLE);
     }
@@ -96,7 +96,7 @@ export class AddonCalendarOfflineProvider {
      * @return Promise resolved with events.
      */
     async getAllEditedEvents(siteId?: string): Promise<AddonCalendarOfflineEventDBRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return await site.getDb().getRecords(EVENTS_TABLE);
     }
@@ -121,7 +121,7 @@ export class AddonCalendarOfflineProvider {
      * @return Promise resolved with the deleted event.
      */
     async getDeletedEvent(eventId: number, siteId?: string): Promise<AddonCalendarOfflineDeletedEventDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const conditions: SQLiteDBRecordValues = {
             id: eventId,
         };
@@ -137,7 +137,7 @@ export class AddonCalendarOfflineProvider {
      * @return Promise resolved with the event.
      */
     async getEvent(eventId: number, siteId?: string): Promise<AddonCalendarOfflineEventDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const conditions: SQLiteDBRecordValues = {
             id: eventId,
         };
@@ -201,7 +201,7 @@ export class AddonCalendarOfflineProvider {
      * @return Promise resolved when done.
      */
     async markDeleted(eventId: number, name: string, deleteAll?: boolean, siteId?: string): Promise<number> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const event: AddonCalendarOfflineDeletedEventDBRecord = {
             id: eventId,
             name: name || '',
@@ -227,7 +227,7 @@ export class AddonCalendarOfflineProvider {
         timeCreated?: number,
         siteId?: string,
     ): Promise<AddonCalendarOfflineEventDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         timeCreated = timeCreated || Date.now();
         const event: AddonCalendarOfflineEventDBRecord = {
             id: eventId || -timeCreated,
@@ -263,7 +263,7 @@ export class AddonCalendarOfflineProvider {
      * @return Promise resolved if deleted, rejected if failure.
      */
     async unmarkDeleted(eventId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const conditions: SQLiteDBRecordValues = {
             id: eventId,
         };
@@ -272,5 +272,4 @@ export class AddonCalendarOfflineProvider {
     }
 
 }
-export class AddonCalendarOffline extends makeSingleton(AddonCalendarOfflineProvider) {}
-
+export const AddonCalendarOffline = makeSingleton(AddonCalendarOfflineProvider);

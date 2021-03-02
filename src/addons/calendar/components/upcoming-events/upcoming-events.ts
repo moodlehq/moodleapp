@@ -64,11 +64,11 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
     constructor(
         differs: KeyValueDiffers,
     ) {
-        this.currentSiteId = CoreSites.instance.getCurrentSiteId();
+        this.currentSiteId = CoreSites.getCurrentSiteId();
 
-        if (CoreLocalNotifications.instance.isAvailable()) {            // Re-schedule events if default time changes.
+        if (CoreLocalNotifications.isAvailable()) {            // Re-schedule events if default time changes.
             this.obsDefaultTimeChange = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
-                AddonCalendar.instance.scheduleEventsNotifications(this.onlineEvents);
+                AddonCalendar.scheduleEventsNotifications(this.onlineEvents);
             }, this.currentSiteId);
         }
 
@@ -124,31 +124,31 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
         promises.push(this.loadCategories());
 
         // Get offline events.
-        promises.push(AddonCalendarOffline.instance.getAllEditedEvents().then((offlineEvents) => {
+        promises.push(AddonCalendarOffline.getAllEditedEvents().then((offlineEvents) => {
             // Format data.
             const events: AddonCalendarEventToDisplay[] = offlineEvents.map((event) =>
-                AddonCalendarHelper.instance.formatOfflineEventData(event));
+                AddonCalendarHelper.formatOfflineEventData(event));
 
-            this.offlineEvents = AddonCalendarHelper.instance.sortEvents(events);
+            this.offlineEvents = AddonCalendarHelper.sortEvents(events);
 
             return;
         }));
 
         // Get events deleted in offline.
-        promises.push(AddonCalendarOffline.instance.getAllDeletedEventsIds().then((ids) => {
+        promises.push(AddonCalendarOffline.getAllDeletedEventsIds().then((ids) => {
             this.deletedEvents = ids;
 
             return;
         }));
 
         // Get user preferences.
-        promises.push(AddonCalendar.instance.getCalendarLookAhead().then((value) => {
+        promises.push(AddonCalendar.getCalendarLookAhead().then((value) => {
             this.lookAhead = value;
 
             return;
         }));
 
-        promises.push(AddonCalendar.instance.getCalendarTimeFormat().then((value) => {
+        promises.push(AddonCalendar.getCalendarTimeFormat().then((value) => {
             this.timeFormat = value;
 
             return;
@@ -160,7 +160,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
             this.fetchEvents();
 
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
         }
 
         this.loaded = true;
@@ -173,10 +173,10 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
      */
     async fetchEvents(): Promise<void> {
         // Don't pass courseId and categoryId, we'll filter them locally.
-        const result = await AddonCalendar.instance.getUpcomingEvents();
-        this.onlineEvents = result.events.map((event) => AddonCalendarHelper.instance.formatEventData(event));
+        const result = await AddonCalendar.getUpcomingEvents();
+        this.onlineEvents = result.events.map((event) => AddonCalendarHelper.formatEventData(event));
         // Schedule notifications for the events retrieved.
-        AddonCalendar.instance.scheduleEventsNotifications(this.onlineEvents);
+        AddonCalendar.scheduleEventsNotifications(this.onlineEvents);
         // Merge the online events with offline data.
         this.events = this.mergeEvents();
         // Filter events by course.
@@ -184,7 +184,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
         // Re-calculate the formatted time so it uses the device date.
         const promises = this.events.map((event) =>
-            AddonCalendar.instance.formatEventTime(event, this.timeFormat!).then((time) => {
+            AddonCalendar.formatEventTime(event, this.timeFormat!).then((time) => {
                 event.formattedtime = time;
 
                 return;
@@ -205,7 +205,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
         }
 
         try {
-            const cats = await CoreCourses.instance.getCategories(0, true);
+            const cats = await CoreCourses.getCategories(0, true);
             this.categoriesRetrieved = true;
             this.categories = {};
 
@@ -222,7 +222,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
      * Filter events based on the filter popover.
      */
     protected filterEvents(): void {
-        this.filteredEvents = AddonCalendarHelper.instance.getFilteredEvents(this.events, this.filter!, this.categories);
+        this.filteredEvents = AddonCalendarHelper.getFilteredEvents(this.events, this.filter!, this.categories);
     }
 
     /**
@@ -236,11 +236,11 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
         // Don't invalidate upcoming events after a change, it has already been handled.
         if (!afterChange) {
-            promises.push(AddonCalendar.instance.invalidateAllUpcomingEvents());
+            promises.push(AddonCalendar.invalidateAllUpcomingEvents());
         }
-        promises.push(CoreCourses.instance.invalidateCategories(0, true));
-        promises.push(AddonCalendar.instance.invalidateLookAhead());
-        promises.push(AddonCalendar.instance.invalidateTimeFormat());
+        promises.push(CoreCourses.invalidateCategories(0, true));
+        promises.push(AddonCalendar.invalidateLookAhead());
+        promises.push(AddonCalendar.invalidateTimeFormat());
 
         this.categoriesRetrieved = false; // Get categories again.
 
@@ -297,7 +297,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
         // Merge both arrays and sort them.
         result = result.concat(periodOfflineEvents);
 
-        return AddonCalendarHelper.instance.sortEvents(result);
+        return AddonCalendarHelper.sortEvents(result);
     }
 
     /**

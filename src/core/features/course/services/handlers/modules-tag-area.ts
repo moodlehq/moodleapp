@@ -44,7 +44,7 @@ export class CoreCourseModulesTagAreaHandlerService implements CoreTagAreaHandle
      * @return Area items (or promise resolved with the items).
      */
     parseContent(content: string): CoreTagFeedElement[] | Promise<CoreTagFeedElement[]> {
-        return CoreTagHelper.instance.parseFeedContent(content);
+        return CoreTagHelper.parseFeedContent(content);
     }
 
     /**
@@ -58,4 +58,4 @@ export class CoreCourseModulesTagAreaHandlerService implements CoreTagAreaHandle
 
 }
 
-export class CoreCourseModulesTagAreaHandler extends makeSingleton(CoreCourseModulesTagAreaHandlerService) {}
+export const CoreCourseModulesTagAreaHandler = makeSingleton(CoreCourseModulesTagAreaHandlerService);

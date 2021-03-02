@@ -69,9 +69,9 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
         protected route: ActivatedRoute,
     ) {
 
-        this.search.loading =  Translate.instance.instant('core.searching');
-        this.loadingMessages = Translate.instance.instant('core.loading');
-        this.siteId = CoreSites.instance.getCurrentSiteId();
+        this.search.loading =  Translate.instant('core.searching');
+        this.loadingMessages = Translate.instant('core.loading');
+        this.siteId = CoreSites.getCurrentSiteId();
 
         // Update discussions when new message is received.
         this.newMessagesObserver = CoreEvents.on<AddonMessagesNewMessagedEventData>(
@@ -107,8 +107,8 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
                         discussion.unread = false;
 
                         // Conversations changed, invalidate them and refresh unread counts.
-                        AddonMessages.instance.invalidateConversations(this.siteId);
-                        AddonMessages.instance.refreshUnreadConversationCounts(this.siteId);
+                        AddonMessages.invalidateConversations(this.siteId);
+                        AddonMessages.refreshUnreadConversationCounts(this.siteId);
                     }
                 }
             },
@@ -116,7 +116,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
         );
 
         // Refresh the view when the app is resumed.
-        this.appResumeSubscription = Platform.instance.resume.subscribe(() => {
+        this.appResumeSubscription = Platform.resume.subscribe(() => {
             if (!this.loaded) {
                 return;
             }
@@ -126,10 +126,10 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
 
         // If a message push notification is received, refresh the view.
-        this.pushObserver = CorePushNotificationsDelegate.instance.on<CorePushNotificationsNotificationBasicData>('receive')
+        this.pushObserver = CorePushNotificationsDelegate.on<CorePushNotificationsNotificationBasicData>('receive')
             .subscribe((notification) => {
                 // New message received. If it's from current site, refresh the data.
-                if (CoreUtils.instance.isFalseOrZero(notification.notif) && notification.site == this.siteId) {
+                if (CoreUtils.isFalseOrZero(notification.notif) && notification.site == this.siteId) {
                 // Don't refresh unread counts, it's refreshed from the main menu handler in this case.
                     this.refreshData(undefined, false);
                 }
@@ -141,8 +141,8 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.route.queryParams.subscribe(async (params) => {
-            const discussionUserId = CoreNavigator.instance.getRouteNumberParam('discussionUserId', params) ||
-                CoreNavigator.instance.getRouteNumberParam('userId', params) || undefined;
+            const discussionUserId = CoreNavigator.getRouteNumberParam('discussionUserId', params) ||
+                CoreNavigator.getRouteNumberParam('userId', params) || undefined;
 
             if (this.loaded && this.discussionUserId == discussionUserId) {
                 return;
@@ -157,7 +157,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
             await this.fetchData();
 
-            if (!this.discussionUserId && this.discussions.length > 0 && CoreScreen.instance.isTablet) {
+            if (!this.discussionUserId && this.discussions.length > 0 && CoreScreen.isTablet) {
                 // Take first and load it.
                 this.gotoDiscussion(this.discussions[0].message!.user);
             }
@@ -173,13 +173,13 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      */
     async refreshData(refresher?: CustomEvent<IonRefresher>, refreshUnreadCounts: boolean = true): Promise<void> {
         const promises: Promise<void>[] = [];
-        promises.push(AddonMessages.instance.invalidateDiscussionsCache(this.siteId));
+        promises.push(AddonMessages.invalidateDiscussionsCache(this.siteId));
 
         if (refreshUnreadCounts) {
-            promises.push(AddonMessages.instance.invalidateUnreadConversationCounts(this.siteId));
+            promises.push(AddonMessages.invalidateUnreadConversationCounts(this.siteId));
         }
 
-        await CoreUtils.instance.allPromises(promises).finally(() => this.fetchData().finally(() => {
+        await CoreUtils.allPromises(promises).finally(() => this.fetchData().finally(() => {
             if (refresher) {
                 refresher?.detail.complete();
             }
@@ -193,11 +193,11 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      */
     protected async fetchData(): Promise<void> {
         this.loadingMessage = this.loadingMessages;
-        this.search.enabled = AddonMessages.instance.isSearchMessagesEnabled();
+        this.search.enabled = AddonMessages.isSearchMessagesEnabled();
 
         const promises: Promise<unknown>[] = [];
 
-        promises.push(AddonMessages.instance.getDiscussions(this.siteId).then((discussions) => {
+        promises.push(AddonMessages.getDiscussions(this.siteId).then((discussions) => {
             // Convert to an array for sorting.
             const discussionsSorted: AddonMessagesDiscussion[] = [];
             for (const userId in discussions) {
@@ -211,12 +211,12 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
             return;
         }));
 
-        promises.push(AddonMessages.instance.getUnreadConversationCounts(this.siteId));
+        promises.push(AddonMessages.getUnreadConversationCounts(this.siteId));
 
         try {
             await Promise.all(promises);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
         }
 
         this.loaded = true;
@@ -241,16 +241,16 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      * @return Resolved when done.
      */
     async searchMessage(query: string): Promise<void> {
-        CoreApp.instance.closeKeyboard();
+        CoreApp.closeKeyboard();
         this.loaded = false;
         this.loadingMessage = this.search.loading;
 
         try {
-            const searchResults = await AddonMessages.instance.searchMessages(query, undefined, undefined, undefined, this.siteId);
+            const searchResults = await AddonMessages.searchMessages(query, undefined, undefined, undefined, this.siteId);
             this.search.showResults = true;
             this.search.results = searchResults.messages;
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
         }
 
         this.loaded = true;
@@ -274,10 +274,10 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
             params.message = messageId;
         }
 
-        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/index/discussion');
+        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/index/discussion');
         const path = (splitViewLoaded ? '../' : '') + 'discussion';
 
-        CoreNavigator.instance.navigate(path, { params });
+        CoreNavigator.navigate(path, { params });
     }
 
     /**
@@ -286,11 +286,11 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
     gotoContacts(): void {
         const params: Params = {};
 
-        if (CoreScreen.instance.isTablet && this.discussionUserId) {
+        if (CoreScreen.isTablet && this.discussionUserId) {
             params.discussionUserId = this.discussionUserId;
         }
 
-        CoreNavigator.instance.navigateToSitePath('contacts-35', { params });
+        CoreNavigator.navigateToSitePath('contacts-35', { params });
     }
 
     /**

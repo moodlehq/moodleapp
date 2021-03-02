@@ -77,7 +77,7 @@ export class AddonQtypeDdImageOrTextQuestion {
             return bgImgXY;
         }
 
-        const position = CoreDomUtils.instance.getElementXY(bgImg, undefined, 'ddarea');
+        const position = CoreDomUtils.getElementXY(bgImg, undefined, 'ddarea');
 
         // Render the position related to the current image dimensions.
         bgImgXY[0] *= this.proportion;
@@ -142,7 +142,7 @@ export class AddonQtypeDdImageOrTextQuestion {
             }
         }
 
-        await CoreUtils.instance.nextTick();
+        await CoreUtils.nextTick();
 
         // All drag items have been created, position them.
         this.repositionDragsForQuestion();
@@ -409,7 +409,7 @@ export class AddonQtypeDdImageOrTextQuestion {
         }
 
         // Now position the draggable and set it to the input.
-        const position = CoreDomUtils.instance.getElementXY(drop, undefined, 'ddarea');
+        const position = CoreDomUtils.getElementXY(drop, undefined, 'ddarea');
         const choice = drag.getAttribute('choice');
         drag.style.left = position[0] - 1 + 'px';
         drag.style.top = position[1] - 1 + 'px';
@@ -462,7 +462,7 @@ export class AddonQtypeDdImageOrTextQuestion {
             return;
         }
 
-        const position = CoreDomUtils.instance.getElementXY(dragItemHome, undefined, 'ddarea');
+        const position = CoreDomUtils.getElementXY(dragItemHome, undefined, 'ddarea');
         drag.style.left = position[0] + 'px';
         drag.style.top = position[1] + 'px';
         drag.classList.remove('placed');

@@ -64,7 +64,7 @@ export class CoreFormatDatePipe implements PipeTransform {
             convert = format.indexOf('core.df') != 0;
         }
 
-        return CoreTimeUtils.instance.userDate(timestamp, format, convert);
+        return CoreTimeUtils.userDate(timestamp, format, convert);
     }
 
 }

@@ -62,32 +62,32 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
         // Update visibility if current site info is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.setVisibility();
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
     }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.root = CoreNavigator.instance.getRouteParam('root');
-        const contextId = CoreNavigator.instance.getRouteNumberParam('contextid');
+        this.root = CoreNavigator.getRouteParam('root');
+        const contextId = CoreNavigator.getRouteNumberParam('contextid');
 
         if (contextId) {
             // Loading a certain folder.
             this.path = {
                 contextid: contextId,
-                component: CoreNavigator.instance.getRouteParam<string>('component')!,
-                filearea: CoreNavigator.instance.getRouteParam<string>('filearea')!,
-                itemid: CoreNavigator.instance.getRouteNumberParam('itemid')!,
-                filepath: CoreNavigator.instance.getRouteParam<string>('filepath')!,
-                filename: CoreNavigator.instance.getRouteParam<string>('filename')!,
+                component: CoreNavigator.getRouteParam<string>('component')!,
+                filearea: CoreNavigator.getRouteParam<string>('filearea')!,
+                itemid: CoreNavigator.getRouteNumberParam('itemid')!,
+                filepath: CoreNavigator.getRouteParam<string>('filepath')!,
+                filename: CoreNavigator.getRouteParam<string>('filename')!,
             };
         }
 
-        this.title = this.path?.filename || Translate.instance.instant('addon.privatefiles.files');
+        this.title = this.path?.filename || Translate.instant('addon.privatefiles.files');
 
         this.setVisibility();
-        this.userQuota = CoreSites.instance.getCurrentSite()?.getInfo()?.userquota;
+        this.userQuota = CoreSites.getCurrentSite()?.getInfo()?.userquota;
 
         if (!this.root) {
             // Load private files by default.
@@ -109,9 +109,9 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      * Set visibility of some items based on site data.
      */
     protected setVisibility(): void {
-        this.showPrivateFiles = AddonPrivateFiles.instance.canViewPrivateFiles();
-        this.showSiteFiles = AddonPrivateFiles.instance.canViewSiteFiles();
-        this.showUpload = AddonPrivateFiles.instance.canUploadFiles();
+        this.showPrivateFiles = AddonPrivateFiles.canViewPrivateFiles();
+        this.showSiteFiles = AddonPrivateFiles.canViewSiteFiles();
+        this.showUpload = AddonPrivateFiles.canUploadFiles();
     }
 
     /**
@@ -142,31 +142,31 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      * Upload a new file.
      */
     async uploadFile(): Promise<void> {
-        const canUpload = await AddonPrivateFiles.instance.versionCanUploadFiles();
+        const canUpload = await AddonPrivateFiles.versionCanUploadFiles();
 
         if (!canUpload) {
-            CoreDomUtils.instance.showAlertTranslated('core.notice', 'addon.privatefiles.erroruploadnotworking');
+            CoreDomUtils.showAlertTranslated('core.notice', 'addon.privatefiles.erroruploadnotworking');
 
             return;
         }
 
-        if (!CoreApp.instance.isOnline()) {
-            CoreDomUtils.instance.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
+        if (!CoreApp.isOnline()) {
+            CoreDomUtils.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
 
             return;
         }
 
         try {
-            await AddonPrivateFilesHelper.instance.uploadPrivateFile(this.filesInfo);
+            await AddonPrivateFilesHelper.uploadPrivateFile(this.filesInfo);
 
             // File uploaded, refresh the list.
             this.filesLoaded = false;
 
-            await CoreUtils.instance.ignoreErrors(this.refreshFiles());
+            await CoreUtils.ignoreErrors(this.refreshFiles());
 
             this.filesLoaded = true;
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.fileuploader.errorwhileuploading', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.fileuploader.errorwhileuploading', true);
         }
     }
 
@@ -179,38 +179,38 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
         try {
             if (this.path) {
                 // Path is set, serve the files the user requested.
-                this.files = await AddonPrivateFiles.instance.getFiles(this.path);
+                this.files = await AddonPrivateFiles.getFiles(this.path);
 
                 return;
             }
 
             // The path is unknown, the user must be requesting a root.
             if (this.root == 'site') {
-                this.title = Translate.instance.instant('addon.privatefiles.sitefiles');
+                this.title = Translate.instant('addon.privatefiles.sitefiles');
 
-                this.files = await AddonPrivateFiles.instance.getSiteFiles();
+                this.files = await AddonPrivateFiles.getSiteFiles();
             } else if (this.root == 'my') {
-                this.title = Translate.instance.instant('addon.privatefiles.files');
+                this.title = Translate.instant('addon.privatefiles.files');
 
-                this.files = await AddonPrivateFiles.instance.getPrivateFiles();
+                this.files = await AddonPrivateFiles.getPrivateFiles();
 
-                if (this.showUpload && AddonPrivateFiles.instance.canGetPrivateFilesInfo() && this.userQuota &&
+                if (this.showUpload && AddonPrivateFiles.canGetPrivateFilesInfo() && this.userQuota &&
                     this.userQuota > 0) {
                     // Get the info to calculate the available size.
-                    this.filesInfo = await AddonPrivateFiles.instance.getPrivateFilesInfo();
+                    this.filesInfo = await AddonPrivateFiles.getPrivateFilesInfo();
 
-                    this.spaceUsed = CoreTextUtils.instance.bytesToSize(this.filesInfo.filesizewithoutreferences, 1);
-                    this.userQuotaReadable = CoreTextUtils.instance.bytesToSize(this.userQuota, 1);
+                    this.spaceUsed = CoreTextUtils.bytesToSize(this.filesInfo.filesizewithoutreferences, 1);
+                    this.userQuotaReadable = CoreTextUtils.bytesToSize(this.userQuota, 1);
                 } else {
                     // User quota isn't useful, delete it.
                     delete this.userQuota;
                 }
             } else {
                 // Unknown root.
-                CoreDomUtils.instance.showErrorModal('addon.privatefiles.couldnotloadfiles', true);
+                CoreDomUtils.showErrorModal('addon.privatefiles.couldnotloadfiles', true);
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.privatefiles.couldnotloadfiles', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.privatefiles.couldnotloadfiles', true);
         }
     }
 
@@ -222,8 +222,8 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
     protected async refreshFiles(): Promise<void> {
         try {
             await Promise.all([
-                AddonPrivateFiles.instance.invalidateDirectory(this.root, this.path),
-                AddonPrivateFiles.instance.invalidatePrivateFilesInfoForUser(),
+                AddonPrivateFiles.invalidateDirectory(this.root, this.path),
+                AddonPrivateFiles.invalidatePrivateFilesInfoForUser(),
             ]);
         } finally {
             await this.fetchFiles();
@@ -252,7 +252,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
         const hash = <string> Md5.hashAsciiStr(JSON.stringify(params));
 
-        CoreNavigator.instance.navigate(`../${hash}`, { params });
+        CoreNavigator.navigate(`../${hash}`, { params });
     }
 
     /**

@@ -59,7 +59,7 @@ export class CoreSettingsLicensesPage implements OnInit {
      */
     async ngOnInit(): Promise<void> {
         try {
-            const licenses = await Http.instance.get(this.licensesUrl).toPromise();
+            const licenses = await Http.get(this.licensesUrl).toPromise();
             this.licenses = Object.keys(licenses).map((name) => {
                 const license = licenses[name];
 

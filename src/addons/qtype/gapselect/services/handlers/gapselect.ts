@@ -128,9 +128,9 @@ export class AddonQtypeGapSelectHandlerService implements CoreQuestionHandler {
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreQuestion.instance.compareAllAnswers(prevAnswers, newAnswers);
+        return CoreQuestion.compareAllAnswers(prevAnswers, newAnswers);
     }
 
 }
 
-export class AddonQtypeGapSelectHandler extends makeSingleton(AddonQtypeGapSelectHandlerService) {}
+export const AddonQtypeGapSelectHandler = makeSingleton(AddonQtypeGapSelectHandlerService);

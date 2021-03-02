@@ -51,7 +51,7 @@ export class CoreEditorOfflineProvider {
         siteId?: string,
     ): Promise<void> {
         try {
-            const db = await CoreSites.instance.getSiteDb(siteId);
+            const db = await CoreSites.getSiteDb(siteId);
 
             const params = this.fixDraftPrimaryData(contextLevel, contextInstanceId, elementId, extraParams);
 
@@ -81,7 +81,7 @@ export class CoreEditorOfflineProvider {
             contextlevel: contextLevel,
             contextinstanceid: contextInstanceId,
             elementid: elementId,
-            extraparams: CoreUtils.instance.sortAndStringify(extraParams || {}),
+            extraparams: CoreUtils.sortAndStringify(extraParams || {}),
         };
     }
 
@@ -103,7 +103,7 @@ export class CoreEditorOfflineProvider {
         siteId?: string,
     ): Promise<CoreEditorDraft> {
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         const params = this.fixDraftPrimaryData(contextLevel, contextInstanceId, elementId, extraParams);
 
@@ -138,7 +138,7 @@ export class CoreEditorOfflineProvider {
 
             // There is a draft stored. Update its page instance.
             try {
-                const db = await CoreSites.instance.getSiteDb(siteId);
+                const db = await CoreSites.getSiteDb(siteId);
 
                 entry.pageinstance = pageInstance;
                 entry.timemodified = Date.now();
@@ -219,7 +219,7 @@ export class CoreEditorOfflineProvider {
             }
         }
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         const data: CoreEditorDraft = this.fixDraftPrimaryData(contextLevel, contextInstanceId, elementId, extraParams);
 
@@ -236,4 +236,4 @@ export class CoreEditorOfflineProvider {
 
 }
 
-export class CoreEditorOffline extends makeSingleton(CoreEditorOfflineProvider) {}
+export const CoreEditorOffline = makeSingleton(CoreEditorOfflineProvider);

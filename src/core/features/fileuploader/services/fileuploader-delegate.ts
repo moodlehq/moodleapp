@@ -196,4 +196,4 @@ export class CoreFileUploaderDelegateService extends CoreDelegate<CoreFileUpload
 
 }
 
-export class CoreFileUploaderDelegate extends makeSingleton(CoreFileUploaderDelegateService) {}
+export const CoreFileUploaderDelegate = makeSingleton(CoreFileUploaderDelegateService);

@@ -116,10 +116,10 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             this.title = 'core.captureimage';
         }
 
-        this.isCordovaAudioCapture = CoreApp.instance.isMobile() && this.isAudio;
+        this.isCordovaAudioCapture = CoreApp.isMobile() && this.isAudio;
 
         if (this.isCordovaAudioCapture) {
-            this.extension = Platform.instance.is('ios') ? 'wav' : 'aac';
+            this.extension = Platform.is('ios') ? 'wav' : 'aac';
             this.returnDataUrl = false;
         }
     }
@@ -131,19 +131,19 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
      */
     protected async initCordovaMediaPlugin(): Promise<void> {
         this.filePath = this.getFilePath();
-        let absolutePath = CoreTextUtils.instance.concatenatePaths(CoreFile.instance.getBasePathInstant(), this.filePath);
+        let absolutePath = CoreTextUtils.concatenatePaths(CoreFile.getBasePathInstant(), this.filePath);
 
-        if (Platform.instance.is('ios')) {
+        if (Platform.is('ios')) {
             // In iOS we need to remove the file:// part.
             absolutePath = absolutePath.replace(/^file:\/\//, '');
         }
 
         try {
             // First create the file.
-            this.fileEntry = await CoreFile.instance.createFile(this.filePath);
+            this.fileEntry = await CoreFile.createFile(this.filePath);
 
             // Now create the media instance.
-            this.mediaFile = Media.instance.create(absolutePath);
+            this.mediaFile = Media.create(absolutePath);
             this.readyToCapture = true;
             this.previewMedia = this.previewAudio?.nativeElement;
         } catch (error) {
@@ -368,7 +368,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             // Get the image from the video and set it to the canvas, using video width/height.
             const width = this.streamVideo?.nativeElement.videoWidth;
             const height = this.streamVideo?.nativeElement.videoHeight;
-            const loadingModal = await CoreDomUtils.instance.showModalLoading();
+            const loadingModal = await CoreDomUtils.showModalLoading();
 
 
             this.imgCanvas.nativeElement.width = width;
@@ -392,7 +392,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     async cancel(): Promise<void> {
         if (this.hasCaptured) {
             try {
-                await CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.confirmcanceledit'));
+                await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
             } catch {
                 // Canceled.
                 return;
@@ -404,7 +404,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
 
         if (this.isCordovaAudioCapture && this.filePath) {
             // Delete the tmp file.
-            CoreFile.instance.removeFile(this.filePath);
+            CoreFile.removeFile(this.filePath);
         }
     }
 
@@ -429,7 +429,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
      * @param data Data to return.
      */
     dismissWithData(data?: [MediaFile] | string): void {
-        ModalController.instance.dismiss(data, 'success');
+        ModalController.dismiss(data, 'success');
     }
 
     /**
@@ -443,7 +443,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
         const isCamera = this.isImage && !this.isCaptureImage;
         const error = isCamera ? new CoreCanceledError(cameraMessage || message) : new CoreCaptureError(3, message);
 
-        ModalController.instance.dismiss(error, 'error');
+        ModalController.dismiss(error, 'error');
     }
 
     /**
@@ -457,7 +457,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
         const isCamera = this.isImage && !this.isCaptureImage;
         const error = isCamera ? new CoreError(cameraMessage || message) : new CoreCaptureError(code, message);
 
-        ModalController.instance.dismiss(error, 'error');
+        ModalController.dismiss(error, 'error');
     }
 
     /**
@@ -473,13 +473,13 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
 
         if (!this.mediaBlob && !this.isCordovaAudioCapture) {
             // Shouldn't happen.
-            CoreDomUtils.instance.showErrorModal('Please capture the media first.');
+            CoreDomUtils.showErrorModal('Please capture the media first.');
 
             return;
         }
 
         let fileEntry = this.fileEntry;
-        const loadingModal = await CoreDomUtils.instance.showModalLoading();
+        const loadingModal = await CoreDomUtils.showModalLoading();
 
         try {
             if (!this.isCordovaAudioCapture) {
@@ -489,7 +489,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
                     throw new Error('Please capture the media first.');
                 }
 
-                fileEntry = await CoreFile.instance.writeFile(this.getFilePath(), this.mediaBlob);
+                fileEntry = await CoreFile.writeFile(this.getFilePath(), this.mediaBlob);
             }
 
             if (!fileEntry) {
@@ -500,11 +500,11 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
                 this.dismissWithData(fileEntry.toURL());
             } else {
                 // The capture plugin should return a MediaFile, not a FileEntry. Convert it.
-                const metadata = await CoreFile.instance.getMetadata(fileEntry);
+                const metadata = await CoreFile.getMetadata(fileEntry);
 
                 let mimetype: string | undefined;
                 if (this.extension) {
-                    mimetype = CoreMimetypeUtils.instance.getMimeType(this.extension);
+                    mimetype = CoreMimetypeUtils.getMimeType(this.extension);
                 }
 
                 const mediaFile: MediaFile = {
@@ -521,7 +521,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
                 this.dismissWithData([mediaFile]);
             }
         } catch (err) {
-            CoreDomUtils.instance.showErrorModal(err);
+            CoreDomUtils.showErrorModal(err);
         } finally {
             loadingModal.dismiss();
         }
@@ -533,9 +533,9 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
      * @return Path.
      */
     protected getFilePath(): string {
-        const fileName = this.type + '_' + CoreTimeUtils.instance.readableTimestamp() + '.' + this.extension;
+        const fileName = this.type + '_' + CoreTimeUtils.readableTimestamp() + '.' + this.extension;
 
-        return CoreTextUtils.instance.concatenatePaths(CoreFileProvider.TMPFOLDER, 'media/' + fileName);
+        return CoreTextUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, 'media/' + fileName);
     }
 
     /**
@@ -548,7 +548,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
         if (this.isCordovaAudioCapture) {
             this.mediaFile?.stopRecord();
             if (this.previewMedia && this.fileEntry) {
-                this.previewMedia.src = CoreFile.instance.convertFileSrc(this.fileEntry.toURL());
+                this.previewMedia.src = CoreFile.convertFileSrc(this.fileEntry.toURL());
             }
         } else {
             this.streamVideo && this.streamVideo.nativeElement.pause();

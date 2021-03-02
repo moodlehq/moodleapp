@@ -44,7 +44,7 @@ export class CoreCoursesIndexLinkHandlerService extends CoreContentLinksHandlerB
             action: (siteId): void => {
                 let pageName = CoreCoursesMyCoursesHomeHandlerService.PAGE_NAME;
 
-                if (CoreCourses.instance.isGetCoursesByFieldAvailable()) {
+                if (CoreCourses.isGetCoursesByFieldAvailable()) {
                     if (params.categoryid) {
                         pageName += '/categories/' + params.categoryid;
                     } else {
@@ -55,11 +55,11 @@ export class CoreCoursesIndexLinkHandlerService extends CoreContentLinksHandlerB
                     pageName += '/my';
                 }
 
-                CoreNavigator.instance.navigateToSitePath(pageName, { siteId });
+                CoreNavigator.navigateToSitePath(pageName, { siteId });
             },
         }];
     }
 
 }
 
-export class CoreCoursesIndexLinkHandler extends makeSingleton(CoreCoursesIndexLinkHandlerService) {}
+export const CoreCoursesIndexLinkHandler = makeSingleton(CoreCoursesIndexLinkHandlerService);

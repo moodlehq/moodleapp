@@ -39,15 +39,15 @@ export class CoreLangProvider {
 
     constructor() {
         // Set fallback language and language to use until the app determines the right language to use.
-        Translate.instance.setDefaultLang(this.fallbackLanguage);
-        Translate.instance.use(this.defaultLanguage);
+        Translate.setDefaultLang(this.fallbackLanguage);
+        Translate.use(this.defaultLanguage);
 
         this.initLanguage();
 
-        Translate.instance.onLangChange.subscribe((event: LangChangeEvent) => {
+        Translate.onLangChange.subscribe((event: LangChangeEvent) => {
             document.documentElement.setAttribute('lang', event.lang);
 
-            let dir = Translate.instance.instant('core.thisdirection');
+            let dir = Translate.instant('core.thisdirection');
             dir = dir.indexOf('rtl') != -1 ? 'rtl' : 'ltr';
             document.documentElement.setAttribute('dir', dir);
         });
@@ -57,7 +57,7 @@ export class CoreLangProvider {
      * Init language.
      */
     protected async initLanguage(): Promise<void> {
-        await Platform.instance.ready();
+        await Platform.ready();
 
         let language: string;
 
@@ -129,13 +129,13 @@ export class CoreLangProvider {
 
         // Change the language, resolving the promise when we receive the first value.
         promises.push(new Promise((resolve, reject) => {
-            CoreSubscriptions.once(Translate.instance.use(language), data => {
+            CoreSubscriptions.once(Translate.use(language), data => {
                 // It's a language override, load the original one first.
-                const fallbackLang = Translate.instance.instant('core.parentlanguage');
+                const fallbackLang = Translate.instant('core.parentlanguage');
 
                 if (fallbackLang != '' && fallbackLang != 'core.parentlanguage' && fallbackLang != language) {
                     CoreSubscriptions.once(
-                        Translate.instance.use(fallbackLang),
+                        Translate.use(fallbackLang),
                         fallbackData => {
                             data = Object.assign(fallbackData, data);
 
@@ -151,7 +151,7 @@ export class CoreLangProvider {
         }));
 
         // Change the config.
-        promises.push(CoreConfig.instance.set('current_language', language));
+        promises.push(CoreConfig.set('current_language', language));
 
         // Use british english when parent english is loaded.
         moment.locale(language == 'en' ? 'en-gb' : language);
@@ -166,7 +166,7 @@ export class CoreLangProvider {
             // Load the custom and site plugins strings for the language.
             if (this.loadLangStrings(this.customStrings, language) || this.loadLangStrings(this.sitePluginsStrings, language)) {
                 // Some lang strings have changed, emit an event to update the pipes.
-                Translate.instance.onLangChange.emit({ lang: language, translations: Translate.instance.translations[language] });
+                Translate.onLangChange.emit({ lang: language, translations: Translate.translations[language] });
             }
         }
     }
@@ -229,7 +229,7 @@ export class CoreLangProvider {
     protected async detectLanguage(): Promise<string> {
         // Get current language from config (user might have changed it).
         try {
-            return await CoreConfig.instance.get<string>('current_language');
+            return await CoreConfig.get<string>('current_language');
         } catch (e) {
             // Try will return, ignore errors here to avoid nesting.
         }
@@ -284,7 +284,7 @@ export class CoreLangProvider {
     getTranslationTable(lang: string): Promise<Record<string, unknown>> {
         // Create a promise to convert the observable into a promise.
         return new Promise((resolve, reject): void => {
-            const observer = Translate.instance.getTranslation(lang).subscribe((table) => {
+            const observer = Translate.getTranslation(lang).subscribe((table) => {
                 resolve(table);
                 observer.unsubscribe();
             }, (err) => {
@@ -358,9 +358,9 @@ export class CoreLangProvider {
 
         if (currentLangChanged) {
             // Some lang strings have changed, emit an event to update the pipes.
-            Translate.instance.onLangChange.emit({
+            Translate.onLangChange.emit({
                 lang: this.currentLanguage!,
-                translations: Translate.instance.translations[this.currentLanguage!],
+                translations: Translate.translations[this.currentLanguage!],
             });
         }
     }
@@ -381,10 +381,10 @@ export class CoreLangProvider {
 
                 if (!entry.applied) {
                     // Store the original value of the string.
-                    entry.original = Translate.instance.translations[lang][key];
+                    entry.original = Translate.translations[lang][key];
 
                     // Store the string in the translations table.
-                    Translate.instance.translations[lang][key] = entry.value;
+                    Translate.translations[lang][key] = entry.value;
 
                     entry.applied = true;
                     langApplied = true;
@@ -406,17 +406,17 @@ export class CoreLangProvider {
     loadString(langObject: CoreLanguageObject, lang: string, key: string, value: string): void {
         lang = lang.replace(/_/g, '-'); // Use the app format instead of Moodle format.
 
-        if (Translate.instance.translations[lang]) {
+        if (Translate.translations[lang]) {
             // The language is loaded.
             // Store the original value of the string.
             langObject[lang][key] = {
-                original: Translate.instance.translations[lang][key],
+                original: Translate.translations[lang][key],
                 value,
                 applied: true,
             };
 
             // Store the string in the translations table.
-            Translate.instance.translations[lang][key] = value;
+            Translate.translations[lang][key] = value;
         } else {
             // The language isn't loaded.
             // Save it in our object but not in the translations table, it will be loaded when the lang is loaded.
@@ -435,7 +435,7 @@ export class CoreLangProvider {
     protected unloadStrings(strings: CoreLanguageObject): void {
         // Iterate over all languages and strings.
         for (const lang in strings) {
-            if (!Translate.instance.translations[lang]) {
+            if (!Translate.translations[lang]) {
                 // Language isn't loaded, nothing to unload.
                 continue;
             }
@@ -445,10 +445,10 @@ export class CoreLangProvider {
                 const entry = langStrings[key];
                 if (entry.original) {
                     // The string had a value, restore it.
-                    Translate.instance.translations[lang][key] = entry.original;
+                    Translate.translations[lang][key] = entry.original;
                 } else {
                     // The string didn't exist, delete it.
-                    delete Translate.instance.translations[lang][key];
+                    delete Translate.translations[lang][key];
                 }
             }
         }
@@ -456,7 +456,7 @@ export class CoreLangProvider {
 
 }
 
-export class CoreLang extends makeSingleton(CoreLangProvider) {}
+export const CoreLang = makeSingleton(CoreLangProvider);
 
 /**
  * Language object has two leves, first per language and second per string key.

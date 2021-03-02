@@ -148,15 +148,15 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      */
     async ngOnInit(): Promise<void> {
         // Refresh the enabled flags if enabled.
-        this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
-        this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-            this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
-            this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+            this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
 
         this.coursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
@@ -166,10 +166,10 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                     this.refreshCourseList();
                 }
             },
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
 
-        this.currentSite = CoreSites.instance.getCurrentSite();
+        this.currentSite = CoreSites.getCurrentSite();
 
         const promises: Promise<void>[] = [];
         if (this.currentSite) {
@@ -209,16 +209,16 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         const promises: Promise<void>[] = [];
 
         // Invalidate course completion data.
-        promises.push(CoreCourses.instance.invalidateUserCourses().finally(() =>
-            CoreUtils.instance.allPromises(this.courseIds.map((courseId) =>
-                AddonCourseCompletion.instance.invalidateCourseCompletion(courseId)))));
+        promises.push(CoreCourses.invalidateUserCourses().finally(() =>
+            CoreUtils.allPromises(this.courseIds.map((courseId) =>
+                AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
-        promises.push(CoreCourseOptionsDelegate.instance.clearAndInvalidateCoursesOptions());
+        promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
         if (this.courseIds.length > 0) {
-            promises.push(CoreCourses.instance.invalidateCoursesByField('ids', this.courseIds.join(',')));
+            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds.join(',')));
         }
 
-        await CoreUtils.instance.allPromises(promises).finally(() => {
+        await CoreUtils.allPromises(promises).finally(() => {
             this.prefetchIconsInitialized = false;
         });
     }
@@ -233,7 +233,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         const showCategories = config?.displaycategories?.value == '1';
 
-        const courses = await CoreCoursesHelper.instance.getUserCoursesWithOptions(this.sort, undefined, undefined, showCategories);
+        const courses = await CoreCoursesHelper.getUserCoursesWithOptions(this.sort, undefined, undefined, showCategories);
 
         // Check to show sort by short name only if the text is visible.
         if (courses.length > 0) {
@@ -300,7 +300,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             false,
         );
         if (this.showFilters.custom == 'show') {
-            this.customFilter = CoreTextUtils.instance.parseJSON(config?.customfieldsexport?.value, []);
+            this.customFilter = CoreTextUtils.parseJSON(config?.customfieldsexport?.value, []);
         } else {
             this.customFilter = [];
         }
@@ -372,7 +372,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         Object.keys(this.prefetchCoursesData).forEach(async (filter) => {
             this.prefetchCoursesData[filter] =
-                await CoreCourseHelper.instance.initPrefetchCoursesIcons(this.courses[filter], this.prefetchCoursesData[filter]);
+                await CoreCourseHelper.initPrefetchCoursesIcons(this.courses[filter], this.prefetchCoursesData[filter]);
         });
     }
 
@@ -386,10 +386,10 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         const initialIcon = this.prefetchCoursesData[selected].icon;
 
         try {
-            await CoreCourseHelper.instance.prefetchCourses(this.courses[selected], this.prefetchCoursesData[selected]);
+            await CoreCourseHelper.prefetchCourses(this.courses[selected], this.prefetchCoursesData[selected]);
         } catch (error) {
             if (!this.isDestroyed) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
                 this.prefetchCoursesData[selected].icon = initialIcon;
             }
         }
@@ -404,7 +404,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
 
         try {
-            await CoreCourses.instance.invalidateUserCourses();
+            await CoreCourses.invalidateUserCourses();
         } catch (error) {
             // Ignore errors.
         }
@@ -435,7 +435,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
             this.loaded = false;
             try {
-                const courses = await CoreCourses.instance.getEnrolledCoursesByCustomField(filterName, filterValue);
+                const courses = await CoreCourses.getEnrolledCoursesByCustomField(filterName, filterValue);
 
                 // Get the courses information from allincludinghidden to get the max info about the course.
                 const courseIds = courses.map((course) => course.id);
@@ -443,7 +443,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 this.filteredCourses = this.courses.allincludinghidden.filter((allCourse) =>
                     courseIds.indexOf(allCourse.id) !== -1);
             } catch (error) {
-                CoreDomUtils.instance.showErrorModalDefault(error, this.fetchContentDefaultError);
+                CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
             } finally {
                 this.loaded = true;
             }
@@ -500,7 +500,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.courses.favourite = [];
         this.courses.hidden = [];
 
-        const today = CoreTimeUtils.instance.timestamp();
+        const today = CoreTimeUtils.timestamp();
         courses.forEach((course) => {
             if (course.hidden) {
                 this.courses.hidden.push(course);

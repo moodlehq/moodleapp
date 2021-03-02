@@ -44,7 +44,7 @@ export class CoreContextMenuPopoverComponent {
      * Close the popover.
      */
     closeMenu(item?: CoreContextMenuItemComponent): void {
-        PopoverController.instance.dismiss(item);
+        PopoverController.dismiss(item);
     }
 
     /**

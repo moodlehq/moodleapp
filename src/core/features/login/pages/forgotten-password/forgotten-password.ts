@@ -45,19 +45,19 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
      * Initialize the component.
      */
     ngOnInit(): void {
-        const siteUrl = CoreNavigator.instance.getRouteParam<string>('siteUrl');
+        const siteUrl = CoreNavigator.getRouteParam<string>('siteUrl');
         if (!siteUrl) {
-            CoreDomUtils.instance.showErrorModal('Site URL not supplied.');
-            CoreNavigator.instance.back();
+            CoreDomUtils.showErrorModal('Site URL not supplied.');
+            CoreNavigator.back();
 
             return;
         }
 
         this.siteUrl = siteUrl;
-        this.autoFocus = Platform.instance.is('tablet');
+        this.autoFocus = Platform.is('tablet');
         this.myForm = this.formBuilder.group({
             field: ['username', Validators.required],
-            value: [CoreNavigator.instance.getRouteParam<string>('username') || '', Validators.required],
+            value: [CoreNavigator.getRouteParam<string>('username') || '', Validators.required],
         });
     }
 
@@ -74,16 +74,16 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
         const value = this.myForm.value.value;
 
         if (!value) {
-            CoreDomUtils.instance.showErrorModal('core.login.usernameoremail', true);
+            CoreDomUtils.showErrorModal('core.login.usernameoremail', true);
 
             return;
         }
 
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
         const isMail = field == 'email';
 
         try {
-            const response = await CoreLoginHelper.instance.requestPasswordReset(
+            const response = await CoreLoginHelper.requestPasswordReset(
                 this.siteUrl,
                 isMail ? '' : value,
                 isMail ? value : '',
@@ -94,16 +94,16 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
                 this.showError(isMail, response.warnings!);
             } else if (response.status == 'emailpasswordconfirmnotsent' || response.status == 'emailpasswordconfirmnoemail') {
                 // Error, not found.
-                CoreDomUtils.instance.showErrorModal(response.notice);
+                CoreDomUtils.showErrorModal(response.notice);
             } else {
                 // Success.
-                CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, true);
+                CoreDomUtils.triggerFormSubmittedEvent(this.formElement, true);
 
-                CoreDomUtils.instance.showAlert(Translate.instance.instant('core.success'), response.notice);
-                CoreNavigator.instance.back();
+                CoreDomUtils.showAlert(Translate.instant('core.success'), response.notice);
+                CoreNavigator.back();
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
         } finally {
             modal.dismiss();
         }
@@ -114,7 +114,7 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
         for (let i = 0; i < warnings.length; i++) {
             const warning = warnings[i];
             if ((warning.item == 'email' && isMail) || (warning.item == 'username' && !isMail)) {
-                CoreDomUtils.instance.showErrorModal(warning.message);
+                CoreDomUtils.showErrorModal(warning.message);
                 break;
             }
         }

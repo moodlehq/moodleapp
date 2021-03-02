@@ -54,16 +54,16 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
 
     constructor() {
 
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
         this.advancedContactable = !!currentSite?.isVersionGreaterEqualThan('3.6');
         this.allowSiteMessaging = !!currentSite?.canUseAdvancedFeature('messagingallusers');
-        this.groupMessagingEnabled = AddonMessages.instance.isGroupMessagingEnabled();
+        this.groupMessagingEnabled = AddonMessages.isGroupMessagingEnabled();
 
         this.asyncInit();
     }
 
     protected async asyncInit(): Promise<void> {
-        this.sendOnEnter = !!(await CoreConfig.instance.get(CoreConstants.SETTINGS_SEND_ON_ENTER, !CoreApp.instance.isMobile()));
+        this.sendOnEnter = !!(await CoreConfig.get(CoreConstants.SETTINGS_SEND_ON_ENTER, !CoreApp.isMobile()));
     }
 
     /**
@@ -82,7 +82,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
      */
     protected async fetchPreferences(): Promise<void> {
         try {
-            const preferences = await AddonMessages.instance.getMessagePreferences();
+            const preferences = await AddonMessages.getMessagePreferences();
             if (this.groupMessagingEnabled) {
                 // Simplify the preferences.
                 for (const component of preferences.components) {
@@ -104,7 +104,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
             this.contactablePrivacy = preferences.blocknoncontacts;
             this.previousContactableValue = this.contactablePrivacy;
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
         } finally {
             this.preferencesLoaded = true;
         }
@@ -114,7 +114,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
      * Update preferences. The purpose is to store the updated data, it won't be reflected in the view.
      */
     protected updatePreferences(): void {
-        AddonMessages.instance.invalidateMessagePreferences().finally(() => {
+        AddonMessages.invalidateMessagePreferences().finally(() => {
             this.fetchPreferences();
         });
     }
@@ -143,7 +143,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
             return;
         }
 
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         if (!this.advancedContactable) {
             // Convert from boolean to number.
@@ -151,13 +151,13 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
         }
 
         try {
-            await CoreUser.instance.updateUserPreference('message_blocknoncontacts', String(value));
+            await CoreUser.updateUserPreference('message_blocknoncontacts', String(value));
             // Update the preferences since they were modified.
             this.updatePreferencesAfterDelay();
             this.previousContactableValue = this.contactablePrivacy;
         } catch (message) {
             // Show error and revert change.
-            CoreDomUtils.instance.showErrorModal(message);
+            CoreDomUtils.showErrorModal(message);
             this.contactablePrivacy = this.previousContactableValue;
         } finally {
             modal.dismiss();
@@ -196,8 +196,8 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
 
             notification.updating = true;
 
-            promises.push(CoreUser.instance.updateUserPreference(notification.preferencekey + '_loggedin', value));
-            promises.push(CoreUser.instance.updateUserPreference(notification.preferencekey + '_loggedoff', value));
+            promises.push(CoreUser.updateUserPreference(notification.preferencekey + '_loggedin', value));
+            promises.push(CoreUser.updateUserPreference(notification.preferencekey + '_loggedoff', value));
 
             try {
                 await Promise.all(promises);
@@ -205,7 +205,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
                 this.updatePreferencesAfterDelay();
             } catch (error) {
                 // Show error and revert change.
-                CoreDomUtils.instance.showErrorModal(error);
+                CoreDomUtils.showErrorModal(error);
                 processor.checked = !processor.checked;
             } finally {
                 notification.updating = false;
@@ -234,12 +234,12 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
 
         notification.updating[state] = true;
         try {
-            await CoreUser.instance.updateUserPreference(preferenceName, value);
+            await CoreUser.updateUserPreference(preferenceName, value);
             // Update the preferences since they were modified.
             this.updatePreferencesAfterDelay();
         } catch (error) {
             // Show error and revert change.
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
             processorState.checked = !processorState.checked;
         } finally {
             notification.updating[state] = false;
@@ -252,7 +252,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      */
     refreshPreferences(refresher?: CustomEvent<IonRefresher>): void {
-        AddonMessages.instance.invalidateMessagePreferences().finally(() => {
+        AddonMessages.invalidateMessagePreferences().finally(() => {
             this.fetchPreferences().finally(() => {
                 refresher?.detail.complete();
             });
@@ -261,13 +261,13 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
 
     sendOnEnterChanged(): void {
         // Save the value.
-        CoreConfig.instance.set(CoreConstants.SETTINGS_SEND_ON_ENTER, this.sendOnEnter ? 1 : 0);
+        CoreConfig.set(CoreConstants.SETTINGS_SEND_ON_ENTER, this.sendOnEnter ? 1 : 0);
 
         // Notify the app.
         CoreEvents.trigger(
             CoreEvents.SEND_ON_ENTER_CHANGED,
             { sendOnEnter: !!this.sendOnEnter },
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
     }
 

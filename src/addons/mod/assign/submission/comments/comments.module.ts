@@ -33,7 +33,7 @@ import { CoreCommentsComponentsModule } from '@features/comments/components/comp
             multi: true,
             deps: [],
             useFactory: () => () => {
-                AddonModAssignSubmissionDelegate.instance.registerHandler(AddonModAssignSubmissionCommentsHandler.instance);
+                AddonModAssignSubmissionDelegate.registerHandler(AddonModAssignSubmissionCommentsHandler.instance);
             },
         },
     ],

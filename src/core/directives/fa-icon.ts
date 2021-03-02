@@ -75,7 +75,7 @@ export class CoreFaIconDirective implements OnChanges {
 
             if (CoreConstants.BUILD.isDevelopment || CoreConstants.BUILD.isTesting) {
                 try {
-                    await Http.instance.get(src, { responseType: 'text' }).toPromise();
+                    await Http.get(src, { responseType: 'text' }).toPromise();
                 } catch (error) {
                     this.logger.error(`Icon ${this.name} not found`);
                 }

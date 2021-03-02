@@ -132,8 +132,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
                 // Check if the affected section is being downloaded.
                 // If so, we don't update section status because it'll already be updated when the download finishes.
-                const downloadId = CoreCourseHelper.instance.getSectionDownloadId({ id: data.sectionId });
-                if (CoreCourseModulePrefetchDelegate.instance.isBeingDownloaded(downloadId)) {
+                const downloadId = CoreCourseHelper.getSectionDownloadId({ id: data.sectionId });
+                if (CoreCourseModulePrefetchDelegate.isBeingDownloaded(downloadId)) {
                     return;
                 }
 
@@ -144,14 +144,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 }
 
                 // Recalculate the status.
-                await CoreCourseHelper.instance.calculateSectionStatus(section, this.course.id, false);
+                await CoreCourseHelper.calculateSectionStatus(section, this.course.id, false);
 
-                if (section.isDownloading && !CoreCourseModulePrefetchDelegate.instance.isBeingDownloaded(downloadId)) {
+                if (section.isDownloading && !CoreCourseModulePrefetchDelegate.isBeingDownloaded(downloadId)) {
                     // All the modules are now downloading, set a download all promise.
                     this.prefetch(section);
                 }
             },
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
 
         // Listen for select course tab events to select the right section if needed.
@@ -184,8 +184,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             // Course has changed, try to get the components.
             this.getComponents();
 
-            this.displaySectionSelector = CoreCourseFormatDelegate.instance.displaySectionSelector(this.course);
-            this.displayBlocks = CoreCourseFormatDelegate.instance.displayBlocks(this.course);
+            this.displaySectionSelector = CoreCourseFormatDelegate.displaySectionSelector(this.course);
+            this.displayBlocks = CoreCourseFormatDelegate.displayBlocks(this.course);
             this.progress = 'progress' in this.course && typeof this.course.progress == 'number' &&
                 this.course.progress >= 0 && this.course.completionusertracked !== false ? this.course.progress : undefined;
             if ('overviewfiles' in this.course) {
@@ -241,7 +241,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadCourseFormatComponent(): Promise<void> {
-        this.courseFormatComponent = await CoreCourseFormatDelegate.instance.getCourseFormatComponent(this.course!);
+        this.courseFormatComponent = await CoreCourseFormatDelegate.getCourseFormatComponent(this.course!);
     }
 
     /**
@@ -250,7 +250,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadCourseSummaryComponent(): Promise<void> {
-        this.courseSummaryComponent = await CoreCourseFormatDelegate.instance.getCourseSummaryComponent(this.course!);
+        this.courseSummaryComponent = await CoreCourseFormatDelegate.getCourseSummaryComponent(this.course!);
     }
 
     /**
@@ -259,7 +259,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadSectionSelectorComponent(): Promise<void> {
-        this.sectionSelectorComponent = await CoreCourseFormatDelegate.instance.getSectionSelectorComponent(this.course!);
+        this.sectionSelectorComponent = await CoreCourseFormatDelegate.getSectionSelectorComponent(this.course!);
     }
 
     /**
@@ -268,7 +268,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadSingleSectionComponent(): Promise<void> {
-        this.singleSectionComponent = await CoreCourseFormatDelegate.instance.getSingleSectionComponent(this.course!);
+        this.singleSectionComponent = await CoreCourseFormatDelegate.getSingleSectionComponent(this.course!);
     }
 
     /**
@@ -277,7 +277,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadAllSectionsComponent(): Promise<void> {
-        this.allSectionsComponent = await CoreCourseFormatDelegate.instance.getAllSectionsComponent(this.course!);
+        this.allSectionsComponent = await CoreCourseFormatDelegate.getAllSectionsComponent(this.course!);
     }
 
     /**
@@ -296,7 +296,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             if (!newSection) {
                 // Section not found, calculate which one to use.
-                newSection = await CoreCourseFormatDelegate.instance.getCurrentSection(this.course!, sections);
+                newSection = await CoreCourseFormatDelegate.getCurrentSection(this.course!, sections);
             }
 
             this.sectionChanged(newSection);
@@ -326,7 +326,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         if (!this.loaded) {
             // No section specified, not found or not visible, get current section.
-            const section = await CoreCourseFormatDelegate.instance.getCurrentSection(this.course!, sections);
+            const section = await CoreCourseFormatDelegate.getCurrentSection(this.course!, sections);
 
             this.loaded = true;
             this.sectionChanged(section);
@@ -345,7 +345,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         this.sectionSelectorExpanded = true;
 
-        const modal = await ModalController.instance.create({
+        const modal = await ModalController.create({
             component: CoreCourseSectionSelectorComponent,
             componentProps: {
                 course: this.course,
@@ -404,7 +404,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         if (this.moduleId && typeof previousValue == 'undefined') {
             setTimeout(() => {
-                CoreDomUtils.instance.scrollToElementBySelector(
+                CoreDomUtils.scrollToElementBySelector(
                     this.elementRef.nativeElement,
                     this.content,
                     '#core-course-module-' + this.moduleId,
@@ -416,8 +416,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         if (!previousValue || previousValue.id != newSection.id) {
             // First load or section changed, add log in Moodle.
-            CoreUtils.instance.ignoreErrors(
-                CoreCourse.instance.logView(this.course!.id, newSection.section, undefined, this.course!.fullname),
+            CoreUtils.ignoreErrors(
+                CoreCourse.logView(this.course!.id, newSection.section, undefined, this.course!.fullname),
             );
         }
     }
@@ -443,7 +443,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             return;
         }
 
-        CoreUtils.instance.ignoreErrors(CoreCourseHelper.instance.calculateSectionsStatus(this.sections, this.course.id, refresh));
+        CoreUtils.ignoreErrors(CoreCourseHelper.calculateSectionsStatus(this.sections, this.course.id, refresh));
     }
 
     /**
@@ -456,13 +456,13 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         section.isCalculating = true;
 
         try {
-            await CoreCourseHelper.instance.confirmDownloadSizeSection(this.course!.id, section, this.sections);
+            await CoreCourseHelper.confirmDownloadSizeSection(this.course!.id, section, this.sections);
 
             await this.prefetchSection(section, true);
         } catch (error) {
             // User cancelled or there was an error calculating the size.
             if (error) {
-                CoreDomUtils.instance.showErrorModal(error);
+                CoreDomUtils.showErrorModal(error);
             }
         } finally {
             section.isCalculating = false;
@@ -478,14 +478,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     protected async prefetchSection(section: CoreCourseSectionWithStatus, manual?: boolean): Promise<void> {
         try {
-            await CoreCourseHelper.instance.prefetchSection(section, this.course!.id, this.sections);
+            await CoreCourseHelper.prefetchSection(section, this.course!.id, this.sections);
         } catch (error) {
             // Don't show error message if it's an automatic download.
             if (!manual) {
                 return;
             }
 
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errordownloadingsection', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingsection', true);
         }
     }
 
@@ -572,9 +572,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         // The download status of a section might have been changed from within a module page.
         if (this.selectedSection && this.selectedSection.id !== CoreCourseProvider.ALL_SECTIONS_ID) {
-            CoreCourseHelper.instance.calculateSectionStatus(this.selectedSection, this.course.id, false, false);
+            CoreCourseHelper.calculateSectionStatus(this.selectedSection, this.course.id, false, false);
         } else {
-            CoreCourseHelper.instance.calculateSectionsStatus(this.sections, this.course.id, false, false);
+            CoreCourseHelper.calculateSectionsStatus(this.sections, this.course.id, false, false);
         }
     }
 
@@ -633,7 +633,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             return;
         }
 
-        CoreCourseHelper.instance.calculateSectionsStatus(this.sections, this.course.id, false, false);
+        CoreCourseHelper.calculateSectionsStatus(this.sections, this.course.id, false, false);
     }
 
 }

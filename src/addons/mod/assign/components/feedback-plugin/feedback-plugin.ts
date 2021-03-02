@@ -67,7 +67,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
             return;
         }
 
-        const name = AddonModAssignFeedbackDelegate.instance.getPluginName(this.plugin);
+        const name = AddonModAssignFeedbackDelegate.getPluginName(this.plugin);
 
         if (!name) {
             this.pluginLoaded = true;
@@ -77,7 +77,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
         this.plugin.name = name;
 
         // Check if the plugin has defined its own component to render itself.
-        this.pluginComponent = await AddonModAssignFeedbackDelegate.instance.getComponentForPlugin(this.plugin);
+        this.pluginComponent = await AddonModAssignFeedbackDelegate.getComponentForPlugin(this.plugin);
 
         if (this.pluginComponent) {
             // Prepare the data to pass to the component.
@@ -86,15 +86,15 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
                 submission: this.submission,
                 plugin: this.plugin,
                 userId: this.userId,
-                configs: AddonModAssignHelper.instance.getPluginConfig(this.assign, 'assignfeedback', this.plugin.type),
+                configs: AddonModAssignHelper.getPluginConfig(this.assign, 'assignfeedback', this.plugin.type),
                 edit: this.edit,
                 canEdit: this.canEdit,
             };
         } else {
             // Data to render the plugin.
-            this.text = AddonModAssign.instance.getSubmissionPluginText(this.plugin);
-            this.files = AddonModAssign.instance.getSubmissionPluginAttachments(this.plugin);
-            this.notSupported = AddonModAssignFeedbackDelegate.instance.isPluginSupported(this.plugin.type);
+            this.text = AddonModAssign.getSubmissionPluginText(this.plugin);
+            this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);
+            this.notSupported = AddonModAssignFeedbackDelegate.isPluginSupported(this.plugin.type);
             this.pluginLoaded = true;
         }
     }
@@ -110,7 +110,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
         }
 
         // Create the navigation modal.
-        const modal = await ModalController.instance.create({
+        const modal = await ModalController.create({
             component: AddonModAssignEditFeedbackModalComponent,
             componentProps: {
                 assign: this.assign,

@@ -43,8 +43,8 @@ export class AddonModPagePrefetchHandlerService extends CoreCourseResourcePrefet
 
         promises.push(super.downloadOrPrefetch(module, courseId, prefetch));
 
-        if (AddonModPage.instance.isGetPageWSAvailable()) {
-            promises.push(AddonModPage.instance.getPageData(courseId, module.id));
+        if (AddonModPage.isGetPageWSAvailable()) {
+            promises.push(AddonModPage.getPageData(courseId, module.id));
         }
 
         await Promise.all(promises);
@@ -58,7 +58,7 @@ export class AddonModPagePrefetchHandlerService extends CoreCourseResourcePrefet
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        await AddonModPage.instance.invalidateContent(moduleId, courseId);
+        await AddonModPage.invalidateContent(moduleId, courseId);
     }
 
     /**
@@ -71,10 +71,10 @@ export class AddonModPagePrefetchHandlerService extends CoreCourseResourcePrefet
     async invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         const promises: Promise<unknown>[] = [];
 
-        promises.push(AddonModPage.instance.invalidatePageData(courseId));
-        promises.push(CoreCourse.instance.invalidateModule(module.id));
+        promises.push(AddonModPage.invalidatePageData(courseId));
+        promises.push(CoreCourse.invalidateModule(module.id));
 
-        await CoreUtils.instance.allPromises(promises);
+        await CoreUtils.allPromises(promises);
     }
 
     /**
@@ -83,8 +83,8 @@ export class AddonModPagePrefetchHandlerService extends CoreCourseResourcePrefet
      * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     isEnabled(): Promise<boolean> {
-        return AddonModPage.instance.isPluginEnabled();
+        return AddonModPage.isPluginEnabled();
     }
 
 }
-export class AddonModPagePrefetchHandler extends makeSingleton(AddonModPagePrefetchHandlerService) {}
+export const AddonModPagePrefetchHandler = makeSingleton(AddonModPagePrefetchHandlerService);

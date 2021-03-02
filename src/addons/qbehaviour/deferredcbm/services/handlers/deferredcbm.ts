@@ -49,7 +49,7 @@ export class AddonQbehaviourDeferredCBMHandlerService implements CoreQuestionBeh
         siteId?: string,
     ): CoreQuestionState | Promise<CoreQuestionState> {
         // Depends on deferredfeedback.
-        return AddonQbehaviourDeferredFeedbackHandler.instance.determineNewStateDeferred(
+        return AddonQbehaviourDeferredFeedbackHandler.determineNewStateDeferred(
             component,
             attemptId,
             question,
@@ -70,7 +70,7 @@ export class AddonQbehaviourDeferredCBMHandlerService implements CoreQuestionBeh
      *         (e.g. certainty options). Don't return anything if no extra data is required.
      */
     handleQuestion(question: CoreQuestionQuestionParsed): void | Type<unknown>[] {
-        if (CoreQuestionHelper.instance.extractQbehaviourCBM(question)) {
+        if (CoreQuestionHelper.extractQbehaviourCBM(question)) {
             return [AddonQbehaviourDeferredCBMComponent];
         }
     }
@@ -91,7 +91,7 @@ export class AddonQbehaviourDeferredCBMHandlerService implements CoreQuestionBeh
         componentId: string | number,
     ): number {
         // First check if the question answer is complete.
-        const complete = CoreQuestionDelegate.instance.isCompleteResponse(question, answers, component, componentId);
+        const complete = CoreQuestionDelegate.isCompleteResponse(question, answers, component, componentId);
         if (complete > 0) {
             // Answer is complete, check the user answered CBM too.
             return answers['-certainty'] ? 1 : 0;
@@ -131,7 +131,7 @@ export class AddonQbehaviourDeferredCBMHandlerService implements CoreQuestionBeh
         componentId: string | number,
     ): boolean {
         // First check if the question answer is the same.
-        const sameResponse = CoreQuestionDelegate.instance.isSameResponse(
+        const sameResponse = CoreQuestionDelegate.isSameResponse(
             question,
             prevBasicAnswers,
             newBasicAnswers,
@@ -149,4 +149,4 @@ export class AddonQbehaviourDeferredCBMHandlerService implements CoreQuestionBeh
 
 }
 
-export class AddonQbehaviourDeferredCBMHandler extends makeSingleton(AddonQbehaviourDeferredCBMHandlerService) {}
+export const AddonQbehaviourDeferredCBMHandler = makeSingleton(AddonQbehaviourDeferredCBMHandlerService);

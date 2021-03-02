@@ -68,24 +68,24 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             }
 
             this.user.email = data.user.email;
-            this.user.address = CoreUserHelper.instance.formatAddress('', data.user.city, data.user.country);
-        }, CoreSites.instance.getCurrentSiteId());
+            this.user.address = CoreUserHelper.formatAddress('', data.user.city, data.user.country);
+        }, CoreSites.getCurrentSiteId());
     }
 
     /**
      * On init.
      */
     async ngOnInit(): Promise<void> {
-        this.site = CoreSites.instance.getCurrentSite();
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId');
-        const userId = CoreNavigator.instance.getRouteNumberParam('userId');
+        this.site = CoreSites.getCurrentSite();
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+        const userId = CoreNavigator.getRouteNumberParam('userId');
 
         if (!this.site) {
             return;
         }
         if (userId === undefined) {
-            CoreDomUtils.instance.showErrorModal('User ID not supplied');
-            CoreNavigator.instance.back();
+            CoreDomUtils.showErrorModal('User ID not supplied');
+            CoreNavigator.back();
 
             return;
         }
@@ -97,14 +97,14 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             (!this.courseId || this.courseId == this.site.getSiteHomeId()) &&
             this.userId == this.site.getUserId() &&
             this.site.canUploadFiles() &&
-            CoreUser.instance.canUpdatePictureInSite(this.site) &&
-            !CoreUser.instance.isUpdatePictureDisabledInSite(this.site);
+            CoreUser.canUpdatePictureInSite(this.site) &&
+            !CoreUser.isUpdatePictureDisabledInSite(this.site);
 
         try {
             await this.fetchUser();
 
             try {
-                await CoreUser.instance.logView(this.userId, this.courseId, this.user!.fullname);
+                await CoreUser.logView(this.userId, this.courseId, this.user!.fullname);
             } catch (error) {
                 this.isDeleted = error?.errorcode === 'userdeleted';
                 this.isEnrolled = error?.errorcode !== 'notenrolledprofile';
@@ -119,10 +119,10 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      */
     async fetchUser(): Promise<void> {
         try {
-            const user = await CoreUser.instance.getProfile(this.userId, this.courseId);
+            const user = await CoreUser.getProfile(this.userId, this.courseId);
 
-            user.address = CoreUserHelper.instance.formatAddress('', user.city, user.country);
-            this.rolesFormatted = 'roles' in user ? CoreUserHelper.instance.formatRoleList(user.roles) : '';
+            user.address = CoreUserHelper.formatAddress('', user.city, user.country);
+            this.rolesFormatted = 'roles' in user ? CoreUserHelper.formatRoleList(user.roles) : '';
 
             this.user = user;
             this.title = user.fullname;
@@ -130,7 +130,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             // If there's already a subscription, unsubscribe because we'll get a new one.
             this.subscription?.unsubscribe();
 
-            this.subscription = CoreUserDelegate.instance.getProfileHandlersFor(user, this.courseId).subscribe((handlers) => {
+            this.subscription = CoreUserDelegate.getProfileHandlersFor(user, this.courseId).subscribe((handlers) => {
                 this.actionHandlers = [];
                 this.newPageHandlers = [];
                 this.communicationHandlers = [];
@@ -149,14 +149,14 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
                     }
                 });
 
-                this.isLoadingHandlers = !CoreUserDelegate.instance.areHandlersLoaded(user.id);
+                this.isLoadingHandlers = !CoreUserDelegate.areHandlersLoaded(user.id);
             });
 
             await this.checkUserImageUpdated();
 
         } catch (error) {
             // Error is null for deleted users, do not show the modal.
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
         }
     }
 
@@ -178,7 +178,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
         // The current user image received is different than the one stored in site info. Assume the image was updated.
         // Update the site info to get the right avatar in there.
         try {
-            await CoreSites.instance.updateSiteInfo(this.site.getId());
+            await CoreSites.updateSiteInfo(this.site.getId());
         } catch {
             // Cannot update site info. Assume the profile image is the right one.
             CoreEvents.trigger<CoreUserProfilePictureUpdatedData>(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
@@ -204,27 +204,27 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      */
     async changeProfilePicture(): Promise<void> {
         const maxSize = -1;
-        const title = Translate.instance.instant('core.user.newpicture');
-        const mimetypes = CoreMimetypeUtils.instance.getGroupMimeInfo('image', 'mimetypes');
+        const title = Translate.instant('core.user.newpicture');
+        const mimetypes = CoreMimetypeUtils.getGroupMimeInfo('image', 'mimetypes');
         let modal: CoreIonLoadingElement | undefined;
 
         try {
-            const result = await CoreFileUploaderHelper.instance.selectAndUploadFile(maxSize, title, mimetypes);
+            const result = await CoreFileUploaderHelper.selectAndUploadFile(maxSize, title, mimetypes);
 
-            modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+            modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
-            const profileImageURL = await CoreUser.instance.changeProfilePicture(result.itemid, this.userId, this.site!.getId());
+            const profileImageURL = await CoreUser.changeProfilePicture(result.itemid, this.userId, this.site!.getId());
 
             CoreEvents.trigger<CoreUserProfilePictureUpdatedData>(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
                 picture: profileImageURL,
             }, this.site!.getId());
 
-            CoreSites.instance.updateSiteInfo(this.site!.getId());
+            CoreSites.updateSiteInfo(this.site!.getId());
 
             this.refreshUser();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
         } finally {
             modal?.dismiss();
         }
@@ -237,8 +237,8 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async refreshUser(event?: CustomEvent<IonRefresher>): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(Promise.all([
-            CoreUser.instance.invalidateUserCache(this.userId),
+        await CoreUtils.ignoreErrors(Promise.all([
+            CoreUser.invalidateUserCache(this.userId),
             // @todo this.coursesProvider.invalidateUserNavigationOptions(),
             // this.coursesProvider.invalidateUserAdministrationOptions()
         ]));
@@ -261,7 +261,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      */
     openUserDetails(): void {
         // @todo: Navigate out of split view if this page is in the right pane.
-        CoreNavigator.instance.navigate('../about', {
+        CoreNavigator.navigate('../about', {
             params: {
                 courseId: this.courseId,
                 userId: this.userId,

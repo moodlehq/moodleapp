@@ -161,11 +161,11 @@ export class CoreTimeUtilsProvider {
         const mins = Math.floor(remainder / CoreConstants.SECONDS_MINUTE);
         const secs = remainder - (mins * CoreConstants.SECONDS_MINUTE);
 
-        const ss = Translate.instance.instant('core.' + (secs == 1 ? 'sec' : 'secs'));
-        const sm = Translate.instance.instant('core.' + (mins == 1 ? 'min' : 'mins'));
-        const sh = Translate.instance.instant('core.' + (hours == 1 ? 'hour' : 'hours'));
-        const sd = Translate.instance.instant('core.' + (days == 1 ? 'day' : 'days'));
-        const sy = Translate.instance.instant('core.' + (years == 1 ? 'year' : 'years'));
+        const ss = Translate.instant('core.' + (secs == 1 ? 'sec' : 'secs'));
+        const sm = Translate.instant('core.' + (mins == 1 ? 'min' : 'mins'));
+        const sh = Translate.instant('core.' + (hours == 1 ? 'hour' : 'hours'));
+        const sd = Translate.instant('core.' + (days == 1 ? 'day' : 'days'));
+        const sy = Translate.instant('core.' + (years == 1 ? 'year' : 'years'));
         let oyears = '';
         let odays = '';
         let ohours = '';
@@ -204,7 +204,7 @@ export class CoreTimeUtilsProvider {
             return osecs;
         }
 
-        return Translate.instance.instant('core.now');
+        return Translate.instant('core.now');
     }
 
     /**
@@ -295,7 +295,7 @@ export class CoreTimeUtilsProvider {
      * @return Readable date.
      */
     userDate(timestamp: number, format?: string, convert: boolean = true, fixDay: boolean = true, fixHour: boolean = true): string {
-        format = Translate.instance.instant(format ? format : 'core.strftimedaydatetime');
+        format = Translate.instant(format ? format : 'core.strftimedaydatetime');
 
         if (fixDay) {
             format = format!.replace(/%d/g, '%e');
@@ -369,4 +369,4 @@ export class CoreTimeUtilsProvider {
 
 }
 
-export class CoreTimeUtils extends makeSingleton(CoreTimeUtilsProvider) {}
+export const CoreTimeUtils = makeSingleton(CoreTimeUtilsProvider);

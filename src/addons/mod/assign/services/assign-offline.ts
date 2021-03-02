@@ -43,7 +43,7 @@ export class AddonModAssignOfflineProvider {
      * @return Promise resolved if deleted, rejected if failure.
      */
     async deleteSubmission(assignId: number, userId?: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
         await site.getDb().deleteRecords(
@@ -61,7 +61,7 @@ export class AddonModAssignOfflineProvider {
      * @return Promise resolved if deleted, rejected if failure.
      */
     async deleteSubmissionGrade(assignId: number, userId?: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
         await site.getDb().deleteRecords(
@@ -128,7 +128,7 @@ export class AddonModAssignOfflineProvider {
         conditions: SQLiteDBRecordValues = {},
         siteId?: string,
     ): Promise<AddonModAssignSubmissionsDBRecordFormatted[]> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         const submissions: AddonModAssignSubmissionsDBRecord[] = await db.getRecords(SUBMISSIONS_TABLE, conditions);
 
@@ -137,7 +137,7 @@ export class AddonModAssignOfflineProvider {
             assignid: submission.assignid,
             userid: submission.userid,
             courseid: submission.courseid,
-            plugindata: CoreTextUtils.instance.parseJSON<AddonModAssignSavePluginData>(submission.plugindata, {}),
+            plugindata: CoreTextUtils.parseJSON<AddonModAssignSavePluginData>(submission.plugindata, {}),
             onlinetimemodified: submission.onlinetimemodified,
             timecreated: submission.timecreated,
             timemodified: submission.timemodified,
@@ -181,7 +181,7 @@ export class AddonModAssignOfflineProvider {
         conditions: SQLiteDBRecordValues = {},
         siteId?: string,
     ): Promise<AddonModAssignSubmissionsGradingDBRecordFormatted[]> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         const submissions: AddonModAssignSubmissionsGradingDBRecord[] = await db.getRecords(SUBMISSIONS_GRADES_TABLE, conditions);
 
@@ -195,8 +195,8 @@ export class AddonModAssignOfflineProvider {
             addattempt: submission.addattempt,
             workflowstate: submission.workflowstate,
             applytoall: submission.applytoall,
-            outcomes: CoreTextUtils.instance.parseJSON<AddonModAssignOutcomes>(submission.outcomes, {}),
-            plugindata: CoreTextUtils.instance.parseJSON<AddonModAssignSavePluginData>(submission.plugindata, {}),
+            outcomes: CoreTextUtils.parseJSON<AddonModAssignOutcomes>(submission.outcomes, {}),
+            plugindata: CoreTextUtils.parseJSON<AddonModAssignSavePluginData>(submission.plugindata, {}),
             timemodified: submission.timemodified,
         }));
     }
@@ -210,7 +210,7 @@ export class AddonModAssignOfflineProvider {
      * @return Promise resolved with submission.
      */
     async getSubmission(assignId: number, userId?: number, siteId?: string): Promise<AddonModAssignSubmissionsDBRecordFormatted> {
-        userId = userId || CoreSites.instance.getCurrentSiteUserId();
+        userId = userId || CoreSites.getCurrentSiteUserId();
 
         const submissions = await this.getAssignSubmissionsFormatted({ assignid: assignId, userid: userId }, siteId);
 
@@ -230,13 +230,13 @@ export class AddonModAssignOfflineProvider {
      * @return Promise resolved with the path.
      */
     async getSubmissionFolder(assignId: number, userId?: number, siteId?: string): Promise<string> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
-        const siteFolderPath = CoreFile.instance.getSiteFolder(site.getId());
+        const siteFolderPath = CoreFile.getSiteFolder(site.getId());
         const submissionFolderPath = 'offlineassign/' + assignId + '/' + userId;
 
-        return CoreTextUtils.instance.concatenatePaths(siteFolderPath, submissionFolderPath);
+        return CoreTextUtils.concatenatePaths(siteFolderPath, submissionFolderPath);
     }
 
     /**
@@ -253,7 +253,7 @@ export class AddonModAssignOfflineProvider {
         userId?: number,
         siteId?: string,
     ): Promise<AddonModAssignSubmissionsGradingDBRecordFormatted> {
-        userId = userId || CoreSites.instance.getCurrentSiteUserId();
+        userId = userId || CoreSites.getCurrentSiteUserId();
 
         const submissions = await this.getAssignSubmissionsGradeFormatted({ assignid: assignId, userid: userId }, siteId);
 
@@ -276,7 +276,7 @@ export class AddonModAssignOfflineProvider {
     async getSubmissionPluginFolder(assignId: number, pluginName: string, userId?: number, siteId?: string): Promise<string> {
         const folderPath = await this.getSubmissionFolder(assignId, userId, siteId);
 
-        return CoreTextUtils.instance.concatenatePaths(folderPath, pluginName);
+        return CoreTextUtils.concatenatePaths(folderPath, pluginName);
     }
 
     /**
@@ -325,7 +325,7 @@ export class AddonModAssignOfflineProvider {
         userId?: number,
         siteId?: string,
     ): Promise<number> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
         let submission: AddonModAssignSubmissionsDBRecord;
@@ -339,7 +339,7 @@ export class AddonModAssignOfflineProvider {
             });
         } catch {
             // No submission, create an empty one.
-            const now = CoreTimeUtils.instance.timestamp();
+            const now = CoreTimeUtils.timestamp();
             submission = {
                 assignid: assignId,
                 courseid: courseId,
@@ -377,11 +377,11 @@ export class AddonModAssignOfflineProvider {
         userId?: number,
         siteId?: string,
     ): Promise<number> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
-        const now = CoreTimeUtils.instance.timestamp();
+        const now = CoreTimeUtils.timestamp();
         const entry: AddonModAssignSubmissionsDBRecord = {
             assignid: assignId,
             courseid: courseId,
@@ -425,9 +425,9 @@ export class AddonModAssignOfflineProvider {
         pluginData: AddonModAssignSavePluginData,
         siteId?: string,
     ): Promise<number> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
-        const now = CoreTimeUtils.instance.timestamp();
+        const now = CoreTimeUtils.timestamp();
         const entry: AddonModAssignSubmissionsGradingDBRecord = {
             assignid: assignId,
             userid: userId,

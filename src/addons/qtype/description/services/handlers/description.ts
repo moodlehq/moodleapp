@@ -74,4 +74,4 @@ export class AddonQtypeDescriptionHandlerService implements CoreQuestionHandler 
 
 }
 
-export class AddonQtypeDescriptionHandler extends makeSingleton(AddonQtypeDescriptionHandlerService) {}
+export const AddonQtypeDescriptionHandler = makeSingleton(AddonQtypeDescriptionHandlerService);

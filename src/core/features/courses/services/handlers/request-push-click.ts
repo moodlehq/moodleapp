@@ -43,7 +43,7 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
      */
     async handles(notification: CorePushNotificationsNotificationBasicData): Promise<boolean> {
         // Don't support 'courserequestrejected', that way the app will open the notifications page.
-        return CoreUtils.instance.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'moodle' &&
+        return CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'moodle' &&
             (notification.name == 'courserequested' || notification.name == 'courserequestapproved');
     }
 
@@ -58,8 +58,8 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
 
         if (notification.name == 'courserequested') {
             // Feature not supported in the app, open in browser.
-            const site = await CoreSites.instance.getSite(notification.site);
-            const url = CoreTextUtils.instance.concatenatePaths(site.getURL(), 'course/pending.php');
+            const site = await CoreSites.getSite(notification.site);
+            const url = CoreTextUtils.concatenatePaths(site.getURL(), 'course/pending.php');
 
             await site.openInBrowserWithAutoLogin(url);
 
@@ -67,12 +67,12 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
         }
 
         // Open the course.
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
-        await CoreUtils.instance.ignoreErrors(CoreCourses.instance.invalidateUserCourses(notification.site));
+        await CoreUtils.ignoreErrors(CoreCourses.invalidateUserCourses(notification.site));
 
         try {
-            const result = await CoreCourseHelper.instance.getCourse(courseId, notification.site);
+            const result = await CoreCourseHelper.getCourse(courseId, notification.site);
             const params: Params = {
                 course: result.course,
             };
@@ -86,9 +86,9 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
                 page = 'courses/preview';
             }
 
-            await CoreNavigator.instance.navigateToSitePath(page, { params, siteId: notification.site });
+            await CoreNavigator.navigateToSitePath(page, { params, siteId: notification.site });
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error getting course.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error getting course.');
         } finally {
             modal.dismiss();
         }
@@ -96,7 +96,7 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
 
 }
 
-export class CoreCoursesRequestPushClickHandler extends makeSingleton(CoreCoursesRequestPushClickHandlerService) {}
+export const CoreCoursesRequestPushClickHandler = makeSingleton(CoreCoursesRequestPushClickHandlerService);
 
 type CoreCoursesRequestNotificationData = CorePushNotificationsNotificationBasicData & {
     courseid: number; // Course ID related to the notification.

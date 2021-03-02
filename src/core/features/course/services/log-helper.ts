@@ -40,7 +40,7 @@ export class CoreCourseLogHelperProvider {
      * @return Promise resolved when deleted, rejected if failure.
      */
     protected async deleteLogs(component: string, componentId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const conditions: Partial<CoreCourseActivityLogDBRecord> = {
             component,
@@ -60,7 +60,7 @@ export class CoreCourseLogHelperProvider {
      * @return Promise resolved when deleted, rejected if failure.
      */
     protected async deleteWSLogsByComponent(component: string, componentId: number, ws: string, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const conditions: Partial<CoreCourseActivityLogDBRecord> = {
             component,
@@ -80,11 +80,11 @@ export class CoreCourseLogHelperProvider {
      * @return Promise resolved when deleted, rejected if failure.
      */
     protected async deleteWSLogs(ws: string, data: Record<string, unknown>, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const conditions: Partial<CoreCourseActivityLogDBRecord> = {
             ws,
-            data: CoreUtils.instance.sortAndStringify(data),
+            data: CoreUtils.sortAndStringify(data),
         };
 
         await site.getDb().deleteRecords(ACTIVITY_LOG_TABLE, conditions);
@@ -97,7 +97,7 @@ export class CoreCourseLogHelperProvider {
      * @return Promise resolved with the list of offline logs.
      */
     protected async getAllLogs(siteId?: string): Promise<CoreCourseActivityLogDBRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getAllRecords<CoreCourseActivityLogDBRecord>(ACTIVITY_LOG_TABLE);
     }
@@ -111,7 +111,7 @@ export class CoreCourseLogHelperProvider {
      * @return Promise resolved with the list of offline logs.
      */
     protected async getLogs(component: string, componentId: number, siteId?: string): Promise<CoreCourseActivityLogDBRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const conditions: Partial<CoreCourseActivityLogDBRecord> = {
             component,
@@ -132,9 +132,9 @@ export class CoreCourseLogHelperProvider {
      * @return Promise resolved when done.
      */
     async log(ws: string, data: Record<string, unknown>, component: string, componentId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
-        if (!CoreApp.instance.isOnline()) {
+        if (!CoreApp.isOnline()) {
             // App is offline, store the action.
             return this.storeOffline(ws, data, component, componentId, site.getId());
         }
@@ -142,7 +142,7 @@ export class CoreCourseLogHelperProvider {
         try {
             await this.logOnline(ws, data, site.getId());
         } catch (error) {
-            if (CoreUtils.instance.isWebServiceError(error)) {
+            if (CoreUtils.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             }
@@ -166,7 +166,7 @@ export class CoreCourseLogHelperProvider {
         data: Record<string, unknown>,
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // Clone to have an unmodified data object.
         const wsData = Object.assign({}, data);
@@ -212,7 +212,7 @@ export class CoreCourseLogHelperProvider {
         eventData?: Record<string, unknown>,
         siteId?: string,
     ): Promise<void> {
-        CorePushNotifications.instance.logViewEvent(componentId, name, category, ws, eventData, siteId);
+        CorePushNotifications.logViewEvent(componentId, name, category, ws, eventData, siteId);
 
         return this.log(ws, data, component, componentId, siteId);
     }
@@ -239,7 +239,7 @@ export class CoreCourseLogHelperProvider {
         eventData?: Record<string, unknown>,
         siteId?: string,
     ): Promise<void> {
-        CorePushNotifications.instance.logViewListEvent(category, ws, eventData, siteId);
+        CorePushNotifications.logViewListEvent(category, ws, eventData, siteId);
 
         return this.log(ws, data, component, componentId, siteId);
     }
@@ -262,14 +262,14 @@ export class CoreCourseLogHelperProvider {
         siteId?: string,
     ): Promise<void> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const log: CoreCourseActivityLogDBRecord = {
             component,
             componentid: componentId,
             ws,
-            data: CoreUtils.instance.sortAndStringify(data),
-            time: CoreTimeUtils.instance.timestamp(),
+            data: CoreUtils.sortAndStringify(data),
+            time: CoreTimeUtils.timestamp(),
         };
 
         await site.getDb().insertRecord(ACTIVITY_LOG_TABLE, log);
@@ -282,7 +282,7 @@ export class CoreCourseLogHelperProvider {
      * @return Promise resolved when done.
      */
     async syncSite(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         siteId = site.getId();
 
@@ -326,7 +326,7 @@ export class CoreCourseLogHelperProvider {
      * @return Promise resolved when done.
      */
     async syncActivity(component: string, componentId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         siteId = site.getId();
 
@@ -356,14 +356,14 @@ export class CoreCourseLogHelperProvider {
      */
     protected async syncLogs(logs: CoreCourseActivityLogDBRecord[], siteId: string): Promise<void> {
         await Promise.all(logs.map(async (log) => {
-            const data = CoreTextUtils.instance.parseJSON<Record<string, unknown>>(log.data || '{}', {});
+            const data = CoreTextUtils.parseJSON<Record<string, unknown>>(log.data || '{}', {});
 
             try {
                 await this.logOnline(log.ws, data, siteId);
             } catch (error) {
-                if (CoreUtils.instance.isWebServiceError(error)) {
+                if (CoreUtils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means that responses cannot be submitted.
-                    await CoreUtils.instance.ignoreErrors(this.deleteWSLogs(log.ws, data, siteId));
+                    await CoreUtils.ignoreErrors(this.deleteWSLogs(log.ws, data, siteId));
                 }
 
                 throw error;
@@ -375,4 +375,4 @@ export class CoreCourseLogHelperProvider {
 
 }
 
-export class CoreCourseLogHelper extends makeSingleton(CoreCourseLogHelperProvider) {}
+export const CoreCourseLogHelper = makeSingleton(CoreCourseLogHelperProvider);

@@ -32,7 +32,7 @@ import { AddonQtypeGapSelectHandler } from './services/handlers/gapselect';
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionDelegate.instance.registerHandler(AddonQtypeGapSelectHandler.instance);
+                CoreQuestionDelegate.registerHandler(AddonQtypeGapSelectHandler.instance);
             },
         },
     ],

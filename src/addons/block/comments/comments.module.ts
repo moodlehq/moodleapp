@@ -28,7 +28,7 @@ import { AddonBlockCommentsHandler } from './services/block-handler';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockCommentsHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockCommentsHandler.instance);
             },
         },
     ],

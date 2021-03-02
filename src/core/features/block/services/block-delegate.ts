@@ -106,7 +106,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      * @return Whether it's disabled.
      */
     areBlocksDisabledInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site && site.isFeatureDisabled('NoDelegate_SiteBlocks');
     }
@@ -118,7 +118,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      * @return Whether it's disabled.
      */
     areBlocksDisabledInCourses(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site && site.isFeatureDisabled('NoDelegate_CourseBlocks');
     }
@@ -130,7 +130,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async areBlocksDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.areBlocksDisabledInSite(site);
     }
@@ -198,4 +198,4 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
 
 }
 
-export class CoreBlockDelegate extends makeSingleton(CoreBlockDelegateService) {}
+export const CoreBlockDelegate = makeSingleton(CoreBlockDelegateService, ['blocksUpdateObservable']);

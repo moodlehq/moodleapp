@@ -76,25 +76,25 @@ export class CoreLoginSitePage implements OnInit {
         };
 
         // Load fixed sites if they're set.
-        if (CoreLoginHelper.instance.hasSeveralFixedSites()) {
+        if (CoreLoginHelper.hasSeveralFixedSites()) {
             url = this.initSiteSelector();
-        } else if (CoreConstants.CONFIG.enableonboarding && !CoreApp.instance.isIOS()) {
+        } else if (CoreConstants.CONFIG.enableonboarding && !CoreApp.isIOS()) {
             this.initOnboarding();
         }
 
-        this.showScanQR = CoreUtils.instance.canScanQR() && (typeof CoreConstants.CONFIG.displayqronsitescreen == 'undefined' ||
+        this.showScanQR = CoreUtils.canScanQR() && (typeof CoreConstants.CONFIG.displayqronsitescreen == 'undefined' ||
             !!CoreConstants.CONFIG.displayqronsitescreen);
 
         this.siteForm = this.formBuilder.group({
             siteUrl: [url, this.moodleUrlValidator()],
         });
 
-        this.searchFunction = CoreUtils.instance.debounce(async (search: string) => {
+        this.searchFunction = CoreUtils.debounce(async (search: string) => {
             search = search.trim();
 
             if (search.length >= 3) {
                 // Update the sites list.
-                const sites = await CoreSites.instance.findSites(search);
+                const sites = await CoreSites.findSites(search);
 
                 // Add UI tweaks.
                 this.sites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> sites);
@@ -113,7 +113,7 @@ export class CoreLoginSitePage implements OnInit {
      * Initialize the component.
      */
     ngOnInit(): void {
-        this.showKeyboard = !!CoreNavigator.instance.getRouteBooleanParam('showKeyboard');
+        this.showKeyboard = !!CoreNavigator.getRouteBooleanParam('showKeyboard');
     }
 
     /**
@@ -128,7 +128,7 @@ export class CoreLoginSitePage implements OnInit {
             this.siteFinderSettings.displayurl = false;
         }
 
-        this.fixedSites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> CoreLoginHelper.instance.getFixedSites());
+        this.fixedSites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> CoreLoginHelper.getFixedSites());
 
         // Do not show images if none are set.
         if (!this.fixedSites.some((site) => !!site.imageurl)) {
@@ -151,7 +151,7 @@ export class CoreLoginSitePage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async initOnboarding(): Promise<void> {
-        const onboardingDone = await CoreConfig.instance.get(CoreLoginHelperProvider.ONBOARDING_DONE, false);
+        const onboardingDone = await CoreConfig.get(CoreLoginHelperProvider.ONBOARDING_DONE, false);
 
         if (!onboardingDone) {
             // Check onboarding.
@@ -176,7 +176,7 @@ export class CoreLoginSitePage implements OnInit {
             site.title = name && alias ? name + ' (' + alias + ')' : name + alias;
 
             const country = this.siteFinderSettings.displaycountry && site.countrycode ?
-                CoreUtils.instance.getCountryName(site.countrycode) : '';
+                CoreUtils.getCountryName(site.countrycode) : '';
             const city = this.siteFinderSettings.displaycity && site.city ?
                 site.city : '';
 
@@ -198,7 +198,7 @@ export class CoreLoginSitePage implements OnInit {
             let valid = value.length >= 3 && CoreUrl.isValidMoodleUrl(value);
 
             if (!valid) {
-                const demo = !!CoreSites.instance.getDemoSiteData(value);
+                const demo = !!CoreSites.getDemoSiteData(value);
 
                 if (demo) {
                     valid = true;
@@ -213,7 +213,7 @@ export class CoreLoginSitePage implements OnInit {
      * Show a help modal.
      */
     async showHelp(): Promise<void> {
-        const modal = await ModalController.instance.create({
+        const modal = await ModalController.create({
             component: CoreLoginSiteHelpComponent,
             cssClass: 'core-modal-fullscreen',
         });
@@ -225,7 +225,7 @@ export class CoreLoginSitePage implements OnInit {
      * Show an onboarding modal.
      */
     async showOnboarding(): Promise<void> {
-        const modal = await ModalController.instance.create({
+        const modal = await ModalController.create({
             component: CoreLoginSiteOnboardingComponent,
             cssClass: 'core-modal-fullscreen',
         });
@@ -245,16 +245,16 @@ export class CoreLoginSitePage implements OnInit {
         e.preventDefault();
         e.stopPropagation();
 
-        CoreApp.instance.closeKeyboard();
+        CoreApp.closeKeyboard();
 
         if (!url) {
-            CoreDomUtils.instance.showErrorModal('core.login.siteurlrequired', true);
+            CoreDomUtils.showErrorModal('core.login.siteurlrequired', true);
 
             return;
         }
 
-        if (!CoreApp.instance.isOnline()) {
-            CoreDomUtils.instance.showErrorModal('core.networkerrormsg', true);
+        if (!CoreApp.isOnline()) {
+            CoreDomUtils.showErrorModal('core.networkerrormsg', true);
 
             return;
         }
@@ -262,12 +262,12 @@ export class CoreLoginSitePage implements OnInit {
         url = url.trim();
 
         if (url.match(/^(https?:\/\/)?campus\.example\.edu/)) {
-            this.showLoginIssue(null, new CoreError(Translate.instance.instant('core.login.errorexampleurl')));
+            this.showLoginIssue(null, new CoreError(Translate.instant('core.login.errorexampleurl')));
 
             return;
         }
 
-        const siteData = CoreSites.instance.getDemoSiteData(url);
+        const siteData = CoreSites.getDemoSiteData(url);
 
         if (siteData) {
             // It's a demo site.
@@ -275,19 +275,19 @@ export class CoreLoginSitePage implements OnInit {
 
         } else {
             // Not a demo site.
-            const modal = await CoreDomUtils.instance.showModalLoading();
+            const modal = await CoreDomUtils.showModalLoading();
 
             let checkResult: CoreSiteCheckResponse;
 
             try {
-                checkResult = await CoreSites.instance.checkSite(url);
+                checkResult = await CoreSites.checkSite(url);
             } catch (error) {
                 // Attempt guessing the domain if the initial check failed
                 const domain = CoreUrl.guessMoodleDomain(url);
 
                 if (domain && domain != url) {
                     try {
-                        checkResult = await CoreSites.instance.checkSite(domain);
+                        checkResult = await CoreSites.checkSite(domain);
                     } catch (secondError) {
                         // Try to use the first error.
                         modal.dismiss();
@@ -314,23 +314,23 @@ export class CoreLoginSitePage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async loginDemoSite(siteData: CoreSitesDemoSiteData): Promise<void> {
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const data = await CoreSites.instance.getUserToken(siteData.url, siteData.username, siteData.password);
+            const data = await CoreSites.getUserToken(siteData.url, siteData.username, siteData.password);
 
-            await CoreSites.instance.newSite(data.siteUrl, data.token, data.privateToken);
+            await CoreSites.newSite(data.siteUrl, data.token, data.privateToken);
 
-            CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, true);
+            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, true);
 
-            await CoreNavigator.instance.navigateToSiteHome();
+            await CoreNavigator.navigateToSiteHome();
 
             return;
         } catch (error) {
-            CoreLoginHelper.instance.treatUserTokenError(siteData.url, error, siteData.username, siteData.password);
+            CoreLoginHelper.treatUserTokenError(siteData.url, error, siteData.username, siteData.password);
 
             if (error.loggedout) {
-                CoreNavigator.instance.navigate('/login/sites', { reset: true });
+                CoreNavigator.navigate('/login/sites', { reset: true });
             }
         } finally {
             modal.dismiss();
@@ -346,17 +346,17 @@ export class CoreLoginSitePage implements OnInit {
      * @return Promise resolved after logging in.
      */
     protected async login(response: CoreSiteCheckResponse, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(CoreSites.instance.checkApplication(response));
+        await CoreUtils.ignoreErrors(CoreSites.checkApplication(response));
 
-        CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, true);
+        CoreDomUtils.triggerFormSubmittedEvent(this.formElement, true);
 
         if (response.warning) {
-            CoreDomUtils.instance.showErrorModal(response.warning, true, 4000);
+            CoreDomUtils.showErrorModal(response.warning, true, 4000);
         }
 
-        if (CoreLoginHelper.instance.isSSOLoginNeeded(response.code)) {
+        if (CoreLoginHelper.isSSOLoginNeeded(response.code)) {
             // SSO. User needs to authenticate in a browser.
-            CoreLoginHelper.instance.confirmAndOpenBrowserForSSOLogin(
+            CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(
                 response.siteUrl,
                 response.code,
                 response.service,
@@ -369,7 +369,7 @@ export class CoreLoginSitePage implements OnInit {
                 pageParams['logoUrl'] = foundSite.imageurl;
             }
 
-            CoreNavigator.instance.navigate('/login/credentials', {
+            CoreNavigator.navigate('/login/credentials', {
                 params: pageParams,
             });
         }
@@ -382,38 +382,38 @@ export class CoreLoginSitePage implements OnInit {
      * @param error Error to display.
      */
     protected showLoginIssue(url: string | null, error: CoreError): void {
-        let errorMessage = CoreDomUtils.instance.getErrorMessage(error);
+        let errorMessage = CoreDomUtils.getErrorMessage(error);
 
-        if (errorMessage == Translate.instance.instant('core.cannotconnecttrouble')) {
+        if (errorMessage == Translate.instant('core.cannotconnecttrouble')) {
             const found = this.sites.find((site) => site.url == url);
 
             if (!found) {
-                errorMessage += ' ' + Translate.instance.instant('core.cannotconnectverify');
+                errorMessage += ' ' + Translate.instant('core.cannotconnectverify');
             }
         }
 
         let message = '<p>' + errorMessage + '</p>';
         if (url) {
-            const fullUrl = CoreUrlUtils.instance.isAbsoluteURL(url) ? url : 'https://' + url;
+            const fullUrl = CoreUrlUtils.isAbsoluteURL(url) ? url : 'https://' + url;
             message += '<p padding><a href="' + fullUrl + '" core-link>' + url + '</a></p>';
         }
 
         const buttons = [
             {
-                text: Translate.instance.instant('core.needhelp'),
+                text: Translate.instant('core.needhelp'),
                 handler: (): void => {
                     this.showHelp();
                 },
             },
             {
-                text: Translate.instance.instant('core.tryagain'),
+                text: Translate.instant('core.tryagain'),
                 role: 'cancel',
             },
         ];
 
         // @TODO: Remove CoreSite.MINIMUM_MOODLE_VERSION, not used on translations since 3.9.0.
-        CoreDomUtils.instance.showAlertWithOptions({
-            header: Translate.instance.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+        CoreDomUtils.showAlertWithOptions({
+            header: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
             message,
             buttons,
         });
@@ -467,19 +467,19 @@ export class CoreLoginSitePage implements OnInit {
      */
     showInstructionsAndScanQR(): void {
         // Show some instructions first.
-        CoreDomUtils.instance.showAlertWithOptions({
-            header: Translate.instance.instant('core.login.faqwhereisqrcode'),
-            message: Translate.instance.instant(
+        CoreDomUtils.showAlertWithOptions({
+            header: Translate.instant('core.login.faqwhereisqrcode'),
+            message: Translate.instant(
                 'core.login.faqwhereisqrcodeanswer',
                 { $image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML },
             ),
             buttons: [
                 {
-                    text: Translate.instance.instant('core.cancel'),
+                    text: Translate.instant('core.cancel'),
                     role: 'cancel',
                 },
                 {
-                    text: Translate.instance.instant('core.next'),
+                    text: Translate.instant('core.next'),
                     handler: (): void => {
                         this.scanQR();
                     },
@@ -495,7 +495,7 @@ export class CoreLoginSitePage implements OnInit {
      */
     async scanQR(): Promise<void> {
         // Scan for a QR code.
-        const text = await CoreUtils.instance.scanQR();
+        const text = await CoreUtils.scanQR();
 
         if (text) {
             // @todo

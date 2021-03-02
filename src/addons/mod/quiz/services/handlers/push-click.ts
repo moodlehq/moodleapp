@@ -42,7 +42,7 @@ export class AddonModQuizPushClickHandlerService implements CorePushNotification
      * @return Whether the notification click is handled by this handler
      */
     async handles(notification: AddonModQuizPushNotificationData): Promise<boolean> {
-        return CoreUtils.instance.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_quiz' &&
+        return CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_quiz' &&
                 this.SUPPORTED_NAMES.indexOf(notification.name!) != -1;
     }
 
@@ -53,13 +53,13 @@ export class AddonModQuizPushClickHandlerService implements CorePushNotification
      * @return Promise resolved when done.
      */
     async handleClick(notification: AddonModQuizPushNotificationData): Promise<void> {
-        const contextUrlParams = CoreUrlUtils.instance.extractUrlParams(notification.contexturl || '');
+        const contextUrlParams = CoreUrlUtils.extractUrlParams(notification.contexturl || '');
         const data = notification.customdata || {};
         const courseId = Number(notification.courseid);
 
         if (notification.name == 'submission') {
             // A student made a submission, go to view the attempt.
-            return AddonModQuizHelper.instance.handleReviewLink(
+            return AddonModQuizHelper.handleReviewLink(
                 Number(contextUrlParams.attempt),
                 Number(contextUrlParams.page),
                 courseId,
@@ -71,14 +71,14 @@ export class AddonModQuizPushClickHandlerService implements CorePushNotification
         // Open the activity.
         const moduleId = Number(contextUrlParams.id);
 
-        await CoreUtils.instance.ignoreErrors(AddonModQuiz.instance.invalidateContent(moduleId, courseId, notification.site));
+        await CoreUtils.ignoreErrors(AddonModQuiz.invalidateContent(moduleId, courseId, notification.site));
 
-        return CoreCourseHelper.instance.navigateToModule(moduleId, notification.site, courseId);
+        return CoreCourseHelper.navigateToModule(moduleId, notification.site, courseId);
     }
 
 }
 
-export class AddonModQuizPushClickHandler extends makeSingleton(AddonModQuizPushClickHandlerService) {}
+export const AddonModQuizPushClickHandler = makeSingleton(AddonModQuizPushClickHandlerService);
 
 type AddonModQuizPushNotificationData = CorePushNotificationsNotificationBasicData & {
     contexturl?: string;

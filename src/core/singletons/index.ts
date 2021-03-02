@@ -191,53 +191,65 @@ function isServiceClass(injectionToken: Type<unknown> | string): injectionToken 
 }
 
 // Convert ionic-native services to singleton.
-export class Badge extends makeSingleton(BadgeService) {}
-export class Camera extends makeSingleton(CameraService) {}
-export class Chooser extends makeSingleton(ChooserService) {}
-export class Clipboard extends makeSingleton(ClipboardService) {}
-export class Device extends makeSingleton(DeviceService) {}
-export class Diagnostic extends makeSingleton(DiagnosticService) {}
-export class File extends makeSingleton(FileService) {}
-export class FileOpener extends makeSingleton(FileOpenerService) {}
-export class FileTransfer extends makeSingleton(FileTransferService) {}
-export class Geolocation extends makeSingleton(GeolocationService) {}
-export class InAppBrowser extends makeSingleton(InAppBrowserService) {}
-export class Keyboard extends makeSingleton(KeyboardService) {}
-export class LocalNotifications extends makeSingleton(LocalNotificationsService) {}
-export class Media extends makeSingleton(MediaService) {}
-export class MediaCapture extends makeSingleton(MediaCaptureService) {}
-export class NativeHttp extends makeSingleton(HTTP) {}
-export class Network extends makeSingleton(NetworkService) {}
-export class Push extends makeSingleton(PushService) {}
-export class QRScanner extends makeSingleton(QRScannerService) {}
-export class StatusBar extends makeSingleton(StatusBarService) {}
-export class SplashScreen extends makeSingleton(SplashScreenService) {}
-export class SQLite extends makeSingleton(SQLiteService) {}
-export class WebIntent extends makeSingleton(WebIntentService) {}
-export class WebView extends makeSingleton(WebViewService) {}
-export class Zip extends makeSingleton(ZipService) {}
+export const Badge = makeSingleton(BadgeService);
+export const Chooser = makeSingleton(ChooserService);
+export const Clipboard = makeSingleton(ClipboardService);
+export const Diagnostic = makeSingleton(DiagnosticService, ['permissionStatus']);
+export const File = makeSingleton(FileService, ['documentsDirectory', 'externalApplicationStorageDirectory']);
+export const FileOpener = makeSingleton(FileOpenerService);
+export const FileTransfer = makeSingleton(FileTransferService);
+export const Geolocation = makeSingleton(GeolocationService);
+export const InAppBrowser = makeSingleton(InAppBrowserService);
+export const Keyboard = makeSingleton(KeyboardService);
+export const LocalNotifications = makeSingleton(LocalNotificationsService);
+export const Media = makeSingleton(MediaService);
+export const MediaCapture = makeSingleton(MediaCaptureService);
+export const NativeHttp = makeSingleton(HTTP);
+export const Network = makeSingleton(NetworkService, ['Connection', 'type']);
+export const Push = makeSingleton(PushService);
+export const QRScanner = makeSingleton(QRScannerService);
+export const StatusBar = makeSingleton(StatusBarService);
+export const SplashScreen = makeSingleton(SplashScreenService);
+export const SQLite = makeSingleton(SQLiteService);
+export const WebIntent = makeSingleton(WebIntentService, ['ACTION_VIEW']);
+export const WebView = makeSingleton(WebViewService);
+export const Zip = makeSingleton(ZipService);
+
+export const Camera = makeSingleton(CameraService, [
+    'DestinationType',
+    'Direction',
+    'EncodingType',
+    'MediaType',
+    'PictureSourceType',
+    'PopoverArrowDirection',
+]);
+
+export const Device = makeSingleton(DeviceService, [
+    'cordova',
+    'isVirtual',
+    'manufacturer',
+    'model',
+    'platform',
+    'serial',
+    'uuid',
+    'version',
+]);
 
 // Convert some Angular and Ionic injectables to singletons.
-export class NgZone extends makeSingleton(NgZoneService) {}
-export class Http extends makeSingleton(HttpClient) {}
-export class Platform extends makeSingleton(PlatformService) {}
-export class ActionSheetController extends makeSingleton(ActionSheetControllerService) {}
-export class AlertController extends makeSingleton(AlertControllerService) {}
-export class LoadingController extends makeSingleton(LoadingControllerService) {}
-export class ModalController extends makeSingleton(ModalControllerService) {}
-export class PopoverController extends makeSingleton(PopoverControllerService) {}
-export class ToastController extends makeSingleton(ToastControllerService) {}
-export class GestureController extends makeSingleton(GestureControllerService) {}
-export class ApplicationInit extends makeSingleton(ApplicationInitStatus) {}
-export class Application extends makeSingleton(ApplicationRef) {}
-export class NavController extends makeSingleton(NavControllerService) {}
-export class Router extends makeSingleton(RouterService) {}
+export const NgZone = makeSingleton(NgZoneService);
+export const Http = makeSingleton(HttpClient);
+export const Platform = makeSingleton(PlatformService, ['isRTL', 'resume']);
+export const ActionSheetController = makeSingleton(ActionSheetControllerService);
+export const AlertController = makeSingleton(AlertControllerService);
+export const LoadingController = makeSingleton(LoadingControllerService);
+export const ModalController = makeSingleton(ModalControllerService);
+export const PopoverController = makeSingleton(PopoverControllerService);
+export const ToastController = makeSingleton(ToastControllerService);
+export const GestureController = makeSingleton(GestureControllerService);
+export const ApplicationInit = makeSingleton(ApplicationInitStatus, ['donePromise']);
+export const Application = makeSingleton(ApplicationRef);
+export const NavController = makeSingleton(NavControllerService);
+export const Router = makeSingleton(RouterService, ['routerState', 'url']);
 
 // Convert external libraries injectables.
-export class Translate extends makeSingleton(TranslateService) {
-
-    static instant(key: string | Array<string>, interpolateParams?: Record<string, unknown>): string | any {
-        return this.instance.instant(key, interpolateParams);
-    }
-
-}
+export const Translate = makeSingleton(TranslateService, ['onLangChange']);

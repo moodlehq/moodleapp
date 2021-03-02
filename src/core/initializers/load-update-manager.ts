@@ -15,5 +15,5 @@
 import { CoreUpdateManager } from '@services/update-manager';
 
 export default async function(): Promise<void> {
-    await CoreUpdateManager.instance.load();
+    await CoreUpdateManager.load();
 }

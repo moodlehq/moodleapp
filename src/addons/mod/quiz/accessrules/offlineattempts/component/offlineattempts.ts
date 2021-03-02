@@ -48,9 +48,9 @@ export class AddonModQuizAccessOfflineAttemptsComponent implements OnInit {
             return;
         }
 
-        const time = await AddonModQuizSync.instance.getSyncTime(this.quiz.id);
+        const time = await AddonModQuizSync.getSyncTime(this.quiz.id);
 
-        this.syncTimeReadable = AddonModQuizSync.instance.getReadableTimeFromTimestamp(time);
+        this.syncTimeReadable = AddonModQuizSync.getReadableTimeFromTimestamp(time);
     }
 
 }

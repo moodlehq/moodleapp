@@ -34,7 +34,7 @@ export class CoreFileUploaderAudioHandlerService implements CoreFileUploaderHand
      * @return Promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
-        return CoreApp.instance.isMobile() || (CoreApp.instance.canGetUserMedia() && CoreApp.instance.canRecordMedia());
+        return CoreApp.isMobile() || (CoreApp.canGetUserMedia() && CoreApp.canRecordMedia());
     }
 
     /**
@@ -44,12 +44,12 @@ export class CoreFileUploaderAudioHandlerService implements CoreFileUploaderHand
      * @return Supported mimetypes.
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
-        if (CoreApp.instance.isIOS()) {
+        if (CoreApp.isIOS()) {
             // In iOS it's recorded as WAV.
-            return CoreUtils.instance.filterByRegexp(mimetypes, /^audio\/wav$/);
-        } else if (CoreApp.instance.isAndroid()) {
+            return CoreUtils.filterByRegexp(mimetypes, /^audio\/wav$/);
+        } else if (CoreApp.isAndroid()) {
             // In Android we don't know the format the audio will be recorded, so accept any audio mimetype.
-            return CoreUtils.instance.filterByRegexp(mimetypes, /^audio\//);
+            return CoreUtils.filterByRegexp(mimetypes, /^audio\//);
         } else {
             // In browser, support audio formats that are supported by MediaRecorder.
             if (MediaRecorder) {
@@ -80,7 +80,7 @@ export class CoreFileUploaderAudioHandlerService implements CoreFileUploaderHand
                 allowOffline?: boolean,
                 mimetypes?: string[],
             ): Promise<CoreFileUploaderHandlerResult> => {
-                const result = await CoreFileUploaderHelper.instance.uploadAudioOrVideo(true, maxSize, upload, mimetypes);
+                const result = await CoreFileUploaderHelper.uploadAudioOrVideo(true, maxSize, upload, mimetypes);
 
                 return {
                     treated: true,
@@ -92,4 +92,4 @@ export class CoreFileUploaderAudioHandlerService implements CoreFileUploaderHand
 
 }
 
-export class CoreFileUploaderAudioHandler extends makeSingleton(CoreFileUploaderAudioHandlerService) { }
+export const CoreFileUploaderAudioHandler = makeSingleton(CoreFileUploaderAudioHandlerService);

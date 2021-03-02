@@ -64,7 +64,7 @@ export class AddonCalendarHelperProvider {
      */
     getEventIcon(eventType: AddonCalendarEventType): string {
         if (this.eventTypeIcons.length == 0) {
-            CoreUtils.instance.enumKeys(AddonCalendarEventType).forEach((name) => {
+            CoreUtils.enumKeys(AddonCalendarEventType).forEach((name) => {
                 const value = AddonCalendarEventType[name];
                 this.eventTypeIcons[value] = AddonCalendarEventIcons[name];
             });
@@ -104,12 +104,12 @@ export class AddonCalendarHelperProvider {
      */
     async canEditEvents(courseId?: number, siteId?: string): Promise<boolean> {
         try {
-            const canEdit = await AddonCalendar.instance.canEditEvents(siteId);
+            const canEdit = await AddonCalendar.canEditEvents(siteId);
             if (!canEdit) {
                 return false;
             }
 
-            const types = await AddonCalendar.instance.getAllowedEventTypes(courseId, siteId);
+            const types = await AddonCalendar.getAllowedEventTypes(courseId, siteId);
 
             return Object.keys(types).length > 0;
         } catch {
@@ -129,7 +129,7 @@ export class AddonCalendarHelperProvider {
     ): { [monthId: string]: { [day: number]: AddonCalendarEventToDisplay[] } } {
         // Format data.
         const events: AddonCalendarEventToDisplay[] = offlineEvents.map((event) =>
-            AddonCalendarHelper.instance.formatOfflineEventData(event));
+            AddonCalendarHelper.formatOfflineEventData(event));
 
         const result = {};
 
@@ -180,7 +180,7 @@ export class AddonCalendarHelperProvider {
             userid: event.userid,
             timemodified: event.timemodified,
             eventIcon: this.getEventIcon(event.eventtype),
-            formattedType: AddonCalendar.instance.getEventType(event),
+            formattedType: AddonCalendar.getEventType(event),
             modulename: event.modulename,
             format: 1,
             visible: 1,
@@ -188,11 +188,11 @@ export class AddonCalendarHelperProvider {
         };
 
         if (event.modulename) {
-            eventFormatted.eventIcon = CoreCourse.instance.getModuleIconSrc(event.modulename);
+            eventFormatted.eventIcon = CoreCourse.getModuleIconSrc(event.modulename);
             eventFormatted.moduleIcon = eventFormatted.eventIcon;
         }
 
-        eventFormatted.formattedType = AddonCalendar.instance.getEventType(event);
+        eventFormatted.formattedType = AddonCalendar.getEventType(event);
 
         // Calculate context.
         if ('course' in event) {
@@ -345,10 +345,10 @@ export class AddonCalendarHelperProvider {
         month: number,
         siteId?: string,
     ): Promise<{ daynames: Partial<AddonCalendarDayName>[]; weeks: Partial<AddonCalendarWeek>[] }> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         // Get starting week day user preference, fallback to site configuration.
         let startWeekDayStr = site.getStoredConfig('calendar_startwday');
-        startWeekDayStr = await CoreConfig.instance.get(AddonCalendarProvider.STARTING_WEEK_DAY, startWeekDayStr);
+        startWeekDayStr = await CoreConfig.get(AddonCalendarProvider.STARTING_WEEK_DAY, startWeekDayStr);
         const startWeekDay = parseInt(startWeekDayStr, 10);
 
         const today = moment();
@@ -531,7 +531,7 @@ export class AddonCalendarHelperProvider {
         const eventCourse = (event.course && event.course.id) || event.courseid;
 
         // Show the event if it is from site home or if it matches the selected course.
-        return !!eventCourse && (eventCourse == CoreSites.instance.getCurrentSiteHomeId() || eventCourse == courseId);
+        return !!eventCourse && (eventCourse == CoreSites.getCurrentSiteHomeId() || eventCourse == courseId);
     }
 
     /**
@@ -543,13 +543,13 @@ export class AddonCalendarHelperProvider {
      * @return Resolved when done.
      */
     async refreshAfterChangeEvents(events: AddonCalendarSyncInvalidateEvent[], siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const fetchTimestarts: number[] = [];
         const invalidateTimestarts: number[] = [];
         const promises: Promise<unknown>[] = [];
 
         // Always fetch upcoming events.
-        promises.push(AddonCalendar.instance.getUpcomingEvents(undefined, undefined, true, site.id));
+        promises.push(AddonCalendar.getUpcomingEvents(undefined, undefined, true, site.id));
 
         promises.concat(events.map(async (eventData) => {
 
@@ -557,7 +557,7 @@ export class AddonCalendarHelperProvider {
                 // Not repeated.
                 fetchTimestarts.push(eventData.timestart);
 
-                return AddonCalendar.instance.invalidateEvent(eventData.id);
+                return AddonCalendar.invalidateEvent(eventData.id);
             }
 
             if (eventData.repeatid) {
@@ -573,10 +573,10 @@ export class AddonCalendarHelperProvider {
 
                 // Get the repeated events to invalidate them.
                 const repeatedEvents =
-                    await AddonCalendar.instance.getLocalEventsByRepeatIdFromLocalDb(eventData.repeatid, site.id);
+                    await AddonCalendar.getLocalEventsByRepeatIdFromLocalDb(eventData.repeatid, site.id);
 
-                await CoreUtils.instance.allPromises(repeatedEvents.map((event) =>
-                    AddonCalendar.instance.invalidateEvent(event.id!)));
+                await CoreUtils.allPromises(repeatedEvents.map((event) =>
+                    AddonCalendar.invalidateEvent(event.id!)));
 
                 return;
             }
@@ -596,11 +596,11 @@ export class AddonCalendarHelperProvider {
         }));
 
         try {
-            await CoreUtils.instance.allPromisesIgnoringErrors(promises);
+            await CoreUtils.allPromisesIgnoringErrors(promises);
         } finally {
             const treatedMonths = {};
             const treatedDays = {};
-            const finalPromises: Promise<unknown>[] =[AddonCalendar.instance.invalidateAllUpcomingEvents()];
+            const finalPromises: Promise<unknown>[] =[AddonCalendar.invalidateAllUpcomingEvents()];
 
             // Fetch months and days.
             fetchTimestarts.map((fetchTime) => {
@@ -611,7 +611,7 @@ export class AddonCalendarHelperProvider {
                     // Month not refetch or invalidated already, do it now.
                     treatedMonths[monthId] = true;
 
-                    finalPromises.push(AddonCalendar.instance.getMonthlyEvents(
+                    finalPromises.push(AddonCalendar.getMonthlyEvents(
                         day.year(),
                         day.month() + 1,
                         undefined,
@@ -626,7 +626,7 @@ export class AddonCalendarHelperProvider {
                     // Dat not refetch or invalidated already, do it now.
                     treatedDays[dayId] = true;
 
-                    finalPromises.push(AddonCalendar.instance.getDayEvents(
+                    finalPromises.push(AddonCalendar.getDayEvents(
                         day.year(),
                         day.month() + 1,
                         day.date(),
@@ -647,7 +647,7 @@ export class AddonCalendarHelperProvider {
                     // Month not refetch or invalidated already, do it now.
                     treatedMonths[monthId] = true;
 
-                    finalPromises.push(AddonCalendar.instance.invalidateMonthlyEvents(day.year(), day.month() + 1, site.id));
+                    finalPromises.push(AddonCalendar.invalidateMonthlyEvents(day.year(), day.month() + 1, site.id));
                 }
 
                 const dayId = monthId + '#' + day.date();
@@ -655,7 +655,7 @@ export class AddonCalendarHelperProvider {
                     // Dat not refetch or invalidated already, do it now.
                     treatedDays[dayId] = true;
 
-                    finalPromises.push(AddonCalendar.instance.invalidateDayEvents(
+                    finalPromises.push(AddonCalendar.invalidateDayEvents(
                         day.year(),
                         day.month() + 1,
                         day.date(),
@@ -664,7 +664,7 @@ export class AddonCalendarHelperProvider {
                 }
             });
 
-            await CoreUtils.instance.allPromisesIgnoringErrors(finalPromises);
+            await CoreUtils.allPromisesIgnoringErrors(finalPromises);
         }
     }
 
@@ -714,7 +714,7 @@ export class AddonCalendarHelperProvider {
 
 }
 
-export class AddonCalendarHelper extends makeSingleton(AddonCalendarHelperProvider) {}
+export const AddonCalendarHelper = makeSingleton(AddonCalendarHelperProvider);
 
 /**
  * Calculated data for Calendar filtering.

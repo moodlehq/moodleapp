@@ -162,7 +162,7 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
     ): Promise<void> {
         rules = rules || [];
 
-        await CoreUtils.instance.ignoreErrors(CoreUtils.instance.allPromises(rules.map(async (rule) => {
+        await CoreUtils.ignoreErrors(CoreUtils.allPromises(rules.map(async (rule) => {
             await this.executeFunctionOnEnabled(rule, 'getFixedPreflightData', [quiz, preflightData, attempt, prefetch, siteId]);
         })));
     }
@@ -207,7 +207,7 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
         rules = rules || [];
         let isRequired = false;
 
-        await CoreUtils.instance.ignoreErrors(CoreUtils.instance.allPromises(rules.map(async (rule) => {
+        await CoreUtils.ignoreErrors(CoreUtils.allPromises(rules.map(async (rule) => {
             const ruleRequired = await this.isPreflightCheckRequiredForRule(rule, quiz, attempt, prefetch, siteId);
 
             isRequired = isRequired || ruleRequired;
@@ -259,7 +259,7 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
     ): Promise<void> {
         rules = rules || [];
 
-        await CoreUtils.instance.ignoreErrors(CoreUtils.instance.allPromises(rules.map(async (rule) => {
+        await CoreUtils.ignoreErrors(CoreUtils.allPromises(rules.map(async (rule) => {
             await this.executeFunctionOnEnabled(
                 rule,
                 'notifyPreflightCheckPassed',
@@ -289,7 +289,7 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
     ): Promise<void> {
         rules = rules || [];
 
-        await CoreUtils.instance.ignoreErrors(CoreUtils.instance.allPromises(rules.map(async (rule) => {
+        await CoreUtils.ignoreErrors(CoreUtils.allPromises(rules.map(async (rule) => {
             await this.executeFunctionOnEnabled(
                 rule,
                 'notifyPreflightCheckFailed',
@@ -323,4 +323,4 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
 
 }
 
-export class AddonModQuizAccessRuleDelegate extends makeSingleton(AddonModQuizAccessRuleDelegateService) {}
+export const AddonModQuizAccessRuleDelegate = makeSingleton(AddonModQuizAccessRuleDelegateService);

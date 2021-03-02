@@ -171,7 +171,7 @@ export class CoreFormatTextDirective implements OnChanges {
             container.classList.add('atto_image_button_text-bottom');
         }
 
-        CoreDomUtils.instance.wrapElement(img, container);
+        CoreDomUtils.wrapElement(img, container);
     }
 
     /**
@@ -202,8 +202,8 @@ export class CoreFormatTextDirective implements OnChanges {
                 return;
             }
 
-            const imgSrc = CoreTextUtils.instance.escapeHTML(img.getAttribute('data-original-src') || img.getAttribute('src'));
-            const label = Translate.instance.instant('core.openfullimage');
+            const imgSrc = CoreTextUtils.escapeHTML(img.getAttribute('data-original-src') || img.getAttribute('src'));
+            const label = Translate.instant('core.openfullimage');
             const anchor = document.createElement('a');
 
             anchor.classList.add('core-image-viewer-icon');
@@ -214,7 +214,7 @@ export class CoreFormatTextDirective implements OnChanges {
             anchor.addEventListener('click', (e: Event) => {
                 e.preventDefault();
                 e.stopPropagation();
-                CoreDomUtils.instance.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId, true);
+                CoreDomUtils.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId, true);
             });
 
             img.parentNode?.appendChild(anchor);
@@ -253,11 +253,11 @@ export class CoreFormatTextDirective implements OnChanges {
      * Display the "Show more" in the element.
      */
     protected displayShowMore(): void {
-        const expandInFullview = CoreUtils.instance.isTrueOrOne(this.fullOnClick) || false;
+        const expandInFullview = CoreUtils.isTrueOrOne(this.fullOnClick) || false;
         const showMoreDiv = document.createElement('div');
 
         showMoreDiv.classList.add('core-show-more');
-        showMoreDiv.innerHTML = Translate.instance.instant('core.showmore');
+        showMoreDiv.innerHTML = Translate.instant('core.showmore');
         this.element.appendChild(showMoreDiv);
 
         if (expandInFullview) {
@@ -284,7 +284,7 @@ export class CoreFormatTextDirective implements OnChanges {
             return;
         }
 
-        const expandInFullview = CoreUtils.instance.isTrueOrOne(this.fullOnClick) || false;
+        const expandInFullview = CoreUtils.isTrueOrOne(this.fullOnClick) || false;
 
         if (!expandInFullview && !this.showMoreDisplayed) {
             // Nothing to do on click, just stop.
@@ -301,10 +301,10 @@ export class CoreFormatTextDirective implements OnChanges {
             return;
         } else {
             // Open a new state with the contents.
-            const filter = typeof this.filter != 'undefined' ? CoreUtils.instance.isTrueOrOne(this.filter) : undefined;
+            const filter = typeof this.filter != 'undefined' ? CoreUtils.isTrueOrOne(this.filter) : undefined;
 
-            CoreTextUtils.instance.viewText(
-                this.fullTitle || Translate.instance.instant('core.description'),
+            CoreTextUtils.viewText(
+                this.fullTitle || Translate.instant('core.description'),
                 this.text,
                 {
                     component: this.component,
@@ -344,7 +344,7 @@ export class CoreFormatTextDirective implements OnChanges {
             this.element.setAttribute('maxHeight', String(this.maxHeight));
         }
         if (!this.element.getAttribute('singleLine')) {
-            this.element.setAttribute('singleLine', String(CoreUtils.instance.isTrueOrOne(this.singleLine)));
+            this.element.setAttribute('singleLine', String(CoreUtils.isTrueOrOne(this.singleLine)));
         }
 
         this.text = this.text ? this.text.trim() : '';
@@ -359,7 +359,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 (this.fullOnClick || (window.innerWidth < 576 || window.innerHeight < 576))) { // Don't collapse in big screens.
 
             // Move the children to the current element to be able to calculate the height.
-            CoreDomUtils.instance.moveChildren(result.div, this.element);
+            CoreDomUtils.moveChildren(result.div, this.element);
 
             // Calculate the height now.
             this.calculateHeight();
@@ -371,14 +371,14 @@ export class CoreFormatTextDirective implements OnChanges {
                 // Recalculate the height if a parent core-loading displays the content.
                 this.loadingChangedListener =
                     CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, (data: CoreEventLoadingChangedData) => {
-                        if (data.loaded && CoreDomUtils.instance.closest(this.element.parentElement, '#' + data.uniqueId)) {
+                        if (data.loaded && CoreDomUtils.closest(this.element.parentElement, '#' + data.uniqueId)) {
                             // The format-text is inside the loading, re-calculate the height.
                             this.calculateHeight();
                         }
                     });
             }
         } else {
-            CoreDomUtils.instance.moveChildren(result.div, this.element);
+            CoreDomUtils.moveChildren(result.div, this.element);
 
             // Add magnifying glasses to images.
             this.addMagnifyingGlasses();
@@ -386,7 +386,7 @@ export class CoreFormatTextDirective implements OnChanges {
 
         if (result.options.filter) {
             // Let filters handle HTML. We do it here because we don't want them to block the render of the text.
-            CoreFilterDelegate.instance.handleHtml(
+            CoreFilterDelegate.handleHtml(
                 this.element,
                 result.filters,
                 this.viewContainerRef,
@@ -409,7 +409,7 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     protected async formatContents(): Promise<FormatContentsResult> {
         // Retrieve the site since it might be needed later.
-        const site = await CoreUtils.instance.ignoreErrors(CoreSites.instance.getSite(this.siteId));
+        const site = await CoreUtils.ignoreErrors(CoreSites.getSite(this.siteId));
 
         const siteId = site?.getId();
 
@@ -418,21 +418,21 @@ export class CoreFormatTextDirective implements OnChanges {
         }
 
         const filter = typeof this.filter == 'undefined' ?
-            !!(this.contextLevel && typeof this.contextInstanceId != 'undefined') : CoreUtils.instance.isTrueOrOne(this.filter);
+            !!(this.contextLevel && typeof this.contextInstanceId != 'undefined') : CoreUtils.isTrueOrOne(this.filter);
 
         const options: CoreFilterFormatTextOptions = {
-            clean: CoreUtils.instance.isTrueOrOne(this.clean),
-            singleLine: CoreUtils.instance.isTrueOrOne(this.singleLine),
+            clean: CoreUtils.isTrueOrOne(this.clean),
+            singleLine: CoreUtils.isTrueOrOne(this.singleLine),
             highlight: this.highlight,
             courseId: this.courseId,
-            wsNotFiltered: CoreUtils.instance.isTrueOrOne(this.wsNotFiltered),
+            wsNotFiltered: CoreUtils.isTrueOrOne(this.wsNotFiltered),
         };
 
         let formatted: string;
         let filters: CoreFilterFilter[] = [];
 
         if (filter) {
-            const filterResult = await CoreFilterHelper.instance.getFiltersAndFormatText(
+            const filterResult = await CoreFilterHelper.getFiltersAndFormatText(
                 this.text || '',
                 this.contextLevel || '',
                 this.contextInstanceId ?? -1,
@@ -443,7 +443,7 @@ export class CoreFormatTextDirective implements OnChanges {
             filters = filterResult.filters;
             formatted = filterResult.text;
         } else {
-            formatted = await CoreFilter.instance.formatText(this.text || '', options, [], siteId);
+            formatted = await CoreFilter.formatText(this.text || '', options, [], siteId);
         }
 
         formatted = this.treatWindowOpen(formatted);
@@ -507,7 +507,7 @@ export class CoreFormatTextDirective implements OnChanges {
                     externalImages.push(externalImage);
                 }
 
-                if (CoreUtils.instance.isTrueOrOne(this.adaptImg) && !img.classList.contains('icon')) {
+                if (CoreUtils.isTrueOrOne(this.adaptImg) && !img.classList.contains('icon')) {
                     this.adaptImage(img);
                 }
             });
@@ -555,14 +555,14 @@ export class CoreFormatTextDirective implements OnChanges {
 
         // Handle all kind of frames.
         frames.forEach((frame: HTMLFrameElement | HTMLObjectElement | HTMLEmbedElement) => {
-            CoreIframeUtils.instance.treatFrame(frame, false);
+            CoreIframeUtils.treatFrame(frame, false);
         });
 
-        CoreDomUtils.instance.handleBootstrapTooltips(div);
+        CoreDomUtils.handleBootstrapTooltips(div);
 
         if (externalImages.length) {
             // Wait for images to load.
-            const promise = CoreUtils.instance.allPromises(externalImages.map((externalImage) => {
+            const promise = CoreUtils.allPromises(externalImages.map((externalImage) => {
                 if (externalImage.loaded) {
                     // Image has already been loaded, no need to wait.
                     return Promise.resolve();
@@ -572,7 +572,7 @@ export class CoreFormatTextDirective implements OnChanges {
             }));
 
             // Automatically reject the promise after 5 seconds to prevent blocking the user forever.
-            await CoreUtils.instance.ignoreErrors(CoreUtils.instance.timeoutPromise(promise, 5000));
+            await CoreUtils.ignoreErrors(CoreUtils.timeoutPromise(promise, 5000));
         }
     }
 
@@ -583,17 +583,17 @@ export class CoreFormatTextDirective implements OnChanges {
      * @return The width of the element in pixels. When 0 is returned it means the element is not visible.
      */
     protected getElementWidth(element: HTMLElement): number {
-        let width = CoreDomUtils.instance.getElementWidth(element);
+        let width = CoreDomUtils.getElementWidth(element);
 
         if (!width) {
             // All elements inside are floating or inline. Change display mode to allow calculate the width.
             const parentWidth = element.parentElement ?
-                CoreDomUtils.instance.getElementWidth(element.parentElement, true, false, false, true) : 0;
+                CoreDomUtils.getElementWidth(element.parentElement, true, false, false, true) : 0;
             const previousDisplay = getComputedStyle(element, null).display;
 
             element.style.display = 'inline-block';
 
-            width = CoreDomUtils.instance.getElementWidth(element);
+            width = CoreDomUtils.getElementWidth(element);
 
             // If width is incorrectly calculated use parent width instead.
             if (parentWidth > 0 && (!width || width > parentWidth)) {
@@ -613,7 +613,7 @@ export class CoreFormatTextDirective implements OnChanges {
      * @return The height of the element in pixels. When 0 is returned it means the element is not visible.
      */
     protected getElementHeight(element: HTMLElement): number {
-        return CoreDomUtils.instance.getElementHeight(element) || 0;
+        return CoreDomUtils.getElementHeight(element) || 0;
     }
 
     /**
@@ -674,7 +674,7 @@ export class CoreFormatTextDirective implements OnChanges {
         canTreatVimeo: boolean,
     ): Promise<void> {
         const src = iframe.src;
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
 
         this.addMediaAdaptClass(iframe);
 
@@ -683,7 +683,7 @@ export class CoreFormatTextDirective implements OnChanges {
             const finalUrl = await currentSite.getAutoLoginUrl(src, false);
 
             iframe.src = finalUrl;
-            CoreIframeUtils.instance.treatFrame(iframe, false);
+            CoreIframeUtils.treatFrame(iframe, false);
 
             return;
         }
@@ -692,7 +692,7 @@ export class CoreFormatTextDirective implements OnChanges {
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
             const matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)/);
             if (matches && matches[1]) {
-                let newUrl = CoreTextUtils.instance.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
+                let newUrl = CoreTextUtils.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
                     matches[1] + '&token=' + site.getToken();
 
                 // Width and height are mandatory, we need to calculate them.
@@ -744,7 +744,7 @@ export class CoreFormatTextDirective implements OnChanges {
             }
         }
 
-        CoreIframeUtils.instance.treatFrame(iframe, false);
+        CoreIframeUtils.treatFrame(iframe, false);
     }
 
     /**

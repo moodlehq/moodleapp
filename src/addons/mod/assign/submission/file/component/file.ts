@@ -43,8 +43,8 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
      */
     async ngOnInit(): Promise<void> {
         // Get the offline data.
-        const filesData = await CoreUtils.instance.ignoreErrors(
-            AddonModAssignOffline.instance.getSubmission(this.assign.id),
+        const filesData = await CoreUtils.ignoreErrors(
+            AddonModAssignOffline.getSubmission(this.assign.id),
             undefined,
         );
 
@@ -62,8 +62,8 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
                 // It has offline data.
                 let offlineFiles: FileEntry[] = [];
                 if (offlineDataFiles.offline) {
-                    offlineFiles = <FileEntry[]>await CoreUtils.instance.ignoreErrors(
-                        AddonModAssignHelper.instance.getStoredSubmissionFiles(
+                    offlineFiles = <FileEntry[]>await CoreUtils.ignoreErrors(
+                        AddonModAssignHelper.getStoredSubmissionFiles(
                             this.assign.id,
                             AddonModAssignSubmissionFileHandlerService.FOLDER_NAME,
                         ),
@@ -75,10 +75,10 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
                 this.files = this.files.concat(offlineFiles);
             } else {
                 // No offline data, get the online files.
-                this.files = AddonModAssign.instance.getSubmissionPluginAttachments(this.plugin);
+                this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);
             }
         } finally  {
-            CoreFileSession.instance.setFiles(this.component, this.assign.id, this.files);
+            CoreFileSession.setFiles(this.component, this.assign.id, this.files);
         }
     }
 

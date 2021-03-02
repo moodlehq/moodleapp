@@ -48,8 +48,8 @@ const tabletRoutes: Routes = [
 ];
 
 const routes: Routes = [
-    ...conditionalRoutes(mobileRoutes, () => CoreScreen.instance.isMobile),
-    ...conditionalRoutes(tabletRoutes, () => CoreScreen.instance.isTablet),
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
 ];
 
 @NgModule({

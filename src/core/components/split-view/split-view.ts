@@ -68,7 +68,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
                 this.updateClasses();
                 this.outletRouteSubject.next(null);
             }),
-            CoreScreen.instance.layoutObservable.subscribe(() => this.updateClasses()),
+            CoreScreen.layoutObservable.subscribe(() => this.updateClasses()),
         ];
 
         this.updateClasses();
@@ -113,7 +113,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
             return CoreSplitViewMode.MenuOnly;
         }
 
-        if (CoreScreen.instance.isMobile) {
+        if (CoreScreen.isMobile) {
             return this.contentOutlet.isActivated
                 ? CoreSplitViewMode.ContentOnly
                 : CoreSplitViewMode.MenuOnly;

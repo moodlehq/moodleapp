@@ -45,7 +45,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
+        this.siteHomeId = CoreSites.getCurrentSiteHomeId();
 
         super.ngOnInit();
     }
@@ -58,12 +58,12 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCourse.instance.invalidateSections(this.siteHomeId));
-        promises.push(CoreSiteHome.instance.invalidateNewsForum(this.siteHomeId));
+        promises.push(CoreCourse.invalidateSections(this.siteHomeId));
+        promises.push(CoreSiteHome.invalidateNewsForum(this.siteHomeId));
 
         if (this.mainMenuBlock && this.mainMenuBlock.modules) {
             // Invalidate modules prefetch data.
-            promises.push(CoreCourseModulePrefetchDelegate.instance.invalidateModules(this.mainMenuBlock.modules, this.siteHomeId));
+            promises.push(CoreCourseModulePrefetchDelegate.invalidateModules(this.mainMenuBlock.modules, this.siteHomeId));
         }
 
         await Promise.all(promises);
@@ -75,14 +75,14 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
      * @return Promise resolved when done.
      */
     protected async fetchContent(): Promise<void> {
-        const sections = await CoreCourse.instance.getSections(this.siteHomeId, false, true);
+        const sections = await CoreCourse.getSections(this.siteHomeId, false, true);
 
         const mainMenuBlock = sections.find((section) => section.section == 0);
         if (!mainMenuBlock) {
             return;
         }
 
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
         const config = currentSite ? currentSite.getStoredConfig() || {} : {};
         if (!config.frontpageloggedin) {
             return;
@@ -91,7 +91,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
         const items = config.frontpageloggedin.split(',');
         const hasNewsItem = items.find((item) => parseInt(item, 10) == FrontPageItemNames['NEWS_ITEMS']);
 
-        const result = CoreCourseHelper.instance.addHandlerDataForModules(
+        const result = CoreCourseHelper.addHandlerDataForModules(
             [mainMenuBlock],
             this.siteHomeId,
             undefined,
@@ -107,7 +107,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
 
         // Remove forum activity (news one only) from the main menu block to prevent duplicates.
         try {
-            const forum = await CoreSiteHome.instance.getNewsForum(this.siteHomeId);
+            const forum = await CoreSiteHome.getNewsForum(this.siteHomeId);
             // Search the module that belongs to site news.
             const forumIndex =
                 this.mainMenuBlock.modules.findIndex((mod) => mod.modname == 'forum' && mod.instance == forum.id);

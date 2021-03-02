@@ -42,10 +42,10 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
     protected sitesObserver: CoreEventObserver;
 
     constructor() {
-        this.currentSiteId = CoreSites.instance.getCurrentSiteId();
+        this.currentSiteId = CoreSites.getCurrentSiteId();
 
         this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async (data: CoreEventSiteUpdatedData) => {
-            const site = await CoreSites.instance.getSite(data.siteId);
+            const site = await CoreSites.getSite(data.siteId);
 
             const siteEntry = this.sites.find((siteEntry) => siteEntry.id == site.id);
             if (siteEntry) {
@@ -80,7 +80,7 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
         let totalSize = 0;
         let totalEntries = 0;
 
-        this.sites = await CoreSites.instance.getSortedSites();
+        this.sites = await CoreSites.getSortedSites();
 
         const settingsHelper = CoreSettingsHelper.instance;
 
@@ -117,7 +117,7 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
      */
     async deleteSiteStorage(siteData: CoreSiteBasicInfoWithUsage): Promise<void> {
         try {
-            const newInfo = await CoreSettingsHelper.instance.deleteSiteStorage(siteData.siteName || '', siteData.id);
+            const newInfo = await CoreSettingsHelper.deleteSiteStorage(siteData.siteName || '', siteData.id);
 
             this.totals.spaceUsage -= siteData.spaceUsage! - newInfo.spaceUsage;
             this.totals.spaceUsage -= siteData.cacheEntries! - newInfo.cacheEntries;
@@ -133,9 +133,9 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
      * Show information about space usage actions.
      */
     showInfo(): void {
-        CoreDomUtils.instance.showAlert(
-            Translate.instance.instant('core.help'),
-            Translate.instance.instant('core.settings.spaceusagehelp'),
+        CoreDomUtils.showAlert(
+            Translate.instant('core.help'),
+            Translate.instant('core.settings.spaceusagehelp'),
         );
     }
 

@@ -28,7 +28,7 @@ import { AddonBlockRecentlyAccessedCoursesHandler } from './services/block-handl
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockRecentlyAccessedCoursesHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockRecentlyAccessedCoursesHandler.instance);
             },
         },
     ],

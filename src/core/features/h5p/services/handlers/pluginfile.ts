@@ -44,7 +44,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      */
     async fileDeleted(fileUrl: string, path: string, siteId?: string): Promise<void> {
         // If an h5p file is deleted, remove the contents folder.
-        await CoreH5P.instance.h5pPlayer.deleteContentByUrl(fileUrl, siteId);
+        await CoreH5P.h5pPlayer.deleteContentByUrl(fileUrl, siteId);
     }
 
     /**
@@ -55,14 +55,14 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * @return Promise resolved with the file to use. Rejected if cannot download.
      */
     async getDownloadableFile(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         if (site.containsUrl(file.fileurl) && file.fileurl.match(/pluginfile\.php\/[^/]+\/core_h5p\/export\//i)) {
             // It's already a deployed file, use it.
             return file;
         }
 
-        return CoreH5P.instance.getTrustedH5PFile(file.fileurl, {}, false, siteId);
+        return CoreH5P.getTrustedH5PFile(file.fileurl, {}, false, siteId);
     }
 
     /**
@@ -77,7 +77,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
         const urls: string[] = [];
 
         for (let i = 0; i < iframes.length; i++) {
-            const params = CoreUrlUtils.instance.extractUrlParams(iframes[i].src);
+            const params = CoreUrlUtils.extractUrlParams(iframes[i].src);
 
             if (params.url) {
                 urls.push(params.url);
@@ -100,7 +100,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
 
             return trustedFile.filesize || 0;
         } catch (error) {
-            if (CoreUtils.instance.isWebServiceError(error)) {
+            if (CoreUtils.isWebServiceError(error)) {
                 // WS returned an error, it means it cannot be downloaded.
                 return 0;
             }
@@ -115,7 +115,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
-        return CoreH5P.instance.canGetTrustedH5PFileInSite();
+        return CoreH5P.canGetTrustedH5PFileInSite();
     }
 
     /**
@@ -126,12 +126,12 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * @return Promise resolved with a boolean and a reason why it isn't downloadable if needed.
      */
     async isFileDownloadable(file: CoreWSExternalFile, siteId?: string): Promise<CorePluginFileDownloadableResult> {
-        const offlineDisabled = await CoreH5P.instance.isOfflineDisabled(siteId);
+        const offlineDisabled = await CoreH5P.isOfflineDisabled(siteId);
 
         if (offlineDisabled) {
             return {
                 downloadable: false,
-                reason: Translate.instance.instant('core.h5p.offlinedisabled'),
+                reason: Translate.instant('core.h5p.offlinedisabled'),
             };
         } else {
             return {
@@ -147,7 +147,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * @return Whether the file should be treated by this handler.
      */
     shouldHandleFile(file: CoreWSExternalFile): boolean {
-        return CoreMimetypeUtils.instance.guessExtensionFromUrl(file.fileurl) == 'h5p';
+        return CoreMimetypeUtils.guessExtensionFromUrl(file.fileurl) == 'h5p';
     }
 
     /**
@@ -170,4 +170,4 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
 
 }
 
-export class CoreH5PPluginFileHandler extends makeSingleton(CoreH5PPluginFileHandlerService) {}
+export const CoreH5PPluginFileHandler = makeSingleton(CoreH5PPluginFileHandlerService);

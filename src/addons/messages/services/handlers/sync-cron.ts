@@ -33,7 +33,7 @@ export class AddonMessagesSyncCronHandlerService implements CoreCronHandler {
      * @return Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string): Promise<void> {
-        return AddonMessagesSync.instance.syncAllDiscussions(siteId);
+        return AddonMessagesSync.syncAllDiscussions(siteId);
     }
 
     /**
@@ -47,4 +47,4 @@ export class AddonMessagesSyncCronHandlerService implements CoreCronHandler {
 
 }
 
-export class AddonMessagesSyncCronHandler extends makeSingleton(AddonMessagesSyncCronHandlerService) {}
+export const AddonMessagesSyncCronHandler = makeSingleton(AddonMessagesSyncCronHandlerService);

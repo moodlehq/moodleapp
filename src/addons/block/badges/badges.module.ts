@@ -30,7 +30,7 @@ import { AddonBlockBadgesComponentsModule } from './components/components.module
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockBadgesHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockBadgesHandler.instance);
             },
         },
     ],

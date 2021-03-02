@@ -49,7 +49,7 @@ export class AddonMessagesDiscussionLinkHandlerService extends CoreContentLinksH
                 const stateParams = {
                     userId: parseInt(params.id || params.user2, 10),
                 };
-                CoreNavigator.instance.navigateToSitePath('/messages/discussion', { params: stateParams, siteId });
+                CoreNavigator.navigateToSitePath('/messages/discussion', { params: stateParams, siteId });
             },
         }];
     }
@@ -64,7 +64,7 @@ export class AddonMessagesDiscussionLinkHandlerService extends CoreContentLinksH
      * @return Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        const enabled = await AddonMessages.instance.isPluginEnabled(siteId);
+        const enabled = await AddonMessages.isPluginEnabled(siteId);
         if (!enabled) {
             return false;
         }
@@ -76,7 +76,7 @@ export class AddonMessagesDiscussionLinkHandlerService extends CoreContentLinksH
 
         if (typeof params.user1 != 'undefined') {
             // Check if user1 is the current user, since the app only supports current user.
-            const site = await CoreSites.instance.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
 
             return parseInt(params.user1, 10) == site.getUserId();
         }
@@ -86,4 +86,4 @@ export class AddonMessagesDiscussionLinkHandlerService extends CoreContentLinksH
 
 }
 
-export class AddonMessagesDiscussionLinkHandler extends makeSingleton(AddonMessagesDiscussionLinkHandlerService) {}
+export const AddonMessagesDiscussionLinkHandler = makeSingleton(AddonMessagesDiscussionLinkHandlerService);

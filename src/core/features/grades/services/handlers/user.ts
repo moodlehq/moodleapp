@@ -86,7 +86,7 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
             return cache;
         }
 
-        const enabled = await CoreUtils.instance.ignoreErrors(CoreGrades.instance.isPluginEnabledForCourse(courseId), false);
+        const enabled = await CoreUtils.ignoreErrors(CoreGrades.isPluginEnabledForCourse(courseId), false);
 
         this.viewGradesEnabledCache[cacheKey] = enabled;
 
@@ -106,7 +106,7 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
             action: (event, user, courseId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                CoreNavigator.instance.navigateToSitePath(`/grades/${courseId}`, {
+                CoreNavigator.navigateToSitePath(`/grades/${courseId}`, {
                     params: { userId: user.id },
                 });
             },
@@ -115,4 +115,4 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
 
 }
 
-export class CoreGradesUserHandler extends makeSingleton(CoreGradesUserHandlerService) {}
+export const CoreGradesUserHandler = makeSingleton(CoreGradesUserHandlerService);

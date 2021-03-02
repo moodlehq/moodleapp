@@ -32,7 +32,7 @@ export class CoreUserHelperProvider {
      * @return Formatted address.
      */
     formatAddress(address?: string, city?: string, country?: string): string {
-        const separator = Translate.instance.instant('core.listsep');
+        const separator = Translate.instant('core.listsep');
         let values = [address, city, country];
 
         values = values.filter((value) => value && value.length > 0);
@@ -51,10 +51,10 @@ export class CoreUserHelperProvider {
             return '';
         }
 
-        const separator = Translate.instance.instant('core.listsep');
+        const separator = Translate.instant('core.listsep');
 
         return roles.map((value) => {
-            const translation = Translate.instance.instant('core.user.' + value.shortname);
+            const translation = Translate.instant('core.user.' + value.shortname);
 
             return translation.indexOf('core.user.') < 0 ? translation : value.shortname;
         }).join(separator + ' ');
@@ -62,4 +62,4 @@ export class CoreUserHelperProvider {
 
 }
 
-export class CoreUserHelper extends makeSingleton(CoreUserHelperProvider) {}
+export const CoreUserHelper = makeSingleton(CoreUserHelperProvider);

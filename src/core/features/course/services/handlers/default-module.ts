@@ -56,7 +56,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
     ): CoreCourseModuleHandlerData {
         // Return the default data.
         const defaultData: CoreCourseModuleHandlerData = {
-            icon: CoreCourse.instance.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined),
+            icon: CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined),
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
             action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
@@ -66,7 +66,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
                 options = options || {};
                 options.params = { module, courseId };
 
-                CoreNavigator.instance.navigateToSitePath('course/unsupported-module', options);
+                CoreNavigator.navigateToSitePath('course/unsupported-module', options);
             },
         };
 
@@ -78,7 +78,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
                     e.preventDefault();
                     e.stopPropagation();
 
-                    CoreSites.instance.getCurrentSite()!.openInBrowserWithAutoLoginIfSameSite(module.url!);
+                    CoreSites.getCurrentSite()!.openInBrowserWithAutoLoginIfSameSite(module.url!);
                 },
             }];
         }

@@ -35,13 +35,13 @@ export class CoreTagMainMenuHandlerService implements CoreMainMenuHandler {
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
-        const available = await CoreTag.instance.areTagsAvailable();
+        const available = await CoreTag.areTagsAvailable();
         if (!available) {
             return false;
         }
 
         // The only way to check whether tags are enabled on web is to perform a WS call.
-        return CoreUtils.instance.promiseWorks(CoreTag.instance.getTagCollections());
+        return CoreUtils.promiseWorks(CoreTag.getTagCollections());
     }
 
     /**
@@ -60,4 +60,4 @@ export class CoreTagMainMenuHandlerService implements CoreMainMenuHandler {
 
 }
 
-export class CoreTagMainMenuHandler extends makeSingleton(CoreTagMainMenuHandlerService) {}
+export const CoreTagMainMenuHandler = makeSingleton(CoreTagMainMenuHandlerService);

@@ -49,7 +49,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
     constructor(route: ActivatedRoute) {
         const courseId = parseInt(route.snapshot.params.courseId ?? route.snapshot.queryParams.courseId);
-        const userId = parseInt(route.snapshot.queryParams.userId ?? CoreSites.instance.getCurrentSiteUserId());
+        const userId = parseInt(route.snapshot.queryParams.userId ?? CoreSites.getCurrentSiteUserId());
         const useSplitView = route.snapshot.data.useSplitView ?? true;
         const outsideGradesTab = route.snapshot.data.outsideGradesTab ?? false;
 
@@ -81,8 +81,8 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     async refreshGrades(refresher: IonRefresher): Promise<void> {
         const { courseId, userId } = this.grades;
 
-        await CoreUtils.instance.ignoreErrors(CoreGrades.instance.invalidateCourseGradesData(courseId, userId));
-        await CoreUtils.instance.ignoreErrors(this.fetchGrades());
+        await CoreUtils.ignoreErrors(CoreGrades.invalidateCourseGradesData(courseId, userId));
+        await CoreUtils.ignoreErrors(this.fetchGrades());
 
         refresher?.complete();
     }
@@ -94,7 +94,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         try {
             await this.fetchGrades();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading course');
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading course');
 
             this.grades.setTable({ columns: [], rows: [] });
         }
@@ -104,8 +104,8 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      * Update the table of grades.
      */
     private async fetchGrades(): Promise<void> {
-        const table = await CoreGrades.instance.getCourseGradesTable(this.grades.courseId!, this.grades.userId);
-        const formattedTable = await CoreGradesHelper.instance.formatGradesTable(table);
+        const table = await CoreGrades.getCourseGradesTable(this.grades.courseId!, this.grades.userId);
+        const formattedTable = await CoreGradesHelper.formatGradesTable(table);
 
         this.grades.setTable(formattedTable);
     }
@@ -149,7 +149,7 @@ class CoreGradesCourseManager extends CorePageItemsListManager<CoreGradesFormatt
      */
     async select(row: CoreGradesFormattedTableRowFilled): Promise<void> {
         if (this.outsideGradesTab) {
-            await CoreNavigator.instance.navigateToSitePath(`/grades/${this.courseId}/${row.id}`);
+            await CoreNavigator.navigateToSitePath(`/grades/${this.courseId}/${row.id}`);
 
             return;
         }
@@ -189,7 +189,7 @@ class CoreGradesCourseManager extends CorePageItemsListManager<CoreGradesFormatt
      * @inheritdoc
      */
     protected async logActivity(): Promise<void> {
-        await CoreGrades.instance.logCourseGradesView(this.courseId!, this.userId!);
+        await CoreGrades.logCourseGradesView(this.courseId!, this.userId!);
     }
 
     /**

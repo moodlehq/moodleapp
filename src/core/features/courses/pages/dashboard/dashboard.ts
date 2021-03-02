@@ -51,18 +51,18 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * Initialize the component.
      */
     ngOnInit(): void {
-        this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
-        this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
-        this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
+        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-            this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
-            this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
-            this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+            this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
+            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+            this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
             this.switchDownload(this.downloadEnabled && this.downloadCourseEnabled && this.downloadCoursesEnabled);
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
 
         this.loadContent();
     }
@@ -73,20 +73,20 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadContent(): Promise<void> {
-        const available = await CoreCoursesDashboard.instance.isAvailable();
+        const available = await CoreCoursesDashboard.isAvailable();
 
         if (available) {
-            this.userId = CoreSites.instance.getCurrentSiteUserId();
+            this.userId = CoreSites.getCurrentSiteUserId();
 
             try {
-                this.blocks = await CoreCoursesDashboard.instance.getDashboardBlocks();
+                this.blocks = await CoreCoursesDashboard.getDashboardBlocks();
             } catch (error) {
-                CoreDomUtils.instance.showErrorModal(error);
+                CoreDomUtils.showErrorModal(error);
 
                 // Cannot get the blocks, just show dashboard if needed.
                 this.loadFallbackBlocks();
             }
-        } else if (!CoreCoursesDashboard.instance.isDisabledInSite()) {
+        } else if (!CoreCoursesDashboard.isDisabledInSite()) {
             // Not available, but not disabled either. Use fallback.
             this.loadFallbackBlocks();
         } else {
@@ -122,7 +122,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     refreshDashboard(refresher: CustomEvent<IonRefresher>): void {
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCoursesDashboard.instance.invalidateDashboardBlocks());
+        promises.push(CoreCoursesDashboard.invalidateDashboardBlocks());
 
         // Invalidate the blocks.
         this.blocksComponents?.forEach((blockComponent) => {
@@ -169,7 +169,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     async openSearch(): Promise<void> {
-        CoreNavigator.instance.navigateToSitePath('/courses/search');
+        CoreNavigator.navigateToSitePath('/courses/search');
     }
 
     /**

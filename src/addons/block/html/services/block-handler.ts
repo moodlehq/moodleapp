@@ -46,4 +46,4 @@ export class AddonBlockHtmlHandlerService extends CoreBlockBaseHandler {
 
 }
 
-export class AddonBlockHtmlHandler extends makeSingleton(AddonBlockHtmlHandlerService) {}
+export const AddonBlockHtmlHandler = makeSingleton(AddonBlockHtmlHandlerService);

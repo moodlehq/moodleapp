@@ -55,7 +55,7 @@ export class AddonModForumEditPostComponent implements OnInit {
         };
 
         // Delete the local files from the tmp folder if any.
-        CoreFileUploader.instance.clearTmpFiles(this.replyData.files as CoreFileEntry[]);
+        CoreFileUploader.clearTmpFiles(this.replyData.files as CoreFileEntry[]);
 
         // Update rich text editor.
         this.messageControl.setValue(this.replyData.message);
@@ -93,12 +93,12 @@ export class AddonModForumEditPostComponent implements OnInit {
         }
 
         if (data) {
-            CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, false, CoreSites.instance.getCurrentSiteId());
+            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
         } else {
-            CoreDomUtils.instance.triggerFormCancelledEvent(this.formElement, CoreSites.instance.getCurrentSiteId());
+            CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
         }
 
-        ModalController.instance.dismiss(data);
+        ModalController.dismiss(data);
     }
 
     /**
@@ -128,16 +128,16 @@ export class AddonModForumEditPostComponent implements OnInit {
      * @return Resolved if we can leave it, rejected if not.
      */
     private async confirmDismiss(): Promise<boolean> {
-        if (this.forceLeave || !AddonModForumHelper.instance.hasPostDataChanged(this.replyData, this.originalData)) {
+        if (this.forceLeave || !AddonModForumHelper.hasPostDataChanged(this.replyData, this.originalData)) {
             return true;
         }
 
         try {
             // Show confirmation if some data has been modified.
-            await CoreDomUtils.instance.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
 
             // Delete the local files from the tmp folder.
-            CoreFileUploader.instance.clearTmpFiles(this.replyData.files as CoreFileEntry[]);
+            CoreFileUploader.clearTmpFiles(this.replyData.files as CoreFileEntry[]);
 
             return true;
         } catch (error) {

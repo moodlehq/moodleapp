@@ -48,7 +48,7 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
      * @return Current section (or promise resolved with current section).
      */
     async getCurrentSection(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): Promise<CoreCourseSection> {
-        const now = CoreTimeUtils.instance.timestamp();
+        const now = CoreTimeUtils.timestamp();
 
         if ((course.startdate && now < course.startdate) || (course.enddate && now > course.enddate)) {
             // Course hasn't started yet or it has ended already. Return all sections.
@@ -93,4 +93,4 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
 
 }
 
-export class CoreCourseFormatWeeksHandler extends makeSingleton(CoreCourseFormatWeeksHandlerService) {}
+export const CoreCourseFormatWeeksHandler = makeSingleton(CoreCourseFormatWeeksHandlerService);

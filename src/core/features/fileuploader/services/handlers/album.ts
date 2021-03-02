@@ -35,7 +35,7 @@ export class CoreFileUploaderAlbumHandlerService implements CoreFileUploaderHand
      * @return Promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
-        return CoreApp.instance.isMobile();
+        return CoreApp.isMobile();
     }
 
     /**
@@ -46,7 +46,7 @@ export class CoreFileUploaderAlbumHandlerService implements CoreFileUploaderHand
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
         // Album allows picking images and videos.
-        return CoreUtils.instance.filterByRegexp(mimetypes, /^(image|video)\//);
+        return CoreUtils.filterByRegexp(mimetypes, /^(image|video)\//);
     }
 
     /**
@@ -65,7 +65,7 @@ export class CoreFileUploaderAlbumHandlerService implements CoreFileUploaderHand
                 allowOffline?: boolean,
                 mimetypes?: string[],
             ): Promise<CoreFileUploaderHandlerResult> => {
-                const result = await CoreFileUploaderHelper.instance.uploadImage(true, maxSize, upload, mimetypes);
+                const result = await CoreFileUploaderHelper.uploadImage(true, maxSize, upload, mimetypes);
 
                 return {
                     treated: true,
@@ -77,4 +77,4 @@ export class CoreFileUploaderAlbumHandlerService implements CoreFileUploaderHand
 
 }
 
-export class CoreFileUploaderAlbumHandler extends makeSingleton(CoreFileUploaderAlbumHandlerService) {}
+export const CoreFileUploaderAlbumHandler = makeSingleton(CoreFileUploaderAlbumHandlerService);

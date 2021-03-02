@@ -46,14 +46,14 @@ export class CoreMainMenuHomePage implements OnInit {
     ngOnInit(): void {
         this.loadSiteName();
 
-        this.subscription = CoreMainMenuHomeDelegate.instance.getHandlersObservable().subscribe((handlers) => {
+        this.subscription = CoreMainMenuHomeDelegate.getHandlersObservable().subscribe((handlers) => {
             handlers && this.initHandlers(handlers);
         });
 
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.loadSiteName();
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
     }
 
     /**
@@ -89,14 +89,14 @@ export class CoreMainMenuHomePage implements OnInit {
 
         this.tabs = newTabs;
 
-        this.loaded = CoreMainMenuHomeDelegate.instance.areHandlersLoaded();
+        this.loaded = CoreMainMenuHomeDelegate.areHandlersLoaded();
     }
 
     /**
      * Load the site name.
      */
     protected loadSiteName(): void {
-        this.siteName = CoreSites.instance.getCurrentSite()!.getSiteName();
+        this.siteName = CoreSites.getCurrentSite()!.getSiteName();
     }
 
     /**

@@ -38,12 +38,12 @@ export class AddonMessagesPushClickHandlerService implements CorePushNotificatio
      * @return Whether the notification click is handled by this handler
      */
     async handles(notification: AddonMessagesPushNotificationData): Promise<boolean> {
-        if (CoreUtils.instance.isTrueOrOne(notification.notif) && notification.name != 'messagecontactrequests') {
+        if (CoreUtils.isTrueOrOne(notification.notif) && notification.name != 'messagecontactrequests') {
             return false;
         }
 
         // Check that messaging is enabled.
-        return AddonMessages.instance.isPluginEnabled(notification.site);
+        return AddonMessages.isPluginEnabled(notification.site);
     }
 
     /**
@@ -54,14 +54,14 @@ export class AddonMessagesPushClickHandlerService implements CorePushNotificatio
      */
     async handleClick(notification: AddonMessagesPushNotificationData): Promise<void> {
         try {
-            await AddonMessages.instance.invalidateDiscussionsCache(notification.site);
+            await AddonMessages.invalidateDiscussionsCache(notification.site);
         } catch {
             // Ignore errors.
         }
 
         // Check if group messaging is enabled, to determine which page should be loaded.
-        const enabled = await AddonMessages.instance.isGroupMessagingEnabledInSite(notification.site);
-        const pageName = await AddonMessages.instance.getMainMessagesPagePathInSite(notification.site);
+        const enabled = await AddonMessages.isGroupMessagingEnabledInSite(notification.site);
+        const pageName = await AddonMessages.getMainMessagesPagePathInSite(notification.site);
 
         const pageParams: Params = {};
 
@@ -72,12 +72,12 @@ export class AddonMessagesPushClickHandlerService implements CorePushNotificatio
             pageParams.discussionUserId = Number(notification.userfromid);
         }
 
-        await CoreNavigator.instance.navigateToSitePath(pageName, { params: pageParams, siteId: notification.site });
+        await CoreNavigator.navigateToSitePath(pageName, { params: pageParams, siteId: notification.site });
     }
 
 }
 
-export class AddonMessagesPushClickHandler extends makeSingleton(AddonMessagesPushClickHandlerService) {}
+export const AddonMessagesPushClickHandler = makeSingleton(AddonMessagesPushClickHandlerService);
 
 type AddonMessagesPushNotificationData = CorePushNotificationsNotificationBasicData & {
     convid?: number; // Conversation Id.

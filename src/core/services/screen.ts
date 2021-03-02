@@ -140,4 +140,11 @@ export class CoreScreenService {
 
 }
 
-export class CoreScreen extends makeSingleton(CoreScreenService) {}
+export const CoreScreen = makeSingleton(CoreScreenService, [
+    'isTablet',
+    'isMobile',
+    'layout',
+    'layoutObservable',
+    'breakpoints',
+    'breakpointsObservable',
+]);

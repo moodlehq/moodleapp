@@ -61,14 +61,14 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
             icon: 'folder',
         };
 
-        if (CoreApp.instance.isMobile()) {
+        if (CoreApp.isMobile()) {
             handler.action = async (
                 maxSize?: number,
                 upload?: boolean,
                 allowOffline?: boolean,
                 mimetypes?: string[],
             ): Promise<CoreFileUploaderHandlerResult> => {
-                const result = await CoreFileUploaderHelper.instance.chooseAndUploadFile(maxSize, upload, allowOffline, mimetypes);
+                const result = await CoreFileUploaderHelper.chooseAndUploadFile(maxSize, upload, allowOffline, mimetypes);
 
                 return {
                     treated: true,
@@ -93,7 +93,7 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
                 const input = document.createElement('input');
                 input.setAttribute('type', 'file');
                 input.classList.add('core-fileuploader-file-handler-input');
-                if (mimetypes && mimetypes.length && (!CoreApp.instance.isAndroid() || mimetypes.length == 1)) {
+                if (mimetypes && mimetypes.length && (!CoreApp.isAndroid() || mimetypes.length == 1)) {
                     // Don't use accept attribute in Android with several mimetypes, it's not supported.
                     input.setAttribute('accept', mimetypes.join(', '));
                 }
@@ -107,16 +107,16 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
                     }
 
                     // Verify that the mimetype of the file is supported, in case the accept attribute isn't supported.
-                    const error = CoreFileUploader.instance.isInvalidMimetype(mimetypes, file.name, file.type);
+                    const error = CoreFileUploader.isInvalidMimetype(mimetypes, file.name, file.type);
                     if (error) {
-                        CoreDomUtils.instance.showErrorModal(error);
+                        CoreDomUtils.showErrorModal(error);
 
                         return;
                     }
 
                     try {
                         // Upload the picked file.
-                        const result = await CoreFileUploaderHelper.instance.uploadFileObject(
+                        const result = await CoreFileUploaderHelper.uploadFileObject(
                             file,
                             maxSize,
                             upload,
@@ -124,16 +124,16 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
                             file.name,
                         );
 
-                        CoreFileUploaderHelper.instance.fileUploaded(result);
+                        CoreFileUploaderHelper.fileUploaded(result);
                     } catch (error) {
-                        CoreDomUtils.instance.showErrorModalDefault(
+                        CoreDomUtils.showErrorModalDefault(
                             error,
-                            Translate.instance.instant('core.fileuploader.errorreadingfile'),
+                            Translate.instant('core.fileuploader.errorreadingfile'),
                         );
                     }
                 });
 
-                if (CoreApp.instance.isIOS()) {
+                if (CoreApp.isIOS()) {
                     // In iOS, the click on the input stopped working for some reason. We need to put it 1 level higher.
                     element.parentElement?.appendChild(input);
 
@@ -157,4 +157,4 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
 
 }
 
-export class CoreFileUploaderFileHandler extends makeSingleton(CoreFileUploaderFileHandlerService) {}
+export const CoreFileUploaderFileHandler = makeSingleton(CoreFileUploaderFileHandlerService);

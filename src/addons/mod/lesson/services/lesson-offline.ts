@@ -44,7 +44,7 @@ export class AddonModLessonOfflineProvider {
      * @return Promise resolved when done.
      */
     async deleteAttempt(lessonId: number, retake: number, pageId: number, timemodified: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(PAGE_ATTEMPTS_TABLE_NAME, <Partial<AddonModLessonPageAttemptDBRecord>> {
             lessonid: lessonId,
@@ -62,7 +62,7 @@ export class AddonModLessonOfflineProvider {
      * @return Promise resolved when done.
      */
     async deleteRetake(lessonId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(RETAKES_TABLE_NAME, <Partial<AddonModLessonRetakeDBRecord>> { lessonid: lessonId });
     }
@@ -77,7 +77,7 @@ export class AddonModLessonOfflineProvider {
      * @return Promise resolved when done.
      */
     async deleteRetakeAttemptsForPage(lessonId: number, retake: number, pageId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(PAGE_ATTEMPTS_TABLE_NAME, <Partial<AddonModLessonPageAttemptDBRecord>> {
             lessonid: lessonId,
@@ -106,14 +106,14 @@ export class AddonModLessonOfflineProvider {
         siteId?: string,
     ): Promise<void> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // Get current stored retake (if any). If not found, it will create a new one.
         const entry = await this.getRetakeWithFallback(lessonId, courseId, retake, site.id);
 
         entry.finished = finished ? 1 : 0;
         entry.outoftime = outOfTime ? 1 : 0;
-        entry.timemodified = CoreTimeUtils.instance.timestamp();
+        entry.timemodified = CoreTimeUtils.timestamp();
 
         await site.getDb().insertRecord(RETAKES_TABLE_NAME, entry);
     }
@@ -125,7 +125,7 @@ export class AddonModLessonOfflineProvider {
      * @return Promise resolved when the offline attempts are retrieved.
      */
     async getAllAttempts(siteId?: string): Promise<AddonModLessonPageAttemptRecord[]> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         const attempts = await db.getAllRecords<AddonModLessonPageAttemptDBRecord>(PAGE_ATTEMPTS_TABLE_NAME);
 
@@ -142,14 +142,14 @@ export class AddonModLessonOfflineProvider {
         const lessons: Record<number, AddonModLessonLessonStoredData> = {};
 
         const [pageAttempts, retakes] = await Promise.all([
-            CoreUtils.instance.ignoreErrors(this.getAllAttempts(siteId)),
-            CoreUtils.instance.ignoreErrors(this.getAllRetakes(siteId)),
+            CoreUtils.ignoreErrors(this.getAllAttempts(siteId)),
+            CoreUtils.ignoreErrors(this.getAllRetakes(siteId)),
         ]);
 
         this.getLessonsFromEntries(lessons, pageAttempts || []);
         this.getLessonsFromEntries(lessons, retakes || []);
 
-        return CoreUtils.instance.objectToArray(lessons);
+        return CoreUtils.objectToArray(lessons);
     }
 
     /**
@@ -159,7 +159,7 @@ export class AddonModLessonOfflineProvider {
      * @return Promise resolved when the offline retakes are retrieved.
      */
     async getAllRetakes(siteId?: string): Promise<AddonModLessonRetakeDBRecord[]> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         return db.getAllRecords(RETAKES_TABLE_NAME);
     }
@@ -177,7 +177,7 @@ export class AddonModLessonOfflineProvider {
         retake: number,
         siteId?: string,
     ): Promise<AddonModLessonPageAttemptRecord | undefined> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         try {
             const retakeData = await this.getRetakeWithFallback(lessonId, 0, retake, siteId);
@@ -203,7 +203,7 @@ export class AddonModLessonOfflineProvider {
      * @return Promise resolved with the attempts.
      */
     async getLessonAttempts(lessonId: number, siteId?: string): Promise<AddonModLessonPageAttemptRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const attempts = await site.getDb().getRecords<AddonModLessonPageAttemptDBRecord>(
             PAGE_ATTEMPTS_TABLE_NAME,
@@ -269,7 +269,7 @@ export class AddonModLessonOfflineProvider {
      * @return Promise resolved with the retake.
      */
     async getRetake(lessonId: number, siteId?: string): Promise<AddonModLessonRetakeDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecord(RETAKES_TABLE_NAME, { lessonid: lessonId });
     }
@@ -283,7 +283,7 @@ export class AddonModLessonOfflineProvider {
      * @return Promise resolved with the retake attempts.
      */
     async getRetakeAttempts(lessonId: number, retake: number, siteId?: string): Promise<AddonModLessonPageAttemptRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const attempts = await site.getDb().getRecords<AddonModLessonPageAttemptDBRecord>(
             PAGE_ATTEMPTS_TABLE_NAME,
@@ -311,7 +311,7 @@ export class AddonModLessonOfflineProvider {
         pageId: number,
         siteId?: string,
     ): Promise<AddonModLessonPageAttemptRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const attempts = await site.getDb().getRecords<AddonModLessonPageAttemptDBRecord>(
             PAGE_ATTEMPTS_TABLE_NAME,
@@ -340,7 +340,7 @@ export class AddonModLessonOfflineProvider {
         type: number,
         siteId?: string,
     ): Promise<AddonModLessonPageAttemptRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const attempts = await site.getDb().getRecords<AddonModLessonPageAttemptDBRecord>(
             PAGE_ATTEMPTS_TABLE_NAME,
@@ -415,8 +415,8 @@ export class AddonModLessonOfflineProvider {
      */
     async hasOfflineData(lessonId: number, siteId?: string): Promise<boolean> {
         const [retake, attempts] = await Promise.all([
-            CoreUtils.instance.ignoreErrors(this.getRetake(lessonId, siteId)),
-            CoreUtils.instance.ignoreErrors(this.getLessonAttempts(lessonId, siteId)),
+            CoreUtils.ignoreErrors(this.getRetake(lessonId, siteId)),
+            CoreUtils.ignoreErrors(this.getLessonAttempts(lessonId, siteId)),
         ]);
 
         return !!retake || !!attempts?.length;
@@ -449,8 +449,8 @@ export class AddonModLessonOfflineProvider {
     protected parsePageAttempt(attempt: AddonModLessonPageAttemptDBRecord): AddonModLessonPageAttemptRecord {
         return {
             ...attempt,
-            data: attempt.data ? CoreTextUtils.instance.parseJSON(attempt.data) : null,
-            useranswer: attempt.useranswer ? CoreTextUtils.instance.parseJSON(attempt.useranswer) : null,
+            data: attempt.data ? CoreTextUtils.parseJSON(attempt.data) : null,
+            useranswer: attempt.useranswer ? CoreTextUtils.parseJSON(attempt.useranswer) : null,
         };
     }
 
@@ -492,13 +492,13 @@ export class AddonModLessonOfflineProvider {
         siteId?: string,
     ): Promise<void> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const entry: AddonModLessonPageAttemptDBRecord = {
             lessonid: lessonId,
             retake: retake,
             pageid: page.id,
-            timemodified: CoreTimeUtils.instance.timestamp(),
+            timemodified: CoreTimeUtils.timestamp(),
             courseid: courseId,
             data: data ? JSON.stringify(data) : null,
             type: page.type,
@@ -533,20 +533,20 @@ export class AddonModLessonOfflineProvider {
         lastPage: number,
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // Get current stored retake (if any). If not found, it will create a new one.
         const entry = await this.getRetakeWithFallback(lessonId, courseId, retake, site.id);
 
         entry.lastquestionpage = lastPage;
-        entry.timemodified = CoreTimeUtils.instance.timestamp();
+        entry.timemodified = CoreTimeUtils.timestamp();
 
         await site.getDb().insertRecord(RETAKES_TABLE_NAME, entry);
     }
 
 }
 
-export class AddonModLessonOffline extends makeSingleton(AddonModLessonOfflineProvider) {}
+export const AddonModLessonOffline = makeSingleton(AddonModLessonOfflineProvider);
 
 /**
  * Attempt DB record with parsed data.

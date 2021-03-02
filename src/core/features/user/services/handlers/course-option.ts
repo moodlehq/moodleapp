@@ -46,7 +46,7 @@ export class CoreUserCourseOptionHandlerService implements CoreCourseOptionsHand
             return Promise.resolve();
         }
 
-        return CoreUser.instance.invalidateParticipantsList(courseId);
+        return CoreUser.invalidateParticipantsList(courseId);
     }
 
     /**
@@ -79,7 +79,7 @@ export class CoreUserCourseOptionHandlerService implements CoreCourseOptionsHand
             return navOptions.participants;
         }
 
-        return CoreUser.instance.isPluginEnabledForCourse(courseId);
+        return CoreUser.isPluginEnabledForCourse(courseId);
     }
 
     /**
@@ -104,7 +104,7 @@ export class CoreUserCourseOptionHandlerService implements CoreCourseOptionsHand
         let canLoadMore = true;
 
         do {
-            const result = await CoreUser.instance.getParticipants(course.id, offset, undefined, undefined, true);
+            const result = await CoreUser.getParticipants(course.id, offset, undefined, undefined, true);
 
             offset += result.participants.length;
             canLoadMore = result.canLoadMore;
@@ -113,4 +113,4 @@ export class CoreUserCourseOptionHandlerService implements CoreCourseOptionsHand
 
 }
 
-export class CoreUserCourseOptionHandler extends makeSingleton(CoreUserCourseOptionHandlerService) {}
+export const CoreUserCourseOptionHandler = makeSingleton(CoreUserCourseOptionHandlerService);

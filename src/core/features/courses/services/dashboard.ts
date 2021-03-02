@@ -46,7 +46,7 @@ export class CoreCoursesDashboardProvider {
      * @since 3.6
      */
     async getDashboardBlocks(userId?: number, siteId?: string): Promise<CoreCourseBlock[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: CoreBlockGetDashboardBlocksWSParams = {
             returncontents: true,
@@ -71,7 +71,7 @@ export class CoreCoursesDashboardProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateDashboardBlocks(userId?: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return await site.invalidateWsCacheForKey(this.getDashboardBlocksCacheKey(userId));
     }
@@ -84,7 +84,7 @@ export class CoreCoursesDashboardProvider {
      * @since 3.6
      */
     async isAvailable(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // First check if it's disabled.
         if (this.isDisabledInSite(site)) {
@@ -101,7 +101,7 @@ export class CoreCoursesDashboardProvider {
      * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.isDisabledInSite(site);
     }
@@ -113,14 +113,14 @@ export class CoreCoursesDashboardProvider {
      * @return Whether it's disabled.
      */
     isDisabledInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site?.isFeatureDisabled('CoreMainMenuDelegate_CoreCoursesDashboard');
     }
 
 }
 
-export class CoreCoursesDashboard extends makeSingleton(CoreCoursesDashboardProvider) {}
+export const CoreCoursesDashboard = makeSingleton(CoreCoursesDashboardProvider);
 
 
 /**

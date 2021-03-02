@@ -60,9 +60,9 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
         });
 
         // Calculate the unique ID.
-        this.uniqueId = 'core-context-menu-' + CoreUtils.instance.getUniqueId('CoreContextMenuComponent');
+        this.uniqueId = 'core-context-menu-' + CoreUtils.getUniqueId('CoreContextMenuComponent');
 
-        this.instanceId = CoreDomUtils.instance.storeInstanceByElement(elementRef.nativeElement, this);
+        this.instanceId = CoreDomUtils.storeInstanceByElement(elementRef.nativeElement, this);
     }
 
     /**
@@ -70,7 +70,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.icon = this.icon || 'ellipsis-vertical';
-        this.ariaLabel = this.ariaLabel || this.title || Translate.instance.instant('core.displayoptions');
+        this.ariaLabel = this.ariaLabel || this.title || Translate.instant('core.displayoptions');
     }
 
     /**
@@ -177,7 +177,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      */
     async showContextMenu(event: MouseEvent): Promise<void> {
         if (!this.expanded) {
-            const popover = await PopoverController.instance.create(
+            const popover = await PopoverController.create(
                 {
                     event,
                     component: CoreContextMenuPopoverComponent,
@@ -206,7 +206,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      * Component destroyed.
      */
     ngOnDestroy(): void {
-        CoreDomUtils.instance.removeInstanceById(this.instanceId);
+        CoreDomUtils.removeInstanceById(this.instanceId);
         this.removeMergedItems();
     }
 

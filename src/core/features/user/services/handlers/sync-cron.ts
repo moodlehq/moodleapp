@@ -36,7 +36,7 @@ export class CoreUserSyncCronHandlerService implements CoreCronHandler {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     execute(siteId?: string, force?: boolean): Promise<void> {
-        return CoreUserSync.instance.syncPreferences(siteId);
+        return CoreUserSync.syncPreferences(siteId);
     }
 
     /**
@@ -50,4 +50,4 @@ export class CoreUserSyncCronHandlerService implements CoreCronHandler {
 
 }
 
-export class CoreUserSyncCronHandler extends makeSingleton(CoreUserSyncCronHandlerService) {}
+export const CoreUserSyncCronHandler = makeSingleton(CoreUserSyncCronHandlerService);

@@ -56,11 +56,11 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
         this.updateSiteObserver = CoreEvents.on(
             CoreEvents.SITE_UPDATED,
             this.loadSiteInfo.bind(this),
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
         this.loadSiteInfo();
-        this.showScanQR = CoreUtils.instance.canScanQR() &&
-                !CoreSites.instance.getCurrentSite()?.isFeatureDisabled('CoreMainMenuDelegate_QrReader');
+        this.showScanQR = CoreUtils.canScanQR() &&
+                !CoreSites.getCurrentSite()?.isFeatureDisabled('CoreMainMenuDelegate_QrReader');
     }
 
     /**
@@ -68,7 +68,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // Load the handlers.
-        this.subscription = CoreMainMenuDelegate.instance.getHandlersObservable().subscribe((handlers) => {
+        this.subscription = CoreMainMenuDelegate.getHandlersObservable().subscribe((handlers) => {
             this.allHandlers = handlers;
 
             this.initHandlers();
@@ -98,19 +98,19 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
         // Calculate the main handlers not to display them in this view.
         const mainHandlers = this.allHandlers
             .filter((handler) => !handler.onlyInMore)
-            .slice(0, CoreMainMenu.instance.getNumItems());
+            .slice(0, CoreMainMenu.getNumItems());
 
         // Get only the handlers that don't appear in the main view.
         this.handlers = this.allHandlers.filter((handler) => mainHandlers.indexOf(handler) == -1);
 
-        this.handlersLoaded = CoreMainMenuDelegate.instance.areHandlersLoaded();
+        this.handlersLoaded = CoreMainMenuDelegate.areHandlersLoaded();
     }
 
     /**
      * Load the site info required by the view.
      */
     protected async loadSiteInfo(): Promise<void> {
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
 
         if (!currentSite) {
             return;
@@ -119,13 +119,13 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
         this.siteInfo = currentSite.getInfo();
         this.siteName = currentSite.getSiteName();
         this.siteUrl = currentSite.getURL();
-        this.logoutLabel = CoreLoginHelper.instance.getLogoutLabel(currentSite);
+        this.logoutLabel = CoreLoginHelper.getLogoutLabel(currentSite);
         this.showWeb = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_website');
         this.showHelp = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_help');
 
         this.docsUrl = await currentSite.getDocsUrl();
 
-        this.customItems = await CoreMainMenu.instance.getCustomMenuItems();
+        this.customItems = await CoreMainMenu.getCustomMenuItems();
     }
 
     /**
@@ -137,7 +137,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
     openHandler(handler: CoreMainMenuHandlerData): void {
         const params = handler.pageParams;
 
-        CoreNavigator.instance.navigateToSitePath(handler.page, { params });
+        CoreNavigator.navigateToSitePath(handler.page, { params });
     }
 
     /**
@@ -146,7 +146,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * @param item Item to open.
      */
     openItem(item: CoreMainMenuCustomItem): void {
-        // @todo CoreNavigator.instance.navigateToSitePath('CoreViewerIframePage', {title: item.label, url: item.url});
+        // @todo CoreNavigator.navigateToSitePath('CoreViewerIframePage', {title: item.label, url: item.url});
 
         // eslint-disable-next-line no-console
         console.error('openItem not implemented', item);
@@ -167,7 +167,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * Logout the user.
      */
     logout(): void {
-        CoreSites.instance.logout();
+        CoreSites.logout();
     }
 
 }

@@ -64,15 +64,15 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
         });
 
         // If a push notification is received, refresh the count.
-        CorePushNotificationsDelegate.instance.on('receive').subscribe((notification) => {
+        CorePushNotificationsDelegate.on('receive').subscribe((notification) => {
             // New notification received. If it's from current site, refresh the data.
-            if (CoreUtils.instance.isTrueOrOne(notification.notif) && CoreSites.instance.isCurrentSite(notification.site)) {
+            if (CoreUtils.isTrueOrOne(notification.notif) && CoreSites.isCurrentSite(notification.site)) {
                 this.updateBadge(notification.site);
             }
         });
 
         // Register Badge counter.
-        CorePushNotificationsDelegate.instance.registerCounterHandler('AddonNotifications');
+        CorePushNotificationsDelegate.registerCounterHandler('AddonNotifications');
     }
 
     /**
@@ -104,16 +104,16 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
      * @return Promise resolved when done.
      */
     protected async updateBadge(siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
         if (!siteId) {
             return;
         }
 
         try {
-            const unreadCount = await AddonNotifications.instance.getUnreadNotificationsCount(undefined, siteId);
+            const unreadCount = await AddonNotifications.getUnreadNotificationsCount(undefined, siteId);
 
             this.handlerData.badge = unreadCount > 0 ? String(unreadCount) : '';
-            CorePushNotifications.instance.updateAddonCounter('AddonNotifications', unreadCount, siteId);
+            CorePushNotifications.updateAddonCounter('AddonNotifications', unreadCount, siteId);
         } catch {
             this.handlerData.badge = '';
         } finally {
@@ -123,4 +123,4 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
 
 }
 
-export class AddonNotificationsMainMenuHandler extends makeSingleton(AddonNotificationsMainMenuHandlerService) {}
+export const AddonNotificationsMainMenuHandler = makeSingleton(AddonNotificationsMainMenuHandlerService);

@@ -32,7 +32,7 @@ import { AddonQbehaviourInformationItemHandler } from './services/handlers/infor
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionBehaviourDelegate.instance.registerHandler(AddonQbehaviourInformationItemHandler.instance);
+                CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourInformationItemHandler.instance);
             },
         },
     ],

@@ -20,7 +20,7 @@ import { Translate } from '@singletons';
 export class CoreNetworkError extends Error {
 
     constructor(message?: string) {
-        super(message || Translate.instance.instant('core.networkerrormsg'));
+        super(message || Translate.instant('core.networkerrormsg'));
     }
 
 }

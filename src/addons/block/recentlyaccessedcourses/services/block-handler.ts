@@ -43,4 +43,4 @@ export class AddonBlockRecentlyAccessedCoursesHandlerService extends CoreBlockBa
 
 }
 
-export class AddonBlockRecentlyAccessedCoursesHandler extends makeSingleton(AddonBlockRecentlyAccessedCoursesHandlerService) {}
+export const AddonBlockRecentlyAccessedCoursesHandler = makeSingleton(AddonBlockRecentlyAccessedCoursesHandlerService);

@@ -35,7 +35,7 @@ import { CoreH5PPluginFileHandler } from './services/handlers/pluginfile';
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CorePluginFileDelegate.instance.registerHandler(CoreH5PPluginFileHandler.instance);
+                CorePluginFileDelegate.registerHandler(CoreH5PPluginFileHandler.instance);
             },
         },
     ],

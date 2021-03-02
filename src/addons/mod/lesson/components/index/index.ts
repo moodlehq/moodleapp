@@ -128,7 +128,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         try {
             await this.setGroup(groupId);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error getting report.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error getting report.');
         } finally {
             this.reportLoaded = true;
         }
@@ -147,7 +147,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             let lessonReady = true;
             this.askPassword = false;
 
-            this.lesson = await AddonModLesson.instance.getLesson(this.courseId!, this.module!.id);
+            this.lesson = await AddonModLesson.getLesson(this.courseId!, this.module!.id);
 
             this.dataRetrieved.emit(this.lesson);
             this.description = this.lesson.intro; // Show description only if intro is present.
@@ -157,13 +157,13 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
                 await this.syncActivity(showErrors);
             }
 
-            this.accessInfo = await AddonModLesson.instance.getAccessInformation(this.lesson.id, { cmId: this.module!.id });
+            this.accessInfo = await AddonModLesson.getAccessInformation(this.lesson.id, { cmId: this.module!.id });
             this.canManage = this.accessInfo.canmanage;
             this.canViewReports = this.accessInfo.canviewreports;
             this.preventReasons = [];
             const promises: Promise<void>[] = [];
 
-            if (AddonModLesson.instance.isLessonOffline(this.lesson)) {
+            if (AddonModLesson.isLessonOffline(this.lesson)) {
                 // Handle status.
                 this.setStatusListener();
 
@@ -171,7 +171,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             }
 
             if (this.accessInfo.preventaccessreasons.length) {
-                let preventReason = AddonModLesson.instance.getPreventAccessReason(this.accessInfo, false);
+                let preventReason = AddonModLesson.getPreventAccessReason(this.accessInfo, false);
                 const askPassword = preventReason?.reason == 'passwordprotectedlesson';
 
                 if (askPassword) {
@@ -179,12 +179,12 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
                         // The lesson requires a password. Check if there is one in memory or DB.
                         const password = this.password ?
                             this.password :
-                            await AddonModLesson.instance.getStoredPassword(this.lesson.id);
+                            await AddonModLesson.getStoredPassword(this.lesson.id);
 
                         await this.validatePassword(password);
 
                         // Now that we have the password, get the access reason again ignoring the password.
-                        preventReason = AddonModLesson.instance.getPreventAccessReason(this.accessInfo, true);
+                        preventReason = AddonModLesson.getPreventAccessReason(this.accessInfo, true);
                         if (preventReason) {
                             this.preventReasons = [preventReason];
                         }
@@ -231,21 +231,21 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         const options = { cmId: this.module!.id };
 
         // Check if there is offline data.
-        promises.push(AddonModLessonSync.instance.hasDataToSync(this.lesson.id, this.accessInfo.attemptscount).then((hasData) => {
+        promises.push(AddonModLessonSync.hasDataToSync(this.lesson.id, this.accessInfo.attemptscount).then((hasData) => {
             this.hasOffline = hasData;
 
             return;
         }));
 
         // Check if there is a retake finished in a synchronization.
-        promises.push(AddonModLessonSync.instance.getRetakeFinishedInSync(this.lesson.id).then((retake) => {
+        promises.push(AddonModLessonSync.getRetakeFinishedInSync(this.lesson.id).then((retake) => {
             if (retake && retake.retake == this.accessInfo!.attemptscount - 1) {
                 // The retake finished is still the last retake. Allow reviewing it.
                 this.retakeToReview = retake;
             } else {
                 this.retakeToReview = undefined;
                 if (retake) {
-                    AddonModLessonSync.instance.deleteRetakeFinishedInSync(this.lesson!.id);
+                    AddonModLessonSync.deleteRetakeFinishedInSync(this.lesson!.id);
                 }
             }
 
@@ -253,15 +253,15 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         }));
 
         // Check if the ser has a finished retake in offline.
-        promises.push(AddonModLessonOffline.instance.hasFinishedRetake(this.lesson.id).then((finished) => {
+        promises.push(AddonModLessonOffline.hasFinishedRetake(this.lesson.id).then((finished) => {
             this.finishedOffline = finished;
 
             return;
         }));
 
         // Update the list of content pages viewed and question attempts.
-        promises.push(AddonModLesson.instance.getContentPagesViewedOnline(this.lesson.id, this.accessInfo.attemptscount, options));
-        promises.push(AddonModLesson.instance.getQuestionsAttemptsOnline(this.lesson.id, this.accessInfo.attemptscount, options));
+        promises.push(AddonModLesson.getContentPagesViewedOnline(this.lesson.id, this.accessInfo.attemptscount, options));
+        promises.push(AddonModLesson.getQuestionsAttemptsOnline(this.lesson.id, this.accessInfo.attemptscount, options));
 
         await Promise.all(promises);
     }
@@ -277,9 +277,9 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         try {
-            this.groupInfo = await CoreGroups.instance.getActivityGroupInfo(this.module.id);
+            this.groupInfo = await CoreGroups.getActivityGroupInfo(this.module.id);
 
-            await this.setGroup(CoreGroups.instance.validateGroupId(this.group, this.groupInfo));
+            await this.setGroup(CoreGroups.validateGroupId(this.group, this.groupInfo));
         } finally {
             this.reportLoaded = true;
         }
@@ -294,7 +294,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     protected hasSyncSucceed(result: AddonModLessonSyncResult): boolean {
         if (result.updated || this.dataSent) {
             // Check completion status if something was sent.
-            CoreCourse.instance.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+            CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
         }
 
         this.dataSent = false;
@@ -340,18 +340,18 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<unknown>[] = [];
 
-        promises.push(AddonModLesson.instance.invalidateLessonData(this.courseId!));
+        promises.push(AddonModLesson.invalidateLessonData(this.courseId!));
 
         if (this.lesson) {
-            promises.push(AddonModLesson.instance.invalidateAccessInformation(this.lesson.id));
-            promises.push(AddonModLesson.instance.invalidatePages(this.lesson.id));
-            promises.push(AddonModLesson.instance.invalidateLessonWithPassword(this.lesson.id));
-            promises.push(AddonModLesson.instance.invalidateTimers(this.lesson.id));
-            promises.push(AddonModLesson.instance.invalidateContentPagesViewed(this.lesson.id));
-            promises.push(AddonModLesson.instance.invalidateQuestionsAttempts(this.lesson.id));
-            promises.push(AddonModLesson.instance.invalidateRetakesOverview(this.lesson.id));
+            promises.push(AddonModLesson.invalidateAccessInformation(this.lesson.id));
+            promises.push(AddonModLesson.invalidatePages(this.lesson.id));
+            promises.push(AddonModLesson.invalidateLessonWithPassword(this.lesson.id));
+            promises.push(AddonModLesson.invalidateTimers(this.lesson.id));
+            promises.push(AddonModLesson.invalidateContentPagesViewed(this.lesson.id));
+            promises.push(AddonModLesson.invalidateQuestionsAttempts(this.lesson.id));
+            promises.push(AddonModLesson.invalidateRetakesOverview(this.lesson.id));
             if (this.module) {
-                promises.push(CoreGroups.instance.invalidateActivityGroupInfo(this.module.id));
+                promises.push(CoreGroups.invalidateActivityGroupInfo(this.module.id));
             }
         }
 
@@ -373,11 +373,11 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected lessonReady(): void {
         this.askPassword = false;
-        this.leftDuringTimed = this.hasOffline || AddonModLesson.instance.leftDuringTimed(this.accessInfo);
+        this.leftDuringTimed = this.hasOffline || AddonModLesson.leftDuringTimed(this.accessInfo);
 
         if (this.password) {
             // Store the password in DB.
-            AddonModLesson.instance.storePassword(this.lesson!.id, this.password);
+            AddonModLesson.storePassword(this.lesson!.id, this.password);
         }
     }
 
@@ -391,11 +391,11 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        await CoreUtils.instance.ignoreErrors(
-            AddonModLesson.instance.logViewLesson(this.lesson.id, this.password, this.lesson.name),
+        await CoreUtils.ignoreErrors(
+            AddonModLesson.logViewLesson(this.lesson.id, this.password, this.lesson.name),
         );
 
-        CoreCourse.instance.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+        CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
     }
 
     /**
@@ -414,7 +414,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (this.hasOffline) {
             if (continueLast) {
-                pageId = await AddonModLesson.instance.getLastPageSeen(this.lesson.id, this.accessInfo.attemptscount, {
+                pageId = await AddonModLesson.getLastPageSeen(this.lesson.id, this.accessInfo.attemptscount, {
                     cmId: this.module!.id,
                 });
             } else {
@@ -424,7 +424,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             pageId = continueLast ? this.accessInfo.lastpageseen : this.accessInfo.firstpageid;
         }
 
-        await CoreNavigator.instance.navigate(`../player/${this.courseId}/${this.lesson.id}`, {
+        await CoreNavigator.navigate(`../player/${this.courseId}/${this.lesson.id}`, {
             params: {
                 pageId: pageId,
                 password: this.password,
@@ -458,7 +458,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (!this.groupInfo) {
             this.fetchReportData().catch((error) => {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'Error getting report.');
+                CoreDomUtils.showErrorModalDefault(error, 'Error getting report.');
             });
         }
     }
@@ -472,7 +472,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        CoreNavigator.instance.navigate(`../player/${this.courseId}/${this.lesson.id}`, {
+        CoreNavigator.navigate(`../player/${this.courseId}/${this.lesson.id}`, {
             params: {
                 pageId: this.retakeToReview.pageid,
                 password: this.password,
@@ -503,7 +503,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         // Get the overview of retakes for the group.
-        const data = await AddonModLesson.instance.getRetakesOverview(this.lesson.id, {
+        const data = await AddonModLesson.getRetakesOverview(this.lesson.id, {
             groupId,
             cmId: this.lesson.coursemodule,
         });
@@ -519,35 +519,35 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         // Format times and grades.
         if (formattedData.avetime != null && formattedData.numofattempts) {
             formattedData.avetime = Math.floor(formattedData.avetime / formattedData.numofattempts);
-            this.avetimeReadable = CoreTimeUtils.instance.formatTime(formattedData.avetime);
+            this.avetimeReadable = CoreTimeUtils.formatTime(formattedData.avetime);
         }
 
         if (formattedData.hightime != null) {
-            this.hightimeReadable = CoreTimeUtils.instance.formatTime(formattedData.hightime);
+            this.hightimeReadable = CoreTimeUtils.formatTime(formattedData.hightime);
         }
 
         if (formattedData.lowtime != null) {
-            this.lowtimeReadable = CoreTimeUtils.instance.formatTime(formattedData.lowtime);
+            this.lowtimeReadable = CoreTimeUtils.formatTime(formattedData.lowtime);
         }
 
         if (formattedData.lessonscored) {
             if (formattedData.numofattempts && formattedData.avescore != null) {
-                formattedData.avescore = CoreTextUtils.instance.roundToDecimals(formattedData.avescore, 2);
+                formattedData.avescore = CoreTextUtils.roundToDecimals(formattedData.avescore, 2);
             }
             if (formattedData.highscore != null) {
-                formattedData.highscore = CoreTextUtils.instance.roundToDecimals(formattedData.highscore, 2);
+                formattedData.highscore = CoreTextUtils.roundToDecimals(formattedData.highscore, 2);
             }
             if (formattedData.lowscore != null) {
-                formattedData.lowscore = CoreTextUtils.instance.roundToDecimals(formattedData.lowscore, 2);
+                formattedData.lowscore = CoreTextUtils.roundToDecimals(formattedData.lowscore, 2);
             }
         }
 
         if (formattedData.students) {
             // Get the user data for each student returned.
-            await CoreUtils.instance.allPromises(formattedData.students.map(async (student) => {
-                student.bestgrade = CoreTextUtils.instance.roundToDecimals(student.bestgrade, 2);
+            await CoreUtils.allPromises(formattedData.students.map(async (student) => {
+                student.bestgrade = CoreTextUtils.roundToDecimals(student.bestgrade, 2);
 
-                const user = await CoreUtils.instance.ignoreErrors(CoreUser.instance.getProfile(student.id, this.courseId, true));
+                const user = await CoreUtils.ignoreErrors(CoreUser.getProfile(student.id, this.courseId, true));
                 if (user) {
                     student.profileimageurl = user.profileimageurl;
                 }
@@ -579,7 +579,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        if (!AddonModLesson.instance.isLessonOffline(this.lesson) || this.currentStatus == CoreConstants.DOWNLOADED) {
+        if (!AddonModLesson.isLessonOffline(this.lesson) || this.currentStatus == CoreConstants.DOWNLOADED) {
             // Not downloadable or already downloaded, open it.
             this.playLesson(continueLast);
 
@@ -590,7 +590,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         this.showSpinner = true;
 
         try {
-            await AddonModLessonPrefetchHandler.instance.prefetch(this.module!, this.courseId, true);
+            await AddonModLessonPrefetchHandler.prefetch(this.module!, this.courseId, true);
 
             // Success downloading, open lesson.
             this.playLesson(continueLast);
@@ -599,7 +599,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
                 // Error downloading but there is something offline, allow continuing it.
                 this.playLesson(continueLast);
             } else {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.errordownloading', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
             }
         } finally {
             this.showSpinner = false;
@@ -618,7 +618,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         const password = passwordEl?.value;
         if (!password) {
-            CoreDomUtils.instance.showErrorModal('addon.mod_lesson.emptypassword', true);
+            CoreDomUtils.showErrorModal('addon.mod_lesson.emptypassword', true);
 
             return;
         }
@@ -634,19 +634,19 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             this.lessonReady();
 
             // Now that we have the password, get the access reason again ignoring the password.
-            const preventReason = AddonModLesson.instance.getPreventAccessReason(this.accessInfo!, true);
+            const preventReason = AddonModLesson.getPreventAccessReason(this.accessInfo!, true);
             this.preventReasons = preventReason ? [preventReason] : [];
 
             // Log view now that we have the password.
             this.logView();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
         } finally {
             this.loaded = true;
             this.refreshIcon = CoreConstants.ICON_REFRESH;
             this.syncIcon = CoreConstants.ICON_SYNC;
 
-            CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, true, this.siteId);
+            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, true, this.siteId);
         }
     }
 
@@ -656,11 +656,11 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * @return Promise resolved when done.
      */
     protected async sync(): Promise<AddonModLessonSyncResult> {
-        const result = await AddonModLessonSync.instance.syncLesson(this.lesson!.id, true);
+        const result = await AddonModLessonSync.syncLesson(this.lesson!.id, true);
 
         if (!result.updated && this.dataSent && this.isPrefetched()) {
             // The user sent data to server, but not in the sync process. Check if we need to fetch data.
-            await CoreUtils.instance.ignoreErrors(AddonModLessonSync.instance.prefetchAfterUpdate(
+            await CoreUtils.ignoreErrors(AddonModLessonSync.prefetchAfterUpdate(
                 AddonModLessonPrefetchHandler.instance,
                 this.module!,
                 this.courseId!,
@@ -678,7 +678,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected async validatePassword(password: string): Promise<void> {
         try {
-            this.lesson = await AddonModLesson.instance.getLessonWithPassword(this.lesson!.id, { password, cmId: this.module!.id });
+            this.lesson = await AddonModLesson.getLessonWithPassword(this.lesson!.id, { password, cmId: this.module!.id });
 
             this.password = password;
         } catch (error) {
@@ -695,7 +695,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * @return Promise resolved when done.
      */
     async openRetake(userId: number): Promise<void> {
-        await CoreNavigator.instance.navigate(`../user-retake/${this.courseId}/${this.lesson!.id}`, {
+        await CoreNavigator.navigate(`../user-retake/${this.courseId}/${this.lesson!.id}`, {
             params: {
                 userId,
             },

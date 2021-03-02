@@ -45,7 +45,7 @@ export class CoreCourseSectionSelectorComponent implements OnInit {
             return;
         }
 
-        const formatOptions = CoreUtils.instance.objectToKeyValueMap(this.course.courseformatoptions, 'name', 'value');
+        const formatOptions = CoreUtils.objectToKeyValueMap(this.course.courseformatoptions, 'name', 'value');
 
         if (!formatOptions || formatOptions.coursedisplay != 1 || formatOptions.completionusertracked === false) {
             return;
@@ -77,7 +77,7 @@ export class CoreCourseSectionSelectorComponent implements OnInit {
      * Close the modal.
      */
     closeModal(): void {
-        ModalController.instance.dismiss();
+        ModalController.dismiss();
     }
 
     /**
@@ -87,7 +87,7 @@ export class CoreCourseSectionSelectorComponent implements OnInit {
      */
     selectSection(section: SectionWithProgress): void {
         if (section.uservisible !== false) {
-            ModalController.instance.dismiss(section);
+            ModalController.dismiss(section);
         }
     }
 

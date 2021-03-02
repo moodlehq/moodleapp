@@ -41,7 +41,7 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
      * Check if there is a pending redirect and trigger it.
      */
     private async guard(): Promise<true | UrlTree> {
-        const redirect = CoreApp.instance.getRedirect();
+        const redirect = CoreApp.getRedirect();
 
         if (!redirect) {
             return true;
@@ -55,12 +55,12 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
 
             // Redirect to site path.
             if (redirect.siteId && redirect.siteId !== CoreConstants.NO_SITE_ID) {
-                const loggedIn = await CoreSites.instance.loadSite(
+                const loggedIn = await CoreSites.loadSite(
                     redirect.siteId,
                     redirect.page,
                     redirect.params,
                 );
-                const route = Router.instance.parseUrl('/main');
+                const route = Router.parseUrl('/main');
 
                 route.queryParams = CoreObject.withoutEmpty({
                     redirectPath: redirect.page,
@@ -76,7 +76,7 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
             }
 
             // Redirect to non-site path.
-            const route = Router.instance.parseUrl(redirect.page);
+            const route = Router.parseUrl(redirect.page);
 
             route.queryParams = CoreObject.withoutEmpty({
                 redirectPath: redirect.page,
@@ -85,7 +85,7 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
 
             return route;
         } finally {
-            CoreApp.instance.forgetRedirect();
+            CoreApp.forgetRedirect();
         }
     }
 

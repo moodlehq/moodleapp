@@ -37,7 +37,7 @@ export class AddonBadgesMyBadgesLinkHandlerService extends CoreContentLinksHandl
     getActions(): CoreContentLinksAction[] {
         return [{
             action: (siteId: string): void => {
-                CoreNavigator.instance.navigateToSitePath('/badges', { siteId });
+                CoreNavigator.navigateToSitePath('/badges', { siteId });
             },
         }];
     }
@@ -50,9 +50,9 @@ export class AddonBadgesMyBadgesLinkHandlerService extends CoreContentLinksHandl
      * @return Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string): Promise<boolean> {
-        return AddonBadges.instance.isPluginEnabled(siteId);
+        return AddonBadges.isPluginEnabled(siteId);
     }
 
 }
 
-export class AddonBadgesMyBadgesLinkHandler extends makeSingleton(AddonBadgesMyBadgesLinkHandlerService) {}
+export const AddonBadgesMyBadgesLinkHandler = makeSingleton(AddonBadgesMyBadgesLinkHandlerService);

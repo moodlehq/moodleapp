@@ -45,7 +45,7 @@ export class CoreXAPIOfflineProvider {
      * @return Promise resolved if stored, rejected if failure.
      */
     async deleteStatements(id: number, siteId?: string): Promise<void> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         await db.deleteRecords(STATEMENTS_TABLE_NAME, { id });
     }
@@ -58,7 +58,7 @@ export class CoreXAPIOfflineProvider {
      * @return Promise resolved if stored, rejected if failure.
      */
     async deleteStatementsForContext(contextId: number, siteId?: string): Promise<void> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         await db.deleteRecords(STATEMENTS_TABLE_NAME, { contextid: contextId });
     }
@@ -70,7 +70,7 @@ export class CoreXAPIOfflineProvider {
      * @return Promise resolved with all the data.
      */
     async getAllStatements(siteId?: string): Promise<CoreXAPIStatementDBRecord[]> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         return db.getRecords(STATEMENTS_TABLE_NAME, undefined, 'timecreated ASC');
     }
@@ -83,7 +83,7 @@ export class CoreXAPIOfflineProvider {
      * @return Promise resolved with the data.
      */
     async getContextStatements(contextId: number, siteId?: string): Promise<CoreXAPIStatementDBRecord[]> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         return db.getRecords<CoreXAPIStatementDBRecord>(STATEMENTS_TABLE_NAME, { contextid: contextId }, 'timecreated ASC');
     }
@@ -96,7 +96,7 @@ export class CoreXAPIOfflineProvider {
      * @return Promise resolved with the data.
      */
     async getStatements(id: number, siteId?: string): Promise<CoreXAPIStatementDBRecord> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         return db.getRecord<CoreXAPIStatementDBRecord>(STATEMENTS_TABLE_NAME, { id });
     }
@@ -116,7 +116,7 @@ export class CoreXAPIOfflineProvider {
         statements: string,
         options?: CoreXAPIOfflineSaveStatementsOptions,
     ): Promise<void> {
-        const db = await CoreSites.instance.getSiteDb(options?.siteId);
+        const db = await CoreSites.getSiteDb(options?.siteId);
 
         const entry: Omit<CoreXAPIStatementDBRecord, 'id'> = {
             contextid: contextId,
@@ -132,7 +132,7 @@ export class CoreXAPIOfflineProvider {
 
 }
 
-export class CoreXAPIOffline extends makeSingleton(CoreXAPIOfflineProvider) {}
+export const CoreXAPIOffline = makeSingleton(CoreXAPIOfflineProvider);
 
 /**
  * Options to pass to saveStatements function.

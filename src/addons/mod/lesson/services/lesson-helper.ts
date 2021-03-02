@@ -43,7 +43,7 @@ export class AddonModLessonHelperProvider {
      * @return Formatted data.
      */
     formatActivityLink(activityLink: string): AddonModLessonActivityLink {
-        const element = CoreDomUtils.instance.convertToElement(activityLink);
+        const element = CoreDomUtils.convertToElement(activityLink);
         const anchor = element.querySelector('a');
 
         if (!anchor) {
@@ -73,7 +73,7 @@ export class AddonModLessonHelperProvider {
             buttonText: '',
             content: '',
         };
-        const element = CoreDomUtils.instance.convertToElement(html);
+        const element = CoreDomUtils.convertToElement(html);
 
         // Search the input button.
         const button = <HTMLInputElement> element.querySelector('input[type="button"]');
@@ -97,7 +97,7 @@ export class AddonModLessonHelperProvider {
      */
     getPageButtonsFromHtml(html: string): AddonModLessonPageButton[] {
         const buttons: AddonModLessonPageButton[] = [];
-        const element = CoreDomUtils.instance.convertToElement(html);
+        const element = CoreDomUtils.convertToElement(html);
 
         // Get the container of the buttons if it exists.
         let buttonsContainer = element.querySelector('.branchbuttoncontainer');
@@ -149,7 +149,7 @@ export class AddonModLessonHelperProvider {
      */
     getPageContentsFromPageData(data: AddonModLessonGetPageDataWSResponse): string {
         // Search the page contents inside the whole page HTML. Use data.pagecontent because it's filtered.
-        const element = CoreDomUtils.instance.convertToElement(data.pagecontent || '');
+        const element = CoreDomUtils.convertToElement(data.pagecontent || '');
         const contents = element.querySelector('.contents');
 
         if (contents) {
@@ -157,7 +157,7 @@ export class AddonModLessonHelperProvider {
         }
 
         // Cannot find contents element.
-        if (AddonModLesson.instance.isQuestionPage(data.page?.type || -1) ||
+        if (AddonModLesson.isQuestionPage(data.page?.type || -1) ||
                 data.page?.qtype == AddonModLessonProvider.LESSON_PAGE_BRANCHTABLE) {
             // Return page.contents to prevent having duplicated elements (some elements like videos might not work).
             return data.page?.contents || '';
@@ -175,7 +175,7 @@ export class AddonModLessonHelperProvider {
      * @return Question data.
      */
     getQuestionFromPageData(questionForm: FormGroup, pageData: AddonModLessonGetPageDataWSResponse): AddonModLessonQuestion {
-        const element = CoreDomUtils.instance.convertToElement(pageData.pagecontent || '');
+        const element = CoreDomUtils.convertToElement(pageData.pagecontent || '');
 
         // Get the container of the question answers if it exists.
         const fieldContainer = <HTMLElement> element.querySelector('.fcontainer');
@@ -190,7 +190,7 @@ export class AddonModLessonHelperProvider {
         const submitButton = <HTMLInputElement> element.querySelector('input[type="submit"]');
         const question: AddonModLessonQuestion = {
             template: '',
-            submitLabel: submitButton ? submitButton.value : Translate.instance.instant('addon.mod_lesson.submit'),
+            submitLabel: submitButton ? submitButton.value : Translate.instant('addon.mod_lesson.submit'),
         };
 
         if (!fieldContainer) {
@@ -455,7 +455,7 @@ export class AddonModLessonHelperProvider {
      * @return Object with the data to render the answer. If the answer doesn't require any parsing, return a string with the HTML.
      */
     getQuestionPageAnswerDataFromHtml(html: string): AddonModLessonAnswerData {
-        const element = CoreDomUtils.instance.convertToElement(html);
+        const element = CoreDomUtils.convertToElement(html);
 
         // Check if it has a checkbox.
         let input = <HTMLInputElement> element.querySelector('input[type="checkbox"][name*="answer"]');
@@ -526,21 +526,21 @@ export class AddonModLessonHelperProvider {
         if (hasGrade || retake.end) {
             // Retake finished with or without grade (if the lesson only has content pages, it has no grade).
             if (hasGrade) {
-                data.grade = Translate.instance.instant('core.percentagenumber', { $a: retake.grade });
+                data.grade = Translate.instant('core.percentagenumber', { $a: retake.grade });
             }
-            data.timestart = CoreTimeUtils.instance.userDate(retake.timestart * 1000);
+            data.timestart = CoreTimeUtils.userDate(retake.timestart * 1000);
             if (includeDuration) {
-                data.duration = CoreTimeUtils.instance.formatTime(retake.timeend - retake.timestart);
+                data.duration = CoreTimeUtils.formatTime(retake.timeend - retake.timestart);
             }
         } else {
             // The user has not completed the retake.
-            data.grade = Translate.instance.instant('addon.mod_lesson.notcompleted');
+            data.grade = Translate.instant('addon.mod_lesson.notcompleted');
             if (retake.timestart) {
-                data.timestart = CoreTimeUtils.instance.userDate(retake.timestart * 1000);
+                data.timestart = CoreTimeUtils.userDate(retake.timestart * 1000);
             }
         }
 
-        return Translate.instance.instant('addon.mod_lesson.retakelabel' + (includeDuration ? 'full' : 'short'), data);
+        return Translate.instant('addon.mod_lesson.retakelabel' + (includeDuration ? 'full' : 'short'), data);
     }
 
     /**
@@ -556,7 +556,7 @@ export class AddonModLessonHelperProvider {
 
             // Add some HTML to the answer if needed.
             if (textarea) {
-                data[textarea.name] = CoreTextUtils.instance.formatHtmlLines(<string> data[textarea.name]);
+                data[textarea.name] = CoreTextUtils.formatHtmlLines(<string> data[textarea.name]);
             }
         } else if (question.template == 'multichoice' && (<AddonModLessonMultichoiceQuestion> question).multi) {
             // Only send the options with value set to true.
@@ -577,17 +577,17 @@ export class AddonModLessonHelperProvider {
      * @return Feedback without the question text.
      */
     removeQuestionFromFeedback(html: string): string {
-        const element = CoreDomUtils.instance.convertToElement(html);
+        const element = CoreDomUtils.convertToElement(html);
 
         // Remove the question text.
-        CoreDomUtils.instance.removeElement(element, '.generalbox:not(.feedback):not(.correctanswer)');
+        CoreDomUtils.removeElement(element, '.generalbox:not(.feedback):not(.correctanswer)');
 
         return element.innerHTML.trim();
     }
 
 }
 
-export class AddonModLessonHelper extends makeSingleton(AddonModLessonHelperProvider) {}
+export const AddonModLessonHelper = makeSingleton(AddonModLessonHelperProvider);
 
 /**
  * Page button data.

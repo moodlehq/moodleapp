@@ -102,7 +102,7 @@ export class CorePushNotificationsDelegateService {
             }
         });
 
-        await CoreUtils.instance.ignoreErrors(CoreUtils.instance.allPromises(promises));
+        await CoreUtils.ignoreErrors(CoreUtils.allPromises(promises));
 
         // Sort by priority.
         handlers = handlers.sort((a, b) => (a.priority || 0) <= (b.priority || 0) ? 1 : -1);
@@ -124,7 +124,7 @@ export class CorePushNotificationsDelegateService {
             return false;
         } else if (handler.featureName) {
             // Check if the feature is disabled.
-            return CoreSites.instance.isFeatureDisabled(handler.featureName, siteId);
+            return CoreSites.isFeatureDisabled(handler.featureName, siteId);
         } else {
             return false;
         }
@@ -215,4 +215,4 @@ export class CorePushNotificationsDelegateService {
 
 }
 
-export class CorePushNotificationsDelegate extends makeSingleton(CorePushNotificationsDelegateService) {}
+export const CorePushNotificationsDelegate = makeSingleton(CorePushNotificationsDelegateService);

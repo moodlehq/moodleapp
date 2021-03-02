@@ -32,7 +32,7 @@ import { AddonQtypeCalculatedHandler } from './services/handlers/calculated';
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionDelegate.instance.registerHandler(AddonQtypeCalculatedHandler.instance);
+                CoreQuestionDelegate.registerHandler(AddonQtypeCalculatedHandler.instance);
             },
         },
     ],

@@ -55,10 +55,10 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @return Promise resolved when done.
      */
     async deleteRetakeFinishedInSync(lessonId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // Ignore errors, maybe there is none.
-        await CoreUtils.instance.ignoreErrors(site.getDb().deleteRecords(RETAKES_FINISHED_SYNC_TABLE_NAME, { lessonid: lessonId }));
+        await CoreUtils.ignoreErrors(site.getDb().deleteRecords(RETAKES_FINISHED_SYNC_TABLE_NAME, { lessonid: lessonId }));
     }
 
     /**
@@ -72,9 +72,9 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         lessonId: number,
         siteId?: string,
     ): Promise<AddonModLessonRetakeFinishedInSyncDBRecord | undefined> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
-        return CoreUtils.instance.ignoreErrors(site.getDb().getRecord(RETAKES_FINISHED_SYNC_TABLE_NAME, { lessonid: lessonId }));
+        return CoreUtils.ignoreErrors(site.getDb().getRecord(RETAKES_FINISHED_SYNC_TABLE_NAME, { lessonid: lessonId }));
     }
 
     /**
@@ -88,8 +88,8 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     async hasDataToSync(lessonId: number, retake: number, siteId?: string): Promise<boolean> {
 
         const [hasAttempts, hasFinished] = await Promise.all([
-            CoreUtils.instance.ignoreErrors(AddonModLessonOffline.instance.hasRetakeAttempts(lessonId, retake, siteId)),
-            CoreUtils.instance.ignoreErrors(AddonModLessonOffline.instance.hasFinishedRetake(lessonId, siteId)),
+            CoreUtils.ignoreErrors(AddonModLessonOffline.hasRetakeAttempts(lessonId, retake, siteId)),
+            CoreUtils.ignoreErrors(AddonModLessonOffline.hasFinishedRetake(lessonId, siteId)),
         ]);
 
         return !!(hasAttempts || hasFinished);
@@ -105,13 +105,13 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @return Promise resolved when done.
      */
     async setRetakeFinishedInSync(lessonId: number, retake: number, pageId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().insertRecord(RETAKES_FINISHED_SYNC_TABLE_NAME, <AddonModLessonRetakeFinishedInSyncDBRecord> {
             lessonid: lessonId,
             retake: Number(retake),
             pageid: Number(pageId),
-            timefinished: CoreTimeUtils.instance.timestamp(),
+            timefinished: CoreTimeUtils.timestamp(),
         });
     }
 
@@ -135,7 +135,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      */
     protected async syncAllLessonsFunc(force: boolean, siteId: string): Promise<void> {
         // Get all the lessons that have something to be synchronized.
-        const lessons = await AddonModLessonOffline.instance.getAllLessonsWithData(siteId);
+        const lessons = await AddonModLessonOffline.getAllLessonsWithData(siteId);
 
         // Sync all lessons that need it.
         await Promise.all(lessons.map(async (lesson) => {
@@ -188,8 +188,8 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         ignoreBlock = false,
         siteId?: string,
     ): Promise<AddonModLessonSyncResult> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
-        this.componentTranslate = this.componentTranslate || CoreCourse.instance.translateModuleName('lesson');
+        siteId = siteId || CoreSites.getCurrentSiteId();
+        this.componentTranslate = this.componentTranslate || CoreCourse.translateModuleName('lesson');
 
         let syncPromise = this.getOngoingSync(lessonId, siteId);
         if (syncPromise) {
@@ -198,10 +198,10 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         }
 
         // Verify that lesson isn't blocked.
-        if (!ignoreBlock && CoreSync.instance.isBlocked(AddonModLessonProvider.COMPONENT, lessonId, siteId)) {
+        if (!ignoreBlock && CoreSync.isBlocked(AddonModLessonProvider.COMPONENT, lessonId, siteId)) {
             this.logger.debug('Cannot sync lesson ' + lessonId + ' because it is blocked.');
 
-            throw new CoreSyncBlockedError(Translate.instance.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
+            throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
         this.logger.debug('Try to sync lesson ' + lessonId + ' in site ' + siteId);
@@ -227,8 +227,8 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         siteId?: string,
     ): Promise<AddonModLessonSyncResult> {
         // Sync offline logs.
-        await CoreUtils.instance.ignoreErrors(
-            CoreCourseLogHelper.instance.syncActivity(AddonModLessonProvider.COMPONENT, lessonId, siteId),
+        await CoreUtils.ignoreErrors(
+            CoreCourseLogHelper.syncActivity(AddonModLessonProvider.COMPONENT, lessonId, siteId),
         );
 
         const result: AddonModLessonSyncResult = {
@@ -245,7 +245,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         if (result.updated && result.courseId) {
             try {
                 // Data has been sent to server, update data.
-                const module = await CoreCourse.instance.getModuleBasicInfoByInstance(lessonId, 'lesson', siteId);
+                const module = await CoreCourse.getModuleBasicInfoByInstance(lessonId, 'lesson', siteId);
                 await this.prefetchAfterUpdate(AddonModLessonPrefetchHandler.instance, module, result.courseId, undefined, siteId);
             } catch {
                 // Ignore errors.
@@ -253,7 +253,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.instance.ignoreErrors(this.setSyncTime(lessonId, siteId));
+        await CoreUtils.ignoreErrors(this.setSyncTime(lessonId, siteId));
 
         // All done, return the result.
         return result;
@@ -273,11 +273,11 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         askPassword = false,
         siteId?: string,
     ): Promise<AddonModLessonGetPasswordResult | undefined> {
-        let attempts = await AddonModLessonOffline.instance.getLessonAttempts(lessonId, siteId);
+        let attempts = await AddonModLessonOffline.getLessonAttempts(lessonId, siteId);
 
         if (!attempts.length) {
             return;
-        } else if (!CoreApp.instance.isOnline()) {
+        } else if (!CoreApp.isOnline()) {
             // Cannot sync in offline.
             throw new CoreNetworkError();
         }
@@ -286,9 +286,9 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         const attemptsLength = attempts.length;
 
         // Get the info, access info and the lesson password if needed.
-        const lesson = await AddonModLesson.instance.getLessonById(result.courseId, lessonId, { siteId });
+        const lesson = await AddonModLesson.getLessonById(result.courseId, lessonId, { siteId });
 
-        const passwordData = await AddonModLessonPrefetchHandler.instance.getLessonPassword(lessonId, {
+        const passwordData = await AddonModLessonPrefetchHandler.getLessonPassword(lessonId, {
             readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
             askPassword,
             siteId,
@@ -304,7 +304,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             }
 
             // Attempt doesn't belong to current retake, delete.
-            promises.push(CoreUtils.instance.ignoreErrors(AddonModLessonOffline.instance.deleteAttempt(
+            promises.push(CoreUtils.ignoreErrors(AddonModLessonOffline.deleteAttempt(
                 lesson.id,
                 attempt.retake,
                 attempt.pageid,
@@ -317,10 +317,10 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         if (attempts.length != attemptsLength) {
             // Some attempts won't be sent, add a warning.
-            result.warnings.push(Translate.instance.instant('core.warningofflinedatadeleted', {
+            result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
                 component: this.componentTranslate,
                 name: lesson.name,
-                error: Translate.instance.instant('addon.mod_lesson.warningretakefinished'),
+                error: Translate.instant('addon.mod_lesson.warningretakefinished'),
             }));
         }
 
@@ -338,7 +338,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             blocking: true,
         }));
 
-        await CoreUtils.instance.executeOrderedPromises(promisesData);
+        await CoreUtils.executeOrderedPromises(promisesData);
 
         return passwordData;
     }
@@ -366,16 +366,16 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         try {
             // Send the page data.
-            await AddonModLesson.instance.processPageOnline(lesson.id, attempt.pageid, attempt.data || {}, {
+            await AddonModLesson.processPageOnline(lesson.id, attempt.pageid, attempt.data || {}, {
                 password,
                 siteId,
             });
 
             result.updated = true;
 
-            await AddonModLessonOffline.instance.deleteAttempt(lesson.id, retake, pageId, timemodified, siteId);
+            await AddonModLessonOffline.deleteAttempt(lesson.id, retake, pageId, timemodified, siteId);
         } catch (error) {
-            if (!error || !CoreUtils.instance.isWebServiceError(error)) {
+            if (!error || !CoreUtils.isWebServiceError(error)) {
                 // Couldn't connect to server.
                 throw error;
             }
@@ -383,13 +383,13 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             // The WebService has thrown an error, this means that the attempt cannot be submitted. Delete it.
             result.updated = true;
 
-            await AddonModLessonOffline.instance.deleteAttempt(lesson.id, retake, pageId, timemodified, siteId);
+            await AddonModLessonOffline.deleteAttempt(lesson.id, retake, pageId, timemodified, siteId);
 
             // Attempt deleted, add a warning.
-            result.warnings.push(Translate.instance.instant('core.warningofflinedatadeleted', {
+            result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
                 component: this.componentTranslate,
                 name: lesson.name,
-                error: CoreTextUtils.instance.getErrorMessageFromError(error),
+                error: CoreTextUtils.getErrorMessageFromError(error),
             }));
         }
     }
@@ -413,7 +413,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         siteId?: string,
     ): Promise<void> {
         // Attempts sent or there was none. If there is a finished retake, send it.
-        const retake = await CoreUtils.instance.ignoreErrors(AddonModLessonOffline.instance.getRetake(lessonId, siteId));
+        const retake = await CoreUtils.ignoreErrors(AddonModLessonOffline.getRetake(lessonId, siteId));
 
         if (!retake) {
             // No retake to sync.
@@ -422,10 +422,10 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         if (!retake.finished) {
             // The retake isn't marked as finished, nothing to send. Delete the retake.
-            await AddonModLessonOffline.instance.deleteRetake(lessonId, siteId);
+            await AddonModLessonOffline.deleteRetake(lessonId, siteId);
 
             return;
-        } else if (!CoreApp.instance.isOnline()) {
+        } else if (!CoreApp.isOnline()) {
             // Cannot sync in offline.
             throw new CoreNetworkError();
         }
@@ -434,8 +434,8 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         if (!passwordData?.lesson) {
             // Retrieve the needed data.
-            const lesson = await AddonModLesson.instance.getLessonById(result.courseId!, lessonId, { siteId });
-            passwordData = await AddonModLessonPrefetchHandler.instance.getLessonPassword(lessonId, {
+            const lesson = await AddonModLesson.getLessonById(result.courseId!, lessonId, { siteId });
+            passwordData = await AddonModLessonPrefetchHandler.getLessonPassword(lessonId, {
                 readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
                 askPassword,
                 siteId,
@@ -447,19 +447,19 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         if (retake.retake != passwordData.accessInfo.attemptscount) {
             // The retake changed, add a warning if it isn't there already.
             if (!result.warnings.length) {
-                result.warnings.push(Translate.instance.instant('core.warningofflinedatadeleted', {
+                result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
                     component: this.componentTranslate,
                     name: passwordData.lesson.name,
-                    error: Translate.instance.instant('addon.mod_lesson.warningretakefinished'),
+                    error: Translate.instant('addon.mod_lesson.warningretakefinished'),
                 }));
             }
 
-            await AddonModLessonOffline.instance.deleteRetake(lessonId, siteId);
+            await AddonModLessonOffline.deleteRetake(lessonId, siteId);
         }
 
         try {
             // All good, finish the retake.
-            const response = await AddonModLesson.instance.finishRetakeOnline(lessonId, {
+            const response = await AddonModLesson.finishRetakeOnline(lessonId, {
                 password: passwordData.password,
                 siteId,
             });
@@ -468,16 +468,16 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
             // Mark the retake as finished in a sync if it can be reviewed.
             if (!ignoreBlock && response.data?.reviewlesson) {
-                const params = CoreUrlUtils.instance.extractUrlParams(<string> response.data.reviewlesson.value);
+                const params = CoreUrlUtils.extractUrlParams(<string> response.data.reviewlesson.value);
                 if (params.pageid) {
                     // The retake can be reviewed, mark it as finished. Don't block the user for this.
                     this.setRetakeFinishedInSync(lessonId, retake.retake, Number(params.pageid), siteId);
                 }
             }
 
-            await AddonModLessonOffline.instance.deleteRetake(lessonId, siteId);
+            await AddonModLessonOffline.deleteRetake(lessonId, siteId);
         } catch (error) {
-            if (!error || !CoreUtils.instance.isWebServiceError(error)) {
+            if (!error || !CoreUtils.isWebServiceError(error)) {
                 // Couldn't connect to server.
                 throw error;
             }
@@ -485,20 +485,20 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
             result.updated = true;
 
-            await AddonModLessonOffline.instance.deleteRetake(lessonId, siteId);
+            await AddonModLessonOffline.deleteRetake(lessonId, siteId);
 
             // Retake deleted, add a warning.
-            result.warnings.push(Translate.instance.instant('core.warningofflinedatadeleted', {
+            result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
                 component: this.componentTranslate,
                 name: passwordData.lesson.name,
-                error: CoreTextUtils.instance.getErrorMessageFromError(error),
+                error: CoreTextUtils.getErrorMessageFromError(error),
             }));
         }
     }
 
 }
 
-export class AddonModLessonSync extends makeSingleton(AddonModLessonSyncProvider) {}
+export const AddonModLessonSync = makeSingleton(AddonModLessonSyncProvider, ['component', 'syncInterval']);
 
 /**
  * Data returned by a lesson sync.

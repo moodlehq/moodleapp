@@ -90,8 +90,8 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
         const promises: Promise<void>[] = [];
 
         const messages = onlyDeviceOffline
-            ? await AddonMessagesOffline.instance.getAllDeviceOfflineMessages(siteId)
-            : await AddonMessagesOffline.instance.getAllMessages(siteId);
+            ? await AddonMessagesOffline.getAllDeviceOfflineMessages(siteId)
+            : await AddonMessagesOffline.getAllMessages(siteId);
 
         // Get all the conversations to be synced.
         messages.forEach((message) => {
@@ -143,7 +143,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
      * @return Promise resolved with the list of warnings if sync is successful, rejected otherwise.
      */
     syncDiscussion(conversationId?: number, userId?: number, siteId?: string): Promise<AddonMessagesSyncEvents> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = this.getSyncId(conversationId, userId);
 
@@ -174,16 +174,16 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
             conversationId,
         };
 
-        const groupMessagingEnabled = AddonMessages.instance.isGroupMessagingEnabled();
+        const groupMessagingEnabled = AddonMessages.isGroupMessagingEnabled();
         let messages: AddonMessagesOfflineAnyMessagesFormatted[];
         const errors: (string | CoreError | CoreTextErrorObject)[] = [];
 
         if (conversationId) {
             this.logger.debug(`Try to sync conversation '${conversationId}'`);
-            messages = await AddonMessagesOffline.instance.getConversationMessages(conversationId, undefined, siteId);
+            messages = await AddonMessagesOffline.getConversationMessages(conversationId, undefined, siteId);
         } else if (userId) {
             this.logger.debug(`Try to sync discussion with user '${userId}'`);
-            messages = await AddonMessagesOffline.instance.getMessages(userId, siteId);
+            messages = await AddonMessagesOffline.getMessages(userId, siteId);
         } else {
             // Should not happen.
             throw new CoreError('Incorrect messages sync.');
@@ -192,15 +192,15 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
         if (!messages.length) {
             // Nothing to sync.
             return result;
-        } else if (!CoreApp.instance.isOnline()) {
+        } else if (!CoreApp.isOnline()) {
             // Cannot sync in offline. Mark messages as device offline.
-            AddonMessagesOffline.instance.setMessagesDeviceOffline(messages, true);
+            AddonMessagesOffline.setMessagesDeviceOffline(messages, true);
 
             throw new CoreError('Cannot sync in offline. Mark messages as device offline.');
         }
 
         // Order message by timecreated.
-        messages = AddonMessages.instance.sortMessages(messages);
+        messages = AddonMessages.sortMessages(messages);
 
         // Get messages sent by the user after the first offline message was sent.
         // We subtract some time because the message could've been saved in server before it was in the app.
@@ -220,16 +220,16 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
                 if (onlineMessages.indexOf(wrappedText) != -1) {
                     // Message already sent, ignore it to prevent duplicates.
                 } else if (conversationId) {
-                    await AddonMessages.instance.sendMessageToConversationOnline(conversationId, text, siteId);
+                    await AddonMessages.sendMessageToConversationOnline(conversationId, text, siteId);
                 } else if (userId) {
-                    await AddonMessages.instance.sendMessageOnline(userId, text, siteId);
+                    await AddonMessages.sendMessageOnline(userId, text, siteId);
                 }
             } catch (error) {
-                if (!CoreUtils.instance.isWebServiceError(error)) {
+                if (!CoreUtils.isWebServiceError(error)) {
                     // Error sending, stop execution.
-                    if (CoreApp.instance.isOnline()) {
+                    if (CoreApp.isOnline()) {
                         // App is online, unmark deviceoffline if marked.
-                        AddonMessagesOffline.instance.setMessagesDeviceOffline(messages, false);
+                        AddonMessagesOffline.setMessagesDeviceOffline(messages, false);
                     }
 
                     throw error;
@@ -243,15 +243,15 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
 
             // Message was sent, delete it from local DB.
             if (conversationId) {
-                await AddonMessagesOffline.instance.deleteConversationMessage(conversationId, text, message.timecreated, siteId);
+                await AddonMessagesOffline.deleteConversationMessage(conversationId, text, message.timecreated, siteId);
             } else if (userId) {
-                await AddonMessagesOffline.instance.deleteMessage(userId, text, message.timecreated, siteId);
+                await AddonMessagesOffline.deleteMessage(userId, text, message.timecreated, siteId);
             }
 
             // In some Moodle versions, wait 1 second to make sure timecreated is different.
             // This is because there was a bug where messages with the same timecreated had a wrong order.
             if (!groupMessagingEnabled && i < messages.length - 1) {
-                await CoreUtils.instance.wait(1000);
+                await CoreUtils.wait(1000);
             }
         }
 
@@ -276,13 +276,13 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
         userId?: number,
         siteId?: string,
     ): Promise<string[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const siteCurrentUserId = site.getUserId();
 
         if (conversationId) {
             try {
-                const result = await AddonMessages.instance.getConversationMessages(conversationId, {
+                const result = await AddonMessages.getConversationMessages(conversationId, {
                     excludePending: true,
                     ignoreCache: true,
                     timeFrom: time,
@@ -306,12 +306,12 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
                 limitnum: AddonMessagesProvider.LIMIT_MESSAGES,
             };
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: AddonMessages.instance.getCacheKeyForDiscussion(userId),
+                cacheKey: AddonMessages.getCacheKeyForDiscussion(userId),
                 getFromCache: false,
                 emergencyCache: false,
             };
 
-            const messages = await AddonMessages.instance.getRecentMessages(params, preSets, 0, 0, false, siteId);
+            const messages = await AddonMessages.getRecentMessages(params, preSets, 0, 0, false, siteId);
 
             time = time * 1000; // Convert to milliseconds.
             const messagesAfterTime = messages.filter((message) => message.timecreated >= time);
@@ -345,16 +345,16 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
             let conversationIdentifier = String(conversationId);
             try {
                 // Get conversation name and add errors to warnings array.
-                const conversation = await AddonMessages.instance.getConversation(conversationId, false, false);
+                const conversation = await AddonMessages.getConversation(conversationId, false, false);
                 conversationIdentifier = conversation.name || String(conversationId);
             } catch {
                 // Ignore errors.
             }
 
             errors.forEach((error) => {
-                warnings.push(Translate.instance.instant('addon.messages.warningconversationmessagenotsent', {
+                warnings.push(Translate.instant('addon.messages.warningconversationmessagenotsent', {
                     conversation: conversationIdentifier,
-                    error: CoreTextUtils.instance.getErrorMessageFromError(error),
+                    error: CoreTextUtils.getErrorMessageFromError(error),
                 }));
             });
         } else if (userId) {
@@ -362,16 +362,16 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
             // Get user full name and add errors to warnings array.
             let userIdentifier = String(userId);
             try {
-                const user = await CoreUser.instance.getProfile(userId, undefined, true);
+                const user = await CoreUser.getProfile(userId, undefined, true);
                 userIdentifier = user.fullname;
             } catch {
                 // Ignore errors.
             }
 
             errors.forEach((error) => {
-                warnings.push(Translate.instance.instant('addon.messages.warningmessagenotsent', {
+                warnings.push(Translate.instant('addon.messages.warningmessagenotsent', {
                     user: userIdentifier,
-                    error: CoreTextUtils.instance.getErrorMessageFromError(error),
+                    error: CoreTextUtils.getErrorMessageFromError(error),
                 }));
             });
         }
@@ -398,7 +398,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
 
 }
 
-export class AddonMessagesSync extends makeSingleton(AddonMessagesSyncProvider) {}
+export const AddonMessagesSync = makeSingleton(AddonMessagesSyncProvider, ['component', 'syncInterval']);
 
 export type AddonMessagesSyncEvents = {
     warnings: string[];

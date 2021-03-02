@@ -41,7 +41,7 @@ export class CameraMock extends Camera {
      * @return Promise resolved when captured.
      */
     getPicture(options: CameraOptions): Promise<string> {
-        return CoreEmulatorCaptureHelper.instance.captureMedia('image', options);
+        return CoreEmulatorCaptureHelper.captureMedia('image', options);
     }
 
 }

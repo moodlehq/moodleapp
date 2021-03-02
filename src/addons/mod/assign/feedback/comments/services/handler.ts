@@ -55,7 +55,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
         // The input data can have a string or an object with text and format. Get the text.
         const text = inputData.assignfeedbackcomments_editor || '';
 
-        return CoreTextUtils.instance.restorePluginfileUrls(text, files || []);
+        return CoreTextUtils.restorePluginfileUrls(text, files || []);
     }
 
     /**
@@ -108,7 +108,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
      * @return Draft ID.
      */
     protected getDraftId(assignId: number, userId: number, siteId?: string): string {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         return siteId + '#' + assignId + '#' + userId;
     }
@@ -127,7 +127,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
     ): CoreWSExternalFile[] {
-        return AddonModAssign.instance.getSubmissionPluginAttachments(plugin);
+        return AddonModAssign.getSubmissionPluginAttachments(plugin);
     }
 
     /**
@@ -148,8 +148,8 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
         userId: number,
     ): Promise<boolean> {
         // Get it from plugin or offline.
-        const offlineData = await CoreUtils.instance.ignoreErrors(
-            AddonModAssignOffline.instance.getSubmissionGrade(assign.id, userId),
+        const offlineData = await CoreUtils.ignoreErrors(
+            AddonModAssignOffline.getSubmissionGrade(assign.id, userId),
             undefined,
         );
 
@@ -160,8 +160,8 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
         }
 
         // No offline data found, get text from plugin.
-        const initialText = AddonModAssign.instance.getSubmissionPluginText(plugin);
-        const newText = AddonModAssignFeedbackCommentsHandler.instance.getTextFromInputData(plugin, inputData);
+        const initialText = AddonModAssign.getSubmissionPluginText(plugin);
+        const newText = AddonModAssignFeedbackCommentsHandler.getTextFromInputData(plugin, inputData);
 
         if (typeof newText == 'undefined') {
             return false;
@@ -219,7 +219,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
 
         if (draft) {
             // Add some HTML to the text if needed.
-            draft.text = CoreTextUtils.instance.formatHtmlLines(draft.text);
+            draft.text = CoreTextUtils.formatHtmlLines(draft.text);
 
             pluginData.assignfeedbackcomments_editor = draft;
         }

@@ -241,8 +241,8 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @return Resolved when done.
      */
     protected updateHandler(handler: HandlerType): Promise<void> {
-        const siteId = CoreSites.instance.getCurrentSiteId();
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const siteId = CoreSites.getCurrentSiteId();
+        const currentSite = CoreSites.getCurrentSite();
         let promise: Promise<boolean>;
 
         if (this.updatePromises[siteId] && this.updatePromises[siteId][handler.name]) {
@@ -252,7 +252,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
             this.updatePromises[siteId] = {};
         }
 
-        if (!CoreSites.instance.isLoggedIn() || this.isFeatureDisabled(handler, currentSite!)) {
+        if (!CoreSites.isLoggedIn() || this.isFeatureDisabled(handler, currentSite!)) {
             promise = Promise.resolve(false);
         } else {
             promise = Promise.resolve(handler.isEnabled()).catch(() => false);
@@ -261,7 +261,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
         // Checks if the handler is enabled.
         this.updatePromises[siteId][handler.name] = promise.then((enabled: boolean) => {
             // Check that site hasn't changed since the check started.
-            if (CoreSites.instance.getCurrentSiteId() === siteId) {
+            if (CoreSites.getCurrentSiteId() === siteId) {
                 const key = handler[this.handlerNameProperty] || handler.name;
 
                 if (enabled) {

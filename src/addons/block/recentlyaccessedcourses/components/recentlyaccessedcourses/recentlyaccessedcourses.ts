@@ -64,15 +64,15 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     async ngOnInit(): Promise<void> {
 
         // Refresh the enabled flags if enabled.
-        this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
-        this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-            this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
-            this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+            this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
 
         this.coursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
@@ -83,7 +83,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
                 }
             },
 
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
 
         super.ngOnInit();
@@ -107,17 +107,17 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCourses.instance.invalidateUserCourses().finally(() =>
+        promises.push(CoreCourses.invalidateUserCourses().finally(() =>
             // Invalidate course completion data.
-            CoreUtils.instance.allPromises(this.courseIds.map((courseId) =>
-                AddonCourseCompletion.instance.invalidateCourseCompletion(courseId)))));
+            CoreUtils.allPromises(this.courseIds.map((courseId) =>
+                AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
-        promises.push(CoreCourseOptionsDelegate.instance.clearAndInvalidateCoursesOptions());
+        promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
         if (this.courseIds.length > 0) {
-            promises.push(CoreCourses.instance.invalidateCoursesByField('ids', this.courseIds.join(',')));
+            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds.join(',')));
         }
 
-        await CoreUtils.instance.allPromises(promises).finally(() => {
+        await CoreUtils.allPromises(promises).finally(() => {
             this.prefetchIconsInitialized = false;
         });
     }
@@ -131,7 +131,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         const showCategories = this.block.configsRecord && this.block.configsRecord.displaycategories &&
             this.block.configsRecord.displaycategories.value == '1';
 
-        this.courses = await CoreCoursesHelper.instance.getUserCoursesWithOptions('lastaccess', 10, undefined, showCategories);
+        this.courses = await CoreCoursesHelper.getUserCoursesWithOptions('lastaccess', 10, undefined, showCategories);
         this.initPrefetchCoursesIcons();
     }
 
@@ -144,7 +144,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
 
         try {
-            await CoreCourses.instance.invalidateUserCourses();
+            await CoreCourses.invalidateUserCourses();
         } catch (error) {
             // Ignore errors.
         }
@@ -163,7 +163,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
         this.prefetchIconsInitialized = true;
 
-        this.prefetchCoursesData = await CoreCourseHelper.instance.initPrefetchCoursesIcons(this.courses, this.prefetchCoursesData);
+        this.prefetchCoursesData = await CoreCourseHelper.initPrefetchCoursesIcons(this.courses, this.prefetchCoursesData);
     }
 
     /**
@@ -178,7 +178,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
             return true;
         }
 
-        if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.instance.getCurrentSiteHomeId() &&
+        if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.getCurrentSiteHomeId() &&
                 this.courses[0] && data.courseId != this.courses[0].id) {
             // Update list if user viewed a course that isn't the most recent one and isn't site home.
             return true;
@@ -216,10 +216,10 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         const initialIcon = this.prefetchCoursesData.icon;
 
         try {
-            return CoreCourseHelper.instance.prefetchCourses(this.courses, this.prefetchCoursesData);
+            return CoreCourseHelper.prefetchCourses(this.courses, this.prefetchCoursesData);
         } catch (error) {
             if (!this.isDestroyed) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
                 this.prefetchCoursesData.icon = initialIcon;
             }
         }

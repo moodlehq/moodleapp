@@ -35,7 +35,7 @@ export class AddonCalendarMainMenuHandlerService implements CoreMainMenuHandler 
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
-        return !AddonCalendar.instance.isCalendarDisabledInSite();
+        return !AddonCalendar.isCalendarDisabledInSite();
     }
 
     /**
@@ -47,11 +47,11 @@ export class AddonCalendarMainMenuHandlerService implements CoreMainMenuHandler 
         return {
             icon: 'far-calendar',
             title: 'addon.calendar.calendar',
-            page: AddonCalendar.instance.getMainCalendarPagePath(),
+            page: AddonCalendar.getMainCalendarPagePath(),
             class: 'addon-calendar-handler',
         };
     }
 
 }
 
-export class AddonCalendarMainMenuHandler extends makeSingleton(AddonCalendarMainMenuHandlerService) {}
+export const AddonCalendarMainMenuHandler = makeSingleton(AddonCalendarMainMenuHandlerService);

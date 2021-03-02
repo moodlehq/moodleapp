@@ -86,8 +86,8 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
             lastCommit: CoreConstants.BUILD.lastCommitHash || '',
             networkStatus: appProvider.isOnline() ? 'online' : 'offline',
             wifiConnection: appProvider.isWifi() ? 'yes' : 'no',
-            localNotifAvailable: CoreLocalNotifications.instance.isAvailable() ? 'yes' : 'no',
-            pushId: CorePushNotifications.instance.getPushId(),
+            localNotifAvailable: CoreLocalNotifications.isAvailable() ? 'yes' : 'no',
+            pushId: CorePushNotifications.getPushId(),
             deviceType: '',
         };
 
@@ -102,7 +102,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         }
 
         if (appProvider.isMobile()) {
-            this.deviceInfo.deviceType = Platform.instance.is('tablet') ? 'tablet' : 'phone';
+            this.deviceInfo.deviceType = Platform.is('tablet') ? 'tablet' : 'phone';
             if (appProvider.isAndroid()) {
                 this.deviceInfo.deviceOs = 'android';
                 this.deviceOsTranslated = 'Android';
@@ -168,9 +168,9 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         this.deviceInfo.siteVersion = currentSite?.getInfo()?.release;
 
         // Refresh online status when changes.
-        this.onlineObserver = Network.instance.onChange().subscribe(() => {
+        this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.instance.run(() => {
+            NgZone.run(() => {
                 this.deviceInfo!.networkStatus = appProvider.isOnline() ? 'online' : 'offline';
             });
         });
@@ -184,7 +184,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
     protected async asyncInit(): Promise<void> {
         const fileProvider = CoreFile.instance;
 
-        const lang = await CoreLang.instance.getCurrentLanguage();
+        const lang = await CoreLang.getCurrentLanguage();
         this.deviceInfo.currentLanguage =  lang;
         this.currentLangName = CoreConstants.CONFIG.languages[lang];
 
@@ -199,7 +199,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
      * Copies device info into the clipboard.
      */
     copyInfo(): void {
-        CoreUtils.instance.copyToClipboard(JSON.stringify(this.deviceInfo));
+        CoreUtils.copyToClipboard(JSON.stringify(this.deviceInfo));
     }
 
     /**
@@ -211,7 +211,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         const el = <Element>e.target;
         const text = el?.closest('ion-item')?.textContent?.trim();
 
-        text && CoreUtils.instance.copyToClipboard(text);
+        text && CoreUtils.copyToClipboard(text);
     }
 
     /**

@@ -31,7 +31,7 @@ export class CoreUserOfflineProvider {
      * @return Promise resolved with list of preferences.
      */
     async getChangedPreferences(siteId?: string): Promise<CoreUserPreferenceDBRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecordsSelect(PREFERENCES_TABLE_NAME, 'value != onlineValue');
     }
@@ -44,7 +44,7 @@ export class CoreUserOfflineProvider {
      * @return Promise resolved with the preference, rejected if not found.
      */
     async getPreference(name: string, siteId?: string): Promise<CoreUserPreferenceDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecord(PREFERENCES_TABLE_NAME, { name });
     }
@@ -59,7 +59,7 @@ export class CoreUserOfflineProvider {
      * @return Promise resolved when done.
      */
     async setPreference(name: string, value: string, onlineValue?: string, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         if (typeof onlineValue == 'undefined') {
             const preference = await this.getPreference(name, site.id);
@@ -78,4 +78,4 @@ export class CoreUserOfflineProvider {
 
 }
 
-export class CoreUserOffline extends makeSingleton(CoreUserOfflineProvider) {}
+export const CoreUserOffline = makeSingleton(CoreUserOfflineProvider);

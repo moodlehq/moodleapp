@@ -34,7 +34,7 @@ export class CorePushNotificationsUnregisterCronHandlerService implements CoreCr
      * @return Promise resolved when done, rejected if failure.
      */
     async execute(siteId?: string): Promise<void> {
-        await CorePushNotifications.instance.retryUnregisters(siteId);
+        await CorePushNotifications.retryUnregisters(siteId);
     }
 
     /**
@@ -48,4 +48,4 @@ export class CorePushNotificationsUnregisterCronHandlerService implements CoreCr
 
 }
 
-export class CorePushNotificationsUnregisterCronHandler extends makeSingleton(CorePushNotificationsUnregisterCronHandlerService) {}
+export const CorePushNotificationsUnregisterCronHandler = makeSingleton(CorePushNotificationsUnregisterCronHandlerService);

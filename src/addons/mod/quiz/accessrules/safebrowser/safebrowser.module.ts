@@ -26,7 +26,7 @@ import { AddonModQuizAccessSafeBrowserHandler } from './services/handlers/safebr
             multi: true,
             deps: [],
             useFactory: () => () => {
-                AddonModQuizAccessRuleDelegate.instance.registerHandler(AddonModQuizAccessSafeBrowserHandler.instance);
+                AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessSafeBrowserHandler.instance);
             },
         },
     ],

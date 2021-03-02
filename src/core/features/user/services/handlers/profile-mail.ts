@@ -50,7 +50,7 @@ export class CoreUserProfileMailHandlerService implements CoreUserProfileHandler
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async isEnabledForUser(user: CoreUserProfile, courseId: number, navOptions?: unknown, admOptions?: unknown): Promise<boolean> {
-        return user.id != CoreSites.instance.getCurrentSiteUserId() && !!user.email;
+        return user.id != CoreSites.getCurrentSiteUserId() && !!user.email;
     }
 
     /**
@@ -68,11 +68,11 @@ export class CoreUserProfileMailHandlerService implements CoreUserProfileHandler
                 event.preventDefault();
                 event.stopPropagation();
 
-                CoreUtils.instance.openInBrowser('mailto:' + user.email);
+                CoreUtils.openInBrowser('mailto:' + user.email);
             },
         };
     }
 
 }
 
-export class CoreUserProfileMailHandler extends makeSingleton(CoreUserProfileMailHandlerService) {}
+export const CoreUserProfileMailHandler = makeSingleton(CoreUserProfileMailHandlerService);

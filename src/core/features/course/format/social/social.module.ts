@@ -26,7 +26,7 @@ import { CoreCourseFormatSocialHandler } from './services/handlers/social-format
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreCourseFormatDelegate.instance.registerHandler(CoreCourseFormatSocialHandler.instance);
+                CoreCourseFormatDelegate.registerHandler(CoreCourseFormatSocialHandler.instance);
             },
         },
     ],

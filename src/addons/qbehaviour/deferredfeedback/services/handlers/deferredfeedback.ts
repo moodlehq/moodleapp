@@ -79,31 +79,31 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
         // Check if we have local data for the question.
         let dbQuestion: CoreQuestionDBRecord | CoreQuestionQuestionWithAnswers = question;
         try {
-            dbQuestion = await CoreQuestion.instance.getQuestion(component, attemptId, question.slot, siteId);
+            dbQuestion = await CoreQuestion.getQuestion(component, attemptId, question.slot, siteId);
         } catch (error) {
             // No entry found, use the original data.
         }
 
-        const state = CoreQuestion.instance.getState(dbQuestion.state);
+        const state = CoreQuestion.getState(dbQuestion.state);
 
         if (state.finished || !state.active) {
             // Question is finished, it cannot change.
             return state;
         }
 
-        const newBasicAnswers = CoreQuestion.instance.getBasicAnswers(question.answers || {});
+        const newBasicAnswers = CoreQuestion.getBasicAnswers(question.answers || {});
 
         if (dbQuestion.state) {
             // Question already has a state stored. Check if answer has changed.
-            const prevAnswersList = await CoreQuestion.instance.getQuestionAnswers(
+            const prevAnswersList = await CoreQuestion.getQuestionAnswers(
                 component,
                 attemptId,
                 question.slot,
                 false,
                 siteId,
             );
-            const prevAnswers = CoreQuestion.instance.convertAnswersArrayToObject(prevAnswersList, true);
-            const prevBasicAnswers = CoreQuestion.instance.getBasicAnswers(prevAnswers);
+            const prevAnswers = CoreQuestion.convertAnswersArrayToObject(prevAnswersList, true);
+            const prevBasicAnswers = CoreQuestion.getBasicAnswers(prevAnswers);
 
             // If answers haven't changed the state is the same.
             let sameResponse = false;
@@ -119,7 +119,7 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
                     componentId,
                 );
             } else {
-                sameResponse = CoreQuestionDelegate.instance.isSameResponse(
+                sameResponse = CoreQuestionDelegate.isSameResponse(
                     question,
                     prevBasicAnswers,
                     newBasicAnswers,
@@ -142,7 +142,7 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
             complete = isCompleteFn(question, question.answers || {}, component, componentId);
         } else {
             // Only pass the basic answers since questions should be independent of extra data.
-            complete = CoreQuestionDelegate.instance.isCompleteResponse(question, newBasicAnswers, component, componentId);
+            complete = CoreQuestionDelegate.isCompleteResponse(question, newBasicAnswers, component, componentId);
         }
 
         if (complete < 0) {
@@ -150,7 +150,7 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
         } else if (complete > 0) {
             newState = 'complete';
         } else {
-            const gradable = CoreQuestionDelegate.instance.isGradableResponse(question, newBasicAnswers, component, componentId);
+            const gradable = CoreQuestionDelegate.isGradableResponse(question, newBasicAnswers, component, componentId);
             if (gradable < 0) {
                 newState = 'cannotdeterminestatus';
             } else if (gradable > 0) {
@@ -160,7 +160,7 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
             }
         }
 
-        return CoreQuestion.instance.getState(newState);
+        return CoreQuestion.getState(newState);
     }
 
     /**
@@ -174,7 +174,7 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
 
 }
 
-export class AddonQbehaviourDeferredFeedbackHandler extends makeSingleton(AddonQbehaviourDeferredFeedbackHandlerService) {}
+export const AddonQbehaviourDeferredFeedbackHandler = makeSingleton(AddonQbehaviourDeferredFeedbackHandlerService);
 
 
 /**

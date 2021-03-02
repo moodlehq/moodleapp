@@ -73,7 +73,7 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
         }
 
         // Wait until next tick to allow items to render and scroll content to grow.
-        await CoreUtils.instance.nextTick();
+        await CoreUtils.nextTick();
 
         // Calculate distance from edge.
         const content = this.element.nativeElement.closest('ion-content') as IonContent;
@@ -152,7 +152,7 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
      */
     protected getElementHeight(element?: ElementRef): number {
         if (element && element.nativeElement) {
-            return CoreDomUtils.instance.getElementHeight(element.nativeElement, true, true, true);
+            return CoreDomUtils.getElementHeight(element.nativeElement, true, true, true);
         }
 
         return 0;

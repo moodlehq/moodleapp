@@ -49,7 +49,7 @@ export class CoreCronDelegateService {
         this.logger = CoreLogger.getInstance('CoreCronDelegate');
 
         // When the app is re-connected, start network handlers that were stopped.
-        Network.instance.onConnect().subscribe(() => {
+        Network.onConnect().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             zone.run(() => {
                 this.startNetworkHandlers();
@@ -62,12 +62,12 @@ export class CoreCronDelegateService {
      */
     async initializeDatabase(): Promise<void> {
         try {
-            await CoreApp.instance.createTablesFromSchema(APP_SCHEMA);
+            await CoreApp.createTablesFromSchema(APP_SCHEMA);
         } catch (e) {
             // Ignore errors.
         }
 
-        this.resolveAppDB(CoreApp.instance.getDB());
+        this.resolveAppDB(CoreApp.getDB());
     }
 
     /**
@@ -91,7 +91,7 @@ export class CoreCronDelegateService {
         const usesNetwork = this.handlerUsesNetwork(name);
         const isSync = !force && this.isHandlerSync(name);
 
-        if (usesNetwork && !CoreApp.instance.isOnline()) {
+        if (usesNetwork && !CoreApp.isOnline()) {
             // Offline, stop executing.
             const message = `Cannot execute handler because device is offline: ${name}`;
             this.logger.debug(message);
@@ -102,9 +102,9 @@ export class CoreCronDelegateService {
 
         if (isSync) {
             // Check network connection.
-            const syncOnlyOnWifi = await CoreConfig.instance.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, false);
+            const syncOnlyOnWifi = await CoreConfig.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, false);
 
-            if (syncOnlyOnWifi && !CoreApp.instance.isWifi()) {
+            if (syncOnlyOnWifi && !CoreApp.isWifi()) {
                 // Cannot execute in this network connection, retry soon.
                 const message = `Cannot execute handler because device is using limited connection: ${name}`;
                 this.logger.debug(message);
@@ -115,13 +115,13 @@ export class CoreCronDelegateService {
         }
 
         // Add the execution to the queue.
-        this.queuePromise = CoreUtils.instance.ignoreErrors(this.queuePromise).then(async () => {
+        this.queuePromise = CoreUtils.ignoreErrors(this.queuePromise).then(async () => {
             try {
                 await this.executeHandler(name, force, siteId);
 
                 this.logger.debug(`Execution of handler '${name}' was a success.`);
 
-                await CoreUtils.instance.ignoreErrors(this.setHandlerLastExecutionTime(name, Date.now()));
+                await CoreUtils.ignoreErrors(this.setHandlerLastExecutionTime(name, Date.now()));
 
                 this.scheduleNextExecution(name);
 
@@ -181,7 +181,7 @@ export class CoreCronDelegateService {
             }
         }
 
-        await CoreUtils.instance.allPromises(promises);
+        await CoreUtils.allPromises(promises);
     }
 
     /**
@@ -393,7 +393,7 @@ export class CoreCronDelegateService {
 
         this.handlers[name].timeout = window.setTimeout(() => {
             delete this.handlers[name].timeout;
-            CoreUtils.instance.ignoreErrors(this.checkAndExecuteHandler(name));
+            CoreUtils.ignoreErrors(this.checkAndExecuteHandler(name));
         }, timeToNextExecution);
     }
 
@@ -476,7 +476,7 @@ export class CoreCronDelegateService {
 
 }
 
-export class CoreCronDelegate extends makeSingleton(CoreCronDelegateService) {}
+export const CoreCronDelegate = makeSingleton(CoreCronDelegateService);
 
 
 /**

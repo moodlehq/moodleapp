@@ -70,7 +70,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      * @return Promise resolved with the DB entry on success.
      */
     protected async getPasswordEntry(quizId: number, siteId?: string): Promise<AddonModQuizAccessPasswordDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecord(PASSWORD_TABLE_NAME, { id: quizId });
     }
@@ -111,7 +111,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
         siteId?: string,
     ): Promise<boolean> {
         // If there's a password stored don't require the preflight since we'll use the stored one.
-        const entry = await CoreUtils.instance.ignoreErrors(this.getPasswordEntry(quiz.id, siteId));
+        const entry = await CoreUtils.ignoreErrors(this.getPasswordEntry(quiz.id, siteId));
 
         return !entry;
     }
@@ -168,7 +168,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      * @return Promise resolved when done.
      */
     protected async removePassword(quizId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(PASSWORD_TABLE_NAME, { id: quizId });
     }
@@ -182,7 +182,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      * @return Promise resolved when done.
      */
     protected async storePassword(quizId: number, password: string, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const entry: AddonModQuizAccessPasswordDBRecord = {
             id: quizId,
@@ -195,4 +195,4 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
 
 }
 
-export class AddonModQuizAccessPasswordHandler extends makeSingleton(AddonModQuizAccessPasswordHandlerService) {}
+export const AddonModQuizAccessPasswordHandler = makeSingleton(AddonModQuizAccessPasswordHandlerService);

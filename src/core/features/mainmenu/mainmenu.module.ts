@@ -43,7 +43,7 @@ const appRoutes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreMainMenuDelegate.instance.registerHandler(CoreMainMenuHomeHandler.instance);
+                CoreMainMenuDelegate.registerHandler(CoreMainMenuHomeHandler.instance);
             },
         },
     ],

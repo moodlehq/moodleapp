@@ -50,34 +50,34 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
         if (!this.question) {
             this.logger.warn('Aborting because of no question received.');
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         this.ddQuestion = this.question;
-        const element = CoreDomUtils.instance.convertToElement(this.ddQuestion.html);
+        const element = CoreDomUtils.convertToElement(this.ddQuestion.html);
 
         // Replace Moodle's correct/incorrect and feedback classes with our own.
-        CoreQuestionHelper.instance.replaceCorrectnessClasses(element);
-        CoreQuestionHelper.instance.replaceFeedbackClasses(element);
+        CoreQuestionHelper.replaceCorrectnessClasses(element);
+        CoreQuestionHelper.replaceFeedbackClasses(element);
 
         // Treat the correct/incorrect icons.
-        CoreQuestionHelper.instance.treatCorrectnessIcons(element);
+        CoreQuestionHelper.treatCorrectnessIcons(element);
 
         const answerContainer = element.querySelector('.answercontainer');
         if (!answerContainer) {
             this.logger.warn('Aborting because of an error parsing question.', this.ddQuestion.slot);
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         this.ddQuestion.readOnly = answerContainer.classList.contains('readonly');
         this.ddQuestion.answers = answerContainer.outerHTML;
 
-        this.ddQuestion.text = CoreDomUtils.instance.getContentsOfElement(element, '.qtext');
+        this.ddQuestion.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
         if (typeof this.ddQuestion.text == 'undefined') {
             this.logger.warn('Aborting because of an error parsing question.', this.ddQuestion.slot);
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         // Get the inputs where the answers will be stored and add them to the question text.
@@ -123,7 +123,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
         }
 
         if (this.questionTextEl) {
-            await CoreDomUtils.instance.waitForImages(this.questionTextEl.nativeElement);
+            await CoreDomUtils.waitForImages(this.questionTextEl.nativeElement);
         }
 
         // Create the instance.
@@ -134,7 +134,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
             this.inputIds,
         );
 
-        CoreQuestionHelper.instance.treatCorrectnessIconsClicks(
+        CoreQuestionHelper.treatCorrectnessIconsClicks(
             this.hostElement,
             this.component,
             this.componentId,

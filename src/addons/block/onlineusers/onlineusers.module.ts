@@ -30,7 +30,7 @@ import { AddonBlockOnlineUsersComponentsModule } from './components/components.m
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockOnlineUsersHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockOnlineUsersHandler.instance);
             },
         },
     ],

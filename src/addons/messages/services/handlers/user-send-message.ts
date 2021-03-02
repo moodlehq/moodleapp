@@ -37,7 +37,7 @@ export class AddonMessagesSendMessageUserHandlerService implements CoreUserProfi
      * @return Promise resolved with true if enabled, rejected or resolved with false otherwise.
      */
     isEnabled(): Promise<boolean> {
-        return AddonMessages.instance.isPluginEnabled();
+        return AddonMessages.isPluginEnabled();
     }
 
     /**
@@ -47,7 +47,7 @@ export class AddonMessagesSendMessageUserHandlerService implements CoreUserProfi
      * @return Promise resolved with true if enabled, resolved with false otherwise.
      */
     async isEnabledForUser(user: CoreUserProfile): Promise<boolean> {
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
 
         if (!currentSite) {
             return false;
@@ -75,11 +75,11 @@ export class AddonMessagesSendMessageUserHandlerService implements CoreUserProfi
                     showKeyboard: true,
                     userId: user.id,
                 };
-                CoreNavigator.instance.navigateToSitePath('/messages/discussion', { params: pageParams });
+                CoreNavigator.navigateToSitePath('/messages/discussion', { params: pageParams });
             },
         };
     }
 
 }
 
-export class AddonMessagesSendMessageUserHandler extends makeSingleton(AddonMessagesSendMessageUserHandlerService) {}
+export const AddonMessagesSendMessageUserHandler = makeSingleton(AddonMessagesSendMessageUserHandlerService);

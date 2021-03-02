@@ -60,7 +60,7 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
                 if (params.userpassword) {
                     this.navigateToModuleWithPassword(parseInt(params.id, 10), courseId!, params.userpassword, siteId);
                 } else {
-                    CoreCourseHelper.instance.navigateToModule(parseInt(params.id, 10), siteId, courseId);
+                    CoreCourseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
                 }
             },
         }];
@@ -78,7 +78,7 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
-        return AddonModLesson.instance.isPluginEnabled(siteId);
+        return AddonModLesson.isPluginEnabled(siteId);
     }
 
     /**
@@ -96,21 +96,21 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
         password: string,
         siteId: string,
     ): Promise<void> {
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
             // Get the module.
-            const module = await CoreCourse.instance.getModuleBasicInfo(moduleId, siteId);
+            const module = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
 
             courseId = courseId || module.course;
 
             // Store the password so it's automatically used.
-            await CoreUtils.instance.ignoreErrors(AddonModLesson.instance.storePassword(module.instance, password, siteId));
+            await CoreUtils.ignoreErrors(AddonModLesson.storePassword(module.instance, password, siteId));
 
-            await CoreCourseHelper.instance.navigateToModule(moduleId, siteId, courseId, module.section);
+            await CoreCourseHelper.navigateToModule(moduleId, siteId, courseId, module.section);
         } catch {
             // Error, go to index page.
-            await CoreCourseHelper.instance.navigateToModule(moduleId, siteId, courseId);
+            await CoreCourseHelper.navigateToModule(moduleId, siteId, courseId);
         } finally {
             modal.dismiss();
         }
@@ -118,4 +118,4 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
 
 }
 
-export class AddonModLessonIndexLinkHandler extends makeSingleton(AddonModLessonIndexLinkHandlerService) {}
+export const AddonModLessonIndexLinkHandler = makeSingleton(AddonModLessonIndexLinkHandlerService);

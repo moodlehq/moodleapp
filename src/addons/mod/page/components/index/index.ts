@@ -54,13 +54,13 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.canGetPage = AddonModPage.instance.isGetPageWSAvailable();
+        this.canGetPage = AddonModPage.isGetPageWSAvailable();
 
         await this.loadContent();
 
         try {
-            await AddonModPage.instance.logView(this.module!.instance!, this.module!.name);
-            CoreCourse.instance.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+            await AddonModPage.logView(this.module!.instance!, this.module!.name);
+            CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
         } catch {
             // Ignore errors.
         }
@@ -72,7 +72,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
      * @return Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
-        await AddonModPage.instance.invalidateContent(this.module!.id, this.courseId!);
+        await AddonModPage.invalidateContent(this.module!.id, this.courseId!);
     }
 
     /**
@@ -92,9 +92,9 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
 
             // Get the module to get the latest title and description. Data should've been updated in download.
             if (this.canGetPage) {
-                getPagePromise = AddonModPage.instance.getPageData(this.courseId!, this.module!.id);
+                getPagePromise = AddonModPage.getPageData(this.courseId!, this.module!.id);
             } else {
-                getPagePromise = CoreCourse.instance.getModule(this.module!.id, this.courseId!);
+                getPagePromise = CoreCourse.getModule(this.module!.id, this.courseId!);
             }
 
             promises.push(getPagePromise.then((page) => {
@@ -114,12 +114,12 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
                 // Check if description and timemodified should be displayed.
                 if ('displayoptions' in this.page) {
                     const options: Record<string, string | boolean> =
-                        CoreTextUtils.instance.unserialize(this.page.displayoptions) || {};
+                        CoreTextUtils.unserialize(this.page.displayoptions) || {};
 
                     this.displayDescription = typeof options.printintro == 'undefined' ||
-                            CoreUtils.instance.isTrueOrOne(options.printintro);
+                            CoreUtils.isTrueOrOne(options.printintro);
                     this.displayTimemodified = typeof options.printlastmodified == 'undefined' ||
-                            CoreUtils.instance.isTrueOrOne(options.printlastmodified);
+                            CoreUtils.isTrueOrOne(options.printlastmodified);
                 } else {
                     this.displayDescription = true;
                     this.displayTimemodified = true;
@@ -133,7 +133,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
             }));
 
             // Get the page HTML.
-            promises.push(AddonModPageHelper.instance.getPageHtml(this.module!.contents, this.module!.id).then((content) => {
+            promises.push(AddonModPageHelper.getPageHtml(this.module!.contents, this.module!.id).then((content) => {
 
                 this.contents = content;
                 this.warning = downloadResult?.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';

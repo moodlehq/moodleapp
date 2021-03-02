@@ -69,8 +69,8 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
         }
 
         const dataSetupString = video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}';
-        const data = <VideoDataSetup> CoreTextUtils.instance.parseJSON(dataSetupString, {});
-        const youtubeUrl = data.techOrder?.[0] == 'youtube' && CoreUrlUtils.instance.getYoutubeEmbedUrl(data.sources?.[0]?.src);
+        const data = <VideoDataSetup> CoreTextUtils.parseJSON(dataSetupString, {});
+        const youtubeUrl = data.techOrder?.[0] == 'youtube' && CoreUrlUtils.getYoutubeEmbedUrl(data.sources?.[0]?.src);
 
         if (!youtubeUrl) {
             return;
@@ -90,7 +90,7 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
 
 }
 
-export class AddonFilterMediaPluginHandler extends makeSingleton(AddonFilterMediaPluginHandlerService) {}
+export const AddonFilterMediaPluginHandler = makeSingleton(AddonFilterMediaPluginHandlerService);
 
 type VideoDataSetup = {
     techOrder?: string[];

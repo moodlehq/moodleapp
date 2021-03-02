@@ -128,9 +128,9 @@ export class AddonQtypeDdImageOrTextHandlerService implements CoreQuestionHandle
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreQuestion.instance.compareAllAnswers(prevAnswers, newAnswers);
+        return CoreQuestion.compareAllAnswers(prevAnswers, newAnswers);
     }
 
 }
 
-export class AddonQtypeDdImageOrTextHandler extends makeSingleton(AddonQtypeDdImageOrTextHandlerService) {}
+export const AddonQtypeDdImageOrTextHandler = makeSingleton(AddonQtypeDdImageOrTextHandlerService);

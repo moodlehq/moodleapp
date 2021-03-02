@@ -103,7 +103,7 @@ export class AddonQtypeTrueFalseHandlerService implements CoreQuestionHandler {
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreUtils.instance.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
+        return CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     }
 
     /**
@@ -129,4 +129,4 @@ export class AddonQtypeTrueFalseHandlerService implements CoreQuestionHandler {
 
 }
 
-export class AddonQtypeTrueFalseHandler extends makeSingleton(AddonQtypeTrueFalseHandlerService) {}
+export const AddonQtypeTrueFalseHandler = makeSingleton(AddonQtypeTrueFalseHandlerService);

@@ -51,7 +51,7 @@ export class AddonModBookModuleHandlerService implements CoreCourseModuleHandler
      * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean> {
-        return AddonModBook.instance.isPluginEnabled();
+        return AddonModBook.isPluginEnabled();
     }
 
     /**
@@ -64,7 +64,7 @@ export class AddonModBookModuleHandlerService implements CoreCourseModuleHandler
      */
     getData(module: CoreCourseAnyModuleData): CoreCourseModuleHandlerData {
         return {
-            icon: CoreCourse.instance.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
+            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
             title: module.name,
             class: 'addon-mod_book-handler',
             showDownloadButton: true,
@@ -74,7 +74,7 @@ export class AddonModBookModuleHandlerService implements CoreCourseModuleHandler
                 Object.assign(options.params, { module });
                 const routeParams = '/' + courseId + '/' + module.id;
 
-                CoreNavigator.instance.navigateToSitePath(AddonModBookModuleHandlerService.PAGE_NAME + routeParams, options);
+                CoreNavigator.navigateToSitePath(AddonModBookModuleHandlerService.PAGE_NAME + routeParams, options);
             },
         };
     }
@@ -91,4 +91,4 @@ export class AddonModBookModuleHandlerService implements CoreCourseModuleHandler
     }
 
 }
-export class AddonModBookModuleHandler extends makeSingleton(AddonModBookModuleHandlerService) {}
+export const AddonModBookModuleHandler = makeSingleton(AddonModBookModuleHandlerService);

@@ -87,7 +87,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.id = this.id || 'core-tab-' + CoreUtils.instance.getUniqueId('CoreTabComponent');
+        this.id = this.id || 'core-tab-' + CoreUtils.getUniqueId('CoreTabComponent');
         this.element.setAttribute('aria-labelledby', this.id + '-tab');
         this.element.setAttribute('id', this.id);
 
@@ -136,7 +136,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     protected showHideNavBarButtons(show: boolean): void {
         const elements = this.element.querySelectorAll('core-navbar-buttons');
         elements.forEach((element) => {
-            const instance: CoreNavBarButtonsComponent = CoreDomUtils.instance.getInstanceByElement(element);
+            const instance: CoreNavBarButtonsComponent = CoreDomUtils.getInstanceByElement(element);
 
             if (instance) {
                 instance.forceHide(!show);

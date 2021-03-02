@@ -108,7 +108,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
         // Wait for filters to be initialized.
         await this.handlersInitPromise;
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         filters = filters || [];
         options = options || {};
@@ -191,7 +191,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
         // Wait for filters to be initialized.
         await this.handlersInitPromise;
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         filters = filters || [];
         options = options || {};
@@ -287,4 +287,4 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
 
 }
 
-export class CoreFilterDelegate extends makeSingleton(CoreFilterDelegateService) {}
+export const CoreFilterDelegate = makeSingleton(CoreFilterDelegateService);

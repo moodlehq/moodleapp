@@ -85,7 +85,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.siteId = CoreSites.instance.getCurrentSiteId();
+        this.siteId = CoreSites.getCurrentSiteId();
         this.description = this.module?.description;
         this.componentId = this.module?.id;
         this.externalUrl = this.module?.url;
@@ -108,11 +108,11 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
         // If it's a single activity course and the refresher is displayed within the component,
         // call doRefresh on the section page to refresh the course data.
-        if (this.courseContentsPage && !CoreCourseModuleDelegate.instance.displayRefresherInSingleActivity(this.module.modname)) {
-            await CoreUtils.instance.ignoreErrors(this.courseContentsPage.doRefresh());
+        if (this.courseContentsPage && !CoreCourseModuleDelegate.displayRefresherInSingleActivity(this.module.modname)) {
+            await CoreUtils.ignoreErrors(this.courseContentsPage.doRefresh());
         }
 
-        await CoreUtils.instance.ignoreErrors(this.refreshContent(true, showErrors));
+        await CoreUtils.ignoreErrors(this.refreshContent(true, showErrors));
 
         refresher?.detail.complete();
         done && done();
@@ -135,7 +135,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.refreshIcon = CoreConstants.ICON_LOADING;
 
         try {
-            await CoreUtils.instance.ignoreErrors(this.invalidateContent());
+            await CoreUtils.ignoreErrors(this.invalidateContent());
 
             await this.loadContent(true);
         } finally  {
@@ -178,7 +178,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         try {
             await this.fetchContent(refresh);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         } finally {
             this.loaded = true;
             this.refreshIcon = CoreConstants.ICON_REFRESH;
@@ -194,7 +194,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         }
 
         // All data obtained, now fill the context menu.
-        CoreCourseHelper.instance.fillContextMenu(this, this.module, this.courseId!, refresh, this.component);
+        CoreCourseHelper.fillContextMenu(this, this.module, this.courseId!, refresh, this.component);
     }
 
     /**
@@ -209,7 +209,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * Expand the description.
      */
     expandDescription(): void {
-        CoreTextUtils.instance.viewText(Translate.instance.instant('core.description'), this.description!, {
+        CoreTextUtils.viewText(Translate.instant('core.description'), this.description!, {
             component: this.component,
             componentId: this.module?.id,
             filter: true,
@@ -224,7 +224,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      */
     async gotoBlog(): Promise<void> {
         // const params: Params = { cmId: this.module?.id };
-        // @todo return CoreNavigator.instance.navigateToSitePath('AddonBlogEntriesPage', { params });
+        // @todo return CoreNavigator.navigateToSitePath('AddonBlogEntriesPage', { params });
     }
 
     /**
@@ -237,7 +237,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             return;
         }
 
-        CoreCourseHelper.instance.contextMenuPrefetch(this, this.module, this.courseId!, done);
+        CoreCourseHelper.contextMenuPrefetch(this, this.module, this.courseId!, done);
     }
 
     /**
@@ -251,12 +251,12 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         }
 
         if (this.prefetchStatus == CoreConstants.DOWNLOADING) {
-            CoreDomUtils.instance.showAlertTranslated(undefined, 'core.course.cannotdeletewhiledownloading');
+            CoreDomUtils.showAlertTranslated(undefined, 'core.course.cannotdeletewhiledownloading');
 
             return;
         }
 
-        CoreCourseHelper.instance.confirmAndRemoveFiles(this.module, this.courseId!, done);
+        CoreCourseHelper.confirmAndRemoveFiles(this.module, this.courseId!, done);
     }
 
     /**
@@ -267,14 +267,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      */
     protected getErrorDownloadingSomeFilesMessage(error: string | CoreTextErrorObject, multiLine?: boolean): string {
         if (multiLine) {
-            return CoreTextUtils.instance.buildSeveralParagraphsMessage([
-                Translate.instance.instant('core.errordownloadingsomefiles'),
+            return CoreTextUtils.buildSeveralParagraphsMessage([
+                Translate.instant('core.errordownloadingsomefiles'),
                 error,
             ]);
         } else {
-            error = CoreTextUtils.instance.getErrorMessageFromError(error) || error;
+            error = CoreTextUtils.getErrorMessageFromError(error) || error;
 
-            return Translate.instance.instant('core.errordownloadingsomefiles') + (error ? ' ' + error : '');
+            return Translate.instant('core.errordownloadingsomefiles') + (error ? ' ' + error : '');
         }
     }
 
@@ -284,7 +284,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param error The specific error.
      */
     protected showErrorDownloadingSomeFiles(error: string | CoreTextErrorObject): void {
-        CoreDomUtils.instance.showErrorModal(this.getErrorDownloadingSomeFilesMessage(error, true));
+        CoreDomUtils.showErrorModal(this.getErrorDownloadingSomeFilesMessage(error, true));
     }
 
     /**
@@ -322,7 +322,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         }, this.siteId);
 
         // Also, get the current status.
-        const status = await CoreCourseModulePrefetchDelegate.instance.getModuleStatus(this.module, this.courseId!);
+        const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(this.module, this.courseId!);
 
         this.currentStatus = status;
         this.showStatus(status);
@@ -355,7 +355,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         if (this.currentStatus != CoreConstants.DOWNLOADED) {
             // Download content. This function also loads module contents if needed.
             try {
-                await CoreCourseModulePrefetchDelegate.instance.downloadModule(this.module, this.courseId!);
+                await CoreCourseModulePrefetchDelegate.downloadModule(this.module, this.courseId!);
 
                 // If we reach here it means the download process already loaded the contents, no need to do it again.
                 contentsAlreadyLoaded = true;
@@ -368,14 +368,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
         if (!this.module.contents.length || (refresh && !contentsAlreadyLoaded)) {
             // Try to load the contents.
-            const ignoreCache = refresh && CoreApp.instance.isOnline();
+            const ignoreCache = refresh && CoreApp.isOnline();
 
             try {
-                await CoreCourse.instance.loadModuleContents(this.module, this.courseId, undefined, false, ignoreCache);
+                await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, ignoreCache);
             } catch (error) {
                 // Error loading contents. If we ignored cache, try to get the cached value.
                 if (ignoreCache && !this.module.contents) {
-                    await CoreCourse.instance.loadModuleContents(this.module, this.courseId);
+                    await CoreCourse.loadModuleContents(this.module, this.courseId);
                 } else if (!this.module.contents) {
                     // Not able to load contents, throw the error.
                     throw error;

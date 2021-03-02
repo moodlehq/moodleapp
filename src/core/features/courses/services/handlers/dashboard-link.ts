@@ -37,7 +37,7 @@ export class CoreCoursesDashboardLinkHandlerService extends CoreContentLinksHand
         return [{
             action: (siteId): void => {
                 // Use redirect to select the tab.
-                CoreNavigator.instance.navigateToSitePath(CoreDashboardHomeHandlerService.PAGE_NAME, { siteId });
+                CoreNavigator.navigateToSitePath(CoreDashboardHomeHandlerService.PAGE_NAME, { siteId });
             },
         }];
     }
@@ -49,9 +49,9 @@ export class CoreCoursesDashboardLinkHandlerService extends CoreContentLinksHand
      * @return Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string): Promise<boolean> {
-        return CoreDashboardHomeHandler.instance.isEnabledForSite(siteId);
+        return CoreDashboardHomeHandler.isEnabledForSite(siteId);
     }
 
 }
 
-export class CoreCoursesDashboardLinkHandler extends makeSingleton(CoreCoursesDashboardLinkHandlerService) {}
+export const CoreCoursesDashboardLinkHandler = makeSingleton(CoreCoursesDashboardLinkHandlerService);

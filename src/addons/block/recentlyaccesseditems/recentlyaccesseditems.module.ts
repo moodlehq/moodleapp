@@ -28,7 +28,7 @@ import { AddonBlockRecentlyAccessedItemsHandler } from './services/block-handler
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockRecentlyAccessedItemsHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockRecentlyAccessedItemsHandler.instance);
             },
         },
     ],

@@ -35,7 +35,7 @@ export class CoreSearchHistoryProvider {
      * @return Promise resolved with the list of items when done.
      */
     async getSearchHistory(searchArea: string, siteId?: string): Promise<CoreSearchHistoryDBRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const conditions = {
             searcharea: searchArea,
         };
@@ -106,7 +106,7 @@ export class CoreSearchHistoryProvider {
      * @return Resolved when done.
      */
     async insertOrUpdateSearchText(searchArea: string, text: string, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const db = site.getDb();
 
         const exists = await this.updateExistingItem(searchArea, text, db);
@@ -128,4 +128,4 @@ export class CoreSearchHistoryProvider {
 
 }
 
-export class CoreSearchHistory extends makeSingleton(CoreSearchHistoryProvider) {}
+export const CoreSearchHistory = makeSingleton(CoreSearchHistoryProvider);

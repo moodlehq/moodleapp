@@ -68,7 +68,7 @@ export class CoreQuestionHelperProvider {
         questions = questions || [];
 
         await Promise.all(questions.map(async (question) => {
-            await CoreQuestionDelegate.instance.clearTmpData(question, component, componentId);
+            await CoreQuestionDelegate.clearTmpData(question, component, componentId);
         }));
     }
 
@@ -87,11 +87,11 @@ export class CoreQuestionHelperProvider {
         componentId: string | number,
         siteId?: string,
     ): Promise<void> {
-        const questionComponentId = CoreQuestion.instance.getQuestionComponentId(question, componentId);
-        const folderPath = CoreQuestion.instance.getQuestionFolder(question.type, component, questionComponentId, siteId);
+        const questionComponentId = CoreQuestion.getQuestionComponentId(question, componentId);
+        const folderPath = CoreQuestion.getQuestionFolder(question.type, component, questionComponentId, siteId);
 
         // Ignore errors, maybe the folder doesn't exist.
-        await CoreUtils.instance.ignoreErrors(CoreFile.instance.removeDir(folderPath));
+        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**
@@ -102,14 +102,14 @@ export class CoreQuestionHelperProvider {
      * @param selector Selector to search the buttons. By default, '.im-controls input[type="submit"]'.
      */
     extractQbehaviourButtons(question: CoreQuestionQuestionParsed, selector?: string): void {
-        if (CoreQuestionDelegate.instance.getPreventSubmitMessage(question)) {
+        if (CoreQuestionDelegate.getPreventSubmitMessage(question)) {
             // The question is not fully supported, don't extract the buttons.
             return;
         }
 
         selector = selector || '.im-controls input[type="submit"]';
 
-        const element = CoreDomUtils.instance.convertToElement(question.html);
+        const element = CoreDomUtils.convertToElement(question.html);
 
         // Search the buttons.
         const buttons = <HTMLInputElement[]> Array.from(element.querySelectorAll(selector));
@@ -128,7 +128,7 @@ export class CoreQuestionHelperProvider {
      * @return Wether the certainty is found.
      */
     extractQbehaviourCBM(question: CoreQuestionQuestion): boolean {
-        const element = CoreDomUtils.instance.convertToElement(question.html);
+        const element = CoreDomUtils.convertToElement(question.html);
 
         const labels = Array.from(element.querySelectorAll('.im-controls .certaintychoices label[for*="certainty"]'));
         question.behaviourCertaintyOptions = [];
@@ -141,7 +141,7 @@ export class CoreQuestionHelperProvider {
                     id: input.id,
                     name: input.name,
                     value: input.value,
-                    text: CoreTextUtils.instance.cleanTags(label.innerHTML),
+                    text: CoreTextUtils.cleanTags(label.innerHTML),
                     disabled: input.disabled,
                 });
 
@@ -195,7 +195,7 @@ export class CoreQuestionHelperProvider {
      * @return Whether the seen input is found.
      */
     extractQbehaviourSeenInput(question: CoreQuestionQuestion): boolean {
-        const element = CoreDomUtils.instance.convertToElement(question.html);
+        const element = CoreDomUtils.convertToElement(question.html);
 
         // Search the "seen" input.
         const seenInput = <HTMLInputElement> element.querySelector('input[type="hidden"][name*=seen]');
@@ -251,13 +251,13 @@ export class CoreQuestionHelperProvider {
      * @param attrName Name of the attribute to store the HTML in.
      */
     protected extractQuestionLastElementNotInContent(question: CoreQuestionQuestion, selector: string, attrName: string): void {
-        const element = CoreDomUtils.instance.convertToElement(question.html);
+        const element = CoreDomUtils.convertToElement(question.html);
         const matches = <HTMLElement[]> Array.from(element.querySelectorAll(selector));
 
         // Get the last element and check it's not in the question contents.
         let last = matches.pop();
         while (last) {
-            if (!CoreDomUtils.instance.closest(last, '.formulation')) {
+            if (!CoreDomUtils.closest(last, '.formulation')) {
                 // Not in question contents. Add it to a separate attribute and remove it from the HTML.
                 question[attrName] = last.innerHTML;
                 last.parentElement?.removeChild(last);
@@ -305,7 +305,7 @@ export class CoreQuestionHelperProvider {
                 initMatch = initMatch.substr(0, initMatch.length - 2);
 
                 // Try to convert it to an object and add it to the question.
-                question.initObjects = CoreTextUtils.instance.parseJSON(initMatch, null);
+                question.initObjects = CoreTextUtils.parseJSON(initMatch, null);
             }
 
             const amdRegExp = new RegExp('require\\(\\[["\']qtype_' + question.type + '/question["\']\\],[^f]*' +
@@ -315,7 +315,7 @@ export class CoreQuestionHelperProvider {
 
             if (amdMatch) {
                 // Try to convert the arguments to an array and add them to the question.
-                question.amdArgs = CoreTextUtils.instance.parseJSON('[' + amdMatch[1] + ']', null);
+                question.amdArgs = CoreTextUtils.parseJSON('[' + amdMatch[1] + ']', null);
             }
         });
     }
@@ -329,7 +329,7 @@ export class CoreQuestionHelperProvider {
      * @return Object where the keys are the names.
      */
     getAllInputNamesFromHtml(html: string): Record<string, boolean> {
-        const element = CoreDomUtils.instance.convertToElement('<form>' + html + '</form>');
+        const element = CoreDomUtils.convertToElement('<form>' + html + '</form>');
         const form = <HTMLFormElement> element.children[0];
         const answers: Record<string, boolean> = {};
 
@@ -342,7 +342,7 @@ export class CoreQuestionHelperProvider {
                 return;
             }
 
-            answers[CoreQuestion.instance.removeQuestionPrefix(name)] = true;
+            answers[CoreQuestion.removeQuestionPrefix(name)] = true;
         });
 
         return answers;
@@ -395,10 +395,10 @@ export class CoreQuestionHelperProvider {
      * @return Attachments.
      */
     getQuestionAttachmentsFromHtml(html: string): CoreWSExternalFile[] {
-        const element = CoreDomUtils.instance.convertToElement(html);
+        const element = CoreDomUtils.convertToElement(html);
 
         // Remove the filemanager (area to attach files to a question).
-        CoreDomUtils.instance.removeElement(element, 'div[id*=filemanager]');
+        CoreDomUtils.removeElement(element, 'div[id*=filemanager]');
 
         // Search the anchors.
         const anchors = Array.from(element.querySelectorAll('a'));
@@ -409,7 +409,7 @@ export class CoreQuestionHelperProvider {
 
             // Check anchor is valid.
             if (anchor.href && content) {
-                content = CoreTextUtils.instance.cleanTags(content, true).trim();
+                content = CoreTextUtils.cleanTags(content, true).trim();
                 attachments.push({
                     filename: content,
                     fileurl: anchor.href,
@@ -432,7 +432,7 @@ export class CoreQuestionHelperProvider {
         }
 
         // Search the input holding the sequencecheck.
-        const element = CoreDomUtils.instance.convertToElement(html);
+        const element = CoreDomUtils.convertToElement(html);
         const input = <HTMLInputElement> element.querySelector('input[name*=sequencecheck]');
 
         if (!input || input.name === undefined || input.value === undefined) {
@@ -452,7 +452,7 @@ export class CoreQuestionHelperProvider {
      * @return State class.
      */
     getQuestionStateClass(name: string): string {
-        const state = CoreQuestion.instance.getState(name);
+        const state = CoreQuestion.getState(name);
 
         return state ? state.class : '';
     }
@@ -489,10 +489,10 @@ export class CoreQuestionHelperProvider {
         componentId: string | number,
         siteId?: string,
     ): Promise<(FileEntry | DirectoryEntry)[]> {
-        const questionComponentId = CoreQuestion.instance.getQuestionComponentId(question, componentId);
-        const folderPath = CoreQuestion.instance.getQuestionFolder(question.type, component, questionComponentId, siteId);
+        const questionComponentId = CoreQuestion.getQuestionComponentId(question, componentId);
+        const folderPath = CoreQuestion.getQuestionFolder(question.type, component, questionComponentId, siteId);
 
-        return CoreFile.instance.getDirectoryContents(folderPath);
+        return CoreFile.getDirectoryContents(folderPath);
     }
 
     /**
@@ -502,9 +502,9 @@ export class CoreQuestionHelperProvider {
      * @return Validation error message if present.
      */
     getValidationErrorFromHtml(html: string): string | undefined {
-        const element = CoreDomUtils.instance.convertToElement(html);
+        const element = CoreDomUtils.convertToElement(html);
 
-        return CoreDomUtils.instance.getContentsOfElement(element, '.validationerror');
+        return CoreDomUtils.getContentsOfElement(element, '.validationerror');
     }
 
     /**
@@ -514,7 +514,7 @@ export class CoreQuestionHelperProvider {
      * @return Whether it contains draft files URLs.
      */
     hasDraftFileUrls(html: string): boolean {
-        let url = CoreSites.instance.getCurrentSite()?.getURL();
+        let url = CoreSites.getCurrentSite()?.getURL();
         if (!url) {
             return false;
         }
@@ -536,12 +536,12 @@ export class CoreQuestionHelperProvider {
      * @return Promise resolved when done.
      */
     async loadLocalAnswers(question: CoreQuestionQuestion, component: string, attemptId: number): Promise<void> {
-        const answers = await CoreUtils.instance.ignoreErrors(
-            CoreQuestion.instance.getQuestionAnswers(component, attemptId, question.slot),
+        const answers = await CoreUtils.ignoreErrors(
+            CoreQuestion.getQuestionAnswers(component, attemptId, question.slot),
         );
 
         if (answers) {
-            question.localAnswers = CoreQuestion.instance.convertAnswersArrayToObject(answers, true);
+            question.localAnswers = CoreQuestion.convertAnswersArrayToObject(answers, true);
         } else {
             question.localAnswers = {};
         }
@@ -554,7 +554,7 @@ export class CoreQuestionHelperProvider {
      * @param question Question.
      */
     loadLocalAnswersInHtml(question: CoreQuestionQuestion): void {
-        const element = CoreDomUtils.instance.convertToElement('<form>' + question.html + '</form>');
+        const element = CoreDomUtils.convertToElement('<form>' + question.html + '</form>');
         const form = <HTMLFormElement> element.children[0];
 
         // Search all input elements.
@@ -567,7 +567,7 @@ export class CoreQuestionHelperProvider {
             }
 
             // Search if there's a local answer.
-            name = CoreQuestion.instance.removeQuestionPrefix(name);
+            name = CoreQuestion.removeQuestionPrefix(name);
             if (question.localAnswers[name] === undefined) {
                 if (Object.keys(question.localAnswers).length && element.type == 'radio') {
                     // No answer stored, but there is a sequencecheck or similar. This means the user cleared his choice.
@@ -595,7 +595,7 @@ export class CoreQuestionHelperProvider {
                 }
             } else if (element.type == 'checkbox') {
                 // Check if this checkbox is checked.
-                if (CoreUtils.instance.isTrueOrOne(question.localAnswers[name])) {
+                if (CoreUtils.isTrueOrOne(question.localAnswers[name])) {
                     element.setAttribute('checked', 'checked');
                 } else {
                     element.removeAttribute('checked');
@@ -632,11 +632,11 @@ export class CoreQuestionHelperProvider {
             componentId = question.number;
         }
 
-        const files = CoreQuestionDelegate.instance.getAdditionalDownloadableFiles(question, usageId) || [];
+        const files = CoreQuestionDelegate.getAdditionalDownloadableFiles(question, usageId) || [];
 
-        files.push(...CoreFilepool.instance.extractDownloadableFilesFromHtmlAsFakeFileObjects(question.html));
+        files.push(...CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(question.html));
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const treated: Record<string, boolean> = {};
 
@@ -648,7 +648,7 @@ export class CoreQuestionHelperProvider {
             }
             treated[file.fileurl] = true;
 
-            if (!site.canDownloadFiles() && CoreUrlUtils.instance.isPluginFileUrl(file.fileurl)) {
+            if (!site.canDownloadFiles() && CoreUrlUtils.isPluginFileUrl(file.fileurl)) {
                 return;
             }
 
@@ -657,7 +657,7 @@ export class CoreQuestionHelperProvider {
                 return;
             }
 
-            await CoreFilepool.instance.addToQueueByUrl(site.getId(), file.fileurl, component, componentId, timemodified);
+            await CoreFilepool.addToQueueByUrl(site.getId(), file.fileurl, component, componentId, timemodified);
         }));
     }
 
@@ -680,8 +680,8 @@ export class CoreQuestionHelperProvider {
         componentId: string | number,
         siteId?: string,
     ): Promise<CoreQuestionsAnswers> {
-        await CoreUtils.instance.allPromises(questions.map(async (question) => {
-            await CoreQuestionDelegate.instance.prepareAnswersForQuestion(
+        await CoreUtils.allPromises(questions.map(async (question) => {
+            await CoreQuestionDelegate.prepareAnswersForQuestion(
                 question,
                 answers,
                 offline,
@@ -700,7 +700,7 @@ export class CoreQuestionHelperProvider {
      * @param element DOM element.
      */
     replaceCorrectnessClasses(element: HTMLElement): void {
-        CoreDomUtils.instance.replaceClassesInElement(element, {
+        CoreDomUtils.replaceClassesInElement(element, {
             correct: 'core-question-answer-correct',
             incorrect: 'core-question-answer-incorrect',
         });
@@ -712,7 +712,7 @@ export class CoreQuestionHelperProvider {
      * @param element DOM element.
      */
     replaceFeedbackClasses(element: HTMLElement): void {
-        CoreDomUtils.instance.replaceClassesInElement(element, {
+        CoreDomUtils.replaceClassesInElement(element, {
             outcome: 'core-question-feedback-container core-question-feedback-padding',
             specificfeedback: 'core-question-feedback-container core-question-feedback-inline',
         });
@@ -727,7 +727,7 @@ export class CoreQuestionHelperProvider {
      * @return Whether the button is found.
      */
     protected searchBehaviourButton(question: CoreQuestionQuestion, htmlProperty: string, selector: string): boolean {
-        const element = CoreDomUtils.instance.convertToElement(question[htmlProperty]);
+        const element = CoreDomUtils.convertToElement(question[htmlProperty]);
 
         const button = <HTMLInputElement> element.querySelector(selector);
         if (!button) {
@@ -757,7 +757,7 @@ export class CoreQuestionHelperProvider {
         const now = Date.now();
         if (now - this.lastErrorShown > 500) {
             this.lastErrorShown = now;
-            CoreDomUtils.instance.showErrorModalDefault(error || '', 'addon.mod_quiz.errorparsequestions', true);
+            CoreDomUtils.showErrorModalDefault(error || '', 'addon.mod_quiz.errorparsequestions', true);
         }
 
         onAbort?.emit();
@@ -846,7 +846,7 @@ export class CoreQuestionHelperProvider {
 
         // @todo: Check if another attribute needs to be used now instead of tappable.
         const icons = <HTMLElement[]> Array.from(element.querySelectorAll('i.icon.questioncorrectnessicon[tappable]'));
-        const title = Translate.instance.instant('core.question.feedback');
+        const title = Translate.instant('core.question.feedback');
 
         icons.forEach((icon) => {
             // Search the feedback for the icon.
@@ -858,7 +858,7 @@ export class CoreQuestionHelperProvider {
 
             // There's a hidden feedback, show it when the icon is clicked.
             icon.addEventListener('click', () => {
-                CoreTextUtils.instance.viewText(title, span.innerHTML, {
+                CoreTextUtils.viewText(title, span.innerHTML, {
                     component: component,
                     componentId: componentId,
                     filter: true,
@@ -872,7 +872,7 @@ export class CoreQuestionHelperProvider {
 
 }
 
-export class CoreQuestionHelper extends makeSingleton(CoreQuestionHelperProvider) {}
+export const CoreQuestionHelper = makeSingleton(CoreQuestionHelperProvider);
 
 /**
  * Question with calculated data.

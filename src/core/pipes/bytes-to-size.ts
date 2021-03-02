@@ -49,7 +49,7 @@ export class CoreBytesToSizePipe implements PipeTransform {
             value = numberValue;
         }
 
-        return CoreTextUtils.instance.bytesToSize(value);
+        return CoreTextUtils.bytesToSize(value);
     }
 
 }

@@ -35,7 +35,7 @@ export class AddonPrivateFilesMainMenuHandlerService implements CoreMainMenuHand
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
-        return AddonPrivateFiles.instance.isPluginEnabled();
+        return AddonPrivateFiles.isPluginEnabled();
     }
 
     /**
@@ -55,4 +55,4 @@ export class AddonPrivateFilesMainMenuHandlerService implements CoreMainMenuHand
 
 }
 
-export class AddonPrivateFilesMainMenuHandler extends makeSingleton(AddonPrivateFilesMainMenuHandlerService) {}
+export const AddonPrivateFilesMainMenuHandler = makeSingleton(AddonPrivateFilesMainMenuHandlerService);

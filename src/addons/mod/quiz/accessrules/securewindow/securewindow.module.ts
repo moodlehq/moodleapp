@@ -26,7 +26,7 @@ import { AddonModQuizAccessSecureWindowHandler } from './services/handlers/secur
             multi: true,
             deps: [],
             useFactory: () => () => {
-                AddonModQuizAccessRuleDelegate.instance.registerHandler(AddonModQuizAccessSecureWindowHandler.instance);
+                AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessSecureWindowHandler.instance);
             },
         },
     ],

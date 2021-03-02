@@ -53,7 +53,7 @@ export class CoreFilesComponent implements OnInit, DoCheck {
      * Component being initialized.
      */
     ngOnInit(): void {
-        if (CoreUtils.instance.isTrueOrOne(this.showInline) && this.files) {
+        if (CoreUtils.isTrueOrOne(this.showInline) && this.files) {
             this.renderInlineFiles();
         }
     }
@@ -62,7 +62,7 @@ export class CoreFilesComponent implements OnInit, DoCheck {
      * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
      */
     ngDoCheck(): void {
-        if (CoreUtils.instance.isTrueOrOne(this.showInline) && this.files) {
+        if (CoreUtils.isTrueOrOne(this.showInline) && this.files) {
             // Check if there's any change in the files array.
             const changes = this.differ.diff(this.files);
             if (changes) {
@@ -76,7 +76,7 @@ export class CoreFilesComponent implements OnInit, DoCheck {
      */
     protected renderInlineFiles(): void {
         this.contentText = this.files!.reduce((previous, file) => {
-            const text = CoreMimetypeUtils.instance.getEmbeddedHtml(file);
+            const text = CoreMimetypeUtils.getEmbeddedHtml(file);
 
             return text ? previous + '<br>' + text : previous;
         }, '');

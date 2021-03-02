@@ -53,18 +53,18 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
     ): Promise<void> {
         const moduleId = Number(params.id);
 
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const module = await CoreCourse.instance.getModuleBasicInfo(moduleId, siteId);
+            const module = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
             courseId = Number(module.course || courseId || params.courseid || params.cid);
 
             // Check if the user can see the user reports in the lesson.
-            const accessInfo = await AddonModLesson.instance.getAccessInformation(module.instance, { cmId: module.id, siteId });
+            const accessInfo = await AddonModLesson.getAccessInformation(module.instance, { cmId: module.id, siteId });
 
             if (accessInfo.canviewreports) {
                 // User can view reports, go to view the report.
-                CoreNavigator.instance.navigateToSitePath(
+                CoreNavigator.navigateToSitePath(
                     AddonModLessonModuleHandlerService.PAGE_NAME + `/user-retake/${courseId}/${module.instance}`,
                     {
                         params: { userId: Number(params.userid) },
@@ -73,10 +73,10 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
                 );
             } else {
                 // User cannot view the report, go to lesson index.
-                CoreCourseHelper.instance.navigateToModule(moduleId, siteId, courseId, module.section);
+                CoreCourseHelper.navigateToModule(moduleId, siteId, courseId, module.section);
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         } finally {
             modal.dismiss();
         }
@@ -94,9 +94,9 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
-        return AddonModLesson.instance.isPluginEnabled(siteId);
+        return AddonModLesson.isPluginEnabled(siteId);
     }
 
 }
 
-export class AddonModLessonGradeLinkHandler extends makeSingleton(AddonModLessonGradeLinkHandlerService) {}
+export const AddonModLessonGradeLinkHandler = makeSingleton(AddonModLessonGradeLinkHandlerService);

@@ -103,8 +103,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
-        this.currentSite = CoreSites.instance.getCurrentSite();
+        this.currentUserId = CoreSites.getCurrentSiteUserId();
+        this.currentSite = CoreSites.getCurrentSite();
 
         // Listen to events.
         this.savedObserver = CoreEvents.on<AddonModAssignSubmissionSavedEventData>(
@@ -123,7 +123,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             (data) => {
                 if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
                 // Assignment submitted, check completion.
-                    CoreCourse.instance.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+                    CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
 
                     // Reload data since it can have offline data now.
                     this.showLoadingAndRefresh(true, false);
@@ -142,18 +142,18 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         await this.loadContent(false, true);
 
         try {
-            await AddonModAssign.instance.logView(this.assign!.id, this.assign!.name);
-            CoreCourse.instance.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+            await AddonModAssign.logView(this.assign!.id, this.assign!.name);
+            CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
         } catch {
             // Ignore errors. Just don't check Module completion.
         }
 
         if (this.canViewAllSubmissions) {
             // User can see all submissions, log grading view.
-            CoreUtils.instance.ignoreErrors(AddonModAssign.instance.logGradingView(this.assign!.id, this.assign!.name));
+            CoreUtils.ignoreErrors(AddonModAssign.logGradingView(this.assign!.id, this.assign!.name));
         } else if (this.canViewOwnSubmission) {
             // User can only see their own submission, log view the user submission.
-            CoreUtils.instance.ignoreErrors(AddonModAssign.instance.logSubmissionView(this.assign!.id, this.assign!.name));
+            CoreUtils.ignoreErrors(AddonModAssign.logSubmissionView(this.assign!.id, this.assign!.name));
         }
     }
 
@@ -165,7 +165,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         ev?.stopPropagation();
 
         if (this.assign && (this.description || this.assign.introattachments)) {
-            CoreTextUtils.instance.viewText(Translate.instance.instant('core.description'), this.description || '', {
+            CoreTextUtils.viewText(Translate.instant('core.description'), this.description || '', {
                 component: this.component,
                 componentId: this.module!.id,
                 files: this.assign.introattachments,
@@ -189,22 +189,22 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         // Get assignment data.
         try {
-            this.assign = await AddonModAssign.instance.getAssignment(this.courseId!, this.module!.id);
+            this.assign = await AddonModAssign.getAssignment(this.courseId!, this.module!.id);
 
             this.dataRetrieved.emit(this.assign);
             this.description = this.assign.intro;
 
             if (sync) {
                 // Try to synchronize the assign.
-                await CoreUtils.instance.ignoreErrors(this.syncActivity(showErrors));
+                await CoreUtils.ignoreErrors(this.syncActivity(showErrors));
             }
 
             // Check if there's any offline data for this assign.
-            this.hasOffline = await AddonModAssignOffline.instance.hasAssignOfflineData(this.assign.id);
+            this.hasOffline = await AddonModAssignOffline.hasAssignOfflineData(this.assign.id);
 
             // Get assignment submissions.
-            const submissions = await AddonModAssign.instance.getSubmissions(this.assign.id, { cmId: this.module!.id });
-            const time = CoreTimeUtils.instance.timestamp();
+            const submissions = await AddonModAssign.getSubmissions(this.assign.id, { cmId: this.module!.id });
+            const time = CoreTimeUtils.timestamp();
 
             this.canViewAllSubmissions = submissions.canviewsubmissions;
 
@@ -213,18 +213,18 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
                 // Calculate the messages to display about time remaining and late submissions.
                 if (this.assign.duedate > 0) {
                     if (this.assign.duedate - time <= 0) {
-                        this.timeRemaining = Translate.instance.instant('addon.mod_assign.assignmentisdue');
+                        this.timeRemaining = Translate.instant('addon.mod_assign.assignmentisdue');
                     } else {
-                        this.timeRemaining = CoreTimeUtils.instance.formatDuration(this.assign.duedate - time, 3);
+                        this.timeRemaining = CoreTimeUtils.formatDuration(this.assign.duedate - time, 3);
 
                         if (this.assign.cutoffdate) {
                             if (this.assign.cutoffdate > time) {
-                                this.lateSubmissions = Translate.instance.instant(
+                                this.lateSubmissions = Translate.instant(
                                     'addon.mod_assign.latesubmissionsaccepted',
-                                    { $a: CoreTimeUtils.instance.userDate(this.assign.cutoffdate * 1000) },
+                                    { $a: CoreTimeUtils.userDate(this.assign.cutoffdate * 1000) },
                                 );
                             } else {
-                                this.lateSubmissions = Translate.instance.instant('addon.mod_assign.nomoresubmissionsaccepted');
+                                this.lateSubmissions = Translate.instant('addon.mod_assign.nomoresubmissionsaccepted');
                             }
                         } else {
                             this.lateSubmissions = '';
@@ -236,18 +236,18 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
                 }
 
                 // Check if groupmode is enabled to avoid showing wrong numbers.
-                this.groupInfo = await CoreGroups.instance.getActivityGroupInfo(this.assign.cmid, false);
+                this.groupInfo = await CoreGroups.getActivityGroupInfo(this.assign.cmid, false);
                 this.showNumbers = (this.groupInfo.groups && this.groupInfo.groups.length == 0) ||
                     this.currentSite!.isVersionGreaterEqualThan('3.5');
 
-                await this.setGroup(CoreGroups.instance.validateGroupId(this.group, this.groupInfo));
+                await this.setGroup(CoreGroups.validateGroupId(this.group, this.groupInfo));
 
                 return;
             }
 
             try {
                 // Check if the user can view their own submission.
-                await AddonModAssign.instance.getSubmissionStatus(this.assign.id, { cmId: this.module!.id });
+                await AddonModAssign.getSubmissionStatus(this.assign.id, { cmId: this.module!.id });
                 this.canViewOwnSubmission = true;
             } catch (error) {
                 this.canViewOwnSubmission = false;
@@ -270,7 +270,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     async setGroup(groupId = 0): Promise<void> {
         this.group = groupId;
 
-        const submissionStatus = await AddonModAssign.instance.getSubmissionStatus(this.assign!.id, {
+        const submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign!.id, {
             groupId: this.group,
             cmId: this.module!.id,
         });
@@ -322,7 +322,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         if (typeof status != 'undefined') {
             params.status = status;
         }
-        CoreNavigator.instance.navigate('submission', {
+        CoreNavigator.navigate('submission', {
             params,
         });
     }
@@ -349,13 +349,13 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonModAssign.instance.invalidateAssignmentData(this.courseId!));
+        promises.push(AddonModAssign.invalidateAssignmentData(this.courseId!));
 
         if (this.assign) {
-            promises.push(AddonModAssign.instance.invalidateAllSubmissionData(this.assign.id));
+            promises.push(AddonModAssign.invalidateAllSubmissionData(this.assign.id));
 
             if (this.canViewAllSubmissions) {
-                promises.push(AddonModAssign.instance.invalidateSubmissionStatusData(this.assign.id, undefined, this.group));
+                promises.push(AddonModAssign.invalidateSubmissionStatusData(this.assign.id, undefined, this.group));
             }
         }
 
@@ -392,7 +392,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         if (this.assign && syncEventData.assignId == this.assign.id) {
             if (syncEventData.warnings && syncEventData.warnings.length) {
                 // Show warnings.
-                CoreDomUtils.instance.showErrorModal(syncEventData.warnings[0]);
+                CoreDomUtils.showErrorModal(syncEventData.warnings[0]);
             }
 
             return true;
@@ -407,7 +407,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      * @return Promise resolved when done.
      */
     protected async sync(): Promise<void> {
-        await AddonModAssignSync.instance.syncAssign(this.assign!.id);
+        await AddonModAssignSync.syncAssign(this.assign!.id);
     }
 
     /**

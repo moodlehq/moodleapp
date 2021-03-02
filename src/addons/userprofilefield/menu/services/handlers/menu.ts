@@ -76,4 +76,4 @@ export class AddonUserProfileFieldMenuHandlerService implements CoreUserProfileF
 
 }
 
-export class AddonUserProfileFieldMenuHandler extends makeSingleton(AddonUserProfileFieldMenuHandlerService) {}
+export const AddonUserProfileFieldMenuHandler = makeSingleton(AddonUserProfileFieldMenuHandlerService);

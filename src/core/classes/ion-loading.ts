@@ -43,7 +43,7 @@ export class CoreIonLoadingElement {
      */
     async present(): Promise<void> {
         // Wait a bit before presenting the modal, to prevent it being displayed if dismiss is called fast.
-        await CoreUtils.instance.wait(40);
+        await CoreUtils.wait(40);
 
         if (!this.isDismissed) {
             this.isPresented = true;

@@ -41,7 +41,7 @@ export class CoreTagListComponent {
         };
 
         // @todo: Check split view to navigate on the outlet if any.
-        CoreNavigator.instance.navigateToSitePath('/tag/index', { params, preferCurrentTab: false });
+        CoreNavigator.navigateToSitePath('/tag/index', { params, preferCurrentTab: false });
     }
 
 }

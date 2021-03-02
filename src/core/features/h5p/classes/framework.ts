@@ -61,7 +61,7 @@ export class CoreH5PFramework {
             return;
         }
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         const whereAndParams = db.getInOrEqual(libraryIds);
         whereAndParams.sql = 'mainlibraryid ' + whereAndParams.sql;
@@ -78,7 +78,7 @@ export class CoreH5PFramework {
      */
     async deleteCachedAssets(libraryId: number, siteId?: string): Promise<CoreH5PLibraryCachedAssetsDBRecord[]> {
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         // Get all the hashes that use this library.
         const entries = await db.getRecords<CoreH5PLibraryCachedAssetsDBRecord>(
@@ -105,7 +105,7 @@ export class CoreH5PFramework {
      */
     async deleteContentData(id: number, siteId?: string): Promise<void> {
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         await Promise.all([
             // Delete the content data.
@@ -124,7 +124,7 @@ export class CoreH5PFramework {
      * @return Promise resolved when done.
      */
     async deleteLibrary(id: number, siteId?: string): Promise<void> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         await db.deleteRecords(LIBRARIES_TABLE_NAME, { id });
     }
@@ -137,7 +137,7 @@ export class CoreH5PFramework {
      * @return Promise resolved when done.
      */
     async deleteLibraryDependencies(libraryId: number, siteId?: string): Promise<void> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         await db.deleteRecords(LIBRARY_DEPENDENCIES_TABLE_NAME, { libraryid: libraryId });
     }
@@ -150,7 +150,7 @@ export class CoreH5PFramework {
      * @return Promise resolved when done.
      */
     async deleteLibraryUsage(id: number, siteId?: string): Promise<void> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         await db.deleteRecords(CONTENTS_LIBRARIES_TABLE_NAME, { h5pid: id });
     }
@@ -162,7 +162,7 @@ export class CoreH5PFramework {
      * @return Promise resolved with the list of content data.
      */
     async getAllContentData(siteId?: string): Promise<CoreH5PContentDBRecord[]> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         return db.getAllRecords<CoreH5PContentDBRecord>(CONTENT_TABLE_NAME);
     }
@@ -175,7 +175,7 @@ export class CoreH5PFramework {
      * @return Promise resolved with the content data.
      */
     async getContentData(id: number, siteId?: string): Promise<CoreH5PContentDBRecord> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         return db.getRecord<CoreH5PContentDBRecord>(CONTENT_TABLE_NAME, { id });
     }
@@ -188,12 +188,12 @@ export class CoreH5PFramework {
      * @return Promise resolved with the content data.
      */
     async getContentDataByUrl(fileUrl: string, siteId?: string): Promise<CoreH5PContentDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const db = site.getDb();
 
         // Try to use the folder name, it should be more reliable than the URL.
-        const folderName = await CoreH5P.instance.h5pCore.h5pFS.getContentFolderNameByUrl(fileUrl, site.getId());
+        const folderName = await CoreH5P.h5pCore.h5pFS.getContentFolderNameByUrl(fileUrl, site.getId());
 
         try {
             return await db.getRecord<CoreH5PContentDBRecord>(CONTENT_TABLE_NAME, { foldername: folderName });
@@ -211,7 +211,7 @@ export class CoreH5PFramework {
      */
     async getLatestLibraryVersion(machineName: string, siteId?: string): Promise<CoreH5PLibraryParsedDBRecord> {
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         try {
             const records = await db.getRecords<CoreH5PLibraryDBRecord>(
@@ -249,7 +249,7 @@ export class CoreH5PFramework {
         siteId?: string,
     ): Promise<CoreH5PLibraryParsedDBRecord> {
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         const libraries = await db.getRecords<CoreH5PLibraryDBRecord>(LIBRARIES_TABLE_NAME, {
             machinename: machineName,
@@ -283,7 +283,7 @@ export class CoreH5PFramework {
      * @return Promise resolved with the library data, rejected if not found.
      */
     async getLibraryById(id: number, siteId?: string): Promise<CoreH5PLibraryParsedDBRecord> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         const library = await db.getRecord<CoreH5PLibraryDBRecord>(LIBRARIES_TABLE_NAME, { id });
 
@@ -412,7 +412,7 @@ export class CoreH5PFramework {
      */
     async loadAddons(siteId?: string): Promise<CoreH5PLibraryAddonData[]> {
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         const query = 'SELECT l1.id AS libraryId, l1.machinename AS machineName, ' +
                         'l1.majorversion AS majorVersion, l1.minorversion AS minorVersion, ' +
@@ -444,7 +444,7 @@ export class CoreH5PFramework {
      * @return Promise resolved with the content data.
      */
     async loadContent(id?: number, fileUrl?: string, siteId?: string): Promise<CoreH5PFrameworkContentData> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         let contentData: CoreH5PContentDBRecord;
 
@@ -479,7 +479,7 @@ export class CoreH5PFramework {
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const params = CoreTextUtils.instance.parseJSON<any>(contentData.jsoncontent);
+        const params = CoreTextUtils.parseJSON<any>(contentData.jsoncontent);
         if (!params.metadata) {
             params.metadata = {};
         }
@@ -502,7 +502,7 @@ export class CoreH5PFramework {
         siteId?: string,
     ): Promise<{[machineName: string]: CoreH5PContentDependencyData}> {
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         let query = 'SELECT hl.id AS libraryId, hl.machinename AS machineName, ' +
                         'hl.majorversion AS majorVersion, hl.minorversion AS minorVersion, ' +
@@ -585,7 +585,7 @@ export class CoreH5PFramework {
             library.id,
         ];
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         const result = await db.execute(sql, sqlParams);
 
@@ -611,7 +611,7 @@ export class CoreH5PFramework {
      */
     parseLibAddonData(library: LibraryAddonDBData): CoreH5PLibraryAddonData {
         const parsedLib = <CoreH5PLibraryAddonData> library;
-        parsedLib.addTo = CoreTextUtils.instance.parseJSON<CoreH5PLibraryAddTo | null>(library.addTo, null);
+        parsedLib.addTo = CoreTextUtils.parseJSON<CoreH5PLibraryAddTo | null>(library.addTo, null);
 
         return parsedLib;
     }
@@ -624,9 +624,9 @@ export class CoreH5PFramework {
      */
     protected parseLibDBData(library: CoreH5PLibraryDBRecord): CoreH5PLibraryParsedDBRecord {
         return Object.assign(library, {
-            semantics: library.semantics ? CoreTextUtils.instance.parseJSON(library.semantics, null) : null,
-            addto: library.addto ? CoreTextUtils.instance.parseJSON(library.addto, null) : null,
-            metadatasettings: library.metadatasettings ? CoreTextUtils.instance.parseJSON(library.metadatasettings, null) : null,
+            semantics: library.semantics ? CoreTextUtils.parseJSON(library.semantics, null) : null,
+            addto: library.addto ? CoreTextUtils.parseJSON(library.addto, null) : null,
+            metadatasettings: library.metadatasettings ? CoreTextUtils.parseJSON(library.metadatasettings, null) : null,
         });
     }
 
@@ -659,7 +659,7 @@ export class CoreH5PFramework {
         siteId?: string,
     ): Promise<void> {
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         await Promise.all(Object.keys(dependencies).map(async (key) => {
             const data: Partial<CoreH5PLibraryCachedAssetsDBRecord> = {
@@ -697,7 +697,7 @@ export class CoreH5PFramework {
             embedTypes = libraryData.embedTypes.join(', ');
         }
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const db = site.getDb();
         const data: Partial<CoreH5PLibraryDBRecord> = {
@@ -751,7 +751,7 @@ export class CoreH5PFramework {
         siteId?: string,
     ): Promise<void> {
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         await Promise.all(dependencies.map(async (dependency) => {
             // Get the ID of the library.
@@ -782,7 +782,7 @@ export class CoreH5PFramework {
         siteId?: string,
     ): Promise<void> {
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         // Calculate the CSS to drop.
         const dropLibraryCssList: Record<string, string> = {};
@@ -825,7 +825,7 @@ export class CoreH5PFramework {
      */
     async updateContent(content: CoreH5PContentBeingSaved, folderName: string, fileUrl: string, siteId?: string): Promise<number> {
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         // If the libraryid declared in the package is empty, get the latest version.
         if (content.library && typeof content.library.libraryId == 'undefined') {
@@ -872,7 +872,7 @@ export class CoreH5PFramework {
      */
     async updateContentFields(id: number, fields: Partial<CoreH5PContentDBRecord>, siteId?: string): Promise<void> {
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         const data = Object.assign({}, fields);
 

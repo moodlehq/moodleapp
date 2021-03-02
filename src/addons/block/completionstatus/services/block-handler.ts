@@ -52,4 +52,4 @@ export class AddonBlockCompletionStatusHandlerService extends CoreBlockBaseHandl
 
 }
 
-export class AddonBlockCompletionStatusHandler extends makeSingleton(AddonBlockCompletionStatusHandlerService) {}
+export const AddonBlockCompletionStatusHandler = makeSingleton(AddonBlockCompletionStatusHandlerService);

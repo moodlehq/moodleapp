@@ -47,15 +47,15 @@ export class CoreCoursesMyCoursesHomeHandlerService implements CoreMainMenuHomeH
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabledForSite(siteId?: string): Promise<boolean> {
-        const disabled = await CoreCourses.instance.isMyCoursesDisabled(siteId);
+        const disabled = await CoreCourses.isMyCoursesDisabled(siteId);
 
         if (disabled) {
             return false;
         }
 
-        const blocks = await CoreCoursesDashboard.instance.getDashboardBlocks(undefined, siteId);
+        const blocks = await CoreCoursesDashboard.getDashboardBlocks(undefined, siteId);
 
-        return !CoreBlockDelegate.instance.hasSupportedBlock(blocks)&& !CoreSiteHome.instance.isAvailable(siteId);
+        return !CoreBlockDelegate.hasSupportedBlock(blocks)&& !CoreSiteHome.isAvailable(siteId);
     }
 
     /**
@@ -75,4 +75,4 @@ export class CoreCoursesMyCoursesHomeHandlerService implements CoreMainMenuHomeH
 
 }
 
-export class CoreCoursesMyCoursesHomeHandler extends makeSingleton(CoreCoursesMyCoursesHomeHandlerService) {}
+export const CoreCoursesMyCoursesHomeHandler = makeSingleton(CoreCoursesMyCoursesHomeHandlerService);

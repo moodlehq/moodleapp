@@ -51,8 +51,8 @@ export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.requiredLabel = Translate.instance.instant('core.required');
-        this.coreMarkRequired = CoreUtils.instance.isTrueOrOne(this.coreMarkRequired);
+        this.requiredLabel = Translate.instant('core.required');
+        this.coreMarkRequired = CoreUtils.isTrueOrOne(this.coreMarkRequired);
     }
 
     /**
@@ -62,7 +62,7 @@ export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
         if (this.coreMarkRequired) {
             // Add the "required" to the aria-label.
             const ariaLabel = this.element.getAttribute('aria-label') ||
-                CoreTextUtils.instance.cleanTags(this.element.innerHTML, true);
+                CoreTextUtils.cleanTags(this.element.innerHTML, true);
             if (ariaLabel) {
                 this.element.setAttribute('aria-label', ariaLabel + ' ' + this.requiredLabel);
             }

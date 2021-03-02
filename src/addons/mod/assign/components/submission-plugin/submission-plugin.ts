@@ -63,7 +63,7 @@ export class AddonModAssignSubmissionPluginComponent implements OnInit {
             return;
         }
 
-        const name = AddonModAssignSubmissionDelegate.instance.getPluginName(this.plugin);
+        const name = AddonModAssignSubmissionDelegate.getPluginName(this.plugin);
 
         if (!name) {
             this.pluginLoaded = true;
@@ -73,7 +73,7 @@ export class AddonModAssignSubmissionPluginComponent implements OnInit {
         this.plugin.name = name;
 
         // Check if the plugin has defined its own component to render itself.
-        this.pluginComponent = await AddonModAssignSubmissionDelegate.instance.getComponentForPlugin(this.plugin, this.edit);
+        this.pluginComponent = await AddonModAssignSubmissionDelegate.getComponentForPlugin(this.plugin, this.edit);
 
         if (this.pluginComponent) {
             // Prepare the data to pass to the component.
@@ -81,15 +81,15 @@ export class AddonModAssignSubmissionPluginComponent implements OnInit {
                 assign: this.assign,
                 submission: this.submission,
                 plugin: this.plugin,
-                configs: AddonModAssignHelper.instance.getPluginConfig(this.assign, 'assignsubmission', this.plugin.type),
+                configs: AddonModAssignHelper.getPluginConfig(this.assign, 'assignsubmission', this.plugin.type),
                 edit: this.edit,
                 allowOffline: this.allowOffline,
             };
         } else {
             // Data to render the plugin.
-            this.text = AddonModAssign.instance.getSubmissionPluginText(this.plugin);
-            this.files = AddonModAssign.instance.getSubmissionPluginAttachments(this.plugin);
-            this.notSupported = AddonModAssignSubmissionDelegate.instance.isPluginSupported(this.plugin.type);
+            this.text = AddonModAssign.getSubmissionPluginText(this.plugin);
+            this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);
+            this.notSupported = AddonModAssignSubmissionDelegate.isPluginSupported(this.plugin.type);
             this.pluginLoaded = true;
         }
     }

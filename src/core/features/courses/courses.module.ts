@@ -64,13 +64,13 @@ const mainMenuHomeSiblingRoutes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreMainMenuHomeDelegate.instance.registerHandler(CoreDashboardHomeHandler.instance);
-                CoreMainMenuHomeDelegate.instance.registerHandler(CoreCoursesMyCoursesHomeHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(CoreCoursesCourseLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(CoreCoursesIndexLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(CoreCoursesDashboardLinkHandler.instance);
-                CorePushNotificationsDelegate.instance.registerClickHandler(CoreCoursesEnrolPushClickHandler.instance);
-                CorePushNotificationsDelegate.instance.registerClickHandler(CoreCoursesRequestPushClickHandler.instance);
+                CoreMainMenuHomeDelegate.registerHandler(CoreDashboardHomeHandler.instance);
+                CoreMainMenuHomeDelegate.registerHandler(CoreCoursesMyCoursesHomeHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreCoursesCourseLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreCoursesIndexLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreCoursesDashboardLinkHandler.instance);
+                CorePushNotificationsDelegate.registerClickHandler(CoreCoursesEnrolPushClickHandler.instance);
+                CorePushNotificationsDelegate.registerClickHandler(CoreCoursesRequestPushClickHandler.instance);
             },
         },
     ],

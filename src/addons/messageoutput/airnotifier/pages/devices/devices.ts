@@ -48,11 +48,11 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
      */
     protected async fetchDevices(): Promise<void> {
         try {
-            const devices = await AddonMessageOutputAirnotifier.instance.getUserDevices();
+            const devices = await AddonMessageOutputAirnotifier.getUserDevices();
 
             this.devices = this.formatDevices(devices);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
         } finally {
             this.devicesLoaded = true;
         }
@@ -66,7 +66,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
      */
     protected formatDevices(devices: AddonMessageOutputAirnotifierDevice[]): AddonMessageOutputAirnotifierDeviceFormatted[] {
         const formattedDevices: AddonMessageOutputAirnotifierDeviceFormatted[] = devices;
-        const pushId = CorePushNotifications.instance.getPushId();
+        const pushId = CorePushNotifications.getPushId();
 
         // Convert enabled to boolean and search current device.
         formattedDevices.forEach((device) => {
@@ -96,9 +96,9 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
      * Fetch devices. The purpose is to store the updated data, it won't be reflected in the view.
      */
     protected async updateDevices(): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(AddonMessageOutputAirnotifier.instance.invalidateUserDevices());
+        await CoreUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
 
-        await AddonMessageOutputAirnotifier.instance.getUserDevices();
+        await AddonMessageOutputAirnotifier.getUserDevices();
     }
 
     /**
@@ -108,7 +108,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
      */
     async refreshDevices(refresher: CustomEvent<IonRefresher>): Promise<void> {
         try {
-            await CoreUtils.instance.ignoreErrors(AddonMessageOutputAirnotifier.instance.invalidateUserDevices());
+            await CoreUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
 
             await this.fetchDevices();
         } finally {
@@ -126,13 +126,13 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
         device.updating = true;
 
         try {
-            await AddonMessageOutputAirnotifier.instance.enableDevice(device.id, enable);
+            await AddonMessageOutputAirnotifier.enableDevice(device.id, enable);
 
             // Update the list of devices since it was modified.
             this.updateDevicesAfterDelay();
         } catch (error) {
             // Show error and revert change.
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
             device.enable = !device.enable;
         } finally {
             device.updating = false;

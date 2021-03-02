@@ -51,7 +51,7 @@ export class CoreLoginSiteOnboardingComponent {
         e.stopPropagation();
 
         if (this.step == 0) {
-            ModalController.instance.dismiss();
+            ModalController.dismiss();
         } else {
             this.step--;
         }
@@ -66,7 +66,7 @@ export class CoreLoginSiteOnboardingComponent {
         e.stopPropagation();
 
         this.saveOnboardingDone();
-        ModalController.instance.dismiss();
+        ModalController.dismiss();
     }
 
     /**
@@ -79,16 +79,16 @@ export class CoreLoginSiteOnboardingComponent {
 
         this.saveOnboardingDone();
 
-        CoreUtils.instance.openInBrowser('https://moodle.com/getstarted/');
+        CoreUtils.openInBrowser('https://moodle.com/getstarted/');
 
-        ModalController.instance.dismiss();
+        ModalController.dismiss();
     }
 
     /**
      * Saves the onboarding has finished.
      */
     protected saveOnboardingDone(): void {
-        CoreConfig.instance.set(CoreLoginHelperProvider.ONBOARDING_DONE, 1);
+        CoreConfig.set(CoreLoginHelperProvider.ONBOARDING_DONE, 1);
     }
 
 }

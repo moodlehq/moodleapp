@@ -92,17 +92,17 @@ export class CoreSettingsHelperProvider {
             spaceUsage: 0,
         };
 
-        siteName = await CoreFilter.instance.formatText(siteName, { clean: true, singleLine: true, filter: false }, [], siteId);
+        siteName = await CoreFilter.formatText(siteName, { clean: true, singleLine: true, filter: false }, [], siteId);
 
-        const title = Translate.instance.instant('core.settings.deletesitefilestitle');
-        const message = Translate.instance.instant('core.settings.deletesitefiles', { sitename: siteName });
+        const title = Translate.instant('core.settings.deletesitefilestitle');
+        const message = Translate.instant('core.settings.deletesitefiles', { sitename: siteName });
 
-        await CoreDomUtils.instance.showConfirm(message, title);
+        await CoreDomUtils.showConfirm(message, title);
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // Clear cache tables.
-        const cleanSchemas = CoreSites.instance.getSiteTableSchemasToClear(site);
+        const cleanSchemas = CoreSites.getSiteTableSchemasToClear(site);
         const promises: Promise<number | void>[] = cleanSchemas.map((name) => site.getDb().deleteRecords(name));
         const filepoolService = CoreFilepool.instance;
 
@@ -110,7 +110,7 @@ export class CoreSettingsHelperProvider {
         promises.push(site.deleteFolder().then(() => {
             filepoolService.clearAllPackagesStatus(siteId);
             filepoolService.clearFilepool(siteId);
-            CoreCourse.instance.clearAllCoursesStatus(siteId);
+            CoreCourse.clearAllCoursesStatus(siteId);
 
             siteInfo.spaceUsage = 0;
 
@@ -122,7 +122,7 @@ export class CoreSettingsHelperProvider {
                 siteInfo.spaceUsage = 0;
             } else {
                 // Error, recalculate the site usage.
-                CoreDomUtils.instance.showErrorModal('core.settings.errordeletesitefiles', true);
+                CoreDomUtils.showErrorModal('core.settings.errordeletesitefiles', true);
 
                 siteInfo.spaceUsage = await site.getSpaceUsage();
             }
@@ -146,7 +146,7 @@ export class CoreSettingsHelperProvider {
      * @return Resolved with detailed info when done.
      */
     async getSiteSpaceUsage(siteId?: string): Promise<CoreSiteSpaceUsage> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // Get space usage.
         const siteInfo: CoreSiteSpaceUsage = {
@@ -167,7 +167,7 @@ export class CoreSettingsHelperProvider {
      * @return If there are rows to delete or not.
      */
     protected async calcSiteClearRows(site: CoreSite): Promise<number> {
-        const clearTables = CoreSites.instance.getSiteTableSchemasToClear(site);
+        const clearTables = CoreSites.getSiteTableSchemasToClear(site);
 
         let totalEntries = 0;
 
@@ -228,27 +228,27 @@ export class CoreSettingsHelperProvider {
             return this.syncPromises[siteId];
         }
 
-        const site = await CoreSites.instance.getSite(siteId);
-        const hasSyncHandlers = CoreCronDelegate.instance.hasManualSyncHandlers();
+        const site = await CoreSites.getSite(siteId);
+        const hasSyncHandlers = CoreCronDelegate.hasManualSyncHandlers();
 
         if (site.isLoggedOut()) {
             // Cannot sync logged out sites.
-            throw new CoreError(Translate.instance.instant('core.settings.cannotsyncloggedout'));
-        } else if (hasSyncHandlers && !CoreApp.instance.isOnline()) {
+            throw new CoreError(Translate.instant('core.settings.cannotsyncloggedout'));
+        } else if (hasSyncHandlers && !CoreApp.isOnline()) {
             // We need connection to execute sync.
-            throw new CoreError(Translate.instance.instant('core.settings.cannotsyncoffline'));
-        } else if (hasSyncHandlers && syncOnlyOnWifi && CoreApp.instance.isNetworkAccessLimited()) {
-            throw new CoreError(Translate.instance.instant('core.settings.cannotsyncwithoutwifi'));
+            throw new CoreError(Translate.instant('core.settings.cannotsyncoffline'));
+        } else if (hasSyncHandlers && syncOnlyOnWifi && CoreApp.isNetworkAccessLimited()) {
+            throw new CoreError(Translate.instant('core.settings.cannotsyncwithoutwifi'));
         }
 
         const syncPromise = Promise.all([
             // Invalidate all the site files so they are re-downloaded.
-            CoreUtils.instance.ignoreErrors(CoreFilepool.instance.invalidateAllFiles(siteId)),
+            CoreUtils.ignoreErrors(CoreFilepool.invalidateAllFiles(siteId)),
             // Invalidate and synchronize site data.
             site.invalidateWsCache(),
             this.checkSiteLocalMobile(site),
-            CoreSites.instance.updateSiteInfo(site.getId()),
-            CoreCronDelegate.instance.forceSyncExecution(site.getId()),
+            CoreSites.updateSiteInfo(site.getId()),
+            CoreCronDelegate.forceSyncExecution(site.getId()),
         // eslint-disable-next-line arrow-body-style
         ]).then(() => {
             return;
@@ -281,7 +281,7 @@ export class CoreSettingsHelperProvider {
         // Local mobile was added. Throw invalid session to force reconnect and create a new token.
         CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, site.getId());
 
-        throw new CoreError(Translate.instance.instant('core.lostconnection'));
+        throw new CoreError(Translate.instant('core.lostconnection'));
     }
 
     /**
@@ -289,7 +289,7 @@ export class CoreSettingsHelperProvider {
      */
     async initDomSettings(): Promise<void> {
         // Set the font size based on user preference.
-        const fontSize = await CoreConfig.instance.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConstants.CONFIG.font_sizes[0]);
+        const fontSize = await CoreConfig.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConstants.CONFIG.font_sizes[0]);
         this.setFontSize(fontSize);
 
         this.initColorScheme();
@@ -302,7 +302,7 @@ export class CoreSettingsHelperProvider {
         if (CoreConstants.CONFIG.forceColorScheme) {
             this.setColorScheme(CoreConstants.CONFIG.forceColorScheme);
         } else {
-            const scheme = await CoreConfig.instance.get(CoreConstants.SETTINGS_COLOR_SCHEME, CoreColorScheme.LIGHT);
+            const scheme = await CoreConfig.get(CoreConstants.SETTINGS_COLOR_SCHEME, CoreColorScheme.LIGHT);
             this.setColorScheme(scheme);
         }
     }
@@ -314,7 +314,7 @@ export class CoreSettingsHelperProvider {
      * @return Promise resolved with whether color scheme is disabled.
      */
     async isColorSchemeDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.isColorSchemeDisabledInSite(site);
     }
@@ -326,7 +326,7 @@ export class CoreSettingsHelperProvider {
      * @return Whether color scheme is disabled.
      */
     isColorSchemeDisabledInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return site ? site.isFeatureDisabled('NoDelegate_DarkMode') : false;
     }
@@ -380,4 +380,4 @@ export class CoreSettingsHelperProvider {
 
 }
 
-export class CoreSettingsHelper extends makeSingleton(CoreSettingsHelperProvider) {}
+export const CoreSettingsHelper = makeSingleton(CoreSettingsHelperProvider);

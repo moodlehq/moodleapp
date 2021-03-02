@@ -70,7 +70,7 @@ export class CoreDomUtilsProvider {
      */
     protected async init(): Promise<void> {
         // Check if debug messages should be displayed.
-        const debugDisplay = await CoreConfig.instance.get<number>(CoreConstants.SETTINGS_DEBUG_DISPLAY, 0);
+        const debugDisplay = await CoreConfig.get<number>(CoreConstants.SETTINGS_DEBUG_DISPLAY, 0);
 
         this.debugDisplay = debugDisplay != 0;
     }
@@ -143,12 +143,12 @@ export class CoreDomUtilsProvider {
         limitedThreshold?: number,
         alwaysConfirm?: boolean,
     ): Promise<void> {
-        const readableSize = CoreTextUtils.instance.bytesToSize(size.size, 2);
+        const readableSize = CoreTextUtils.bytesToSize(size.size, 2);
 
         const getAvailableBytes = async (): Promise<number | null> => {
-            const availableBytes = await CoreFile.instance.calculateFreeSpace();
+            const availableBytes = await CoreFile.calculateFreeSpace();
 
-            if (CoreApp.instance.isAndroid()) {
+            if (CoreApp.isAndroid()) {
                 return availableBytes;
             } else {
                 // Space calculation is not accurate on iOS, but it gets more accurate when space is lower.
@@ -165,18 +165,18 @@ export class CoreDomUtilsProvider {
             if (availableBytes === null) {
                 return '';
             } else {
-                const availableSize = CoreTextUtils.instance.bytesToSize(availableBytes, 2);
+                const availableSize = CoreTextUtils.bytesToSize(availableBytes, 2);
 
-                if (CoreApp.instance.isAndroid() && size.size > availableBytes - CoreConstants.MINIMUM_FREE_SPACE) {
+                if (CoreApp.isAndroid() && size.size > availableBytes - CoreConstants.MINIMUM_FREE_SPACE) {
                     throw new CoreError(
-                        Translate.instance.instant(
+                        Translate.instant(
                             'core.course.insufficientavailablespace',
                             { size: readableSize },
                         ),
                     );
                 }
 
-                return Translate.instance.instant('core.course.availablespace', { available: availableSize });
+                return Translate.instant('core.course.availablespace', { available: availableSize });
             }
         };
 
@@ -188,8 +188,8 @@ export class CoreDomUtilsProvider {
         limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
 
         let wifiPrefix = '';
-        if (CoreApp.instance.isNetworkAccessLimited()) {
-            wifiPrefix = Translate.instance.instant('core.course.confirmlimiteddownload');
+        if (CoreApp.isNetworkAccessLimited()) {
+            wifiPrefix = Translate.instant('core.course.confirmlimiteddownload');
         }
 
         if (size.size < 0 || (size.size == 0 && !size.total)) {
@@ -197,7 +197,7 @@ export class CoreDomUtilsProvider {
             unknownMessage = unknownMessage || 'core.course.confirmdownloadunknownsize';
 
             return this.showConfirm(
-                wifiPrefix + Translate.instance.instant(
+                wifiPrefix + Translate.instant(
                     unknownMessage,
                     { availableSpace: availableSpace },
                 ),
@@ -206,17 +206,17 @@ export class CoreDomUtilsProvider {
             // Filesize is only partial.
 
             return this.showConfirm(
-                wifiPrefix + Translate.instance.instant(
+                wifiPrefix + Translate.instant(
                     'core.course.confirmpartialdownloadsize',
                     { size: readableSize, availableSpace: availableSpace },
                 ),
             );
         } else if (alwaysConfirm || size.size >= wifiThreshold ||
-                (CoreApp.instance.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
+                (CoreApp.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
             message = message || (size.size === 0 ? 'core.course.confirmdownloadzerosize' : 'core.course.confirmdownload');
 
             return this.showConfirm(
-                wifiPrefix + Translate.instance.instant(
+                wifiPrefix + Translate.instant(
                     message,
                     { size: readableSize, availableSpace: availableSpace },
                 ),
@@ -293,14 +293,14 @@ export class CoreDomUtilsProvider {
             const element = elements[i];
             let url = 'href' in element ? element.href : element.src;
 
-            if (url && CoreUrlUtils.instance.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
+            if (url && CoreUrlUtils.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
                 urls.push(url);
             }
 
             // Treat video poster.
             if (element.tagName == 'VIDEO' && element.getAttribute('poster')) {
                 url = element.getAttribute('poster') || '';
-                if (url && CoreUrlUtils.instance.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
+                if (url && CoreUrlUtils.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
                     urls.push(url);
                 }
             }
@@ -386,9 +386,9 @@ export class CoreDomUtilsProvider {
     focusElement(el: HTMLElement): void {
         if (el?.focus) {
             el.focus();
-            if (CoreApp.instance.isAndroid() && this.supportsInputKeyboard(el)) {
+            if (CoreApp.isAndroid() && this.supportsInputKeyboard(el)) {
                 // On some Android versions the keyboard doesn't open automatically.
-                CoreApp.instance.openKeyboard();
+                CoreApp.openKeyboard();
             }
         }
     }
@@ -649,8 +649,8 @@ export class CoreDomUtilsProvider {
      * @return True if the message error is a network error, false otherwise.
      */
     protected isNetworkError(message: string, error?: CoreError | CoreTextErrorObject | string): boolean {
-        return message == Translate.instance.instant('core.networkerrormsg') ||
-            message == Translate.instance.instant('core.fileuploader.errormustbeonlinetoupload') ||
+        return message == Translate.instant('core.networkerrormsg') ||
+            message == Translate.instant('core.fileuploader.errormustbeonlinetoupload') ||
             error instanceof CoreNetworkError;
     }
 
@@ -673,11 +673,11 @@ export class CoreDomUtilsProvider {
             if (this.debugDisplay) {
                 // Get the debug info. Escape the HTML so it is displayed as it is in the view.
                 if ('debuginfo' in error && error.debuginfo) {
-                    extraInfo = '<br><br>' + CoreTextUtils.instance.escapeHTML(error.debuginfo, false);
+                    extraInfo = '<br><br>' + CoreTextUtils.escapeHTML(error.debuginfo, false);
                 }
                 if ('backtrace' in error && error.backtrace) {
-                    extraInfo += '<br><br>' + CoreTextUtils.instance.replaceNewLines(
-                        CoreTextUtils.instance.escapeHTML(error.backtrace, false),
+                    extraInfo += '<br><br>' + CoreTextUtils.replaceNewLines(
+                        CoreTextUtils.escapeHTML(error.backtrace, false),
                         '<br>',
                     );
                 }
@@ -692,7 +692,7 @@ export class CoreDomUtilsProvider {
             }
 
             // We received an object instead of a string. Search for common properties.
-            errorMessage = CoreTextUtils.instance.getErrorMessageFromError(error);
+            errorMessage = CoreTextUtils.getErrorMessageFromError(error);
             if (!errorMessage) {
                 // No common properties found, just stringify it.
                 errorMessage = JSON.stringify(error);
@@ -713,7 +713,7 @@ export class CoreDomUtilsProvider {
             return null;
         }
 
-        let message = CoreTextUtils.instance.decodeHTML(needsTranslate ? Translate.instance.instant(errorMessage) : errorMessage);
+        let message = CoreTextUtils.decodeHTML(needsTranslate ? Translate.instant(errorMessage) : errorMessage);
 
         if (extraInfo) {
             message += extraInfo;
@@ -764,7 +764,7 @@ export class CoreDomUtilsProvider {
      * @return Resolved if found, rejected if too many tries.
      */
     waitElementToExist(findFunction: () => HTMLElement | null): Promise<HTMLElement> {
-        const promiseInterval = CoreUtils.instance.promiseDefer<HTMLElement>();
+        const promiseInterval = CoreUtils.promiseDefer<HTMLElement>();
         let tries = 100;
 
         const clear = setInterval(() => {
@@ -844,7 +844,7 @@ export class CoreDomUtilsProvider {
      * @return Promise resolved with boolean: true if enabled, false otherwise.
      */
     isRichTextEditorEnabled(): Promise<boolean> {
-        return CoreConfig.instance.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true).then((enabled) => !!enabled);
+        return CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true).then((enabled) => !!enabled);
     }
 
     /**
@@ -976,7 +976,7 @@ export class CoreDomUtilsProvider {
         const media = Array.from(element.querySelectorAll('img, video, audio, source, track'));
         media.forEach((media: HTMLElement) => {
             const currentSrc = media.getAttribute('src');
-            const newSrc = currentSrc ? paths[CoreTextUtils.instance.decodeURIComponent(currentSrc)] : undefined;
+            const newSrc = currentSrc ? paths[CoreTextUtils.decodeURIComponent(currentSrc)] : undefined;
 
             if (typeof newSrc != 'undefined') {
                 media.setAttribute('src', newSrc);
@@ -985,7 +985,7 @@ export class CoreDomUtilsProvider {
             // Treat video posters.
             if (media.tagName == 'VIDEO' && media.getAttribute('poster')) {
                 const currentPoster = media.getAttribute('poster');
-                const newPoster = paths[CoreTextUtils.instance.decodeURIComponent(currentPoster!)];
+                const newPoster = paths[CoreTextUtils.decodeURIComponent(currentPoster!)];
                 if (typeof newPoster !== 'undefined') {
                     media.setAttribute('poster', newPoster);
                 }
@@ -996,7 +996,7 @@ export class CoreDomUtilsProvider {
         const anchors = Array.from(element.querySelectorAll('a'));
         anchors.forEach((anchor: HTMLElement) => {
             const currentHref = anchor.getAttribute('href');
-            const newHref = currentHref ? paths[CoreTextUtils.instance.decodeURIComponent(currentHref)] : undefined;
+            const newHref = currentHref ? paths[CoreTextUtils.decodeURIComponent(currentHref)] : undefined;
 
             if (typeof newHref != 'undefined') {
                 anchor.setAttribute('href', newHref);
@@ -1190,7 +1190,7 @@ export class CoreDomUtilsProvider {
         return this.showAlertWithOptions({
             header,
             message,
-            buttons: [buttonText || Translate.instance.instant('core.ok')],
+            buttons: [buttonText || Translate.instant('core.ok')],
         }, autocloseTime);
     }
 
@@ -1202,11 +1202,11 @@ export class CoreDomUtilsProvider {
      * @return Promise resolved with the alert modal.
      */
     async showAlertWithOptions(options: AlertOptions = {}, autocloseTime?: number): Promise<HTMLIonAlertElement> {
-        const hasHTMLTags = CoreTextUtils.instance.hasHTMLTags(<string> options.message || '');
+        const hasHTMLTags = CoreTextUtils.hasHTMLTags(<string> options.message || '');
 
         if (hasHTMLTags) {
             // Format the text.
-            options.message = await CoreTextUtils.instance.formatText(<string> options.message);
+            options.message = await CoreTextUtils.formatText(<string> options.message);
         }
 
         const alertId = <string> Md5.hashAsciiStr((options.header || '') + '#' + (options.message || ''));
@@ -1216,7 +1216,7 @@ export class CoreDomUtilsProvider {
             return this.displayedAlerts[alertId];
         }
 
-        const alert = await AlertController.instance.create(options);
+        const alert = await AlertController.create(options);
 
         // eslint-disable-next-line promise/catch-or-return
         alert.present().then(() => {
@@ -1270,9 +1270,9 @@ export class CoreDomUtilsProvider {
         buttonText?: string,
         autocloseTime?: number,
     ): Promise<HTMLIonAlertElement> {
-        header = header ? Translate.instance.instant(header) : header;
-        message = message ? Translate.instance.instant(message) : message;
-        buttonText = buttonText ? Translate.instance.instant(buttonText) : buttonText;
+        header = header ? Translate.instant(header) : header;
+        message = message ? Translate.instant(message) : message;
+        buttonText = buttonText ? Translate.instant(buttonText) : buttonText;
 
         return this.showAlert(header, message, buttonText, autocloseTime);
     }
@@ -1291,9 +1291,9 @@ export class CoreDomUtilsProvider {
         options?: AlertOptions,
     ): Promise<void> {
         return this.showConfirm(
-            Translate.instance.instant(translateMessage, translateArgs),
+            Translate.instant(translateMessage, translateArgs),
             undefined,
-            Translate.instance.instant('core.delete'),
+            Translate.instant('core.delete'),
             undefined,
             options,
         );
@@ -1322,14 +1322,14 @@ export class CoreDomUtilsProvider {
 
             options.buttons = [
                 {
-                    text: cancelText || Translate.instance.instant('core.cancel'),
+                    text: cancelText || Translate.instant('core.cancel'),
                     role: 'cancel',
                     handler: () => {
                         reject(new CoreCanceledError(''));
                     },
                 },
                 {
-                    text: okText || Translate.instance.instant('core.ok'),
+                    text: okText || Translate.instant('core.ok'),
                     handler: (data: T) => {
                         resolve(data);
                     },
@@ -1371,13 +1371,13 @@ export class CoreDomUtilsProvider {
 
         const alertOptions: AlertOptions = {
             message: message,
-            buttons: [Translate.instance.instant('core.ok')],
+            buttons: [Translate.instant('core.ok')],
         };
 
         if (this.isNetworkError(message, error)) {
             alertOptions.cssClass = 'core-alert-network-error';
         } else {
-            alertOptions.header = Translate.instance.instant('core.error');
+            alertOptions.header = Translate.instant('core.error');
         }
 
         return this.showAlertWithOptions(alertOptions, autocloseTime);
@@ -1406,7 +1406,7 @@ export class CoreDomUtilsProvider {
         let errorMessage = error || undefined;
 
         if (error && typeof error != 'string') {
-            errorMessage = CoreTextUtils.instance.getErrorMessageFromError(error);
+            errorMessage = CoreTextUtils.getErrorMessageFromError(error);
         }
 
         return this.showErrorModal(typeof errorMessage == 'string' ? error! : defaultError, needsTranslate, autocloseTime);
@@ -1444,12 +1444,12 @@ export class CoreDomUtilsProvider {
      */
     async showModalLoading(text?: string, needsTranslate?: boolean): Promise<CoreIonLoadingElement> {
         if (!text) {
-            text = Translate.instance.instant('core.loading');
+            text = Translate.instant('core.loading');
         } else if (needsTranslate) {
-            text = Translate.instance.instant(text);
+            text = Translate.instant(text);
         }
 
-        const loadingElement = await LoadingController.instance.create({
+        const loadingElement = await LoadingController.create({
             message: text,
         });
 
@@ -1469,27 +1469,27 @@ export class CoreDomUtilsProvider {
      */
     async showDownloadAppNoticeModal(message: string, link?: string): Promise<void> {
         const buttons: AlertButton[] = [{
-            text: Translate.instance.instant('core.ok'),
+            text: Translate.instant('core.ok'),
             role: 'cancel',
         }];
 
         if (link) {
             buttons.push({
-                text: Translate.instance.instant('core.download'),
+                text: Translate.instant('core.download'),
                 handler: (): void => {
-                    CoreUtils.instance.openInBrowser(link);
+                    CoreUtils.openInBrowser(link);
                 },
             });
         }
 
-        const alert = await AlertController.instance.create({
+        const alert = await AlertController.create({
             message: message,
             buttons: buttons,
         });
 
         await alert.present();
 
-        const isDevice = CoreApp.instance.isAndroid() || CoreApp.instance.isIOS();
+        const isDevice = CoreApp.isAndroid() || CoreApp.isIOS();
         if (!isDevice) {
             // Treat all anchors so they don't override the app.
             const alertMessageEl: HTMLElement | null = alert.querySelector('.alert-message');
@@ -1514,7 +1514,7 @@ export class CoreDomUtilsProvider {
         type: TextFieldTypes | 'checkbox' | 'radio' | 'textarea' = 'password',
     ): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
         return new Promise((resolve, reject) => {
-            placeholder = placeholder ?? Translate.instance.instant('core.login.password');
+            placeholder = placeholder ?? Translate.instant('core.login.password');
 
             const options: AlertOptions = {
                 header,
@@ -1528,14 +1528,14 @@ export class CoreDomUtilsProvider {
                 ],
                 buttons: [
                     {
-                        text: Translate.instance.instant('core.cancel'),
+                        text: Translate.instant('core.cancel'),
                         role: 'cancel',
                         handler: () => {
                             reject();
                         },
                     },
                     {
-                        text: Translate.instance.instant('core.ok'),
+                        text: Translate.instant('core.ok'),
                         handler: (data) => {
                             resolve(data.promptinput);
                         },
@@ -1579,10 +1579,10 @@ export class CoreDomUtilsProvider {
         cssClass: string = '',
     ): Promise<HTMLIonToastElement> {
         if (needsTranslate) {
-            text = Translate.instance.instant(text);
+            text = Translate.instant(text);
         }
 
-        const loader = await ToastController.instance.create({
+        const loader = await ToastController.create({
             message: text,
             duration: duration,
             position: 'bottom',
@@ -1656,7 +1656,7 @@ export class CoreDomUtilsProvider {
                     event.preventDefault();
                     event.stopPropagation();
 
-                    CoreUtils.instance.openInBrowser(href);
+                    CoreUtils.openInBrowser(href);
                 }
             });
         });
@@ -1759,7 +1759,7 @@ export class CoreDomUtilsProvider {
 
 }
 
-export class CoreDomUtils extends makeSingleton(CoreDomUtilsProvider) {}
+export const CoreDomUtils = makeSingleton(CoreDomUtilsProvider);
 
 type AnchorOrMediaElement =
     HTMLAnchorElement | HTMLImageElement | HTMLAudioElement | HTMLVideoElement | HTMLSourceElement | HTMLTrackElement;

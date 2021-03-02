@@ -135,12 +135,12 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
     async getFilesDownloadSize(files: CoreWSExternalFile[], siteId?: string): Promise<CoreFileSizeSum> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const filteredFiles = <CoreWSExternalFile[]>[];
 
         await Promise.all(files.map(async (file) => {
-            const state = await CoreFilepool.instance.getFileStateByUrl(siteId!, file.fileurl, file.timemodified);
+            const state = await CoreFilepool.getFileStateByUrl(siteId!, file.fileurl, file.timemodified);
 
             if (state != CoreConstants.DOWNLOADED && state != CoreConstants.NOT_DOWNLOADABLE) {
                 filteredFiles.push(file);
@@ -291,7 +291,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
 
 }
 
-export class CorePluginFileDelegate extends makeSingleton(CorePluginFileDelegateService) {}
+export const CorePluginFileDelegate = makeSingleton(CorePluginFileDelegateService);
 
 /**
  * Interface that all plugin file handlers must implement.

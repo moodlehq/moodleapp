@@ -66,9 +66,9 @@ export class CoreGradesHelperProvider {
                     row.rowclass += tableRow[name]!.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
 
                     content = content.replace(/<\/span>/gi, '\n');
-                    content = CoreTextUtils.instance.cleanTags(content);
+                    content = CoreTextUtils.cleanTags(content);
                 } else {
-                    content = CoreTextUtils.instance.replaceNewLines(content, '<br>');
+                    content = CoreTextUtils.replaceNewLines(content, '<br>');
                 }
 
                 if (content == '&nbsp;') {
@@ -105,10 +105,10 @@ export class CoreGradesHelperProvider {
                     row.rowclass += tableRow[name]!.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
 
                     content = content.replace(/<\/span>/gi, '\n');
-                    content = CoreTextUtils.instance.cleanTags(content);
+                    content = CoreTextUtils.cleanTags(content);
                     name = 'gradeitem';
                 } else {
-                    content = CoreTextUtils.instance.replaceNewLines(content, '<br>');
+                    content = CoreTextUtils.replaceNewLines(content, '<br>');
                 }
 
                 if (content == '&nbsp;') {
@@ -208,8 +208,8 @@ export class CoreGradesHelperProvider {
         let coursesWereMissing = false;
 
         try {
-            const courses = await CoreCourses.instance.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.OnlyCache);
-            const coursesMap = CoreUtils.instance.arrayToObject(courses, 'id');
+            const courses = await CoreCourses.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.OnlyCache);
+            const coursesMap = CoreUtils.arrayToObject(courses, 'id');
 
             coursesWereMissing = this.addCourseData(grades, coursesMap);
         } catch {
@@ -218,13 +218,13 @@ export class CoreGradesHelperProvider {
 
         // If any course wasn't found, make a network request.
         if (coursesWereMissing) {
-            const coursesPromise = CoreCourses.instance.isGetCoursesByFieldAvailable()
-                ? CoreCourses.instance.getCoursesByField('ids', grades.map((grade) => grade.courseid).join(','))
-                : CoreCourses.instance.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.PreferNetwork);
+            const coursesPromise = CoreCourses.isGetCoursesByFieldAvailable()
+                ? CoreCourses.getCoursesByField('ids', grades.map((grade) => grade.courseid).join(','))
+                : CoreCourses.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.PreferNetwork);
 
             const courses = await coursesPromise;
             const coursesMap =
-                CoreUtils.instance.arrayToObject(courses as Record<string, unknown>[], 'id') as
+                CoreUtils.arrayToObject(courses as Record<string, unknown>[], 'id') as
                     Record<string, CoreEnrolledCourseData> |
                     Record<string, CoreCourseSearchedData>;
 
@@ -278,7 +278,7 @@ export class CoreGradesHelperProvider {
         siteId?: string,
         ignoreCache: boolean = false,
     ): Promise<CoreGradesFormattedRow | null> {
-        const grades = await CoreGrades.instance.getCourseGradesTable(courseId, userId, siteId, ignoreCache);
+        const grades = await CoreGrades.getCourseGradesTable(courseId, userId, siteId, ignoreCache);
 
         if (!grades) {
             throw new CoreError('Couldn\'t get grade item');
@@ -329,7 +329,7 @@ export class CoreGradesHelperProvider {
         siteId?: string,
         ignoreCache: boolean = false,
     ): Promise<CoreGradesFormattedItem[] | CoreGradesFormattedRow[]> {
-        const grades = await CoreGrades.instance.getGradeItems(courseId, userId, groupId, siteId, ignoreCache);
+        const grades = await CoreGrades.getGradeItems(courseId, userId, groupId, siteId, ignoreCache);
 
         if (!grades) {
             throw new CoreError('Couldn\'t get grade module items');
@@ -369,7 +369,7 @@ export class CoreGradesHelperProvider {
      * @return URL linking to the module.
      */
     protected getModuleLink(text: string): string | false {
-        const el = CoreDomUtils.instance.toDom(text)[0];
+        const el = CoreDomUtils.toDom(text)[0];
         const link = el.attributes['href'] ? el.attributes['href'].value : false;
 
         if (!link || link.indexOf('/mod/') < 0) {
@@ -424,7 +424,7 @@ export class CoreGradesHelperProvider {
                 const matches = row.itemname.content.match(regex);
 
                 if (matches && matches.length) {
-                    const hrefParams = CoreUrlUtils.instance.extractUrlParams(matches[1]);
+                    const hrefParams = CoreUrlUtils.extractUrlParams(matches[1]);
 
                     return hrefParams && parseInt(hrefParams.id) === moduleId;
                 }
@@ -449,11 +449,11 @@ export class CoreGradesHelperProvider {
         moduleId?: number,
         siteId?: string,
     ): Promise<void> {
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
         let currentUserId: number;
 
         try {
-            const site = await CoreSites.instance.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
 
             siteId = site.id;
             currentUserId = site.getUserId();
@@ -463,7 +463,7 @@ export class CoreGradesHelperProvider {
             }
 
             // Try to open the module grade directly. Check if it's possible.
-            const grades = await CoreGrades.instance.isGradeItemsAvalaible(siteId);
+            const grades = await CoreGrades.isGradeItemsAvalaible(siteId);
 
             if (!grades) {
                 throw new CoreError('No grades found.');
@@ -471,7 +471,7 @@ export class CoreGradesHelperProvider {
 
             try {
                 // Can get grades. Do it.
-                const items = await CoreGrades.instance.getGradeItems(courseId, userId, undefined, siteId);
+                const items = await CoreGrades.getGradeItems(courseId, userId, undefined, siteId);
 
                 // Find the item of the module.
                 const item = Array.isArray(items) && items.find((item) => moduleId == item.cmid);
@@ -483,8 +483,8 @@ export class CoreGradesHelperProvider {
                 // Open the item directly.
                 const gradeId = item.id;
 
-                await CoreUtils.instance.ignoreErrors(
-                    CoreNavigator.instance.navigateToSitePath(`/grades/${courseId}/${gradeId}`, {
+                await CoreUtils.ignoreErrors(
+                    CoreNavigator.navigateToSitePath(`/grades/${courseId}/${gradeId}`, {
                         siteId,
                         params: { userId },
                     }),
@@ -493,8 +493,8 @@ export class CoreGradesHelperProvider {
                 // Cannot get grade items or there's no need to.
                 if (userId && userId != currentUserId) {
                     // View another user grades. Open the grades page directly.
-                    await CoreUtils.instance.ignoreErrors(
-                        CoreNavigator.instance.navigateToSitePath(`/grades/${courseId}`, {
+                    await CoreUtils.ignoreErrors(
+                        CoreNavigator.navigateToSitePath(`/grades/${courseId}`, {
                             siteId,
                             params: { userId },
                         }),
@@ -502,23 +502,23 @@ export class CoreGradesHelperProvider {
                 }
 
                 // View own grades. Check if we already are in the course index page.
-                if (CoreCourse.instance.currentViewIsCourse(courseId)) {
+                if (CoreCourse.currentViewIsCourse(courseId)) {
                     // Current view is this course, just select the grades tab.
-                    CoreCourse.instance.selectCourseTab('CoreGrades');
+                    CoreCourse.selectCourseTab('CoreGrades');
 
                     return;
                 }
 
                 // @todo
                 // Open the course with the grades tab selected.
-                // await CoreCourseHelper.instance.getCourse(courseId, siteId).then(async (result) => {
+                // await CoreCourseHelper.getCourse(courseId, siteId).then(async (result) => {
                 //     const pageParams = {
                 //         course: result.course,
                 //         selectedTab: 'CoreGrades',
                 //     };
 
-                //     // CoreContentLinksHelper.instance.goInSite(navCtrl, 'CoreCourseSectionPage', pageParams, siteId)
-                //     return await CoreUtils.instance.ignoreErrors(CoreNavigator.instance.navigateToSitePath('/course', {
+                //     // CoreContentLinksHelper.goInSite(navCtrl, 'CoreCourseSectionPage', pageParams, siteId)
+                //     return await CoreUtils.ignoreErrors(CoreNavigator.navigateToSitePath('/course', {
                 //         siteId,
                 //         params: pageParams,
                 //     }));
@@ -526,7 +526,7 @@ export class CoreGradesHelperProvider {
             }
         } catch (error) {
             // Cannot get course for some reason, just open the grades page.
-            await CoreNavigator.instance.navigateToSitePath(`/grades/${courseId}`, { siteId });
+            await CoreNavigator.navigateToSitePath(`/grades/${courseId}`, { siteId });
         } finally {
             modal.dismiss();
         }
@@ -542,16 +542,16 @@ export class CoreGradesHelperProvider {
      * @return Promise to be resolved when the grades are invalidated.
      */
     async invalidateGradeModuleItems(courseId: number, userId?: number, groupId?: number, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
-        const enabled = await CoreGrades.instance.isGradeItemsAvalaible(siteId);
+        const enabled = await CoreGrades.isGradeItemsAvalaible(siteId);
 
         return enabled
-            ? CoreGrades.instance.invalidateCourseGradesItemsData(courseId, userId, groupId, siteId)
-            : CoreGrades.instance.invalidateCourseGradesData(courseId, userId, siteId);
+            ? CoreGrades.invalidateCourseGradesItemsData(courseId, userId, groupId, siteId)
+            : CoreGrades.invalidateCourseGradesData(courseId, userId, siteId);
     }
 
     /**
@@ -587,9 +587,9 @@ export class CoreGradesHelperProvider {
             if (typeof module?.[1] != 'undefined') {
                 row.itemtype = 'mod';
                 row.itemmodule = module[1];
-                row.image = CoreCourse.instance.getModuleIconSrc(
+                row.image = CoreCourse.getModuleIconSrc(
                     module[1],
-                    CoreDomUtils.instance.convertToElement(text).querySelector('img')?.getAttribute('src') ?? undefined,
+                    CoreDomUtils.convertToElement(text).querySelector('img')?.getAttribute('src') ?? undefined,
                 );
             }
         } else {
@@ -633,11 +633,11 @@ export class CoreGradesHelperProvider {
     ): Promise<CoreGradesMenuItem[]> {
         if (gradingType < 0) {
             if (scale) {
-                return Promise.resolve(CoreUtils.instance.makeMenuFromList(scale, defaultLabel, undefined, defaultValue));
+                return Promise.resolve(CoreUtils.makeMenuFromList(scale, defaultLabel, undefined, defaultValue));
             } else if (moduleId) {
-                return CoreCourse.instance.getModuleBasicGradeInfo(moduleId).then((gradeInfo) => {
+                return CoreCourse.getModuleBasicGradeInfo(moduleId).then((gradeInfo) => {
                     if (gradeInfo && gradeInfo.scale) {
-                        return CoreUtils.instance.makeMenuFromList(gradeInfo.scale, defaultLabel, undefined,  defaultValue);
+                        return CoreUtils.makeMenuFromList(gradeInfo.scale, defaultLabel, undefined,  defaultValue);
                     }
 
                     return [];
@@ -681,7 +681,7 @@ export class CoreGradesHelperProvider {
 
 }
 
-export class CoreGradesHelper extends makeSingleton(CoreGradesHelperProvider) {}
+export const CoreGradesHelper = makeSingleton(CoreGradesHelperProvider);
 
 // @todo formatted data types.
 export type CoreGradesFormattedRowForTable = any;

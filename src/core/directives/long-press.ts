@@ -39,7 +39,7 @@ export class CoreLongPressDirective implements OnInit, OnDestroy {
      * Initialize gesture listening.
      */
     ngOnInit(): void {
-        this.pressGesture = GestureController.instance.create({
+        this.pressGesture = GestureController.create({
             el: this.element,
             threshold: 0,
             gestureName: 'longpress',

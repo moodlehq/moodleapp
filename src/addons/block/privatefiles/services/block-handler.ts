@@ -46,4 +46,4 @@ export class AddonBlockPrivateFilesHandlerService extends CoreBlockBaseHandler {
 
 }
 
-export class AddonBlockPrivateFilesHandler extends makeSingleton(AddonBlockPrivateFilesHandlerService) {}
+export const AddonBlockPrivateFilesHandler = makeSingleton(AddonBlockPrivateFilesHandlerService);

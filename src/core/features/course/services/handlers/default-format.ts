@@ -127,12 +127,12 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
         if ('marker' in course) {
             // We already have it.
             marker = course.marker;
-        } else if (!CoreCourses.instance.isGetCoursesByFieldAvailable()) {
+        } else if (!CoreCourses.isGetCoursesByFieldAvailable()) {
             // Cannot get the current section, return all of them.
             return sections[0];
         } else {
             // Try to retrieve the marker.
-            const courseData = await CoreUtils.instance.ignoreErrors(CoreCourses.instance.getCourseByField('id', course.id));
+            const courseData = await CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', course.id));
 
             marker = courseData?.marker;
         }
@@ -159,7 +159,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async invalidateData(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): Promise<void> {
-        await CoreCourses.instance.invalidateCoursesByField('id', course.id);
+        await CoreCourses.invalidateCoursesByField('id', course.id);
     }
 
     /**
@@ -177,7 +177,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
         Object.assign(params, { course: course });
 
         // Don't return the .push promise, we don't want to display a loading modal during the page transition.
-        CoreNavigator.instance.navigateToSitePath('course', { params });
+        CoreNavigator.navigateToSitePath('course', { params });
     }
 
     /**

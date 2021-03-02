@@ -88,7 +88,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
 
             return [{
                 action: (siteId) => {
-                    CoreCourseHelper.instance.navigateToModuleByInstance(
+                    CoreCourseHelper.navigateToModuleByInstance(
                         instanceId,
                         this.modName,
                         siteId,
@@ -103,7 +103,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
 
         return [{
             action: (siteId) => {
-                CoreCourseHelper.instance.navigateToModule(
+                CoreCourseHelper.navigateToModule(
                     parseInt(params.id, 10),
                     siteId,
                     courseId,

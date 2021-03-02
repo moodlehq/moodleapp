@@ -38,7 +38,7 @@ export class AddonPrivateFilesProvider {
      * @return Whether the WS is available, false otherwise.
      */
     canGetPrivateFilesInfo(): boolean {
-        return CoreSites.instance.wsAvailableInCurrentSite('core_user_get_private_files_info');
+        return CoreSites.wsAvailableInCurrentSite('core_user_get_private_files_info');
     }
 
     /**
@@ -47,7 +47,7 @@ export class AddonPrivateFilesProvider {
      * @return Whether the user can view his private files.
      */
     canViewPrivateFiles(): boolean {
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
         if (!currentSite) {
             return false;
         }
@@ -70,7 +70,7 @@ export class AddonPrivateFilesProvider {
      * @return Whether the user can upload private files.
      */
     canUploadFiles(): boolean {
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
         if (!currentSite) {
             return false;
         }
@@ -87,7 +87,7 @@ export class AddonPrivateFilesProvider {
      */
     async getFiles(params: AddonPrivateFilesGetFilesWSParams, siteId?: string): Promise<AddonPrivateFilesFile[]> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const preSets = {
             cacheKey: this.getFilesListCacheKey(params),
@@ -104,9 +104,9 @@ export class AddonPrivateFilesProvider {
             entry.fileurl = entry.url;
 
             if (entry.isdir) {
-                entry.imgPath = CoreMimetypeUtils.instance.getFolderIcon();
+                entry.imgPath = CoreMimetypeUtils.getFolderIcon();
             } else {
-                entry.imgPath = CoreMimetypeUtils.instance.getFileIcon(entry.filename);
+                entry.imgPath = CoreMimetypeUtils.getFileIcon(entry.filename);
             }
 
             return entry;
@@ -146,7 +146,7 @@ export class AddonPrivateFilesProvider {
             component: 'user',
             filearea: 'private',
             contextlevel: 'user',
-            instanceid: CoreSites.instance.getCurrentSite()?.getUserId(),
+            instanceid: CoreSites.getCurrentSite()?.getUserId(),
             itemid: 0,
             filepath: '',
             filename: '',
@@ -161,7 +161,7 @@ export class AddonPrivateFilesProvider {
      * @return Promise resolved with the info.
      */
     async getPrivateFilesInfo(userId?: number, siteId?: string): Promise<AddonPrivateFilesGetUserInfoWSResult> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -241,7 +241,7 @@ export class AddonPrivateFilesProvider {
             }
         }
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getFilesListCacheKey(params));
     }
@@ -253,7 +253,7 @@ export class AddonPrivateFilesProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidatePrivateFilesInfo(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getPrivateFilesInfoCommonCacheKey());
     }
@@ -266,7 +266,7 @@ export class AddonPrivateFilesProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidatePrivateFilesInfoForUser(userId?: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getPrivateFilesInfoCacheKey(userId || site.getUserId()));
     }
@@ -278,7 +278,7 @@ export class AddonPrivateFilesProvider {
      * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.isDisabledInSite(site);
     }
@@ -290,7 +290,7 @@ export class AddonPrivateFilesProvider {
      * @return Whether it's disabled.
      */
     isDisabledInSite(site: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return site.isFeatureDisabled('CoreMainMenuDelegate_AddonPrivateFiles');
     }
@@ -311,7 +311,7 @@ export class AddonPrivateFilesProvider {
      * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isPrivateFilesDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.isPrivateFilesDisabledInSite(site);
     }
@@ -323,7 +323,7 @@ export class AddonPrivateFilesProvider {
      * @return Whether it's disabled.
      */
     isPrivateFilesDisabledInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site && site.isFeatureDisabled('AddonPrivateFilesPrivateFiles');
     }
@@ -335,7 +335,7 @@ export class AddonPrivateFilesProvider {
      * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isSiteFilesDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.isSiteFilesDisabledInSite(site);
     }
@@ -347,7 +347,7 @@ export class AddonPrivateFilesProvider {
      * @return Whether it's disabled.
      */
     isSiteFilesDisabledInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site && site.isFeatureDisabled('AddonPrivateFilesSiteFiles');
     }
@@ -359,7 +359,7 @@ export class AddonPrivateFilesProvider {
      * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isUploadDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.isUploadDisabledInSite(site);
     }
@@ -371,7 +371,7 @@ export class AddonPrivateFilesProvider {
      * @return Whether it's disabled.
      */
     isUploadDisabledInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site && site.isFeatureDisabled('AddonPrivateFilesUpload');
     }
@@ -391,7 +391,7 @@ export class AddonPrivateFilesProvider {
             responseExpected: false,
         };
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.write('core_user_add_user_private_files', params, preSets);
     }
@@ -403,7 +403,7 @@ export class AddonPrivateFilesProvider {
      * @return Promise resolved with true if WS is working, false otherwise.
      */
     async versionCanUploadFiles(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // Upload private files doesn't work for Moodle 3.1.0 due to a bug.
         return site.isVersionGreaterEqualThan('3.1.1');
@@ -411,7 +411,7 @@ export class AddonPrivateFilesProvider {
 
 }
 
-export class AddonPrivateFiles extends makeSingleton(AddonPrivateFilesProvider) {}
+export const AddonPrivateFiles = makeSingleton(AddonPrivateFilesProvider);
 
 /**
  * File data returned by core_files_get_files.

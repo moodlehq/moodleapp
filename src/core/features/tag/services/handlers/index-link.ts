@@ -57,11 +57,11 @@ export class CoreTagIndexLinkHandlerService extends CoreContentLinksHandlerBase 
                 };
 
                 if (!pageParams.tagId && (!pageParams.tagName || !pageParams.collectionId)) {
-                    CoreNavigator.instance.navigateToSitePath('/tag/search', { siteId });
+                    CoreNavigator.navigateToSitePath('/tag/search', { siteId });
                 } else if (pageParams.areaId) {
-                    CoreNavigator.instance.navigateToSitePath('/tag/index-area', { params: pageParams, siteId });
+                    CoreNavigator.navigateToSitePath('/tag/index-area', { params: pageParams, siteId });
                 } else {
-                    CoreNavigator.instance.navigateToSitePath('/tag/index', { params: pageParams, siteId });
+                    CoreNavigator.navigateToSitePath('/tag/index', { params: pageParams, siteId });
                 }
             },
         }];
@@ -78,9 +78,9 @@ export class CoreTagIndexLinkHandlerService extends CoreContentLinksHandlerBase 
      * @return Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string): Promise<boolean> {
-        return CoreTag.instance.areTagsAvailable(siteId);
+        return CoreTag.areTagsAvailable(siteId);
     }
 
 }
 
-export class CoreTagIndexLinkHandler extends makeSingleton(CoreTagIndexLinkHandlerService) {}
+export const CoreTagIndexLinkHandler = makeSingleton(CoreTagIndexLinkHandlerService);

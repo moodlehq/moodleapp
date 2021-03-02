@@ -37,9 +37,9 @@ export class CoreCourseLogCronHandlerService implements CoreCronHandler {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async execute(siteId?: string, force?: boolean): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
-        return CoreCourse.instance.logView(site.getSiteHomeId(), undefined, site.getId(), site.getInfo()?.sitename);
+        return CoreCourse.logView(site.getSiteHomeId(), undefined, site.getId(), site.getInfo()?.sitename);
     }
 
     /**
@@ -62,4 +62,4 @@ export class CoreCourseLogCronHandlerService implements CoreCronHandler {
 
 }
 
-export class CoreCourseLogCronHandler extends makeSingleton(CoreCourseLogCronHandlerService) {}
+export const CoreCourseLogCronHandler = makeSingleton(CoreCourseLogCronHandlerService, ['name']);

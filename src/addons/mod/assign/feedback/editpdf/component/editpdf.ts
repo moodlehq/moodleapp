@@ -34,7 +34,7 @@ export class AddonModAssignFeedbackEditPdfComponent extends AddonModAssignFeedba
      */
     async ngOnInit(): Promise<void> {
         if (this.plugin) {
-            this.files = AddonModAssign.instance.getSubmissionPluginAttachments(this.plugin);
+            this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);
         }
     }
 

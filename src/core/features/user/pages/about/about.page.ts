@@ -47,7 +47,7 @@ export class CoreUserAboutPage implements OnInit {
     encodedAddress?: SafeUrl;
 
     constructor() {
-        this.siteId = CoreSites.instance.getCurrentSiteId();
+        this.siteId = CoreSites.getCurrentSiteId();
     }
 
     /**
@@ -56,8 +56,8 @@ export class CoreUserAboutPage implements OnInit {
      * @return Promise resolved when done.
      */
     async ngOnInit(): Promise<void> {
-        this.userId = CoreNavigator.instance.getRouteNumberParam('userId') || 0;
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId') || 0;
+        this.userId = CoreNavigator.getRouteNumberParam('userId') || 0;
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId') || 0;
 
         this.fetchUser().finally(() => {
             this.userLoaded = true;
@@ -71,11 +71,11 @@ export class CoreUserAboutPage implements OnInit {
      */
     async fetchUser(): Promise<void> {
         try {
-            const user = await CoreUser.instance.getProfile(this.userId, this.courseId);
+            const user = await CoreUser.getProfile(this.userId, this.courseId);
 
             if (user.address) {
-                this.formattedAddress = CoreUserHelper.instance.formatAddress(user.address, user.city, user.country);
-                this.encodedAddress = CoreTextUtils.instance.buildAddressURL(user.address);
+                this.formattedAddress = CoreUserHelper.formatAddress(user.address, user.city, user.country);
+                this.encodedAddress = CoreTextUtils.buildAddressURL(user.address);
             }
 
             this.hasContact = !!(user.email || user.phone1 || user.phone2 || user.city || user.country || user.address);
@@ -84,7 +84,7 @@ export class CoreUserAboutPage implements OnInit {
             this.user = user;
             this.title = user.fullname;
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.user.errorloaduser', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.user.errorloaduser', true);
         }
     }
 
@@ -95,7 +95,7 @@ export class CoreUserAboutPage implements OnInit {
      * @return Promise resolved when done.
      */
     async refreshUser(event?: CustomEvent<IonRefresher>): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(CoreUser.instance.invalidateUserCache(this.userId));
+        await CoreUtils.ignoreErrors(CoreUser.invalidateUserCache(this.userId));
 
         await this.fetchUser();
 

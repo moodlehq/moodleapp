@@ -35,7 +35,7 @@ export class CoreCourseSyncCronHandlerService implements CoreCronHandler {
      * @return Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string, force?: boolean): Promise<void> {
-        return CoreCourseSync.instance.syncAllCourses(siteId, force);
+        return CoreCourseSync.syncAllCourses(siteId, force);
     }
 
     /**
@@ -44,9 +44,9 @@ export class CoreCourseSyncCronHandlerService implements CoreCronHandler {
      * @return Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return CoreCourseSync.instance.syncInterval;
+        return CoreCourseSync.syncInterval;
     }
 
 }
 
-export class CoreCourseSyncCronHandler extends makeSingleton(CoreCourseSyncCronHandlerService) {}
+export const CoreCourseSyncCronHandler = makeSingleton(CoreCourseSyncCronHandlerService);

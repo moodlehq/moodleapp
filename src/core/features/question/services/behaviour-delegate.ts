@@ -89,7 +89,7 @@ export class CoreQuestionBehaviourDelegateService extends CoreDelegate<CoreQuest
         componentId: string | number,
         siteId?: string,
     ): Promise<CoreQuestionState | undefined> {
-        behaviour = CoreQuestionDelegate.instance.getBehaviourForQuestion(question, behaviour);
+        behaviour = CoreQuestionDelegate.getBehaviourForQuestion(question, behaviour);
 
         return this.executeFunctionOnEnabled(
             behaviour,
@@ -108,7 +108,7 @@ export class CoreQuestionBehaviourDelegateService extends CoreDelegate<CoreQuest
      * @return Promise resolved with components to render some extra data in the question.
      */
     async handleQuestion(behaviour: string, question: CoreQuestionQuestionParsed): Promise<Type<unknown>[] | undefined> {
-        behaviour = CoreQuestionDelegate.instance.getBehaviourForQuestion(question, behaviour);
+        behaviour = CoreQuestionDelegate.getBehaviourForQuestion(question, behaviour);
 
         return this.executeFunctionOnEnabled(behaviour, 'handleQuestion', [question]);
     }
@@ -125,7 +125,7 @@ export class CoreQuestionBehaviourDelegateService extends CoreDelegate<CoreQuest
 
 }
 
-export class CoreQuestionBehaviourDelegate extends makeSingleton(CoreQuestionBehaviourDelegateService) {}
+export const CoreQuestionBehaviourDelegate = makeSingleton(CoreQuestionBehaviourDelegateService);
 
 /**
  * Answers classified by question slot.

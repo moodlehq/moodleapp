@@ -162,10 +162,10 @@ export class CoreContentLinksDelegateService {
         }
 
         // Get the list of sites the URL belongs to.
-        const siteIds = await CoreSites.instance.getSiteIdsFromUrl(url, true, username);
+        const siteIds = await CoreSites.getSiteIdsFromUrl(url, true, username);
         const linkActions: CoreContentLinksHandlerActions[] = [];
         const promises: Promise<void>[] = [];
-        const params = CoreUrlUtils.instance.extractUrlParams(url);
+        const params = CoreUrlUtils.extractUrlParams(url);
         for (const name in this.handlers) {
             const handler = this.handlers[name];
             const checkAll = handler.checkAllUsers;
@@ -177,7 +177,7 @@ export class CoreContentLinksDelegateService {
             }
 
             // Filter the site IDs using the isEnabled function.
-            promises.push(CoreUtils.instance.filterEnabledSites(siteIds, isEnabledFn, checkAll).then(async (siteIds) => {
+            promises.push(CoreUtils.filterEnabledSites(siteIds, isEnabledFn, checkAll).then(async (siteIds) => {
                 if (!siteIds.length) {
                     // No sites supported, no actions.
                     return;
@@ -204,7 +204,7 @@ export class CoreContentLinksDelegateService {
             }));
         }
         try {
-            await CoreUtils.instance.allPromises(promises);
+            await CoreUtils.allPromises(promises);
         } catch {
             // Ignore errors.
         }
@@ -256,7 +256,7 @@ export class CoreContentLinksDelegateService {
         let disabled = false;
         if (handler.featureName) {
             // Check if the feature is disabled.
-            disabled = await CoreSites.instance.isFeatureDisabled(handler.featureName, siteId);
+            disabled = await CoreSites.isFeatureDisabled(handler.featureName, siteId);
         }
 
         if (disabled) {
@@ -311,4 +311,4 @@ export class CoreContentLinksDelegateService {
 
 }
 
-export class CoreContentLinksDelegate extends makeSingleton(CoreContentLinksDelegateService) {}
+export const CoreContentLinksDelegate = makeSingleton(CoreContentLinksDelegateService);

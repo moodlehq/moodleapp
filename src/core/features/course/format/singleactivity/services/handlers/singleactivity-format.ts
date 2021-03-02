@@ -115,7 +115,7 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
      */
     displayRefresher(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): boolean {
         if (sections?.[0]?.modules?.[0]) {
-            return CoreCourseModuleDelegate.instance.displayRefresherInSingleActivity(sections[0].modules[0].modname);
+            return CoreCourseModuleDelegate.displayRefresherInSingleActivity(sections[0].modules[0].modname);
         } else {
             return true;
         }
@@ -149,4 +149,4 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
 
 }
 
-export class CoreCourseFormatSingleActivityHandler extends makeSingleton(CoreCourseFormatSingleActivityHandlerService) {}
+export const CoreCourseFormatSingleActivityHandler = makeSingleton(CoreCourseFormatSingleActivityHandlerService);

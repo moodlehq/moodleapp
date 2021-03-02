@@ -64,7 +64,7 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implemen
     async loadAttachments(): Promise<void> {
         if (this.offlineEnabled && this.essayQuestion?.localAnswers?.attachments_offline) {
 
-            const attachmentsData: CoreFileUploaderStoreFilesResult = CoreTextUtils.instance.parseJSON(
+            const attachmentsData: CoreFileUploaderStoreFilesResult = CoreTextUtils.parseJSON(
                 this.essayQuestion.localAnswers.attachments_offline,
                 {
                     online: [],
@@ -74,7 +74,7 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implemen
             let offlineFiles: FileEntry[] = [];
 
             if (attachmentsData.offline) {
-                offlineFiles = <FileEntry[]> await CoreQuestionHelper.instance.getStoredQuestionFiles(
+                offlineFiles = <FileEntry[]> await CoreQuestionHelper.getStoredQuestionFiles(
                     this.essayQuestion,
                     this.component || '',
                     this.componentId || -1,
@@ -83,12 +83,12 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implemen
 
             this.attachments = [...attachmentsData.online, ...offlineFiles];
         } else {
-            this.attachments = Array.from(CoreQuestionHelper.instance.getResponseFileAreaFiles(this.question!, 'attachments'));
+            this.attachments = Array.from(CoreQuestionHelper.getResponseFileAreaFiles(this.question!, 'attachments'));
         }
 
-        CoreFileSession.instance.setFiles(
+        CoreFileSession.setFiles(
             this.component || '',
-            CoreQuestion.instance.getQuestionComponentId(this.question!, this.componentId || -1),
+            CoreQuestion.getQuestionComponentId(this.question!, this.componentId || -1),
             this.attachments,
         );
     }

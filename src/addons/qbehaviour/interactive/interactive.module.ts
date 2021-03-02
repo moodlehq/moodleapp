@@ -26,7 +26,7 @@ import { AddonQbehaviourInteractiveHandler } from './services/handlers/interacti
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionBehaviourDelegate.instance.registerHandler(AddonQbehaviourInteractiveHandler.instance);
+                CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourInteractiveHandler.instance);
             },
         },
     ],

@@ -32,4 +32,4 @@ export class AddonModQuizGradeLinkHandlerService extends CoreContentLinksModuleG
 
 }
 
-export class AddonModQuizGradeLinkHandler extends makeSingleton(AddonModQuizGradeLinkHandlerService) {}
+export const AddonModQuizGradeLinkHandler = makeSingleton(AddonModQuizGradeLinkHandlerService);

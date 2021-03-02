@@ -44,7 +44,7 @@ export class CoreBlockOnlyTitleComponent extends CoreBlockBaseComponent implemen
      */
     gotoBlock(): void {
         // @todo test that this is working properly.
-        CoreNavigator.instance.navigateToSitePath(this.link!, { params: this.linkParams });
+        CoreNavigator.navigateToSitePath(this.link!, { params: this.linkParams });
     }
 
 }

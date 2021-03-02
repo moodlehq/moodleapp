@@ -55,10 +55,10 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
      */
     ngOnInit(): void {
         this.route.queryParams.subscribe((params) => {
-            this.moduleId = CoreNavigator.instance.getRouteNumberParam('cmId')!;
-            this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId')!;
-            this.submitId = CoreNavigator.instance.getRouteNumberParam('submitId') || 0;
-            this.blindId = CoreNavigator.instance.getRouteNumberParam('blindId', params);
+            this.moduleId = CoreNavigator.getRouteNumberParam('cmId')!;
+            this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
+            this.submitId = CoreNavigator.getRouteNumberParam('submitId') || 0;
+            this.blindId = CoreNavigator.getRouteNumberParam('blindId', params);
 
             this.fetchSubmission().finally(() => {
                 this.loaded = true;
@@ -100,12 +100,12 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchSubmission(): Promise<void> {
-        this.assign = await AddonModAssign.instance.getAssignment(this.courseId, this.moduleId);
+        this.assign = await AddonModAssign.getAssignment(this.courseId, this.moduleId);
         this.title = this.assign.name;
 
         this.blindMarking = !!this.assign.blindmarking && !this.assign.revealidentities;
 
-        const gradeInfo = await CoreCourse.instance.getModuleBasicGradeInfo(this.moduleId);
+        const gradeInfo = await CoreCourse.getModuleBasicGradeInfo(this.moduleId);
         if (!gradeInfo) {
             return;
         }
@@ -129,11 +129,11 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
     protected async refreshAllData(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonModAssign.instance.invalidateAssignmentData(this.courseId));
+        promises.push(AddonModAssign.invalidateAssignmentData(this.courseId));
         if (this.assign) {
-            promises.push(AddonModAssign.instance.invalidateSubmissionData(this.assign.id));
-            promises.push(AddonModAssign.instance.invalidateAssignmentUserMappingsData(this.assign.id));
-            promises.push(AddonModAssign.instance.invalidateSubmissionStatusData(
+            promises.push(AddonModAssign.invalidateSubmissionData(this.assign.id));
+            promises.push(AddonModAssign.invalidateAssignmentUserMappingsData(this.assign.id));
+            promises.push(AddonModAssign.invalidateSubmissionStatusData(
                 this.assign.id,
                 this.submitId,
                 undefined,
@@ -172,12 +172,12 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
         try {
             await this.submissionComponent.submitGrade();
             // Grade submitted, leave the view if not in tablet.
-            if (!CoreScreen.instance.isTablet) {
+            if (!CoreScreen.isTablet) {
                 this.forceLeave = true;
-                CoreNavigator.instance.back();
+                CoreNavigator.back();
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.error', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
         }
     }
 

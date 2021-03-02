@@ -35,7 +35,7 @@ export class AddonModQuizSyncCronHandlerService implements CoreCronHandler {
      * @return Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string, force?: boolean): Promise<void> {
-        return AddonModQuizSync.instance.syncAllQuizzes(siteId, force);
+        return AddonModQuizSync.syncAllQuizzes(siteId, force);
     }
 
     /**
@@ -44,9 +44,9 @@ export class AddonModQuizSyncCronHandlerService implements CoreCronHandler {
      * @return Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return AddonModQuizSync.instance.syncInterval;
+        return AddonModQuizSync.syncInterval;
     }
 
 }
 
-export class AddonModQuizSyncCronHandler extends makeSingleton(AddonModQuizSyncCronHandlerService) {}
+export const AddonModQuizSyncCronHandler = makeSingleton(AddonModQuizSyncCronHandlerService);

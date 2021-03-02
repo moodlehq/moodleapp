@@ -57,7 +57,7 @@ export class AddonModAssignFeedbackEditPdfHandlerService implements AddonModAssi
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
     ): CoreWSExternalFile[] {
-        return AddonModAssign.instance.getSubmissionPluginAttachments(plugin);
+        return AddonModAssign.getSubmissionPluginAttachments(plugin);
     }
 
     /**

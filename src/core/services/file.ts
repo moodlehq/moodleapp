@@ -137,12 +137,12 @@ export class CoreFileProvider {
             return;
         }
 
-        await Platform.instance.ready();
+        await Platform.ready();
 
-        if (CoreApp.instance.isAndroid()) {
-            this.basePath = File.instance.externalApplicationStorageDirectory || this.basePath;
-        } else if (CoreApp.instance.isIOS()) {
-            this.basePath = File.instance.documentsDirectory || this.basePath;
+        if (CoreApp.isAndroid()) {
+            this.basePath = File.externalApplicationStorageDirectory || this.basePath;
+        } else if (CoreApp.isIOS()) {
+            this.basePath = File.documentsDirectory || this.basePath;
         } else if (!this.isAvailable() || this.basePath === '') {
             this.logger.error('Error getting device OS.');
 
@@ -172,7 +172,7 @@ export class CoreFileProvider {
         return this.init().then(() => {
             this.logger.debug('Get file: ' + path);
 
-            return File.instance.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(path));
+            return File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(path));
         }).then((entry) => <FileEntry> entry);
     }
 
@@ -186,7 +186,7 @@ export class CoreFileProvider {
         return this.init().then(() => {
             this.logger.debug('Get directory: ' + path);
 
-            return File.instance.resolveDirectoryUrl(this.addBasePathIfNeeded(path));
+            return File.resolveDirectoryUrl(this.addBasePathIfNeeded(path));
         });
     }
 
@@ -225,11 +225,11 @@ export class CoreFileProvider {
             if (isDirectory) {
                 this.logger.debug('Create dir ' + path + ' in ' + base);
 
-                return File.instance.createDir(base, path, !failIfExists);
+                return File.createDir(base, path, !failIfExists);
             } else {
                 this.logger.debug('Create file ' + path + ' in ' + base);
 
-                return File.instance.createFile(base, path, !failIfExists);
+                return File.createFile(base, path, !failIfExists);
             }
         } else {
             // The file plugin doesn't allow creating more than 1 level at a time (e.g. tmp/folder).
@@ -239,7 +239,7 @@ export class CoreFileProvider {
 
             this.logger.debug('Create dir ' + firstDir + ' in ' + base);
 
-            const newDirEntry = await File.instance.createDir(base, firstDir, true);
+            const newDirEntry = await File.createDir(base, firstDir, true);
 
             return this.create(isDirectory, restOfPath, failIfExists, newDirEntry.toURL());
         }
@@ -284,7 +284,7 @@ export class CoreFileProvider {
         path = this.removeStartingSlash(path.replace(this.basePath, ''));
         this.logger.debug('Remove directory: ' + path);
 
-        await File.instance.removeRecursively(this.basePath, path);
+        await File.removeRecursively(this.basePath, path);
     }
 
     /**
@@ -301,13 +301,13 @@ export class CoreFileProvider {
         this.logger.debug('Remove file: ' + path);
 
         try {
-            await File.instance.removeFile(this.basePath, path);
+            await File.removeFile(this.basePath, path);
         } catch (error) {
             // The delete can fail if the path has encoded characters. Try again if that's the case.
             const decodedPath = decodeURI(path);
 
             if (decodedPath != path) {
-                await File.instance.removeFile(this.basePath, decodedPath);
+                await File.removeFile(this.basePath, decodedPath);
             } else {
                 throw error;
             }
@@ -337,7 +337,7 @@ export class CoreFileProvider {
         path = this.removeStartingSlash(path.replace(this.basePath, ''));
         this.logger.debug('Get contents of dir: ' + path);
 
-        const result = await File.instance.listDir(this.basePath, path);
+        const result = await File.listDir(this.basePath, path);
 
         return <(FileEntry | DirectoryEntry)[]> result;
     }
@@ -445,8 +445,8 @@ export class CoreFileProvider {
      * @return Promise resolved with the estimated free space in bytes.
      */
     calculateFreeSpace(): Promise<number> {
-        return File.instance.getFreeDiskSpace().then((size) => {
-            if (CoreApp.instance.isIOS()) {
+        return File.getFreeDiskSpace().then((size) => {
+            if (CoreApp.isIOS()) {
                 // In iOS the size is in bytes.
                 return Number(size);
             }
@@ -463,7 +463,7 @@ export class CoreFileProvider {
      * @return The file name normalized.
      */
     normalizeFileName(filename: string): string {
-        filename = CoreTextUtils.instance.decodeURIComponent(filename);
+        filename = CoreTextUtils.decodeURIComponent(filename);
 
         return filename;
     }
@@ -488,14 +488,14 @@ export class CoreFileProvider {
 
         switch (format) {
             case CoreFileFormat.FORMATDATAURL:
-                return File.instance.readAsDataURL(this.basePath, path);
+                return File.readAsDataURL(this.basePath, path);
             case CoreFileFormat.FORMATBINARYSTRING:
-                return File.instance.readAsBinaryString(this.basePath, path);
+                return File.readAsBinaryString(this.basePath, path);
             case CoreFileFormat.FORMATARRAYBUFFER:
-                return File.instance.readAsArrayBuffer(this.basePath, path);
+                return File.readAsArrayBuffer(this.basePath, path);
             case CoreFileFormat.FORMATJSON:
-                return File.instance.readAsText(this.basePath, path).then((text) => {
-                    const parsed = CoreTextUtils.instance.parseJSON(text, null);
+                return File.readAsText(this.basePath, path).then((text) => {
+                    const parsed = CoreTextUtils.parseJSON(text, null);
 
                     if (parsed == null && text != null) {
                         throw new CoreError('Error parsing JSON file: ' + path);
@@ -504,7 +504,7 @@ export class CoreFileProvider {
                     return parsed;
                 });
             default:
-                return File.instance.readAsText(this.basePath, path);
+                return File.readAsText(this.basePath, path);
         }
     }
 
@@ -526,7 +526,7 @@ export class CoreFileProvider {
                 if (event.target?.result !== undefined && event.target.result !== null) {
                     if (format == CoreFileFormat.FORMATJSON) {
                         // Convert to object.
-                        const parsed = CoreTextUtils.instance.parseJSON(<string> event.target.result, null);
+                        const parsed = CoreTextUtils.parseJSON(<string> event.target.result, null);
 
                         if (parsed == null) {
                             reject('Error parsing JSON file.');
@@ -591,12 +591,12 @@ export class CoreFileProvider {
 
         if (this.isHTMLAPI && (typeof data == 'string' || data.toString() == '[object ArrayBuffer]')) {
             // We need to write Blobs.
-            const extension = CoreMimetypeUtils.instance.getFileExtension(path);
-            const type = extension ? CoreMimetypeUtils.instance.getMimeType(extension) : '';
+            const extension = CoreMimetypeUtils.getFileExtension(path);
+            const type = extension ? CoreMimetypeUtils.getMimeType(extension) : '';
             data = new Blob([data], { type: type || 'text/plain' });
         }
 
-        await File.instance.writeFile(this.basePath, path, data, { replace: !append, append: !!append });
+        await File.writeFile(this.basePath, path, data, { replace: !append, append: !!append });
 
         return fileEntry;
     }
@@ -660,7 +660,7 @@ export class CoreFileProvider {
      * @return Promise to be resolved when the file is retrieved.
      */
     getExternalFile(fullPath: string): Promise<FileEntry> {
-        return File.instance.resolveLocalFilesystemUrl(fullPath).then((entry) => <FileEntry> entry);
+        return File.resolveLocalFilesystemUrl(fullPath).then((entry) => <FileEntry> entry);
     }
 
     /**
@@ -685,7 +685,7 @@ export class CoreFileProvider {
         const directory = fullPath.substring(0, fullPath.lastIndexOf('/'));
         const filename = fullPath.substr(fullPath.lastIndexOf('/') + 1);
 
-        await File.instance.removeFile(directory, filename);
+        await File.removeFile(directory, filename);
     }
 
     /**
@@ -713,9 +713,9 @@ export class CoreFileProvider {
     async getBasePathToDownload(): Promise<string> {
         await this.init();
 
-        if (CoreApp.instance.isIOS()) {
+        if (CoreApp.isIOS()) {
             // In iOS we want the internal URL (cdvfile://localhost/persistent/...).
-            const dirEntry = await File.instance.resolveDirectoryUrl(this.basePath);
+            const dirEntry = await File.resolveDirectoryUrl(this.basePath);
 
             return dirEntry.toInternalURL();
         } else {
@@ -824,8 +824,8 @@ export class CoreFileProvider {
         }
 
         const moveCopyFn: MoveCopyFunction = copy ?
-            (isDir ? File.instance.copyDir.bind(File.instance) : File.instance.copyFile.bind(File.instance)) :
-            (isDir ? File.instance.moveDir.bind(File.instance) : File.instance.moveFile.bind(File.instance));
+            (isDir ? File.copyDir.bind(File.instance) : File.copyFile.bind(File.instance)) :
+            (isDir ? File.moveDir.bind(File.instance) : File.moveFile.bind(File.instance));
 
         await this.init();
 
@@ -907,7 +907,7 @@ export class CoreFileProvider {
         if (path.indexOf(this.basePath) > -1) {
             return path;
         } else {
-            return CoreTextUtils.instance.concatenatePaths(this.basePath, path);
+            return CoreTextUtils.concatenatePaths(this.basePath, path);
         }
     }
 
@@ -946,16 +946,16 @@ export class CoreFileProvider {
 
         if (destFolder && recreateDir) {
             // Make sure the dest dir doesn't exist already.
-            await CoreUtils.instance.ignoreErrors(this.removeDir(destFolder));
+            await CoreUtils.ignoreErrors(this.removeDir(destFolder));
 
             // Now create the dir, otherwise if any of the ancestor dirs doesn't exist the unzip would fail.
             await this.createDir(destFolder);
         }
 
         // If destFolder is not set, use same location as ZIP file. We need to use absolute paths (including basePath).
-        destFolder = this.addBasePathIfNeeded(destFolder || CoreMimetypeUtils.instance.removeExtension(path));
+        destFolder = this.addBasePathIfNeeded(destFolder || CoreMimetypeUtils.removeExtension(path));
 
-        const result = await Zip.instance.unzip(fileEntry.toURL(), destFolder, onProgress);
+        const result = await Zip.unzip(fileEntry.toURL(), destFolder, onProgress);
 
         if (result == -1) {
             throw new CoreError('Unzip failed.');
@@ -1095,12 +1095,12 @@ export class CoreFileProvider {
             const entries = await this.getDirectoryContents(dirPath);
 
             const files = {};
-            let fileNameWithoutExtension = CoreMimetypeUtils.instance.removeExtension(fileName);
-            let extension = CoreMimetypeUtils.instance.getFileExtension(fileName) || defaultExt;
+            let fileNameWithoutExtension = CoreMimetypeUtils.removeExtension(fileName);
+            let extension = CoreMimetypeUtils.getFileExtension(fileName) || defaultExt;
 
             // Clean the file name.
-            fileNameWithoutExtension = CoreTextUtils.instance.removeSpecialCharactersForFiles(
-                CoreTextUtils.instance.decodeURIComponent(fileNameWithoutExtension),
+            fileNameWithoutExtension = CoreTextUtils.removeSpecialCharactersForFiles(
+                CoreTextUtils.decodeURIComponent(fileNameWithoutExtension),
             );
 
             // Index the files by name.
@@ -1118,7 +1118,7 @@ export class CoreFileProvider {
             return this.calculateUniqueName(files, fileNameWithoutExtension + extension);
         } catch (error) {
             // Folder doesn't exist, name is unique. Clean it and return it.
-            return CoreTextUtils.instance.removeSpecialCharactersForFiles(CoreTextUtils.instance.decodeURIComponent(fileName));
+            return CoreTextUtils.removeSpecialCharactersForFiles(CoreTextUtils.decodeURIComponent(fileName));
         }
     }
 
@@ -1136,8 +1136,8 @@ export class CoreFileProvider {
         }
 
         // Repeated name. Add a number until we find a free name.
-        const nameWithoutExtension = CoreMimetypeUtils.instance.removeExtension(name);
-        let extension = CoreMimetypeUtils.instance.getFileExtension(name);
+        const nameWithoutExtension = CoreMimetypeUtils.removeExtension(name);
+        let extension = CoreMimetypeUtils.getFileExtension(name);
         let num = 1;
         extension = extension ? '.' + extension : '';
 
@@ -1156,7 +1156,7 @@ export class CoreFileProvider {
      */
     async clearTmpFolder(): Promise<void> {
         // Ignore errors because the folder might not exist.
-        await CoreUtils.instance.ignoreErrors(this.removeDir(CoreFileProvider.TMPFOLDER));
+        await CoreUtils.ignoreErrors(this.removeDir(CoreFileProvider.TMPFOLDER));
     }
 
     /**
@@ -1231,7 +1231,7 @@ export class CoreFileProvider {
      */
     getWWWAbsolutePath(): string {
         if (cordova && cordova.file && cordova.file.applicationDirectory) {
-            return CoreTextUtils.instance.concatenatePaths(cordova.file.applicationDirectory, 'www');
+            return CoreTextUtils.concatenatePaths(cordova.file.applicationDirectory, 'www');
         }
 
         // Cannot use Cordova to get it, use the WebView URL.
@@ -1246,7 +1246,7 @@ export class CoreFileProvider {
      * @return Converted src.
      */
     convertFileSrc(src: string): string {
-        return CoreApp.instance.isMobile() ? WebView.instance.convertFileSrc(src) : src;
+        return CoreApp.isMobile() ? WebView.convertFileSrc(src) : src;
     }
 
     /**
@@ -1256,11 +1256,11 @@ export class CoreFileProvider {
      * @return Unconverted src.
      */
     unconvertFileSrc(src: string): string {
-        if (!CoreApp.instance.isMobile()) {
+        if (!CoreApp.isMobile()) {
             return src;
         }
 
-        const scheme = CoreApp.instance.isIOS() ? CoreConstants.CONFIG.ioswebviewscheme : 'http';
+        const scheme = CoreApp.isIOS() ? CoreConstants.CONFIG.ioswebviewscheme : 'http';
 
         return src.replace(scheme + '://localhost/_app_file_', 'file://');
     }
@@ -1282,11 +1282,11 @@ export class CoreFileProvider {
      * @return The file name.
      */
     getFileName(file: CoreWSExternalFile | FileEntry): string | undefined {
-        return CoreUtils.instance.isFileEntry(file) ? file.name : file.filename;
+        return CoreUtils.isFileEntry(file) ? file.name : file.filename;
     }
 
 }
 
-export class CoreFile extends makeSingleton(CoreFileProvider) {}
+export const CoreFile = makeSingleton(CoreFileProvider);
 
 type MoveCopyFunction = (path: string, dirName: string, newPath: string, newDirName: string) => Promise<FileEntry | DirectoryEntry>;

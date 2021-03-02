@@ -73,7 +73,7 @@ export class CoreUserProvider {
      * @since 3.8
      */
     async canSearchParticipants(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.canSearchParticipantsInSite(site);
     }
@@ -86,7 +86,7 @@ export class CoreUserProvider {
      * @since 3.8
      */
     canSearchParticipantsInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site?.wsAvailable('core_enrol_search_users');
     }
@@ -99,7 +99,7 @@ export class CoreUserProvider {
      * @since 3.2
      */
     async canUpdatePicture(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.canUpdatePictureInSite(site);
     }
@@ -112,7 +112,7 @@ export class CoreUserProvider {
      * @since 3.2
      */
     canUpdatePictureInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site?.wsAvailable('core_user_update_picture');
     }
@@ -126,7 +126,7 @@ export class CoreUserProvider {
      * @return Promise resolve with the new profileimageurl
      */
     async changeProfilePicture(draftItemId: number, userId: number, siteId?: string): Promise<string> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: CoreUserUpdatePictureWSParams = {
             draftitemid: draftItemId,
@@ -155,7 +155,7 @@ export class CoreUserProvider {
             throw new CoreError('Invalid user ID.');
         }
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await Promise.all([
             this.invalidateUserCache(userId, site.getId()),
@@ -181,7 +181,7 @@ export class CoreUserProvider {
         ignoreCache?: boolean,
     ): Promise<{participants: CoreUserParticipant[]; canLoadMore: boolean}> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         this.logger.debug(`Get participants for course '${courseId}' starting at '${limitFrom}'`);
 
@@ -245,7 +245,7 @@ export class CoreUserProvider {
         forceLocal: boolean = false,
         siteId?: string,
     ): Promise<CoreUserProfile> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (forceLocal) {
             try {
@@ -284,7 +284,7 @@ export class CoreUserProvider {
      * @return Promise resolve when the user is retrieved.
      */
     protected async getUserFromLocalDb(userId: number, siteId?: string): Promise<CoreUserDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecord(USERS_TABLE_NAME, { id: userId });
     }
@@ -302,7 +302,7 @@ export class CoreUserProvider {
         courseId?: number,
         siteId?: string,
     ): Promise<CoreUserCourseProfile | CoreUserData> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserCacheKey(userId),
@@ -342,7 +342,7 @@ export class CoreUserProvider {
 
         const user: CoreUserData | CoreUserCourseProfile = users[0];
         if (user.country) {
-            user.country = CoreUtils.instance.getCountryName(user.country);
+            user.country = CoreUtils.getCountryName(user.country);
         }
         this.storeUser(user.id, user.fullname, user.profileimageurl);
 
@@ -357,11 +357,11 @@ export class CoreUserProvider {
      * @return Preference value or null if preference not set.
      */
     async getUserPreference(name: string, siteId?: string): Promise<string> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const preference = await CoreUtils.instance.ignoreErrors(CoreUserOffline.instance.getPreference(name, siteId));
+        const preference = await CoreUtils.ignoreErrors(CoreUserOffline.getPreference(name, siteId));
 
-        if (preference && !CoreApp.instance.isOnline()) {
+        if (preference && !CoreApp.isOnline()) {
             // Offline, return stored value.
             return preference.value;
         }
@@ -382,7 +382,7 @@ export class CoreUserProvider {
             return preference.value;
         }
 
-        await CoreUserOffline.instance.setPreference(name, wsValue, wsValue);
+        await CoreUserOffline.setPreference(name, wsValue, wsValue);
 
         return wsValue;
     }
@@ -405,7 +405,7 @@ export class CoreUserProvider {
      * @return Preference value or null if preference not set.
      */
     async getUserPreferenceOnline(name: string, siteId?: string): Promise<string | null> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: CoreUserGetUserPreferencesWSParams = {
             name,
@@ -428,7 +428,7 @@ export class CoreUserProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateUserCache(userId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getUserCacheKey(userId));
     }
@@ -441,7 +441,7 @@ export class CoreUserProvider {
      * @return Promise resolved when the list is invalidated.
      */
     async invalidateParticipantsList(courseId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getParticipantsListCacheKey(courseId));
     }
@@ -454,7 +454,7 @@ export class CoreUserProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateUserPreference(name: string, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getUserPreferenceCacheKey(name));
     }
@@ -466,7 +466,7 @@ export class CoreUserProvider {
      * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isParticipantsDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.isParticipantsDisabledInSite(site);
     }
@@ -478,7 +478,7 @@ export class CoreUserProvider {
      * @return Whether it's disabled.
      */
     isParticipantsDisabledInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site?.isFeatureDisabled('CoreCourseOptionsDelegate_CoreUserParticipants');
     }
@@ -496,7 +496,7 @@ export class CoreUserProvider {
         }
 
         // Retrieving one participant will fail if browsing users is disabled by capabilities.
-        return CoreUtils.instance.promiseWorks(this.getParticipants(courseId, 0, 1, siteId));
+        return CoreUtils.promiseWorks(this.getParticipants(courseId, 0, 1, siteId));
     }
 
     /**
@@ -506,7 +506,7 @@ export class CoreUserProvider {
      * @return True if disabled, false otherwise.
      */
     isUpdatePictureDisabledInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site?.isFeatureDisabled('CoreUserDelegate_picture');
     }
@@ -520,7 +520,7 @@ export class CoreUserProvider {
      * @return Promise resolved when done.
      */
     async logView(userId: number, courseId?: number, name?: string, siteId?: string): Promise<CoreStatusWithWarningsWSResponse> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: CoreUserViewUserProfileWSParams = {
             userid: userId,
@@ -531,7 +531,7 @@ export class CoreUserProvider {
             params.courseid = courseId;
         }
 
-        CorePushNotifications.instance.logViewEvent(userId, name, 'user', wsName, { courseid: courseId });
+        CorePushNotifications.logViewEvent(userId, name, 'user', wsName, { courseid: courseId });
 
         return site.write(wsName, params);
     }
@@ -543,13 +543,13 @@ export class CoreUserProvider {
      * @return Promise resolved when done.
      */
     async logParticipantsView(courseId: number, siteId?: string): Promise<CoreStatusWithWarningsWSResponse> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: CoreUserViewUserListWSParams = {
             courseid: courseId,
         };
 
-        CorePushNotifications.instance.logViewListEvent('user', 'core_user_view_user_list', params);
+        CorePushNotifications.logViewListEvent('user', 'core_user_view_user_list', params);
 
         return site.write('core_user_view_user_list', params);
     }
@@ -563,7 +563,7 @@ export class CoreUserProvider {
      * @return Promise resolved when prefetched.
      */
     async prefetchProfiles(userIds: number[], courseId?: number, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (!siteId) {
             return;
@@ -589,7 +589,7 @@ export class CoreUserProvider {
                 const profile = await this.getProfile(userId, courseId, false, siteId);
 
                 if (profile.profileimageurl) {
-                    await CoreFilepool.instance.addToQueueByUrl(siteId!, profile.profileimageurl);
+                    await CoreFilepool.addToQueueByUrl(siteId!, profile.profileimageurl);
                 }
             } catch (error) {
                 this.logger.warn(`Ignore error when prefetching user ${userId}`, error);
@@ -606,7 +606,7 @@ export class CoreUserProvider {
      * @return Promise resolved when prefetched.
      */
     async prefetchUserAvatars(entries: Record<string, unknown>[], propertyName: string, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (!siteId) {
             return;
@@ -625,7 +625,7 @@ export class CoreUserProvider {
             treated[imageUrl] = true;
 
             try {
-                await CoreFilepool.instance.addToQueueByUrl(siteId!, imageUrl);
+                await CoreFilepool.addToQueueByUrl(siteId!, imageUrl);
             } catch (ex) {
                 this.logger.warn(`Ignore error when prefetching user avatar ${imageUrl}`, entry, ex);
             }
@@ -654,7 +654,7 @@ export class CoreUserProvider {
         perPage: number = CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
         siteId?: string,
     ): Promise<{participants: CoreUserData[]; canLoadMore: boolean}> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: CoreEnrolSearchUsersWSParams = {
             courseid: courseId,
@@ -685,7 +685,7 @@ export class CoreUserProvider {
      * @return Promise resolve when the user is stored.
      */
     protected async storeUser(userId: number, fullname: string, avatar?: string, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const userRecord: CoreUserDBRecord = {
             id: userId,
@@ -723,11 +723,11 @@ export class CoreUserProvider {
      * @return Promise resolved on success.
      */
     async setUserPreference(name: string, value: string, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (!CoreApp.instance.isOnline()) {
+        if (!CoreApp.isOnline()) {
             // Offline, just update the preference.
-            return CoreUserOffline.instance.setPreference(name, value);
+            return CoreUserOffline.setPreference(name, value);
         }
 
 
@@ -741,12 +741,12 @@ export class CoreUserProvider {
 
             // Update preference and invalidate data.
             await Promise.all([
-                CoreUserOffline.instance.setPreference(name, value, value),
-                CoreUtils.instance.ignoreErrors(this.invalidateUserPreference(name)),
+                CoreUserOffline.setPreference(name, value, value),
+                CoreUtils.ignoreErrors(this.invalidateUserPreference(name)),
             ]);
         } catch (error) {
             // Preference not saved online. Update the offline one.
-            await CoreUserOffline.instance.setPreference(name, value);
+            await CoreUserOffline.setPreference(name, value);
         }
     }
 
@@ -785,7 +785,7 @@ export class CoreUserProvider {
         userId?: number,
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -806,7 +806,7 @@ export class CoreUserProvider {
 
 }
 
-export class CoreUser extends makeSingleton(CoreUserProvider) {}
+export const CoreUser = makeSingleton(CoreUserProvider);
 
 /**
  * Data passed to PROFILE_REFRESHED event.

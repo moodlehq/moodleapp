@@ -45,7 +45,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
      * @return Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
-        await CoreCourse.instance.invalidateSections(this.instanceId);
+        await CoreCourse.invalidateSections(this.instanceId);
     }
 
     /**
@@ -54,7 +54,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
      * @return Promise resolved when done.
      */
     protected async fetchContent(): Promise<void> {
-        const sections = await CoreCourse.instance.getSections(this.getCourseId(), false, true);
+        const sections = await CoreCourse.getSections(this.getCourseId(), false, true);
 
         this.entries = [];
         const archetypes: Record<string, number> = {};
@@ -66,7 +66,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
             }
 
             section.modules.forEach((mod) => {
-                if (mod.uservisible === false || !CoreCourse.instance.moduleHasView(mod) ||
+                if (mod.uservisible === false || !CoreCourse.moduleHasView(mod) ||
                     typeof modFullNames[mod.modname] != 'undefined') {
                     // Ignore this module.
                     return;
@@ -74,7 +74,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
 
                 // Get the archetype of the module type.
                 if (typeof archetypes[mod.modname] == 'undefined') {
-                    archetypes[mod.modname] = CoreCourseModuleDelegate.instance.supportsFeature<number>(
+                    archetypes[mod.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
                         mod.modname,
                         CoreConstants.FEATURE_MOD_ARCHETYPE,
                         CoreConstants.MOD_ARCHETYPE_OTHER,
@@ -85,7 +85,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
                 if (archetypes[mod.modname] == CoreConstants.MOD_ARCHETYPE_RESOURCE) {
                     // All resources are gathered in a single "Resources" option.
                     if (!modFullNames['resources']) {
-                        modFullNames['resources'] = Translate.instance.instant('core.resources');
+                        modFullNames['resources'] = Translate.instant('core.resources');
                     }
                 } else {
                     modFullNames[mod.modname] = mod.modplural;
@@ -94,14 +94,14 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
             });
         });
         // Sort the modnames alphabetically.
-        modFullNames = CoreUtils.instance.sortValues(modFullNames);
+        modFullNames = CoreUtils.sortValues(modFullNames);
         for (const modName in modFullNames) {
             let icon: string;
 
             if (modName === 'resources') {
-                icon = CoreCourse.instance.getModuleIconSrc('page', modIcons['page']);
+                icon = CoreCourse.getModuleIconSrc('page', modIcons['page']);
             } else {
-                icon = CoreCourseModuleDelegate.instance.getModuleIconSrc(modName, modIcons[modName]);
+                icon = CoreCourseModuleDelegate.getModuleIconSrc(modName, modIcons[modName]);
             }
 
             this.entries.push({
@@ -122,7 +122,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
             return this.instanceId;
         }
 
-        return CoreSites.instance.getCurrentSiteHomeId();
+        return CoreSites.getCurrentSiteHomeId();
     }
 
     /**
@@ -131,7 +131,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
      * @param entry Selected entry.
      */
     gotoCoureListModType(entry: AddonBlockActivityModuleEntry): void {
-        CoreNavigator.instance.navigateToSitePath('course/list-mod-type', {
+        CoreNavigator.navigateToSitePath('course/list-mod-type', {
             params: {
                 courseId: this.getCourseId(),
                 modName: entry.modName,

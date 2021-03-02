@@ -45,7 +45,7 @@ export class AddonNotificationsActionsComponent implements OnInit {
 
         // Treat appurl first if any.
         if (this.data?.appurl) {
-            actions = await CoreContentLinksDelegate.instance.getActionsFor(
+            actions = await CoreContentLinksDelegate.getActionsFor(
                 <string> this.data.appurl,
                 this.courseId,
                 undefined,
@@ -55,7 +55,7 @@ export class AddonNotificationsActionsComponent implements OnInit {
 
         if (!actions.length && this.contextUrl) {
             // No appurl or cannot handle it. Try with contextUrl.
-            actions = await CoreContentLinksDelegate.instance.getActionsFor(this.contextUrl, this.courseId, undefined, this.data);
+            actions = await CoreContentLinksDelegate.getActionsFor(this.contextUrl, this.courseId, undefined, this.data);
         }
 
         if (!actions.length) {
@@ -82,7 +82,7 @@ export class AddonNotificationsActionsComponent implements OnInit {
             return;
         }
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         site.openInBrowserWithAutoLogin(url);
     }

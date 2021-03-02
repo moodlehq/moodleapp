@@ -59,7 +59,7 @@ export class AddonUserProfileFieldTextareaHandlerService implements CoreUserProf
         if (formValues[name]) {
             let text = <string> formValues[name] || '';
             // Add some HTML to the message in case the user edited with textarea.
-            text = CoreTextUtils.instance.formatHtmlLines(text);
+            text = CoreTextUtils.formatHtmlLines(text);
 
             return {
                 type: 'textarea',
@@ -84,4 +84,4 @@ export class AddonUserProfileFieldTextareaHandlerService implements CoreUserProf
 
 }
 
-export class AddonUserProfileFieldTextareaHandler extends makeSingleton(AddonUserProfileFieldTextareaHandlerService) {}
+export const AddonUserProfileFieldTextareaHandler = makeSingleton(AddonUserProfileFieldTextareaHandlerService);

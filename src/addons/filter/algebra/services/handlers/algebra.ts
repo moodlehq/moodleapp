@@ -43,4 +43,4 @@ export class AddonFilterAlgebraHandlerService extends CoreFilterDefaultHandler {
 
 }
 
-export class AddonFilterAlgebraHandler extends makeSingleton(AddonFilterAlgebraHandlerService) {}
+export const AddonFilterAlgebraHandler = makeSingleton(AddonFilterAlgebraHandlerService);

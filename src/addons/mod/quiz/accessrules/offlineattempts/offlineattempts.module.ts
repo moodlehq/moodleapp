@@ -32,7 +32,7 @@ import { AddonModQuizAccessOfflineAttemptsHandler } from './services/handlers/of
             multi: true,
             deps: [],
             useFactory: () => () => {
-                AddonModQuizAccessRuleDelegate.instance.registerHandler(AddonModQuizAccessOfflineAttemptsHandler.instance);
+                AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessOfflineAttemptsHandler.instance);
             },
         },
     ],

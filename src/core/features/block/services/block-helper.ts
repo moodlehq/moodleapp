@@ -29,7 +29,7 @@ export class CoreBlockHelperProvider {
      * @return true if enabled, false otherwise.
      */
     canGetCourseBlocks(): boolean {
-        return CoreCourse.instance.canGetCourseBlocks() && !CoreBlockDelegate.instance.areBlocksDisabledInCourses();
+        return CoreCourse.canGetCourseBlocks() && !CoreBlockDelegate.areBlocksDisabledInCourses();
     }
 
     /**
@@ -45,8 +45,8 @@ export class CoreBlockHelperProvider {
             return [];
         }
 
-        const blocks = await CoreCourse.instance.getCourseBlocks(courseId);
-        const hasSupportedBlock = CoreBlockDelegate.instance.hasSupportedBlock(blocks);
+        const blocks = await CoreCourse.getCourseBlocks(courseId);
+        const hasSupportedBlock = CoreBlockDelegate.hasSupportedBlock(blocks);
         if (!hasSupportedBlock) {
             return [];
         }
@@ -56,5 +56,4 @@ export class CoreBlockHelperProvider {
 
 }
 
-export class CoreBlockHelper extends makeSingleton(CoreBlockHelperProvider) {}
-
+export const CoreBlockHelper = makeSingleton(CoreBlockHelperProvider);

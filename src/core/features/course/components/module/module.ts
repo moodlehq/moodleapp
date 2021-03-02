@@ -86,7 +86,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         }
 
         this.courseId = this.courseId || this.module.course;
-        this.modNameTranslated = CoreCourse.instance.translateModuleName(this.module.modname) || '';
+        this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname) || '';
 
         if (!this.module.handlerData) {
             return;
@@ -96,8 +96,8 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
         if (this.module.handlerData.showDownloadButton) {
             // Listen for changes on this module status, even if download isn't enabled.
-            this.prefetchHandler = CoreCourseModulePrefetchDelegate.instance.getPrefetchHandlerFor(this.module);
-            this.canCheckUpdates = CoreCourseModulePrefetchDelegate.instance.canCheckUpdates();
+            this.prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(this.module);
+            this.canCheckUpdates = CoreCourseModulePrefetchDelegate.canCheckUpdates();
 
             this.statusObserver = CoreEvents.on<CoreEventPackageStatusChanged>(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
                 if (!this.module || data.componentId != this.module.id || !this.prefetchHandler ||
@@ -106,7 +106,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
                 }
 
                 // Call determineModuleStatus to get the right status to display.
-                const status = CoreCourseModulePrefetchDelegate.instance.determineModuleStatus(this.module, data.status);
+                const status = CoreCourseModulePrefetchDelegate.determineModuleStatus(this.module, data.status);
 
                 if (this.downloadEnabled) {
                     // Download is enabled, show the status.
@@ -115,7 +115,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
                     // Download isn't enabled but the handler defines a updateStatus function, call it anyway.
                     this.module.handlerData.updateStatus(status);
                 }
-            }, CoreSites.instance.getCurrentSiteId());
+            }, CoreSites.getCurrentSiteId());
         }
     }
 
@@ -165,7 +165,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
             // Get download size to ask for confirm if it's high.
             const size = await this.prefetchHandler.getDownloadSize(this.module, this.courseId!, true);
 
-            await CoreCourseHelper.instance.prefetchModule(this.prefetchHandler, this.module, size, this.courseId!, refresh);
+            await CoreCourseHelper.prefetchModule(this.prefetchHandler, this.module, size, this.courseId!, refresh);
 
             const eventData = {
                 sectionId: this.section?.id,
@@ -177,7 +177,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
             // Error, hide spinner.
             this.spinner = false;
             if (!this.isDestroyed) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.errordownloading', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
             }
         }
     }
@@ -208,7 +208,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const status = await CoreCourseModulePrefetchDelegate.instance.getModuleStatus(this.module, this.courseId);
+        const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(this.module, this.courseId);
 
         this.showStatus(status);
     }

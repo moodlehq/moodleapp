@@ -34,7 +34,7 @@ export class CoreFileUploaderVideoHandlerService implements CoreFileUploaderHand
      * @return Promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
-        return CoreApp.instance.isMobile() || (CoreApp.instance.canGetUserMedia() && CoreApp.instance.canRecordMedia());
+        return CoreApp.isMobile() || (CoreApp.canGetUserMedia() && CoreApp.canRecordMedia());
     }
 
     /**
@@ -44,12 +44,12 @@ export class CoreFileUploaderVideoHandlerService implements CoreFileUploaderHand
      * @return Supported mimetypes.
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
-        if (CoreApp.instance.isIOS()) {
+        if (CoreApp.isIOS()) {
             // In iOS it's recorded as MOV.
-            return CoreUtils.instance.filterByRegexp(mimetypes, /^video\/quicktime$/);
-        } else if (CoreApp.instance.isAndroid()) {
+            return CoreUtils.filterByRegexp(mimetypes, /^video\/quicktime$/);
+        } else if (CoreApp.isAndroid()) {
             // In Android we don't know the format the video will be recorded, so accept any video mimetype.
-            return CoreUtils.instance.filterByRegexp(mimetypes, /^video\//);
+            return CoreUtils.filterByRegexp(mimetypes, /^video\//);
         } else {
             // In browser, support video formats that are supported by MediaRecorder.
             if (MediaRecorder) {
@@ -80,7 +80,7 @@ export class CoreFileUploaderVideoHandlerService implements CoreFileUploaderHand
                 allowOffline?: boolean,
                 mimetypes?: string[],
             ): Promise<CoreFileUploaderHandlerResult> => {
-                const result = await CoreFileUploaderHelper.instance.uploadAudioOrVideo(false, maxSize, upload, mimetypes);
+                const result = await CoreFileUploaderHelper.uploadAudioOrVideo(false, maxSize, upload, mimetypes);
 
                 return {
                     treated: true,
@@ -92,4 +92,4 @@ export class CoreFileUploaderVideoHandlerService implements CoreFileUploaderHand
 
 }
 
-export class CoreFileUploaderVideoHandler extends makeSingleton(CoreFileUploaderVideoHandlerService) {}
+export const CoreFileUploaderVideoHandler = makeSingleton(CoreFileUploaderVideoHandlerService);

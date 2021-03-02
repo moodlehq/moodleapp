@@ -51,7 +51,7 @@ export class AddonModPageModuleHandlerService implements CoreCourseModuleHandler
      * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean> {
-        return AddonModPage.instance.isPluginEnabled();
+        return AddonModPage.isPluginEnabled();
     }
 
     /**
@@ -62,7 +62,7 @@ export class AddonModPageModuleHandlerService implements CoreCourseModuleHandler
      */
     getData(module: CoreCourseAnyModuleData): CoreCourseModuleHandlerData {
         return {
-            icon: CoreCourse.instance.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
+            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
             title: module.name,
             class: 'addon-mod_page-handler',
             showDownloadButton: true,
@@ -72,7 +72,7 @@ export class AddonModPageModuleHandlerService implements CoreCourseModuleHandler
                 Object.assign(options.params, { module });
                 const routeParams = '/' + courseId + '/' + module.id;
 
-                CoreNavigator.instance.navigateToSitePath(AddonModPageModuleHandlerService.PAGE_NAME + routeParams, options);
+                CoreNavigator.navigateToSitePath(AddonModPageModuleHandlerService.PAGE_NAME + routeParams, options);
             },
         };
     }
@@ -90,4 +90,4 @@ export class AddonModPageModuleHandlerService implements CoreCourseModuleHandler
     }
 
 }
-export class AddonModPageModuleHandler extends makeSingleton(AddonModPageModuleHandlerService) {}
+export const AddonModPageModuleHandler = makeSingleton(AddonModPageModuleHandlerService);

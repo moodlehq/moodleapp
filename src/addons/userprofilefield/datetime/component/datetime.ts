@@ -54,11 +54,11 @@ export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileField
         super.initForEdit(field);
 
         // Check if it's only date or it has time too.
-        const hasTime = CoreUtils.instance.isTrueOrOne(field.param3);
+        const hasTime = CoreUtils.isTrueOrOne(field.param3);
 
         // Calculate format to use.
-        this.format = CoreTimeUtils.instance.fixFormatForDatetime(CoreTimeUtils.instance.convertPHPToMoment(
-            Translate.instance.instant('core.' + (hasTime ? 'strftimedatetime' : 'strftimedate')),
+        this.format = CoreTimeUtils.fixFormatForDatetime(CoreTimeUtils.convertPHPToMoment(
+            Translate.instant('core.' + (hasTime ? 'strftimedatetime' : 'strftimedate')),
         ));
 
         // Check min value.

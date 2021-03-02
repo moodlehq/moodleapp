@@ -57,8 +57,8 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
 
     constructor() {
 
-        this.isIOS = CoreApp.instance.isIOS();
-        this.siteId = CoreSites.instance.getCurrentSiteId();
+        this.isIOS = CoreApp.isIOS();
+        this.siteId = CoreSites.getCurrentSiteId();
 
         this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, (data: CoreEventSiteUpdatedData) => {
             if (data.siteId == this.siteId) {
@@ -78,7 +78,7 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
 
             if (this.selectedPage) {
                 this.openHandler(this.selectedPage);
-            } else if (CoreScreen.instance.isTablet) {
+            } else if (CoreScreen.isTablet) {
                 if (this.isIOS) {
                     // @todo
                     // this.openHandler('CoreSharedFilesListPage', { manage: true, siteId: this.siteId, hideSitePicker: true });
@@ -93,16 +93,16 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
      * Fetch Data.
      */
     protected async fetchData(): Promise<void> {
-        this.handlers = CoreSettingsDelegate.instance.getHandlers();
+        this.handlers = CoreSettingsDelegate.getHandlers();
 
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
         this.siteInfo = currentSite!.getInfo();
         this.siteName = currentSite!.getSiteName();
         this.siteUrl = currentSite!.getURL();
 
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreSettingsHelper.instance.getSiteSpaceUsage(this.siteId)
+        promises.push(CoreSettingsHelper.getSiteSpaceUsage(this.siteId)
             .then((spaceUsage) => {
                 this.spaceUsage = spaceUsage;
 
@@ -110,7 +110,7 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
             }));
 
         /* if (this.isIOS) {
-            promises.push(CoreSharedFiles.instance.getSiteSharedFiles(this.siteId)
+            promises.push(CoreSharedFiles.getSiteSharedFiles(this.siteId)
                 .then((files) => {
                 this.iosSharedFiles = files.length;
 
@@ -127,12 +127,12 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
     async synchronize(): Promise<void> {
         try {
             // Using syncOnlyOnWifi false to force manual sync.
-            await CoreSettingsHelper.instance.synchronizeSite(false, this.siteId);
+            await CoreSettingsHelper.synchronizeSite(false, this.siteId);
         } catch (error) {
             if (this.isDestroyed) {
                 return;
             }
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.settings.errorsyncsite', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.settings.errorsyncsite', true);
         }
 
     }
@@ -143,7 +143,7 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
      * @return True if site is beeing synchronized, false otherwise.
      */
     isSynchronizing(): boolean {
-        return !!CoreSettingsHelper.instance.getSiteSyncPromise(this.siteId);
+        return !!CoreSettingsHelper.getSiteSyncPromise(this.siteId);
     }
 
     /**
@@ -164,7 +164,7 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
      */
     async deleteSiteStorage(): Promise<void> {
         try {
-            this.spaceUsage = await CoreSettingsHelper.instance.deleteSiteStorage(this.siteName || '', this.siteId);
+            this.spaceUsage = await CoreSettingsHelper.deleteSiteStorage(this.siteName || '', this.siteId);
         } catch {
             // Ignore cancelled confirmation modal.
         }
@@ -179,16 +179,16 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
     openHandler(page: string, params?: Params): void {
         this.selectedPage = page;
         // this.splitviewCtrl.push(page, params);
-        CoreNavigator.instance.navigateToSitePath(page, { params });
+        CoreNavigator.navigateToSitePath(page, { params });
     }
 
     /**
      * Show information about space usage actions.
      */
     showSpaceInfo(): void {
-        CoreDomUtils.instance.showAlert(
-            Translate.instance.instant('core.help'),
-            Translate.instance.instant('core.settings.spaceusagehelp'),
+        CoreDomUtils.showAlert(
+            Translate.instant('core.help'),
+            Translate.instant('core.settings.spaceusagehelp'),
         );
     }
 
@@ -196,9 +196,9 @@ export class CoreSitePreferencesPage implements OnInit, OnDestroy {
      * Show information about sync actions.
      */
     showSyncInfo(): void {
-        CoreDomUtils.instance.showAlert(
-            Translate.instance.instant('core.help'),
-            Translate.instance.instant('core.settings.synchronizenowhelp'),
+        CoreDomUtils.showAlert(
+            Translate.instant('core.help'),
+            Translate.instant('core.settings.synchronizenowhelp'),
         );
     }
 

@@ -86,7 +86,7 @@ export class CoreNavigatorService {
      * @return Whether the active route is using the given path.
      */
     isCurrent(path: string): boolean {
-        return CoreTextUtils.instance.matchesGlob(this.getCurrentPath(), path);
+        return CoreTextUtils.matchesGlob(this.getCurrentPath(), path);
     }
 
     /**
@@ -108,7 +108,7 @@ export class CoreNavigatorService {
      * @return Whether the active route is using the given path.
      */
     isCurrentPathInTablet(path: string): boolean {
-        if (CoreScreen.instance.isMobile) {
+        if (CoreScreen.isMobile) {
             // Split view is off.
             return false;
         }
@@ -135,8 +135,8 @@ export class CoreNavigatorService {
         this.replaceObjectParams(navigationOptions.queryParams);
 
         const navigationResult = (options.reset ?? false)
-            ? await NavController.instance.navigateRoot(url, navigationOptions)
-            : await NavController.instance.navigateForward(url, navigationOptions);
+            ? await NavController.navigateRoot(url, navigationOptions)
+            : await NavController.navigateForward(url, navigationOptions);
 
         return navigationResult !== false;
     }
@@ -150,7 +150,7 @@ export class CoreNavigatorService {
     async navigateToLoginCredentials(params: Params = {}): Promise<boolean> {
         // If necessary, open the previous path to keep the navigation history.
         if (!this.isCurrent('/login/site') && !this.isCurrent('/login/sites')) {
-            const hasSites = await CoreSites.instance.hasSites();
+            const hasSites = await CoreSites.hasSites();
 
             await this.navigate(hasSites ? '/login/sites' : '/login/site', { reset: true });
         }
@@ -180,7 +180,7 @@ export class CoreNavigatorService {
         path: string,
         options: Omit<CoreNavigationOptions, 'reset'> & { siteId?: string } = {},
     ): Promise<boolean> {
-        const siteId = options.siteId ?? CoreSites.instance.getCurrentSiteId();
+        const siteId = options.siteId ?? CoreSites.getCurrentSiteId();
         const navigationOptions: CoreNavigationOptions = CoreObject.without(options, ['siteId']);
 
         // @todo: When this function was in ContentLinksHelper, this code was inside NgZone. Check if it's needed.
@@ -194,18 +194,18 @@ export class CoreNavigatorService {
         }
 
         // If we are logged into a different site, log out first.
-        if (CoreSites.instance.isLoggedIn() && CoreSites.instance.getCurrentSiteId() !== siteId) {
+        if (CoreSites.isLoggedIn() && CoreSites.getCurrentSiteId() !== siteId) {
             // @todo: Check site plugins and store redirect.
 
-            await CoreSites.instance.logout();
+            await CoreSites.logout();
         }
 
         // If we are not logged into the site, load the site.
-        if (!CoreSites.instance.isLoggedIn()) {
-            const modal = await CoreDomUtils.instance.showModalLoading();
+        if (!CoreSites.isLoggedIn()) {
+            const modal = await CoreDomUtils.showModalLoading();
 
             try {
-                const loggedIn = await CoreSites.instance.loadSite(siteId, path, options.params);
+                const loggedIn = await CoreSites.loadSite(siteId, path, options.params);
 
                 if (!loggedIn) {
                     // User has been redirected to the login page and will be redirected to the site path after login.
@@ -229,7 +229,7 @@ export class CoreNavigatorService {
      * @return Current path.
      */
     getCurrentPath(): string {
-        return CoreUrlUtils.instance.removeUrlParams(Router.instance.url);
+        return CoreUrlUtils.removeUrlParams(Router.url);
     }
 
     /**
@@ -240,7 +240,7 @@ export class CoreNavigatorService {
     getPreviousPath(): string {
         // @todo: Remove this method and the used attributes.
         // This is a quick workarround to avoid loops. Ie, in messages we can navigate to user profile and there to messages.
-        return CoreUrlUtils.instance.removeUrlParams(this.previousPath || '');
+        return CoreUrlUtils.removeUrlParams(this.previousPath || '');
     }
 
     /**
@@ -293,11 +293,11 @@ export class CoreNavigatorService {
         // Remove the parameter from our map if it's in there.
         delete this.storedParams[value];
 
-        if (!CoreApp.instance.isMobile() && !storedParam) {
+        if (!CoreApp.isMobile() && !storedParam) {
             // Try to retrieve the param from local storage in browser.
             const storageParam = localStorage.getItem(value);
             if (storageParam) {
-                storedParam = CoreTextUtils.instance.parseJSON(storageParam);
+                storedParam = CoreTextUtils.parseJSON(storageParam);
             }
         }
 
@@ -338,7 +338,7 @@ export class CoreNavigatorService {
      * @return Promise resolved when done.
      */
     back(): Promise<void> {
-        return NavController.instance.pop();
+        return NavController.pop();
     }
 
     /**
@@ -353,7 +353,7 @@ export class CoreNavigatorService {
     getCurrentRoute(): ActivatedRoute;
     getCurrentRoute(options: GetCurrentRouteOptions): ActivatedRoute | null;
     getCurrentRoute({ parentRoute, pageComponent }: GetCurrentRouteOptions = {}): ActivatedRoute | null {
-        parentRoute = parentRoute ?? Router.instance.routerState.root;
+        parentRoute = parentRoute ?? Router.routerState.root;
 
         if (pageComponent && parentRoute.component === pageComponent) {
             return parentRoute;
@@ -389,8 +389,8 @@ export class CoreNavigatorService {
 
         const pathRoot = /^[^/]+/.exec(path)?.[0] ?? '';
         const currentMainMenuTab = this.getCurrentMainMenuTab();
-        const isMainMenuTab = await CoreUtils.instance.ignoreErrors(
-            CoreMainMenu.instance.isMainMenuTab(pathRoot),
+        const isMainMenuTab = await CoreUtils.ignoreErrors(
+            CoreMainMenu.isMainMenuTab(pathRoot),
             false,
         );
 
@@ -435,7 +435,7 @@ export class CoreNavigatorService {
             this.storedParams[id] = value;
             queryParams[name] = id;
 
-            if (!CoreApp.instance.isMobile()) {
+            if (!CoreApp.isMobile()) {
                 // In browser, save the param in local storage to be able to retrieve it if the app is refreshed.
                 localStorage.setItem(id, JSON.stringify(value));
             }
@@ -451,4 +451,4 @@ export class CoreNavigatorService {
 
 }
 
-export class CoreNavigator extends makeSingleton(CoreNavigatorService) {}
+export const CoreNavigator = makeSingleton(CoreNavigatorService);

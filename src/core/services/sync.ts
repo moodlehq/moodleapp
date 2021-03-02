@@ -43,7 +43,7 @@ export class CoreSyncProvider {
      * @param siteId Site ID. If not defined, current site.
      */
     blockOperation(component: string, id: string | number, operation?: string, siteId?: string): void {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const uniqueId = this.getUniqueSyncBlockId(component, id);
 
@@ -81,7 +81,7 @@ export class CoreSyncProvider {
      * @param siteId Site ID. If not defined, current site.
      */
     clearBlocks(component: string, id: string | number, siteId?: string): void {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const uniqueId = this.getUniqueSyncBlockId(component, id);
         if (this.blockedItems[siteId]) {
@@ -98,7 +98,7 @@ export class CoreSyncProvider {
      * @return Record if found or reject.
      */
     async getSyncRecord(component: string, id: string | number, siteId?: string): Promise<CoreSyncRecord> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         return await db.getRecord(SYNC_TABLE_NAME, { component: component, id: String(id) });
     }
@@ -118,7 +118,7 @@ export class CoreSyncProvider {
         data: Partial<CoreSyncRecord>,
         siteId?: string,
     ): Promise<void> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         data.component = component;
         data.id = String(id);
@@ -147,7 +147,7 @@ export class CoreSyncProvider {
      * @return Whether it's blocked.
      */
     isBlocked(component: string, id: string | number, siteId?: string): boolean {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (!this.blockedItems[siteId]) {
             return false;
@@ -171,7 +171,7 @@ export class CoreSyncProvider {
      */
     unblockOperation(component: string, id: string | number, operation?: string, siteId?: string): void {
         operation = operation || '-';
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const uniqueId = this.getUniqueSyncBlockId(component, id);
 
@@ -182,4 +182,4 @@ export class CoreSyncProvider {
 
 }
 
-export class CoreSync extends makeSingleton(CoreSyncProvider) {}
+export const CoreSync = makeSingleton(CoreSyncProvider);

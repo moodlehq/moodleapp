@@ -63,9 +63,9 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     ) {
 
         this.logger = CoreLogger.getInstance('CoreH5PIframeComponent');
-        this.site = CoreSites.instance.getCurrentSite()!;
+        this.site = CoreSites.getCurrentSite()!;
         this.siteId = this.site.getId();
-        this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.instance.isOfflineDisabledInSite();
+        this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.isOfflineDisabledInSite();
 
         // Send resize events when the page holding this component is re-entered.
         // @todo: Check that this works as expected.
@@ -101,12 +101,12 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
         let state: string;
 
         if (this.fileUrl) {
-            state = await CoreFilepool.instance.getFileStateByUrl(this.siteId, this.fileUrl);
+            state = await CoreFilepool.getFileStateByUrl(this.siteId, this.fileUrl);
         } else {
             state = CoreConstants.NOT_DOWNLOADABLE;
         }
 
-        if (this.siteCanDownload && CoreFileHelper.instance.isStateDownloaded(state)) {
+        if (this.siteCanDownload && CoreFileHelper.isStateDownloaded(state)) {
             // Package is downloaded, use the local URL.
             localUrl = await this.getLocalUrl();
         }
@@ -116,7 +116,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
                 // Local package.
                 this.iframeSrc = localUrl;
             } else {
-                this.onlinePlayerUrl = this.onlinePlayerUrl || CoreH5P.instance.h5pPlayer.calculateOnlinePlayerUrl(
+                this.onlinePlayerUrl = this.onlinePlayerUrl || CoreH5P.h5pPlayer.calculateOnlinePlayerUrl(
                     this.site.getURL(),
                     this.fileUrl || '',
                     this.displayOptions,
@@ -133,10 +133,10 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
                 const url = await this.site.getAutoLoginUrl(src, false);
 
                 // Add the preventredirect param so the user can authenticate.
-                this.iframeSrc = CoreUrlUtils.instance.addParamsToUrl(url, { preventredirect: false });
+                this.iframeSrc = CoreUrlUtils.addParamsToUrl(url, { preventredirect: false });
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading H5P package.', true);
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading H5P package.', true);
 
         } finally {
             this.addResizerScript();
@@ -151,7 +151,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
      */
     protected async getLocalUrl(): Promise<string | undefined> {
         try {
-            const url = await CoreH5P.instance.h5pPlayer.getContentIndexFileUrl(
+            const url = await CoreH5P.h5pPlayer.getContentIndexFileUrl(
                 this.fileUrl!,
                 this.displayOptions,
                 this.trackComponent,
@@ -163,14 +163,14 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
         } catch (error) {
             // Index file doesn't exist, probably deleted because a lib was updated. Try to create it again.
             try {
-                const path = await CoreFilepool.instance.getInternalUrlByUrl(this.siteId, this.fileUrl!);
+                const path = await CoreFilepool.getInternalUrlByUrl(this.siteId, this.fileUrl!);
 
-                const file = await CoreFile.instance.getFile(path);
+                const file = await CoreFile.getFile(path);
 
                 await CoreH5PHelper.saveH5P(this.fileUrl!, file, this.siteId);
 
                 // File treated. Try to get the index file URL again.
-                const url = await CoreH5P.instance.h5pPlayer.getContentIndexFileUrl(
+                const url = await CoreH5P.h5pPlayer.getContentIndexFileUrl(
                     this.fileUrl!,
                     this.displayOptions,
                     this.trackComponent,
@@ -198,7 +198,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
         const script = document.createElement('script');
         script.id = 'core-h5p-resizer-script';
         script.type = 'text/javascript';
-        script.src = CoreH5P.instance.h5pPlayer.getResizerScriptUrl();
+        script.src = CoreH5P.h5pPlayer.getResizerScriptUrl();
         document.head.appendChild(script);
     }
 

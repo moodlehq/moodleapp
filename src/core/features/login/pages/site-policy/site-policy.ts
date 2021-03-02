@@ -42,8 +42,8 @@ export class CoreLoginSitePolicyPage implements OnInit {
      */
     ngOnInit(): void {
 
-        this.siteId = CoreNavigator.instance.getRouteParam('siteId');
-        this.currentSite = CoreSites.instance.getCurrentSite();
+        this.siteId = CoreNavigator.getRouteParam('siteId');
+        this.currentSite = CoreSites.getCurrentSite();
 
         if (!this.currentSite) {
             // Not logged in, stop.
@@ -72,9 +72,9 @@ export class CoreLoginSitePolicyPage implements OnInit {
      */
     protected async fetchSitePolicy(): Promise<void> {
         try {
-            this.sitePolicy = await CoreLoginHelper.instance.getSitePolicy(this.siteId);
+            this.sitePolicy = await CoreLoginHelper.getSitePolicy(this.siteId);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error getting site policy.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error getting site policy.');
             this.cancel();
 
             return;
@@ -82,9 +82,9 @@ export class CoreLoginSitePolicyPage implements OnInit {
 
         // Try to get the mime type.
         try {
-            const mimeType = await CoreUtils.instance.getMimeTypeFromUrl(this.sitePolicy);
+            const mimeType = await CoreUtils.getMimeTypeFromUrl(this.sitePolicy);
 
-            const extension = CoreMimetypeUtils.instance.getExtension(mimeType, this.sitePolicy);
+            const extension = CoreMimetypeUtils.getExtension(mimeType, this.sitePolicy);
             this.showInline = extension == 'html' || extension == 'htm';
         } catch (error) {
             // Unable to get mime type, assume it's not supported.
@@ -100,9 +100,9 @@ export class CoreLoginSitePolicyPage implements OnInit {
      * @return Promise resolved when done.
      */
     async cancel(): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(CoreSites.instance.logout());
+        await CoreUtils.ignoreErrors(CoreSites.logout());
 
-        await CoreNavigator.instance.navigate('/login/sites', { reset: true });
+        await CoreNavigator.navigate('/login/sites', { reset: true });
     }
 
     /**
@@ -111,18 +111,18 @@ export class CoreLoginSitePolicyPage implements OnInit {
      * @return Promise resolved when done.
      */
     async accept(): Promise<void> {
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {
-            await CoreLoginHelper.instance.acceptSitePolicy(this.siteId);
+            await CoreLoginHelper.acceptSitePolicy(this.siteId);
 
             // Success accepting, go to site initial page.
             // Invalidate cache since some WS don't return error if site policy is not accepted.
-            await CoreUtils.instance.ignoreErrors(this.currentSite!.invalidateWsCache());
+            await CoreUtils.ignoreErrors(this.currentSite!.invalidateWsCache());
 
-            await CoreNavigator.instance.navigateToSiteHome();
+            await CoreNavigator.navigateToSiteHome();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error accepting site policy.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error accepting site policy.');
         } finally {
             modal.dismiss();
         }

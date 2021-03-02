@@ -44,7 +44,7 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
         return [{
             action: (siteId: string): void => {
                 // @todo This should open the 'sitehome' setting as well.
-                CoreNavigator.instance.navigateToSiteHome({ siteId });
+                CoreNavigator.navigateToSiteHome({ siteId });
             },
         }];
     }
@@ -65,15 +65,15 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
             return false;
         }
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         if (courseId != site.getSiteHomeId()) {
             // The course is not site home.
             return false;
         }
 
-        return CoreSiteHome.instance.isAvailable(siteId).then(() => true).catch(() => false);
+        return CoreSiteHome.isAvailable(siteId).then(() => true).catch(() => false);
     }
 
 }
 
-export class CoreSiteHomeIndexLinkHandler extends makeSingleton(CoreSiteHomeIndexLinkHandlerService) {}
+export const CoreSiteHomeIndexLinkHandler = makeSingleton(CoreSiteHomeIndexLinkHandlerService);

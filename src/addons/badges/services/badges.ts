@@ -37,7 +37,7 @@ export class AddonBadgesProvider {
      * @return Promise resolved with true if enabled, false otherwise.
      */
     async isPluginEnabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.canUseAdvancedFeature('enablebadges') && site.wsAvailable('core_course_get_user_navigation_options');
     }
@@ -63,7 +63,7 @@ export class AddonBadgesProvider {
      */
     async getUserBadges(courseId: number, userId: number, siteId?: string): Promise<AddonBadgesUserBadge[]> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const data: AddonBadgesGetUserBadgesWSParams = {
             courseid: courseId,
             userid: userId,
@@ -101,14 +101,14 @@ export class AddonBadgesProvider {
      * @return Promise resolved when data is invalidated.
      */
     async invalidateUserBadges(courseId: number, userId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getBadgesCacheKey(courseId, userId));
     }
 
 }
 
-export class AddonBadges extends makeSingleton(AddonBadgesProvider) {}
+export const AddonBadges = makeSingleton(AddonBadgesProvider);
 
 /**
  * Params of core_badges_get_user_badges WS.

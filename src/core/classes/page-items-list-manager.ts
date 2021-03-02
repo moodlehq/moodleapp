@@ -62,13 +62,13 @@ export abstract class CorePageItemsListManager<Item> {
         this.watchSplitViewOutlet(splitView);
 
         // Calculate current selected item.
-        const route = CoreNavigator.instance.getCurrentRoute({ pageComponent: this.pageComponent });
+        const route = CoreNavigator.getCurrentRoute({ pageComponent: this.pageComponent });
         if (route !== null && route.firstChild) {
             this.updateSelectedItem(route.firstChild.snapshot);
         }
 
         // Select default item if none is selected on a non-mobile layout.
-        if (!CoreScreen.instance.isMobile && this.selectedItem === null) {
+        if (!CoreScreen.isMobile && this.selectedItem === null) {
             const defaultItem = this.getDefaultItem();
 
             if (defaultItem) {
@@ -77,7 +77,7 @@ export abstract class CorePageItemsListManager<Item> {
         }
 
         // Log activity.
-        await CoreUtils.instance.ignoreErrors(this.logActivity());
+        await CoreUtils.ignoreErrors(this.logActivity());
     }
 
     /**
@@ -128,7 +128,7 @@ export abstract class CorePageItemsListManager<Item> {
      */
     async select(item: Item): Promise<void> {
         // Get current route in the page.
-        const route = CoreNavigator.instance.getCurrentRoute({ pageComponent: this.pageComponent });
+        const route = CoreNavigator.getCurrentRoute({ pageComponent: this.pageComponent });
 
         if (route === null) {
             return;
@@ -147,9 +147,9 @@ export abstract class CorePageItemsListManager<Item> {
         const params = this.getItemQueryParams(item);
         const pathPrefix = selectedItemPath ? selectedItemPath.split('/').fill('../').join('') : '';
 
-        await CoreNavigator.instance.navigate(pathPrefix + itemPath, {
+        await CoreNavigator.navigate(pathPrefix + itemPath, {
             params,
-            reset: CoreScreen.instance.isTablet,
+            reset: CoreScreen.isTablet,
         });
     }
 

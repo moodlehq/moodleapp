@@ -71,11 +71,11 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
         e.preventDefault();
         e.stopPropagation();
 
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
         this.completion.state = this.completion.state === 1 ? 0 : 1;
 
         try {
-            const response = await CoreCourse.instance.markCompletedManually(
+            const response = await CoreCourse.markCompletedManually(
                 this.completion.cmid,
                 this.completion.state === 1,
                 this.completion.courseId!,
@@ -91,7 +91,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
             this.completionChanged.emit(this.completion);
         } catch (error) {
             this.completion.state = this.completion.state === 1 ? 0 : 1;
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.errorchangecompletion', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.errorchangecompletion', true);
         } finally {
             modal.dismiss();
         }
@@ -146,7 +146,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
             return;
         }
 
-        const result = await CoreFilterHelper.instance.getFiltersAndFormatText(
+        const result = await CoreFilterHelper.getFiltersAndFormatText(
             moduleName,
             'module',
             this.moduleId,
@@ -160,7 +160,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
         if (this.completion.overrideby > 0) {
             langKey += '-override';
 
-            const profile = await CoreUser.instance.getProfile(this.completion.overrideby, this.completion.courseId, true);
+            const profile = await CoreUser.getProfile(this.completion.overrideby, this.completion.courseId, true);
 
             translateParams = {
                 $a: {
@@ -170,7 +170,7 @@ export class CoreCourseModuleCompletionComponent implements OnChanges {
             };
         }
 
-        this.completionDescription = Translate.instance.instant(langKey, translateParams);
+        this.completionDescription = Translate.instant(langKey, translateParams);
     }
 
 }

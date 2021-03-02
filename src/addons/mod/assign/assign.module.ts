@@ -57,12 +57,12 @@ const routes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreCourseModuleDelegate.instance.registerHandler(AddonModAssignModuleHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModAssignIndexLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModAssignListLinkHandler.instance);
-                CoreCourseModulePrefetchDelegate.instance.registerHandler(AddonModAssignPrefetchHandler.instance);
-                CoreCronDelegate.instance.register(AddonModAssignSyncCronHandler.instance);
-                CorePushNotificationsDelegate.instance.registerClickHandler(AddonModAssignPushClickHandler.instance);
+                CoreCourseModuleDelegate.registerHandler(AddonModAssignModuleHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModAssignIndexLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModAssignListLinkHandler.instance);
+                CoreCourseModulePrefetchDelegate.registerHandler(AddonModAssignPrefetchHandler.instance);
+                CoreCronDelegate.register(AddonModAssignSyncCronHandler.instance);
+                CorePushNotificationsDelegate.registerClickHandler(AddonModAssignPushClickHandler.instance);
             },
         },
     ],

@@ -45,7 +45,7 @@ export class CoreUpdateManagerProvider {
         const promises = [];
         const versionCode = CoreConstants.CONFIG.versioncode;
 
-        const versionApplied = await CoreConfig.instance.get<number>(VERSION_APPLIED, 0);
+        const versionApplied = await CoreConfig.get<number>(VERSION_APPLIED, 0);
 
         if (versionCode >= 3900 && versionApplied < 3900 && versionApplied > 0) {
             // @todo: H5P update.
@@ -54,7 +54,7 @@ export class CoreUpdateManagerProvider {
         try {
             await Promise.all(promises);
 
-            await CoreConfig.instance.set(VERSION_APPLIED, versionCode);
+            await CoreConfig.set(VERSION_APPLIED, versionCode);
         } catch (error) {
             this.logger.error(`Error applying update from ${versionApplied} to ${versionCode}`, error);
         }
@@ -62,4 +62,4 @@ export class CoreUpdateManagerProvider {
 
 }
 
-export class CoreUpdateManager extends makeSingleton(CoreUpdateManagerProvider) {}
+export const CoreUpdateManager = makeSingleton(CoreUpdateManagerProvider);

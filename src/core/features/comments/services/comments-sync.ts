@@ -55,7 +55,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     private async syncAllCommentsFunc(siteId: string, force: boolean): Promise<void> {
-        const comments = await CoreCommentsOffline.instance.getAllComments(siteId);
+        const comments = await CoreCommentsOffline.getAllComments(siteId);
 
         const commentsUnique: { [syncId: string]: (CoreCommentsDBRecord | CoreCommentsDeletedDBRecord) } = {};
         // Get Unique array.
@@ -155,7 +155,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
         area: string = '',
         siteId?: string,
     ): Promise<CoreCommentsSyncResult> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = this.getSyncId(contextLevel, instanceId, component, itemId, area);
 
@@ -197,13 +197,13 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
         };
 
         // Get offline comments to be sent.
-        const comments = await CoreCommentsOffline.instance.getComments(contextLevel, instanceId, component, itemId, area, siteId);
+        const comments = await CoreCommentsOffline.getComments(contextLevel, instanceId, component, itemId, area, siteId);
         if (!comments.length) {
             // Nothing to sync.
             return result;
         }
 
-        if (!CoreApp.instance.isOnline()) {
+        if (!CoreApp.isOnline()) {
             // Cannot sync in offline.
             throw new CoreNetworkError();
         }
@@ -217,7 +217,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
             if ('deleted' in comment) {
                 deleteCommentIds.push(comment.commentid);
             } else {
-                promises.push(CoreComments.instance.addCommentOnline(
+                promises.push(CoreComments.addCommentOnline(
                     comment.content,
                     contextLevel,
                     instanceId,
@@ -228,13 +228,13 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
                 ).then(() => {
                     countChange++;
 
-                    return CoreCommentsOffline.instance.removeComment(contextLevel, instanceId, component, itemId, area, siteId);
+                    return CoreCommentsOffline.removeComment(contextLevel, instanceId, component, itemId, area, siteId);
                 }));
             }
         });
 
         if (deleteCommentIds.length > 0) {
-            promises.push(CoreComments.instance.deleteCommentsOnline(
+            promises.push(CoreComments.deleteCommentsOnline(
                 deleteCommentIds,
                 contextLevel,
                 instanceId,
@@ -245,7 +245,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
             ).then(() => {
                 countChange--;
 
-                return CoreCommentsOffline.instance.removeDeletedComments(
+                return CoreCommentsOffline.removeDeletedComments(
                     contextLevel,
                     instanceId,
                     component,
@@ -269,17 +269,17 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
                 itemId: itemId,
                 area: area,
                 countChange: countChange,
-            }, CoreSites.instance.getCurrentSiteId());
+            }, CoreSites.getCurrentSiteId());
 
             // Fetch the comments from server to be sure they're up to date.
-            await CoreUtils.instance.ignoreErrors(
-                CoreComments.instance.invalidateCommentsData(contextLevel, instanceId, component, itemId, area, siteId),
+            await CoreUtils.ignoreErrors(
+                CoreComments.invalidateCommentsData(contextLevel, instanceId, component, itemId, area, siteId),
             );
-            await CoreUtils.instance.ignoreErrors(
-                CoreComments.instance.getComments(contextLevel, instanceId, component, itemId, area, 0, siteId),
+            await CoreUtils.ignoreErrors(
+                CoreComments.getComments(contextLevel, instanceId, component, itemId, area, 0, siteId),
             );
         } catch (error) {
-            if (CoreUtils.instance.isWebServiceError(error)) {
+            if (CoreUtils.isWebServiceError(error)) {
             // It's a WebService error, this means the user cannot send comments.
                 errors.push(error.message);
             } else {
@@ -290,7 +290,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
 
         if (errors && errors.length) {
             errors.forEach((error) => {
-                result.warnings.push(Translate.instance.instant('core.comments.warningcommentsnotsent', {
+                result.warnings.push(Translate.instant('core.comments.warningcommentsnotsent', {
                     error: error,
                 }));
             });
@@ -315,7 +315,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
     }
 
 }
-export const CoreCommentsSync = makeSingleton(CoreCommentsSyncProvider);
+export const CoreCommentsSync = makeSingleton(CoreCommentsSyncProvider, ['component', 'syncInterval']);
 
 export type CoreCommentsSyncResult = {
     warnings: string[]; // List of warnings.

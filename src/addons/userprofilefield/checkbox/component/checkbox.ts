@@ -35,7 +35,7 @@ export class AddonUserProfileFieldCheckboxComponent extends CoreUserProfileField
      */
     protected createFormControl(field: AuthEmailSignupProfileField): FormControl {
         const formData = {
-            value: CoreUtils.instance.isTrueOrOne(field.defaultdata),
+            value: CoreUtils.isTrueOrOne(field.defaultdata),
             disabled: this.disabled,
         };
 

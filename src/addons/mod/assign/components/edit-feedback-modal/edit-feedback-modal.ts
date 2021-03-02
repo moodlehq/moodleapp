@@ -45,12 +45,12 @@ export class AddonModAssignEditFeedbackModalComponent {
     async closeModal(): Promise<void> {
         const changed = await this.hasDataChanged();
         if (changed) {
-            await CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.confirmcanceledit'));
+            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
         }
 
-        CoreDomUtils.instance.triggerFormCancelledEvent(this.formElement, CoreSites.instance.getCurrentSiteId());
+        CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
-        ModalController.instance.dismiss();
+        ModalController.dismiss();
     }
 
     /**
@@ -62,10 +62,10 @@ export class AddonModAssignEditFeedbackModalComponent {
         e.preventDefault();
         e.stopPropagation();
 
-        CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, false, CoreSites.instance.getCurrentSiteId());
+        CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
         // Close the modal, sending the input data.
-        ModalController.instance.dismiss(this.getInputData());
+        ModalController.dismiss(this.getInputData());
     }
 
     /**
@@ -74,7 +74,7 @@ export class AddonModAssignEditFeedbackModalComponent {
      * @return Object with the data.
      */
     protected getInputData(): Record<string, unknown> {
-        return CoreDomUtils.instance.getDataFromForm(document.forms['addon-mod_assign-edit-feedback-form']);
+        return CoreDomUtils.getDataFromForm(document.forms['addon-mod_assign-edit-feedback-form']);
     }
 
     /**
@@ -83,8 +83,8 @@ export class AddonModAssignEditFeedbackModalComponent {
      * @return Promise resolved with boolean: whether the data has changed.
      */
     protected async hasDataChanged(): Promise<boolean> {
-        const changed = await CoreUtils.instance.ignoreErrors(
-            AddonModAssignFeedbackDelegate.instance.hasPluginDataChanged(
+        const changed = await CoreUtils.ignoreErrors(
+            AddonModAssignFeedbackDelegate.hasPluginDataChanged(
                 this.assign,
                 this.submission,
                 this.plugin,

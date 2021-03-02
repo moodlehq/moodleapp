@@ -96,7 +96,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
         });
 
         // Get the current language.
-        const lang = await CoreLang.instance.getCurrentLanguage();
+        const lang = await CoreLang.getCurrentLanguage();
 
         // Now call the configure function.
         this.window.M!.filter_mathjaxloader!.configure({
@@ -121,7 +121,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
         siteId?: string,
     ): Promise<string> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // Don't apply this filter if Moodle is 3.7 or higher and the WS already filtered the content.
         if (!options.wsNotFiltered && site.isVersionGreaterEqualThan('3.7')) {
@@ -188,7 +188,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      * @return The whole text with the span inserted around the defined substring.
      */
     protected insertSpan(text: string, start: number, end: number): string {
-        return CoreTextUtils.instance.substrReplace(
+        return CoreTextUtils.substrReplace(
             text,
             '<span class="nolink">' + text.substr(start, end - start + 1) + '</span>',
             start,
@@ -280,7 +280,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
         }
 
         // No more guessing, use default language.
-        return CoreLang.instance.getDefaultLanguage();
+        return CoreLang.getDefaultLanguage();
     }
 
     /**
@@ -292,7 +292,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      */
     shouldBeApplied(options: CoreFilterFormatTextOptions, site?: CoreSite): boolean {
         // Only apply the filter if logged in and we're filtering current site.
-        return !!(site && site.getId() == CoreSites.instance.getCurrentSiteId());
+        return !!(site && site.getId() == CoreSites.getCurrentSiteId());
     }
 
     /**
@@ -307,7 +307,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
             return;
         }
 
-        const deferred = CoreUtils.instance.promiseDefer<void>();
+        const deferred = CoreUtils.promiseDefer<void>();
 
         setTimeout(async () => {
             try {
@@ -396,7 +396,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
 
 }
 
-export class AddonFilterMathJaxLoaderHandler extends makeSingleton(AddonFilterMathJaxLoaderHandlerService) {}
+export const AddonFilterMathJaxLoaderHandler = makeSingleton(AddonFilterMathJaxLoaderHandlerService);
 
 type MathJaxWindow = Window & {
     MathJax?: any; // eslint-disable-line @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any

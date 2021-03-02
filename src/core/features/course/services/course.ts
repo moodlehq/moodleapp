@@ -83,18 +83,18 @@ export class CoreCourseProvider {
      * Initialize.
      */
     initialize(): void {
-        Platform.instance.resume.subscribe(() => {
+        Platform.resume.subscribe(() => {
             // Run the handler the app is open to keep user in online status.
             setTimeout(() => {
-                CoreCronDelegate.instance.forceCronHandlerExecution(CoreCourseLogCronHandler.instance.name);
+                CoreCronDelegate.forceCronHandlerExecution(CoreCourseLogCronHandler.name);
             }, 1000);
         });
 
         CoreEvents.on(CoreEvents.LOGIN, () => {
             setTimeout(() => {
                 // Ignore errors here, since probably login is not complete: it happens on token invalid.
-                CoreUtils.instance.ignoreErrors(
-                    CoreCronDelegate.instance.forceCronHandlerExecution(CoreCourseLogCronHandler.instance.name),
+                CoreUtils.ignoreErrors(
+                    CoreCronDelegate.forceCronHandlerExecution(CoreCourseLogCronHandler.name),
                 );
             }, 1000);
         });
@@ -108,7 +108,7 @@ export class CoreCourseProvider {
      * @since 3.7
      */
     canGetCourseBlocks(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site && site.isVersionGreaterEqualThan('3.7') && site.wsAvailable('core_block_get_course_blocks');
     }
@@ -121,7 +121,7 @@ export class CoreCourseProvider {
      * @since 3.4.6, 3.5.3, 3.6
      */
     canRequestStealthModules(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site && site.isVersionGreaterEqualThan(['3.4.6', '3.5.3']);
     }
@@ -148,7 +148,7 @@ export class CoreCourseProvider {
      * @return Promise resolved when all status are cleared.
      */
     async clearAllCoursesStatus(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         this.logger.debug('Clear all course status for site ' + site.id);
 
         await site.getDb().deleteRecords(COURSE_STATUS_TABLE);
@@ -187,7 +187,7 @@ export class CoreCourseProvider {
         includeOffline: boolean = true,
     ): Promise<Record<string, CoreCourseCompletionActivityStatus>> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
         this.logger.debug(`Getting completion status for user ${userId} in course ${courseId}`);
@@ -218,14 +218,14 @@ export class CoreCourseProvider {
             throw Error('WS core_completion_get_activities_completion_status failed');
         }
 
-        const completionStatus = CoreUtils.instance.arrayToObject(data.statuses, 'cmid');
+        const completionStatus = CoreUtils.arrayToObject(data.statuses, 'cmid');
         if (!includeOffline) {
             return completionStatus;
         }
 
         try {
             // Now get the offline completion (if any).
-            const offlineCompletions = await CoreCourseOffline.instance.getCourseManualCompletions(courseId, site.id);
+            const offlineCompletions = await CoreCourseOffline.getCourseManualCompletions(courseId, site.id);
 
             offlineCompletions.forEach((offlineCompletion) => {
 
@@ -267,7 +267,7 @@ export class CoreCourseProvider {
      * @since 3.7
      */
     async getCourseBlocks(courseId: number, siteId?: string): Promise<CoreCourseBlock[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const params: CoreBlockGetCourseBlocksWSParams = {
             courseid: courseId,
             returncontents: true,
@@ -299,7 +299,7 @@ export class CoreCourseProvider {
      * @return Promise resolved with the data.
      */
     async getCourseStatusData(courseId: number, siteId?: string): Promise<CoreCourseStatusDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const entry: CoreCourseStatusDBRecord = await site.getDb().getRecord(COURSE_STATUS_TABLE, { id: courseId });
         if (!entry) {
             throw Error('No entry found on course status table');
@@ -332,7 +332,7 @@ export class CoreCourseProvider {
      * @return Resolves with an array containing downloaded course ids.
      */
     async getDownloadedCourseIds(siteId?: string): Promise<number[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const entries: CoreCourseStatusDBRecord[] = await site.getDb().getRecordsList(
             COURSE_STATUS_TABLE,
             'status',
@@ -368,7 +368,7 @@ export class CoreCourseProvider {
         siteId?: string,
         modName?: string,
     ): Promise<CoreCourseWSModule> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Helper function to do the WS request without processing the result.
         const doRequest = async (
@@ -420,7 +420,7 @@ export class CoreCourseProvider {
                 return sections;
             } catch {
                 // The module might still be cached by a request with different parameters.
-                if (!ignoreCache && !CoreApp.instance.isOnline()) {
+                if (!ignoreCache && !CoreApp.isOnline()) {
                     if (includeStealth) {
                         // Older versions didn't include the includestealthmodules option.
                         return doRequest(site, moduleId, modName, false, true);
@@ -442,7 +442,7 @@ export class CoreCourseProvider {
 
         let sections: CoreCourseWSSection[];
         try {
-            const site = await CoreSites.instance.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
             // We have courseId, we can use core_course_get_contents for compatibility.
             this.logger.debug(`Getting module ${moduleId} in course ${courseId}`);
 
@@ -494,7 +494,7 @@ export class CoreCourseProvider {
      * @return Promise resolved with the module's info.
      */
     async getModuleBasicInfo(moduleId: number, siteId?: string): Promise<CoreCourseModuleBasicInfo> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const params: CoreCourseGetCourseModuleWSParams = {
             cmid: moduleId,
         };
@@ -523,7 +523,7 @@ export class CoreCourseProvider {
      * @return Promise resolved with the module's grade info.
      */
     async getModuleBasicGradeInfo(moduleId: number, siteId?: string): Promise<CoreCourseModuleGradeInfo | undefined> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         if (!site || !site.isVersionGreaterEqualThan('3.2')) {
             // On 3.1 won't get grading info and will return undefined. See check bellow.
@@ -562,7 +562,7 @@ export class CoreCourseProvider {
      * @return Promise resolved with the module's info.
      */
     async getModuleBasicInfoByInstance(id: number, module: string, siteId?: string): Promise<CoreCourseModuleBasicInfo> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const params: CoreCourseGetCourseModuleByInstanceWSParams = {
             instance: id,
             module: module,
@@ -702,7 +702,7 @@ export class CoreCourseProvider {
         includeStealthModules: boolean = true,
     ): Promise<CoreCourseWSSection[]> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         preSets = preSets || {};
         preSets.cacheKey = this.getSectionsCacheKey(courseId);
         preSets.updateFrequency = preSets.updateFrequency || CoreSite.FREQUENCY_RARELY;
@@ -785,7 +785,7 @@ export class CoreCourseProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateCourseBlocks(courseId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getCourseBlocksCacheKey(courseId));
     }
@@ -799,7 +799,7 @@ export class CoreCourseProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateModule(moduleId: number, siteId?: string, modName?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const promises: Promise<void>[] = [];
         if (modName) {
             promises.push(site.invalidateWsCacheForKey(this.getModuleByModNameCacheKey(modName)));
@@ -818,7 +818,7 @@ export class CoreCourseProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateModuleByInstance(id: number, module: string, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getModuleBasicInfoByInstanceCacheKey(id, module));
     }
@@ -832,7 +832,7 @@ export class CoreCourseProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateSections(courseId: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const promises: Promise<void>[] = [];
         const siteHomeId = site.getSiteHomeId();
         userId = userId || site.getUserId();
@@ -896,8 +896,8 @@ export class CoreCourseProvider {
             params.sectionnumber = sectionNumber;
         }
 
-        const site = await CoreSites.instance.getSite(siteId);
-        CorePushNotifications.instance.logViewEvent(courseId, name, 'course', wsName, { sectionnumber: sectionNumber }, siteId);
+        const site = await CoreSites.getSite(siteId);
+        CorePushNotifications.logViewEvent(courseId, name, 'course', wsName, { sectionnumber: sectionNumber }, siteId);
         const response: CoreStatusWithWarningsWSResponse = await site.write(wsName, params);
 
         if (!response.status) {
@@ -928,14 +928,14 @@ export class CoreCourseProvider {
         siteId?: string,
     ): Promise<CoreStatusWithWarningsWSResponse> {
 
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Convenience function to store a completion to be synchronized later.
         const storeOffline = (): Promise<CoreStatusWithWarningsWSResponse> =>
-            CoreCourseOffline.instance.markCompletedManually(cmId, completed, courseId, courseName, siteId);
+            CoreCourseOffline.markCompletedManually(cmId, completed, courseId, courseName, siteId);
 
         // The offline function requires a courseId and it could be missing because it's a calculated field.
-        if (!CoreApp.instance.isOnline() && courseId) {
+        if (!CoreApp.isOnline() && courseId) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -946,14 +946,14 @@ export class CoreCourseProvider {
 
             // Data sent to server, if there is some offline data delete it now.
             try {
-                await CoreCourseOffline.instance.deleteManualCompletion(cmId, siteId);
+                await CoreCourseOffline.deleteManualCompletion(cmId, siteId);
             } catch {
                 // Ignore errors, shouldn't happen.
             }
 
             return result;
         } catch (error) {
-            if (CoreUtils.instance.isWebServiceError(error) || !courseId) {
+            if (CoreUtils.isWebServiceError(error) || !courseId) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             } else {
@@ -976,7 +976,7 @@ export class CoreCourseProvider {
         completed: boolean,
         siteId?: string,
     ): Promise<CoreStatusWithWarningsWSResponse> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const params: CoreCompletionUpdateActivityCompletionStatusManuallyWSParams = {
             cmid: cmId,
             completed: completed,
@@ -1023,20 +1023,20 @@ export class CoreCourseProvider {
      * @return Promise resolved when done.
      */
     async openCourse(course: CoreCourseAnyCourseData | { id: number }, params?: Params): Promise<void> {
-        const loading = await CoreDomUtils.instance.showModalLoading();
+        const loading = await CoreDomUtils.showModalLoading();
 
         // Wait for site plugins to be fetched.
         // @todo await this.sitePluginsProvider.waitFetchPlugins();
 
         if (!('format' in course) || typeof course.format == 'undefined') {
-            const result = await CoreCourseHelper.instance.getCourse(course.id);
+            const result = await CoreCourseHelper.getCourse(course.id);
 
             course = result.course;
         }
 
         if (course) { // @todo Replace with: if (!this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
             // No custom format plugin. We don't need to wait for anything.
-            await CoreCourseFormatDelegate.instance.openCourse(<CoreCourseAnyCourseData> course, params);
+            await CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, params);
             loading.dismiss();
 
             return;
@@ -1047,27 +1047,27 @@ export class CoreCourseProvider {
             /* @todo await this.sitePluginsProvider.sitePluginLoaded('format_' + course.format);
             // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
             if (this.sitePluginsProvider.sitePluginsFinishedLoading) {
-                return CoreCourseFormatDelegate.instance.openCourse(course, params);
+                return CoreCourseFormatDelegate.openCourse(course, params);
             }*/
 
             // Wait for plugins to be loaded.
-            const deferred = CoreUtils.instance.promiseDefer<void>();
+            const deferred = CoreUtils.promiseDefer<void>();
 
             const observer = CoreEvents.on(CoreEvents.SITE_PLUGINS_LOADED, () => {
                 observer?.off();
 
-                CoreCourseFormatDelegate.instance.openCourse(<CoreCourseAnyCourseData> course, params)
+                CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, params)
                     .then(deferred.resolve).catch(deferred.reject);
             });
 
             return deferred.promise;
         } catch (error) {
             // The site plugin failed to load. The user needs to restart the app to try loading it again.
-            const message = Translate.instance.instant('core.courses.errorloadplugins');
-            const reload = Translate.instance.instant('core.courses.reload');
-            const ignore = Translate.instance.instant('core.courses.ignore');
+            const message = Translate.instant('core.courses.errorloadplugins');
+            const reload = Translate.instant('core.courses.reload');
+            const ignore = Translate.instant('core.courses.ignore');
 
-            await CoreDomUtils.instance.showConfirm(message, '', reload, ignore);
+            await CoreDomUtils.showConfirm(message, '', reload, ignore);
             window.location.reload();
         }
     }
@@ -1093,11 +1093,11 @@ export class CoreCourseProvider {
      * @return Promise resolved when the status is changed. Resolve param: new status.
      */
     async setCoursePreviousStatus(courseId: number, siteId?: string): Promise<string> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         this.logger.debug(`Set previous status for course ${courseId} in site ${siteId}`);
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const db = site.getDb();
         const entry = await this.getCourseStatusData(courseId, siteId);
 
@@ -1127,18 +1127,18 @@ export class CoreCourseProvider {
      * @return Promise resolved when the status is stored.
      */
     async setCourseStatus(courseId: number, status: string, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         this.logger.debug(`Set status '${status}' for course ${courseId} in site ${siteId}`);
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         let downloadTime = 0;
         let previousDownloadTime = 0;
         let previousStatus = '';
 
         if (status == CoreConstants.DOWNLOADING) {
             // Set download time if course is now downloading.
-            downloadTime = CoreTimeUtils.instance.timestamp();
+            downloadTime = CoreTimeUtils.timestamp();
         }
 
         try {
@@ -1186,7 +1186,7 @@ export class CoreCourseProvider {
         }
 
         const langKey = 'core.mod_' + moduleName;
-        const translated = Translate.instance.instant(langKey);
+        const translated = Translate.instant(langKey);
 
         return translated !== langKey ? translated : moduleName;
     }
@@ -1207,7 +1207,7 @@ export class CoreCourseProvider {
 
 }
 
-export class CoreCourse extends makeSingleton(CoreCourseProvider) {}
+export const CoreCourse = makeSingleton(CoreCourseProvider);
 
 /**
  * Common options used by modules when calling a WS through CoreSite.

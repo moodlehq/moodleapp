@@ -38,7 +38,7 @@ export class AddonModAssignPushClickHandlerService implements CorePushNotificati
      * @return Whether the notification click is handled by this handler
      */
     async handles(notification: NotificationData): Promise<boolean> {
-        return CoreUtils.instance.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_assign' &&
+        return CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_assign' &&
                 notification.name == 'assign_notification';
     }
 
@@ -49,12 +49,12 @@ export class AddonModAssignPushClickHandlerService implements CorePushNotificati
      * @return Promise resolved when done.
      */
     async handleClick(notification: NotificationData): Promise<void> {
-        const contextUrlParams = CoreUrlUtils.instance.extractUrlParams(notification.contexturl);
+        const contextUrlParams = CoreUrlUtils.extractUrlParams(notification.contexturl);
         const courseId = Number(notification.courseid);
         const moduleId = Number(contextUrlParams.id);
 
-        await CoreUtils.instance.ignoreErrors(AddonModAssign.instance.invalidateContent(moduleId, courseId, notification.site));
-        await CoreCourseHelper.instance.navigateToModule(moduleId, notification.site, courseId);
+        await CoreUtils.ignoreErrors(AddonModAssign.invalidateContent(moduleId, courseId, notification.site));
+        await CoreCourseHelper.navigateToModule(moduleId, notification.site, courseId);
     }
 
 }

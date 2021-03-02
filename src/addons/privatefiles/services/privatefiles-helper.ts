@@ -35,7 +35,7 @@ export class AddonPrivateFilesHelperProvider {
      */
     async uploadPrivateFile(info?: AddonPrivateFilesGetUserInfoWSResult): Promise<void> {
         // Calculate the max size.
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
         let maxSize = currentSite?.getInfo()?.usermaxuploadfilesize || -1;
         let userQuota = currentSite?.getInfo()?.userquota;
 
@@ -52,19 +52,19 @@ export class AddonPrivateFilesHelperProvider {
         }
 
         // Select and upload the file.
-        const result = await CoreFileUploaderHelper.instance.selectAndUploadFile(maxSize);
+        const result = await CoreFileUploaderHelper.selectAndUploadFile(maxSize);
 
         if (!result) {
-            throw new CoreError(Translate.instance.instant('core.fileuploader.errorwhileuploading'));
+            throw new CoreError(Translate.instant('core.fileuploader.errorwhileuploading'));
         }
 
         // File uploaded. Move it to private files.
-        const modal = await CoreDomUtils.instance.showModalLoading('core.fileuploader.uploading', true);
+        const modal = await CoreDomUtils.showModalLoading('core.fileuploader.uploading', true);
 
         try {
-            await AddonPrivateFiles.instance.moveFromDraftToPrivate(result.itemid);
+            await AddonPrivateFiles.moveFromDraftToPrivate(result.itemid);
 
-            CoreDomUtils.instance.showToast('core.fileuploader.fileuploaded', true, undefined, 'core-toast-success');
+            CoreDomUtils.showToast('core.fileuploader.fileuploaded', true, undefined, 'core-toast-success');
         } finally {
             modal.dismiss();
         }
@@ -72,4 +72,4 @@ export class AddonPrivateFilesHelperProvider {
 
 }
 
-export class AddonPrivateFilesHelper extends makeSingleton(AddonPrivateFilesHelperProvider) {}
+export const AddonPrivateFilesHelper = makeSingleton(AddonPrivateFilesHelperProvider);

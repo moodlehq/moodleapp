@@ -28,7 +28,7 @@ import { AddonBlockPrivateFilesHandler } from './services/block-handler';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockPrivateFilesHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockPrivateFilesHandler.instance);
             },
         },
     ],

@@ -119,8 +119,8 @@ export class CoreDynamicComponent implements OnChanges, DoCheck {
             const changes = this.differ.diff(this.data || {});
             if (changes) {
                 this.setInputData();
-                if (this.instance.ngOnChanges) {
-                    this.instance.ngOnChanges(CoreDomUtils.instance.createChangesFromKeyValueDiff(changes));
+                if (this.ngOnChanges) {
+                    this.ngOnChanges(CoreDomUtils.createChangesFromKeyValueDiff(changes));
                 }
             }
         }

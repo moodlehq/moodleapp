@@ -36,7 +36,7 @@ export class CoreGradesOverviewLinkHandlerService extends CoreContentLinksHandle
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: siteId => {
-                CoreNavigator.instance.navigateToSitePath('/grades', { siteId });
+                CoreNavigator.navigateToSitePath('/grades', { siteId });
             },
         }];
     }
@@ -49,9 +49,9 @@ export class CoreGradesOverviewLinkHandlerService extends CoreContentLinksHandle
      * @return Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string): Promise<boolean> {
-        return CoreGrades.instance.isCourseGradesEnabled(siteId);
+        return CoreGrades.isCourseGradesEnabled(siteId);
     }
 
 }
 
-export class CoreGradesOverviewLinkHandler extends makeSingleton(CoreGradesOverviewLinkHandlerService) {}
+export const CoreGradesOverviewLinkHandler = makeSingleton(CoreGradesOverviewLinkHandlerService);

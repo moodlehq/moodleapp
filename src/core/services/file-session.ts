@@ -40,7 +40,7 @@ export class CoreFileSessionProvider {
      * @param siteId Site ID. If not defined, current site.
      */
     addFile(component: string, id: string | number, file: CoreWSExternalFile | FileEntry, siteId?: string): void {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         this.initFileArea(component, id, siteId);
 
@@ -55,7 +55,7 @@ export class CoreFileSessionProvider {
      * @param siteId Site ID. If not defined, current site.
      */
     clearFiles(component: string, id: string | number, siteId?: string): void {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
         if (this.files[siteId] && this.files[siteId][component] && this.files[siteId][component][id]) {
             this.files[siteId][component][id] = [];
         }
@@ -70,7 +70,7 @@ export class CoreFileSessionProvider {
      * @return Array of files in session.
      */
     getFiles(component: string, id: string | number, siteId?: string): (CoreWSExternalFile | FileEntry)[] {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
         if (this.files[siteId] && this.files[siteId][component] && this.files[siteId][component][id]) {
             return this.files[siteId][component][id];
         }
@@ -108,7 +108,7 @@ export class CoreFileSessionProvider {
      * @param siteId Site ID. If not defined, current site.
      */
     removeFile(component: string, id: string | number, file: CoreWSExternalFile | FileEntry, siteId?: string): void {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
         if (this.files[siteId] && this.files[siteId][component] && this.files[siteId][component][id]) {
             const position = this.files[siteId][component][id].indexOf(file);
             if (position != -1) {
@@ -126,7 +126,7 @@ export class CoreFileSessionProvider {
      * @param siteId Site ID. If not defined, current site.
      */
     removeFileByIndex(component: string, id: string | number, index: number, siteId?: string): void {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
         if (this.files[siteId] && this.files[siteId][component] && this.files[siteId][component][id] && index >= 0 &&
             index < this.files[siteId][component][id].length) {
             this.files[siteId][component][id].splice(index, 1);
@@ -142,7 +142,7 @@ export class CoreFileSessionProvider {
      * @param siteId Site ID. If not defined, current site.
      */
     setFiles(component: string, id: string | number, newFiles: (CoreWSExternalFile | FileEntry)[], siteId?: string): void {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         this.initFileArea(component, id, siteId);
 
@@ -151,4 +151,4 @@ export class CoreFileSessionProvider {
 
 }
 
-export class CoreFileSession extends makeSingleton(CoreFileSessionProvider) {}
+export const CoreFileSession = makeSingleton(CoreFileSessionProvider);

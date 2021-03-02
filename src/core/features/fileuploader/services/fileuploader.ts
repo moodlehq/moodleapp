@@ -90,7 +90,7 @@ export class CoreFileUploaderProvider {
         // Currently we are going to compare the order of the files as well.
         // This function can be improved comparing more fields or not comparing the order.
         for (let i = 0; i < a.length; i++) {
-            if (CoreFile.instance.getFileName(a[i]) != CoreFile.instance.getFileName(b[i])) {
+            if (CoreFile.getFileName(a[i]) != CoreFile.getFileName(b[i])) {
                 return true;
             }
         }
@@ -107,7 +107,7 @@ export class CoreFileUploaderProvider {
      */
     async canDeleteDraftFiles(siteId?: string): Promise<boolean> {
         try {
-            const site = await CoreSites.instance.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
 
             return this.canDeleteDraftFilesInSite(site);
         } catch (error) {
@@ -123,7 +123,7 @@ export class CoreFileUploaderProvider {
      * @since 3.10
      */
     canDeleteDraftFilesInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!(site?.wsAvailable('core_files_delete_draft_files'));
     }
@@ -138,7 +138,7 @@ export class CoreFileUploaderProvider {
         this.onAudioCapture.next(true);
 
         try {
-            return await MediaCapture.instance.captureAudio(options);
+            return await MediaCapture.captureAudio(options);
         } finally {
             this.onAudioCapture.next(false);
         }
@@ -154,7 +154,7 @@ export class CoreFileUploaderProvider {
             type: 'audio',
         };
 
-        const modal = await ModalController.instance.create({
+        const modal = await ModalController.create({
             component: CoreEmulatorCaptureMediaComponent,
             cssClass: 'core-modal-fullscreen',
             componentProps: params,
@@ -182,7 +182,7 @@ export class CoreFileUploaderProvider {
         this.onVideoCapture.next(true);
 
         try {
-            return await MediaCapture.instance.captureVideo(options);
+            return await MediaCapture.captureVideo(options);
         } finally {
             this.onVideoCapture.next(false);
         }
@@ -215,7 +215,7 @@ export class CoreFileUploaderProvider {
      * @return Promise resolved when done.
      */
     async deleteDraftFiles(draftId: number, files: { filepath: string; filename: string }[], siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params = {
             draftitemid: draftId,
@@ -233,20 +233,20 @@ export class CoreFileUploaderProvider {
      * @return Options.
      */
     getCameraUploadOptions(uri: string, isFromAlbum?: boolean): CoreFileUploaderOptions {
-        const extension = CoreMimetypeUtils.instance.guessExtensionFromUrl(uri);
-        const mimetype = CoreMimetypeUtils.instance.getMimeType(extension);
-        const isIOS = CoreApp.instance.isIOS();
+        const extension = CoreMimetypeUtils.guessExtensionFromUrl(uri);
+        const mimetype = CoreMimetypeUtils.getMimeType(extension);
+        const isIOS = CoreApp.isIOS();
         const options: CoreFileUploaderOptions = {
             deleteAfterUpload: !isFromAlbum,
             mimeType: mimetype,
         };
-        const fileName = CoreFile.instance.getFileAndDirectoryFromPath(uri).name;
+        const fileName = CoreFile.getFileAndDirectoryFromPath(uri).name;
 
         if (isIOS && (mimetype == 'image/jpeg' || mimetype == 'image/png')) {
             // In iOS, the pictures can have repeated names, even if they come from the album.
             // Add a timestamp to the filename to make it unique.
             const split = fileName.split('.');
-            split[0] += '_' + CoreTimeUtils.instance.readableTimestamp();
+            split[0] += '_' + CoreTimeUtils.readableTimestamp();
 
             options.fileName = split.join('.');
         } else {
@@ -256,9 +256,9 @@ export class CoreFileUploaderProvider {
 
         if (isFromAlbum) {
             // If the file was picked from the album, delete it only if it was copied to the app's folder.
-            options.deleteAfterUpload = CoreFile.instance.isFileInAppFolder(uri);
+            options.deleteAfterUpload = CoreFile.isFileInAppFolder(uri);
 
-            if (CoreApp.instance.isAndroid()) {
+            if (CoreApp.isAndroid()) {
                 // Picking an image from album in Android adds a timestamp at the end of the file. Delete it.
                 options.fileName = options.fileName.replace(/(\.[^.]*)\?[^.]*$/, '$1');
             }
@@ -317,8 +317,8 @@ export class CoreFileUploaderProvider {
     ): CoreFileUploaderOptions {
         const options: CoreFileUploaderOptions = {};
         options.fileName = name;
-        options.mimeType = mimetype || CoreMimetypeUtils.instance.getMimeType(
-            CoreMimetypeUtils.instance.getFileExtension(options.fileName),
+        options.mimeType = mimetype || CoreMimetypeUtils.getMimeType(
+            CoreMimetypeUtils.getFileExtension(options.fileName),
         );
         options.deleteAfterUpload = !!deleteAfterUpload;
         options.itemId = itemId || 0;
@@ -340,7 +340,7 @@ export class CoreFileUploaderProvider {
         if (!filename.match(/_\d{14}(\..*)?$/)) {
             // Add a timestamp to the filename to make it unique.
             const split = filename.split('.');
-            split[0] += '_' + CoreTimeUtils.instance.readableTimestamp();
+            split[0] += '_' + CoreTimeUtils.readableTimestamp();
             filename = split.join('.');
         }
 
@@ -349,8 +349,8 @@ export class CoreFileUploaderProvider {
         if (mediaFile.type) {
             options.mimeType = mediaFile.type;
         } else {
-            options.mimeType = CoreMimetypeUtils.instance.getMimeType(
-                CoreMimetypeUtils.instance.getFileExtension(options.fileName),
+            options.mimeType = CoreMimetypeUtils.getMimeType(
+                CoreMimetypeUtils.getFileExtension(options.fileName),
             );
         }
 
@@ -366,7 +366,7 @@ export class CoreFileUploaderProvider {
     getPicture(options: CameraOptions): Promise<string> {
         this.onGetPicture.next(true);
 
-        return Camera.instance.getPicture(options).finally(() => {
+        return Camera.getPicture(options).finally(() => {
             this.onGetPicture.next(false);
         });
     }
@@ -378,7 +378,7 @@ export class CoreFileUploaderProvider {
      * @return Promise resolved with the list of files.
      */
     async getStoredFiles(folderPath: string): Promise<FileEntry[]> {
-        return <FileEntry[]> await CoreFile.instance.getDirectoryContents(folderPath);
+        return <FileEntry[]> await CoreFile.getDirectoryContents(folderPath);
     }
 
     /**
@@ -395,11 +395,11 @@ export class CoreFileUploaderProvider {
         let files: (CoreWSExternalFile | FileEntry)[] = [];
 
         if (filesObject.online.length > 0) {
-            files = CoreUtils.instance.clone(filesObject.online);
+            files = CoreUtils.clone(filesObject.online);
         }
 
         if (filesObject.offline > 0) {
-            const offlineFiles = await CoreUtils.instance.ignoreErrors(this.getStoredFiles(folderPath));
+            const offlineFiles = await CoreUtils.ignoreErrors(this.getStoredFiles(folderPath));
 
             if (offlineFiles) {
                 files = files.concat(offlineFiles);
@@ -424,24 +424,24 @@ export class CoreFileUploaderProvider {
         if (mimetypes) {
             // Verify that the mimetype of the file is supported.
             if (mimetype) {
-                extension = CoreMimetypeUtils.instance.getExtension(mimetype);
+                extension = CoreMimetypeUtils.getExtension(mimetype);
 
                 if (mimetypes.indexOf(mimetype) == -1) {
                     // Get the "main" mimetype of the extension.
                     // It's possible that the list of accepted mimetypes only includes the "main" mimetypes.
-                    mimetype = CoreMimetypeUtils.instance.getMimeType(extension);
+                    mimetype = CoreMimetypeUtils.getMimeType(extension);
                 }
             } else if (path) {
-                extension = CoreMimetypeUtils.instance.getFileExtension(path);
-                mimetype = CoreMimetypeUtils.instance.getMimeType(extension);
+                extension = CoreMimetypeUtils.getFileExtension(path);
+                mimetype = CoreMimetypeUtils.getMimeType(extension);
             } else {
                 throw new CoreError('No mimetype or path supplied.');
             }
 
             if (mimetype && mimetypes.indexOf(mimetype) == -1) {
-                extension = extension || Translate.instance.instant('core.unknown');
+                extension = extension || Translate.instant('core.unknown');
 
-                return Translate.instance.instant('core.fileuploader.invalidfiletype', { $a: extension });
+                return Translate.instant('core.fileuploader.invalidfiletype', { $a: extension });
             }
         }
     }
@@ -485,16 +485,16 @@ export class CoreFileUploaderProvider {
             if (filetype.indexOf('/') != -1) {
                 // It's a mimetype.
                 typesInfo.push({
-                    name: CoreMimetypeUtils.instance.getMimetypeDescription(filetype),
-                    extlist: CoreMimetypeUtils.instance.getExtensions(filetype).map(this.addDot).join(' '),
+                    name: CoreMimetypeUtils.getMimetypeDescription(filetype),
+                    extlist: CoreMimetypeUtils.getExtensions(filetype).map(this.addDot).join(' '),
                 });
 
                 mimetypes[filetype] = true;
             } else if (filetype.indexOf('.') === 0) {
                 // It's an extension.
-                const mimetype = CoreMimetypeUtils.instance.getMimeType(filetype);
+                const mimetype = CoreMimetypeUtils.getMimeType(filetype);
                 typesInfo.push({
-                    name: mimetype && CoreMimetypeUtils.instance.getMimetypeDescription(mimetype),
+                    name: mimetype && CoreMimetypeUtils.getMimetypeDescription(mimetype),
                     extlist: filetype,
                 });
 
@@ -503,12 +503,12 @@ export class CoreFileUploaderProvider {
                 }
             } else {
                 // It's a group.
-                const groupExtensions = CoreMimetypeUtils.instance.getGroupMimeInfo(filetype, 'extensions');
-                const groupMimetypes = CoreMimetypeUtils.instance.getGroupMimeInfo(filetype, 'mimetypes');
+                const groupExtensions = CoreMimetypeUtils.getGroupMimeInfo(filetype, 'extensions');
+                const groupMimetypes = CoreMimetypeUtils.getGroupMimeInfo(filetype, 'mimetypes');
 
                 if (groupExtensions && groupExtensions.length > 0) {
                     typesInfo.push({
-                        name: CoreMimetypeUtils.instance.getTranslatedGroupName(filetype),
+                        name: CoreMimetypeUtils.getTranslatedGroupName(filetype),
                         extlist: groupExtensions.map(this.addDot).join(' '),
                     });
 
@@ -521,9 +521,9 @@ export class CoreFileUploaderProvider {
                     // Treat them as extensions.
                     filetype = this.addDot(filetype);
 
-                    const mimetype = CoreMimetypeUtils.instance.getMimeType(filetype);
+                    const mimetype = CoreMimetypeUtils.getMimeType(filetype);
                     typesInfo.push({
-                        name: mimetype && CoreMimetypeUtils.instance.getMimetypeDescription(mimetype),
+                        name: mimetype && CoreMimetypeUtils.getMimetypeDescription(mimetype),
                         extlist: filetype,
                     });
 
@@ -562,10 +562,10 @@ export class CoreFileUploaderProvider {
         }
 
         // Remove unused files from previous saves.
-        await CoreFile.instance.removeUnusedFiles(folderPath, files);
+        await CoreFile.removeUnusedFiles(folderPath, files);
 
         await Promise.all(files.map(async (file) => {
-            if (!CoreUtils.instance.isFileEntry(file)) {
+            if (!CoreUtils.isFileEntry(file)) {
                 // It's an online file, add it to the result and ignore it.
                 result.online.push({
                     filename: file.filename,
@@ -577,10 +577,10 @@ export class CoreFileUploaderProvider {
             } else {
                 // Local file, copy it.
                 // Use copy instead of move to prevent having a unstable state if some copies succeed and others don't.
-                const destFile = CoreTextUtils.instance.concatenatePaths(folderPath, file.name);
+                const destFile = CoreTextUtils.concatenatePaths(folderPath, file.name);
                 result.offline++;
 
-                await CoreFile.instance.copyFile(file.toURL(), destFile);
+                await CoreFile.copyFile(file.toURL(), destFile);
             }
         }));
 
@@ -605,16 +605,16 @@ export class CoreFileUploaderProvider {
         options = options || {};
 
         const deleteAfterUpload = options.deleteAfterUpload;
-        const ftOptions = CoreUtils.instance.clone(options);
+        const ftOptions = CoreUtils.clone(options);
 
         delete ftOptions.deleteAfterUpload;
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const result = await site.uploadFile(uri, ftOptions, onProgress);
 
         if (deleteAfterUpload) {
-            CoreFile.instance.removeExternalFile(uri);
+            CoreFile.removeExternalFile(uri);
         }
 
         return result;
@@ -630,7 +630,7 @@ export class CoreFileUploaderProvider {
      * @return Promise resolved with the itemId.
      */
     async uploadFiles(itemId: number, files: (CoreWSExternalFile | FileEntry)[], siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (!files || !files.length) {
             return;
@@ -640,7 +640,7 @@ export class CoreFileUploaderProvider {
         const usedNames: {[name: string]: (CoreWSExternalFile | FileEntry)} = {};
         const filesToUpload: FileEntry[] = [];
         files.forEach((file) => {
-            if (CoreUtils.instance.isFileEntry(file)) {
+            if (CoreUtils.isFileEntry(file)) {
                 filesToUpload.push(<FileEntry> file);
             } else {
                 // It's an online file.
@@ -650,7 +650,7 @@ export class CoreFileUploaderProvider {
 
         await Promise.all(filesToUpload.map(async (file) => {
             // Make sure the file name is unique in the area.
-            const name = CoreFile.instance.calculateUniqueName(usedNames, file.name);
+            const name = CoreFile.calculateUniqueName(usedNames, file.name);
             usedNames[name] = file;
 
             // Now upload the file.
@@ -680,14 +680,14 @@ export class CoreFileUploaderProvider {
         componentId?: string | number,
         siteId?: string,
     ): Promise<number> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         let fileName: string | undefined;
         let fileEntry: FileEntry | undefined;
 
-        const isOnline = !CoreUtils.instance.isFileEntry(file);
+        const isOnline = !CoreUtils.isFileEntry(file);
 
-        if (CoreUtils.instance.isFileEntry(file)) {
+        if (CoreUtils.isFileEntry(file)) {
             // Local file, we already have the file entry.
             fileName = file.name;
             fileEntry = file;
@@ -695,7 +695,7 @@ export class CoreFileUploaderProvider {
             // It's an online file. We need to download it and re-upload it.
             fileName = file.filename;
 
-            const path = await CoreFilepool.instance.downloadUrl(
+            const path = await CoreFilepool.downloadUrl(
                 siteId,
                 file.fileurl,
                 false,
@@ -707,12 +707,12 @@ export class CoreFileUploaderProvider {
                 file,
             );
 
-            fileEntry = await CoreFile.instance.getExternalFile(path);
+            fileEntry = await CoreFile.getExternalFile(path);
         }
 
         // Now upload the file.
-        const extension = CoreMimetypeUtils.instance.getFileExtension(fileName!);
-        const mimetype = extension ? CoreMimetypeUtils.instance.getMimeType(extension) : undefined;
+        const extension = CoreMimetypeUtils.getFileExtension(fileName!);
+        const mimetype = extension ? CoreMimetypeUtils.getMimeType(extension) : undefined;
         const options = this.getFileUploadOptions(fileEntry.toURL(), fileName!, mimetype, isOnline, 'draft', itemId);
 
         const result = await this.uploadFile(fileEntry.toURL(), options, undefined, siteId);
@@ -739,7 +739,7 @@ export class CoreFileUploaderProvider {
         componentId?: string | number,
         siteId?: string,
     ): Promise<number> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (!files || !files.length) {
             // Return fake draft ID.
@@ -763,7 +763,7 @@ export class CoreFileUploaderProvider {
 
 }
 
-export class CoreFileUploader extends makeSingleton(CoreFileUploaderProvider) {}
+export const CoreFileUploader = makeSingleton(CoreFileUploaderProvider);
 
 export type CoreFileUploaderStoreFilesResult = {
     online: CoreWSExternalFile[]; // List of online files.

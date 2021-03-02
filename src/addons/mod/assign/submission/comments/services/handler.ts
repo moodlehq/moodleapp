@@ -90,8 +90,8 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
     ): Promise<void> {
 
         // Fail silently (Moodle < 3.1.1, 3.2)
-        await CoreUtils.instance.ignoreErrors(
-            CoreComments.instance.getComments(
+        await CoreUtils.ignoreErrors(
+            CoreComments.getComments(
                 'module',
                 assign.cmid,
                 'assignsubmission_comments',

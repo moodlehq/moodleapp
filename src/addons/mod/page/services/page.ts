@@ -60,7 +60,7 @@ export class AddonModPageProvider {
         value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModPagePage> {
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModPageGetPagesByCoursesWSParams = {
             courseids: [courseId],
@@ -69,7 +69,7 @@ export class AddonModPageProvider {
             cacheKey: this.getPageCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
             component: AddonModPageProvider.COMPONENT,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy),
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
         const response = await site.read<AddonModPageGetPagesByCoursesWSResponse>('mod_page_get_pages_by_courses', params, preSets);
@@ -100,15 +100,15 @@ export class AddonModPageProvider {
      * @param siteId Site ID. If not defined, current site.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidatePageData(courseId, siteId));
-        promises.push(CoreFilepool.instance.invalidateFilesByComponent(siteId, AddonModPageProvider.COMPONENT, moduleId));
-        promises.push(CoreCourse.instance.invalidateModule(moduleId, siteId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, AddonModPageProvider.COMPONENT, moduleId));
+        promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
-        return CoreUtils.instance.allPromises(promises);
+        return CoreUtils.allPromises(promises);
     }
 
     /**
@@ -119,7 +119,7 @@ export class AddonModPageProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidatePageData(courseId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getPageCacheKey(courseId));
     }
@@ -131,7 +131,7 @@ export class AddonModPageProvider {
      * @since 3.3
      */
     isGetPageWSAvailable(): boolean {
-        return CoreSites.instance.wsAvailableInCurrentSite('mod_page_get_pages_by_courses');
+        return CoreSites.wsAvailableInCurrentSite('mod_page_get_pages_by_courses');
     }
 
     /**
@@ -141,7 +141,7 @@ export class AddonModPageProvider {
      * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     async isPluginEnabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.canDownloadFiles();
     }
@@ -159,7 +159,7 @@ export class AddonModPageProvider {
             pageid,
         };
 
-        return CoreCourseLogHelper.instance.logSingle(
+        return CoreCourseLogHelper.logSingle(
             'mod_page_view_page',
             params,
             AddonModPageProvider.COMPONENT,
@@ -173,7 +173,7 @@ export class AddonModPageProvider {
 
 }
 
-export class AddonModPage extends makeSingleton(AddonModPageProvider) {}
+export const AddonModPage = makeSingleton(AddonModPageProvider);
 
 
 /**

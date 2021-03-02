@@ -57,14 +57,14 @@ export class CoreUtilsProvider {
      * @return New error message.
      */
     addDataNotDownloadedError(error: Error | string, defaultError?: string): string {
-        const errorMessage = CoreTextUtils.instance.getErrorMessageFromError(error) || defaultError || '';
+        const errorMessage = CoreTextUtils.getErrorMessageFromError(error) || defaultError || '';
 
         if (this.isWebServiceError(error)) {
             return errorMessage;
         }
 
         // Local error. Add an extra warning.
-        return errorMessage + '<br><br>' + Translate.instance.instant('core.errorsomedatanotdownloaded');
+        return errorMessage + '<br><br>' + Translate.instant('core.errorsomedatanotdownloaded');
     }
 
     /**
@@ -101,7 +101,7 @@ export class CoreUtilsProvider {
      * @return Promise resolved if all promises are resolved and rejected if at least 1 promise fails.
      */
     async allPromisesIgnoringErrors(promises: Promise<unknown>[]): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(this.allPromises(promises));
+        await CoreUtils.ignoreErrors(this.allPromises(promises));
     }
 
     /**
@@ -217,7 +217,7 @@ export class CoreUtilsProvider {
         }
 
         try {
-            const response = await this.timeoutPromise(window.fetch(url, initOptions), CoreWS.instance.getRequestTimeout());
+            const response = await this.timeoutPromise(window.fetch(url, initOptions), CoreWS.getRequestTimeout());
 
             return !!response && response.redirected;
         } catch (error) {
@@ -308,7 +308,7 @@ export class CoreUtilsProvider {
      */
     async copyToClipboard(text: string): Promise<void> {
         try {
-            await Clipboard.instance.copy(text);
+            await Clipboard.copy(text);
         } catch {
             // Use HTML Copy command.
             const virtualInput = document.createElement('textarea');
@@ -319,7 +319,7 @@ export class CoreUtilsProvider {
         }
 
         // Show toast using ionicLoading.
-        CoreDomUtils.instance.showToast('core.copiedtoclipboard', true);
+        CoreDomUtils.showToast('core.copiedtoclipboard', true);
     }
 
     /**
@@ -331,7 +331,7 @@ export class CoreUtilsProvider {
      * @deprecated since 3.9.5. Just create the error directly.
      */
     createFakeWSError(message: string, needsTranslate?: boolean): CoreWSError {
-        return CoreWS.instance.createFakeWSError(message, needsTranslate);
+        return CoreWS.createFakeWSError(message, needsTranslate);
     }
 
     /**
@@ -506,7 +506,7 @@ export class CoreUtilsProvider {
             return '';
         }
 
-        const localeSeparator = Translate.instance.instant('core.decsep');
+        const localeSeparator = Translate.instant('core.decsep');
 
         // Convert float to string.
         const floatString = float + '';
@@ -592,7 +592,7 @@ export class CoreUtilsProvider {
      */
     getCountryName(code: string): string {
         const countryKey = 'assets.countries.' + code;
-        const countryName = Translate.instance.instant(countryKey);
+        const countryName = Translate.instant(countryKey);
 
         return countryName !== countryKey ? countryName : code;
     }
@@ -611,7 +611,7 @@ export class CoreUtilsProvider {
             keys.forEach((key) => {
                 if (key.indexOf('assets.countries.') === 0) {
                     const code = key.replace('assets.countries.', '');
-                    countries[code] = Translate.instance.instant(key);
+                    countries[code] = Translate.instant(key);
                 }
             });
 
@@ -645,11 +645,11 @@ export class CoreUtilsProvider {
      */
     protected getCountryKeysList(): Promise<string[]> {
         // It's possible that the current language isn't translated, so try with default language first.
-        const defaultLang = CoreLang.instance.getDefaultLanguage();
+        const defaultLang = CoreLang.getDefaultLanguage();
 
         return this.getCountryKeysListForLanguage(defaultLang).catch(() => {
             // Not translated, try to use the fallback language.
-            const fallbackLang = CoreLang.instance.getFallbackLanguage();
+            const fallbackLang = CoreLang.getFallbackLanguage();
 
             if (fallbackLang === defaultLang) {
                 // Same language, just reject.
@@ -668,7 +668,7 @@ export class CoreUtilsProvider {
      */
     protected async getCountryKeysListForLanguage(lang: string): Promise<string[]> {
         // Get the translation table for the language.
-        const table = await CoreLang.instance.getTranslationTable(lang);
+        const table = await CoreLang.getTranslationTable(lang);
 
         // Gather all the keys for countries,
         const keys: string[] = [];
@@ -697,15 +697,15 @@ export class CoreUtilsProvider {
      */
     getMimeTypeFromUrl(url: string): Promise<string> {
         // First check if it can be guessed from the URL.
-        const extension = CoreMimetypeUtils.instance.guessExtensionFromUrl(url);
-        const mimetype = extension && CoreMimetypeUtils.instance.getMimeType(extension);
+        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
+        const mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
 
         if (mimetype) {
             return Promise.resolve(mimetype);
         }
 
         // Can't be guessed, get the remote mimetype.
-        return CoreWS.instance.getRemoteFileMimeType(url).then(mimetype => mimetype || '');
+        return CoreWS.getRemoteFileMimeType(url).then(mimetype => mimetype || '');
     }
 
     /**
@@ -761,7 +761,7 @@ export class CoreUtilsProvider {
             const name = (this.isFileEntry(file) ? file.name : file.filename) || '';
 
             if (names.indexOf(name) > -1) {
-                return Translate.instance.instant('core.filenameexist', { $a: name });
+                return Translate.instant('core.filenameexist', { $a: name });
             }
 
             names.push(name);
@@ -894,12 +894,12 @@ export class CoreUtilsProvider {
      */
     async openFile(path: string): Promise<void> {
         // Convert the path to a native path if needed.
-        path = CoreFile.instance.unconvertFileSrc(path);
+        path = CoreFile.unconvertFileSrc(path);
 
-        const extension = CoreMimetypeUtils.instance.getFileExtension(path);
-        const mimetype = extension && CoreMimetypeUtils.instance.getMimeType(extension);
+        const extension = CoreMimetypeUtils.getFileExtension(path);
+        const mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
 
-        if (mimetype == 'text/html' && CoreApp.instance.isAndroid()) {
+        if (mimetype == 'text/html' && CoreApp.isAndroid()) {
             // Open HTML local files in InAppBrowser, in system browser some embedded files aren't loaded.
             this.openInApp(path);
 
@@ -914,17 +914,17 @@ export class CoreUtilsProvider {
         }
 
         try {
-            await FileOpener.instance.open(path, mimetype || '');
+            await FileOpener.open(path, mimetype || '');
         } catch (error) {
             this.logger.error('Error opening file ' + path + ' with mimetype ' + mimetype);
             this.logger.error('Error: ', JSON.stringify(error));
 
             if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
                 // Extension not found.
-                throw new Error(Translate.instance.instant('core.erroropenfilenoextension'));
+                throw new Error(Translate.instant('core.erroropenfilenoextension'));
             }
 
-            throw new Error(Translate.instance.instant('core.erroropenfilenoapp'));
+            throw new Error(Translate.instant('core.erroropenfilenoapp'));
         }
     }
 
@@ -952,15 +952,15 @@ export class CoreUtilsProvider {
             options.allowInlineMediaPlayback = 'yes'; // Allow playing inline videos in iOS.
         }
 
-        if (!options.location && CoreApp.instance.isIOS() && url.indexOf('file://') === 0) {
+        if (!options.location && CoreApp.isIOS() && url.indexOf('file://') === 0) {
             // The URL uses file protocol, don't show it on iOS.
             // In Android we keep it because otherwise we lose the whole toolbar.
             options.location = 'no';
         }
 
-        this.iabInstance = InAppBrowser.instance.create(url, '_blank', options);
+        this.iabInstance = InAppBrowser.create(url, '_blank', options);
 
-        if (CoreApp.instance.isMobile()) {
+        if (CoreApp.isMobile()) {
             let loadStopSubscription;
             const loadStartUrls: string[] = [];
 
@@ -978,7 +978,7 @@ export class CoreUtilsProvider {
                 });
             });
 
-            if (CoreApp.instance.isAndroid()) {
+            if (CoreApp.isAndroid()) {
                 // Load stop is needed with InAppBrowser v3. Custom URL schemes no longer trigger load start, simulate it.
                 loadStopSubscription = this.iabInstance.on('loadstop').subscribe((event) => {
                     // Execute the callback in the Angular zone, so change detection doesn't stop working.
@@ -1023,26 +1023,26 @@ export class CoreUtilsProvider {
      * @return Promise resolved when opened.
      */
     async openOnlineFile(url: string): Promise<void> {
-        if (CoreApp.instance.isAndroid()) {
+        if (CoreApp.isAndroid()) {
             // In Android we need the mimetype to open it.
             const mimetype = await this.ignoreErrors(this.getMimeTypeFromUrl(url));
 
             if (!mimetype) {
                 // Couldn't retrieve mimetype. Return error.
-                throw new Error(Translate.instance.instant('core.erroropenfilenoextension'));
+                throw new Error(Translate.instant('core.erroropenfilenoextension'));
             }
 
             const options = {
-                action: WebIntent.instance.ACTION_VIEW,
+                action: WebIntent.ACTION_VIEW,
                 url,
                 type: mimetype,
             };
 
-            return WebIntent.instance.startActivity(options).catch((error) => {
+            return WebIntent.startActivity(options).catch((error) => {
                 this.logger.error('Error opening online file ' + url + ' with mimetype ' + mimetype);
                 this.logger.error('Error: ', JSON.stringify(error));
 
-                throw new Error(Translate.instance.instant('core.erroropenfilenoapp'));
+                throw new Error(Translate.instant('core.erroropenfilenoapp'));
             });
         }
 
@@ -1428,7 +1428,7 @@ export class CoreUtilsProvider {
         }
 
         localeFloat = localeFloat.replace(' ', ''); // No spaces - those might be used as thousand separators.
-        localeFloat = localeFloat.replace(Translate.instance.instant('core.decsep'), '.');
+        localeFloat = localeFloat.replace(Translate.instant('core.decsep'), '.');
 
         const parsedFloat = parseFloat(localeFloat);
 
@@ -1489,7 +1489,7 @@ export class CoreUtilsProvider {
      * @return Whether the app can scan QR codes.
      */
     canScanQR(): boolean {
-        return CoreApp.instance.isMobile();
+        return CoreApp.isMobile();
     }
 
     /**
@@ -1519,14 +1519,14 @@ export class CoreUtilsProvider {
         }
 
 
-        if (!CoreApp.instance.isMobile()) {
+        if (!CoreApp.isMobile()) {
             return Promise.reject('QRScanner isn\'t available in browser.');
         }
 
         // Ask the user for permission to use the camera.
         // The scan method also does this, but since it returns an Observable we wouldn't be able to detect if the user denied.
         try {
-            const status = await QRScanner.instance.prepare();
+            const status = await QRScanner.prepare();
 
             if (!status.authorized) {
                 // No access to the camera, reject. In android this shouldn't happen, denying access passes through catch.
@@ -1543,12 +1543,12 @@ export class CoreUtilsProvider {
                 deferred: this.promiseDefer(),
 
                 // When text is received, stop scanning and return the text.
-                observable: QRScanner.instance.scan().subscribe(text => this.stopScanQR(text, false)),
+                observable: QRScanner.scan().subscribe(text => this.stopScanQR(text, false)),
             };
 
             // Show the camera.
             try {
-                await QRScanner.instance.show();
+                await QRScanner.show();
 
                 document.body.classList.add('core-scanning-qr');
 
@@ -1580,8 +1580,8 @@ export class CoreUtilsProvider {
 
         // Hide camera preview.
         document.body.classList.remove('core-scanning-qr');
-        QRScanner.instance.hide();
-        QRScanner.instance.destroy();
+        QRScanner.hide();
+        QRScanner.destroy();
 
         this.qrScanData.observable.unsubscribe(); // Stop scanning.
 
@@ -1590,7 +1590,7 @@ export class CoreUtilsProvider {
         } else if (typeof data != 'undefined') {
             this.qrScanData.deferred.resolve(data as string);
         } else {
-            this.qrScanData.deferred.reject(CoreDomUtils.instance.createCanceledError());
+            this.qrScanData.deferred.reject(CoreDomUtils.createCanceledError());
         }
 
         delete this.qrScanData;
@@ -1635,7 +1635,7 @@ export class CoreUtilsProvider {
 
 }
 
-export class CoreUtils extends makeSingleton(CoreUtilsProvider) {}
+export const CoreUtils = makeSingleton(CoreUtilsProvider);
 
 /**
  * Deferred promise. It's similar to the result of $q.defer() in AngularJS.

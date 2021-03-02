@@ -46,17 +46,17 @@ export class CoreTagIndexPage implements OnInit {
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
-        this.tagId = CoreNavigator.instance.getRouteNumberParam('tagId') || this.tagId;
-        this.tagName = CoreNavigator.instance.getRouteParam('tagName') || this.tagName;
-        this.collectionId = CoreNavigator.instance.getRouteNumberParam('collectionId') || this.collectionId;
-        this.areaId = CoreNavigator.instance.getRouteNumberParam('areaId') || this.areaId;
-        this.fromContextId = CoreNavigator.instance.getRouteNumberParam('fromContextId') || this.fromContextId;
-        this.contextId = CoreNavigator.instance.getRouteNumberParam('contextId') || this.contextId;
-        this.recursive = CoreNavigator.instance.getRouteBooleanParam('recursive') ?? true;
+        this.tagId = CoreNavigator.getRouteNumberParam('tagId') || this.tagId;
+        this.tagName = CoreNavigator.getRouteParam('tagName') || this.tagName;
+        this.collectionId = CoreNavigator.getRouteNumberParam('collectionId') || this.collectionId;
+        this.areaId = CoreNavigator.getRouteNumberParam('areaId') || this.areaId;
+        this.fromContextId = CoreNavigator.getRouteNumberParam('fromContextId') || this.fromContextId;
+        this.contextId = CoreNavigator.getRouteNumberParam('contextId') || this.contextId;
+        this.recursive = CoreNavigator.getRouteBooleanParam('recursive') ?? true;
 
         try {
             await this.fetchData();
-            if (CoreScreen.instance.isTablet && this.areas && this.areas.length > 0) {
+            if (CoreScreen.isTablet && this.areas && this.areas.length > 0) {
                 const area = this.areas.find((area) => area.id == this.areaId);
                 this.openArea(area || this.areas[0]);
             }
@@ -72,7 +72,7 @@ export class CoreTagIndexPage implements OnInit {
      */
     async fetchData(): Promise<void> {
         try {
-            const areas = await CoreTag.instance.getTagIndexPerArea(
+            const areas = await CoreTag.getTagIndexPerArea(
                 this.tagId,
                 this.tagName,
                 this.collectionId,
@@ -89,7 +89,7 @@ export class CoreTagIndexPage implements OnInit {
             const areasDisplay: CoreTagAreaDisplay[] = [];
 
             await Promise.all(areas.map(async (area) => {
-                const items = await CoreTagAreaDelegate.instance.parseContent(area.component, area.itemtype, area.content);
+                const items = await CoreTagAreaDelegate.parseContent(area.component, area.itemtype, area.content);
 
                 if (!items || !items.length) {
                     // Tag area not supported, skip.
@@ -102,7 +102,7 @@ export class CoreTagIndexPage implements OnInit {
                     id: area.ta,
                     componentName: area.component,
                     itemType: area.itemtype,
-                    nameKey: CoreTagAreaDelegate.instance.getDisplayNameKey(area.component, area.itemtype),
+                    nameKey: CoreTagAreaDelegate.getDisplayNameKey(area.component, area.itemtype),
                     items,
                     canLoadMore: !!area.nextpageurl,
                     badge: items && items.length ? items.length + (area.nextpageurl ? '+' : '') : '',
@@ -112,7 +112,7 @@ export class CoreTagIndexPage implements OnInit {
             this.areas = areasDisplay;
 
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading tag index');
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading tag index');
         }
     }
 
@@ -122,7 +122,7 @@ export class CoreTagIndexPage implements OnInit {
      * @param refresher Refresher.
      */
     refreshData(refresher?: CustomEvent<IonRefresher>): void {
-        CoreTag.instance.invalidateTagIndexPerArea(
+        CoreTag.invalidateTagIndexPerArea(
             this.tagId,
             this.tagName,
             this.collectionId,
@@ -161,10 +161,10 @@ export class CoreTagIndexPage implements OnInit {
             nextPage: 1,
         };
 
-        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/tag/index/index-area');
+        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/tag/index/index-area');
         const path = (splitViewLoaded ? '../' : '') + 'index-area';
 
-        CoreNavigator.instance.navigate(path, { params });
+        CoreNavigator.navigate(path, { params });
     }
 
 }

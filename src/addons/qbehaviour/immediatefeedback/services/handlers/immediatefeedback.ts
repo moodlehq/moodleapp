@@ -39,7 +39,7 @@ export class AddonQbehaviourImmediateFeedbackHandlerService implements CoreQuest
      */
     handleQuestion(question: CoreQuestionQuestionParsed): void {
         // Just extract the button, it doesn't need any specific component.
-        CoreQuestionHelper.instance.extractQbehaviourButtons(question);
+        CoreQuestionHelper.extractQbehaviourButtons(question);
 
         return;
     }
@@ -55,4 +55,4 @@ export class AddonQbehaviourImmediateFeedbackHandlerService implements CoreQuest
 
 }
 
-export class AddonQbehaviourImmediateFeedbackHandler extends makeSingleton(AddonQbehaviourImmediateFeedbackHandlerService) {}
+export const AddonQbehaviourImmediateFeedbackHandler = makeSingleton(AddonQbehaviourImmediateFeedbackHandlerService);

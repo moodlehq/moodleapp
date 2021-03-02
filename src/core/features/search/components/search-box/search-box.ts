@@ -69,10 +69,10 @@ export class CoreSearchBoxComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.searchLabel = this.searchLabel || Translate.instance.instant('core.search');
-        this.placeholder = this.placeholder || Translate.instance.instant('core.search');
-        this.spellcheck = CoreUtils.instance.isTrueOrOne(this.spellcheck);
-        this.showClear = CoreUtils.instance.isTrueOrOne(this.showClear);
+        this.searchLabel = this.searchLabel || Translate.instant('core.search');
+        this.placeholder = this.placeholder || Translate.instant('core.search');
+        this.spellcheck = CoreUtils.isTrueOrOne(this.spellcheck);
+        this.showClear = CoreUtils.isTrueOrOne(this.showClear);
         this.searchText = this.initialSearch;
 
         if (this.searchArea) {
@@ -98,7 +98,7 @@ export class CoreSearchBoxComponent implements OnInit {
             this.saveSearchToHistory(this.searchText);
         }
 
-        CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, false, CoreSites.instance.getCurrentSiteId());
+        CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
         this.historyShown = false;
         this.searched = this.searchText;
@@ -113,7 +113,7 @@ export class CoreSearchBoxComponent implements OnInit {
      */
     protected async saveSearchToHistory(text: string): Promise<void> {
         try {
-            await CoreSearchHistory.instance.insertOrUpdateSearchText(this.searchArea, text.toLowerCase());
+            await CoreSearchHistory.insertOrUpdateSearchText(this.searchArea, text.toLowerCase());
         } finally {
             this.loadHistory();
         }
@@ -125,7 +125,7 @@ export class CoreSearchBoxComponent implements OnInit {
      * @return Promise resolved when done.
      */
     protected async loadHistory(): Promise<void> {
-        this.history = await CoreSearchHistory.instance.getSearchHistory(this.searchArea);
+        this.history = await CoreSearchHistory.getSearchHistory(this.searchArea);
     }
 
     /**

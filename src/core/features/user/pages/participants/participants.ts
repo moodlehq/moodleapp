@@ -53,7 +53,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.searchEnabled = await CoreUser.instance.canSearchParticipantsInSite();
+        this.searchEnabled = await CoreUser.canSearchParticipantsInSite();
     }
 
     /**
@@ -108,7 +108,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
      * @param query Text to search for.
      */
     async search(query: string): Promise<void> {
-        CoreApp.instance.closeKeyboard();
+        CoreApp.closeKeyboard();
 
         this.searchInProgress = true;
         this.searchQuery = query;
@@ -125,8 +125,8 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
      * @param refresher Refresher.
      */
     async refreshParticipants(refresher: IonRefresher): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(CoreUser.instance.invalidateParticipantsList(this.participants.courseId));
-        await CoreUtils.instance.ignoreErrors(this.fetchParticipants());
+        await CoreUtils.ignoreErrors(CoreUser.invalidateParticipantsList(this.participants.courseId));
+        await CoreUtils.ignoreErrors(this.fetchParticipants());
 
         refresher?.complete();
     }
@@ -140,7 +140,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
         try {
             await this.fetchParticipants(this.participants.items);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading more participants');
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading more participants');
 
             this.fetchMoreParticipantsFailed = true;
         }
@@ -155,7 +155,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
         try {
             await this.fetchParticipants();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading participants');
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading participants');
 
             this.participants.setItems([]);
         }
@@ -168,7 +168,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
      */
     private async fetchParticipants(loadedParticipants: CoreUserParticipant[] | CoreUserData[] = []): Promise<void> {
         if (this.searchQuery) {
-            const { participants, canLoadMore } = await CoreUser.instance.searchParticipants(
+            const { participants, canLoadMore } = await CoreUser.searchParticipants(
                 this.participants.courseId,
                 this.searchQuery,
                 true,
@@ -178,7 +178,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
 
             this.participants.setItems((loadedParticipants as CoreUserData[]).concat(participants), canLoadMore);
         } else {
-            const { participants, canLoadMore } = await CoreUser.instance.getParticipants(
+            const { participants, canLoadMore } = await CoreUser.getParticipants(
                 this.participants.courseId,
                 loadedParticipants.length,
             );
@@ -208,8 +208,8 @@ class CoreUserParticipantsManager extends CorePageItemsListManager<CoreUserParti
      * @inheritdoc
      */
     async select(participant: CoreUserParticipant | CoreUserData): Promise<void> {
-        if (CoreScreen.instance.isMobile) {
-            await CoreNavigator.instance.navigateToSitePath('/user/profile', { params: { userId: participant.id } });
+        if (CoreScreen.isMobile) {
+            await CoreNavigator.navigateToSitePath('/user/profile', { params: { userId: participant.id } });
 
             return;
         }
@@ -235,7 +235,7 @@ class CoreUserParticipantsManager extends CorePageItemsListManager<CoreUserParti
      * @inheritdoc
      */
     protected async logActivity(): Promise<void>  {
-        await CoreUser.instance.logParticipantsView(this.courseId);
+        await CoreUser.logParticipantsView(this.courseId);
     }
 
 }

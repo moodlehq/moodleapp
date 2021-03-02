@@ -73,4 +73,4 @@ export class AddonModQuizAccessOpenCloseDateHandlerService implements AddonModQu
 
 }
 
-export class AddonModQuizAccessOpenCloseDateHandler extends makeSingleton(AddonModQuizAccessOpenCloseDateHandlerService) {}
+export const AddonModQuizAccessOpenCloseDateHandler = makeSingleton(AddonModQuizAccessOpenCloseDateHandlerService);

@@ -45,7 +45,7 @@ export class AddonCourseCompletionProvider {
      * @return True if user can mark course as self completed, false otherwise.
      */
     canMarkSelfCompleted(userId: number, completion: AddonCourseCompletionCourseCompletionStatus): boolean {
-        if (CoreSites.instance.getCurrentSiteUserId() != userId) {
+        if (CoreSites.getCurrentSiteUserId() != userId) {
             return false;
         }
 
@@ -100,7 +100,7 @@ export class AddonCourseCompletionProvider {
         siteId?: string,
     ): Promise<AddonCourseCompletionCourseCompletionStatus> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
         this.logger.debug('Get completion for course ' + courseId + ' and user ' + userId);
 
@@ -142,7 +142,7 @@ export class AddonCourseCompletionProvider {
      * @return Promise resolved when the list is invalidated.
      */
     async invalidateCourseCompletion(courseId: number, userId?: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
         await site.invalidateWsCacheForKey(this.getCompletionCacheKey(courseId, userId));
@@ -154,7 +154,7 @@ export class AddonCourseCompletionProvider {
      * @return True if plugin enabled, false otherwise.
      */
     isPluginViewEnabled(): boolean {
-        return CoreSites.instance.isLoggedIn();
+        return CoreSites.isLoggedIn();
     }
 
     /**
@@ -169,7 +169,7 @@ export class AddonCourseCompletionProvider {
             throw new CoreError('No courseId provided');
         }
 
-        const course = await CoreCourses.instance.getUserCourse(courseId, preferCache);
+        const course = await CoreCourses.getUserCourse(courseId, preferCache);
 
         if (course) {
             if (typeof course.enablecompletion != 'undefined' && !course.enablecompletion) {
@@ -195,14 +195,14 @@ export class AddonCourseCompletionProvider {
      * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     async isPluginViewEnabledForUser(courseId: number, userId?: number, siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const currentUserId = site.getUserId();
 
         // Check if user wants to view his own completion.
         try {
             if (!userId || userId == currentUserId) {
                 // Viewing own completion. Get the course to check if it has completion criteria.
-                const course = await CoreCourses.instance.getUserCourse(courseId, true);
+                const course = await CoreCourses.getUserCourse(courseId, true);
 
                 // If the site is returning the completionhascriteria then the user can view his own completion.
                 // We already checked the value in isPluginViewEnabledForCourse.
@@ -226,7 +226,7 @@ export class AddonCourseCompletionProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.instance.isWebServiceError(error)) {
+            if (CoreUtils.isWebServiceError(error)) {
                 // The WS returned an error, plugin is not enabled.
                 return false;
             }
@@ -252,7 +252,7 @@ export class AddonCourseCompletionProvider {
      * @return Promise resolved on success.
      */
     async markCourseAsSelfCompleted(courseId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonCourseCompletionMarkCourseSelfCompletedWSParams = {
             courseid: courseId,
@@ -267,7 +267,7 @@ export class AddonCourseCompletionProvider {
 
 }
 
-export class AddonCourseCompletion extends makeSingleton(AddonCourseCompletionProvider) {}
+export const AddonCourseCompletion = makeSingleton(AddonCourseCompletionProvider);
 
 /**
  * Completion status returned by core_completion_get_course_completion_status.

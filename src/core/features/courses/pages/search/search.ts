@@ -44,7 +44,7 @@ export class CoreCoursesSearchPage {
         this.page = 0;
         this.total = 0;
 
-        const modal = await CoreDomUtils.instance.showModalLoading('core.searching', true);
+        const modal = await CoreDomUtils.showModalLoading('core.searching', true);
         this.searchCourses().finally(() => {
             modal.dismiss();
         });
@@ -80,7 +80,7 @@ export class CoreCoursesSearchPage {
         this.loadMoreError = false;
 
         try {
-            const response = await CoreCourses.instance.search(this.currentSearch, this.page);
+            const response = await CoreCourses.search(this.currentSearch, this.page);
 
             if (this.page === 0) {
                 this.courses = response.courses;
@@ -93,7 +93,7 @@ export class CoreCoursesSearchPage {
             this.canLoadMore = this.courses.length < this.total;
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.courses.errorsearching', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorsearching', true);
         }
     }
 

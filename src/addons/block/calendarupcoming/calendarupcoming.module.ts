@@ -28,7 +28,7 @@ import { AddonBlockCalendarUpcomingHandler } from './services/block-handler';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockCalendarUpcomingHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockCalendarUpcomingHandler.instance);
             },
         },
     ],

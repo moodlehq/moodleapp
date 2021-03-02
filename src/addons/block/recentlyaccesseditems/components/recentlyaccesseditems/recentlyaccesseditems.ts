@@ -48,7 +48,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
      * @return Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
-        await AddonBlockRecentlyAccessedItems.instance.invalidateRecentItems();
+        await AddonBlockRecentlyAccessedItems.invalidateRecentItems();
     }
 
     /**
@@ -57,7 +57,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
      * @return Promise resolved when done.
      */
     protected async fetchContent(): Promise<void> {
-        this.items = await AddonBlockRecentlyAccessedItems.instance.getRecentItems();
+        this.items = await AddonBlockRecentlyAccessedItems.getRecentItems();
     }
 
     /**
@@ -70,13 +70,13 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
         e.preventDefault();
         e.stopPropagation();
 
-        const url = CoreTextUtils.instance.decodeHTMLEntities(item.viewurl);
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const url = CoreTextUtils.decodeHTMLEntities(item.viewurl);
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const treated = await CoreContentLinksHelper.instance.handleLink(url);
+            const treated = await CoreContentLinksHelper.handleLink(url);
             if (!treated) {
-                return CoreSites.instance.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(url);
+                return CoreSites.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(url);
             }
         } finally {
             modal.dismiss();

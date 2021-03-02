@@ -44,4 +44,4 @@ export class AddonBlockBadgesHandlerService extends CoreBlockBaseHandler {
 
 }
 
-export class AddonBlockBadgesHandler extends makeSingleton(AddonBlockBadgesHandlerService) {}
+export const AddonBlockBadgesHandler = makeSingleton(AddonBlockBadgesHandlerService);

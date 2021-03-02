@@ -65,7 +65,7 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
 
         if (module && !this.componentClass) {
             // We haven't obtained the class yet. Get it now.
-            const component = await CoreCourseModuleDelegate.instance.getMainComponent(this.course, module);
+            const component = await CoreCourseModuleDelegate.getMainComponent(this.course, module);
             this.componentClass = component || CoreCourseUnsupportedModuleComponent;
         }
     }

@@ -32,7 +32,7 @@ import { AddonQtypeDdwtosHandler } from './services/handlers/ddwtos';
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionDelegate.instance.registerHandler(AddonQtypeDdwtosHandler.instance);
+                CoreQuestionDelegate.registerHandler(AddonQtypeDdwtosHandler.instance);
             },
         },
     ],

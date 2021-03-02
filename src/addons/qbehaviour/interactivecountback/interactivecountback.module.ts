@@ -26,7 +26,7 @@ import { AddonQbehaviourInteractiveCountbackHandler } from './services/handlers/
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionBehaviourDelegate.instance.registerHandler(AddonQbehaviourInteractiveCountbackHandler.instance);
+                CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourInteractiveCountbackHandler.instance);
             },
         },
     ],

@@ -66,7 +66,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
 
     protected get componentTranslate(): string {
         if (!this._componentTranslate) {
-            this._componentTranslate = CoreCourse.instance.translateModuleName('forum');
+            this._componentTranslate = CoreCourse.translateModuleName('forum');
         }
 
         return this._componentTranslate;
@@ -178,7 +178,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
         userId: number,
         siteId?: string,
     ): Promise<AddonModForumSyncResult | void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = this.getForumSyncId(forumId, userId);
 
@@ -202,8 +202,8 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
         userId?: number,
         siteId?: string,
     ): Promise<AddonModForumSyncResult> {
-        userId = userId || CoreSites.instance.getCurrentSiteUserId();
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        userId = userId || CoreSites.getCurrentSiteUserId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = this.getForumSyncId(forumId, userId);
 
@@ -213,7 +213,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
         }
 
         // Verify that forum isn't blocked.
-        if (CoreSync.instance.isBlocked(AddonModForumProvider.COMPONENT, syncId, siteId)) {
+        if (CoreSync.isBlocked(AddonModForumProvider.COMPONENT, syncId, siteId)) {
             this.logger.debug('Cannot sync forum ' + forumId + ' because it is blocked.');
 
             return Promise.reject(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
@@ -228,17 +228,17 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
 
         // Sync offline logs.
         const syncDiscussions = async (): Promise<{ warnings: string[]; updated: boolean }> => {
-            await CoreUtils.instance.ignoreErrors(
-                CoreCourseLogHelper.instance.syncActivity(AddonModForumProvider.COMPONENT, forumId, siteId),
+            await CoreUtils.ignoreErrors(
+                CoreCourseLogHelper.syncActivity(AddonModForumProvider.COMPONENT, forumId, siteId),
             );
 
             // Get offline responses to be sent.
-            const discussions = await CoreUtils.instance.ignoreErrors(
-                AddonModForumOffline.instance.getNewDiscussions(forumId, siteId, userId),
+            const discussions = await CoreUtils.ignoreErrors(
+                AddonModForumOffline.getNewDiscussions(forumId, siteId, userId),
                 [] as AddonModForumOfflineDiscussion[],
             );
 
-            if (discussions.length !== 0 && !CoreApp.instance.isOnline()) {
+            if (discussions.length !== 0 && !CoreApp.isOnline()) {
                 throw new Error('cannot sync in offline');
             }
 
@@ -247,7 +247,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
                 const groupIds = discussion.groupid === AddonModForumProvider.ALL_GROUPS
                     ? await AddonModForum.instance
                         .getForumById(discussion.courseid, discussion.forumid, { siteId })
-                        .then(forum => CoreGroups.instance.getActivityAllowedGroups(forum.cmid))
+                        .then(forum => CoreGroups.getActivityAllowedGroups(forum.cmid))
                         .then(result => result.groups.map((group) => group.id))
                     : [discussion.groupid];
 
@@ -257,10 +257,10 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
                         const itemId = await this.uploadAttachments(forumId, discussion, true, siteId, userId);
 
                         // Now try to add the discussion.
-                        const options = CoreUtils.instance.clone(discussion.options || {});
+                        const options = CoreUtils.clone(discussion.options || {});
                         options.attachmentsid = itemId!;
 
-                        await AddonModForum.instance.addNewDiscussionOnline(
+                        await AddonModForum.addNewDiscussionOnline(
                             forumId,
                             discussion.subject,
                             discussion.message,
@@ -276,7 +276,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
                 if (errors.length === groupIds.length) {
                     // All requests have failed, reject if errors were not returned by WS.
                     for (const error of errors) {
-                        if (!CoreUtils.instance.isWebServiceError(error)) {
+                        if (!CoreUtils.isWebServiceError(error)) {
                             throw error;
                         }
                     }
@@ -292,7 +292,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
                     result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
                         component: this.componentTranslate,
                         name: discussion.name,
-                        error: CoreTextUtils.instance.getErrorMessageFromError(errors[0]),
+                        error: CoreTextUtils.getErrorMessageFromError(errors[0]),
                     }));
                 }
             });
@@ -302,15 +302,15 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
             if (result.updated) {
                 // Data has been sent to server. Now invalidate the WS calls.
                 const promises = [
-                    AddonModForum.instance.invalidateDiscussionsList(forumId, siteId),
-                    AddonModForum.instance.invalidateCanAddDiscussion(forumId, siteId),
+                    AddonModForum.invalidateDiscussionsList(forumId, siteId),
+                    AddonModForum.invalidateCanAddDiscussion(forumId, siteId),
                 ];
 
-                await CoreUtils.instance.ignoreErrors(Promise.all(promises));
+                await CoreUtils.ignoreErrors(Promise.all(promises));
             }
 
             // Sync finished, set sync time.
-            await CoreUtils.instance.ignoreErrors(this.setSyncTime(syncId, siteId));
+            await CoreUtils.ignoreErrors(this.setSyncTime(syncId, siteId));
 
             return result;
         };
@@ -347,15 +347,15 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
      */
     async syncForumReplies(forumId: number, userId?: number, siteId?: string): Promise<AddonModForumSyncResult> {
         // Get offline forum replies to be sent.
-        const replies = await CoreUtils.instance.ignoreErrors(
-            AddonModForumOffline.instance.getForumReplies(forumId, siteId, userId),
+        const replies = await CoreUtils.ignoreErrors(
+            AddonModForumOffline.getForumReplies(forumId, siteId, userId),
             [] as AddonModForumOfflineReply[],
         );
 
         if (!replies.length) {
             // Nothing to sync.
             return { warnings: [], updated: false };
-        } else if (!CoreApp.instance.isOnline()) {
+        } else if (!CoreApp.isOnline()) {
             // Cannot sync in offline.
             return Promise.reject(null);
         }
@@ -391,7 +391,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
         userId?: number,
         siteId?: string,
     ): Promise<AddonModForumSyncResult | void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = this.getDiscussionSyncId(discussionId, userId);
 
@@ -411,8 +411,8 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
      * @return Promise resolved if sync is successful, rejected otherwise.
      */
     async syncDiscussionReplies(discussionId: number, userId?: number, siteId?: string): Promise<AddonModForumSyncResult> {
-        userId = userId || CoreSites.instance.getCurrentSiteUserId();
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        userId = userId || CoreSites.getCurrentSiteUserId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = this.getDiscussionSyncId(discussionId, userId);
 
@@ -422,7 +422,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
         }
 
         // Verify that forum isn't blocked.
-        if (CoreSync.instance.isBlocked(AddonModForumProvider.COMPONENT, syncId, siteId)) {
+        if (CoreSync.isBlocked(AddonModForumProvider.COMPONENT, syncId, siteId)) {
             this.logger.debug('Cannot sync forum discussion ' + discussionId + ' because it is blocked.');
 
             throw new Error(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
@@ -438,12 +438,12 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
 
         // Get offline responses to be sent.
         const syncReplies = async () => {
-            const replies = await CoreUtils.instance.ignoreErrors(
-                AddonModForumOffline.instance.getDiscussionReplies(discussionId, siteId, userId),
+            const replies = await CoreUtils.ignoreErrors(
+                AddonModForumOffline.getDiscussionReplies(discussionId, siteId, userId),
                 [] as AddonModForumOfflineReply[],
             );
 
-            if (replies.length !== 0 && !CoreApp.instance.isOnline()) {
+            if (replies.length !== 0 && !CoreApp.isOnline()) {
                 throw new Error('Cannot sync in offline');
             }
 
@@ -457,7 +457,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
                         // Now try to send the reply.
                         reply.options.attachmentsid = itemId;
 
-                        return AddonModForum.instance.replyPostOnline(
+                        return AddonModForum.replyPostOnline(
                             reply.postid,
                             reply.subject,
                             reply.message,
@@ -470,7 +470,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
 
                     await this.deleteReply(forumId, reply.postid, siteId, userId);
                 } catch (error) {
-                    if (!CoreUtils.instance.isWebServiceError(error)) {
+                    if (!CoreUtils.isWebServiceError(error)) {
                         throw error;
                     }
 
@@ -483,7 +483,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
                     result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
                         component: this.componentTranslate,
                         name: reply.name,
-                        error: CoreTextUtils.instance.getErrorMessageFromError(error),
+                        error: CoreTextUtils.getErrorMessageFromError(error),
                     }));
                 }
             });
@@ -494,15 +494,15 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
             const invalidationPromises: Promise<void>[] = [];
 
             if (forumId) {
-                invalidationPromises.push(AddonModForum.instance.invalidateDiscussionsList(forumId, siteId));
+                invalidationPromises.push(AddonModForum.invalidateDiscussionsList(forumId, siteId));
             }
 
-            invalidationPromises.push(AddonModForum.instance.invalidateDiscussionPosts(discussionId, forumId, siteId));
+            invalidationPromises.push(AddonModForum.invalidateDiscussionPosts(discussionId, forumId, siteId));
 
-            await CoreUtils.instance.ignoreErrors(CoreUtils.instance.allPromises(invalidationPromises));
+            await CoreUtils.ignoreErrors(CoreUtils.allPromises(invalidationPromises));
 
             // Sync finished, set sync time.
-            await CoreUtils.instance.ignoreErrors(this.setSyncTime(syncId, siteId));
+            await CoreUtils.ignoreErrors(this.setSyncTime(syncId, siteId));
 
             // All done, return the warnings.
             return result;
@@ -522,9 +522,9 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
      */
     protected async deleteNewDiscussion(forumId: number, timecreated: number, siteId?: string, userId?: number): Promise<void> {
         await Promise.all([
-            AddonModForumOffline.instance.deleteNewDiscussion(forumId, timecreated, siteId, userId),
-            CoreUtils.instance.ignoreErrors(
-                AddonModForumHelper.instance.deleteNewDiscussionStoredFiles(forumId, timecreated, siteId),
+            AddonModForumOffline.deleteNewDiscussion(forumId, timecreated, siteId, userId),
+            CoreUtils.ignoreErrors(
+                AddonModForumHelper.deleteNewDiscussionStoredFiles(forumId, timecreated, siteId),
             ),
         ]);
     }
@@ -540,8 +540,8 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
      */
     protected async deleteReply(forumId: number, postId: number, siteId?: string, userId?: number): Promise<void> {
         await Promise.all([
-            AddonModForumOffline.instance.deleteReply(postId, siteId, userId),
-            CoreUtils.instance.ignoreErrors(AddonModForumHelper.instance.deleteReplyStoredFiles(forumId, postId, siteId, userId)),
+            AddonModForumOffline.deleteReply(postId, siteId, userId),
+            CoreUtils.ignoreErrors(AddonModForumHelper.deleteReplyStoredFiles(forumId, postId, siteId, userId)),
         ]);
     }
 
@@ -575,12 +575,12 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
             // Has offline files.
             try {
                 const postAttachments = isDiscussion
-                    ? await AddonModForumHelper.instance.getNewDiscussionStoredFiles(
+                    ? await AddonModForumHelper.getNewDiscussionStoredFiles(
                         forumId,
                         (post as AddonModForumOfflineDiscussion).timecreated,
                         siteId,
                     )
-                    : await AddonModForumHelper.instance.getReplyStoredFiles(
+                    : await AddonModForumHelper.getReplyStoredFiles(
                         forumId,
                         (post as AddonModForumOfflineReply).postid,
                         siteId,
@@ -593,7 +593,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
             }
         }
 
-        return CoreFileUploader.instance.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
     }
 
     /**
@@ -604,7 +604,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
      * @return Sync ID.
      */
     getForumSyncId(forumId: number, userId?: number): string {
-        userId = userId || CoreSites.instance.getCurrentSiteUserId();
+        userId = userId || CoreSites.getCurrentSiteUserId();
 
         return 'forum#' + forumId + '#' + userId;
     }
@@ -617,14 +617,14 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
      * @return Sync ID.
      */
     getDiscussionSyncId(discussionId: number, userId?: number): string {
-        userId = userId || CoreSites.instance.getCurrentSiteUserId();
+        userId = userId || CoreSites.getCurrentSiteUserId();
 
         return 'discussion#' + discussionId + '#' + userId;
     }
 
 }
 
-export class AddonModForumSync extends makeSingleton(AddonModForumSyncProvider) {}
+export const AddonModForumSync = makeSingleton(AddonModForumSyncProvider, ['component', 'syncInterval']);
 
 /**
  * Result of forum sync.

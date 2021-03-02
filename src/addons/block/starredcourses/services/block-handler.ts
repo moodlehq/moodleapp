@@ -43,4 +43,4 @@ export class AddonBlockStarredCoursesHandlerService extends CoreBlockBaseHandler
 
 }
 
-export class AddonBlockStarredCoursesHandler extends makeSingleton(AddonBlockStarredCoursesHandlerService) {}
+export const AddonBlockStarredCoursesHandler = makeSingleton(AddonBlockStarredCoursesHandlerService);

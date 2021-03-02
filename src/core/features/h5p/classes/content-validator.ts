@@ -65,7 +65,7 @@ export class CoreH5PContentValidator {
             type: 'preloaded',
         };
 
-        this.nextWeight = await CoreH5P.instance.h5pCore.findLibraryDependencies(this.dependencies, library, this.nextWeight);
+        this.nextWeight = await CoreH5P.h5pCore.findLibraryDependencies(this.dependencies, library, this.nextWeight);
 
         this.dependencies[depKey].weight = this.nextWeight++;
     }
@@ -88,7 +88,7 @@ export class CoreH5PContentValidator {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     validateMetadata(metadata: any): Promise<unknown> {
         const semantics = this.getMetadataSemantics();
-        const group = CoreUtils.instance.clone(metadata || {});
+        const group = CoreUtils.clone(metadata || {});
 
         // Stop complaining about "invalid selected option in select" for old content without license chosen.
         if (typeof group.license == 'undefined') {
@@ -131,7 +131,7 @@ export class CoreH5PContentValidator {
                 tags.push('s');
             }
 
-            tags = CoreUtils.instance.uniqueArray(tags);
+            tags = CoreUtils.uniqueArray(tags);
 
             // Determine allowed style tags
             const stylePatterns: RegExp[] = [];
@@ -164,7 +164,7 @@ export class CoreH5PContentValidator {
             text = this.filterXss(text, tags, stylePatterns);
         } else {
             // Filter text to plain text.
-            text = CoreTextUtils.instance.escapeHTML(text, false);
+            text = CoreTextUtils.escapeHTML(text, false);
         }
 
         // Check if string is within allowed length.
@@ -270,7 +270,7 @@ export class CoreH5PContentValidator {
                 if (strict && !optional && !options[value]) {
                     delete select[key];
                 } else {
-                    select[key] = CoreTextUtils.instance.escapeHTML(value, false);
+                    select[key] = CoreTextUtils.escapeHTML(value, false);
                 }
             }
         } else {
@@ -282,7 +282,7 @@ export class CoreH5PContentValidator {
             if (strict && !optional && !options[select]) {
                 select = (<OptionSemantics> semantics.options![0]).value || '';
             }
-            select = CoreTextUtils.instance.escapeHTML(select, false);
+            select = CoreTextUtils.escapeHTML(select, false);
         }
 
         return select;
@@ -331,7 +331,7 @@ export class CoreH5PContentValidator {
         }
 
         if (!isArray) {
-            list = CoreUtils.instance.objectToArray(<Record<string, unknown>> list);
+            list = CoreUtils.objectToArray(<Record<string, unknown>> list);
         }
 
         if (!list.length) {
@@ -362,9 +362,9 @@ export class CoreH5PContentValidator {
         }
 
         // Make sure path and mime does not have any special chars
-        file.path = CoreTextUtils.instance.escapeHTML(file.path, false);
+        file.path = CoreTextUtils.escapeHTML(file.path, false);
         if (file.mime) {
-            file.mime = CoreTextUtils.instance.escapeHTML(file.mime, false);
+            file.mime = CoreTextUtils.escapeHTML(file.mime, false);
         }
 
         // Remove attributes that should not exist, they may contain JSON escape code.
@@ -372,7 +372,7 @@ export class CoreH5PContentValidator {
         if (semantics.extraAttributes) {
             validKeys = validKeys.concat(semantics.extraAttributes);
         }
-        validKeys = CoreUtils.instance.uniqueArray(validKeys);
+        validKeys = CoreUtils.uniqueArray(validKeys);
 
         this.filterParams(file, validKeys);
 
@@ -385,7 +385,7 @@ export class CoreH5PContentValidator {
         }
 
         if (file.codecs) {
-            file.codecs = CoreTextUtils.instance.escapeHTML(file.codecs, false);
+            file.codecs = CoreTextUtils.escapeHTML(file.codecs, false);
         }
 
         if (typeof file.bitrate == 'string') {
@@ -398,7 +398,7 @@ export class CoreH5PContentValidator {
             } else {
                 this.filterParams(file.quality, ['level', 'label']);
                 file.quality.level = Number(file.quality.level);
-                file.quality.label = CoreTextUtils.instance.escapeHTML(file.quality.label, false);
+                file.quality.label = CoreTextUtils.escapeHTML(file.quality.label, false);
             }
         }
 
@@ -545,7 +545,7 @@ export class CoreH5PContentValidator {
             // Load the library and store it in the index of libraries.
             const libSpec = CoreH5PCore.libraryFromString(value.library);
 
-            this.libraries[value.library] = await CoreH5P.instance.h5pCore.loadLibrary(
+            this.libraries[value.library] = await CoreH5P.h5pCore.loadLibrary(
                 libSpec?.machineName || '',
                 libSpec?.majorVersion || 0,
                 libSpec?.minorVersion || 0,
@@ -565,7 +565,7 @@ export class CoreH5PContentValidator {
 
         let validKeys = ['library', 'params', 'subContentId', 'metadata'];
         if (semantics.extraAttributes) {
-            validKeys = CoreUtils.instance.uniqueArray(validKeys.concat(semantics.extraAttributes));
+            validKeys = CoreUtils.uniqueArray(validKeys.concat(semantics.extraAttributes));
         }
 
         this.filterParams(value, validKeys);
@@ -583,7 +583,7 @@ export class CoreH5PContentValidator {
                 type: 'preloaded',
             };
 
-            this.nextWeight = await CoreH5P.instance.h5pCore.findLibraryDependencies(this.dependencies, library, this.nextWeight);
+            this.nextWeight = await CoreH5P.h5pCore.findLibraryDependencies(this.dependencies, library, this.nextWeight);
 
             this.dependencies[depKey].weight = this.nextWeight++;
 
@@ -663,7 +663,7 @@ export class CoreH5PContentValidator {
      */
     protected filterXssSplit(tags: string[], store: boolean = false): string {
         if (store) {
-            this.allowedHtml = CoreUtils.instance.arrayToObject(tags);
+            this.allowedHtml = CoreUtils.arrayToObject(tags);
 
             return '';
         }
@@ -853,10 +853,10 @@ export class CoreH5PContentValidator {
     filterXssBadProtocol(str: string, decode: boolean = true): string {
         // Get the plain text representation of the attribute value (i.e. its meaning).
         if (decode) {
-            str = CoreTextUtils.instance.decodeHTMLEntities(str);
+            str = CoreTextUtils.decodeHTMLEntities(str);
         }
 
-        return CoreTextUtils.instance.escapeHTML(this.stripDangerousProtocols(str), false);
+        return CoreTextUtils.escapeHTML(this.stripDangerousProtocols(str), false);
     }
 
     /**
@@ -915,92 +915,92 @@ export class CoreH5PContentValidator {
             {
                 name: 'title',
                 type: 'text',
-                label: Translate.instance.instant('core.h5p.title'),
+                label: Translate.instant('core.h5p.title'),
                 placeholder: 'La Gioconda',
             },
             {
                 name: 'license',
                 type: 'select',
-                label: Translate.instance.instant('core.h5p.license'),
+                label: Translate.instant('core.h5p.license'),
                 default: 'U',
                 options: [
                     {
                         value: 'U',
-                        label: Translate.instance.instant('core.h5p.undisclosed'),
+                        label: Translate.instant('core.h5p.undisclosed'),
                     },
                     {
                         type: 'optgroup',
-                        label: Translate.instance.instant('core.h5p.creativecommons'),
+                        label: Translate.instant('core.h5p.creativecommons'),
                         options: [
                             {
                                 value: 'CC BY',
-                                label: Translate.instance.instant('core.h5p.ccattribution'),
+                                label: Translate.instant('core.h5p.ccattribution'),
                                 versions: ccVersions,
                             },
                             {
                                 value: 'CC BY-SA',
-                                label: Translate.instance.instant('core.h5p.ccattributionsa'),
+                                label: Translate.instant('core.h5p.ccattributionsa'),
                                 versions: ccVersions,
                             },
                             {
                                 value: 'CC BY-ND',
-                                label: Translate.instance.instant('core.h5p.ccattributionnd'),
+                                label: Translate.instant('core.h5p.ccattributionnd'),
                                 versions: ccVersions,
                             },
                             {
                                 value: 'CC BY-NC',
-                                label: Translate.instance.instant('core.h5p.ccattributionnc'),
+                                label: Translate.instant('core.h5p.ccattributionnc'),
                                 versions: ccVersions,
                             },
                             {
                                 value: 'CC BY-NC-SA',
-                                label: Translate.instance.instant('core.h5p.ccattributionncsa'),
+                                label: Translate.instant('core.h5p.ccattributionncsa'),
                                 versions: ccVersions,
                             },
                             {
                                 value: 'CC BY-NC-ND',
-                                label: Translate.instance.instant('core.h5p.ccattributionncnd'),
+                                label: Translate.instant('core.h5p.ccattributionncnd'),
                                 versions: ccVersions,
                             },
                             {
                                 value: 'CC0 1.0',
-                                label: Translate.instance.instant('core.h5p.ccpdd'),
+                                label: Translate.instant('core.h5p.ccpdd'),
                             },
                             {
                                 value: 'CC PDM',
-                                label: Translate.instance.instant('core.h5p.pdm'),
+                                label: Translate.instant('core.h5p.pdm'),
                             },
                         ],
                     },
                     {
                         value: 'GNU GPL',
-                        label: Translate.instance.instant('core.h5p.gpl'),
+                        label: Translate.instant('core.h5p.gpl'),
                     },
                     {
                         value: 'PD',
-                        label: Translate.instance.instant('core.h5p.pd'),
+                        label: Translate.instant('core.h5p.pd'),
                     },
                     {
                         value: 'ODC PDDL',
-                        label: Translate.instance.instant('core.h5p.pddl'),
+                        label: Translate.instant('core.h5p.pddl'),
                     },
                     {
                         value: 'C',
-                        label: Translate.instance.instant('core.h5p.copyrightstring'),
+                        label: Translate.instant('core.h5p.copyrightstring'),
                     },
                 ],
             },
             {
                 name: 'licenseVersion',
                 type: 'select',
-                label: Translate.instance.instant('core.h5p.licenseversion'),
+                label: Translate.instant('core.h5p.licenseversion'),
                 options: ccVersions,
                 optional: true,
             },
             {
                 name: 'yearFrom',
                 type: 'number',
-                label: Translate.instance.instant('core.h5p.yearsfrom'),
+                label: Translate.instant('core.h5p.yearsfrom'),
                 placeholder: '1991',
                 min: -9999,
                 max: 9999,
@@ -1009,7 +1009,7 @@ export class CoreH5PContentValidator {
             {
                 name: 'yearTo',
                 type: 'number',
-                label: Translate.instance.instant('core.h5p.yearsto'),
+                label: Translate.instant('core.h5p.yearsto'),
                 placeholder: '1992',
                 min: -9999,
                 max: 9999,
@@ -1018,7 +1018,7 @@ export class CoreH5PContentValidator {
             {
                 name: 'source',
                 type: 'text',
-                label: Translate.instance.instant('core.h5p.source'),
+                label: Translate.instant('core.h5p.source'),
                 placeholder: 'https://',
                 optional: true,
             },
@@ -1030,7 +1030,7 @@ export class CoreH5PContentValidator {
                     type: 'group',
                     fields: [
                         {
-                            label: Translate.instance.instant('core.h5p.authorname'),
+                            label: Translate.instant('core.h5p.authorname'),
                             name: 'name',
                             optional: true,
                             type: 'text',
@@ -1038,24 +1038,24 @@ export class CoreH5PContentValidator {
                         {
                             name: 'role',
                             type: 'select',
-                            label: Translate.instance.instant('core.h5p.authorrole'),
+                            label: Translate.instant('core.h5p.authorrole'),
                             default: 'Author',
                             options: [
                                 {
                                     value: 'Author',
-                                    label: Translate.instance.instant('core.h5p.author'),
+                                    label: Translate.instant('core.h5p.author'),
                                 },
                                 {
                                     value: 'Editor',
-                                    label: Translate.instance.instant('core.h5p.editor'),
+                                    label: Translate.instant('core.h5p.editor'),
                                 },
                                 {
                                     value: 'Licensee',
-                                    label: Translate.instance.instant('core.h5p.licensee'),
+                                    label: Translate.instant('core.h5p.licensee'),
                                 },
                                 {
                                     value: 'Originator',
-                                    label: Translate.instance.instant('core.h5p.originator'),
+                                    label: Translate.instant('core.h5p.originator'),
                                 },
                             ],
                         },
@@ -1066,9 +1066,9 @@ export class CoreH5PContentValidator {
                 name: 'licenseExtras',
                 type: 'text',
                 widget: 'textarea',
-                label: Translate.instance.instant('core.h5p.licenseextras'),
+                label: Translate.instant('core.h5p.licenseextras'),
                 optional: true,
-                description: Translate.instance.instant('core.h5p.additionallicenseinfo'),
+                description: Translate.instant('core.h5p.additionallicenseinfo'),
             },
             {
                 name: 'changes',
@@ -1076,26 +1076,26 @@ export class CoreH5PContentValidator {
                 field: {
                     name: 'change',
                     type: 'group',
-                    label: Translate.instance.instant('core.h5p.changelog'),
+                    label: Translate.instant('core.h5p.changelog'),
                     fields: [
                         {
                             name: 'date',
                             type: 'text',
-                            label: Translate.instance.instant('core.h5p.date'),
+                            label: Translate.instant('core.h5p.date'),
                             optional: true,
                         },
                         {
                             name: 'author',
                             type: 'text',
-                            label: Translate.instance.instant('core.h5p.changedby'),
+                            label: Translate.instant('core.h5p.changedby'),
                             optional: true,
                         },
                         {
                             name: 'log',
                             type: 'text',
                             widget: 'textarea',
-                            label: Translate.instance.instant('core.h5p.changedescription'),
-                            placeholder: Translate.instance.instant('core.h5p.changeplaceholder'),
+                            label: Translate.instant('core.h5p.changedescription'),
+                            placeholder: Translate.instant('core.h5p.changeplaceholder'),
                             optional: true,
                         },
                     ],
@@ -1105,8 +1105,8 @@ export class CoreH5PContentValidator {
                 name: 'authorComments',
                 type: 'text',
                 widget: 'textarea',
-                label: Translate.instance.instant('core.h5p.authorcomments'),
-                description: Translate.instance.instant('core.h5p.authorcommentsdescription'),
+                label: Translate.instant('core.h5p.authorcomments'),
+                description: Translate.instant('core.h5p.authorcommentsdescription'),
                 optional: true,
             },
             {
@@ -1140,33 +1140,33 @@ export class CoreH5PContentValidator {
         this.copyrightSemantics = {
             name: 'copyright',
             type: 'group',
-            label: Translate.instance.instant('core.h5p.copyrightinfo'),
+            label: Translate.instant('core.h5p.copyrightinfo'),
             fields: [
                 {
                     name: 'title',
                     type: 'text',
-                    label: Translate.instance.instant('core.h5p.title'),
+                    label: Translate.instant('core.h5p.title'),
                     placeholder: 'La Gioconda',
                     optional: true,
                 },
                 {
                     name: 'author',
                     type: 'text',
-                    label: Translate.instance.instant('core.h5p.author'),
+                    label: Translate.instant('core.h5p.author'),
                     placeholder: 'Leonardo da Vinci',
                     optional: true,
                 },
                 {
                     name: 'year',
                     type: 'text',
-                    label: Translate.instance.instant('core.h5p.years'),
+                    label: Translate.instant('core.h5p.years'),
                     placeholder: '1503 - 1517',
                     optional: true,
                 },
                 {
                     name: 'source',
                     type: 'text',
-                    label: Translate.instance.instant('core.h5p.source'),
+                    label: Translate.instant('core.h5p.source'),
                     placeholder: 'http://en.wikipedia.org/wiki/Mona_Lisa',
                     optional: true,
                     regexp: {
@@ -1177,64 +1177,64 @@ export class CoreH5PContentValidator {
                 {
                     name: 'license',
                     type: 'select',
-                    label: Translate.instance.instant('core.h5p.license'),
+                    label: Translate.instant('core.h5p.license'),
                     default: 'U',
                     options: [
                         {
                             value: 'U',
-                            label: Translate.instance.instant('core.h5p.undisclosed'),
+                            label: Translate.instant('core.h5p.undisclosed'),
                         },
                         {
                             value: 'CC BY',
-                            label: Translate.instance.instant('core.h5p.ccattribution'),
+                            label: Translate.instant('core.h5p.ccattribution'),
                             versions: ccVersions,
                         },
                         {
                             value: 'CC BY-SA',
-                            label: Translate.instance.instant('core.h5p.ccattributionsa'),
+                            label: Translate.instant('core.h5p.ccattributionsa'),
                             versions: ccVersions,
                         },
                         {
                             value: 'CC BY-ND',
-                            label: Translate.instance.instant('core.h5p.ccattributionnd'),
+                            label: Translate.instant('core.h5p.ccattributionnd'),
                             versions: ccVersions,
                         },
                         {
                             value: 'CC BY-NC',
-                            label: Translate.instance.instant('core.h5p.ccattributionnc'),
+                            label: Translate.instant('core.h5p.ccattributionnc'),
                             versions: ccVersions,
                         },
                         {
                             value: 'CC BY-NC-SA',
-                            label: Translate.instance.instant('core.h5p.ccattributionncsa'),
+                            label: Translate.instant('core.h5p.ccattributionncsa'),
                             versions: ccVersions,
                         },
                         {
                             value: 'CC BY-NC-ND',
-                            label: Translate.instance.instant('core.h5p.ccattributionncnd'),
+                            label: Translate.instant('core.h5p.ccattributionncnd'),
                             versions: ccVersions,
                         },
                         {
                             value: 'GNU GPL',
-                            label: Translate.instance.instant('core.h5p.licenseGPL'),
+                            label: Translate.instant('core.h5p.licenseGPL'),
                             versions: [
                                 {
                                     value: 'v3',
-                                    label: Translate.instance.instant('core.h5p.licenseV3'),
+                                    label: Translate.instant('core.h5p.licenseV3'),
                                 },
                                 {
                                     value: 'v2',
-                                    label: Translate.instance.instant('core.h5p.licenseV2'),
+                                    label: Translate.instant('core.h5p.licenseV2'),
                                 },
                                 {
                                     value: 'v1',
-                                    label: Translate.instance.instant('core.h5p.licenseV1'),
+                                    label: Translate.instant('core.h5p.licenseV1'),
                                 },
                             ],
                         },
                         {
                             value: 'PD',
-                            label: Translate.instance.instant('core.h5p.pd'),
+                            label: Translate.instant('core.h5p.pd'),
                             versions: [
                                 {
                                     value: '-',
@@ -1242,24 +1242,24 @@ export class CoreH5PContentValidator {
                                 },
                                 {
                                     value: 'CC0 1.0',
-                                    label: Translate.instance.instant('core.h5p.licenseCC010U'),
+                                    label: Translate.instant('core.h5p.licenseCC010U'),
                                 },
                                 {
                                     value: 'CC PDM',
-                                    label: Translate.instance.instant('core.h5p.pdm'),
+                                    label: Translate.instant('core.h5p.pdm'),
                                 },
                             ],
                         },
                         {
                             value: 'C',
-                            label: Translate.instance.instant('core.h5p.copyrightstring'),
+                            label: Translate.instant('core.h5p.copyrightstring'),
                         },
                     ],
                 },
                 {
                     name: 'version',
                     type: 'select',
-                    label: Translate.instance.instant('core.h5p.licenseversion'),
+                    label: Translate.instant('core.h5p.licenseversion'),
                     options: [],
                 },
             ],
@@ -1277,23 +1277,23 @@ export class CoreH5PContentValidator {
         return [
             {
                 value: '4.0',
-                label: Translate.instance.instant('core.h5p.licenseCC40'),
+                label: Translate.instant('core.h5p.licenseCC40'),
             },
             {
                 value: '3.0',
-                label: Translate.instance.instant('core.h5p.licenseCC30'),
+                label: Translate.instant('core.h5p.licenseCC30'),
             },
             {
                 value: '2.5',
-                label: Translate.instance.instant('core.h5p.licenseCC25'),
+                label: Translate.instant('core.h5p.licenseCC25'),
             },
             {
                 value: '2.0',
-                label: Translate.instance.instant('core.h5p.licenseCC20'),
+                label: Translate.instant('core.h5p.licenseCC20'),
             },
             {
                 value: '1.0',
-                label: Translate.instance.instant('core.h5p.licenseCC10'),
+                label: Translate.instant('core.h5p.licenseCC10'),
             },
         ];
     }

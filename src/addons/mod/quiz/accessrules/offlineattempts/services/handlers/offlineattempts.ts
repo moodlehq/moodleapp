@@ -91,12 +91,12 @@ export class AddonModQuizAccessOfflineAttemptsHandlerService implements AddonMod
             return true;
         }
 
-        const syncTime = await AddonModQuizSync.instance.getSyncTime(quiz.id);
+        const syncTime = await AddonModQuizSync.getSyncTime(quiz.id);
 
         // Show warning if last sync was a while ago.
-        return Date.now() - AddonModQuizSync.instance.syncInterval > syncTime;
+        return Date.now() - AddonModQuizSync.syncInterval > syncTime;
     }
 
 }
 
-export class AddonModQuizAccessOfflineAttemptsHandler extends makeSingleton(AddonModQuizAccessOfflineAttemptsHandlerService) {}
+export const AddonModQuizAccessOfflineAttemptsHandler = makeSingleton(AddonModQuizAccessOfflineAttemptsHandlerService);

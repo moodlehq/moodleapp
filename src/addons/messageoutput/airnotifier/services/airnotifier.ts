@@ -47,7 +47,7 @@ export class AddonMessageOutputAirnotifierProvider {
      * @return Promise resolved if success.
      */
     async enableDevice(deviceId: number, enable: boolean, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const data: AddonMessageOutputAirnotifierEnableDeviceWSParams = {
             deviceid: deviceId,
@@ -89,7 +89,7 @@ export class AddonMessageOutputAirnotifierProvider {
      */
     async getUserDevices(ignoreCache?: boolean, siteId?: string): Promise<AddonMessageOutputAirnotifierDevice[]> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const data: AddonMessageOutputAirnotifierGetUserDevicesWSParams = {
             appid: CoreConstants.CONFIG.app_id,
@@ -120,7 +120,7 @@ export class AddonMessageOutputAirnotifierProvider {
      * @return Promise resolved when data is invalidated.
      */
     async invalidateUserDevices(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.invalidateWsCacheForKey(this.getUserDevicesCacheKey());
     }
@@ -132,13 +132,13 @@ export class AddonMessageOutputAirnotifierProvider {
      * @since 3.2
      */
     isEnabled(): boolean {
-        return CoreSites.instance.wsAvailableInCurrentSite('message_airnotifier_enable_device') &&
-                CoreSites.instance.wsAvailableInCurrentSite('message_airnotifier_get_user_devices');
+        return CoreSites.wsAvailableInCurrentSite('message_airnotifier_enable_device') &&
+                CoreSites.wsAvailableInCurrentSite('message_airnotifier_get_user_devices');
     }
 
 }
 
-export class AddonMessageOutputAirnotifier extends makeSingleton(AddonMessageOutputAirnotifierProvider) {}
+export const AddonMessageOutputAirnotifier = makeSingleton(AddonMessageOutputAirnotifierProvider);
 
 /**
  * Device data returned by WS message_airnotifier_get_user_devices.

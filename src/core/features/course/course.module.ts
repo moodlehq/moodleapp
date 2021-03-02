@@ -67,13 +67,13 @@ const courseIndexRoutes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreCronDelegate.instance.register(CoreCourseSyncCronHandler.instance);
-                CoreCronDelegate.instance.register(CoreCourseLogCronHandler.instance);
-                CoreTagAreaDelegate.instance.registerHandler(CoreCourseTagAreaHandler.instance);
-                CoreTagAreaDelegate.instance.registerHandler(CoreCourseModulesTagAreaHandler.instance);
+                CoreCronDelegate.register(CoreCourseSyncCronHandler.instance);
+                CoreCronDelegate.register(CoreCourseLogCronHandler.instance);
+                CoreTagAreaDelegate.registerHandler(CoreCourseTagAreaHandler.instance);
+                CoreTagAreaDelegate.registerHandler(CoreCourseModulesTagAreaHandler.instance);
 
-                CoreCourse.instance.initialize();
-                CoreCourseModulePrefetchDelegate.instance.initialize();
+                CoreCourse.initialize();
+                CoreCourseModulePrefetchDelegate.initialize();
             },
         },
     ],

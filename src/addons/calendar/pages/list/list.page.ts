@@ -103,14 +103,14 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
 
     constructor() {
 
-        this.siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
-        this.notificationsEnabled = CoreLocalNotifications.instance.isAvailable();
-        this.currentSiteId = CoreSites.instance.getCurrentSiteId();
+        this.siteHomeId = CoreSites.getCurrentSiteHomeId();
+        this.notificationsEnabled = CoreLocalNotifications.isAvailable();
+        this.currentSiteId = CoreSites.getCurrentSiteId();
 
         if (this.notificationsEnabled) {
             // Re-schedule events if default time changes.
             this.obsDefaultTimeChange = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
-                AddonCalendar.instance.scheduleEventsNotifications(this.onlineEvents);
+                AddonCalendar.scheduleEventsNotifications(this.onlineEvents);
             }, this.currentSiteId);
         }
 
@@ -225,7 +225,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
                 this.filter = data;
 
                 // Course viewed has changed, check if the user can create events for this course calendar.
-                this.canCreate = await AddonCalendarHelper.instance.canEditEvents(this.filter.courseId);
+                this.canCreate = await AddonCalendarHelper.canEditEvents(this.filter.courseId);
 
                 this.filterEvents();
 
@@ -233,10 +233,10 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
             });
 
         // Refresh online status when changes.
-        this.onlineObserver = Network.instance.onChange().subscribe(() => {
+        this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.instance.run(() => {
-                this.isOnline = CoreApp.instance.isOnline();
+            NgZone.run(() => {
+                this.isOnline = CoreApp.isOnline();
             });
         });
     }
@@ -245,8 +245,8 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
-        this.eventId = CoreNavigator.instance.getRouteNumberParam('eventId');
-        this.filter.courseId = CoreNavigator.instance.getRouteNumberParam('courseId') || -1;
+        this.eventId = CoreNavigator.getRouteNumberParam('eventId');
+        this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId') || -1;
 
         if (this.eventId) {
             // There is an event to load, open the event in a new state.
@@ -272,10 +272,10 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
      */
     protected emptySplitView(): void {
         // Empty details.
-        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/calendar/list/event') ||
-            CoreNavigator.instance.isCurrentPathInTablet('**/calendar/list/edit');
+        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/calendar/list/event') ||
+            CoreNavigator.isCurrentPathInTablet('**/calendar/list/edit');
         if (splitViewLoaded) {
-            CoreNavigator.instance.navigate('../');
+            CoreNavigator.navigate('../');
         }
     }
 
@@ -288,17 +288,17 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async fetchData(refresh = false, sync = false, showErrors = false): Promise<void> {
-        this.initialTime = CoreTimeUtils.instance.timestamp();
+        this.initialTime = CoreTimeUtils.timestamp();
         this.daysLoaded = 0;
         this.emptyEventsTimes = 0;
-        this.isOnline = CoreApp.instance.isOnline();
+        this.isOnline = CoreApp.isOnline();
 
         if (sync) {
             // Try to synchronize offline events.
             try {
-                const result = await AddonCalendarSync.instance.syncEvents();
+                const result = await AddonCalendarSync.syncEvents();
                 if (result.warnings && result.warnings.length) {
-                    CoreDomUtils.instance.showErrorModal(result.warnings[0]);
+                    CoreDomUtils.showErrorModal(result.warnings[0]);
                 }
 
                 if (result.updated) {
@@ -313,7 +313,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
                 }
             } catch (error) {
                 if (showErrors) {
-                    CoreDomUtils.instance.showErrorModalDefault(error, 'core.errorsync', true);
+                    CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
                 }
             }
         }
@@ -323,34 +323,34 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
 
             this.hasOffline = false;
 
-            promises.push(AddonCalendarHelper.instance.canEditEvents(this.filter.courseId).then((canEdit) => {
+            promises.push(AddonCalendarHelper.canEditEvents(this.filter.courseId).then((canEdit) => {
                 this.canCreate = canEdit;
 
                 return;
             }));
 
             // Load courses for the popover.
-            promises.push(CoreCoursesHelper.instance.getCoursesForPopover(this.filter.courseId).then((result) => {
+            promises.push(CoreCoursesHelper.getCoursesForPopover(this.filter.courseId).then((result) => {
                 this.courses = result.courses;
 
                 return this.fetchEvents(refresh);
             }));
 
             // Get offline events.
-            promises.push(AddonCalendarOffline.instance.getAllEditedEvents().then((offlineEvents) => {
+            promises.push(AddonCalendarOffline.getAllEditedEvents().then((offlineEvents) => {
                 this.hasOffline = this.hasOffline || !!offlineEvents.length;
 
                 // Format data and sort by timestart.
                 const events: AddonCalendarEventToDisplay[] = offlineEvents.map((event) =>
-                    AddonCalendarHelper.instance.formatOfflineEventData(event));
+                    AddonCalendarHelper.formatOfflineEventData(event));
 
-                this.offlineEvents = AddonCalendarHelper.instance.sortEvents(events);
+                this.offlineEvents = AddonCalendarHelper.sortEvents(events);
 
                 return;
             }));
 
             // Get events deleted in offline.
-            promises.push(AddonCalendarOffline.instance.getAllDeletedEventsIds().then((ids) => {
+            promises.push(AddonCalendarOffline.getAllDeletedEventsIds().then((ids) => {
                 this.hasOffline = this.hasOffline || !!ids.length;
                 this.deletedEvents = ids;
 
@@ -359,7 +359,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
 
             await Promise.all(promises);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
         }
 
         this.eventsLoaded = true;
@@ -377,7 +377,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
 
         try {
             const onlineEventsTemp =
-                await AddonCalendar.instance.getEventsList(this.initialTime, this.daysLoaded, AddonCalendarProvider.DAYS_INTERVAL);
+                await AddonCalendar.getEventsList(this.initialTime, this.daysLoaded, AddonCalendarProvider.DAYS_INTERVAL);
 
             if (onlineEventsTemp.length === 0) {
                 this.emptyEventsTimes++;
@@ -395,7 +395,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
                     return this.fetchEvents();
                 }
             } else {
-                const onlineEvents = onlineEventsTemp.map((event) => AddonCalendarHelper.instance.formatEventData(event));
+                const onlineEvents = onlineEventsTemp.map((event) => AddonCalendarHelper.formatEventData(event));
 
                 // Get the merged events of this period.
                 const events = this.mergeEvents(onlineEvents);
@@ -407,8 +407,8 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
                     this.events = events;
                 } else {
                     // Filter events with same ID. Repeated events are returned once per WS call, show them only once.
-                    this.onlineEvents = CoreUtils.instance.mergeArraysWithoutDuplicates(this.onlineEvents, onlineEvents, 'id');
-                    this.events = CoreUtils.instance.mergeArraysWithoutDuplicates(this.events, events, 'id');
+                    this.onlineEvents = CoreUtils.mergeArraysWithoutDuplicates(this.onlineEvents, onlineEvents, 'id');
+                    this.events = CoreUtils.mergeArraysWithoutDuplicates(this.events, events, 'id');
                 }
                 this.filterEvents();
 
@@ -420,7 +420,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
                 this.canLoadMore = true;
 
                 // Schedule notifications for the events retrieved (might have new events).
-                AddonCalendar.instance.scheduleEventsNotifications(this.onlineEvents);
+                AddonCalendar.scheduleEventsNotifications(this.onlineEvents);
 
                 this.daysLoaded += AddonCalendarProvider.DAYS_INTERVAL;
             }
@@ -429,7 +429,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
             // @todo: Infinite loading is not working if content is not high enough.
             // this.content.resize();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
         }
 
@@ -454,7 +454,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
     }
 
     protected filterEvents(): void {
-        this.filteredEvents = AddonCalendarHelper.instance.getFilteredEvents(this.events, this.filter, this.categories);
+        this.filteredEvents = AddonCalendarHelper.getFilteredEvents(this.events, this.filter, this.categories);
     }
 
     /**
@@ -482,7 +482,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
      */
     protected async loadCategories(): Promise<void> {
         try {
-            const cats = await CoreCourses.instance.getCategories(0, true);
+            const cats = await CoreCourses.getCategories(0, true);
             this.categoriesRetrieved = true;
             this.categories = {};
             // Index categories by ID.
@@ -539,7 +539,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
         // Merge both arrays and sort them.
         result = result.concat(periodOfflineEvents);
 
-        return AddonCalendarHelper.instance.sortEvents(result);
+        return AddonCalendarHelper.sortEvents(result);
     }
 
     /**
@@ -573,11 +573,11 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
 
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonCalendar.instance.invalidateEventsList());
-        promises.push(AddonCalendar.instance.invalidateAllowedEventTypes());
+        promises.push(AddonCalendar.invalidateEventsList());
+        promises.push(AddonCalendar.invalidateAllowedEventTypes());
 
         if (this.categoriesRetrieved) {
-            promises.push(CoreCourses.instance.invalidateCategories(0, true));
+            promises.push(CoreCourses.invalidateCategories(0, true));
             this.categoriesRetrieved = false;
         }
 
@@ -624,7 +624,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
      * @param event Event.
      */
     async openFilter(event: MouseEvent): Promise<void> {
-        const popover = await PopoverController.instance.create({
+        const popover = await PopoverController.create({
             component: AddonCalendarFilterPopoverComponent,
             componentProps: {
                 courses: this.courses,
@@ -652,17 +652,17 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
             params.courseId = this.filter.courseId;
         }
 
-        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/calendar/list/event') ||
-            CoreNavigator.instance.isCurrentPathInTablet('**/calendar/list/edit');
+        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/calendar/list/event') ||
+            CoreNavigator.isCurrentPathInTablet('**/calendar/list/edit');
         const path = (splitViewLoaded ? '../' : '') + 'edit';
-        CoreNavigator.instance.navigate(path, { params });
+        CoreNavigator.navigate(path, { params });
     }
 
     /**
      * Open calendar events settings.
      */
     openSettings(): void {
-        CoreNavigator.instance.navigateToSitePath('/calendar/settings');
+        CoreNavigator.navigateToSitePath('/calendar/settings');
     }
 
     /**
@@ -677,10 +677,10 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
             // It's an offline event, go to the edit page.
             this.openEdit(eventId);
         } else {
-            const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/calendar/list/event') ||
-                CoreNavigator.instance.isCurrentPathInTablet('**/calendar/list/edit');
+            const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/calendar/list/event') ||
+                CoreNavigator.isCurrentPathInTablet('**/calendar/list/edit');
             const path = (splitViewLoaded ? '../' : '') + 'event';
-            CoreNavigator.instance.navigate(path, { params: {
+            CoreNavigator.navigate(path, { params: {
                 id: eventId,
             } });
         }

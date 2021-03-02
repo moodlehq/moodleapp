@@ -41,18 +41,18 @@ export class AddonModLessonPasswordModalComponent {
         e.preventDefault();
         e.stopPropagation();
 
-        CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, false, CoreSites.instance.getCurrentSiteId());
+        CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
-        ModalController.instance.dismiss(password.value);
+        ModalController.dismiss(password.value);
     }
 
     /**
      * Close modal.
      */
     closeModal(): void {
-        CoreDomUtils.instance.triggerFormCancelledEvent(this.formElement, CoreSites.instance.getCurrentSiteId());
+        CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
-        ModalController.instance.dismiss();
+        ModalController.dismiss();
     }
 
 }

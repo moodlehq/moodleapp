@@ -81,7 +81,7 @@ export class AddonNotificationsProvider {
             }
 
             if (typeof notification.customdata == 'string') {
-                notification.customdata = CoreTextUtils.instance.parseJSON<Record<string, unknown>>(notification.customdata, {});
+                notification.customdata = CoreTextUtils.parseJSON<Record<string, unknown>>(notification.customdata, {});
             }
 
             // Try to set courseid the notification belongs to.
@@ -97,7 +97,7 @@ export class AddonNotificationsProvider {
             if (notification.useridfrom > 0) {
                 // Try to get the profile picture of the user.
                 try {
-                    const user = await CoreUser.instance.getProfile(notification.useridfrom, notification.courseid, true);
+                    const user = await CoreUser.getProfile(notification.useridfrom, notification.courseid, true);
 
                     notification.profileimageurlfrom = user.profileimageurl;
                     notification.userfromfullname = user.fullname;
@@ -130,7 +130,7 @@ export class AddonNotificationsProvider {
     async getNotificationPreferences(siteId?: string): Promise<AddonNotificationsPreferences> {
         this.logger.debug('Get notification preferences');
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getNotificationPreferencesCacheKey(),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
@@ -172,7 +172,7 @@ export class AddonNotificationsProvider {
 
         this.logger.debug(`Get ${(read ? 'read' : 'unread')} notifications from ${offset}. Limit: ${options.limit}`);
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
         const data: AddonNotificationsGetMessagesWSParams = {
             useridto: site.getUserId(),
             useridfrom: 0,
@@ -184,7 +184,7 @@ export class AddonNotificationsProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getNotificationsCacheKey(),
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         // Get unread notifications.
@@ -212,7 +212,7 @@ export class AddonNotificationsProvider {
 
         this.logger.debug(`Get popup notifications from ${offset}. Limit: ${options.limit}`);
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
         const data: AddonNotificationsPopupGetPopupNotificationsWSParams = {
             useridto: site.getUserId(),
             newestfirst: true,
@@ -221,7 +221,7 @@ export class AddonNotificationsProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getNotificationsCacheKey(),
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         // Get notifications.
@@ -275,7 +275,7 @@ export class AddonNotificationsProvider {
      * @return Promise resolved with the message notifications count.
      */
     async getUnreadNotificationsCount(userId?: number, siteId?: string): Promise<number> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // @since 3.2
         if (site.wsAvailable('message_popup_get_unread_popup_notification_count')) {
@@ -318,7 +318,7 @@ export class AddonNotificationsProvider {
      * @since 3.2
      */
     async isPopupAvailable(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.wsAvailable('message_popup_get_popup_notifications');
     }
@@ -330,10 +330,10 @@ export class AddonNotificationsProvider {
      * @since 3.2
      */
     async markAllNotificationsAsRead(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: CoreMessageMarkAllNotificationsAsReadWSParams = {
-            useridto: CoreSites.instance.getCurrentSiteUserId(),
+            useridto: CoreSites.getCurrentSiteUserId(),
         };
 
         return site.write<boolean>('core_message_mark_all_notifications_as_read', params);
@@ -352,18 +352,18 @@ export class AddonNotificationsProvider {
         siteId?: string,
     ): Promise<CoreMessageMarkNotificationReadWSResponse | AddonMessagesMarkMessageReadResult> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         if (site.wsAvailable('core_message_mark_notification_read')) {
             const params: CoreMessageMarkNotificationReadWSParams = {
                 notificationid: notificationId,
-                timeread: CoreTimeUtils.instance.timestamp(),
+                timeread: CoreTimeUtils.timestamp(),
             };
 
             return site.write<CoreMessageMarkNotificationReadWSResponse>('core_message_mark_notification_read', params);
         } else {
             // Fallback for versions prior to 3.5.
-            return AddonMessages.instance.markMessageRead(notificationId, site.id);
+            return AddonMessages.markMessageRead(notificationId, site.id);
         }
     }
 
@@ -374,7 +374,7 @@ export class AddonNotificationsProvider {
      * @return Promise resolved when data is invalidated.
      */
     async invalidateNotificationPreferences(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getNotificationPreferencesCacheKey());
     }
@@ -386,7 +386,7 @@ export class AddonNotificationsProvider {
      * @return Promise resolved when the list is invalidated.
      */
     async invalidateNotificationsList(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getNotificationsCacheKey());
     }
@@ -398,7 +398,7 @@ export class AddonNotificationsProvider {
      * @since 3.2
      */
     isMarkAllNotificationsAsReadEnabled(): boolean {
-        return CoreSites.instance.wsAvailableInCurrentSite('core_message_mark_all_notifications_as_read');
+        return CoreSites.wsAvailableInCurrentSite('core_message_mark_all_notifications_as_read');
     }
 
     /**
@@ -408,7 +408,7 @@ export class AddonNotificationsProvider {
      * @since 3.2
      */
     isPreciseNotificationCountEnabled(): boolean {
-        return CoreSites.instance.wsAvailableInCurrentSite('message_popup_get_unread_popup_notification_count');
+        return CoreSites.wsAvailableInCurrentSite('message_popup_get_unread_popup_notification_count');
     }
 
     /**
@@ -418,12 +418,12 @@ export class AddonNotificationsProvider {
      * @since 3.2
      */
     isNotificationPreferencesEnabled(): boolean {
-        return CoreSites.instance.wsAvailableInCurrentSite('core_message_get_user_notification_preferences');
+        return CoreSites.wsAvailableInCurrentSite('core_message_get_user_notification_preferences');
     }
 
 }
 
-export class AddonNotifications extends makeSingleton(AddonNotificationsProvider) {}
+export const AddonNotifications = makeSingleton(AddonNotificationsProvider);
 
 /**
  * Preferences returned by core_message_get_user_notification_preferences.

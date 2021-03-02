@@ -43,4 +43,4 @@ export class AddonBlockOnlineUsersHandlerService extends CoreBlockBaseHandler {
 
 }
 
-export class AddonBlockOnlineUsersHandler extends makeSingleton(AddonBlockOnlineUsersHandlerService) {}
+export const AddonBlockOnlineUsersHandler = makeSingleton(AddonBlockOnlineUsersHandlerService);

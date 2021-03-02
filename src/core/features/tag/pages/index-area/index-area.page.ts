@@ -61,28 +61,28 @@ export class CoreTagIndexAreaPage implements OnInit {
         this.route.queryParams.subscribe(async () => {
             this.loaded = false;
 
-            this.tagId = CoreNavigator.instance.getRouteNumberParam('tagId') || this.tagId;
-            this.tagName = CoreNavigator.instance.getRouteParam('tagName') || this.tagName;
-            this.collectionId = CoreNavigator.instance.getRouteNumberParam('collectionId') || this.collectionId;
-            this.areaId = CoreNavigator.instance.getRouteNumberParam('areaId') || this.areaId;
-            this.fromContextId = CoreNavigator.instance.getRouteNumberParam('fromContextId') || this.fromContextId;
-            this.contextId = CoreNavigator.instance.getRouteNumberParam('contextId') || this.contextId;
-            this.recursive = CoreNavigator.instance.getRouteBooleanParam('recursive') ?? true;
+            this.tagId = CoreNavigator.getRouteNumberParam('tagId') || this.tagId;
+            this.tagName = CoreNavigator.getRouteParam('tagName') || this.tagName;
+            this.collectionId = CoreNavigator.getRouteNumberParam('collectionId') || this.collectionId;
+            this.areaId = CoreNavigator.getRouteNumberParam('areaId') || this.areaId;
+            this.fromContextId = CoreNavigator.getRouteNumberParam('fromContextId') || this.fromContextId;
+            this.contextId = CoreNavigator.getRouteNumberParam('contextId') || this.contextId;
+            this.recursive = CoreNavigator.getRouteBooleanParam('recursive') ?? true;
 
-            this.areaNameKey = CoreNavigator.instance.getRouteParam('areaNameKey') || '';
+            this.areaNameKey = CoreNavigator.getRouteParam('areaNameKey') || '';
             // Pass the the following parameters to avoid fetching the first page.
-            this.componentName = CoreNavigator.instance.getRouteParam('componentName');
-            this.itemType = CoreNavigator.instance.getRouteParam('itemType');
-            this.items = CoreNavigator.instance.getRouteParam<unknown[]>('items') || [];
-            this.nextPage = CoreNavigator.instance.getRouteNumberParam('nextPage') || 0;
-            this.canLoadMore = CoreNavigator.instance.getRouteBooleanParam('canLoadMore') || false;
+            this.componentName = CoreNavigator.getRouteParam('componentName');
+            this.itemType = CoreNavigator.getRouteParam('itemType');
+            this.items = CoreNavigator.getRouteParam<unknown[]>('items') || [];
+            this.nextPage = CoreNavigator.getRouteNumberParam('nextPage') || 0;
+            this.canLoadMore = CoreNavigator.getRouteBooleanParam('canLoadMore') || false;
 
             try {
                 if (!this.componentName || !this.itemType || !this.items.length || this.nextPage == 0) {
                     await this.fetchData(true);
                 }
 
-                this.areaComponent = await CoreTagAreaDelegate.instance.getComponent(this.componentName!, this.itemType!);
+                this.areaComponent = await CoreTagAreaDelegate.getComponent(this.componentName!, this.itemType!);
             } finally {
                 this.loaded = true;
             }
@@ -100,7 +100,7 @@ export class CoreTagIndexAreaPage implements OnInit {
         const page = refresh ? 0 : this.nextPage;
 
         try {
-            const areas = await CoreTag.instance.getTagIndexPerArea(
+            const areas = await CoreTag.getTagIndexPerArea(
                 this.tagId,
                 this.tagName,
                 this.collectionId,
@@ -112,10 +112,10 @@ export class CoreTagIndexAreaPage implements OnInit {
             );
             const area = areas[0];
 
-            const items = await CoreTagAreaDelegate.instance.parseContent(area.component, area.itemtype, area.content);
+            const items = await CoreTagAreaDelegate.parseContent(area.component, area.itemtype, area.content);
             if (!items || !items.length) {
                 // Tag area not supported.
-                throw Translate.instance.instant('core.tag.errorareanotsupported');
+                throw Translate.instant('core.tag.errorareanotsupported');
             }
 
             if (page == 0) {
@@ -125,12 +125,12 @@ export class CoreTagIndexAreaPage implements OnInit {
             }
             this.componentName = area.component;
             this.itemType = area.itemtype;
-            this.areaNameKey = CoreTagAreaDelegate.instance.getDisplayNameKey(area.component, area.itemtype);
+            this.areaNameKey = CoreTagAreaDelegate.getDisplayNameKey(area.component, area.itemtype);
             this.canLoadMore = !!area.nextpageurl;
             this.nextPage = page + 1;
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading tag index');
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading tag index');
         }
     }
 
@@ -155,7 +155,7 @@ export class CoreTagIndexAreaPage implements OnInit {
      */
     async refreshData(refresher?: CustomEvent<IonRefresher>): Promise<void> {
         try {
-            await CoreTag.instance.invalidateTagIndexPerArea(
+            await CoreTag.invalidateTagIndexPerArea(
                 this.tagId,
                 this.tagName,
                 this.collectionId,

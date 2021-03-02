@@ -205,4 +205,4 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
 
 }
 
-export class CoreUserProfileFieldDelegate extends makeSingleton(CoreUserProfileFieldDelegateService) {}
+export const CoreUserProfileFieldDelegate = makeSingleton(CoreUserProfileFieldDelegateService);

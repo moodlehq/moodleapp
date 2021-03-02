@@ -39,7 +39,7 @@ export class AddonQbehaviourAdaptiveNoPenaltyHandlerService implements CoreQuest
      */
     handleQuestion(question: CoreQuestionQuestionParsed): void {
         // Just extract the button, it doesn't need any specific component.
-        CoreQuestionHelper.instance.extractQbehaviourButtons(question);
+        CoreQuestionHelper.extractQbehaviourButtons(question);
     }
 
     /**
@@ -53,4 +53,4 @@ export class AddonQbehaviourAdaptiveNoPenaltyHandlerService implements CoreQuest
 
 }
 
-export class AddonQbehaviourAdaptiveNoPenaltyHandler extends makeSingleton(AddonQbehaviourAdaptiveNoPenaltyHandlerService) {}
+export const AddonQbehaviourAdaptiveNoPenaltyHandler = makeSingleton(AddonQbehaviourAdaptiveNoPenaltyHandlerService);

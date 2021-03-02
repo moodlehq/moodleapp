@@ -61,11 +61,11 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
 
         return [{
             action: (siteId): void => {
-                CoreNavigator.instance.navigateToSitePath('course/list-mod-type', {
+                CoreNavigator.navigateToSitePath('course/list-mod-type', {
                     params: {
                         courseId: params.id,
                         modName: this.modName,
-                        title: this.title || Translate.instance.instant('addon.mod_' + this.modName + '.modulenameplural'),
+                        title: this.title || Translate.instant('addon.mod_' + this.modName + '.modulenameplural'),
                     },
                     siteId,
                 });

@@ -30,7 +30,7 @@ import { AddonBlockActivityModulesComponentsModule } from './components/componen
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockActivityModulesHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockActivityModulesHandler.instance);
             },
         },
     ],

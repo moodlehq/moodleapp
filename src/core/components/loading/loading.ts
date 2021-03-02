@@ -58,7 +58,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
         this.element = element.nativeElement;
 
         // Calculate the unique ID.
-        this.uniqueId = 'core-loading-content-' + CoreUtils.instance.getUniqueId('CoreLoadingComponent');
+        this.uniqueId = 'core-loading-content-' + CoreUtils.getUniqueId('CoreLoadingComponent');
     }
 
     /**
@@ -67,7 +67,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
     ngOnInit(): void {
         if (!this.message) {
             // Default loading message.
-            this.message = Translate.instance.instant('core.loading');
+            this.message = Translate.instant('core.loading');
         }
     }
 

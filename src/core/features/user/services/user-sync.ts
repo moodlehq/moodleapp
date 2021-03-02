@@ -51,7 +51,7 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
      * @param Promise resolved with warnings if sync is successful, rejected if sync fails.
      */
     async syncSitePreferences(siteId: string): Promise<string[]> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = 'preferences';
 
@@ -76,21 +76,21 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
     protected async performSyncSitePreferences(siteId: string): Promise<string[]> {
         const warnings: string[] = [];
 
-        const preferences = await CoreUserOffline.instance.getChangedPreferences(siteId);
+        const preferences = await CoreUserOffline.getChangedPreferences(siteId);
 
-        await CoreUtils.instance.allPromises(preferences.map(async (preference) => {
-            const onlineValue = await CoreUser.instance.getUserPreferenceOnline(preference.name, siteId);
+        await CoreUtils.allPromises(preferences.map(async (preference) => {
+            const onlineValue = await CoreUser.getUserPreferenceOnline(preference.name, siteId);
 
             if (onlineValue !== null && preference.onlinevalue != onlineValue) {
                 // Preference was changed on web while the app was offline, do not sync.
-                return CoreUserOffline.instance.setPreference(preference.name, onlineValue, onlineValue, siteId);
+                return CoreUserOffline.setPreference(preference.name, onlineValue, onlineValue, siteId);
             }
 
             try {
-                await CoreUser.instance.setUserPreference(preference.name, preference.value, siteId);
+                await CoreUser.setUserPreference(preference.name, preference.value, siteId);
             } catch (error) {
-                if (CoreUtils.instance.isWebServiceError(error)) {
-                    warnings.push(CoreTextUtils.instance.getErrorMessageFromError(error)!);
+                if (CoreUtils.isWebServiceError(error)) {
+                    warnings.push(CoreTextUtils.getErrorMessageFromError(error)!);
                 } else {
                     // Couldn't connect to server, reject.
                     throw error;
@@ -104,4 +104,4 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
 
 }
 
-export class CoreUserSync extends makeSingleton(CoreUserSyncProvider) {}
+export const CoreUserSync = makeSingleton(CoreUserSyncProvider, ['component', 'syncInterval']);

@@ -32,7 +32,7 @@ export class AddonModForumSortOrderSelectorComponent {
      * Close the modal.
      */
     closeModal(): void {
-        ModalController.instance.dismiss();
+        ModalController.dismiss();
     }
 
     /**
@@ -41,7 +41,7 @@ export class AddonModForumSortOrderSelectorComponent {
      * @param sortOrder Selected sort order.
      */
     selectSortOrder(sortOrder: AddonModForumSortOrder): void {
-        ModalController.instance.dismiss(sortOrder);
+        ModalController.dismiss(sortOrder);
     }
 
 }

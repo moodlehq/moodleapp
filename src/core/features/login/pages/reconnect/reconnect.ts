@@ -62,7 +62,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         protected fb: FormBuilder,
     ) {
 
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
 
         this.isLoggedOut = !!currentSite?.isLoggedOut();
         this.credForm = fb.group({
@@ -74,17 +74,17 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      * Initialize the component.
      */
     async ngOnInit(): Promise<void> {
-        const siteId = CoreNavigator.instance.getRouteParam<string>('siteId');
+        const siteId = CoreNavigator.getRouteParam<string>('siteId');
         if (!siteId) {
             return this.cancel();
         }
 
         this.siteUrl = siteId;
-        this.page = CoreNavigator.instance.getRouteParam('pageName');
-        this.pageParams = CoreNavigator.instance.getRouteParam('pageParams');
+        this.page = CoreNavigator.getRouteParam('pageName');
+        this.pageParams = CoreNavigator.getRouteParam('pageParams');
 
         try {
-            const site = await CoreSites.instance.getSite(this.siteId);
+            const site = await CoreSites.getSite(this.siteId);
 
             if (!site.infos) {
                 throw new CoreError('Invalid site');
@@ -100,9 +100,9 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.isOAuth = site.isOAuth();
 
             // Show logo instead of avatar if it's a fixed site.
-            this.showSiteAvatar = !!this.userAvatar && !CoreLoginHelper.instance.getFixedSites();
+            this.showSiteAvatar = !!this.userAvatar && !CoreLoginHelper.getFixedSites();
 
-            const config = await CoreUtils.instance.ignoreErrors(site.getPublicConfig());
+            const config = await CoreUtils.ignoreErrors(site.getPublicConfig());
 
             if (!config) {
                 return;
@@ -110,13 +110,13 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
             this.siteConfig = config;
 
-            await CoreSites.instance.checkRequiredMinimumVersion(config);
+            await CoreSites.checkRequiredMinimumVersion(config);
 
             // Check logoURL if user avatar is not set.
             if (this.userAvatar.startsWith(this.siteUrl + '/theme/image.php')) {
                 this.showSiteAvatar = false;
             }
-            this.logoUrl = CoreLoginHelper.instance.getLogoUrl(config);
+            this.logoUrl = CoreLoginHelper.getLogoUrl(config);
 
             this.getDataFromConfig(this.siteConfig);
         } catch (error) {
@@ -139,10 +139,10 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      * @param config Config to use.
      */
     protected getDataFromConfig(config: CoreSitePublicConfigResponse): void {
-        const disabledFeatures = CoreLoginHelper.instance.getDisabledFeatures(config);
+        const disabledFeatures = CoreLoginHelper.getDisabledFeatures(config);
 
-        this.identityProviders = CoreLoginHelper.instance.getValidIdentityProviders(config, disabledFeatures);
-        this.showForgottenPassword = !CoreLoginHelper.instance.isForgottenPasswordDisabled(config);
+        this.identityProviders = CoreLoginHelper.getValidIdentityProviders(config, disabledFeatures);
+        this.showForgottenPassword = !CoreLoginHelper.isForgottenPasswordDisabled(config);
 
         if (!this.eventThrown && !this.viewLeft) {
             this.eventThrown = true;
@@ -161,7 +161,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             e.stopPropagation();
         }
 
-        CoreSites.instance.logout();
+        CoreSites.logout();
     }
 
     /**
@@ -173,49 +173,49 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         e.preventDefault();
         e.stopPropagation();
 
-        CoreApp.instance.closeKeyboard();
+        CoreApp.closeKeyboard();
 
         // Get input data.
         const password = this.credForm.value.password;
 
         if (!password) {
-            CoreDomUtils.instance.showErrorModal('core.login.passwordrequired', true);
+            CoreDomUtils.showErrorModal('core.login.passwordrequired', true);
 
             return;
         }
 
-        if (!CoreApp.instance.isOnline()) {
-            CoreDomUtils.instance.showErrorModal('core.networkerrormsg', true);
+        if (!CoreApp.isOnline()) {
+            CoreDomUtils.showErrorModal('core.networkerrormsg', true);
 
             return;
         }
 
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
             // Start the authentication process.
-            const data = await CoreSites.instance.getUserToken(this.siteUrl, this.username, password);
+            const data = await CoreSites.getUserToken(this.siteUrl, this.username, password);
 
-            await CoreSites.instance.updateSiteToken(this.siteUrl, this.username, data.token, data.privateToken);
+            await CoreSites.updateSiteToken(this.siteUrl, this.username, data.token, data.privateToken);
 
-            CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, true);
+            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, true);
 
             // Update site info too.
-            await CoreSites.instance.updateSiteInfoByUrl(this.siteUrl, this.username);
+            await CoreSites.updateSiteInfoByUrl(this.siteUrl, this.username);
 
             // Reset fields so the data is not in the view anymore.
             this.credForm.controls['password'].reset();
 
             // Go to the site initial page.
             // @todo test that this is working properly (could we use navigateToSitePath instead?).
-            await CoreNavigator.instance.navigateToSiteHome({
+            await CoreNavigator.navigateToSiteHome({
                 params: {
                     redirectPath: this.page,
                     redirectParams: this.pageParams,
                 },
             });
         } catch (error) {
-            CoreLoginHelper.instance.treatUserTokenError(this.siteUrl, error, this.username, password);
+            CoreLoginHelper.treatUserTokenError(this.siteUrl, error, this.username, password);
 
             if (error.loggedout) {
                 this.cancel();
@@ -232,7 +232,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      * Forgotten password button clicked.
      */
     forgottenPassword(): void {
-        CoreLoginHelper.instance.forgottenPasswordClicked(this.siteUrl, this.username, this.siteConfig);
+        CoreLoginHelper.forgottenPasswordClicked(this.siteUrl, this.username, this.siteConfig);
     }
 
     /**
@@ -241,8 +241,8 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      * @param provider The provider that was clicked.
      */
     oauthClicked(provider: CoreSiteIdentityProvider): void {
-        if (!CoreLoginHelper.instance.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig?.launchurl)) {
-            CoreDomUtils.instance.showErrorModal('Invalid data.');
+        if (!CoreLoginHelper.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig?.launchurl)) {
+            CoreDomUtils.showErrorModal('Invalid data.');
         }
     }
 

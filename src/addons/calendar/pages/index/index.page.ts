@@ -86,7 +86,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
     ) {
-        this.currentSiteId = CoreSites.instance.getCurrentSiteId();
+        this.currentSiteId = CoreSites.getCurrentSiteId();
 
         // Listen for events added. When an event is added, reload the data.
         this.newEventObserver = CoreEvents.on<AddonCalendarUpdatedEventEvent>(
@@ -140,7 +140,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
         // Update the "hasOffline" property if an event deleted in offline is restored.
         this.undeleteEventObserver = CoreEvents.on(AddonCalendarProvider.UNDELETED_EVENT_EVENT, async () => {
-            this.hasOffline = await AddonCalendarOffline.instance.hasOfflineData();
+            this.hasOffline = await AddonCalendarOffline.hasOfflineData();
         }, this.currentSiteId);
 
         this.filterChangedObserver = CoreEvents.on<AddonCalendarFilter>(
@@ -149,15 +149,15 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
                 this.filter = filterData;
 
                 // Course viewed has changed, check if the user can create events for this course calendar.
-                this.canCreate = await AddonCalendarHelper.instance.canEditEvents(this.filter['courseId']);
+                this.canCreate = await AddonCalendarHelper.canEditEvents(this.filter['courseId']);
             },
         );
 
         // Refresh online status when changes.
-        this.onlineObserver = Network.instance.onChange().subscribe(() => {
+        this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.instance.run(() => {
-                this.isOnline = CoreApp.instance.isOnline();
+            NgZone.run(() => {
+                this.isOnline = CoreApp.isOnline();
             });
         });
     }
@@ -166,14 +166,14 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * View loaded.
      */
     ngOnInit(): void {
-        this.notificationsEnabled = CoreLocalNotifications.instance.isAvailable();
+        this.notificationsEnabled = CoreLocalNotifications.isAvailable();
 
         this.route.queryParams.subscribe(() => {
-            this.eventId = CoreNavigator.instance.getRouteNumberParam('eventId');
-            this.filter.courseId = CoreNavigator.instance.getRouteNumberParam('courseId') || -1;
-            this.year = CoreNavigator.instance.getRouteNumberParam('year');
-            this.month = CoreNavigator.instance.getRouteNumberParam('month');
-            this.loadUpcoming = !!CoreNavigator.instance.getRouteBooleanParam('upcoming');
+            this.eventId = CoreNavigator.getRouteNumberParam('eventId');
+            this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId') || -1;
+            this.year = CoreNavigator.getRouteNumberParam('year');
+            this.month = CoreNavigator.getRouteNumberParam('month');
+            this.loadUpcoming = !!CoreNavigator.getRouteBooleanParam('upcoming');
             this.showCalendar = !this.loadUpcoming;
             this.filter.filtered = this.filter.courseId > 0;
 
@@ -196,14 +196,14 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     async fetchData(sync?: boolean, showErrors?: boolean): Promise<void> {
 
         this.syncIcon = CoreConstants.ICON_LOADING;
-        this.isOnline = CoreApp.instance.isOnline();
+        this.isOnline = CoreApp.isOnline();
 
         if (sync) {
             // Try to synchronize offline events.
             try {
-                const result = await AddonCalendarSync.instance.syncEvents();
+                const result = await AddonCalendarSync.syncEvents();
                 if (result.warnings && result.warnings.length) {
-                    CoreDomUtils.instance.showErrorModal(result.warnings[0]);
+                    CoreDomUtils.showErrorModal(result.warnings[0]);
                 }
 
                 if (result.updated) {
@@ -218,7 +218,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
                 }
             } catch (error) {
                 if (showErrors) {
-                    CoreDomUtils.instance.showErrorModalDefault(error, 'core.errorsync', true);
+                    CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
                 }
             }
         }
@@ -229,21 +229,21 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             this.hasOffline = false;
 
             // Load courses for the popover.
-            promises.push(CoreCoursesHelper.instance.getCoursesForPopover(this.filter.courseId).then((data) => {
+            promises.push(CoreCoursesHelper.getCoursesForPopover(this.filter.courseId).then((data) => {
                 this.courses = data.courses;
 
                 return;
             }));
 
             // Check if user can create events.
-            promises.push(AddonCalendarHelper.instance.canEditEvents(this.filter.courseId).then((canEdit) => {
+            promises.push(AddonCalendarHelper.canEditEvents(this.filter.courseId).then((canEdit) => {
                 this.canCreate = canEdit;
 
                 return;
             }));
 
             // Check if there is offline data.
-            promises.push(AddonCalendarOffline.instance.hasOfflineData().then((hasOffline) => {
+            promises.push(AddonCalendarOffline.hasOfflineData().then((hasOffline) => {
                 this.hasOffline = hasOffline;
 
                 return;
@@ -251,7 +251,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
             await Promise.all(promises);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
         }
 
         this.loaded = true;
@@ -290,7 +290,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonCalendar.instance.invalidateAllowedEventTypes());
+        promises.push(AddonCalendar.invalidateAllowedEventTypes());
 
         // Refresh the sub-component.
         if (this.showCalendar && this.calendarComponent) {
@@ -312,7 +312,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             // It's an offline event, go to the edit page.
             this.openEdit(eventId);
         } else {
-            CoreNavigator.instance.navigateToSitePath('/calendar/event', { params: { id: eventId } });
+            CoreNavigator.navigateToSitePath('/calendar/event', { params: { id: eventId } });
         }
     }
 
@@ -332,7 +332,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             params[key] = this.filter[key];
         });
 
-        CoreNavigator.instance.navigateToSitePath('/calendar/day', { params });
+        CoreNavigator.navigateToSitePath('/calendar/day', { params });
     }
 
     /**
@@ -341,7 +341,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * @param event Event.
      */
     async openFilter(event: MouseEvent): Promise<void> {
-        const popover = await PopoverController.instance.create({
+        const popover = await PopoverController.create({
             component: AddonCalendarFilterPopoverComponent,
             componentProps: {
                 courses: this.courses,
@@ -367,14 +367,14 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             params.courseId = this.filter.courseId;
         }
 
-        CoreNavigator.instance.navigateToSitePath('/calendar/edit', { params });
+        CoreNavigator.navigateToSitePath('/calendar/edit', { params });
     }
 
     /**
      * Open calendar events settings.
      */
     openSettings(): void {
-        CoreNavigator.instance.navigateToSitePath('/calendar/settings');
+        CoreNavigator.navigateToSitePath('/calendar/settings');
     }
 
     /**

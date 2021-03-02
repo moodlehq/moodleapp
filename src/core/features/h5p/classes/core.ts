@@ -141,14 +141,14 @@ export class CoreH5PCore {
      * @return array The array containg urls of the core JavaScript files:
      */
     static getScripts(): string[] {
-        const libUrl = CoreH5P.instance.h5pCore.h5pFS.getCoreH5PPath();
+        const libUrl = CoreH5P.h5pCore.h5pFS.getCoreH5PPath();
         const urls: string[] = [];
 
         CoreH5PCore.SCRIPTS.forEach((script) => {
             urls.push(libUrl + script);
         });
 
-        urls.push(CoreTextUtils.instance.concatenatePaths(libUrl, 'moodle/js/h5p_overrides.js'));
+        urls.push(CoreTextUtils.concatenatePaths(libUrl, 'moodle/js/h5p_overrides.js'));
 
         return urls;
     }
@@ -235,7 +235,7 @@ export class CoreH5PCore {
      * @return Promise resolved with the filtered params, resolved with null if error.
      */
     async filterParameters(content: CoreH5PContentData, siteId?: string): Promise<string | null> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (content.filtered) {
             return content.filtered;
@@ -247,7 +247,7 @@ export class CoreH5PCore {
 
         const params = {
             library: CoreH5PCore.libraryToString(content.library),
-            params: CoreTextUtils.instance.parseJSON(content.params, false),
+            params: CoreTextUtils.parseJSON(content.params, false),
         };
 
         if (!params.params) {
@@ -332,7 +332,7 @@ export class CoreH5PCore {
         siteId?: string,
     ): Promise<number> {
 
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const types = ['dynamic', 'preloaded', 'editor'];
 
@@ -456,7 +456,7 @@ export class CoreH5PCore {
 
             // Add URL prefix if not external.
             if (asset.path.indexOf('://') == -1 && assetsFolderPath) {
-                url = CoreTextUtils.instance.concatenatePaths(assetsFolderPath, url);
+                url = CoreTextUtils.concatenatePaths(assetsFolderPath, url);
             }
 
             // Add version if set.
@@ -485,7 +485,7 @@ export class CoreH5PCore {
         prefix: string = '',
         siteId?: string,
     ): Promise<CoreH5PDependenciesFiles> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Build files list for assets.
         const files: CoreH5PDependenciesFiles = {
@@ -547,7 +547,7 @@ export class CoreH5PCore {
      * @return Promise resolved with an object containing the path of each content dependency.
      */
     async getDependencyRoots(id: number, siteId?: string): Promise<{[libString: string]: string}> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const roots = {};
 
@@ -584,7 +584,7 @@ export class CoreH5PCore {
         }
 
         // Check if we should skip CSS.
-        if (type === 'preloadedCss' && CoreUtils.instance.isTrueOrOne(dependency.dropCss)) {
+        if (type === 'preloadedCss' && CoreUtils.isTrueOrOne(dependency.dropCss)) {
             return;
         }
 
@@ -636,73 +636,73 @@ export class CoreH5PCore {
      */
     getLocalization(): {[name: string]: string} {
         return {
-            fullscreen: Translate.instance.instant('core.h5p.fullscreen'),
-            disableFullscreen: Translate.instance.instant('core.h5p.disablefullscreen'),
-            download: Translate.instance.instant('core.h5p.download'),
-            copyrights: Translate.instance.instant('core.h5p.copyright'),
-            embed: Translate.instance.instant('core.h5p.embed'),
-            size: Translate.instance.instant('core.h5p.size'),
-            showAdvanced: Translate.instance.instant('core.h5p.showadvanced'),
-            hideAdvanced: Translate.instance.instant('core.h5p.hideadvanced'),
-            advancedHelp: Translate.instance.instant('core.h5p.resizescript'),
-            copyrightInformation: Translate.instance.instant('core.h5p.copyright'),
-            close: Translate.instance.instant('core.h5p.close'),
-            title: Translate.instance.instant('core.h5p.title'),
-            author: Translate.instance.instant('core.h5p.author'),
-            year: Translate.instance.instant('core.h5p.year'),
-            source: Translate.instance.instant('core.h5p.source'),
-            license: Translate.instance.instant('core.h5p.license'),
-            thumbnail: Translate.instance.instant('core.h5p.thumbnail'),
-            noCopyrights: Translate.instance.instant('core.h5p.nocopyright'),
-            reuse: Translate.instance.instant('core.h5p.reuse'),
-            reuseContent: Translate.instance.instant('core.h5p.reuseContent'),
-            reuseDescription: Translate.instance.instant('core.h5p.reuseDescription'),
-            downloadDescription: Translate.instance.instant('core.h5p.downloadtitle'),
-            copyrightsDescription: Translate.instance.instant('core.h5p.copyrighttitle'),
-            embedDescription: Translate.instance.instant('core.h5p.embedtitle'),
-            h5pDescription: Translate.instance.instant('core.h5p.h5ptitle'),
-            contentChanged: Translate.instance.instant('core.h5p.contentchanged'),
-            startingOver: Translate.instance.instant('core.h5p.startingover'),
-            by: Translate.instance.instant('core.h5p.by'),
-            showMore: Translate.instance.instant('core.h5p.showmore'),
-            showLess: Translate.instance.instant('core.h5p.showless'),
-            subLevel: Translate.instance.instant('core.h5p.sublevel'),
-            confirmDialogHeader: Translate.instance.instant('core.h5p.confirmdialogheader'),
-            confirmDialogBody: Translate.instance.instant('core.h5p.confirmdialogbody'),
-            cancelLabel: Translate.instance.instant('core.h5p.cancellabel'),
-            confirmLabel: Translate.instance.instant('core.h5p.confirmlabel'),
-            licenseU: Translate.instance.instant('core.h5p.undisclosed'),
-            licenseCCBY: Translate.instance.instant('core.h5p.ccattribution'),
-            licenseCCBYSA: Translate.instance.instant('core.h5p.ccattributionsa'),
-            licenseCCBYND: Translate.instance.instant('core.h5p.ccattributionnd'),
-            licenseCCBYNC: Translate.instance.instant('core.h5p.ccattributionnc'),
-            licenseCCBYNCSA: Translate.instance.instant('core.h5p.ccattributionncsa'),
-            licenseCCBYNCND: Translate.instance.instant('core.h5p.ccattributionncnd'),
-            licenseCC40: Translate.instance.instant('core.h5p.licenseCC40'),
-            licenseCC30: Translate.instance.instant('core.h5p.licenseCC30'),
-            licenseCC25: Translate.instance.instant('core.h5p.licenseCC25'),
-            licenseCC20: Translate.instance.instant('core.h5p.licenseCC20'),
-            licenseCC10: Translate.instance.instant('core.h5p.licenseCC10'),
-            licenseGPL: Translate.instance.instant('core.h5p.licenseGPL'),
-            licenseV3: Translate.instance.instant('core.h5p.licenseV3'),
-            licenseV2: Translate.instance.instant('core.h5p.licenseV2'),
-            licenseV1: Translate.instance.instant('core.h5p.licenseV1'),
-            licensePD: Translate.instance.instant('core.h5p.pd'),
-            licenseCC010: Translate.instance.instant('core.h5p.licenseCC010'),
-            licensePDM: Translate.instance.instant('core.h5p.pdm'),
-            licenseC: Translate.instance.instant('core.h5p.copyrightstring'),
-            contentType: Translate.instance.instant('core.h5p.contenttype'),
-            licenseExtras: Translate.instance.instant('core.h5p.licenseextras'),
-            changes: Translate.instance.instant('core.h5p.changelog'),
-            contentCopied: Translate.instance.instant('core.h5p.contentCopied'),
-            connectionLost: Translate.instance.instant('core.h5p.connectionLost'),
-            connectionReestablished: Translate.instance.instant('core.h5p.connectionReestablished'),
-            resubmitScores: Translate.instance.instant('core.h5p.resubmitScores'),
-            offlineDialogHeader: Translate.instance.instant('core.h5p.offlineDialogHeader'),
-            offlineDialogBody: Translate.instance.instant('core.h5p.offlineDialogBody'),
-            offlineDialogRetryMessage: Translate.instance.instant('core.h5p.offlineDialogRetryMessage'),
-            offlineDialogRetryButtonLabel: Translate.instance.instant('core.h5p.offlineDialogRetryButtonLabel'),
-            offlineSuccessfulSubmit: Translate.instance.instant('core.h5p.offlineSuccessfulSubmit'),
+            fullscreen: Translate.instant('core.h5p.fullscreen'),
+            disableFullscreen: Translate.instant('core.h5p.disablefullscreen'),
+            download: Translate.instant('core.h5p.download'),
+            copyrights: Translate.instant('core.h5p.copyright'),
+            embed: Translate.instant('core.h5p.embed'),
+            size: Translate.instant('core.h5p.size'),
+            showAdvanced: Translate.instant('core.h5p.showadvanced'),
+            hideAdvanced: Translate.instant('core.h5p.hideadvanced'),
+            advancedHelp: Translate.instant('core.h5p.resizescript'),
+            copyrightInformation: Translate.instant('core.h5p.copyright'),
+            close: Translate.instant('core.h5p.close'),
+            title: Translate.instant('core.h5p.title'),
+            author: Translate.instant('core.h5p.author'),
+            year: Translate.instant('core.h5p.year'),
+            source: Translate.instant('core.h5p.source'),
+            license: Translate.instant('core.h5p.license'),
+            thumbnail: Translate.instant('core.h5p.thumbnail'),
+            noCopyrights: Translate.instant('core.h5p.nocopyright'),
+            reuse: Translate.instant('core.h5p.reuse'),
+            reuseContent: Translate.instant('core.h5p.reuseContent'),
+            reuseDescription: Translate.instant('core.h5p.reuseDescription'),
+            downloadDescription: Translate.instant('core.h5p.downloadtitle'),
+            copyrightsDescription: Translate.instant('core.h5p.copyrighttitle'),
+            embedDescription: Translate.instant('core.h5p.embedtitle'),
+            h5pDescription: Translate.instant('core.h5p.h5ptitle'),
+            contentChanged: Translate.instant('core.h5p.contentchanged'),
+            startingOver: Translate.instant('core.h5p.startingover'),
+            by: Translate.instant('core.h5p.by'),
+            showMore: Translate.instant('core.h5p.showmore'),
+            showLess: Translate.instant('core.h5p.showless'),
+            subLevel: Translate.instant('core.h5p.sublevel'),
+            confirmDialogHeader: Translate.instant('core.h5p.confirmdialogheader'),
+            confirmDialogBody: Translate.instant('core.h5p.confirmdialogbody'),
+            cancelLabel: Translate.instant('core.h5p.cancellabel'),
+            confirmLabel: Translate.instant('core.h5p.confirmlabel'),
+            licenseU: Translate.instant('core.h5p.undisclosed'),
+            licenseCCBY: Translate.instant('core.h5p.ccattribution'),
+            licenseCCBYSA: Translate.instant('core.h5p.ccattributionsa'),
+            licenseCCBYND: Translate.instant('core.h5p.ccattributionnd'),
+            licenseCCBYNC: Translate.instant('core.h5p.ccattributionnc'),
+            licenseCCBYNCSA: Translate.instant('core.h5p.ccattributionncsa'),
+            licenseCCBYNCND: Translate.instant('core.h5p.ccattributionncnd'),
+            licenseCC40: Translate.instant('core.h5p.licenseCC40'),
+            licenseCC30: Translate.instant('core.h5p.licenseCC30'),
+            licenseCC25: Translate.instant('core.h5p.licenseCC25'),
+            licenseCC20: Translate.instant('core.h5p.licenseCC20'),
+            licenseCC10: Translate.instant('core.h5p.licenseCC10'),
+            licenseGPL: Translate.instant('core.h5p.licenseGPL'),
+            licenseV3: Translate.instant('core.h5p.licenseV3'),
+            licenseV2: Translate.instant('core.h5p.licenseV2'),
+            licenseV1: Translate.instant('core.h5p.licenseV1'),
+            licensePD: Translate.instant('core.h5p.pd'),
+            licenseCC010: Translate.instant('core.h5p.licenseCC010'),
+            licensePDM: Translate.instant('core.h5p.pdm'),
+            licenseC: Translate.instant('core.h5p.copyrightstring'),
+            contentType: Translate.instant('core.h5p.contenttype'),
+            licenseExtras: Translate.instant('core.h5p.licenseextras'),
+            changes: Translate.instant('core.h5p.changelog'),
+            contentCopied: Translate.instant('core.h5p.contentCopied'),
+            connectionLost: Translate.instant('core.h5p.connectionLost'),
+            connectionReestablished: Translate.instant('core.h5p.connectionReestablished'),
+            resubmitScores: Translate.instant('core.h5p.resubmitScores'),
+            offlineDialogHeader: Translate.instant('core.h5p.offlineDialogHeader'),
+            offlineDialogBody: Translate.instant('core.h5p.offlineDialogBody'),
+            offlineDialogRetryMessage: Translate.instant('core.h5p.offlineDialogRetryMessage'),
+            offlineDialogRetryButtonLabel: Translate.instant('core.h5p.offlineDialogRetryButtonLabel'),
+            offlineSuccessfulSubmit: Translate.instant('core.h5p.offlineSuccessfulSubmit'),
         };
     }
 
@@ -715,7 +715,7 @@ export class CoreH5PCore {
      * @return Promise resolved with the content data.
      */
     async loadContent(id?: number, fileUrl?: string, siteId?: string): Promise<CoreH5PContentData> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const content = await this.h5pFramework.loadContent(id, fileUrl, siteId);
 

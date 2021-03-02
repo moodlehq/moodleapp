@@ -44,4 +44,4 @@ export class AddonBlockBlogMenuHandlerService extends CoreBlockBaseHandler {
 
 }
 
-export class AddonBlockBlogMenuHandler extends makeSingleton(AddonBlockBlogMenuHandlerService) {}
+export const AddonBlockBlogMenuHandler = makeSingleton(AddonBlockBlogMenuHandlerService);

@@ -33,7 +33,7 @@ import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate
             multi: true,
             deps: [],
             useFactory: () => () => {
-                AddonModAssignFeedbackDelegate.instance.registerHandler(AddonModAssignFeedbackCommentsHandler.instance);
+                AddonModAssignFeedbackDelegate.registerHandler(AddonModAssignFeedbackCommentsHandler.instance);
             },
         },
     ],

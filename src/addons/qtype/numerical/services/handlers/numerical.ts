@@ -29,4 +29,4 @@ export class AddonQtypeNumericalHandlerService extends AddonQtypeCalculatedHandl
 
 }
 
-export class AddonQtypeNumericalHandler extends makeSingleton(AddonQtypeNumericalHandlerService) {}
+export const AddonQtypeNumericalHandler = makeSingleton(AddonQtypeNumericalHandlerService);

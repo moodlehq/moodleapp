@@ -38,12 +38,12 @@ export class CoreConfigProvider {
      */
     async initializeDatabase(): Promise<void> {
         try {
-            await CoreApp.instance.createTablesFromSchema(APP_SCHEMA);
+            await CoreApp.createTablesFromSchema(APP_SCHEMA);
         } catch (e) {
             // Ignore errors.
         }
 
-        this.resolveAppDB(CoreApp.instance.getDB());
+        this.resolveAppDB(CoreApp.getDB());
     }
 
     /**
@@ -96,4 +96,4 @@ export class CoreConfigProvider {
 
 }
 
-export class CoreConfig extends makeSingleton(CoreConfigProvider) {}
+export const CoreConfig = makeSingleton(CoreConfigProvider);

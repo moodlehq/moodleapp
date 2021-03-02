@@ -98,12 +98,12 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.direction = Platform.instance.isRTL ? 'rtl' : 'ltr';
+        this.direction = Platform.isRTL ? 'rtl' : 'ltr';
 
         // Change the side when the language changes.
-        this.languageChangedSubscription = Translate.instance.onLangChange.subscribe(() => {
+        this.languageChangedSubscription = Translate.onLangChange.subscribe(() => {
             setTimeout(() => {
-                this.direction = Platform.instance.isRTL ? 'rtl' : 'ltr';
+                this.direction = Platform.isRTL ? 'rtl' : 'ltr';
             });
         });
     }
@@ -179,7 +179,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      * Register back button action.
      */
     protected registerBackButtonAction(): void {
-        this.unregisterBackButtonAction = CoreApp.instance.registerBackButtonAction(() => {
+        this.unregisterBackButtonAction = CoreApp.registerBackButtonAction(() => {
             // The previous page in history is not the last one, we need the previous one.
             if (this.selectHistory.length > 1) {
                 const tabIndex = this.selectHistory[this.selectHistory.length - 2];
@@ -373,7 +373,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             return;
         }
 
-        const fontSize = await CoreConfig.instance.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConstants.CONFIG.font_sizes[0]);
+        const fontSize = await CoreConfig.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConstants.CONFIG.font_sizes[0]);
 
         this.maxSlides = Math.floor(width / (fontSize / CoreConstants.CONFIG.font_sizes[0] * CoreTabsBaseComponent.MIN_TAB_WIDTH));
     }

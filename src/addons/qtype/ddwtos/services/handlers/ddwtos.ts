@@ -126,9 +126,9 @@ export class AddonQtypeDdwtosHandlerService implements CoreQuestionHandler {
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreQuestion.instance.compareAllAnswers(prevAnswers, newAnswers);
+        return CoreQuestion.compareAllAnswers(prevAnswers, newAnswers);
     }
 
 }
 
-export class AddonQtypeDdwtosHandler extends makeSingleton(AddonQtypeDdwtosHandlerService) {}
+export const AddonQtypeDdwtosHandler = makeSingleton(AddonQtypeDdwtosHandlerService);

@@ -78,7 +78,7 @@ export class AddonMessagesProvider {
      * @deprecatedonmoodle since Moodle 3.6
      */
     protected async addContact(userId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params = {
             userids: [userId],
@@ -97,7 +97,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved when done.
      */
     async blockContact(userId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         try {
             if (site.wsAvailable('core_message_block_user')) {
@@ -131,7 +131,7 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     async confirmContactRequest(userId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesConfirmContactRequestWSParams = {
             userid: userId,
@@ -140,7 +140,7 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_confirm_contact_request', params);
 
-        await CoreUtils.instance.allPromises([
+        await CoreUtils.allPromises([
             this.invalidateAllMemberInfo(userId, site),
             this.invalidateContactsCache(site.id),
             this.invalidateUserContacts(site.id),
@@ -160,7 +160,7 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     async createContactRequest(userId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // Use legacy function if not available.
         if (!site.wsAvailable('core_message_create_contact_request')) {
@@ -189,7 +189,7 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     async declineContactRequest(userId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesDeclineContactRequestWSParams = {
             userid: userId,
@@ -198,7 +198,7 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_decline_contact_request', params);
 
-        await CoreUtils.instance.allPromises([
+        await CoreUtils.allPromises([
             this.invalidateAllMemberInfo(userId, site),
             this.refreshContactRequestsCount(site.id),
         ]).finally(() => {
@@ -228,7 +228,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved when the conversations have been deleted.
      */
     async deleteConversations(conversationIds: number[], siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -241,7 +241,7 @@ export class AddonMessagesProvider {
 
         await Promise.all(conversationIds.map(async (conversationId) => {
             try {
-                return AddonMessagesOffline.instance.deleteConversationMessages(conversationId, site.getId());
+                return AddonMessagesOffline.deleteConversationMessages(conversationId, site.getId());
             } catch {
                 // Ignore errors.
             }
@@ -267,10 +267,10 @@ export class AddonMessagesProvider {
 
         // It's an offline message.
         if (!('conversationid' in message)) {
-            return AddonMessagesOffline.instance.deleteMessage(message.touserid, message.smallmessage, message.timecreated);
+            return AddonMessagesOffline.deleteMessage(message.touserid, message.smallmessage, message.timecreated);
         }
 
-        return AddonMessagesOffline.instance.deleteConversationMessage(message.conversationid, message.text, message.timecreated);
+        return AddonMessagesOffline.deleteConversationMessage(message.conversationid, message.text, message.timecreated);
     }
 
     /**
@@ -282,7 +282,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved when the message has been deleted.
      */
     async deleteMessageOnline(id: number, read: boolean, userId?: number): Promise<void> {
-        userId = userId || CoreSites.instance.getCurrentSiteUserId();
+        userId = userId || CoreSites.getCurrentSiteUserId();
 
         const params: AddonMessagesDeleteMessageWSParams = {
             messageid: id,
@@ -293,7 +293,7 @@ export class AddonMessagesProvider {
             params.read = read;
         }
 
-        await CoreSites.instance.getCurrentSite()?.write('core_message_delete_message', params);
+        await CoreSites.getCurrentSite()?.write('core_message_delete_message', params);
 
         await this.invalidateDiscussionCache(userId);
     }
@@ -306,14 +306,14 @@ export class AddonMessagesProvider {
      * @return Promise resolved when the message has been deleted.
      */
     async deleteMessageForAllOnline(id: number, userId?: number): Promise<void> {
-        userId = userId || CoreSites.instance.getCurrentSiteUserId();
+        userId = userId || CoreSites.getCurrentSiteUserId();
 
         const params: AddonMessagesDeleteMessageForAllUsersWSParams = {
             messageid: id,
             userid: userId,
         };
 
-        await CoreSites.instance.getCurrentSite()?.write('core_message_delete_message_for_all_users', params);
+        await CoreSites.getCurrentSite()?.write('core_message_delete_message_for_all_users', params);
 
         await this.invalidateDiscussionCache(userId);
     }
@@ -556,7 +556,7 @@ export class AddonMessagesProvider {
      * @deprecatedonmoodle since Moodle 3.6
      */
     async getAllContacts(siteId?: string): Promise<AddonMessagesGetContactsWSResponse> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const contacts = await this.getContacts(siteId);
 
@@ -582,7 +582,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved with the WS data.
      */
     async getBlockedContacts(siteId?: string): Promise<AddonMessagesGetBlockedUsersWSResponse> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const userId = site.getUserId();
 
@@ -608,7 +608,7 @@ export class AddonMessagesProvider {
      * @deprecatedonmoodle since Moodle 3.6
      */
     async getContacts(siteId?: string): Promise<AddonMessagesGetContactsWSResponse> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForContacts(),
@@ -653,7 +653,7 @@ export class AddonMessagesProvider {
         limitNum: number = AddonMessagesProvider.LIMIT_CONTACTS,
         siteId?: string,
     ): Promise<{contacts: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesGetUserContactsWSParams = {
             userid: site.getUserId(),
@@ -672,7 +672,7 @@ export class AddonMessagesProvider {
             return { contacts: [], canLoadMore: false };
         }
 
-        CoreUser.instance.storeUsers(contacts, site.id);
+        CoreUser.storeUsers(contacts, site.id);
         if (limitNum <= 0) {
             return { contacts, canLoadMore: false };
         }
@@ -697,7 +697,7 @@ export class AddonMessagesProvider {
         limitNum: number = AddonMessagesProvider.LIMIT_CONTACTS,
         siteId?: string,
     ): Promise<{requests: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesGetContactRequestsWSParams = {
             userid: site.getUserId(),
@@ -720,7 +720,7 @@ export class AddonMessagesProvider {
             return { requests: [], canLoadMore: false };
         }
 
-        CoreUser.instance.storeUsers(requests, site.id);
+        CoreUser.storeUsers(requests, site.id);
         if (limitNum <= 0) {
             return { requests, canLoadMore: false };
         }
@@ -739,7 +739,7 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     async getContactRequestsCount(siteId?: string): Promise<number> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesGetReceivedContactRequestsCountWSParams = {
             userid: site.getUserId(),
@@ -791,7 +791,7 @@ export class AddonMessagesProvider {
         siteId?: string,
         userId?: number,
     ): Promise<AddonMessagesConversationFormatted> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
         const preSets: CoreSiteWSPreSets = {
@@ -851,7 +851,7 @@ export class AddonMessagesProvider {
         userId?: number,
         preferCache?: boolean,
     ): Promise<AddonMessagesConversationFormatted> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
         const preSets: CoreSiteWSPreSets = {
@@ -895,7 +895,7 @@ export class AddonMessagesProvider {
         siteId?: string,
         userId?: number,
     ): Promise<{members: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
         limitTo = limitTo ?? AddonMessagesProvider.LIMIT_MESSAGES;
 
@@ -941,7 +941,7 @@ export class AddonMessagesProvider {
         options: AddonMessagesGetConversationMessagesOptions = {},
     ): Promise<AddonMessagesGetConversationMessagesResult> {
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         options.userId = options.userId || site.getUserId();
         options.limitFrom = options.limitFrom || 0;
@@ -996,7 +996,7 @@ export class AddonMessagesProvider {
 
         // Get offline messages.
         const offlineMessages =
-            await AddonMessagesOffline.instance.getConversationMessages(conversationId, options.userId, site.getId());
+            await AddonMessagesOffline.getConversationMessages(conversationId, options.userId, site.getId());
 
         result.messages = result.messages.concat(offlineMessages);
 
@@ -1028,7 +1028,7 @@ export class AddonMessagesProvider {
         ignoreCache?: boolean,
     ): Promise<{conversations: AddonMessagesConversationFormatted[]; canLoadMore: boolean}> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
         const preSets: CoreSiteWSPreSets = {
@@ -1092,7 +1092,7 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     async getConversationCounts(siteId?: string): Promise<{favourites: number; individual: number; group: number; self: number}> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForConversationCounts(),
@@ -1138,7 +1138,7 @@ export class AddonMessagesProvider {
         siteId?: string,
     ): Promise<AddonMessagesGetDiscussionMessages> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const result: AddonMessagesGetDiscussionMessages = {
             messages: [],
@@ -1189,7 +1189,7 @@ export class AddonMessagesProvider {
         }
 
         // Get offline messages.
-        const offlineMessages = await AddonMessagesOffline.instance.getMessages(userId, site.getId());
+        const offlineMessages = await AddonMessagesOffline.getMessages(userId, site.getId());
 
         result.messages = result.messages.concat(offlineMessages);
 
@@ -1245,7 +1245,7 @@ export class AddonMessagesProvider {
             }
         };
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const currentUserId = site.getUserId();
         const params: AddonMessagesGetMessagesWSParams = {
@@ -1274,7 +1274,7 @@ export class AddonMessagesProvider {
             treatRecentMessage(message, message.useridto, message.usertofullname);
         });
 
-        const offlineMessages = await AddonMessagesOffline.instance.getAllMessages(site.getId());
+        const offlineMessages = await AddonMessagesOffline.getAllMessages(site.getId());
 
         offlineMessages.forEach((message) => {
             treatRecentMessage(message, 'touserid' in message ? message.touserid : 0, '');
@@ -1302,7 +1302,7 @@ export class AddonMessagesProvider {
         for (const userId in discussions) {
             if (!discussions[userId].profileimageurl && discussions[userId].message) {
                 // We don't have the user image. Try to retrieve it.
-                promises.push(CoreUser.instance.getProfile(discussions[userId].message!.user, 0, true, siteId).then((user) => {
+                promises.push(CoreUser.getProfile(discussions[userId].message!.user, 0, true, siteId).then((user) => {
                     discussions[userId].profileimageurl = user.profileimageurl;
 
                     return;
@@ -1327,7 +1327,7 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     async getMemberInfo(otherUserId: number, siteId?: string, userId?: number): Promise<AddonMessagesConversationMember> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -1368,7 +1368,7 @@ export class AddonMessagesProvider {
     async getMessagePreferences(siteId?: string): Promise<AddonMessagesMessagePreferences> {
         this.logger.debug('Get message preferences');
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getMessagePreferencesCacheKey(),
@@ -1431,7 +1431,7 @@ export class AddonMessagesProvider {
         params.type = 'conversations';
         params.newestfirst = true;
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const response: AddonMessagesGetMessagesResult = await site.read('core_message_get_messages', params, preSets);
 
         response.messages.forEach((message) => {
@@ -1516,7 +1516,7 @@ export class AddonMessagesProvider {
         siteId?: string,
         userId?: number,
     ): Promise<AddonMessagesConversationFormatted> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
         const preSets: CoreSiteWSPreSets = {
@@ -1543,7 +1543,7 @@ export class AddonMessagesProvider {
     async getUnreadConversationCounts(
         siteId?: string,
     ): Promise<{favourites: number; individual: number; group: number; self: number; orMore?: boolean}> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         let counts: AddonMessagesUnreadConversationCountsEventData;
 
@@ -1625,7 +1625,7 @@ export class AddonMessagesProvider {
         ignoreCache: boolean = false,
         siteId?: string,
     ): Promise<AddonMessagesGetMessagesResult> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesGetMessagesWSParams = {
             read: false,
@@ -1653,7 +1653,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateAllContactsCache(siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         await this.invalidateContactsCache(siteId);
 
@@ -1667,7 +1667,7 @@ export class AddonMessagesProvider {
      * @param siteId Site ID. If not defined, current site.
      */
     async invalidateBlockedContactsCache(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const userId = site.getUserId();
 
@@ -1681,7 +1681,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateContactsCache(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getCacheKeyForContacts());
     }
@@ -1693,7 +1693,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateUserContacts(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getCacheKeyForUserContacts());
     }
@@ -1705,7 +1705,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateContactRequestsCache(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.invalidateWsCacheForKey(this.getCacheKeyForContactRequests());
     }
@@ -1717,7 +1717,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateContactRequestsCountCache(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getCacheKeyForContactRequestsCount());
     }
@@ -1731,7 +1731,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateConversation(conversationId: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
         await site.invalidateWsCacheForKey(this.getCacheKeyForConversation(userId, conversationId));
@@ -1746,7 +1746,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateConversationBetweenUsers(otherUserId: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
 
@@ -1762,7 +1762,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateConversationMembers(conversationId: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -1778,7 +1778,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateConversationMessages(conversationId: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -1793,7 +1793,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateConversations(siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -1807,7 +1807,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateConversationCounts(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getCacheKeyForConversationCounts());
     }
@@ -1820,7 +1820,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateDiscussionCache(userId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getCacheKeyForDiscussion(userId));
     }
@@ -1834,7 +1834,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateDiscussionsCache(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const promises: Promise<void>[] = [];
         promises.push(site.invalidateWsCacheForKey(this.getCacheKeyForDiscussions()));
@@ -1852,7 +1852,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateMemberInfo(otherUserId: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -1866,7 +1866,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved when data is invalidated.
      */
     async invalidateMessagePreferences(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getMessagePreferencesCacheKey());
     }
@@ -1879,7 +1879,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved when done.
      */
     protected async invalidateAllMemberInfo(userId: number, site: CoreSite): Promise<void> {
-        await CoreUtils.instance.allPromises([
+        await CoreUtils.allPromises([
             this.invalidateMemberInfo(userId, site.id),
             this.invalidateUserContacts(site.id),
             this.invalidateBlockedContactsCache(site.id),
@@ -1897,7 +1897,7 @@ export class AddonMessagesProvider {
                 site.id,
                 undefined,
                 true,
-            ).then((conversation) => CoreUtils.instance.allPromises([
+            ).then((conversation) => CoreUtils.allPromises([
                 this.invalidateConversation(conversation.id),
                 this.invalidateConversationMembers(conversation.id, site.id),
             ])).catch(() => {
@@ -1914,7 +1914,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateSelfConversation(siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -1928,7 +1928,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async invalidateUnreadConversationCounts(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         if (this.isGroupMessagingEnabled()) {
             // @since 3.6
             return site.invalidateWsCacheForKey(this.getCacheKeyForUnreadConversationCounts());
@@ -1993,7 +1993,7 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     isGroupMessagingEnabled(): boolean {
-        return CoreSites.instance.wsAvailableInCurrentSite('core_message_get_conversations');
+        return CoreSites.wsAvailableInCurrentSite('core_message_get_conversations');
     }
 
     /**
@@ -2005,7 +2005,7 @@ export class AddonMessagesProvider {
      */
     async isGroupMessagingEnabledInSite(siteId?: string): Promise<boolean> {
         try {
-            const site = await CoreSites.instance.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
 
             return site.wsAvailable('core_message_get_conversations');
         } catch {
@@ -2020,8 +2020,8 @@ export class AddonMessagesProvider {
      * @since  3.2
      */
     isMarkAllMessagesReadEnabled(): boolean {
-        return CoreSites.instance.wsAvailableInCurrentSite('core_message_mark_all_conversation_messages_as_read') ||
-                CoreSites.instance.wsAvailableInCurrentSite('core_message_mark_all_messages_as_read');
+        return CoreSites.wsAvailableInCurrentSite('core_message_mark_all_conversation_messages_as_read') ||
+                CoreSites.wsAvailableInCurrentSite('core_message_mark_all_messages_as_read');
     }
 
     /**
@@ -2031,7 +2031,7 @@ export class AddonMessagesProvider {
      * @since  3.2
      */
     isMessageCountEnabled(): boolean {
-        return CoreSites.instance.wsAvailableInCurrentSite('core_message_get_unread_conversations_count');
+        return CoreSites.wsAvailableInCurrentSite('core_message_get_unread_conversations_count');
     }
 
     /**
@@ -2041,7 +2041,7 @@ export class AddonMessagesProvider {
      * @since  3.2
      */
     isMessagePreferencesEnabled(): boolean {
-        return CoreSites.instance.wsAvailableInCurrentSite('core_message_get_user_message_preferences');
+        return CoreSites.wsAvailableInCurrentSite('core_message_get_user_message_preferences');
     }
 
     /**
@@ -2068,7 +2068,7 @@ export class AddonMessagesProvider {
      * @since 3.7
      */
     isMuteConversationEnabled(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site?.wsAvailable('core_message_mute_conversations');
     }
@@ -2082,7 +2082,7 @@ export class AddonMessagesProvider {
      */
     async isMuteConversationEnabledInSite(siteId?: string): Promise<boolean> {
         try {
-            const site = await CoreSites.instance.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
 
             return this.isMuteConversationEnabled(site);
         } catch {
@@ -2097,7 +2097,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved with true if enabled, rejected or resolved with false otherwise.
      */
     async isPluginEnabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.canUseAdvancedFeature('messaging');
     }
@@ -2108,7 +2108,7 @@ export class AddonMessagesProvider {
      * @since  3.2
      */
     isSearchMessagesEnabled(): boolean {
-        return CoreSites.instance.wsAvailableInCurrentSite('core_message_data_for_messagearea_search_messages');
+        return CoreSites.wsAvailableInCurrentSite('core_message_data_for_messagearea_search_messages');
     }
 
     /**
@@ -2119,7 +2119,7 @@ export class AddonMessagesProvider {
      * @since 3.7
      */
     isSelfConversationEnabled(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site?.wsAvailable('core_message_get_self_conversation');
     }
@@ -2133,7 +2133,7 @@ export class AddonMessagesProvider {
      */
     async isSelfConversationEnabledInSite(siteId?: string): Promise<boolean> {
         try {
-            const site = await CoreSites.instance.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
 
             return this.isSelfConversationEnabled(site);
         } catch {
@@ -2149,11 +2149,11 @@ export class AddonMessagesProvider {
      * @return Promise resolved with boolean marking success or not.
      */
     async markMessageRead(messageId: number, siteId?: string): Promise<AddonMessagesMarkMessageReadResult> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesMarkMessageReadWSParams = {
             messageid: messageId,
-            timeread: CoreTimeUtils.instance.timestamp(),
+            timeread: CoreTimeUtils.timestamp(),
         };
 
         return site.write('core_message_mark_message_read', params);
@@ -2168,7 +2168,7 @@ export class AddonMessagesProvider {
      */
     async markAllConversationMessagesRead(conversationId: number): Promise<void> {
         const params: AddonMessagesMarkAllConversationMessagesAsReadWSParams = {
-            userid: CoreSites.instance.getCurrentSiteUserId(),
+            userid: CoreSites.getCurrentSiteUserId(),
             conversationid: conversationId,
         };
 
@@ -2176,7 +2176,7 @@ export class AddonMessagesProvider {
             responseExpected: false,
         };
 
-        await CoreSites.instance.getCurrentSite()?.write('core_message_mark_all_conversation_messages_as_read', params, preSets);
+        await CoreSites.getCurrentSite()?.write('core_message_mark_all_conversation_messages_as_read', params, preSets);
     }
 
     /**
@@ -2188,7 +2188,7 @@ export class AddonMessagesProvider {
      */
     async markAllMessagesRead(userIdFrom?: number): Promise<boolean> {
         const params: AddonMessagesMarkAllMessagesAsReadWSParams = {
-            useridto: CoreSites.instance.getCurrentSiteUserId(),
+            useridto: CoreSites.getCurrentSiteUserId(),
             useridfrom: userIdFrom,
         };
 
@@ -2196,7 +2196,7 @@ export class AddonMessagesProvider {
             typeExpected: 'boolean',
         };
 
-        const site = CoreSites.instance.getCurrentSite();
+        const site = CoreSites.getCurrentSite();
 
         if (!site) {
             return false;
@@ -2228,7 +2228,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async muteConversations(conversations: number[], set: boolean, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
         const params: AddonMessagesMuteConversationsWSParams = {
@@ -2257,7 +2257,7 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     async refreshContactRequestsCount(siteId?: string): Promise<number> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         await this.invalidateContactRequestsCountCache(siteId);
 
@@ -2273,7 +2273,7 @@ export class AddonMessagesProvider {
     async refreshUnreadConversationCounts(
         siteId?: string,
     ): Promise<{favourites: number; individual: number; group: number; orMore?: boolean}> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         await this.invalidateUnreadConversationCounts(siteId);
 
@@ -2288,7 +2288,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async removeContact(userId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesDeleteContactsWSParams = {
             userids: [userId],
@@ -2300,7 +2300,7 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_delete_contacts', params, preSets);
 
-        return CoreUtils.instance.allPromises([
+        return CoreUtils.allPromises([
             this.invalidateUserContacts(site.id),
             this.invalidateAllMemberInfo(userId, site),
             this.invalidateContactsCache(site.id),
@@ -2325,7 +2325,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved with the contacts.
      */
     async searchContacts(query: string, limit: number = 100, siteId?: string): Promise<AddonMessagesSearchContactsContact[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesSearchContactsWSParams = {
             searchtext: query,
@@ -2342,7 +2342,7 @@ export class AddonMessagesProvider {
             contacts = contacts.splice(0, limit);
         }
 
-        CoreUser.instance.storeUsers(contacts);
+        CoreUser.storeUsers(contacts);
 
         return contacts;
     }
@@ -2364,7 +2364,7 @@ export class AddonMessagesProvider {
         limitNum: number = AddonMessagesProvider.LIMIT_SEARCH,
         siteId?: string,
     ): Promise<{messages: AddonMessagesMessageAreaContact[]; canLoadMore: boolean}> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesDataForMessageareaSearchMessagesWSParams = {
             userid: userId || site.getUserId(),
@@ -2389,7 +2389,7 @@ export class AddonMessagesProvider {
             profileimageurl: contact.profileimageurl,
         }));
 
-        CoreUser.instance.storeUsers(users, site.id);
+        CoreUser.storeUsers(users, site.id);
 
         if (limitNum <= 0) {
             return { messages: result.contacts, canLoadMore: false };
@@ -2422,7 +2422,7 @@ export class AddonMessagesProvider {
             canLoadMoreContacts: boolean;
             canLoadMoreNonContacts: boolean;
         }> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesMessageSearchUsersWSParams = {
             userid: site.getUserId(),
@@ -2438,8 +2438,8 @@ export class AddonMessagesProvider {
         const contacts = result.contacts || [];
         const nonContacts = result.noncontacts || [];
 
-        CoreUser.instance.storeUsers(contacts, site.id);
-        CoreUser.instance.storeUsers(nonContacts, site.id);
+        CoreUser.storeUsers(contacts, site.id);
+        CoreUser.storeUsers(nonContacts, site.id);
 
         if (limitNum <= 0) {
             return { contacts, nonContacts, canLoadMoreContacts: false, canLoadMoreNonContacts: false };
@@ -2471,7 +2471,7 @@ export class AddonMessagesProvider {
 
         // Convenience function to store a message to be synchronized later.
         const storeOffline = async (): Promise<AddonMessagesSendMessageResults> => {
-            const entry = await AddonMessagesOffline.instance.saveMessage(toUserId, message, siteId);
+            const entry = await AddonMessagesOffline.saveMessage(toUserId, message, siteId);
 
             return {
                 sent: false,
@@ -2486,9 +2486,9 @@ export class AddonMessagesProvider {
             };
         };
 
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (!CoreApp.instance.isOnline()) {
+        if (!CoreApp.isOnline()) {
             // App is offline, store the message.
             return storeOffline();
         }
@@ -2497,7 +2497,7 @@ export class AddonMessagesProvider {
         // If so, store this message since they need to be sent in order.
         let hasStoredMessages = false;
         try {
-            hasStoredMessages = await AddonMessagesOffline.instance.hasMessages(toUserId, siteId);
+            hasStoredMessages = await AddonMessagesOffline.hasMessages(toUserId, siteId);
         } catch {
             // Error, it's safer to assume it has messages.
             hasStoredMessages = true;
@@ -2516,7 +2516,7 @@ export class AddonMessagesProvider {
                 message: result,
             };
         } catch (error) {
-            if (CoreUtils.instance.isWebServiceError(error)) {
+            if (CoreUtils.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 throw error;
             }
@@ -2535,7 +2535,7 @@ export class AddonMessagesProvider {
      * @return Promise resolved if success, rejected if failure.
      */
     async sendMessageOnline(toUserId: number, message: string, siteId?: string): Promise<AddonMessagesSendInstantMessagesMessage> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const messages = [
             {
@@ -2575,7 +2575,7 @@ export class AddonMessagesProvider {
         messages: AddonMessagesMessageData[],
         siteId?: string,
     ): Promise<AddonMessagesSendInstantMessagesMessage[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const data: AddonMessagesSendInstantMessagesWSParams = {
             messages,
@@ -2601,12 +2601,12 @@ export class AddonMessagesProvider {
         siteId?: string,
     ): Promise<AddonMessagesSendMessageResults> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         siteId = site.getId();
 
         // Convenience function to store a message to be synchronized later.
         const storeOffline = async(): Promise<AddonMessagesSendMessageResults> => {
-            const entry = await AddonMessagesOffline.instance.saveConversationMessage(conversation, message, siteId);
+            const entry = await AddonMessagesOffline.saveConversationMessage(conversation, message, siteId);
 
             return {
                 sent: false,
@@ -2619,7 +2619,7 @@ export class AddonMessagesProvider {
             };
         };
 
-        if (!CoreApp.instance.isOnline()) {
+        if (!CoreApp.isOnline()) {
             // App is offline, store the message.
             return storeOffline();
         }
@@ -2628,7 +2628,7 @@ export class AddonMessagesProvider {
         // If so, store this message since they need to be sent in order.
         let hasStoredMessages = false;
         try {
-            hasStoredMessages = await AddonMessagesOffline.instance.hasConversationMessages(conversation.id, siteId);
+            hasStoredMessages = await AddonMessagesOffline.hasConversationMessages(conversation.id, siteId);
         } catch {
             // Error, it's safer to assume it has messages.
             hasStoredMessages = true;
@@ -2647,7 +2647,7 @@ export class AddonMessagesProvider {
                 message: result,
             };
         } catch (error) {
-            if (CoreUtils.instance.isWebServiceError(error)) {
+            if (CoreUtils.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 throw error;
             }
@@ -2671,7 +2671,7 @@ export class AddonMessagesProvider {
         message: string,
         siteId?: string,
     ): Promise<AddonMessagesSendMessagesToConversationMessage> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const messages = [
             {
@@ -2706,7 +2706,7 @@ export class AddonMessagesProvider {
         siteId?: string,
     ): Promise<AddonMessagesSendMessagesToConversationMessage[]> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const params: CoreMessageSendMessagesToConversationWSParams = {
             conversationid: conversationId,
             messages: messages.map((message) => ({
@@ -2741,7 +2741,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async setFavouriteConversations(conversations: number[], set: boolean, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -2829,7 +2829,7 @@ export class AddonMessagesProvider {
      */
     protected storeUsersFromAllContacts(contactTypes: AddonMessagesGetContactsWSResponse): void {
         for (const x in contactTypes) {
-            CoreUser.instance.storeUsers(contactTypes[x]);
+            CoreUser.storeUsers(contactTypes[x]);
         }
     }
 
@@ -2849,7 +2849,7 @@ export class AddonMessagesProvider {
                 profileimageurl: discussions[userId].profileimageurl,
             });
         }
-        CoreUser.instance.storeUsers(users, siteId);
+        CoreUser.storeUsers(users, siteId);
     }
 
     /**
@@ -2860,7 +2860,7 @@ export class AddonMessagesProvider {
      * @return Resolved when done.
      */
     async unblockContact(userId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         try {
             if (site.wsAvailable('core_message_unblock_user')) {
@@ -2890,7 +2890,7 @@ export class AddonMessagesProvider {
 
 }
 
-export class AddonMessages extends makeSingleton(AddonMessagesProvider) {}
+export const AddonMessages = makeSingleton(AddonMessagesProvider);
 
 /**
  * Options to pass to getConversationMessages.

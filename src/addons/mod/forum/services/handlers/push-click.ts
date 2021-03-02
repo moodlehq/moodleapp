@@ -42,7 +42,7 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
      * @return Whether the notification click is handled by this handler
      */
     async handles(notification: NotificationData): Promise<boolean> {
-        return CoreUtils.instance.isTrueOrOne(notification.notif)
+        return CoreUtils.isTrueOrOne(notification.notif)
             && notification.moodlecomponent == 'mod_forum'
             && notification.name == 'posts';
     }
@@ -54,7 +54,7 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
      * @return Promise resolved when done.
      */
     async handleClick(notification: NotificationData): Promise<void> {
-        const contextUrlParams = CoreUrlUtils.instance.extractUrlParams(notification.contexturl);
+        const contextUrlParams = CoreUrlUtils.extractUrlParams(notification.contexturl);
         const data = notification.customdata || {};
         const courseId = Number(notification.courseid);
         const discussionId = Number(contextUrlParams.d || data.discussionid);
@@ -67,11 +67,11 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
             pageParams.postId = Number(data.postid || contextUrlParams.urlHash.replace('p', ''));
         }
 
-        await CoreUtils.instance.ignoreErrors(
-            AddonModForum.instance.invalidateDiscussionPosts(pageParams.discussionId, undefined, notification.site),
+        await CoreUtils.ignoreErrors(
+            AddonModForum.invalidateDiscussionPosts(pageParams.discussionId, undefined, notification.site),
         );
 
-        await CoreNavigator.instance.navigateToSitePath(
+        await CoreNavigator.navigateToSitePath(
             `${AddonModForumModuleHandlerService.PAGE_NAME}/${courseId}/${cmId}/${discussionId}`,
             { siteId: notification.site, params: pageParams },
         );
@@ -79,7 +79,7 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
 
 }
 
-export class AddonModForumPushClickHandler extends makeSingleton(AddonModForumPushClickHandlerService) {}
+export const AddonModForumPushClickHandler = makeSingleton(AddonModForumPushClickHandlerService);
 
 type NotificationData = CorePushNotificationsNotificationBasicData & {
     courseid: number;

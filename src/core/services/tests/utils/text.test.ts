@@ -59,7 +59,7 @@ describe('CoreTextUtilsProvider', () => {
         expect(url).toEqual('geo:0,0?q=Moodle%20Spain%20HQ');
 
         expect(sanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
-        expect(CoreApp.instance.isAndroid).toHaveBeenCalled();
+        expect(CoreApp.isAndroid).toHaveBeenCalled();
     });
 
     it('builds address URL for non-Android platforms', () => {
@@ -75,7 +75,7 @@ describe('CoreTextUtilsProvider', () => {
         expect(url).toEqual('http://maps.google.com?q=Moodle%20Spain%20HQ');
 
         expect(sanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
-        expect(CoreApp.instance.isAndroid).toHaveBeenCalled();
+        expect(CoreApp.isAndroid).toHaveBeenCalled();
     });
 
     it('matches glob patterns', () => {

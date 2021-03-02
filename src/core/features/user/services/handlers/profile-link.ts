@@ -53,7 +53,7 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
                     userId: parseInt(params.id, 10),
                 };
 
-                CoreNavigator.instance.navigateToSitePath('/user', { params: pageParams, siteId });
+                CoreNavigator.navigateToSitePath('/user', { params: pageParams, siteId });
             },
         }];
     }
@@ -75,4 +75,4 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
 
 }
 
-export class CoreUserProfileLinkHandler extends makeSingleton(CoreUserProfileLinkHandlerService) {}
+export const CoreUserProfileLinkHandler = makeSingleton(CoreUserProfileLinkHandlerService);

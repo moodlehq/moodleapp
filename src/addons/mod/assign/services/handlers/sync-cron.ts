@@ -34,7 +34,7 @@ export class AddonModAssignSyncCronHandlerService implements CoreCronHandler {
      * @return Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string, force?: boolean): Promise<void> {
-        return AddonModAssignSync.instance.syncAllAssignments(siteId, force);
+        return AddonModAssignSync.syncAllAssignments(siteId, force);
     }
 
     /**
@@ -43,7 +43,7 @@ export class AddonModAssignSyncCronHandlerService implements CoreCronHandler {
      * @return Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return AddonModAssignSync.instance.syncInterval;
+        return AddonModAssignSync.syncInterval;
     }
 
 }

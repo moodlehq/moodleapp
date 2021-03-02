@@ -48,21 +48,21 @@ export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent 
         if (!this.question) {
             this.logger.warn('Aborting because of no question received.');
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         this.ddQuestion = this.question;
 
-        const element = CoreDomUtils.instance.convertToElement(this.ddQuestion.html);
+        const element = CoreDomUtils.convertToElement(this.ddQuestion.html);
 
         // Get D&D area and question text.
         const ddArea = element.querySelector('.ddarea');
 
-        this.ddQuestion.text = CoreDomUtils.instance.getContentsOfElement(element, '.qtext');
+        this.ddQuestion.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
         if (!ddArea || typeof this.ddQuestion.text == 'undefined') {
             this.logger.warn('Aborting because of an error parsing question.', this.ddQuestion.slot);
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         // Set the D&D area HTML.

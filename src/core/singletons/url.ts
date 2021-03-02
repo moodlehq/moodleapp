@@ -197,7 +197,7 @@ export class CoreUrl {
         const partsB = CoreUrl.parse(urlB);
 
         return partsA?.domain == partsB?.domain &&
-            CoreTextUtils.instance.removeEndingSlash(partsA?.path) == CoreTextUtils.instance.removeEndingSlash(partsB?.path);
+            CoreTextUtils.removeEndingSlash(partsA?.path) == CoreTextUtils.removeEndingSlash(partsB?.path);
     }
 
 }

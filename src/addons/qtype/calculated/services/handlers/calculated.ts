@@ -57,7 +57,7 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
      */
     hasSeparateUnitField(question: CoreQuestionQuestionParsed): boolean {
         if (!question.parsedSettings) {
-            const element = CoreDomUtils.instance.convertToElement(question.html);
+            const element = CoreDomUtils.convertToElement(question.html);
 
             return !!(element.querySelector('select[name*=unit]') || element.querySelector('input[type="radio"]'));
         }
@@ -164,8 +164,8 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
         component: string, // eslint-disable-line @typescript-eslint/no-unused-vars
         componentId: string | number, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): boolean {
-        return CoreUtils.instance.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') &&
-            CoreUtils.instance.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'unit');
+        return CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') &&
+            CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'unit');
     }
 
     /**
@@ -234,4 +234,4 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
 
 }
 
-export class AddonQtypeCalculatedHandler extends makeSingleton(AddonQtypeCalculatedHandlerService) {}
+export const AddonQtypeCalculatedHandler = makeSingleton(AddonQtypeCalculatedHandlerService);
