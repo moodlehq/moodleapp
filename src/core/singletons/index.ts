@@ -56,23 +56,32 @@ import { Zip as ZipService } from '@ionic-native/zip/ngx';
 
 import { TranslateService } from '@ngx-translate/core';
 
+const OBJECT_PROTOTYPE = Object.getPrototypeOf(Object);
+
 /**
  * Injector instance used to resolve singletons.
  */
 let singletonsInjector: Injector | null = null;
 
 /**
- * Stub class used to type anonymous classes created in the makeSingleton method.
+ * Helper to get service class methods.
  */
-class CoreSingleton {}
+type GetMethods<T> = {
+    [K in keyof T]: T[K] extends (...args: unknown[]) => unknown ? K : never;
+}[keyof T];
 
 /**
- * Singleton class created using the factory.
+ * Singleton proxy created using the factory method.
+ *
+ * @see makeSingleton
  */
-export type CoreSingletonClass<Service> = typeof CoreSingleton & {
-    instance: Service;
-    setInstance(instance: Service): void;
-};
+export type CoreSingletonProxy<Service, Getters extends keyof Service = never> =
+    Pick<Service, GetMethods<Service>> &
+    Pick<Service, Getters> &
+    {
+        instance: Service;
+        setInstance(instance: Service): void;
+    };
 
 /**
  * Set the injector that will be used to resolve instances in the singletons of this module.
@@ -84,34 +93,101 @@ export function setSingletonsInjector(injector: Injector): void {
 }
 
 /**
- * Make a singleton for the given injection token.
+ * Make a singleton proxy for the given injection token.
  *
- * @param injectionToken Injection token used to resolve the singleton instance. This is usually the service class if the
- * provider was defined using a class or the string used in the `provide` key if it was defined using an object.
+ * This method will return an object that will proxy method calls to an underlying service instance. Getters will also be proxied,
+ * but these need to be configured manually using the `getters` argument. Most of the time, this proxy can be used directly like
+ * you would use a service instance. If you need to get the real service instance, it can be accessed through the `instance`
+ * property and it can be set with the `setInstance` method.
+ *
+ * @param injectionToken Injection token used to resolve the service. This is usually the service class if the provider was
+ * defined using a class or the string used in the `provide` key if it was defined using an object.
+ * @param getters Getter names to proxy.
+ * @return Singleton proxy.
  */
-export function makeSingleton<Service>(injectionToken: Type<Service> | Type<unknown> | string): CoreSingletonClass<Service> {
-    return class {
+export function makeSingleton<Service>(injectionToken: Type<Service> | Type<unknown> | string): CoreSingletonProxy<Service, never>;
+export function makeSingleton<Service, Getters extends keyof Service>(
+    injectionToken: Type<Service> | Type<unknown> | string,
+    getters: Getters[],
+): CoreSingletonProxy<Service, Getters>;
+export function makeSingleton<Service, Getters extends keyof Service>(
+    injectionToken: Type<Service> | Type<unknown> | string,
+    getters: Getters[] = [],
+): CoreSingletonProxy<Service, Getters> {
+    // Define instance manipulation affordances.
+    const proxy = {
+        setInstance(instance: Service) {
+            Object.defineProperty(proxy, 'instance', {
+                value: instance,
+                configurable: true,
+            });
+        },
+    } as CoreSingletonProxy<Service, Getters>;
 
-        private static serviceInstance: Service;
-
-        static get instance(): Service {
-            // Initialize instances lazily.
-            if (!this.serviceInstance) {
-                if (!singletonsInjector) {
-                    throw new Error('Can\'t resolve a singleton instance without an injector');
-                }
-
-                this.serviceInstance = singletonsInjector.get(injectionToken);
+    Object.defineProperty(proxy, 'instance', {
+        get: () => {
+            if (!singletonsInjector) {
+                throw new Error('Can\'t resolve a singleton instance without an injector');
             }
 
-            return this.serviceInstance;
+            const instance = singletonsInjector.get(injectionToken);
+
+            proxy.setInstance(instance);
+
+            return instance;
+        },
+        configurable: true,
+    });
+
+    // Define method and getter proxies.
+    if (isServiceClass(injectionToken)) {
+        // Get property descriptors, going all the way up the prototype chain (for services extending other classes).
+        let parentPrototype = injectionToken;
+        let descriptors: Record<string, PropertyDescriptor> = {};
+
+        do {
+            descriptors = {
+                ...Object.getOwnPropertyDescriptors(parentPrototype.prototype),
+                ...descriptors,
+            };
+
+            parentPrototype = Object.getPrototypeOf(parentPrototype);
+        } while (parentPrototype !== OBJECT_PROTOTYPE);
+
+        // Don't proxy constructor calls.
+        delete descriptors['constructor'];
+
+        // Define method proxies.
+        for (const [property, descriptor] of Object.entries(descriptors)) {
+            // Skip getters and setters.
+            if (descriptor.get || descriptor.set) {
+                continue;
+            }
+
+            // Define method proxy.
+            Object.defineProperty(proxy, property, {
+                value: (...args) => proxy.instance[property].call(proxy.instance, ...args),
+                configurable: true,
+            });
         }
 
-        static setInstance(instance: Service): void {
-            this.serviceInstance = instance;
+        // Define getter proxies.
+        for (const getter of getters) {
+            Object.defineProperty(proxy, getter, { get: () => proxy.instance[getter] });
         }
+    }
 
-    };
+    return proxy;
+}
+
+/**
+ * Type guard to check if an injection token is a service class.
+ *
+ * @param injectionToken Injection token.
+ * @return Whether the token is a class.
+ */
+function isServiceClass(injectionToken: Type<unknown> | string): injectionToken is Type<unknown> {
+    return typeof injectionToken !== 'string';
 }
 
 // Convert ionic-native services to singleton.

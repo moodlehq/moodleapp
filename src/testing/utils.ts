@@ -15,7 +15,7 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Type, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CoreSingletonClass } from '@singletons';
+import { CoreSingletonProxy } from '@singletons';
 
 abstract class WrapperComponent<U> {
 
@@ -47,15 +47,15 @@ export function mock<T>(
     return instance as T;
 }
 
-export function mockSingleton<T>(singletonClass: CoreSingletonClass<T>, instance: T): T;
-export function mockSingleton<T>(singletonClass: CoreSingletonClass<unknown>, instance?: Record<string, unknown>): T;
+export function mockSingleton<T>(singletonClass: CoreSingletonProxy<T>, instance: T): T;
+export function mockSingleton<T>(singletonClass: CoreSingletonProxy<unknown>, instance?: Record<string, unknown>): T;
 export function mockSingleton<T>(
-    singletonClass: CoreSingletonClass<unknown>,
+    singletonClass: CoreSingletonProxy<unknown>,
     methods: string[],
     instance?: Record<string, unknown>,
 ): T;
 export function mockSingleton<T>(
-    singletonClass: CoreSingletonClass<T>,
+    singleton: CoreSingletonProxy<T>,
     methodsOrInstance: string[] | Record<string, unknown> = [],
     instance: Record<string, unknown> = {},
 ): T {
@@ -64,7 +64,18 @@ export function mockSingleton<T>(
     const methods = Array.isArray(methodsOrInstance) ? methodsOrInstance : [];
     const mockInstance = mock<T>(methods, instance);
 
-    singletonClass.setInstance(mockInstance);
+    singleton.setInstance(mockInstance);
+
+    for (const [property, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(singleton))) {
+        if (typeof descriptor.value !== 'function' || property === 'setInstance') {
+            continue;
+        }
+
+        Object.defineProperty(singleton, property, {
+            value: jest.fn(descriptor.value),
+            configurable: true,
+        });
+    }
 
     return mockInstance;
 }
