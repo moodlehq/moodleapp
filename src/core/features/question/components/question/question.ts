@@ -95,6 +95,7 @@ export class CoreQuestionComponent implements OnInit {
             contextInstanceId: this.contextInstanceId,
             courseId: this.courseId,
             review: this.review,
+            preferredBehaviour: this.preferredBehaviour,
             buttonClicked: this.buttonClicked,
             onAbort: this.onAbort,
         };

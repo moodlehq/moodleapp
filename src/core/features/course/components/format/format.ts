@@ -507,6 +507,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         await Promise.all(promises);
+
+        refresher?.detail.complete();
+        done?.();
     }
 
     /**

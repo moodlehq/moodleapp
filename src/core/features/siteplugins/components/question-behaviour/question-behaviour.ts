@@ -12,18 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
+import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { CoreQuestionBehaviourButton, CoreQuestionQuestion } from '@features/question/services/question-helper';
+import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
+
 
 /**
- * Component to render the deferred CBM in a question.
+ * Component that displays a question behaviour created using a site plugin.
  */
 @Component({
-    selector: 'addon-qbehaviour-deferredcbm',
-    templateUrl: 'addon-qbehaviour-deferredcbm.html',
+    selector: 'core-site-plugins-question-behaviour',
+    templateUrl: 'core-siteplugins-question-behaviour.html',
 })
-export class AddonQbehaviourDeferredCBMComponent {
+export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 
     @Input() question?: CoreQuestionQuestion; // The question.
     @Input() component?: string; // The component the question belongs to.
@@ -37,5 +40,29 @@ export class AddonQbehaviourDeferredCBMComponent {
     @Input() preferredBehaviour?: string; // Preferred behaviour.
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort = new EventEmitter<void>(); // Should emit an event if the question should be aborted.
+
+    constructor() {
+        super();
+    }
+
+    /**
+     * Component being initialized.
+     */
+    ngOnInit(): void {
+        // Pass the input and output data to the component.
+        this.jsData.question = this.question;
+        this.jsData.component = this.component;
+        this.jsData.componentId = this.componentId;
+        this.jsData.attemptId = this.attemptId;
+        this.jsData.offlineEnabled = this.offlineEnabled;
+        this.jsData.contextLevel = this.contextLevel;
+        this.jsData.contextInstanceId = this.contextInstanceId;
+        this.jsData.buttonClicked = this.buttonClicked;
+        this.jsData.onAbort = this.onAbort;
+
+        if (this.question) {
+            this.getHandlerData(CoreQuestionBehaviourDelegate.getHandlerName(this.preferredBehaviour || ''));
+        }
+    }
 
 }

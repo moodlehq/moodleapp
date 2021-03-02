@@ -39,6 +39,7 @@ export class CoreQuestionBaseComponent {
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // The course the question belongs to (if any).
     @Input() review?: boolean; // Whether the user is in review mode.
+    @Input() preferredBehaviour?: string; // Preferred behaviour.
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort = new EventEmitter<void>(); // Should emit an event if the question should be aborted.
 
