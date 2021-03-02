@@ -121,9 +121,9 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
                 this.refreshEvents(true, false).finally(() => {
 
                     // In tablet mode try to open the event (only if it's an online event).
-                    if (this.splitviewCtrl?.isOn() && data.eventId > 0) {
+                    if (this.splitviewCtrl?.outletActivated && data.eventId > 0) {
                         this.gotoEvent(data.eventId);
-                    } else if (this.splitviewCtrl?.isOn()) {
+                    } else if (this.splitviewCtrl?.outletActivated) {
                         // Discussion added, clear details page.
                         this.emptySplitView();
                     }
@@ -133,7 +133,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
 
         // Listen for new event discarded event. When it does, reload the data.
         this.discardedObserver = CoreEvents.on(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, () => {
-            if (this.splitviewCtrl?.isOn()) {
+            if (this.splitviewCtrl?.outletActivated) {
                 // Discussion added, clear details page.
                 this.emptySplitView();
             }
@@ -155,7 +155,8 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
             this.eventsLoaded = false;
             this.refreshEvents();
 
-            if (this.splitviewCtrl?.isOn() && this.eventId && data && data.deleted && data.deleted.indexOf(this.eventId) != -1) {
+            if (this.splitviewCtrl?.outletActivated &&
+                this.eventId && data && data.deleted && data.deleted.indexOf(this.eventId) != -1) {
                 // Current selected event was deleted. Clear details.
                 this.emptySplitView();
             }
@@ -168,7 +169,8 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
                 this.refreshEvents();
             }
 
-            if (this.splitviewCtrl?.isOn() && this.eventId && data && data.deleted && data.deleted.indexOf(this.eventId) != -1) {
+            if (this.splitviewCtrl?.outletActivated &&
+                this.eventId && data && data.deleted && data.deleted.indexOf(this.eventId) != -1) {
                 // Current selected event was deleted. Clear details.
                 this.emptySplitView();
             }
@@ -185,7 +187,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
                     this.hasOffline = true;
                 } else {
                     // Event deleted, clear the details if needed and refresh the view.
-                    if (this.splitviewCtrl?.isOn()) {
+                    if (this.splitviewCtrl?.outletActivated) {
                         this.emptySplitView();
                     }
 
@@ -255,7 +257,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
 
         await this.fetchData(false, true, false);
 
-        if (!this.eventId && this.splitviewCtrl?.isOn() && this.events.length > 0) {
+        if (!this.eventId && this.splitviewCtrl?.outletActivated && this.events.length > 0) {
             // Take first online event and load it. If no online event, load the first offline.
             if (this.onlineEvents[0]) {
                 this.gotoEvent(this.onlineEvents[0].id);

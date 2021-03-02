@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, OnDestroy, ViewChild, ElementRef, OnInit, Optional } from '@angular/core';
 import { FileEntry } from '@ionic-native/file/ngx';
 import { FormControl } from '@angular/forms';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
@@ -38,7 +38,7 @@ import { IonRefresher } from '@ionic/angular';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreTextUtils } from '@services/utils/text';
 import { CanLeave } from '@guards/can-leave';
-import { CoreScreen } from '@services/screen';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 type NewDiscussionData = {
     subject: string;
@@ -95,6 +95,8 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     protected isDestroyed = false;
     protected originalData?: Partial<NewDiscussionData>;
     protected forceLeave = false;
+
+    constructor(@Optional() protected splitView: CoreSplitViewComponent) {}
 
     /**
      * Component being initialized.
@@ -433,9 +435,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
             CoreSites.instance.getCurrentSiteId(),
         );
 
-        if (CoreScreen.instance.isMobile) {
-            CoreNavigator.instance.back();
-        } else {
+        if (this.splitView?.outletActivated) {
             // Empty form.
             this.hasOffline = false;
             this.newDiscussion.subject = '';
@@ -444,6 +444,8 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
             this.newDiscussion.postToAllGroups = false;
             this.messageEditor.clearText();
             this.originalData = CoreUtils.instance.clone(this.newDiscussion);
+        } else {
+            CoreNavigator.instance.back();
         }
     }
 

@@ -46,6 +46,10 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
         return this.outletRouteSubject.value;
     }
 
+    get outletActivated(): boolean {
+        return this.contentOutlet.isActivated;
+    }
+
     get outletRouteObservable(): Observable<ActivatedRouteSnapshot | null> {
         return this.outletRouteSubject.asObservable();
     }
@@ -116,15 +120,6 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
         }
 
         return CoreSplitViewMode.MenuAndContent;
-    }
-
-    /**
-     * Check if both panels are shown. It depends on screen width.
-     *
-     * @return If split view is enabled.
-     */
-    isOn(): boolean {
-        return this.contentOutlet.isActivated;
     }
 
 }

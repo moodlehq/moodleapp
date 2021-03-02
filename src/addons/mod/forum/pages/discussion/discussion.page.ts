@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef, Optional } from '@angular/core';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreUser } from '@features/user/services/user';
 import { CanLeave } from '@guards/can-leave';
@@ -106,7 +107,10 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     protected ratingSyncObserver?: CoreEventObserver;
     protected changeDiscObserver?: CoreEventObserver;
 
-    constructor(protected elementRef: ElementRef) {}
+    constructor(
+        @Optional() protected splitView: CoreSplitViewComponent,
+        protected elementRef: ElementRef,
+    ) {}
 
     get isMobile(): boolean {
         return CoreScreen.instance.isMobile;
@@ -216,12 +220,11 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
                     if (typeof data.deleted != 'undefined' && data.deleted) {
                         if (!data.post?.parentid) {
-                            // @todo
-                            // if (this.svComponent && this.svComponent.isOn()) {
-                            //     this.svComponent.emptyDetails();
-                            // } else {
-                            //     this.navCtrl.pop();
-                            // }
+                            if (this.splitView?.outletActivated) {
+                                CoreNavigator.instance.navigate('../');
+                            } else {
+                                CoreNavigator.instance.back();
+                            }
                         } else {
                             this.discussionLoaded = false;
                             this.refreshPosts();
