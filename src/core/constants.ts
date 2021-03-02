@@ -14,7 +14,7 @@
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { CoreColorScheme } from '@features/settings/services/settings-helper';
+import { CoreColorScheme, CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CoreSitesDemoSiteData } from '@services/sites';
 import envJson from '@/assets/env.json';
 
@@ -56,7 +56,7 @@ export class CoreConstants {
     static readonly SETTINGS_DEBUG_DISPLAY = 'CoreSettingsDebugDisplay';
     static readonly SETTINGS_REPORT_IN_BACKGROUND = 'CoreSettingsReportInBackground'; // @deprecated since 3.5.0
     static readonly SETTINGS_SEND_ON_ENTER = 'CoreSettingsSendOnEnter';
-    static readonly SETTINGS_FONT_SIZE = 'CoreSettingsFontSize';
+    static readonly SETTINGS_ZOOM_LEVEL = 'CoreSettingsZoomLevel';
     static readonly SETTINGS_COLOR_SCHEME = 'CoreSettingsColorScheme';
     static readonly SETTINGS_ANALYTICS_ENABLED = 'CoreSettingsAnalyticsEnabled';
 
@@ -145,7 +145,7 @@ type EnvironmentConfig = {
     wsservice: string;
     wsextservice: string;
     demo_sites: Record<string, CoreSitesDemoSiteData>;
-    font_sizes: number[];
+    zoomlevels: Record<CoreZoomLevel, number>;
     customurlscheme: string;
     siteurl: string;
     sitename: string;

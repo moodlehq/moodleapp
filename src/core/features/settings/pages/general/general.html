@@ -21,13 +21,13 @@
         <ion-label>
             <h2>{{ 'core.settings.fontsize' | translate }}</h2>
         </ion-label>
-        <ion-segment [(ngModel)]="selectedFontSize" (ionChange)="fontSizeChanged()" color="primary" item-content>
-            <ion-segment-button *ngFor="let fontSize of fontSizes" [value]="fontSize.size"
-                [ngStyle]="{'font-size.px': fontSize.style}">
+        <ion-segment [(ngModel)]="selectedZoomLevel" (ionChange)="zoomLevelChanged()" color="primary" item-content>
+            <ion-segment-button *ngFor="let zoomLevel of zoomLevels" [value]="zoomLevel.value"
+                [ngStyle]="{'font-size.px': zoomLevel.style}">
                 <ion-label>
                     {{ 'core.settings.fontsizecharacter' | translate }}
                     <!-- Empty element styled with the largest font size, so all buttons share a common baseline. -->
-                    <span [ngStyle]="{'font-size.px': fontSizes[fontSizes.length - 1].style}"></span>
+                    <span [ngStyle]="{'font-size.px': zoomLevels[zoomLevels.length - 1].style}"></span>
                 </ion-label>
             </ion-segment-button>
         </ion-segment>

@@ -46,6 +46,15 @@ export const enum CoreColorScheme {
 }
 
 /**
+ * Constants to define zoom levels.
+ */
+export const enum CoreZoomLevel {
+    NORMAL = 'normal',
+    LOW = 'low',
+    HIGH = 'high',
+}
+
+/**
  * Settings helper service.
  */
 @Injectable({ providedIn: 'root' })
@@ -285,12 +294,63 @@ export class CoreSettingsHelperProvider {
     }
 
     /**
+     * Upgrades from Font size to new zoom level.
+     */
+    async upgradeZoomLevel(): Promise<void> {
+        // Check old setting and update the new.
+        try {
+            const fontSize = await CoreConfig.get<number>('CoreSettingsFontSize');
+            if (typeof fontSize == 'undefined') {
+                // Already upgraded.
+                return;
+            }
+
+            // Reset the value to solve edge cases.
+            CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.NORMAL);
+
+            if (fontSize < 100) {
+                if (fontSize > 90) {
+                    CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.HIGH);
+                } else if (fontSize > 70) {
+                    CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.LOW);
+                }
+            }
+
+            CoreConfig.delete('CoreSettingsFontSize');
+        } catch {
+            // Already upgraded.
+            return;
+        }
+    }
+
+    /**
+     * Get saved Zoom Level setting.
+     *
+     * @return The saved zoom Level option.
+     */
+    async getZoomLevel(): Promise<CoreZoomLevel> {
+        return CoreConfig.get(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.NORMAL);
+    }
+
+    /**
+     * Get saved zoom level value.
+     *
+     * @return The saved zoom level value in %.
+     */
+    async getZoom(): Promise<number> {
+        const zoomLevel = await this.getZoomLevel();
+
+        return CoreConstants.CONFIG.zoomlevels[zoomLevel];
+    }
+
+    /**
      * Init Settings related to DOM.
      */
     async initDomSettings(): Promise<void> {
         // Set the font size based on user preference.
-        const fontSize = await CoreConfig.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConstants.CONFIG.font_sizes[0]);
-        this.setFontSize(fontSize);
+        const zoomLevel = await this.getZoomLevel();
+
+        this.applyZoomLevel(zoomLevel);
 
         this.initColorScheme();
     }
@@ -334,11 +394,12 @@ export class CoreSettingsHelperProvider {
     /**
      * Set document default font size.
      *
-     * @param fontSize Font size in percentage.
+     * @param zoomLevel Zoom Level.
      */
-    setFontSize(fontSize: number): void {
+    applyZoomLevel(zoomLevel: CoreZoomLevel): void {
+        const zoom = CoreConstants.CONFIG.zoomlevels[zoomLevel];
         // @todo Since zoom is deprecated and fontSize is not working, we should do some research here.
-        document.documentElement.style.zoom = fontSize + '%';
+        document.documentElement.style.zoom = zoom + '%';
     }
 
     /**
