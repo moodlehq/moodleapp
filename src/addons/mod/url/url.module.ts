@@ -18,25 +18,23 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
-import { AddonModBookComponentsModule } from './components/components.module';
-import { AddonModBookModuleHandler, AddonModBookModuleHandlerService } from './services/handlers/module';
-import { AddonModBookIndexLinkHandler } from './services/handlers/index-link';
-import { AddonModBookListLinkHandler } from './services/handlers/list-link';
-import { AddonModBookPrefetchHandler } from './services/handlers/prefetch';
-import { AddonModBookTagAreaHandler } from './services/handlers/tag-area';
+import { AddonModUrlComponentsModule } from './components/components.module';
+import { AddonModUrlIndexLinkHandler } from './services/handlers/index-link';
+import { AddonModUrlListLinkHandler } from './services/handlers/list-link';
+import { AddonModUrlModuleHandler, AddonModUrlModuleHandlerService } from './services/handlers/module';
+import { AddonModUrlPrefetchHandler } from './services/handlers/prefetch';
 
 const routes: Routes = [
     {
-        path: AddonModBookModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./book-lazy.module').then(m => m.AddonModBookLazyModule),
+        path: AddonModUrlModuleHandlerService.PAGE_NAME,
+        loadChildren: () => import('./url-lazy.module').then(m => m.AddonModUrlLazyModule),
     },
 ];
 
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModBookComponentsModule,
+        AddonModUrlComponentsModule,
     ],
     providers: [
         {
@@ -44,13 +42,12 @@ const routes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModBookModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModBookIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModBookListLinkHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModBookPrefetchHandler.instance);
-                CoreTagAreaDelegate.registerHandler(AddonModBookTagAreaHandler.instance);
+                CoreCourseModuleDelegate.registerHandler(AddonModUrlModuleHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModUrlIndexLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModUrlListLinkHandler.instance);
+                CoreCourseModulePrefetchDelegate.registerHandler(AddonModUrlPrefetchHandler.instance);
             },
         },
     ],
 })
-export class AddonModBookModule {}
+export class AddonModUrlModule {}
