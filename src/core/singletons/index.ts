@@ -64,10 +64,17 @@ const OBJECT_PROTOTYPE = Object.getPrototypeOf(Object);
 let singletonsInjector: Injector | null = null;
 
 /**
- * Helper to get service class methods.
+ * Helper to get service class properties that are methods.
  */
 type GetMethods<T> = {
-    [K in keyof T]: T[K] extends (...args: unknown[]) => unknown ? K : never;
+    [K in keyof T]: T[K] extends (...args: unknown[]) => unknown ? K : never
+}[keyof T];
+
+/**
+ * Helper to get service class properties that are not methods.
+ */
+type GetNonMethods<T> = {
+    [K in keyof T]: T[K] extends (...args: unknown[]) => unknown ? never : K
 }[keyof T];
 
 /**
@@ -76,7 +83,7 @@ type GetMethods<T> = {
  * @see makeSingleton
  */
 export type CoreSingletonProxy<Service, Getters extends keyof Service = never> =
-    Pick<Service, GetMethods<Service>> &
+    Pick<Service, Exclude<GetMethods<Service>, GetNonMethods<Service>>> &
     Pick<Service, Getters> &
     {
         instance: Service;
