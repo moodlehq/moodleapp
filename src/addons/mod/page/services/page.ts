@@ -21,7 +21,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreWSError } from '@classes/errors/wserror';
+import { CoreError } from '@classes/errors/error';
 
 const ROOT_CACHE_KEY = 'mmaModPage:';
 
@@ -79,7 +79,7 @@ export class AddonModPageProvider {
             return currentPage;
         }
 
-        throw new CoreWSError('Page not found');
+        throw new CoreError('Page not found');
     }
 
     /**
