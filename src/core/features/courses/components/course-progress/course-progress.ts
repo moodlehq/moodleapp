@@ -16,14 +16,14 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-// import { CoreUser } from '@core/user/services/user';
-import { CoreCourses } from '@features/courses/services/courses';
+import { CoreCourses, CoreCoursesMyCoursesUpdatedEventData, CoreCoursesProvider } from '@features/courses/services/courses';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { PopoverController, Translate } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/course-options-menu';
+import { CoreUser } from '@features/user/services/user';
 
 /**
  * This component is meant to display a course for a list of courses with progress.
@@ -193,7 +193,6 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      * Show the context menu.
      *
      * @param e Click Event.
-     * @todo
      */
     async showCourseOptionsMenu(e: Event): Promise<void> {
         e.preventDefault();
@@ -247,22 +246,62 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      * Hide/Unhide the course from the course list.
      *
      * @param hide True to hide and false to show.
-     * @todo CoreUser
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected setCourseHidden(hide: boolean): void {
-        return;
+    protected async setCourseHidden(hide: boolean): Promise<void> {
+        this.showSpinner = true;
+
+        // We should use null to unset the preference.
+        try {
+            await CoreUser.updateUserPreference(
+                'block_myoverview_hidden_course_' + this.course.id,
+                hide ? '1' : undefined,
+            );
+
+            this.course.hidden = hide;
+            CoreEvents.trigger<CoreCoursesMyCoursesUpdatedEventData>(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+                courseId: this.course.id,
+                course: this.course,
+                action: CoreCoursesProvider.ACTION_STATE_CHANGED,
+                state: CoreCoursesProvider.STATE_HIDDEN,
+                value: hide,
+            }, CoreSites.getCurrentSiteId());
+
+        } catch (error) {
+            if (!this.isDestroyed) {
+                CoreDomUtils.showErrorModalDefault(error, 'Error changing course visibility.');
+            }
+        } finally {
+            this.showSpinner = false;
+        }
     }
 
     /**
      * Favourite/Unfavourite the course from the course list.
      *
      * @param favourite True to favourite and false to unfavourite.
-     * @todo CoreUser
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected setCourseFavourite(favourite: boolean): void {
-        return;
+    protected async setCourseFavourite(favourite: boolean): Promise<void> {
+        this.showSpinner = true;
+
+        try {
+            await CoreCourses.setFavouriteCourse(this.course.id, favourite);
+
+            this.course.isfavourite = favourite;
+            CoreEvents.trigger<CoreCoursesMyCoursesUpdatedEventData>(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+                courseId: this.course.id,
+                course: this.course,
+                action: CoreCoursesProvider.ACTION_STATE_CHANGED,
+                state: CoreCoursesProvider.STATE_FAVOURITE,
+                value: favourite,
+            }, CoreSites.getCurrentSiteId());
+
+        } catch (error) {
+            if (!this.isDestroyed) {
+                CoreDomUtils.showErrorModalDefault(error, 'Error changing course favourite attribute.');
+            }
+        } finally {
+            this.showSpinner = false;
+        }
     }
 
     /**

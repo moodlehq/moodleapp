@@ -161,7 +161,7 @@
                 </ion-item>
                 <ion-datetime #notificationPicker hidden [(ngModel)]="notificationTimeText"
                     [displayFormat]="notificationFormat" [min]="notificationMin" [max]="notificationMax"
-                    doneText]="'core.add' | translate"(ionChange)="addNotificationTime()">
+                    [doneText]="'core.add' | translate" (ionChange)="addNotificationTime()" [monthNames]="monthNames">
                 </ion-datetime>
             </ng-container>
         </ion-card>

@@ -115,6 +115,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
 
         this.onPlatformReady();
+
+        // @todo: Quit app with back button. How to tell if we're at root level?
     }
 
     /**

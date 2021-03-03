@@ -450,11 +450,11 @@ export class CoreCoursesCoursePreviewPage implements OnInit, OnDestroy {
      * Prefetch the course.
      */
     prefetchCourse(): void {
-        /* @todo CoreCourseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course).catch((error) => {
+        CoreCourseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course!).catch((error) => {
             if (!this.pageDestroyed) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
             }
-        });*/
+        });
     }
 
     /**

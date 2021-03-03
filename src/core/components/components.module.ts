@@ -51,6 +51,7 @@ import { CorePipesModule } from '@pipes/pipes.module';
 import { CoreAttachmentsComponent } from './attachments/attachments';
 import { CoreFilesComponent } from './files/files';
 import { CoreLocalFileComponent } from './local-file/local-file';
+import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
 
 @NgModule({
     declarations: [
@@ -84,6 +85,7 @@ import { CoreLocalFileComponent } from './local-file/local-file';
         CoreAttachmentsComponent,
         CoreFilesComponent,
         CoreLocalFileComponent,
+        CoreBSTooltipComponent,
     ],
     imports: [
         CommonModule,
@@ -124,6 +126,7 @@ import { CoreLocalFileComponent } from './local-file/local-file';
         CoreAttachmentsComponent,
         CoreFilesComponent,
         CoreLocalFileComponent,
+        CoreBSTooltipComponent,
     ],
 })
 export class CoreComponentsModule {}

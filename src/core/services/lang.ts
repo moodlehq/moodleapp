@@ -156,8 +156,6 @@ export class CoreLangProvider {
         // Use british english when parent english is loaded.
         moment.locale(language == 'en' ? 'en-gb' : language);
 
-        // @todo: Set data for ion-datetime.
-
         this.currentLanguage = language;
 
         try {
@@ -273,6 +271,42 @@ export class CoreLangProvider {
      */
     getFallbackLanguage(): string {
         return this.fallbackLanguage;
+    }
+
+    /**
+     * Get translated month names.
+     *
+     * @return Translated month names.
+     */
+    getMonthNames(): string[] {
+        return moment.months().map(this.capitalize.bind(this));
+    }
+
+    /**
+     * Get translated month short names.
+     *
+     * @return Translated month short names.
+     */
+    getMonthShortNames(): string[] {
+        return moment.monthsShort().map(this.capitalize.bind(this));
+    }
+
+    /**
+     * Get translated day names.
+     *
+     * @return Translated day names.
+     */
+    getDayNames(): string[] {
+        return moment.weekdays().map(this.capitalize.bind(this));
+    }
+
+    /**
+     * Get translated day short names.
+     *
+     * @return Translated day short names.
+     */
+    getDayShortNames(): string[] {
+        return moment.weekdaysShort().map(this.capitalize.bind(this));
     }
 
     /**

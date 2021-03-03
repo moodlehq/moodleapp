@@ -759,7 +759,7 @@ export class CoreUserProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved if success.
      */
-    updateUserPreference(name: string, value: string, userId?: number, siteId?: string): Promise<void> {
+    updateUserPreference(name: string, value: string | undefined, userId?: number, siteId?: string): Promise<void> {
         const preferences = [
             {
                 type: name,
@@ -780,7 +780,7 @@ export class CoreUserProvider {
      * @return Promise resolved if success.
      */
     async updateUserPreferences(
-        preferences: { type: string; value: string }[],
+        preferences: { type: string; value: string | undefined }[],
         disableNotifications?: boolean,
         userId?: number,
         siteId?: string,

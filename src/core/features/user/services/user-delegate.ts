@@ -20,7 +20,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents } from '@singletons/events';
 import { CoreUserProfile } from './user';
 import { makeSingleton } from '@singletons';
-import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
+import { CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
+import { CoreSites } from '@services/sites';
 
 /**
  * Interface that all user profile handlers must implement.
@@ -241,9 +242,22 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      * @return Promise resolved when done.
      */
     protected async calculateUserHandlers(user: CoreUserProfile, courseId?: number): Promise<void> {
-        // @todo: Get Course admin/nav options.
-        let navOptions;
-        let admOptions;
+        let navOptions: CoreCourseUserAdminOrNavOptionIndexed | undefined;
+        let admOptions: CoreCourseUserAdminOrNavOptionIndexed | undefined;
+
+        if (CoreCourses.canGetAdminAndNavOptions()) {
+            // Get course options.
+            const courses = await CoreCourses.getUserCourses(true);
+            const courseIds = courses.map((course) => course.id);
+
+            const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);
+
+            // For backwards compatibility we don't modify the courseId.
+            const courseIdForOptions = courseId || CoreSites.getCurrentSiteHomeId();
+
+            navOptions = options.navOptions[courseIdForOptions];
+            admOptions = options.admOptions[courseIdForOptions];
+        }
 
         const userData = this.userHandlers[user.id];
         userData.handlers = [];

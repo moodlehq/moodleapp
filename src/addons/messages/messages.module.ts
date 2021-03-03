@@ -22,7 +22,7 @@ import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-deleg
 import { AddonMessagesMainMenuHandler, AddonMessagesMainMenuHandlerService } from './services/handlers/mainmenu';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
-import { AddonMessagesSettingsHandler } from './services/handlers/settings';
+import { AddonMessagesSettingsHandler, AddonMessagesSettingsHandlerService } from './services/handlers/settings';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { AddonMessagesIndexLinkHandler } from './services/handlers/index-link';
@@ -35,6 +35,7 @@ import { AddonMessagesSendMessageUserHandler } from './services/handlers/user-se
 import { Network, NgZone } from '@singletons';
 import { AddonMessagesSync } from './services/messages-sync';
 import { AddonMessagesSyncCronHandler } from './services/handlers/sync-cron';
+import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
 
 const mainMenuChildrenRoutes: Routes = [
     {
@@ -42,11 +43,18 @@ const mainMenuChildrenRoutes: Routes = [
         loadChildren: () => import('./messages-lazy.module').then(m => m.AddonMessagesLazyModule),
     },
 ];
+const preferencesRoutes: Routes = [
+    {
+        path: AddonMessagesSettingsHandlerService.PAGE_NAME,
+        loadChildren: () => import('./pages/settings/settings.module').then(m => m.AddonMessagesSettingsPageModule),
+    },
+];
 
 @NgModule({
     imports: [
         CoreMainMenuRoutingModule.forChild({ children: mainMenuChildrenRoutes }),
         CoreMainMenuTabRoutingModule.forChild( mainMenuChildrenRoutes),
+        CoreSitePreferencesRoutingModule.forChild(preferencesRoutes),
     ],
     providers: [
         {

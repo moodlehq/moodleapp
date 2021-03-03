@@ -22,7 +22,6 @@ import { CoreUtils } from '@services/utils/utils';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreObject } from '@singletons/object';
 
 /**
  * Page that displays the list of calendar events.
@@ -125,10 +124,10 @@ class AddonBadgesUserBadgesManager extends CorePageItemsListManager<AddonBadgesU
      * @inheritdoc
      */
     protected getItemQueryParams(): Params {
-        return CoreObject.withoutEmpty({
+        return {
             courseId: this.courseId,
             userId: this.userId,
-        });
+        };
     }
 
     /**

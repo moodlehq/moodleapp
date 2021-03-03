@@ -56,8 +56,6 @@ export class CoreLinkDirective implements OnInit {
     ngOnInit(): void {
         this.inApp = typeof this.inApp == 'undefined' ? this.inApp : CoreUtils.isTrueOrOne(this.inApp);
 
-        // @todo: Handle split view?
-
         this.element.addEventListener('click', async (event) => {
             if (event.defaultPrevented) {
                 return; // Link already treated, stop.

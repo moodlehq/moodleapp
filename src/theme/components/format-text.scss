@@ -1,5 +1,7 @@
 /** Format Text - Show more styles. */
 /** Styles of elements inside the directive should be placed in format-text.scss */
+@import "~theme/globals";
+
 core-format-text {
     user-select: text;
     word-break: break-word;
@@ -77,5 +79,41 @@ core-format-text {
                 background-size: 14px 14px;
             }
         }
+    }
+
+    .core-adapted-img-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .core-image-viewer-icon {
+        position: absolute;
+        @include position(null, 10px, 10px, null);
+        color: var(--black);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, .5);
+        text-align: center;
+        cursor: pointer;
+
+        width: 32px;
+        height: 32px;
+        max-width: 32px;
+        line-height: 32px;
+        font-size: 24px;
+
+        ion-icon {
+            margin-top: 3px;
+        }
+
+        &:hover {
+            opacity: .7;
+        }
+    }
+}
+
+body.dark {
+    core-format-text .core-image-viewer-icon {
+        background-color: rgba(0, 0, 0, .5);
     }
 }

@@ -14,27 +14,16 @@
 
 import { Component, Input } from '@angular/core';
 
-import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { CoreCouseTagItems } from '@features/course/services/handlers/course-tag-area';
-
 /**
- * Component that renders the course tag area.
+ * Component to display a Bootstrap Tooltip in a popover.
  */
 @Component({
-    selector: 'core-course-tag-area',
-    templateUrl: 'core-course-tag-area.html',
+    selector: 'core-bs-tooltip',
+    templateUrl: 'core-bs-tooltip.html',
 })
-export class CoreCourseTagAreaComponent {
+export class CoreBSTooltipComponent {
 
-    @Input() items?: CoreCouseTagItems[]; // Area items to render.
-
-    /**
-     * Open a course.
-     *
-     * @param courseId The course to open.
-     */
-    openCourse(courseId: number): void {
-        CoreCourseHelper.getAndOpenCourse(courseId);
-    }
+    @Input() content = '';
+    @Input() html?: boolean;
 
 }

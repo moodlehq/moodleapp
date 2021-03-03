@@ -40,7 +40,6 @@ export class CoreTagListComponent {
             fromContextId: tag.taginstancecontextid,
         };
 
-        // @todo: Check split view to navigate on the outlet if any.
         CoreNavigator.navigateToSitePath('/tag/index', { params, preferCurrentTab: false });
     }
 

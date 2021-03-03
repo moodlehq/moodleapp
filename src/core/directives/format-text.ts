@@ -208,8 +208,8 @@ export class CoreFormatTextDirective implements OnChanges {
 
             anchor.classList.add('core-image-viewer-icon');
             anchor.setAttribute('aria-label', label);
-            // @todo Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
-            anchor.innerHTML = '<ion-icon name="fas-search" class="icon icon-md ion-md-search"></ion-icon>';
+            // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
+            anchor.innerHTML = '<ion-icon name="fas-search" src="assets/fonts/font-awesome/solid/search.svg"></ion-icon>';
 
             anchor.addEventListener('click', (e: Event) => {
                 e.preventDefault();
@@ -471,8 +471,6 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     protected async treatHTMLElements(div: HTMLElement, site?: CoreSite): Promise<void> {
         const canTreatVimeo = site?.isVersionGreaterEqualThan(['3.3.4', '3.4']) || false;
-        // @todo this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        // @todo: Pass navCtrl to all treateFrame calls?
 
         const images = Array.from(div.querySelectorAll('img'));
         const anchors = Array.from(div.querySelectorAll('a'));

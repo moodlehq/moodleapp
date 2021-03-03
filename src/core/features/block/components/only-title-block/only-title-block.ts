@@ -43,7 +43,6 @@ export class CoreBlockOnlyTitleComponent extends CoreBlockBaseComponent implemen
      * Go to the block page.
      */
     gotoBlock(): void {
-        // @todo test that this is working properly.
         CoreNavigator.navigateToSitePath(this.link!, { params: this.linkParams });
     }
 

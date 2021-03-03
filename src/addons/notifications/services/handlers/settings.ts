@@ -18,7 +18,6 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 import { makeSingleton } from '@singletons';
 import { CoreSettingsHandler, CoreSettingsHandlerData } from '@features/settings/services/settings-delegate';
 import { AddonNotifications } from '../notifications';
-import { AddonNotificationsMainMenuHandlerService } from './mainmenu';
 
 /**
  * Notifications settings handler.
@@ -26,7 +25,7 @@ import { AddonNotificationsMainMenuHandlerService } from './mainmenu';
 @Injectable({ providedIn: 'root' })
 export class AddonNotificationsSettingsHandlerService implements CoreSettingsHandler {
 
-    static readonly PAGE_NAME = 'settings';
+    static readonly PAGE_NAME = 'notifications';
 
     name = 'AddonNotifications';
     priority = 500;
@@ -50,7 +49,7 @@ export class AddonNotificationsSettingsHandlerService implements CoreSettingsHan
         return {
             icon: 'fas-bell',
             title: 'addon.notifications.notifications',
-            page: AddonNotificationsMainMenuHandlerService.PAGE_NAME + '/' + AddonNotificationsSettingsHandlerService.PAGE_NAME,
+            page: AddonNotificationsSettingsHandlerService.PAGE_NAME,
             class: 'addon-notifications-settings-handler',
         };
     }

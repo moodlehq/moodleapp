@@ -137,7 +137,6 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
         event.preventDefault();
         event.stopPropagation();
 
-        // @todo Decide which navCtrl to use. If this component is inside a split view, use the split view's master nav.
         CoreNavigator.navigateToSitePath('user', {
             params: {
                 userId: this.userId,

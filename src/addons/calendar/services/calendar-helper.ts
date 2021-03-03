@@ -721,7 +721,7 @@ export const AddonCalendarHelper = makeSingleton(AddonCalendarHelperProvider);
  */
 export type AddonCalendarFilter = {
     filtered: boolean; // If filter enabled (some filters applied).
-    courseId: number; // Course Id to filter.
+    courseId: number | undefined; // Course Id to filter.
     categoryId?: number; // Category Id to filter.
     course: boolean; // Filter to show course events.
     group: boolean; // Filter to show group events.

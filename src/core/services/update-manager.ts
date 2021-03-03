@@ -18,6 +18,7 @@ import { CoreConfig } from '@services/config';
 import { CoreConstants } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
 import { makeSingleton } from '@singletons';
+import { CoreH5P } from '@features/h5p/services/h5p';
 
 const VERSION_APPLIED = 'version_applied';
 
@@ -42,13 +43,13 @@ export class CoreUpdateManagerProvider {
      * @return Promise resolved when the update process finishes.
      */
     async load(): Promise<void> {
-        const promises = [];
+        const promises: Promise<unknown>[] = [];
         const versionCode = CoreConstants.CONFIG.versioncode;
 
         const versionApplied = await CoreConfig.get<number>(VERSION_APPLIED, 0);
 
         if (versionCode >= 3900 && versionApplied < 3900 && versionApplied > 0) {
-            // @todo: H5P update.
+            promises.push(CoreH5P.h5pPlayer.deleteAllContentIndexes());
         }
 
         try {

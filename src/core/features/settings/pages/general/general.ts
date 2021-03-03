@@ -153,8 +153,6 @@ export class CoreSettingsGeneralPage {
 
     /**
      * Called when the analytics setting is enabled or disabled.
-     *
-     * @todo
      */
     async analyticsEnabledChanged(): Promise<void> {
         await CorePushNotifications.enableAnalytics(this.analyticsEnabled);

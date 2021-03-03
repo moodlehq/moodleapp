@@ -25,9 +25,9 @@ import {
     ElementRef,
 } from '@angular/core';
 import { IonSlides } from '@ionic/angular';
+import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
 
-import { CoreApp } from '@services/app';
 import { Platform, Translate } from '@singletons';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 
@@ -81,7 +81,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     protected selectHistory: string[] = [];
 
     protected firstSelectedTab?: string; // ID of the first selected tab to control history.
-    protected unregisterBackButtonAction: any;
+    protected backButtonFunction: (event: BackButtonEvent) => void;
     protected languageChangedSubscription?: Subscription;
     protected isInTransition = false; // Weather Slides is in transition.
     protected slidesSwiper: any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -91,6 +91,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     constructor(
         protected element: ElementRef,
     ) {
+        this.backButtonFunction = this.backButtonClicked.bind(this);
     }
 
     /**
@@ -171,43 +172,47 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
 
         this.calculateSlides();
 
-        this.registerBackButtonAction();
+        document.addEventListener('ionBackButton', this.backButtonFunction);
     }
 
     /**
-     * Register back button action.
+     * Back button clicked.
+     *
+     * @param event Event.
      */
-    protected registerBackButtonAction(): void {
-        this.unregisterBackButtonAction = CoreApp.registerBackButtonAction(() => {
-            // The previous page in history is not the last one, we need the previous one.
+    protected backButtonClicked(event: BackButtonEvent): void {
+        event.detail.register(40, (processNextHandler: () => void) => {
             if (this.selectHistory.length > 1) {
-                const tabIndex = this.selectHistory[this.selectHistory.length - 2];
+                // The previous page in history is not the last one, we need the previous one.
+                const previousTabId = this.selectHistory[this.selectHistory.length - 2];
 
                 // Remove curent and previous tabs from history.
-                this.selectHistory = this.selectHistory.filter((tabId) => this.selected != tabId && tabIndex != tabId);
+                this.selectHistory = this.selectHistory.filter((tabId) => this.selected != tabId && previousTabId != tabId);
 
-                this.selectTab(tabIndex);
+                this.selectTab(previousTabId);
 
-                return true;
-            } else if (this.selected != this.firstSelectedTab) {
+                return;
+            }
+
+            if (this.firstSelectedTab && this.selected != this.firstSelectedTab) {
                 // All history is gone but we are not in the first selected tab.
                 this.selectHistory = [];
 
-                this.selectTab(this.firstSelectedTab!);
+                this.selectTab(this.firstSelectedTab);
 
-                return true;
+                return;
             }
 
-            return false;
-        }, 750);
+            processNextHandler();
+        });
     }
 
     /**
      * User left the page that contains the component.
      */
     ionViewDidLeave(): void {
-        // Unregister the custom back button action for this page
-        this.unregisterBackButtonAction && this.unregisterBackButtonAction();
+        // Unregister the custom back button action for this component.
+        document.removeEventListener('ionBackButton', this.backButtonFunction);
 
         this.isCurrentView = false;
     }

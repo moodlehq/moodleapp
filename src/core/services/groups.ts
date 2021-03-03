@@ -19,6 +19,7 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalWarning } from '@services/ws';
+import { CoreCourses } from '@features/courses/services/courses';
 
 const ROOT_CACHE_KEY = 'mmGroups:';
 
@@ -242,8 +243,11 @@ export class CoreGroupsProvider {
             return this.getUserGroupsInCourse(0, siteId);
         }
 
-        // @todo Get courses.
-        return <CoreGroup[]>[];
+        const courses = <CoreCourseBase[]> await CoreCourses.getUserCourses(false, siteId);
+
+        courses.push({ id: site.getSiteHomeId() }); // Add site home.
+
+        return this.getUserGroups(courses, siteId);
     }
 
     /**

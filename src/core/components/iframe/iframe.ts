@@ -27,6 +27,7 @@ import { CoreLogger } from '@singletons/logger';
 @Component({
     selector: 'core-iframe',
     templateUrl: 'core-iframe.html',
+    styleUrls: ['iframe.scss'],
 })
 export class CoreIframeComponent implements OnChanges {
 
@@ -74,8 +75,6 @@ export class CoreIframeComponent implements OnChanges {
         // Show loading only with external URLs.
         this.loading = !this.src || !CoreUrlUtils.isLocalFileUrl(this.src);
 
-        // @todo const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        // CoreIframeUtils.treatFrame(iframe, false, this.navCtrl);
         CoreIframeUtils.treatFrame(iframe, false);
 
         iframe.addEventListener('load', () => {

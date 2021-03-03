@@ -37,7 +37,6 @@ export interface CoreTagAreaHandler extends CoreDelegateHandler {
      * Get the component to use to display items.
      *
      * @return The component (or promise resolved with component) to use, undefined if not found.
-     * @todo, check return types.
      */
     getComponent(): Type<unknown> | Promise<Type<unknown>>;
 }
@@ -85,7 +84,6 @@ export class CoreTagAreaDelegateService extends CoreDelegate<CoreTagAreaHandler>
      * @param component Component name.
      * @param itemType Item type.
      * @return The component (or promise resolved with component) to use, undefined if not found.
-     * @todo, check return types.
      */
     async getComponent(component: string, itemType: string): Promise<Type<unknown> | undefined> {
         const type = component + '/' + itemType;
