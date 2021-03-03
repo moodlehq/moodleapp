@@ -113,7 +113,7 @@ export class AddonModQuizAutoSave {
      * @return Answers.
      */
     protected getAnswers(): CoreQuestionsAnswers {
-        return CoreQuestionHelper.instance.getAnswersFromForm(document.forms[this.formName]);
+        return CoreQuestionHelper.getAnswersFromForm(document.forms[this.formName]);
     }
 
     /**
@@ -149,7 +149,7 @@ export class AddonModQuizAutoSave {
         offline?: boolean,
     ): void {
         // Don't schedule if already shceduled or quiz is almost closed.
-        if (!quiz.autosaveperiod || this.autoSaveTimeout || AddonModQuiz.instance.isAttemptTimeNearlyOver(quiz, attempt)) {
+        if (!quiz.autosaveperiod || this.autoSaveTimeout || AddonModQuiz.isAttemptTimeNearlyOver(quiz, attempt)) {
             return;
         }
 
@@ -160,7 +160,7 @@ export class AddonModQuizAutoSave {
             this.previousAnswers = answers; // Update previous answers to match what we're sending to the server.
 
             try {
-                await AddonModQuiz.instance.saveAttempt(quiz, attempt, answers, preflightData, offline);
+                await AddonModQuiz.saveAttempt(quiz, attempt, answers, preflightData, offline);
 
                 // Save successful, we can hide the connection error if it was shown.
                 this.hideAutoSaveError();
@@ -197,7 +197,7 @@ export class AddonModQuizAutoSave {
         };
         this.popoverShown = true;
 
-        this.popover = await PopoverController.instance.create({
+        this.popover = await PopoverController.create({
             component: AddonModQuizConnectionErrorComponent,
             event: <Event> event,
         });

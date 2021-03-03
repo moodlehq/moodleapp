@@ -42,7 +42,7 @@ export class AddonModForumOfflineProvider {
      * @return Promise resolved if stored, rejected if failure.
      */
     async deleteNewDiscussion(forumId: number, timeCreated: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const conditions = {
             forumid: forumId,
             userid: userId || site.getUserId(),
@@ -67,7 +67,7 @@ export class AddonModForumOfflineProvider {
         siteId?: string,
         userId?: number,
     ): Promise<AddonModForumOfflineDiscussion> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const conditions = {
             forumid: forumId,
             userid: userId || site.getUserId(),
@@ -86,7 +86,7 @@ export class AddonModForumOfflineProvider {
      * @return Promise resolved with discussions.
      */
     async getAllNewDiscussions(siteId?: string): Promise<AddonModForumOfflineDiscussion[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const records = await site.getDb().getRecords<AddonModForumOfflineDiscussionDBRecord>(DISCUSSIONS_TABLE);
 
         return this.parseRecordsOptions(records);
@@ -121,7 +121,7 @@ export class AddonModForumOfflineProvider {
      * @return Promise resolved with the object to be synced.
      */
     async getNewDiscussions(forumId: number, siteId?: string, userId?: number): Promise<AddonModForumOfflineDiscussion[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const conditions = {
             forumid: forumId,
             userid: userId || site.getUserId(),
@@ -159,7 +159,7 @@ export class AddonModForumOfflineProvider {
         siteId?: string,
         userId?: number,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const data: AddonModForumOfflineDiscussionDBRecord = {
             forumid: forumId,
             name: name,
@@ -184,7 +184,7 @@ export class AddonModForumOfflineProvider {
      * @return Promise resolved if stored, rejected if failure.
      */
     async deleteReply(postId: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const conditions = {
             postid: postId,
             userid: userId || site.getUserId(),
@@ -200,7 +200,7 @@ export class AddonModForumOfflineProvider {
      * @return Promise resolved with replies.
      */
     async getAllReplies(siteId?: string): Promise<AddonModForumOfflineReply[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const records = await site.getDb().getRecords<AddonModForumOfflineReplyDBRecord>(REPLIES_TABLE);
 
         return this.parseRecordsOptions(records);
@@ -235,7 +235,7 @@ export class AddonModForumOfflineProvider {
      * @return Promise resolved with replies.
      */
     async getForumReplies(forumId: number, siteId?: string, userId?: number): Promise<AddonModForumOfflineReply[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const conditions = {
             forumid: forumId,
             userid: userId || site.getUserId(),
@@ -275,7 +275,7 @@ export class AddonModForumOfflineProvider {
      * @return Promise resolved with discussions.
      */
     async getDiscussionReplies(discussionId: number, siteId?: string, userId?: number): Promise<AddonModForumOfflineReply[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const conditions = {
             discussionid: discussionId,
             userid: userId || site.getUserId(),
@@ -313,7 +313,7 @@ export class AddonModForumOfflineProvider {
         siteId?: string,
         userId?: number,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const data: AddonModForumOfflineReplyDBRecord = {
             postid: postId,
             discussionid: discussionId,
@@ -338,10 +338,10 @@ export class AddonModForumOfflineProvider {
      * @return Promise resolved with the path.
      */
     async getForumFolder(forumId: number, siteId?: string): Promise<string> {
-        const site = await CoreSites.instance.getSite(siteId);
-        const siteFolderPath = CoreFile.instance.getSiteFolder(site.getId());
+        const site = await CoreSites.getSite(siteId);
+        const siteFolderPath = CoreFile.getSiteFolder(site.getId());
 
-        return CoreTextUtils.instance.concatenatePaths(siteFolderPath, 'offlineforum/' + forumId);
+        return CoreTextUtils.concatenatePaths(siteFolderPath, 'offlineforum/' + forumId);
     }
 
     /**
@@ -355,7 +355,7 @@ export class AddonModForumOfflineProvider {
     async getNewDiscussionFolder(forumId: number, timeCreated: number, siteId?: string): Promise<string> {
         const folderPath = await this.getForumFolder(forumId, siteId);
 
-        return CoreTextUtils.instance.concatenatePaths(folderPath, 'newdisc_' + timeCreated);
+        return CoreTextUtils.concatenatePaths(folderPath, 'newdisc_' + timeCreated);
     }
 
     /**
@@ -369,10 +369,10 @@ export class AddonModForumOfflineProvider {
      */
     async getReplyFolder(forumId: number, postId: number, siteId?: string, userId?: number): Promise<string> {
         const folderPath = await this.getForumFolder(forumId, siteId);
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
-        return CoreTextUtils.instance.concatenatePaths(folderPath, 'reply_' + postId + '_' + userId);
+        return CoreTextUtils.concatenatePaths(folderPath, 'reply_' + postId + '_' + userId);
     }
 
     /**
@@ -398,14 +398,14 @@ export class AddonModForumOfflineProvider {
         R extends { options: string },
         O extends Record<string, unknown> = Record<string, unknown>
     >(record: R): Omit<R, 'options'> & { options: O } {
-        record.options = CoreTextUtils.instance.parseJSON(record.options);
+        record.options = CoreTextUtils.parseJSON(record.options);
 
         return record as unknown as Omit<R, 'options'> & { options: O };
     }
 
 }
 
-export class AddonModForumOffline extends makeSingleton(AddonModForumOfflineProvider) {}
+export const AddonModForumOffline = makeSingleton(AddonModForumOfflineProvider);
 
 export type AddonModForumDiscussionOptions = {
     attachmentsid?: number | CoreFileUploaderStoreFilesResult;

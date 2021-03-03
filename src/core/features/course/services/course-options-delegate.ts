@@ -285,12 +285,12 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
         // Invalidate course enabled data for the handlers that are enabled at site level.
         if (courseId) {
             // Invalidate only options for this course.
-            promises.push(CoreCourses.instance.invalidateCoursesAdminAndNavOptions([courseId]));
+            promises.push(CoreCourses.invalidateCoursesAdminAndNavOptions([courseId]));
             promises.push(this.invalidateCourseHandlers(courseId));
         } else {
             // Invalidate all options.
-            promises.push(CoreCourses.instance.invalidateUserNavigationOptions());
-            promises.push(CoreCourses.instance.invalidateUserAdministrationOptions());
+            promises.push(CoreCourses.invalidateUserNavigationOptions());
+            promises.push(CoreCourses.invalidateUserAdministrationOptions());
 
             for (const cId in this.coursesHandlers) {
                 promises.push(this.invalidateCourseHandlers(parseInt(cId, 10)));
@@ -331,7 +331,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
                     access: accessData,
                     navOptions,
                     admOptions,
-                    deferred: CoreUtils.instance.promiseDefer(),
+                    deferred: CoreUtils.promiseDefer(),
                     enabledHandlers: [],
                     enabledMenuHandlers: [],
                 };
@@ -339,7 +339,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
                 this.coursesHandlers[courseId].access = accessData;
                 this.coursesHandlers[courseId].navOptions = navOptions;
                 this.coursesHandlers[courseId].admOptions = admOptions;
-                this.coursesHandlers[courseId].deferred = CoreUtils.instance.promiseDefer();
+                this.coursesHandlers[courseId].deferred = CoreUtils.promiseDefer();
             }
 
             this.updateHandlersForCourse(courseId, accessData, navOptions, admOptions);
@@ -558,7 +558,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
             }
         });
 
-        await CoreUtils.instance.allPromises(promises);
+        await CoreUtils.allPromises(promises);
     }
 
     /**
@@ -585,10 +585,10 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
      * @return Promise resolved when done.
      */
     protected async loadCourseOptions(course: CoreCourseAnyCourseDataWithOptions, refresh = false): Promise<void> {
-        if (CoreCourses.instance.canGetAdminAndNavOptions() &&
+        if (CoreCourses.canGetAdminAndNavOptions() &&
                 (typeof course.navOptions == 'undefined' || typeof course.admOptions == 'undefined' || refresh)) {
 
-            const options = await CoreCourses.instance.getCoursesAdminAndNavOptions([course.id]);
+            const options = await CoreCourses.getCoursesAdminAndNavOptions([course.id]);
             course.navOptions = options.navOptions[course.id];
             course.admOptions = options.admOptions[course.id];
         }
@@ -623,7 +623,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
         const promises: Promise<void>[] = [];
         const enabledForCourse: CoreCourseOptionsHandler[] = [];
         const enabledForCourseMenu: CoreCourseOptionsMenuHandler[] = [];
-        const siteId = CoreSites.instance.getCurrentSiteId();
+        const siteId = CoreSites.getCurrentSiteId();
         const now = Date.now();
 
         this.lastUpdateHandlersForCoursesStart[courseId] = now;
@@ -656,7 +656,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
 
         // Verify that this call is the last one that was started.
         // Check that site hasn't changed since the check started.
-        if (this.isLastUpdateCourseCall(courseId, now) && CoreSites.instance.getCurrentSiteId() === siteId) {
+        if (this.isLastUpdateCourseCall(courseId, now) && CoreSites.getCurrentSiteId() === siteId) {
             // Update the coursesHandlers array with the new enabled addons.
             this.coursesHandlers[courseId].enabledHandlers = enabledForCourse;
             this.coursesHandlers[courseId].enabledMenuHandlers = enabledForCourseMenu;
@@ -669,7 +669,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
 
 }
 
-export class CoreCourseOptionsDelegate extends makeSingleton(CoreCourseOptionsDelegateService) {}
+export const CoreCourseOptionsDelegate = makeSingleton(CoreCourseOptionsDelegateService);
 
 export type CoreCourseAccess = {
     type: string; // Either CoreCourseProvider.ACCESS_GUEST or CoreCourseProvider.ACCESS_DEFAULT.

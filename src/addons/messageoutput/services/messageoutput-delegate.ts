@@ -90,4 +90,4 @@ export class AddonMessageOutputDelegateService extends CoreDelegate<AddonMessage
 
 }
 
-export class AddonMessageOutputDelegate extends makeSingleton(AddonMessageOutputDelegateService) {}
+export const AddonMessageOutputDelegate = makeSingleton(AddonMessageOutputDelegateService);

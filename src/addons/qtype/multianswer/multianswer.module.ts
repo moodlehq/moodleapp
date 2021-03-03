@@ -32,7 +32,7 @@ import { AddonQtypeMultiAnswerHandler } from './services/handlers/multianswer';
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionDelegate.instance.registerHandler(AddonQtypeMultiAnswerHandler.instance);
+                CoreQuestionDelegate.registerHandler(AddonQtypeMultiAnswerHandler.instance);
             },
         },
     ],

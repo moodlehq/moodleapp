@@ -31,7 +31,7 @@ export class CoreCommentsOfflineProvider {
      * @return Promise resolved with comments.
      */
     async getAllComments(siteId?: string): Promise<(CoreCommentsDBRecord | CoreCommentsDeletedDBRecord)[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const results = await Promise.all([
             site.getDb().getRecords(COMMENTS_TABLE),
             site.getDb().getRecords(COMMENTS_DELETED_TABLE),
@@ -60,7 +60,7 @@ export class CoreCommentsOfflineProvider {
         siteId?: string,
     ): Promise<CoreCommentsDBRecord | undefined> {
         try {
-            const site = await CoreSites.instance.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
 
             return await site.getDb().getRecord(COMMENTS_TABLE, {
                 contextlevel: contextLevel,
@@ -95,7 +95,7 @@ export class CoreCommentsOfflineProvider {
     ): Promise<(CoreCommentsDBRecord | CoreCommentsDeletedDBRecord)[]> {
         let comments: (CoreCommentsDBRecord | CoreCommentsDeletedDBRecord)[] = [];
 
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const comment = await this.getComment(contextLevel, instanceId, component, itemId, area, siteId);
 
@@ -114,7 +114,7 @@ export class CoreCommentsOfflineProvider {
      * @return Promise resolved with comments.
      */
     async getAllDeletedComments(siteId?: string): Promise<CoreCommentsDeletedDBRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return await site.getDb().getRecords(COMMENTS_DELETED_TABLE);
     }
@@ -139,7 +139,7 @@ export class CoreCommentsOfflineProvider {
         siteId?: string,
     ): Promise<CoreCommentsDeletedDBRecord[]> {
         try {
-            const site = await CoreSites.instance.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
 
             return await site.getDb().getRecords(COMMENTS_DELETED_TABLE, {
                 contextlevel: contextLevel,
@@ -172,7 +172,7 @@ export class CoreCommentsOfflineProvider {
         area: string = '',
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(COMMENTS_TABLE, {
             contextlevel: contextLevel,
@@ -202,7 +202,7 @@ export class CoreCommentsOfflineProvider {
         area: string = '',
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(COMMENTS_DELETED_TABLE, {
             contextlevel: contextLevel,
@@ -234,8 +234,8 @@ export class CoreCommentsOfflineProvider {
         area: string = '',
         siteId?: string,
     ): Promise<CoreCommentsDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
-        const now = CoreTimeUtils.instance.timestamp();
+        const site = await CoreSites.getSite(siteId);
+        const now = CoreTimeUtils.timestamp();
         const data: CoreCommentsDBRecord = {
             contextlevel: contextLevel,
             instanceid: instanceId,
@@ -272,8 +272,8 @@ export class CoreCommentsOfflineProvider {
         area: string = '',
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
-        const now = CoreTimeUtils.instance.timestamp();
+        const site = await CoreSites.getSite(siteId);
+        const now = CoreTimeUtils.timestamp();
         const data: CoreCommentsDeletedDBRecord = {
             contextlevel: contextLevel,
             instanceid: instanceId,
@@ -295,7 +295,7 @@ export class CoreCommentsOfflineProvider {
      * @return Promise resolved if deleted, rejected if failure.
      */
     async undoDeleteComment(commentId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(COMMENTS_DELETED_TABLE, { commentid: commentId });
     }

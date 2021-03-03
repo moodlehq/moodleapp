@@ -34,7 +34,7 @@ export class CoreGradesMainMenuHandlerService implements CoreMainMenuHandler {
      * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean> {
-        return CoreGrades.instance.isCourseGradesEnabled();
+        return CoreGrades.isCourseGradesEnabled();
     }
 
     /**
@@ -53,4 +53,4 @@ export class CoreGradesMainMenuHandlerService implements CoreMainMenuHandler {
 
 }
 
-export default class CoreGradesMainMenuHandler extends makeSingleton(CoreGradesMainMenuHandlerService) {}
+export const CoreGradesMainMenuHandler = makeSingleton(CoreGradesMainMenuHandlerService);

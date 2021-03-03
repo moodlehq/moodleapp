@@ -34,7 +34,7 @@ import { AddonQtypeEssayComponent } from './component/essay';
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionDelegate.instance.registerHandler(AddonQtypeEssayHandler.instance);
+                CoreQuestionDelegate.registerHandler(AddonQtypeEssayHandler.instance);
             },
         },
     ],

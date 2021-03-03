@@ -25,7 +25,7 @@ import { AddonQbehaviourDeferredFeedbackHandler } from './services/handlers/defe
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionBehaviourDelegate.instance.registerHandler(AddonQbehaviourDeferredFeedbackHandler.instance);
+                CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourDeferredFeedbackHandler.instance);
             },
         },
     ],

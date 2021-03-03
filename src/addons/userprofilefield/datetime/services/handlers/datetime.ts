@@ -60,7 +60,7 @@ export class AddonUserProfileFieldDatetimeHandlerService implements CoreUserProf
             return {
                 type: 'datetime',
                 name: 'profile_field_' + field.shortname,
-                value: CoreTimeUtils.instance.convertToTimestamp(<string> formValues[name]),
+                value: CoreTimeUtils.convertToTimestamp(<string> formValues[name]),
             };
         }
     }
@@ -77,4 +77,4 @@ export class AddonUserProfileFieldDatetimeHandlerService implements CoreUserProf
 
 }
 
-export class AddonUserProfileFieldDatetimeHandler extends makeSingleton(AddonUserProfileFieldDatetimeHandlerService) {}
+export const AddonUserProfileFieldDatetimeHandler = makeSingleton(AddonUserProfileFieldDatetimeHandlerService);

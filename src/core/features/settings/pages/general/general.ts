@@ -62,11 +62,11 @@ export class CoreSettingsGeneralPage {
         }
         // Sort them by name.
         this.languages.sort((a, b) => a.name.localeCompare(b.name));
-        this.selectedLanguage = await CoreLang.instance.getCurrentLanguage();
+        this.selectedLanguage = await CoreLang.getCurrentLanguage();
 
         // Configure color schemes.
         if (!CoreConstants.CONFIG.forceColorScheme) {
-            this.colorSchemeDisabled = CoreSettingsHelper.instance.isColorSchemeDisabledInSite();
+            this.colorSchemeDisabled = CoreSettingsHelper.isColorSchemeDisabledInSite();
 
             if (this.colorSchemeDisabled) {
                 this.colorSchemes.push(CoreColorScheme.LIGHT);
@@ -80,11 +80,11 @@ export class CoreSettingsGeneralPage {
                     this.colorSchemes.push(CoreColorScheme.AUTO);
                 }
 
-                this.selectedScheme = await CoreConfig.instance.get(CoreConstants.SETTINGS_COLOR_SCHEME, CoreColorScheme.LIGHT);
+                this.selectedScheme = await CoreConfig.get(CoreConstants.SETTINGS_COLOR_SCHEME, CoreColorScheme.LIGHT);
             }
         }
 
-        this.selectedFontSize = await CoreConfig.instance.get(
+        this.selectedFontSize = await CoreConfig.get(
             CoreConstants.SETTINGS_FONT_SIZE,
             CoreConstants.CONFIG.font_sizes[0],
         );
@@ -98,13 +98,13 @@ export class CoreSettingsGeneralPage {
             }));
 
 
-        this.richTextEditor = await CoreConfig.instance.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
+        this.richTextEditor = await CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
 
-        this.debugDisplay = await CoreConfig.instance.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false);
+        this.debugDisplay = await CoreConfig.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false);
 
         this.analyticsSupported = CoreConstants.CONFIG.enableanalytics;
         if (this.analyticsSupported) {
-            this.analyticsEnabled = await CoreConfig.instance.get(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true);
+            this.analyticsEnabled = await CoreConfig.get(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true);
         }
     }
 
@@ -112,7 +112,7 @@ export class CoreSettingsGeneralPage {
      * Called when a new language is selected.
      */
     languageChanged(): void {
-        CoreLang.instance.changeCurrentLanguage(this.selectedLanguage).finally(() => {
+        CoreLang.changeCurrentLanguage(this.selectedLanguage).finally(() => {
             CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, this.selectedLanguage);
         });
     }
@@ -127,31 +127,31 @@ export class CoreSettingsGeneralPage {
             return fontSize;
         });
 
-        CoreSettingsHelper.instance.setFontSize(this.selectedFontSize);
-        CoreConfig.instance.set(CoreConstants.SETTINGS_FONT_SIZE, this.selectedFontSize);
+        CoreSettingsHelper.setFontSize(this.selectedFontSize);
+        CoreConfig.set(CoreConstants.SETTINGS_FONT_SIZE, this.selectedFontSize);
     }
 
     /**
      * Called when a new color scheme is selected.
      */
     colorSchemeChanged(): void {
-        CoreSettingsHelper.instance.setColorScheme(this.selectedScheme);
-        CoreConfig.instance.set(CoreConstants.SETTINGS_COLOR_SCHEME, this.selectedScheme);
+        CoreSettingsHelper.setColorScheme(this.selectedScheme);
+        CoreConfig.set(CoreConstants.SETTINGS_COLOR_SCHEME, this.selectedScheme);
     }
 
     /**
      * Called when the rich text editor is enabled or disabled.
      */
     richTextEditorChanged(): void {
-        CoreConfig.instance.set(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, this.richTextEditor ? 1 : 0);
+        CoreConfig.set(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, this.richTextEditor ? 1 : 0);
     }
 
     /**
      * Called when the debug display setting is enabled or disabled.
      */
     debugDisplayChanged(): void {
-        CoreConfig.instance.set(CoreConstants.SETTINGS_DEBUG_DISPLAY, this.debugDisplay ? 1 : 0);
-        CoreDomUtils.instance.setDebugDisplay(this.debugDisplay);
+        CoreConfig.set(CoreConstants.SETTINGS_DEBUG_DISPLAY, this.debugDisplay ? 1 : 0);
+        CoreDomUtils.setDebugDisplay(this.debugDisplay);
     }
 
     /**
@@ -160,9 +160,9 @@ export class CoreSettingsGeneralPage {
      * @todo
      */
     async analyticsEnabledChanged(): Promise<void> {
-        await CorePushNotifications.instance.enableAnalytics(this.analyticsEnabled);
+        await CorePushNotifications.enableAnalytics(this.analyticsEnabled);
 
-        CoreConfig.instance.set(CoreConstants.SETTINGS_ANALYTICS_ENABLED, this.analyticsEnabled ? 1 : 0);
+        CoreConfig.set(CoreConstants.SETTINGS_ANALYTICS_ENABLED, this.analyticsEnabled ? 1 : 0);
     }
 
 }

@@ -44,4 +44,4 @@ export class AddonBlockBlogRecentHandlerService extends CoreBlockBaseHandler {
 
 }
 
-export class AddonBlockBlogRecentHandler extends makeSingleton(AddonBlockBlogRecentHandlerService) {}
+export const AddonBlockBlogRecentHandler = makeSingleton(AddonBlockBlogRecentHandlerService);

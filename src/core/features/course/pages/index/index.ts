@@ -79,22 +79,22 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         // Get params.
-        this.course = CoreNavigator.instance.getRouteParam('course');
-        this.firstTabName = CoreNavigator.instance.getRouteParam('selectedTab');
-        const module = CoreNavigator.instance.getRouteParam<CoreCourseWSModule>('module');
-        const modParams = CoreNavigator.instance.getRouteParam<Params>('modParams');
+        this.course = CoreNavigator.getRouteParam('course');
+        this.firstTabName = CoreNavigator.getRouteParam('selectedTab');
+        const module = CoreNavigator.getRouteParam<CoreCourseWSModule>('module');
+        const modParams = CoreNavigator.getRouteParam<Params>('modParams');
 
-        this.currentPagePath = CoreNavigator.instance.getCurrentPath();
-        this.contentsTab.page = CoreTextUtils.instance.concatenatePaths(this.currentPagePath, this.contentsTab.page);
+        this.currentPagePath = CoreNavigator.getCurrentPath();
+        this.contentsTab.page = CoreTextUtils.concatenatePaths(this.currentPagePath, this.contentsTab.page);
         this.contentsTab.pageParams = {
             course: this.course,
-            sectionId: CoreNavigator.instance.getRouteNumberParam('sectionId'),
-            sectionNumber: CoreNavigator.instance.getRouteNumberParam('sectionNumber'),
+            sectionId: CoreNavigator.getRouteNumberParam('sectionId'),
+            sectionNumber: CoreNavigator.getRouteNumberParam('sectionNumber'),
         };
 
         if (module) {
             this.contentsTab.pageParams!.moduleId = module.id;
-            CoreCourseHelper.instance.openModule(module, this.course!.id, this.contentsTab.pageParams!.sectionId, modParams);
+            CoreCourseHelper.openModule(module, this.course!.id, this.contentsTab.pageParams!.sectionId, modParams);
         }
 
         this.tabs.push(this.contentsTab);
@@ -113,7 +113,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      */
     protected async loadCourseHandlers(): Promise<void> {
         // Load the course handlers.
-        const handlers = await CoreCourseOptionsDelegate.instance.getHandlersToDisplay(this.course!, false, false);
+        const handlers = await CoreCourseOptionsDelegate.getHandlersToDisplay(this.course!, false, false);
 
         this.tabs = [...this.tabs, ...handlers.map(handler => handler.data)];
 
@@ -121,7 +121,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
         // Add the courseId to the handler component data.
         handlers.forEach((handler, index) => {
-            handler.data.page = CoreTextUtils.instance.concatenatePaths(this.currentPagePath, handler.data.page);
+            handler.data.page = CoreTextUtils.concatenatePaths(this.currentPagePath, handler.data.page);
             handler.data.pageParams = handler.data.pageParams || {};
             handler.data.pageParams.courseId = this.course!.id;
 
@@ -147,17 +147,17 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      */
     protected async loadTitle(): Promise<void> {
         // Get the title to display initially.
-        this.title =  CoreCourseFormatDelegate.instance.getCourseTitle(this.course!);
+        this.title =  CoreCourseFormatDelegate.getCourseTitle(this.course!);
 
         // Load sections.
-        const sections = await CoreUtils.instance.ignoreErrors(CoreCourse.instance.getSections(this.course!.id, false, true));
+        const sections = await CoreUtils.ignoreErrors(CoreCourse.getSections(this.course!.id, false, true));
 
         if (!sections) {
             return;
         }
 
         // Get the title again now that we have sections.
-        this.title = CoreCourseFormatDelegate.instance.getCourseTitle(this.course!, sections);
+        this.title = CoreCourseFormatDelegate.getCourseTitle(this.course!, sections);
     }
 
     /**

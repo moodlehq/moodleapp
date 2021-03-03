@@ -66,7 +66,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
 
-        this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
+        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
 
         if (this.downloadCourseEnabled) {
             this.initPrefetchCourse();
@@ -79,13 +79,13 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             const wasEnabled = this.downloadCourseEnabled;
 
-            this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
+            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
 
             if (!wasEnabled && this.downloadCourseEnabled) {
                 // Download course is enabled now, initialize it.
                 this.initPrefetchCourse();
             }
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
     }
 
     /**
@@ -102,27 +102,27 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             if (data.courseId == this.course.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
                 this.updateCourseStatus(data.status);
             }
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
 
         // Determine course prefetch icon.
-        const status = await CoreCourse.instance.getCourseStatus(this.course.id);
+        const status = await CoreCourse.getCourseStatus(this.course.id);
 
-        this.prefetchCourseData = CoreCourseHelper.instance.getCourseStatusIconAndTitleFromStatus(status);
+        this.prefetchCourseData = CoreCourseHelper.getCourseStatusIconAndTitleFromStatus(status);
         this.courseStatus = status;
 
         if (this.prefetchCourseData.loading) {
             // Course is being downloaded. Get the download promise.
-            const promise = CoreCourseHelper.instance.getCourseDownloadPromise(this.course.id);
+            const promise = CoreCourseHelper.getCourseDownloadPromise(this.course.id);
             if (promise) {
                 // There is a download promise. If it fails, show an error.
                 promise.catch((error) => {
                     if (!this.isDestroyed) {
-                        CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                        CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
                     }
                 });
             } else {
                 // No download, this probably means that the app was closed while downloading. Set previous status.
-                CoreCourse.instance.setCoursePreviousStatus(this.course.id);
+                CoreCourse.setCoursePreviousStatus(this.course.id);
             }
         }
 
@@ -132,7 +132,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      * Open a course.
      */
     openCourse(): void {
-        CoreCourseHelper.instance.openCourse(this.course);
+        CoreCourseHelper.openCourse(this.course);
     }
 
     /**
@@ -145,10 +145,10 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         e.stopPropagation();
 
         /* @ todo try {
-            CoreCourseHelper.instance.confirmAndPrefetchCourse(this.prefetchCourseData, this.course);
+            CoreCourseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course);
         } catch (error) {
             if (!this.isDestroyed) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
             }
         }*/
     }
@@ -158,21 +158,21 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      */
     async deleteCourse(): Promise<void> {
         try {
-            await CoreDomUtils.instance.showDeleteConfirm('core.course.confirmdeletestoreddata');
+            await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
-            if (CoreDomUtils.instance.isCanceledError(error)) {
+            if (CoreDomUtils.isCanceledError(error)) {
                 throw error;
             }
 
             return;
         }
 
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            await CoreCourseHelper.instance.deleteCourseFiles(this.course.id);
+            await CoreCourseHelper.deleteCourseFiles(this.course.id);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, Translate.instance.instant('core.errordeletefile'));
+            CoreDomUtils.showErrorModalDefault(error, Translate.instant('core.errordeletefile'));
         } finally {
             modal.dismiss();
         }
@@ -184,7 +184,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      * @param status Status to show.
      */
     protected updateCourseStatus(status: string): void {
-        this.prefetchCourseData = CoreCourseHelper.instance.getCourseStatusIconAndTitleFromStatus(status);
+        this.prefetchCourseData = CoreCourseHelper.getCourseStatusIconAndTitleFromStatus(status);
 
         this.courseStatus = status;
     }
@@ -199,7 +199,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         e.preventDefault();
         e.stopPropagation();
 
-        const popover = await PopoverController.instance.create({
+        const popover = await PopoverController.create({
             component: CoreCoursesCourseOptionsMenuComponent,
             componentProps: {
                 course: this.course,

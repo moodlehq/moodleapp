@@ -122,7 +122,7 @@ export class AddonQtypeDdMarkerQuestion {
             return [];
         }
 
-        const position = CoreDomUtils.instance.getElementXY(bgImg, undefined, 'ddarea');
+        const position = CoreDomUtils.getElementXY(bgImg, undefined, 'ddarea');
         let coordsNumbers = this.parsePoint(bgImgXY);
 
         coordsNumbers = this.makePointProportional(coordsNumbers);
@@ -178,13 +178,13 @@ export class AddonQtypeDdMarkerQuestion {
             const dragging = this.selected;
             if (dragging && !drag.classList.contains('unplaced')) {
 
-                const position = CoreDomUtils.instance.getElementXY(drag, undefined, 'ddarea');
+                const position = CoreDomUtils.getElementXY(drag, undefined, 'ddarea');
                 const bgImg = this.doc.bgImg();
                 if (!bgImg) {
                     return;
                 }
 
-                const bgImgPos = CoreDomUtils.instance.getElementXY(bgImg, undefined, 'ddarea');
+                const bgImgPos = CoreDomUtils.getElementXY(bgImg, undefined, 'ddarea');
 
                 position[0] = position[0] - bgImgPos[0] + e.offsetX;
                 position[1] = position[1] - bgImgPos[1] + e.offsetY;
@@ -218,7 +218,7 @@ export class AddonQtypeDdMarkerQuestion {
             return [];
         }
 
-        const position = CoreDomUtils.instance.getElementXY(dragItemHome, undefined, 'ddarea');
+        const position = CoreDomUtils.getElementXY(dragItemHome, undefined, 'ddarea');
 
         return [position[0], position[1]];
     }
@@ -256,7 +256,7 @@ export class AddonQtypeDdMarkerQuestion {
         }
 
         // Check that a function to draw this shape exists.
-        const drawFunc = 'drawShape' + CoreTextUtils.instance.ucFirst(shape);
+        const drawFunc = 'drawShape' + CoreTextUtils.ucFirst(shape);
         if (!(this[drawFunc] instanceof Function)) {
             return;
         }
@@ -273,8 +273,8 @@ export class AddonQtypeDdMarkerQuestion {
             return;
         }
 
-        const width = CoreDomUtils.instance.getElementMeasure(markerSpan, true, true, false, true);
-        const height = CoreDomUtils.instance.getElementMeasure(markerSpan, false, true, false, true);
+        const width = CoreDomUtils.getElementMeasure(markerSpan, true, true, false, true);
+        const height = CoreDomUtils.getElementMeasure(markerSpan, false, true, false, true);
         markerSpan.style.opacity = '0.6';
         markerSpan.style.left = (xyForText.x - (width / 2)) + 'px';
         markerSpan.style.top = (xyForText.y - (height / 2)) + 'px';
@@ -533,10 +533,10 @@ export class AddonQtypeDdMarkerQuestion {
      * @return Coordinates.
      */
     getDragXY(dragItem: HTMLElement): number[] {
-        const position = CoreDomUtils.instance.getElementXY(dragItem, undefined, 'ddarea');
+        const position = CoreDomUtils.getElementXY(dragItem, undefined, 'ddarea');
         const bgImg = this.doc.bgImg();
         if (bgImg) {
-            const bgImgXY = CoreDomUtils.instance.getElementXY(bgImg, undefined, 'ddarea');
+            const bgImgXY = CoreDomUtils.getElementXY(bgImg, undefined, 'ddarea');
 
             position[0] -= bgImgXY[0];
             position[1] -= bgImgXY[1];
@@ -746,8 +746,8 @@ export class AddonQtypeDdMarkerQuestion {
                     dragItem.classList.add('placed');
 
                     const computedStyle = getComputedStyle(dragItem);
-                    const left = coords[i][0] - CoreDomUtils.instance.getComputedStyleMeasure(computedStyle, 'marginLeft');
-                    const top = coords[i][1] - CoreDomUtils.instance.getComputedStyleMeasure(computedStyle, 'marginTop');
+                    const left = coords[i][0] - CoreDomUtils.getComputedStyleMeasure(computedStyle, 'marginLeft');
+                    const top = coords[i][1] - CoreDomUtils.getComputedStyleMeasure(computedStyle, 'marginTop');
 
                     dragItem.style.left = left + 'px';
                     dragItem.style.top = top + 'px';

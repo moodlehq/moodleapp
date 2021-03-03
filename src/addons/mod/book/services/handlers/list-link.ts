@@ -36,9 +36,9 @@ export class AddonModBookListLinkHandlerService extends CoreContentLinksModuleLi
      * @return Whether the handler is enabled for the URL and site.
      */
     isEnabled(): Promise<boolean> {
-        return AddonModBook.instance.isPluginEnabled();
+        return AddonModBook.isPluginEnabled();
     }
 
 }
 
-export class AddonModBookListLinkHandler extends makeSingleton(AddonModBookListLinkHandlerService) {}
+export const AddonModBookListLinkHandler = makeSingleton(AddonModBookListLinkHandlerService);

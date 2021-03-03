@@ -44,7 +44,7 @@ export class AddonModForumTagAreaHandlerService implements CoreTagAreaHandler {
      * @return Area items (or promise resolved with the items).
      */
     parseContent(content: string): CoreTagFeedElement[] {
-        return CoreTagHelper.instance.parseFeedContent(content);
+        return CoreTagHelper.parseFeedContent(content);
     }
 
     /**
@@ -59,4 +59,4 @@ export class AddonModForumTagAreaHandlerService implements CoreTagAreaHandler {
 
 }
 
-export class AddonModForumTagAreaHandler extends makeSingleton(AddonModForumTagAreaHandlerService) {}
+export const AddonModForumTagAreaHandler = makeSingleton(AddonModForumTagAreaHandlerService);

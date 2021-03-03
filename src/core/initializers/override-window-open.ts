@@ -15,7 +15,7 @@
 import { Platform } from '@singletons';
 
 export default async function(): Promise<void> {
-    await Platform.instance.ready();
+    await Platform.ready();
 
     if (!window.cordova?.InAppBrowser) {
         return;

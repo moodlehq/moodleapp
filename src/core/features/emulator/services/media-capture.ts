@@ -36,7 +36,7 @@ export class MediaCaptureMock extends MediaCapture {
      * @return Promise resolved when captured.
      */
     captureAudio(options: CaptureAudioOptions): Promise<MediaFile[]> {
-        return CoreEmulatorCaptureHelper.instance.captureMedia('audio', options);
+        return CoreEmulatorCaptureHelper.captureMedia('audio', options);
     }
 
     /**
@@ -46,7 +46,7 @@ export class MediaCaptureMock extends MediaCapture {
      * @return Promise resolved when captured.
      */
     captureImage(options: CaptureImageOptions): Promise<MediaFile[]> {
-        return CoreEmulatorCaptureHelper.instance.captureMedia('captureimage', options);
+        return CoreEmulatorCaptureHelper.captureMedia('captureimage', options);
     }
 
     /**
@@ -56,7 +56,7 @@ export class MediaCaptureMock extends MediaCapture {
      * @return Promise resolved when captured.
      */
     captureVideo(options: CaptureVideoOptions): Promise<MediaFile[]> {
-        return CoreEmulatorCaptureHelper.instance.captureMedia('video', options);
+        return CoreEmulatorCaptureHelper.captureMedia('video', options);
     }
 
 }

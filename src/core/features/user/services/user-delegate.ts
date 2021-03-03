@@ -248,7 +248,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
         const userData = this.userHandlers[user.id];
         userData.handlers = [];
 
-        await CoreUtils.instance.allPromises(Object.keys(this.enabledHandlers).map(async (name) => {
+        await CoreUtils.allPromises(Object.keys(this.enabledHandlers).map(async (name) => {
             // Checks if the handler is enabled for the user.
             const handler = this.handlers[name];
 
@@ -276,7 +276,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
 
 }
 
-export class CoreUserDelegate extends makeSingleton(CoreUserDelegateService) {}
+export const CoreUserDelegate = makeSingleton(CoreUserDelegateService);
 
 /**
  * Data passed to UPDATE_HANDLER_EVENT event.

@@ -66,22 +66,22 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
                 }
             },
 
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
 
         // Refresh the enabled flags if site is updated.
         this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-            this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
-            this.downloadAllCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
-        }, CoreSites.instance.getCurrentSiteId());
+            this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
+            this.downloadAllCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
+        }, CoreSites.getCurrentSiteId());
     }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
-        this.downloadAllCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
+        this.downloadAllCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
         this.fetchCourses().finally(() => {
             this.coursesLoaded = true;
@@ -95,15 +95,15 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
      */
     protected async fetchCourses(): Promise<void> {
         try {
-            const courses: CoreEnrolledCourseDataWithExtraInfoAndOptions[] = await CoreCourses.instance.getUserCourses();
+            const courses: CoreEnrolledCourseDataWithExtraInfoAndOptions[] = await CoreCourses.getUserCourses();
             const courseIds = courses.map((course) => course.id);
 
             this.courseIds = courseIds.join(',');
 
-            await CoreCoursesHelper.instance.loadCoursesExtraInfo(courses);
+            await CoreCoursesHelper.loadCoursesExtraInfo(courses);
 
-            if (CoreCourses.instance.canGetAdminAndNavOptions()) {
-                const options = await CoreCourses.instance.getCoursesAdminAndNavOptions(courseIds);
+            if (CoreCourses.canGetAdminAndNavOptions()) {
+                const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);
                 courses.forEach((course) => {
                     course.navOptions = options.navOptions[course.id];
                     course.admOptions = options.admOptions[course.id];
@@ -114,7 +114,7 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
             this.filteredCourses = this.courses;
             this.filter = '';
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
         }
     }
 
@@ -126,10 +126,10 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
     refreshCourses(refresher: CustomEvent<IonRefresher>): void {
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCourses.instance.invalidateUserCourses());
-        promises.push(CoreCourseOptionsDelegate.instance.clearAndInvalidateCoursesOptions());
+        promises.push(CoreCourses.invalidateUserCourses());
+        promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
         if (this.courseIds) {
-            promises.push(CoreCourses.instance.invalidateCoursesByField('ids', this.courseIds));
+            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds));
         }
 
         Promise.all(promises).finally(() => {
@@ -182,12 +182,12 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
         this.downloadAllCoursesLoading = true;
 
         try {
-            await CoreCourseHelper.instance.confirmAndPrefetchCourses(this.courses, (progress) => {
+            await CoreCourseHelper.confirmAndPrefetchCourses(this.courses, (progress) => {
                 this.downloadAllCoursesBadge = progress.count + ' / ' + progress.total;
             });
         } catch (error) {
             if (!this.isDestroyed) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
             }
         }
 
@@ -199,7 +199,7 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     openSearch(): void {
-        CoreNavigator.instance.navigate('courses/search');
+        CoreNavigator.navigate('courses/search');
     }
 
     /**

@@ -64,10 +64,10 @@ export class AddonModLessonUserRetakePage implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.lessonId = CoreNavigator.instance.getRouteNumberParam('lessonId')!;
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId')!;
-        this.userId = CoreNavigator.instance.getRouteNumberParam('userId') || CoreSites.instance.getCurrentSiteUserId();
-        this.retakeNumber = CoreNavigator.instance.getRouteNumberParam('retake');
+        this.lessonId = CoreNavigator.getRouteNumberParam('lessonId')!;
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
+        this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSiteUserId();
+        this.retakeNumber = CoreNavigator.getRouteNumberParam('retake');
 
         // Fetch the data.
         this.fetchData().finally(() => {
@@ -87,7 +87,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
             await this.setRetake(retakeNumber);
         } catch (error) {
             this.selectedRetake = this.previousSelectedRetake;
-            CoreDomUtils.instance.showErrorModal(CoreUtils.instance.addDataNotDownloadedError(error, 'Error getting attempt.'));
+            CoreDomUtils.showErrorModal(CoreUtils.addDataNotDownloadedError(error, 'Error getting attempt.'));
         } finally {
             this.loaded = true;
         }
@@ -111,10 +111,10 @@ export class AddonModLessonUserRetakePage implements OnInit {
      */
     protected async fetchData(): Promise<void> {
         try {
-            this.lesson = await AddonModLesson.instance.getLessonById(this.courseId, this.lessonId);
+            this.lesson = await AddonModLesson.getLessonById(this.courseId, this.lessonId);
 
             // Get the retakes overview for all participants.
-            const data = await AddonModLesson.instance.getRetakesOverview(this.lesson.id, {
+            const data = await AddonModLesson.getRetakesOverview(this.lesson.id, {
                 cmId: this.lesson.coursemodule,
             });
 
@@ -122,22 +122,22 @@ export class AddonModLessonUserRetakePage implements OnInit {
             const student: StudentData | undefined = data?.students?.find(student => student.id == this.userId);
             if (!student) {
                 // Student not found.
-                throw new CoreError(Translate.instance.instant('addon.mod_lesson.cannotfinduser'));
+                throw new CoreError(Translate.instant('addon.mod_lesson.cannotfinduser'));
             }
 
             if (!student.attempts.length) {
                 // No retakes.
-                throw new CoreError(Translate.instance.instant('addon.mod_lesson.cannotfindattempt'));
+                throw new CoreError(Translate.instant('addon.mod_lesson.cannotfindattempt'));
             }
 
-            student.bestgrade = CoreTextUtils.instance.roundToDecimals(student.bestgrade, 2);
+            student.bestgrade = CoreTextUtils.roundToDecimals(student.bestgrade, 2);
             student.attempts.forEach((retake) => {
                 if (!this.selectedRetake && this.retakeNumber == retake.try) {
                     // The retake specified as parameter exists. Use it.
                     this.selectedRetake = this.retakeNumber;
                 }
 
-                retake.label = AddonModLessonHelper.instance.getRetakeLabel(retake);
+                retake.label = AddonModLessonHelper.getRetakeLabel(retake);
             });
 
             if (!this.selectedRetake) {
@@ -146,14 +146,14 @@ export class AddonModLessonUserRetakePage implements OnInit {
             }
 
             // Get the profile image of the user.
-            const user = await CoreUtils.instance.ignoreErrors(CoreUser.instance.getProfile(student.id, this.courseId, true));
+            const user = await CoreUtils.ignoreErrors(CoreUser.getProfile(student.id, this.courseId, true));
 
             this.student = student;
             this.student.profileimageurl = user?.profileimageurl;
 
             await this.setRetake(this.selectedRetake);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error getting data.', true);
+            CoreDomUtils.showErrorModalDefault(error, 'Error getting data.', true);
         }
     }
 
@@ -165,13 +165,13 @@ export class AddonModLessonUserRetakePage implements OnInit {
     protected async refreshData(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonModLesson.instance.invalidateLessonData(this.courseId));
+        promises.push(AddonModLesson.invalidateLessonData(this.courseId));
         if (this.lesson) {
-            promises.push(AddonModLesson.instance.invalidateRetakesOverview(this.lesson.id));
-            promises.push(AddonModLesson.instance.invalidateUserRetakesForUser(this.lesson.id, this.userId));
+            promises.push(AddonModLesson.invalidateRetakesOverview(this.lesson.id));
+            promises.push(AddonModLesson.invalidateUserRetakesForUser(this.lesson.id, this.userId));
         }
 
-        await CoreUtils.instance.ignoreErrors(Promise.all(promises));
+        await CoreUtils.ignoreErrors(Promise.all(promises));
 
         await this.fetchData();
     }
@@ -185,7 +185,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
     protected async setRetake(retakeNumber: number): Promise<void> {
         this.selectedRetake = retakeNumber;
 
-        const retakeData = await AddonModLesson.instance.getUserRetake(this.lessonId, retakeNumber, {
+        const retakeData = await AddonModLesson.getUserRetake(this.lessonId, retakeNumber, {
             cmId: this.lesson!.coursemodule,
             userId: this.userId,
         });
@@ -205,28 +205,28 @@ export class AddonModLessonUserRetakePage implements OnInit {
 
         if (formattedData.userstats.gradeinfo) {
             // Completed.
-            formattedData.userstats.grade = CoreTextUtils.instance.roundToDecimals(formattedData.userstats.grade, 2);
-            this.timeTakenReadable = CoreTimeUtils.instance.formatTime(formattedData.userstats.timetotake);
+            formattedData.userstats.grade = CoreTextUtils.roundToDecimals(formattedData.userstats.grade, 2);
+            this.timeTakenReadable = CoreTimeUtils.formatTime(formattedData.userstats.timetotake);
         }
 
         // Format pages data.
         formattedData.answerpages.forEach((page) => {
-            if (AddonModLesson.instance.answerPageIsContent(page)) {
+            if (AddonModLesson.answerPageIsContent(page)) {
                 page.isContent = true;
 
                 if (page.answerdata?.answers) {
                     page.answerdata.answers.forEach((answer) => {
                         // Content pages only have 1 valid field in the answer array.
-                        answer[0] = AddonModLessonHelper.instance.getContentPageAnswerDataFromHtml(answer[0]);
+                        answer[0] = AddonModLessonHelper.getContentPageAnswerDataFromHtml(answer[0]);
                     });
                 }
-            } else if (AddonModLesson.instance.answerPageIsQuestion(page)) {
+            } else if (AddonModLesson.answerPageIsQuestion(page)) {
                 page.isQuestion = true;
 
                 if (page.answerdata?.answers) {
                     page.answerdata.answers.forEach((answer) => {
                         // Only the first field of the answer array requires to be parsed.
-                        answer[0] = AddonModLessonHelper.instance.getQuestionPageAnswerDataFromHtml(answer[0]);
+                        answer[0] = AddonModLessonHelper.getQuestionPageAnswerDataFromHtml(answer[0]);
                     });
                 }
             }

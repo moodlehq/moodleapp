@@ -31,7 +31,7 @@ import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate
             multi: true,
             deps: [],
             useFactory: () => () => {
-                AddonModAssignFeedbackDelegate.instance.registerHandler(AddonModAssignFeedbackEditPdfHandler.instance);
+                AddonModAssignFeedbackDelegate.registerHandler(AddonModAssignFeedbackEditPdfHandler.instance);
             },
         },
     ],

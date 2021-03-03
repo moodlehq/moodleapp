@@ -50,4 +50,4 @@ export class AddonBlockCommentsHandlerService extends CoreBlockBaseHandler {
 
 }
 
-export class AddonBlockCommentsHandler extends makeSingleton(AddonBlockCommentsHandlerService) {}
+export const AddonBlockCommentsHandler = makeSingleton(AddonBlockCommentsHandlerService);

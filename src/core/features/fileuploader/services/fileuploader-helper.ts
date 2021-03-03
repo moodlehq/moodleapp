@@ -66,9 +66,9 @@ export class CoreFileUploaderHelperProvider {
         mimetypes?: string[],
     ): Promise<CoreWSUploadFileResult | FileEntry> {
 
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
-        const result = await Chooser.instance.getFile(mimetypes ? mimetypes.join(',') : undefined);
+        const result = await Chooser.getFile(mimetypes ? mimetypes.join(',') : undefined);
 
         modal.dismiss();
 
@@ -83,13 +83,13 @@ export class CoreFileUploaderHelperProvider {
         }
 
         // Verify that the mimetype is supported.
-        const error = CoreFileUploader.instance.isInvalidMimetype(mimetypes, result.name, result.mediaType);
+        const error = CoreFileUploader.isInvalidMimetype(mimetypes, result.name, result.mediaType);
 
         if (error) {
             throw new CoreError(error);
         }
 
-        const options = CoreFileUploader.instance.getFileUploadOptions(result.uri, result.name, result.mediaType, true);
+        const options = CoreFileUploader.getFileUploadOptions(result.uri, result.name, result.mediaType, true);
 
         if (upload) {
             return this.uploadFile(result.uri, maxSize || -1, true, options);
@@ -119,8 +119,8 @@ export class CoreFileUploaderHelperProvider {
             return;
         }
 
-        if (!allowOffline && !CoreApp.instance.isOnline()) {
-            throw new CoreError(Translate.instance.instant('core.fileuploader.errormustbeonlinetoupload'));
+        if (!allowOffline && !CoreApp.isOnline()) {
+            throw new CoreError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
         }
 
         wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreFileUploaderProvider.WIFI_SIZE_WARNING : wifiThreshold;
@@ -128,15 +128,15 @@ export class CoreFileUploaderHelperProvider {
             CoreFileUploaderProvider.LIMITED_SIZE_WARNING : limitedThreshold;
 
         if (size < 0) {
-            return CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.fileuploader.confirmuploadunknownsize'));
-        } else if (size >= wifiThreshold || (CoreApp.instance.isNetworkAccessLimited() && size >= limitedThreshold)) {
-            const readableSize = CoreTextUtils.instance.bytesToSize(size, 2);
+            return CoreDomUtils.showConfirm(Translate.instant('core.fileuploader.confirmuploadunknownsize'));
+        } else if (size >= wifiThreshold || (CoreApp.isNetworkAccessLimited() && size >= limitedThreshold)) {
+            const readableSize = CoreTextUtils.bytesToSize(size, 2);
 
-            return CoreDomUtils.instance.showConfirm(
-                Translate.instance.instant('core.fileuploader.confirmuploadfile', { size: readableSize }),
+            return CoreDomUtils.showConfirm(
+                Translate.instant('core.fileuploader.confirmuploadfile', { size: readableSize }),
             );
         } else if (alwaysConfirm) {
-            return CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.areyousure'));
+            return CoreDomUtils.showConfirm(Translate.instant('core.areyousure'));
         }
     }
 
@@ -151,17 +151,17 @@ export class CoreFileUploaderHelperProvider {
     async copyAndUploadFile(file: IFile | File, upload?: boolean, name?: string): Promise<CoreWSUploadFileResult | FileEntry> {
         name = name || file.name;
 
-        const modal = await CoreDomUtils.instance.showModalLoading('core.fileuploader.readingfile', true);
+        const modal = await CoreDomUtils.showModalLoading('core.fileuploader.readingfile', true);
         let fileEntry: FileEntry | undefined;
 
         try {
             // Get unique name for the copy.
-            const newName = await CoreFile.instance.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, name);
+            const newName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, name);
 
-            const filePath = CoreTextUtils.instance.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
+            const filePath = CoreTextUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
 
             // Write the data into the file.
-            fileEntry = await CoreFile.instance.writeFileDataInFile(
+            fileEntry = await CoreFile.writeFileDataInFile(
                 file,
                 filePath,
                 (progress: CoreFileProgressEvent) => this.showProgressModal(modal, 'core.fileuploader.readingfileperc', progress),
@@ -200,14 +200,14 @@ export class CoreFileUploaderHelperProvider {
         options?: CoreFileUploaderOptions,
     ): Promise<FileEntry> {
 
-        const fileName = options?.fileName || CoreFile.instance.getFileAndDirectoryFromPath(path).name;
+        const fileName = options?.fileName || CoreFile.getFileAndDirectoryFromPath(path).name;
 
         // Check that size isn't too large.
         if (typeof maxSize != 'undefined' && maxSize != -1) {
             try {
-                const fileEntry = await CoreFile.instance.getExternalFile(path);
+                const fileEntry = await CoreFile.getExternalFile(path);
 
-                const fileData = await CoreFile.instance.getFileObjectFromFileEntry(fileEntry);
+                const fileData = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 
                 if (fileData.size > maxSize) {
                     throw this.createMaxBytesError(maxSize, fileEntry.name);
@@ -219,14 +219,14 @@ export class CoreFileUploaderHelperProvider {
 
         // File isn't too large.
         // Get a unique name in the folder to prevent overriding another file.
-        const newName = await CoreFile.instance.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, fileName, defaultExt);
+        const newName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, fileName, defaultExt);
 
         // Now move or copy the file.
-        const destPath = CoreTextUtils.instance.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
+        const destPath = CoreTextUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
         if (shouldDelete) {
-            return CoreFile.instance.moveExternalFile(path, destPath);
+            return CoreFile.moveExternalFile(path, destPath);
         } else {
-            return CoreFile.instance.copyExternalFile(path, destPath);
+            return CoreFile.copyExternalFile(path, destPath);
         }
     }
 
@@ -238,10 +238,10 @@ export class CoreFileUploaderHelperProvider {
      * @return Message.
      */
     protected createMaxBytesError(maxSize: number, fileName: string): CoreError {
-        return new CoreError(Translate.instance.instant('core.fileuploader.maxbytesfile', {
+        return new CoreError(Translate.instant('core.fileuploader.maxbytesfile', {
             $a: {
                 file: fileName,
-                size: CoreTextUtils.instance.bytesToSize(maxSize, 2),
+                size: CoreTextUtils.bytesToSize(maxSize, 2),
             },
         }));
     }
@@ -277,17 +277,17 @@ export class CoreFileUploaderHelperProvider {
      * @return File name, undefined if cannot get it.
      */
     protected getChosenFileNameFromPath(result: ChooserResult): string | undefined {
-        const nameAndDir = CoreFile.instance.getFileAndDirectoryFromPath(result.uri);
+        const nameAndDir = CoreFile.getFileAndDirectoryFromPath(result.uri);
 
         if (!nameAndDir.name) {
             return;
         }
 
-        let extension = CoreMimetypeUtils.instance.getFileExtension(nameAndDir.name);
+        let extension = CoreMimetypeUtils.getFileExtension(nameAndDir.name);
 
         if (!extension) {
             // The URI doesn't have an extension, add it now.
-            extension = CoreMimetypeUtils.instance.getExtension(result.mediaType);
+            extension = CoreMimetypeUtils.getExtension(result.mediaType);
 
             if (extension) {
                 nameAndDir.name += '.' + extension;
@@ -343,21 +343,21 @@ export class CoreFileUploaderHelperProvider {
     ): Promise<CoreWSUploadFileResult | FileEntry> {
         // Create the cancel button and get the handlers to upload the file.
         const buttons: ActionSheetButton[] = [{
-            text: Translate.instance.instant('core.cancel'),
+            text: Translate.instant('core.cancel'),
             role: 'cancel',
             handler: (): void => {
                 // User cancelled the action sheet.
                 this.filePickerClosed();
             },
         }];
-        const handlers = CoreFileUploaderDelegate.instance.getHandlers(mimetypes);
+        const handlers = CoreFileUploaderDelegate.getHandlers(mimetypes);
 
-        this.filePickerDeferred = CoreUtils.instance.promiseDefer();
+        this.filePickerDeferred = CoreUtils.promiseDefer();
 
         // Create a button for each handler.
         handlers.forEach((handler) => {
             buttons.push({
-                text: Translate.instance.instant(handler.title),
+                text: Translate.instant(handler.title),
                 icon: handler.icon,
                 cssClass: handler.class,
                 handler: async (): Promise<boolean> => {
@@ -366,9 +366,9 @@ export class CoreFileUploaderHelperProvider {
                         return false;
                     }
 
-                    if (!allowOffline && !CoreApp.instance.isOnline()) {
+                    if (!allowOffline && !CoreApp.isOnline()) {
                         // Not allowed, show error.
-                        CoreDomUtils.instance.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
+                        CoreDomUtils.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
 
                         return false;
                     }
@@ -391,10 +391,10 @@ export class CoreFileUploaderHelperProvider {
 
                             try {
                                 // The handler provided a path. First treat it like it's a relative path.
-                                fileEntry = await CoreFile.instance.getFile(data.path);
+                                fileEntry = await CoreFile.getFile(data.path);
                             } catch (error) {
                                 // File not found, it's probably an absolute path.
-                                fileEntry = await CoreFile.instance.getExternalFile(data.path);
+                                fileEntry = await CoreFile.getExternalFile(data.path);
                             }
 
                             // File found, treat it.
@@ -406,9 +406,9 @@ export class CoreFileUploaderHelperProvider {
                         // Nothing received, fail.
                         throw new CoreError('No file received');
                     } catch (error) {
-                        CoreDomUtils.instance.showErrorModalDefault(
+                        CoreDomUtils.showErrorModalDefault(
                             error,
-                            Translate.instance.instant('core.fileuploader.errorreadingfile'),
+                            Translate.instant('core.fileuploader.errorreadingfile'),
                         );
 
                         return false;
@@ -417,8 +417,8 @@ export class CoreFileUploaderHelperProvider {
             });
         });
 
-        this.actionSheet = await ActionSheetController.instance.create({
-            header: title ? title : Translate.instance.instant('core.fileuploader.' + (upload ? 'uploadafile' : 'selectafile')),
+        this.actionSheet = await ActionSheetController.create({
+            header: title ? title : Translate.instant('core.fileuploader.' + (upload ? 'uploadafile' : 'selectafile')),
             buttons: buttons,
         });
         await this.actionSheet.present();
@@ -445,15 +445,15 @@ export class CoreFileUploaderHelperProvider {
      */
     async showConfirmAndUploadInSite(fileEntry: FileEntry, deleteAfterUpload?: boolean, siteId?: string): Promise<void> {
         try {
-            const file = await CoreFile.instance.getFileObjectFromFileEntry(fileEntry);
+            const file = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 
             await this.confirmUploadFile(file.size);
 
             await this.uploadGenericFile(fileEntry.toURL(), file.name, file.type, deleteAfterUpload, siteId);
 
-            CoreDomUtils.instance.showToast('core.fileuploader.fileuploaded', true, undefined, 'core-toast-success');
+            CoreDomUtils.showToast('core.fileuploader.fileuploaded', true, undefined, 'core-toast-success');
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.fileuploader.errorreadingfile', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.fileuploader.errorreadingfile', true);
 
             throw error;
         }
@@ -473,8 +473,8 @@ export class CoreFileUploaderHelperProvider {
                 // Error, not cancelled.
                 this.logger.error('Error while recording audio/video', error);
 
-                const message = this.isNoAppError(error) ? Translate.instance.instant('core.fileuploader.errornoapp') :
-                    (error.message || Translate.instance.instant(defaultMessage));
+                const message = this.isNoAppError(error) ? Translate.instant('core.fileuploader.errornoapp') :
+                    (error.message || Translate.instant(defaultMessage));
 
                 throw new CoreError(message);
             } else {
@@ -545,18 +545,18 @@ export class CoreFileUploaderHelperProvider {
         let media: MediaFile;
 
         try {
-            const medias = isAudio ? await CoreFileUploader.instance.captureAudio(captureOptions) :
-                await CoreFileUploader.instance.captureVideo(captureOptions);
+            const medias = isAudio ? await CoreFileUploader.captureAudio(captureOptions) :
+                await CoreFileUploader.captureVideo(captureOptions);
 
             media = medias[0]; // We used limit 1, we only want 1 media.
         } catch (error) {
 
-            if (isAudio && this.isNoAppError(error) && CoreApp.instance.isMobile() &&
-                    (!Platform.instance.is('android') || CoreApp.instance.getPlatformMajorVersion() < 10)) {
+            if (isAudio && this.isNoAppError(error) && CoreApp.isMobile() &&
+                    (!Platform.is('android') || CoreApp.getPlatformMajorVersion() < 10)) {
                 // No app to record audio, fallback to capture it ourselves.
                 // In Android it will only be done in Android 9 or lower because there's a bug in the plugin.
                 try {
-                    media = await CoreFileUploader.instance.captureAudioInApp();
+                    media = await CoreFileUploader.captureAudioInApp();
                 } catch (error) {
                     throw this.treatCaptureError(error, 'core.fileuploader.errorcapturingaudio'); // Throw the right error.
                 }
@@ -569,18 +569,18 @@ export class CoreFileUploaderHelperProvider {
         }
 
         let path = media.fullPath;
-        const error = CoreFileUploader.instance.isInvalidMimetype(mimetypes, path); // Verify that the mimetype is supported.
+        const error = CoreFileUploader.isInvalidMimetype(mimetypes, path); // Verify that the mimetype is supported.
 
         if (error) {
             throw new Error(error);
         }
 
         // Make sure the path has the protocol. In iOS it doesn't.
-        if (CoreApp.instance.isMobile() && path.indexOf('file://') == -1) {
+        if (CoreApp.isMobile() && path.indexOf('file://') == -1) {
             path = 'file://' + path;
         }
 
-        const options = CoreFileUploader.instance.getMediaUploadOptions(media);
+        const options = CoreFileUploader.getMediaUploadOptions(media);
 
         if (upload) {
             return this.uploadFile(path, maxSize || -1, true, options);
@@ -608,7 +608,7 @@ export class CoreFileUploaderHelperProvider {
         deleteAfterUpload?: boolean,
         siteId?: string,
     ): Promise<CoreWSUploadFileResult> {
-        const options = CoreFileUploader.instance.getFileUploadOptions(uri, name, type, deleteAfterUpload);
+        const options = CoreFileUploader.getFileUploadOptions(uri, name, type, deleteAfterUpload);
 
         return this.uploadFile(uri, -1, false, options, siteId);
     }
@@ -632,56 +632,56 @@ export class CoreFileUploaderHelperProvider {
 
         const options: CameraOptions = {
             quality: 50,
-            destinationType: Camera.instance.DestinationType.FILE_URI,
+            destinationType: Camera.DestinationType.FILE_URI,
             correctOrientation: true,
         };
 
         if (fromAlbum) {
-            const imageSupported = !mimetypes || CoreUtils.instance.indexOfRegexp(mimetypes, /^image\//) > -1;
-            const videoSupported = !mimetypes || CoreUtils.instance.indexOfRegexp(mimetypes, /^video\//) > -1;
+            const imageSupported = !mimetypes || CoreUtils.indexOfRegexp(mimetypes, /^image\//) > -1;
+            const videoSupported = !mimetypes || CoreUtils.indexOfRegexp(mimetypes, /^video\//) > -1;
 
-            options.sourceType = Camera.instance.PictureSourceType.PHOTOLIBRARY;
+            options.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
             options.popoverOptions = {
                 x: 10,
                 y: 10,
-                width: Platform.instance.width() - 200,
-                height: Platform.instance.height() - 200,
-                arrowDir: Camera.instance.PopoverArrowDirection.ARROW_ANY,
+                width: Platform.width() - 200,
+                height: Platform.height() - 200,
+                arrowDir: Camera.PopoverArrowDirection.ARROW_ANY,
             };
 
             // Determine the mediaType based on the mimetypes.
             if (imageSupported && !videoSupported) {
-                options.mediaType = Camera.instance.MediaType.PICTURE;
+                options.mediaType = Camera.MediaType.PICTURE;
             } else if (!imageSupported && videoSupported) {
-                options.mediaType = Camera.instance.MediaType.VIDEO;
-            } else if (CoreApp.instance.isIOS()) {
+                options.mediaType = Camera.MediaType.VIDEO;
+            } else if (CoreApp.isIOS()) {
                 // Only get all media in iOS because in Android using this option allows uploading any kind of file.
-                options.mediaType = Camera.instance.MediaType.ALLMEDIA;
+                options.mediaType = Camera.MediaType.ALLMEDIA;
             }
         } else if (mimetypes) {
             if (mimetypes.indexOf('image/jpeg') > -1) {
-                options.encodingType = Camera.instance.EncodingType.JPEG;
+                options.encodingType = Camera.EncodingType.JPEG;
             } else if (mimetypes.indexOf('image/png') > -1) {
-                options.encodingType = Camera.instance.EncodingType.PNG;
+                options.encodingType = Camera.EncodingType.PNG;
             }
         }
 
         let path: string | undefined;
 
         try {
-            path = await CoreFileUploader.instance.getPicture(options);
+            path = await CoreFileUploader.getPicture(options);
         } catch (error) {
             const defaultError = fromAlbum ? 'core.fileuploader.errorgettingimagealbum' : 'core.fileuploader.errorcapturingimage';
 
             throw this.treatImageError(error, defaultError);
         }
 
-        const error = CoreFileUploader.instance.isInvalidMimetype(mimetypes, path); // Verify that the mimetype is supported.
+        const error = CoreFileUploader.isInvalidMimetype(mimetypes, path); // Verify that the mimetype is supported.
         if (error) {
             throw new CoreError(error);
         }
 
-        const uploadOptions = CoreFileUploader.instance.getCameraUploadOptions(path, fromAlbum);
+        const uploadOptions = CoreFileUploader.getCameraUploadOptions(path, fromAlbum);
 
         if (upload) {
             return this.uploadFile(path, maxSize || -1, true, uploadOptions);
@@ -710,13 +710,13 @@ export class CoreFileUploaderHelperProvider {
         allowOffline?: boolean,
         name?: string,
     ): Promise<CoreWSUploadFileResult | FileEntry> {
-        const file = await CoreFile.instance.getFileObjectFromFileEntry(fileEntry);
+        const file = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 
         const result = await this.uploadFileObject(file, maxSize, upload, allowOffline, name);
 
         if (deleteAfter) {
             // We have uploaded and deleted a copy of the file. Now delete the original one.
-            CoreFile.instance.removeFileByFileEntry(fileEntry);
+            CoreFile.removeFileByFileEntry(fileEntry);
         }
 
         return result;
@@ -740,7 +740,7 @@ export class CoreFileUploaderHelperProvider {
         name?: string,
     ): Promise<CoreWSUploadFileResult | FileEntry> {
         if (maxSize === 0) {
-            const siteInfo = CoreSites.instance.getCurrentSite()?.getInfo();
+            const siteInfo = CoreSites.getCurrentSite()?.getInfo();
 
             if (siteInfo && siteInfo.usermaxuploadfilesize) {
                 maxSize = siteInfo.usermaxuploadfilesize;
@@ -777,17 +777,17 @@ export class CoreFileUploaderHelperProvider {
         siteId?: string,
     ): Promise<CoreWSUploadFileResult> {
 
-        const errorStr = Translate.instance.instant('core.error');
-        const retryStr = Translate.instance.instant('core.retry');
-        const uploadingStr = Translate.instance.instant('core.fileuploader.uploading');
+        const errorStr = Translate.instant('core.error');
+        const retryStr = Translate.instant('core.retry');
+        const uploadingStr = Translate.instant('core.fileuploader.uploading');
         const errorUploading = async (error): Promise<CoreWSUploadFileResult> => {
             // Allow the user to retry.
             try {
-                await CoreDomUtils.instance.showConfirm(error, errorStr, retryStr);
+                await CoreDomUtils.showConfirm(error, errorStr, retryStr);
             } catch (error) {
                 // User cancelled. Delete the file if needed.
                 if (options.deleteAfterUpload) {
-                    CoreFile.instance.removeExternalFile(path);
+                    CoreFile.removeExternalFile(path);
                 }
 
                 throw new CoreCanceledError();
@@ -797,8 +797,8 @@ export class CoreFileUploaderHelperProvider {
             return this.uploadFile(path, maxSize, checkSize, options, siteId);
         };
 
-        if (!CoreApp.instance.isOnline()) {
-            return errorUploading(Translate.instance.instant('core.fileuploader.errormustbeonlinetoupload'));
+        if (!CoreApp.isOnline()) {
+            return errorUploading(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
         }
 
         let file: IFile | undefined;
@@ -807,9 +807,9 @@ export class CoreFileUploaderHelperProvider {
         if (checkSize) {
             try {
                 // Check that file size is the right one.
-                const fileEntry = await CoreFile.instance.getExternalFile(path);
+                const fileEntry = await CoreFile.getExternalFile(path);
 
-                file = await CoreFile.instance.getFileObjectFromFileEntry(fileEntry);
+                file = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 
                 size = file.size;
             } catch (error) {
@@ -826,10 +826,10 @@ export class CoreFileUploaderHelperProvider {
         }
 
         // File isn't too large and user confirmed, let's upload.
-        const modal = await CoreDomUtils.instance.showModalLoading(uploadingStr);
+        const modal = await CoreDomUtils.showModalLoading(uploadingStr);
 
         try {
-            return await CoreFileUploader.instance.uploadFile(
+            return await CoreFileUploader.uploadFile(
                 path,
                 options,
                 (progress: ProgressEvent) => {
@@ -873,10 +873,10 @@ export class CoreFileUploaderHelperProvider {
 
         const contentElement = modal.loading?.querySelector('.loading-content');
         if (contentElement) {
-            contentElement.innerHTML = Translate.instance.instant(stringKey, { $a: perc.toFixed(1) });
+            contentElement.innerHTML = Translate.instant(stringKey, { $a: perc.toFixed(1) });
         }
     }
 
 }
 
-export class CoreFileUploaderHelper extends makeSingleton(CoreFileUploaderHelperProvider) {}
+export const CoreFileUploaderHelper = makeSingleton(CoreFileUploaderHelperProvider);

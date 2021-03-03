@@ -15,5 +15,5 @@
 import { CoreFile } from '@services/file';
 
 export default async function(): Promise<void> {
-    await CoreFile.instance.clearTmpFolder();
+    await CoreFile.clearTmpFolder();
 }

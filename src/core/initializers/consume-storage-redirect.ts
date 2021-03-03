@@ -15,5 +15,5 @@
 import { CoreApp } from '@services/app';
 
 export default function(): void {
-    CoreApp.instance.consumeStorageRedirect();
+    CoreApp.consumeStorageRedirect();
 }

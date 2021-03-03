@@ -56,11 +56,11 @@ export class AddonModQuizReviewLinkHandlerService extends CoreContentLinksHandle
                 const page = parseInt(params.page, 10);
                 const quizId = data!.instance ? Number(data!.instance) : undefined;
 
-                AddonModQuizHelper.instance.handleReviewLink(attemptId, page, courseId, quizId, siteId);
+                AddonModQuizHelper.handleReviewLink(attemptId, page, courseId, quizId, siteId);
             },
         }];
     }
 
 }
 
-export class AddonModQuizReviewLinkHandler extends makeSingleton(AddonModQuizReviewLinkHandlerService) {}
+export const AddonModQuizReviewLinkHandler = makeSingleton(AddonModQuizReviewLinkHandlerService);

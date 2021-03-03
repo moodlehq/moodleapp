@@ -39,7 +39,7 @@ export class CoreCourseActivitySyncBaseProvider<T = void> extends CoreSyncBasePr
         siteId?: string,
     ): Promise<void> {
         // Get the module updates to check if the data was updated or not.
-        const result = await CoreCourseModulePrefetchDelegate.instance.getModuleUpdates(module, courseId, true, siteId);
+        const result = await CoreCourseModulePrefetchDelegate.getModuleUpdates(module, courseId, true, siteId);
 
         if (!result?.updates.length) {
             return;

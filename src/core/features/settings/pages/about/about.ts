@@ -32,7 +32,7 @@ export class CoreSettingsAboutPage {
     privacyPolicy: string;
 
     constructor() {
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
 
         this.appName = CoreConstants.CONFIG.appname;
         this.versionName = CoreConstants.CONFIG.versionname;
@@ -50,7 +50,7 @@ export class CoreSettingsAboutPage {
     openPage(page: string): void {
         // const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
         // navCtrl.push(page);
-        CoreNavigator.instance.navigate(page);
+        CoreNavigator.navigate(page);
     }
 
 }

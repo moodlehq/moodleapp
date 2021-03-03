@@ -93,14 +93,14 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         protected route: ActivatedRoute,
     ) {
 
-        this.notificationsEnabled = CoreLocalNotifications.instance.isAvailable();
-        this.siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
-        this.currentSiteId = CoreSites.instance.getCurrentSiteId();
+        this.notificationsEnabled = CoreLocalNotifications.isAvailable();
+        this.siteHomeId = CoreSites.getCurrentSiteHomeId();
+        this.currentSiteId = CoreSites.getCurrentSiteId();
         this.isSplitViewOn = this.svComponent?.outletActivated;
 
         // Check if site supports editing and deleting. No need to check allowed types, event.canedit already does it.
-        this.canEdit = AddonCalendar.instance.canEditEventsInSite();
-        this.canDelete = AddonCalendar.instance.canDeleteEventsInSite();
+        this.canEdit = AddonCalendar.canEditEventsInSite();
+        this.canDelete = AddonCalendar.canDeleteEventsInSite();
 
         this.asyncConstructor();
 
@@ -127,23 +127,23 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         );
 
         // Refresh online status when changes.
-        this.onlineObserver = Network.instance.onChange().subscribe(() => {
+        this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.instance.run(() => {
-                this.isOnline = CoreApp.instance.isOnline();
+            NgZone.run(() => {
+                this.isOnline = CoreApp.isOnline();
             });
         });
     }
 
     protected async asyncConstructor(): Promise<void> {
         if (this.notificationsEnabled) {
-            this.reminders = await AddonCalendar.instance.getEventReminders(this.eventId);
-            this.defaultTime = await AddonCalendar.instance.getDefaultNotificationTime() * 60;
+            this.reminders = await AddonCalendar.getEventReminders(this.eventId);
+            this.defaultTime = await AddonCalendar.getDefaultNotificationTime() * 60;
 
             // Calculate format to use.
             this.notificationFormat =
-                CoreTimeUtils.instance.fixFormatForDatetime(CoreTimeUtils.instance.convertPHPToMoment(
-                    Translate.instance.instant('core.strftimedatetime'),
+                CoreTimeUtils.fixFormatForDatetime(CoreTimeUtils.convertPHPToMoment(
+                    Translate.instant('core.strftimedatetime'),
                 ));
         }
     }
@@ -155,10 +155,10 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         this.route.queryParams.subscribe(() => {
             this.eventLoaded = false;
 
-            const eventId = CoreNavigator.instance.getRouteNumberParam('id');
+            const eventId = CoreNavigator.getRouteNumberParam('id');
             if (!eventId) {
-                CoreDomUtils.instance.showErrorModal('Event ID not supplied.');
-                CoreNavigator.instance.back();
+                CoreDomUtils.showErrorModal('Event ID not supplied.');
+                CoreNavigator.back();
 
                 return;
             }
@@ -178,18 +178,18 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async fetchEvent(sync = false, showErrors = false): Promise<void> {
-        const currentSite = CoreSites.instance.getCurrentSite();
-        const canGetById = AddonCalendar.instance.isGetEventByIdAvailableInSite();
+        const currentSite = CoreSites.getCurrentSite();
+        const canGetById = AddonCalendar.isGetEventByIdAvailableInSite();
         let deleted = false;
 
-        this.isOnline = CoreApp.instance.isOnline();
+        this.isOnline = CoreApp.isOnline();
 
         if (sync) {
             // Try to synchronize offline events.
             try {
-                const result = await AddonCalendarSync.instance.syncEvents();
+                const result = await AddonCalendarSync.syncEvents();
                 if (result.warnings && result.warnings.length) {
-                    CoreDomUtils.instance.showErrorModal(result.warnings[0]);
+                    CoreDomUtils.showErrorModal(result.warnings[0]);
                 }
 
                 if (result.deleted && result.deleted.indexOf(this.eventId) != -1) {
@@ -209,7 +209,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 }
             } catch (error) {
                 if (showErrors) {
-                    CoreDomUtils.instance.showErrorModalDefault(error, 'core.errorsync', true);
+                    CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
                 }
             }
         }
@@ -222,15 +222,15 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             let event: AddonCalendarEvent | AddonCalendarEventBase | AddonCalendarGetEventsEvent;
             // Get the event data.
             if (canGetById) {
-                event = await AddonCalendar.instance.getEventById(this.eventId);
+                event = await AddonCalendar.getEventById(this.eventId);
             } else {
-                event = await AddonCalendar.instance.getEvent(this.eventId);
+                event = await AddonCalendar.getEvent(this.eventId);
             }
-            this.event = AddonCalendarHelper.instance.formatEventData(event);
+            this.event = AddonCalendarHelper.formatEventData(event);
 
             try {
-                const offlineEvent = AddonCalendarHelper.instance.formatOfflineEventData(
-                    await AddonCalendarOffline.instance.getEvent(this.eventId),
+                const offlineEvent = AddonCalendarHelper.formatOfflineEventData(
+                    await AddonCalendarOffline.getEvent(this.eventId),
                 );
 
                 // There is offline data, apply it.
@@ -242,9 +242,9 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 this.hasOffline = false;
             }
 
-            this.currentTime = CoreTimeUtils.instance.timestamp();
-            this.notificationMin = CoreTimeUtils.instance.userDate(this.currentTime * 1000, 'YYYY-MM-DDTHH:mm', false);
-            this.notificationMax = CoreTimeUtils.instance.userDate(
+            this.currentTime = CoreTimeUtils.timestamp();
+            this.notificationMin = CoreTimeUtils.userDate(this.currentTime * 1000, 'YYYY-MM-DDTHH:mm', false);
+            this.notificationMax = CoreTimeUtils.userDate(
                 (this.event!.timestart + this.event!.timeduration) * 1000,
                 'YYYY-MM-DDTHH:mm',
                 false,
@@ -258,7 +258,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             if (this.event!.moduleIcon) {
                 // It's a module event, translate the module name to the current language.
-                const name = CoreCourse.instance.translateModuleName(this.event!.modulename || '');
+                const name = CoreCourse.translateModuleName(this.event!.modulename || '');
                 if (name.indexOf('core.mod_') === -1) {
                     this.event!.modulename = name;
                 }
@@ -280,10 +280,10 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                     this.courseUrl = this.event.course.viewurl;
                 } else if (!canGetById && this.event.courseid ) {
                     // Retrieve the course.
-                    promises.push(CoreCourses.instance.getUserCourse(this.event.courseid, true).then((course) => {
+                    promises.push(CoreCourses.getUserCourse(this.event.courseid, true).then((course) => {
                         this.courseId = course.id;
                         this.courseName = course.fullname;
-                        this.courseUrl = currentSite ? CoreTextUtils.instance.concatenatePaths(
+                        this.courseUrl = currentSite ? CoreTextUtils.concatenatePaths(
                             currentSite.siteUrl,
                             '/course/view.php?id=' + this.courseId,
                         ) : '';
@@ -297,7 +297,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             // If it's a group event, get the name of the group.
             if (courseId && this.event.groupid) {
-                promises.push(CoreGroups.instance.getUserGroupsInCourse(courseId).then((groups) => {
+                promises.push(CoreGroups.getUserGroupsInCourse(courseId).then((groups) => {
                     const group = groups.find((group) => group.id == this.event!.groupid);
 
                     this.groupName = group ? group.name : '';
@@ -315,27 +315,27 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             if (this.event.location) {
                 // Build a link to open the address in maps.
-                this.event.location = CoreTextUtils.instance.decodeHTML(this.event.location);
-                this.event.encodedLocation = CoreTextUtils.instance.buildAddressURL(this.event.location);
+                this.event.location = CoreTextUtils.decodeHTML(this.event.location);
+                this.event.encodedLocation = CoreTextUtils.buildAddressURL(this.event.location);
             }
 
             // Check if event was deleted in offine.
-            promises.push(AddonCalendarOffline.instance.isEventDeleted(this.eventId).then((deleted) => {
+            promises.push(AddonCalendarOffline.isEventDeleted(this.eventId).then((deleted) => {
                 this.event!.deleted = deleted;
 
                 return;
             }));
 
             // Re-calculate the formatted time so it uses the device date.
-            promises.push(AddonCalendar.instance.getCalendarTimeFormat().then(async (timeFormat) => {
-                this.event!.formattedtime = await AddonCalendar.instance.formatEventTime(this.event!, timeFormat);
+            promises.push(AddonCalendar.getCalendarTimeFormat().then(async (timeFormat) => {
+                this.event!.formattedtime = await AddonCalendar.formatEventTime(this.event!, timeFormat);
 
                 return;
             }));
 
             await Promise.all(promises);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.calendar.errorloadevent', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevent', true);
         }
 
         this.eventLoaded = true;
@@ -347,9 +347,9 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      */
     async addNotificationTime(): Promise<void> {
         if (this.notificationTimeText && this.event && this.event.id) {
-            let notificationTime = CoreTimeUtils.instance.convertToTimestamp(this.notificationTimeText);
+            let notificationTime = CoreTimeUtils.convertToTimestamp(this.notificationTimeText);
 
-            const currentTime = CoreTimeUtils.instance.timestamp();
+            const currentTime = CoreTimeUtils.timestamp();
             const minute = Math.floor(currentTime / 60) * 60;
 
             // Check if the notification time is in the same minute as we are, so the notification is triggered.
@@ -357,8 +357,8 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 notificationTime  = currentTime + 1;
             }
 
-            await AddonCalendar.instance.addEventReminder(this.event, notificationTime);
-            this.reminders = await AddonCalendar.instance.getEventReminders(this.eventId);
+            await AddonCalendar.addEventReminder(this.event, notificationTime);
+            this.reminders = await AddonCalendar.getEventReminders(this.eventId);
             this.notificationTimeText = undefined;
         }
     }
@@ -374,15 +374,15 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         e.stopPropagation();
 
         try {
-            await CoreDomUtils.instance.showDeleteConfirm();
+            await CoreDomUtils.showDeleteConfirm();
 
-            const modal = await CoreDomUtils.instance.showModalLoading('core.deleting', true);
+            const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
 
             try {
-                await AddonCalendar.instance.deleteEventReminder(id);
-                this.reminders = await AddonCalendar.instance.getEventReminders(this.eventId);
+                await AddonCalendar.deleteEventReminder(id);
+                this.reminders = await AddonCalendar.getEventReminders(this.eventId);
             } catch (error) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'Error deleting reminder');
+                CoreDomUtils.showErrorModalDefault(error, 'Error deleting reminder');
             } finally {
                 modal.dismiss();
             }
@@ -422,10 +422,10 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonCalendar.instance.invalidateEvent(this.eventId));
-        promises.push(AddonCalendar.instance.invalidateTimeFormat());
+        promises.push(AddonCalendar.invalidateEvent(this.eventId));
+        promises.push(AddonCalendar.invalidateTimeFormat());
 
-        await CoreUtils.instance.allPromisesIgnoringErrors(promises);
+        await CoreUtils.allPromisesIgnoringErrors(promises);
 
         await this.fetchEvent(sync, showErrors);
     }
@@ -436,7 +436,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     openEdit(): void {
         // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
         // @todo const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        CoreNavigator.instance.navigateToSitePath('/calendar/edit', { params: { eventId: this.eventId } });
+        CoreNavigator.navigateToSitePath('/calendar/edit', { params: { eventId: this.eventId } });
     }
 
     /**
@@ -447,13 +447,13 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             return;
         }
 
-        const title = Translate.instance.instant('addon.calendar.deleteevent');
+        const title = Translate.instant('addon.calendar.deleteevent');
         const options: AlertOptions = {};
         let message: string;
 
         if (this.event.eventcount > 1) {
             // It's a repeated event.
-            message = Translate.instance.instant(
+            message = Translate.instant(
                 'addon.calendar.confirmeventseriesdelete',
                 { $a: { name: this.event.name, count: this.event.eventcount } },
             );
@@ -464,39 +464,39 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                     name: 'deleteall',
                     checked: true,
                     value: false,
-                    label: Translate.instance.instant('addon.calendar.deleteoneevent'),
+                    label: Translate.instant('addon.calendar.deleteoneevent'),
                 },
                 {
                     type: 'radio',
                     name: 'deleteall',
                     checked: false,
                     value: true,
-                    label: Translate.instance.instant('addon.calendar.deleteallevents'),
+                    label: Translate.instant('addon.calendar.deleteallevents'),
                 },
             ];
         } else {
             // Not repeated, display a simple confirm.
-            message = Translate.instance.instant('addon.calendar.confirmeventdelete', { $a: this.event.name });
+            message = Translate.instant('addon.calendar.confirmeventdelete', { $a: this.event.name });
         }
 
         let deleteAll = false;
         try {
-            deleteAll = await CoreDomUtils.instance.showConfirm(message, title, undefined, undefined, options);
+            deleteAll = await CoreDomUtils.showConfirm(message, title, undefined, undefined, options);
         } catch {
 
             // User canceled.
             return;
         }
 
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {
-            const sent = await AddonCalendar.instance.deleteEvent(this.event.id, this.event.name, deleteAll);
+            const sent = await AddonCalendar.deleteEvent(this.event.id, this.event.name, deleteAll);
 
             if (sent) {
                 // Event deleted, invalidate right days & months.
                 try {
-                    await AddonCalendarHelper.instance.refreshAfterChangeEvent(this.event, deleteAll ? this.event.eventcount : 1);
+                    await AddonCalendarHelper.refreshAfterChangeEvent(this.event, deleteAll ? this.event.eventcount : 1);
                 } catch {
                     // Ignore errors.
                 }
@@ -506,21 +506,21 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             CoreEvents.trigger<AddonCalendarUpdatedEventEvent>(AddonCalendarProvider.DELETED_EVENT_EVENT, {
                 eventId: this.eventId,
                 sent: sent,
-            }, CoreSites.instance.getCurrentSiteId());
+            }, CoreSites.getCurrentSiteId());
 
             if (sent) {
-                CoreDomUtils.instance.showToast('addon.calendar.eventcalendareventdeleted', true, 3000);
+                CoreDomUtils.showToast('addon.calendar.eventcalendareventdeleted', true, 3000);
 
                 // Event deleted, close the view.
-                if (CoreScreen.instance.isMobile) {
-                    CoreNavigator.instance.back();
+                if (CoreScreen.isMobile) {
+                    CoreNavigator.back();
                 }
             } else {
                 // Event deleted in offline, just mark it as deleted.
                 this.event.deleted = true;
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error deleting event.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error deleting event.');
         }
 
         modal.dismiss();
@@ -534,21 +534,21 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             return;
         }
 
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {
 
-            await AddonCalendarOffline.instance.unmarkDeleted(this.event.id);
+            await AddonCalendarOffline.unmarkDeleted(this.event.id);
 
             // Trigger an event.
             CoreEvents.trigger<AddonCalendarUpdatedEventEvent>(AddonCalendarProvider.UNDELETED_EVENT_EVENT, {
                 eventId: this.eventId,
-            }, CoreSites.instance.getCurrentSiteId());
+            }, CoreSites.getCurrentSiteId());
 
             this.event.deleted = false;
 
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error undeleting event.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error undeleting event.');
         }
 
         modal.dismiss();
@@ -566,11 +566,11 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         }
 
         if (data.deleted && data.deleted.indexOf(this.eventId) != -1) {
-            CoreDomUtils.instance.showToast('addon.calendar.eventcalendareventdeleted', true, 3000);
+            CoreDomUtils.showToast('addon.calendar.eventcalendareventdeleted', true, 3000);
 
             // Event was deleted, close the view.
-            if (CoreScreen.instance.isMobile) {
-                CoreNavigator.instance.back();
+            if (CoreScreen.isMobile) {
+                CoreNavigator.back();
             }
         } else if (data.events && (!isManual || data.source != 'event')) {
             const event = data.events.find((ev) => ev.id == this.eventId);

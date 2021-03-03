@@ -48,7 +48,7 @@ export class AddonCalendarFilterPopoverComponent implements OnInit {
     types: string[] = [];
 
     constructor() {
-        CoreUtils.instance.enumKeys(AddonCalendarEventType).forEach((name) => {
+        CoreUtils.enumKeys(AddonCalendarEventType).forEach((name) => {
             const value = AddonCalendarEventType[name];
             this.typeIcons[value] = AddonCalendarEventIcons[name];
             this.types.push(value);

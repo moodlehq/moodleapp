@@ -39,7 +39,7 @@ export class CoreContentLinksHelperProvider {
     async canHandleLink(url: string, courseId?: number, username?: string, checkRoot?: boolean): Promise<boolean> {
         try {
             if (checkRoot) {
-                const data = await CoreSites.instance.isStoredRootURL(url, username);
+                const data = await CoreSites.isStoredRootURL(url, username);
 
                 if (data.site) {
                     // URL is the root of the site, can handle it.
@@ -70,7 +70,7 @@ export class CoreContentLinksHelperProvider {
         username?: string,
         data?: unknown,
     ): Promise<CoreContentLinksAction | undefined> {
-        const actions = await CoreContentLinksDelegate.instance.getActionsFor(url, courseId, username, data);
+        const actions = await CoreContentLinksDelegate.getActionsFor(url, courseId, username, data);
         if (!actions) {
             return;
         }
@@ -91,7 +91,7 @@ export class CoreContentLinksHelperProvider {
      * @deprecated since 3.9.5. Use CoreNavigator.navigateToSitePath instead.
      */
     async goInSite(navCtrlUnused: unknown, pageName: string, pageParams: Params, siteId?: string): Promise<void> {
-        await CoreNavigator.instance.navigateToSitePath(pageName, { params: pageParams, siteId });
+        await CoreNavigator.navigateToSitePath(pageName, { params: pageParams, siteId });
     }
 
     /**
@@ -101,7 +101,7 @@ export class CoreContentLinksHelperProvider {
      * @todo set correct root.
      */
     async goToChooseSite(url: string): Promise<void> {
-        await CoreNavigator.instance.navigate('CoreContentLinksChooseSitePage @todo', { params: { url }, reset: true });
+        await CoreNavigator.navigate('CoreContentLinksChooseSitePage @todo', { params: { url }, reset: true });
     }
 
     /**
@@ -122,7 +122,7 @@ export class CoreContentLinksHelperProvider {
     ): Promise<boolean> {
         try {
             if (checkRoot) {
-                const data = await CoreSites.instance.isStoredRootURL(url, username);
+                const data = await CoreSites.isStoredRootURL(url, username);
 
                 if (data.site) {
                     // URL is the root of the site.
@@ -137,20 +137,20 @@ export class CoreContentLinksHelperProvider {
             if (!action) {
                 return false;
             }
-            if (!CoreSites.instance.isLoggedIn()) {
+            if (!CoreSites.isLoggedIn()) {
                 // No current site. Perform the action if only 1 site found, choose the site otherwise.
                 if (action.sites?.length == 1) {
                     action.action(action.sites[0]);
                 } else {
                     this.goToChooseSite(url);
                 }
-            } else if (action.sites?.length == 1 && action.sites[0] == CoreSites.instance.getCurrentSiteId()) {
+            } else if (action.sites?.length == 1 && action.sites[0] == CoreSites.getCurrentSiteId()) {
                 // Current site.
                 action.action(action.sites[0]);
             } else {
                 try {
                     // Not current site or more than one site. Ask for confirmation.
-                    await CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.contentlinks.confirmurlothersite'));
+                    await CoreDomUtils.showConfirm(Translate.instant('core.contentlinks.confirmurlothersite'));
                     if (action.sites?.length == 1) {
                         action.action(action.sites[0]);
                     } else {
@@ -179,7 +179,7 @@ export class CoreContentLinksHelperProvider {
      * @return Promise resolved when done.
      */
     async handleRootURL(site: CoreSite, openBrowserRoot?: boolean, checkToken?: boolean): Promise<void> {
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
 
         if (currentSite && currentSite.getURL() == site.getURL() && (!checkToken || currentSite.getToken() == site.getToken())) {
             // Already logged in.
@@ -188,10 +188,10 @@ export class CoreContentLinksHelperProvider {
             }
         } else {
             // Login in the site.
-            await CoreNavigator.instance.navigateToSiteHome({ siteId: site.getId() });
+            await CoreNavigator.navigateToSiteHome({ siteId: site.getId() });
         }
     }
 
 }
 
-export class CoreContentLinksHelper extends makeSingleton(CoreContentLinksHelperProvider) {}
+export const CoreContentLinksHelper = makeSingleton(CoreContentLinksHelperProvider);

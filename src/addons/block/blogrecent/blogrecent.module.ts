@@ -30,7 +30,7 @@ import { AddonBlockBlogRecentComponentsModule } from './components/components.mo
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockBlogRecentHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockBlogRecentHandler.instance);
             },
         },
     ],

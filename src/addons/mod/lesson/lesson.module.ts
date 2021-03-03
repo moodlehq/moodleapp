@@ -56,14 +56,14 @@ const routes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreCourseModuleDelegate.instance.registerHandler(AddonModLessonModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.instance.registerHandler(AddonModLessonPrefetchHandler.instance);
-                CoreCronDelegate.instance.register(AddonModLessonSyncCronHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModLessonGradeLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModLessonIndexLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModLessonListLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModLessonReportLinkHandler.instance);
-                CorePushNotificationsDelegate.instance.registerClickHandler(AddonModLessonPushClickHandler.instance);
+                CoreCourseModuleDelegate.registerHandler(AddonModLessonModuleHandler.instance);
+                CoreCourseModulePrefetchDelegate.registerHandler(AddonModLessonPrefetchHandler.instance);
+                CoreCronDelegate.register(AddonModLessonSyncCronHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModLessonGradeLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModLessonIndexLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModLessonListLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModLessonReportLinkHandler.instance);
+                CorePushNotificationsDelegate.registerClickHandler(AddonModLessonPushClickHandler.instance);
             },
         },
     ],

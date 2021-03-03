@@ -79,11 +79,11 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getFiles(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreWSExternalFile[]> {
         try {
-            const quiz = await AddonModQuiz.instance.getQuiz(courseId, module.id);
+            const quiz = await AddonModQuiz.getQuiz(courseId, module.id);
 
             const files = this.getIntroFilesFromInstance(module, quiz);
 
-            const attempts = await AddonModQuiz.instance.getUserAttempts(quiz.id, {
+            const attempts = await AddonModQuiz.getUserAttempts(quiz.id, {
                 cmId: module.id,
                 readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
             });
@@ -110,21 +110,21 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         attempts: AddonModQuizAttemptWSData[],
         siteId?: string,
     ): Promise<CoreWSExternalFile[]> {
-        const getInlineFiles = CoreSites.instance.getCurrentSite()?.isVersionGreaterEqualThan('3.2');
+        const getInlineFiles = CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.2');
         let files: CoreWSExternalFile[] = [];
 
         await Promise.all(attempts.map(async (attempt) => {
-            if (!AddonModQuiz.instance.isAttemptFinished(attempt.state)) {
+            if (!AddonModQuiz.isAttemptFinished(attempt.state)) {
                 // Attempt not finished, no feedback files.
                 return;
             }
 
-            const attemptGrade = AddonModQuiz.instance.rescaleGrade(attempt.sumgrades, quiz, false);
+            const attemptGrade = AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false);
             if (typeof attemptGrade == 'undefined') {
                 return;
             }
 
-            const feedback = await AddonModQuiz.instance.getFeedbackForGrade(quiz.id, Number(attemptGrade), {
+            const feedback = await AddonModQuiz.getFeedbackForGrade(quiz.id, Number(attemptGrade), {
                 cmId: quiz.coursemodule,
                 readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
                 siteId,
@@ -134,7 +134,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
                 files = files.concat(feedback.feedbackinlinefiles);
             } else if (feedback.feedbacktext && !getInlineFiles) {
                 files = files.concat(
-                    CoreFilepool.instance.extractDownloadableFilesFromHtmlAsFakeFileObjects(feedback.feedbacktext),
+                    CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(feedback.feedbacktext),
                 );
             }
         }));
@@ -165,7 +165,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
         if (askPreflight) {
             // We can ask preflight, check if it's needed and get the data.
-            await AddonModQuizHelper.instance.getAndCheckPreflightData(
+            await AddonModQuizHelper.getAndCheckPreflightData(
                 quiz,
                 accessInfo,
                 preflightData,
@@ -179,11 +179,11 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             // Get some fixed preflight data from access rules (data that doesn't require user interaction).
             const rules = accessInfo?.activerulenames || [];
 
-            await AddonModQuizAccessRuleDelegate.instance.getFixedPreflightData(rules, quiz, preflightData, attempt, true, siteId);
+            await AddonModQuizAccessRuleDelegate.getFixedPreflightData(rules, quiz, preflightData, attempt, true, siteId);
 
             if (!attempt) {
                 // We need to create a new attempt.
-                await AddonModQuiz.instance.startAttempt(quiz.id, preflightData, false, siteId);
+                await AddonModQuiz.startAttempt(quiz.id, preflightData, false, siteId);
             }
         }
 
@@ -198,7 +198,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        return AddonModQuiz.instance.invalidateContent(moduleId, courseId);
+        return AddonModQuiz.invalidateContent(moduleId, courseId);
     }
 
     /**
@@ -211,8 +211,8 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
     async invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         // Invalidate the calls required to check if a quiz is downloadable.
         await Promise.all([
-            AddonModQuiz.instance.invalidateQuizData(courseId),
-            AddonModQuiz.instance.invalidateUserAttemptsForUser(module.instance!),
+            AddonModQuiz.invalidateQuizData(courseId),
+            AddonModQuiz.invalidateUserAttemptsForUser(module.instance!),
         ]);
     }
 
@@ -224,26 +224,26 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @return Whether the module can be downloaded. The promise should never be rejected.
      */
     async isDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
-        if (CoreSites.instance.getCurrentSite()?.isOfflineDisabled()) {
+        if (CoreSites.getCurrentSite()?.isOfflineDisabled()) {
             // Don't allow downloading the quiz if offline is disabled to prevent wasting a lot of data when opening it.
             return false;
         }
 
-        const siteId = CoreSites.instance.getCurrentSiteId();
+        const siteId = CoreSites.getCurrentSiteId();
 
-        const quiz = await AddonModQuiz.instance.getQuiz(courseId, module.id, { siteId });
+        const quiz = await AddonModQuiz.getQuiz(courseId, module.id, { siteId });
 
         if (quiz.allowofflineattempts !== 1 || quiz.hasquestions === 0) {
             return false;
         }
 
         // Not downloadable if we reached max attempts or the quiz has an unfinished attempt.
-        const attempts = await AddonModQuiz.instance.getUserAttempts(quiz.id, {
+        const attempts = await AddonModQuiz.getUserAttempts(quiz.id, {
             cmId: module.id,
             siteId,
         });
 
-        const isLastFinished = !attempts.length || AddonModQuiz.instance.isAttemptFinished(attempts[attempts.length - 1].state);
+        const isLastFinished = !attempts.length || AddonModQuiz.isAttemptFinished(attempts[attempts.length - 1].state);
 
         return quiz.attempts === 0 || quiz.attempts! > attempts.length || !isLastFinished;
     }
@@ -282,7 +282,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             return;
         }
 
-        const siteId = CoreSites.instance.getCurrentSiteId();
+        const siteId = CoreSites.getCurrentSiteId();
 
         return this.prefetchPackage(module, courseId, this.prefetchQuiz.bind(this, module, courseId, single, siteId, canStart));
     }
@@ -314,18 +314,18 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         };
 
         // Get quiz.
-        const quiz = await AddonModQuiz.instance.getQuiz(courseId, module.id, commonOptions);
+        const quiz = await AddonModQuiz.getQuiz(courseId, module.id, commonOptions);
 
         const introFiles = this.getIntroFilesFromInstance(module, quiz);
 
         // Prefetch some quiz data.
         // eslint-disable-next-line prefer-const
         let [quizAccessInfo, attempts, attemptAccessInfo] = await Promise.all([
-            AddonModQuiz.instance.getQuizAccessInformation(quiz.id, modOptions),
-            AddonModQuiz.instance.getUserAttempts(quiz.id, modOptions),
-            AddonModQuiz.instance.getAttemptAccessInformation(quiz.id, 0, modOptions),
-            AddonModQuiz.instance.getQuizRequiredQtypes(quiz.id, modOptions),
-            CoreFilepool.instance.addFilesToQueue(siteId, introFiles, AddonModQuizProvider.COMPONENT, module.id),
+            AddonModQuiz.getQuizAccessInformation(quiz.id, modOptions),
+            AddonModQuiz.getUserAttempts(quiz.id, modOptions),
+            AddonModQuiz.getAttemptAccessInformation(quiz.id, 0, modOptions),
+            AddonModQuiz.getQuizRequiredQtypes(quiz.id, modOptions),
+            CoreFilepool.addFilesToQueue(siteId, introFiles, AddonModQuizProvider.COMPONENT, module.id),
         ]);
 
         // Check if we need to start a new attempt.
@@ -334,10 +334,10 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         let startAttempt = false;
 
         if (canStart || attempt) {
-            if (canStart && (!attempt || AddonModQuiz.instance.isAttemptFinished(attempt.state))) {
+            if (canStart && (!attempt || AddonModQuiz.isAttemptFinished(attempt.state))) {
                 // Check if the user can attempt the quiz.
                 if (attemptAccessInfo.preventnewattemptreasons.length) {
-                    throw new CoreError(CoreTextUtils.instance.buildMessage(attemptAccessInfo.preventnewattemptreasons));
+                    throw new CoreError(CoreTextUtils.buildMessage(attemptAccessInfo.preventnewattemptreasons));
                 }
 
                 startAttempt = true;
@@ -352,29 +352,29 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
         if (startAttempt) {
             // Re-fetch user attempts since we created a new one.
-            promises.push(AddonModQuiz.instance.getUserAttempts(quiz.id, modOptions).then(async (atts) => {
+            promises.push(AddonModQuiz.getUserAttempts(quiz.id, modOptions).then(async (atts) => {
                 attempts = atts;
 
                 const attemptFiles = await this.getAttemptsFeedbackFiles(quiz, attempts, siteId);
 
-                return CoreFilepool.instance.addFilesToQueue(siteId, attemptFiles, AddonModQuizProvider.COMPONENT, module.id);
+                return CoreFilepool.addFilesToQueue(siteId, attemptFiles, AddonModQuizProvider.COMPONENT, module.id);
             }));
 
             // Update the download time to prevent detecting the new attempt as an update.
-            promises.push(CoreUtils.instance.ignoreErrors(
-                CoreFilepool.instance.updatePackageDownloadTime(siteId, AddonModQuizProvider.COMPONENT, module.id),
+            promises.push(CoreUtils.ignoreErrors(
+                CoreFilepool.updatePackageDownloadTime(siteId, AddonModQuizProvider.COMPONENT, module.id),
             ));
         } else {
             // Use the already fetched attempts.
             promises.push(this.getAttemptsFeedbackFiles(quiz, attempts, siteId).then((attemptFiles) =>
-                CoreFilepool.instance.addFilesToQueue(siteId, attemptFiles, AddonModQuizProvider.COMPONENT, module.id)));
+                CoreFilepool.addFilesToQueue(siteId, attemptFiles, AddonModQuizProvider.COMPONENT, module.id)));
         }
 
         // Fetch attempt related data.
-        promises.push(AddonModQuiz.instance.getCombinedReviewOptions(quiz.id, modOptions));
-        promises.push(AddonModQuiz.instance.getUserBestGrade(quiz.id, modOptions));
+        promises.push(AddonModQuiz.getCombinedReviewOptions(quiz.id, modOptions));
+        promises.push(AddonModQuiz.getUserBestGrade(quiz.id, modOptions));
         promises.push(this.prefetchGradeAndFeedback(quiz, modOptions, siteId));
-        promises.push(AddonModQuiz.instance.getAttemptAccessInformation(quiz.id, 0, modOptions)); // Last attempt.
+        promises.push(AddonModQuiz.getAttemptAccessInformation(quiz.id, 0, modOptions)); // Last attempt.
 
         await Promise.all(promises);
 
@@ -389,10 +389,10 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         }
 
         // If there's nothing to send, mark the quiz as synchronized.
-        const hasData = await AddonModQuizSync.instance.hasDataToSync(quiz.id, siteId);
+        const hasData = await AddonModQuizSync.hasDataToSync(quiz.id, siteId);
 
         if (!hasData) {
-            AddonModQuizSync.instance.setSyncTime(quiz.id, siteId);
+            AddonModQuizSync.setSyncTime(quiz.id, siteId);
         }
     }
 
@@ -411,8 +411,8 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         preflightData: Record<string, string>,
         siteId?: string,
     ): Promise<void> {
-        const pages = AddonModQuiz.instance.getPagesFromLayout(attempt.layout);
-        const isSequential = AddonModQuiz.instance.isNavigationSequential(quiz);
+        const pages = AddonModQuiz.getPagesFromLayout(attempt.layout);
+        const isSequential = AddonModQuiz.isNavigationSequential(quiz);
         let promises: Promise<unknown>[] = [];
 
         const modOptions: CoreCourseCommonModWSOptions = {
@@ -421,16 +421,16 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             siteId,
         };
 
-        if (AddonModQuiz.instance.isAttemptFinished(attempt.state)) {
+        if (AddonModQuiz.isAttemptFinished(attempt.state)) {
             // Attempt is finished, get feedback and review data.
-            const attemptGrade = AddonModQuiz.instance.rescaleGrade(attempt.sumgrades, quiz, false);
+            const attemptGrade = AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false);
             if (typeof attemptGrade != 'undefined') {
-                promises.push(AddonModQuiz.instance.getFeedbackForGrade(quiz.id, Number(attemptGrade), modOptions));
+                promises.push(AddonModQuiz.getFeedbackForGrade(quiz.id, Number(attemptGrade), modOptions));
             }
 
             // Get the review for each page.
             pages.forEach((page) => {
-                promises.push(CoreUtils.instance.ignoreErrors(AddonModQuiz.instance.getAttemptReview(attempt.id, {
+                promises.push(CoreUtils.ignoreErrors(AddonModQuiz.getAttemptReview(attempt.id, {
                     page,
                     ...modOptions, // Include all options.
                 })));
@@ -441,8 +441,8 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         } else {
 
             // Attempt not finished, get data needed to continue the attempt.
-            promises.push(AddonModQuiz.instance.getAttemptAccessInformation(quiz.id, attempt.id, modOptions));
-            promises.push(AddonModQuiz.instance.getAttemptSummary(attempt.id, preflightData, modOptions));
+            promises.push(AddonModQuiz.getAttemptAccessInformation(quiz.id, attempt.id, modOptions));
+            promises.push(AddonModQuiz.getAttemptSummary(attempt.id, preflightData, modOptions));
 
             if (attempt.state == AddonModQuizProvider.ATTEMPT_IN_PROGRESS) {
                 // Get data for each page.
@@ -452,11 +452,11 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
                         return;
                     }
 
-                    const data = await AddonModQuiz.instance.getAttemptData(attempt.id, page, preflightData, modOptions);
+                    const data = await AddonModQuiz.getAttemptData(attempt.id, page, preflightData, modOptions);
 
                     // Download the files inside the questions.
                     await Promise.all(data.questions.map(async (question) => {
-                        await CoreQuestionHelper.instance.prefetchQuestionFiles(
+                        await CoreQuestionHelper.prefetchQuestionFiles(
                             question,
                             this.component,
                             quiz.coursemodule,
@@ -488,7 +488,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         siteId?: string,
     ): Promise<void> {
         // Get the review for all questions in same page.
-        const data = await CoreUtils.instance.ignoreErrors(AddonModQuiz.instance.getAttemptReview(attempt.id, {
+        const data = await CoreUtils.ignoreErrors(AddonModQuiz.getAttemptReview(attempt.id, {
             page: -1,
             ...modOptions, // Include all options.
         }));
@@ -498,7 +498,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         }
         // Download the files inside the questions.
         await Promise.all(data.questions.map((question) => {
-            CoreQuestionHelper.instance.prefetchQuestionFiles(
+            CoreQuestionHelper.prefetchQuestionFiles(
                 question,
                 this.component,
                 quiz.coursemodule,
@@ -522,10 +522,10 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         siteId?: string,
     ): Promise<void> {
         try {
-            const gradebookData = await AddonModQuiz.instance.getGradeFromGradebook(quiz.course, quiz.coursemodule, true, siteId);
+            const gradebookData = await AddonModQuiz.getGradeFromGradebook(quiz.course, quiz.coursemodule, true, siteId);
 
             if (gradebookData && 'graderaw' in gradebookData && gradebookData.graderaw !== undefined) {
-                await AddonModQuiz.instance.getFeedbackForGrade(quiz.id, gradebookData.graderaw, modOptions);
+                await AddonModQuiz.getFeedbackForGrade(quiz.id, gradebookData.graderaw, modOptions);
             }
         } catch {
             // Ignore errors.
@@ -542,7 +542,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @return Promise resolved when done.
      */
     async prefetchQuizAndLastAttempt(quiz: AddonModQuizQuizWSData, askPreflight?: boolean, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const modOptions = {
             cmId: quiz.coursemodule,
@@ -552,13 +552,13 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
         // Get quiz data.
         const [quizAccessInfo, attempts] = await Promise.all([
-            AddonModQuiz.instance.getQuizAccessInformation(quiz.id, modOptions),
-            AddonModQuiz.instance.getUserAttempts(quiz.id, modOptions),
-            AddonModQuiz.instance.getQuizRequiredQtypes(quiz.id, modOptions),
-            AddonModQuiz.instance.getCombinedReviewOptions(quiz.id, modOptions),
-            AddonModQuiz.instance.getUserBestGrade(quiz.id, modOptions),
+            AddonModQuiz.getQuizAccessInformation(quiz.id, modOptions),
+            AddonModQuiz.getUserAttempts(quiz.id, modOptions),
+            AddonModQuiz.getQuizRequiredQtypes(quiz.id, modOptions),
+            AddonModQuiz.getCombinedReviewOptions(quiz.id, modOptions),
+            AddonModQuiz.getUserBestGrade(quiz.id, modOptions),
             this.prefetchGradeAndFeedback(quiz, modOptions, siteId),
-            AddonModQuiz.instance.getAttemptAccessInformation(quiz.id, 0, modOptions), // Last attempt.
+            AddonModQuiz.getAttemptAccessInformation(quiz.id, 0, modOptions), // Last attempt.
         ]);
 
         const lastAttempt = attempts[attempts.length - 1];
@@ -592,17 +592,17 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         quiz: AddonModQuizQuizWSData,
         options: AddonModQuizSetStatusAfterPrefetchOptions = {},
     ): Promise<void> {
-        options.siteId = options.siteId || CoreSites.instance.getCurrentSiteId();
+        options.siteId = options.siteId || CoreSites.getCurrentSiteId();
 
         let attempts = options.attempts;
 
         if (!attempts) {
             // Get the attempts.
-            attempts = await AddonModQuiz.instance.getUserAttempts(quiz.id, options);
+            attempts = await AddonModQuiz.getUserAttempts(quiz.id, options);
         }
 
         // Check the current status of the quiz.
-        const status = await CoreFilepool.instance.getPackageStatus(options.siteId, this.component, quiz.coursemodule);
+        const status = await CoreFilepool.getPackageStatus(options.siteId, this.component, quiz.coursemodule);
 
         if (status === CoreConstants.NOT_DOWNLOADED) {
             return;
@@ -611,10 +611,10 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         // Quiz was downloaded, set the new status.
         // If no attempts or last is finished we'll mark it as not downloaded to show download icon.
         const lastAttempt = attempts[attempts.length - 1];
-        const isLastFinished = !lastAttempt || AddonModQuiz.instance.isAttemptFinished(lastAttempt.state);
+        const isLastFinished = !lastAttempt || AddonModQuiz.isAttemptFinished(lastAttempt.state);
         const newStatus = isLastFinished ? CoreConstants.NOT_DOWNLOADED : CoreConstants.DOWNLOADED;
 
-        await CoreFilepool.instance.storePackageStatus(options.siteId, newStatus, this.component, quiz.coursemodule);
+        await CoreFilepool.storePackageStatus(options.siteId, newStatus, this.component, quiz.coursemodule);
     }
 
     /**
@@ -626,10 +626,10 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @return Promise resolved when done.
      */
     async sync(module: SyncedModule, courseId: number, siteId?: string): Promise<AddonModQuizSyncResult | undefined> {
-        const quiz = await AddonModQuiz.instance.getQuiz(courseId, module.id, { siteId });
+        const quiz = await AddonModQuiz.getQuiz(courseId, module.id, { siteId });
 
         try {
-            const result = await AddonModQuizSync.instance.syncQuiz(quiz, false, siteId);
+            const result = await AddonModQuizSync.syncQuiz(quiz, false, siteId);
 
             module.attemptFinished = result.attemptFinished || false;
 
@@ -642,7 +642,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
 }
 
-export class AddonModQuizPrefetchHandler extends makeSingleton(AddonModQuizPrefetchHandlerService) {}
+export const AddonModQuizPrefetchHandler = makeSingleton(AddonModQuizPrefetchHandlerService);
 
 /**
  * Options to pass to setStatusAfterPrefetch.

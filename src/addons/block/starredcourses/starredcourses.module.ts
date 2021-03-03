@@ -30,7 +30,7 @@ import { AddonBlockStarredCoursesHandler } from './services/block-handler';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockStarredCoursesHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockStarredCoursesHandler.instance);
             },
         },
     ],

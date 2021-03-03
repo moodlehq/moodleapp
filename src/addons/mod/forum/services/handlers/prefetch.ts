@@ -46,7 +46,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      */
     async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
         try {
-            const forum = await AddonModForum.instance.getForum(courseId, module.id);
+            const forum = await AddonModForum.getForum(courseId, module.id);
 
             const files = this.getIntroFilesFromInstance(module, forum);
 
@@ -71,7 +71,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      */
     protected getPostsFiles(posts: AddonModForumPost[]): CoreWSExternalFile[] {
         let files: CoreWSExternalFile[] = [];
-        const getInlineFiles = CoreSites.instance.getCurrentSite()?.isVersionGreaterEqualThan('3.2');
+        const getInlineFiles = CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.2');
 
         posts.forEach((post) => {
             if (post.attachments && post.attachments.length) {
@@ -80,7 +80,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
             if (getInlineFiles && post.messageinlinefiles && post.messageinlinefiles.length) {
                 files = files.concat(post.messageinlinefiles);
             } else if (post.message && !getInlineFiles) {
-                files = files.concat(CoreFilepool.instance.extractDownloadableFilesFromHtmlAsFakeFileObjects(post.message));
+                files = files.concat(CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(post.message));
             }
         });
 
@@ -98,7 +98,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
         forum: AddonModForumData,
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<AddonModForumPost[]> {
-        const promises = AddonModForum.instance.getAvailableSortOrders().map((sortOrder) => {
+        const promises = AddonModForum.getAvailableSortOrders().map((sortOrder) => {
             // Get discussions in first 2 pages.
             const discussionsOptions = {
                 sortOrder: sortOrder.value,
@@ -106,7 +106,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
                 ...options, // Include all options.
             };
 
-            return AddonModForum.instance.getDiscussionsInPages(forum.id, discussionsOptions).then((response) => {
+            return AddonModForum.getDiscussionsInPages(forum.id, discussionsOptions).then((response) => {
                 if (response.error) {
                     throw new Error('Failed getting discussions');
                 }
@@ -114,7 +114,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
                 const promises: Promise<{ posts: AddonModForumPost[] }>[] = [];
 
                 response.discussions.forEach((discussion) => {
-                    promises.push(AddonModForum.instance.getDiscussionPosts(discussion.discussion, options));
+                    promises.push(AddonModForum.getDiscussionPosts(discussion.discussion, options));
                 });
 
                 return Promise.all(promises);
@@ -149,7 +149,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        return AddonModForum.instance.invalidateContent(moduleId, courseId);
+        return AddonModForum.invalidateContent(moduleId, courseId);
     }
 
     /**
@@ -164,8 +164,8 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
         // Invalidate forum data to recalculate unread message count badge.
         const promises: Promise<unknown>[] = [];
 
-        promises.push(AddonModForum.instance.invalidateForumData(courseId));
-        promises.push(CoreCourse.instance.invalidateModule(module.id));
+        promises.push(AddonModForum.invalidateForumData(courseId));
+        promises.push(CoreCourse.invalidateModule(module.id));
 
         await Promise.all(promises);
     }
@@ -208,7 +208,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
         };
 
         // Get the forum data.
-        const forum = await AddonModForum.instance.getForum(courseId, module.id, commonOptions);
+        const forum = await AddonModForum.getForum(courseId, module.id, commonOptions);
         const promises: Promise<unknown>[] = [];
 
         // Prefetch the posts.
@@ -216,23 +216,23 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
             const promises: Promise<unknown>[] = [];
 
             const files = this.getIntroFilesFromInstance(module, forum).concat(this.getPostsFiles(posts));
-            promises.push(CoreFilepool.instance.addFilesToQueue(siteId, files, this.component, module.id));
+            promises.push(CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id));
 
             // Prefetch groups data.
             promises.push(this.prefetchGroupsInfo(forum, courseId, !!forum.cancreatediscussions, siteId));
 
             // Prefetch avatars.
-            promises.push(CoreUser.instance.prefetchUserAvatars(posts, 'userpictureurl', siteId));
+            promises.push(CoreUser.prefetchUserAvatars(posts, 'userpictureurl', siteId));
 
             return Promise.all(promises);
         }));
 
         // Prefetch access information.
-        promises.push(AddonModForum.instance.getAccessInformation(forum.id, modOptions));
+        promises.push(AddonModForum.getAccessInformation(forum.id, modOptions));
 
         // Prefetch sort order preference.
-        if (AddonModForum.instance.isDiscussionListSortingAvailable()) {
-            promises.push(CoreUser.instance.getUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER, siteId));
+        if (AddonModForum.isDiscussionListSortingAvailable()) {
+            promises.push(CoreUser.getUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER, siteId));
         }
 
         await Promise.all(promises);
@@ -260,28 +260,28 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
 
         // Check group mode.
         try {
-            const mode = await CoreGroups.instance.getActivityGroupMode(forum.cmid, siteId);
+            const mode = await CoreGroups.getActivityGroupMode(forum.cmid, siteId);
 
             if (mode !== CoreGroupsProvider.SEPARATEGROUPS && mode !== CoreGroupsProvider.VISIBLEGROUPS) {
                 // Activity doesn't use groups. Prefetch canAddDiscussionToAll to determine if user can pin/attach.
-                await CoreUtils.instance.ignoreErrors(AddonModForum.instance.canAddDiscussionToAll(forum.id, options));
+                await CoreUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forum.id, options));
 
                 return;
             }
 
             // Activity uses groups, prefetch allowed groups.
-            const result = await CoreGroups.instance.getActivityAllowedGroups(forum.cmid, undefined, siteId);
+            const result = await CoreGroups.getActivityAllowedGroups(forum.cmid, undefined, siteId);
             if (mode === CoreGroupsProvider.SEPARATEGROUPS) {
                 // Groups are already filtered by WS. Prefetch canAddDiscussionToAll to determine if user can pin/attach.
-                await CoreUtils.instance.ignoreErrors(AddonModForum.instance.canAddDiscussionToAll(forum.id, options));
+                await CoreUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forum.id, options));
 
                 return;
             }
 
             if (canCreateDiscussions) {
                 // Prefetch data to check the visible groups when creating discussions.
-                const response = await CoreUtils.instance.ignoreErrors(
-                    AddonModForum.instance.canAddDiscussionToAll(forum.id, options),
+                const response = await CoreUtils.ignoreErrors(
+                    AddonModForum.canAddDiscussionToAll(forum.id, options),
                     { status: false },
                 );
 
@@ -293,8 +293,8 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
                 // The user can't post to all groups, let's check which groups he can post to.
                 await Promise.all(
                     result.groups.map(
-                        async (group) => CoreUtils.instance.ignoreErrors(
-                            AddonModForum.instance.canAddDiscussion(forum.id, group.id, options),
+                        async (group) => CoreUtils.ignoreErrors(
+                            AddonModForum.canAddDiscussion(forum.id, group.id, options),
                         ),
                     ),
                 );
@@ -322,9 +322,9 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
     ): Promise<AddonModForumSyncResult> {
         const promises: Promise<AddonModForumSyncResult>[] = [];
 
-        promises.push(AddonModForumSync.instance.syncForumDiscussions(module.instance!, undefined, siteId));
-        promises.push(AddonModForumSync.instance.syncForumReplies(module.instance!, undefined, siteId));
-        promises.push(AddonModForumSync.instance.syncRatings(module.id, undefined, true, siteId));
+        promises.push(AddonModForumSync.syncForumDiscussions(module.instance!, undefined, siteId));
+        promises.push(AddonModForumSync.syncForumReplies(module.instance!, undefined, siteId));
+        promises.push(AddonModForumSync.syncRatings(module.id, undefined, true, siteId));
 
         const results = await Promise.all(promises);
 
@@ -342,7 +342,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
 
 }
 
-export class AddonModForumPrefetchHandler extends makeSingleton(AddonModForumPrefetchHandlerService) {}
+export const AddonModForumPrefetchHandler = makeSingleton(AddonModForumPrefetchHandlerService);
 
 /**
  * Data returned by a forum sync.

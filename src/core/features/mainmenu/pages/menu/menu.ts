@@ -64,8 +64,8 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // @TODO this should be handled by route guards and can be removed
-        if (!CoreSites.instance.isLoggedIn()) {
-            CoreNavigator.instance.navigate('/login/init', { reset: true });
+        if (!CoreSites.isLoggedIn()) {
+            CoreNavigator.navigate('/login/init', { reset: true });
 
             return;
         }
@@ -83,7 +83,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
         this.showTabs = true;
 
-        this.subscription = CoreMainMenuDelegate.instance.getHandlersObservable().subscribe((handlers) => {
+        this.subscription = CoreMainMenuDelegate.getHandlersObservable().subscribe((handlers) => {
             // Remove the handlers that should only appear in the More menu.
             this.allHandlers = handlers.filter((handler) => !handler.onlyInMore);
 
@@ -102,7 +102,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
         window.addEventListener('resize', this.initHandlers.bind(this));
 
-        if (CoreApp.instance.isIOS()) {
+        if (CoreApp.isIOS()) {
             // In iOS, the resize event is triggered before the keyboard is opened/closed and not triggered again once done.
             // Init handlers again once keyboard is closed since the resize event doesn't have the updated height.
             this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, (kbHeight: number) => {
@@ -123,9 +123,9 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
      */
     initHandlers(): void {
         if (this.allHandlers) {
-            this.tabsPlacement = CoreMainMenu.instance.getTabPlacement();
+            this.tabsPlacement = CoreMainMenu.getTabPlacement();
 
-            const handlers = this.allHandlers.slice(0, CoreMainMenu.instance.getNumItems()); // Get main handlers.
+            const handlers = this.allHandlers.slice(0, CoreMainMenu.getNumItems()); // Get main handlers.
 
             // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.
             const newTabs: CoreMainMenuHandlerToDisplay[] = [];
@@ -147,7 +147,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             // Sort them by priority so new handlers are in the right position.
             this.tabs.sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
-            this.loaded = CoreMainMenuDelegate.instance.areHandlersLoaded();
+            this.loaded = CoreMainMenuDelegate.areHandlersLoaded();
 
             if (this.loaded && this.mainTabs && !this.mainTabs.getSelected()) {
                 // Select the first tab.
@@ -190,7 +190,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
         if (i >= 0) {
             // Tab found. Open it with the params.
-            CoreNavigator.instance.navigate(data.redirectPath, {
+            CoreNavigator.navigate(data.redirectPath, {
                 params: data.redirectParams,
                 animated: false,
             });
@@ -225,10 +225,10 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             return;
         }
 
-        const trimmedUrl = CoreTextUtils.instance.trimCharacter(this.router.url, '/');
+        const trimmedUrl = CoreTextUtils.trimCharacter(this.router.url, '/');
 
         // Current tab was clicked. Check if user is already at root level.
-        if (trimmedUrl  == CoreTextUtils.instance.trimCharacter(page, '/')) {
+        if (trimmedUrl  == CoreTextUtils.trimCharacter(page, '/')) {
             // Already at root level, nothing to do.
             return;
         }
@@ -242,17 +242,17 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
             // Use tab's subPage to check if user is already at root level.
             if (tab?.subPage && trimmedUrl ==
-                CoreTextUtils.instance.trimCharacter(CoreTextUtils.instance.concatenatePaths(tab.page, tab.subPage), '/')) {
+                CoreTextUtils.trimCharacter(CoreTextUtils.concatenatePaths(tab.page, tab.subPage), '/')) {
                 // Already at root level, nothing to do.
                 return;
             }
 
             if (tab?.title) {
-                await CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.confirmgotabroot', {
-                    name: Translate.instance.instant(tab.title),
+                await CoreDomUtils.showConfirm(Translate.instant('core.confirmgotabroot', {
+                    name: Translate.instant(tab.title),
                 }));
             } else {
-                await CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.confirmgotabrootdefault'));
+                await CoreDomUtils.showConfirm(Translate.instant('core.confirmgotabrootdefault'));
             }
 
             // User confirmed, go to root.

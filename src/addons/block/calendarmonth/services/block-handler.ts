@@ -45,11 +45,11 @@ export class AddonBlockCalendarMonthHandlerService extends CoreBlockBaseHandler 
             title: 'addon.block_calendarmonth.pluginname',
             class: 'addon-block-calendar-month',
             component: CoreBlockOnlyTitleComponent,
-            link: AddonCalendar.instance.getMainCalendarPagePath(),
+            link: AddonCalendar.getMainCalendarPagePath(),
             linkParams: linkParams,
         };
     }
 
 }
 
-export class AddonBlockCalendarMonthHandler extends makeSingleton(AddonBlockCalendarMonthHandlerService) {}
+export const AddonBlockCalendarMonthHandler = makeSingleton(AddonBlockCalendarMonthHandlerService);

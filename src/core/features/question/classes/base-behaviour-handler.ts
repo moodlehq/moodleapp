@@ -47,7 +47,7 @@ export class CoreQuestionBehaviourBaseHandler implements CoreQuestionBehaviourHa
         siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): CoreQuestionState | Promise<CoreQuestionState> {
         // Return the current state.
-        return CoreQuestion.instance.getState(question.state);
+        return CoreQuestion.getState(question.state);
     }
 
     /**

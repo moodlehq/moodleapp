@@ -32,7 +32,7 @@ import { CoreCourseFormatSingleActivityHandler } from './services/handlers/singl
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreCourseFormatDelegate.instance.registerHandler(CoreCourseFormatSingleActivityHandler.instance);
+                CoreCourseFormatDelegate.registerHandler(CoreCourseFormatSingleActivityHandler.instance);
             },
         },
     ],

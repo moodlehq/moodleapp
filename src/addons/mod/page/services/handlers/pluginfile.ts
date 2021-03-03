@@ -60,4 +60,4 @@ export class AddonModPagePluginFileHandlerService implements CorePluginFileHandl
 
 }
 
-export class AddonModPagePluginFileHandler extends makeSingleton(AddonModPagePluginFileHandlerService) {}
+export const AddonModPagePluginFileHandler = makeSingleton(AddonModPagePluginFileHandlerService);

@@ -40,10 +40,10 @@ export class AddonModLessonIndexPage implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.module = CoreNavigator.instance.getRouteParam('module');
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId');
-        this.group = CoreNavigator.instance.getRouteNumberParam('group');
-        this.action = CoreNavigator.instance.getRouteParam('action');
+        this.module = CoreNavigator.getRouteParam('module');
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+        this.group = CoreNavigator.getRouteNumberParam('group');
+        this.action = CoreNavigator.getRouteParam('action');
         this.title = this.module?.name;
     }
 

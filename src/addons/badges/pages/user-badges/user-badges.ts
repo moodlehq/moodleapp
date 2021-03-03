@@ -40,7 +40,7 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
     constructor(route: ActivatedRoute) {
         const courseId = parseInt(route.snapshot.queryParams.courseId ?? 0); // Use 0 for site badges.
-        const userId = parseInt(route.snapshot.queryParams.userId ?? CoreSites.instance.getCurrentSiteUserId());
+        const userId = parseInt(route.snapshot.queryParams.userId ?? CoreSites.getCurrentSiteUserId());
 
         this.badges = new AddonBadgesUserBadgesManager(AddonBadgesUserBadgesPage, courseId, userId);
     }
@@ -67,8 +67,8 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
      * @param refresher Refresher.
      */
     async refreshBadges(refresher?: IonRefresher): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(AddonBadges.instance.invalidateUserBadges(this.badges.courseId, this.badges.userId));
-        await CoreUtils.instance.ignoreErrors(this.fetchBadges());
+        await CoreUtils.ignoreErrors(AddonBadges.invalidateUserBadges(this.badges.courseId, this.badges.userId));
+        await CoreUtils.ignoreErrors(this.fetchBadges());
 
         refresher?.complete();
     }
@@ -77,12 +77,12 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
      * Obtain the initial list of badges.
      */
     private async fetchInitialBadges(): Promise<void> {
-        this.currentTime = CoreTimeUtils.instance.timestamp();
+        this.currentTime = CoreTimeUtils.timestamp();
 
         try {
             await this.fetchBadges();
         } catch (message) {
-            CoreDomUtils.instance.showErrorModalDefault(message, 'Error loading badges');
+            CoreDomUtils.showErrorModalDefault(message, 'Error loading badges');
 
             this.badges.setItems([]);
         }
@@ -92,7 +92,7 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
      * Update the list of badges.
      */
     private async fetchBadges(): Promise<void> {
-        const badges = await AddonBadges.instance.getUserBadges(this.badges.courseId, this.badges.userId);
+        const badges = await AddonBadges.getUserBadges(this.badges.courseId, this.badges.userId);
 
         this.badges.setItems(badges);
     }

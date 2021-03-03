@@ -30,4 +30,4 @@ export class AddonModForumIndexLinkHandlerService extends CoreContentLinksModule
 
 }
 
-export class AddonModForumIndexLinkHandler extends makeSingleton(AddonModForumIndexLinkHandlerService) {}
+export const AddonModForumIndexLinkHandler = makeSingleton(AddonModForumIndexLinkHandlerService);

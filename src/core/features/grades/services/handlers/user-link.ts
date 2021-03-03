@@ -54,7 +54,7 @@ export class CoreGradesUserLinkHandlerService extends CoreContentLinksHandlerBas
                 const userId = params.userid ? parseInt(params.userid, 10) : undefined;
                 const moduleId = data?.cmid && parseInt(data.cmid, 10) || undefined;
 
-                CoreGradesHelper.instance.goToGrades(courseId!, userId, moduleId, siteId);
+                CoreGradesHelper.goToGrades(courseId!, userId, moduleId, siteId);
             },
         }];
     }
@@ -74,9 +74,9 @@ export class CoreGradesUserLinkHandlerService extends CoreContentLinksHandlerBas
             return false;
         }
 
-        return CoreGrades.instance.isPluginEnabledForCourse(courseId || Number(params.id), siteId);
+        return CoreGrades.isPluginEnabledForCourse(courseId || Number(params.id), siteId);
     }
 
 }
 
-export class CoreGradesUserLinkHandler extends makeSingleton(CoreGradesUserLinkHandlerService) {}
+export const CoreGradesUserLinkHandler = makeSingleton(CoreGradesUserLinkHandlerService);

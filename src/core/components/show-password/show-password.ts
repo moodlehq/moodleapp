@@ -61,7 +61,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.shown = CoreUtils.instance.isTrueOrOne(this.initialShown);
+        this.shown = CoreUtils.isTrueOrOne(this.initialShown);
         this.selector = 'input[name="' + this.name + '"]';
         this.setData();
     }
@@ -126,10 +126,10 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
         this.shown = !this.shown;
         this.setData();
 
-        if (isFocused && CoreApp.instance.isAndroid()) {
+        if (isFocused && CoreApp.isAndroid()) {
             // In Android, the keyboard is closed when the input type changes. Focus it again.
             setTimeout(() => {
-                CoreDomUtils.instance.focusElement(this.input!);
+                CoreDomUtils.focusElement(this.input!);
             }, 400);
         }
     }

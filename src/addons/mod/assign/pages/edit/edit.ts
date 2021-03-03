@@ -69,8 +69,8 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
     ) {
-        this.userId = CoreSites.instance.getCurrentSiteUserId(); // Right now we can only edit current user's submissions.
-        this.editText = Translate.instance.instant('addon.mod_assign.editsubmission');
+        this.userId = CoreSites.getCurrentSiteUserId(); // Right now we can only edit current user's submissions.
+        this.editText = Translate.instant('addon.mod_assign.editsubmission');
         this.title = this.editText;
     }
 
@@ -78,9 +78,9 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.moduleId = CoreNavigator.instance.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId')!;
-        this.isBlind = !!CoreNavigator.instance.getRouteNumberParam('blindId');
+        this.moduleId = CoreNavigator.getRouteNumberParam('cmId')!;
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
+        this.isBlind = !!CoreNavigator.getRouteNumberParam('blindId');
 
         this.fetchAssignment().finally(() => {
             this.loaded = true;
@@ -100,13 +100,13 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
         // Check if data has changed.
         const changed = await this.hasDataChanged();
         if (changed) {
-            await CoreDomUtils.instance.showConfirm(Translate.instance.instant('core.confirmcanceledit'));
+            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
         }
 
         // Nothing has changed or user confirmed to leave. Clear temporary data from plugins.
-        AddonModAssignHelper.instance.clearSubmissionPluginTmpData(this.assign!, this.userSubmission, this.getInputData());
+        AddonModAssignHelper.clearSubmissionPluginTmpData(this.assign!, this.userSubmission, this.getInputData());
 
-        CoreDomUtils.instance.triggerFormCancelledEvent(this.formElement, CoreSites.instance.getCurrentSiteId());
+        CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
     }
 
     /**
@@ -115,20 +115,20 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async fetchAssignment(): Promise<void> {
-        const currentUserId = CoreSites.instance.getCurrentSiteUserId();
+        const currentUserId = CoreSites.getCurrentSiteUserId();
 
         try {
             // Get assignment data.
-            this.assign = await AddonModAssign.instance.getAssignment(this.courseId, this.moduleId);
+            this.assign = await AddonModAssign.getAssignment(this.courseId, this.moduleId);
             this.title = this.assign.name || this.title;
 
             if (!this.isDestroyed) {
                 // Block the assignment.
-                CoreSync.instance.blockOperation(AddonModAssignProvider.COMPONENT, this.assign.id);
+                CoreSync.blockOperation(AddonModAssignProvider.COMPONENT, this.assign.id);
             }
 
             // Wait for sync to be over (if any).
-            await AddonModAssignSync.instance.waitForSync(this.assign.id);
+            await AddonModAssignSync.waitForSync(this.assign.id);
 
             // Get submission status. Ignore cache to get the latest data.
             const options: AddonModAssignSubmissionStatusOptions = {
@@ -141,21 +141,21 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
 
             let submissionStatus: AddonModAssignGetSubmissionStatusWSResponse;
             try {
-                submissionStatus = await AddonModAssign.instance.getSubmissionStatus(this.assign.id, options);
+                submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, options);
                 this.userSubmission =
-                    AddonModAssign.instance.getSubmissionObjectFromAttempt(this.assign, submissionStatus.lastattempt);
+                    AddonModAssign.getSubmissionObjectFromAttempt(this.assign, submissionStatus.lastattempt);
             } catch (error) {
                 // Cannot connect. Get cached data.
                 options.filter = true;
                 options.readingStrategy = CoreSitesReadingStrategy.PreferCache;
 
-                submissionStatus = await AddonModAssign.instance.getSubmissionStatus(this.assign.id, options);
+                submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, options);
                 this.userSubmission =
-                    AddonModAssign.instance.getSubmissionObjectFromAttempt(this.assign, submissionStatus.lastattempt);
+                    AddonModAssign.getSubmissionObjectFromAttempt(this.assign, submissionStatus.lastattempt);
 
                 // Check if the user can edit it in offline.
                 const canEditOffline =
-                    await AddonModAssignHelper.instance.canEditSubmissionOffline(this.assign, this.userSubmission);
+                    await AddonModAssignHelper.canEditSubmissionOffline(this.assign, this.userSubmission);
                 if (!canEditOffline) {
                     // Submission cannot be edited in offline, reject.
                     this.allowOffline = false;
@@ -165,7 +165,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
 
             if (!submissionStatus.lastattempt?.canedit) {
                 // Can't edit. Reject.
-                throw new CoreError(Translate.instance.instant('core.nopermissions', { $a: this.editText }));
+                throw new CoreError(Translate.instant('core.nopermissions', { $a: this.editText }));
             }
 
             this.allowOffline = true; // If offline isn't allowed we shouldn't have reached this point.
@@ -178,7 +178,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
 
             try {
                 // Check if there's any offline data for this submission.
-                const offlineData = await AddonModAssignOffline.instance.getSubmission(this.assign.id, this.userId);
+                const offlineData = await AddonModAssignOffline.getSubmission(this.assign.id, this.userId);
 
                 this.hasOffline = offlineData?.plugindata && Object.keys(offlineData.plugindata).length > 0;
             } catch {
@@ -186,7 +186,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
                 this.hasOffline = false;
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error getting assigment data.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error getting assigment data.');
 
             // Leave the player.
             this.leaveWithoutCheck();
@@ -199,7 +199,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
      * @return Input data.
      */
     protected getInputData(): Record<string, unknown> {
-        return CoreDomUtils.instance.getDataFromForm(document.forms['addon-mod_assign-edit-form']);
+        return CoreDomUtils.getDataFromForm(document.forms['addon-mod_assign-edit-form']);
     }
 
     /**
@@ -210,11 +210,11 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
     protected async hasDataChanged(): Promise<boolean> {
         // Usually the hasSubmissionDataChanged call will be resolved inmediately, causing the modal to be shown just an instant.
         // We'll wait a bit before showing it to prevent this "blink".
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         const data = this.getInputData();
 
-        return AddonModAssignHelper.instance.hasSubmissionDataChanged(this.assign!, this.userSubmission, data).finally(() => {
+        return AddonModAssignHelper.hasSubmissionDataChanged(this.assign!, this.userSubmission, data).finally(() => {
             modal.dismiss();
         });
     }
@@ -224,7 +224,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
      */
     protected leaveWithoutCheck(): void {
         this.forceLeave = true;
-        CoreNavigator.instance.back();
+        CoreNavigator.back();
     }
 
     /**
@@ -238,7 +238,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
         this.saveOffline = this.hasOffline;
 
         try {
-            return AddonModAssignHelper.instance.prepareSubmissionPluginData(
+            return AddonModAssignHelper.prepareSubmissionPluginData(
                 this.assign!,
                 this.userSubmission,
                 inputData,
@@ -249,7 +249,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
                 // Cannot submit in online, prepare for offline usage.
                 this.saveOffline = true;
 
-                return AddonModAssignHelper.instance.prepareSubmissionPluginData(
+                return AddonModAssignHelper.prepareSubmissionPluginData(
                     this.assign!,
                     this.userSubmission,
                     inputData,
@@ -277,7 +277,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
             await this.saveSubmission();
             this.leaveWithoutCheck();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error saving submission.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error saving submission.');
         }
     }
 
@@ -290,15 +290,15 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
         const inputData = this.getInputData();
 
         if (this.submissionStatement && (!inputData.submissionstatement || inputData.submissionstatement === 'false')) {
-            throw Translate.instance.instant('addon.mod_assign.acceptsubmissionstatement');
+            throw Translate.instant('addon.mod_assign.acceptsubmissionstatement');
         }
 
-        let modal = await CoreDomUtils.instance.showModalLoading();
+        let modal = await CoreDomUtils.showModalLoading();
         let size = -1;
 
         // Get size to ask for confirmation.
         try {
-            size = await AddonModAssignHelper.instance.getSubmissionSizeForEdit(this.assign!, this.userSubmission!, inputData);
+            size = await AddonModAssignHelper.getSubmissionSizeForEdit(this.assign!, this.userSubmission!, inputData);
         } catch (error) {
             // Error calculating size, return -1.
             size = -1;
@@ -308,9 +308,9 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
 
         try {
             // Confirm action.
-            await CoreFileUploaderHelper.instance.confirmUploadFile(size, true, this.allowOffline);
+            await CoreFileUploaderHelper.confirmUploadFile(size, true, this.allowOffline);
 
-            modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+            modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
             const pluginData = await this.prepareSubmissionData(inputData);
             if (!Object.keys(pluginData).length) {
@@ -323,7 +323,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
             if (this.saveOffline) {
                 // Save submission in offline.
                 sent = false;
-                await AddonModAssignOffline.instance.saveSubmission(
+                await AddonModAssignOffline.saveSubmission(
                     this.assign!.id,
                     this.courseId,
                     pluginData,
@@ -333,7 +333,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
                 );
             } else {
                 // Try to send it to server.
-                sent = await AddonModAssign.instance.saveSubmission(
+                sent = await AddonModAssign.saveSubmission(
                     this.assign!.id,
                     this.courseId,
                     pluginData,
@@ -345,14 +345,14 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
             }
 
             // Clear temporary data from plugins.
-            AddonModAssignHelper.instance.clearSubmissionPluginTmpData(this.assign!, this.userSubmission, inputData);
+            AddonModAssignHelper.clearSubmissionPluginTmpData(this.assign!, this.userSubmission, inputData);
 
             if (sent) {
                 CoreEvents.trigger<CoreEventActivityDataSentData>(CoreEvents.ACTIVITY_DATA_SENT, { module: 'assign' });
             }
 
             // Submission saved, trigger events.
-            CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.instance.getCurrentSiteId());
+            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
 
             CoreEvents.trigger<AddonModAssignSubmissionSavedEventData>(
                 AddonModAssignProvider.SUBMISSION_SAVED_EVENT,
@@ -361,7 +361,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
                     submissionId: this.userSubmission!.id,
                     userId: this.userId,
                 },
-                CoreSites.instance.getCurrentSiteId(),
+                CoreSites.getCurrentSiteId(),
             );
 
             if (!this.assign!.submissiondrafts) {
@@ -373,7 +373,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
                         submissionId: this.userSubmission!.id,
                         userId: this.userId,
                     },
-                    CoreSites.instance.getCurrentSiteId(),
+                    CoreSites.getCurrentSiteId(),
                 );
             }
         } finally {
@@ -389,7 +389,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
 
         // Unblock the assignment.
         if (this.assign) {
-            CoreSync.instance.unblockOperation(AddonModAssignProvider.COMPONENT, this.assign.id);
+            CoreSync.unblockOperation(AddonModAssignProvider.COMPONENT, this.assign.id);
         }
     }
 

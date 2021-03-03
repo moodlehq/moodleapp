@@ -113,26 +113,26 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     ) {}
 
     get isMobile(): boolean {
-        return CoreScreen.instance.isMobile;
+        return CoreScreen.isMobile;
     }
 
     ngOnInit(): void {
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId')!;
-        this.cmId = CoreNavigator.instance.getRouteNumberParam('cmId')!;
-        this.forumId = CoreNavigator.instance.getRouteNumberParam('forumId')!;
-        this.discussion = CoreNavigator.instance.getRouteParam<AddonModForumDiscussion>('discussion')!;
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
+        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
+        this.forumId = CoreNavigator.getRouteNumberParam('forumId')!;
+        this.discussion = CoreNavigator.getRouteParam<AddonModForumDiscussion>('discussion')!;
         this.discussionId = this.discussion
             ? this.discussion.discussion
-            : CoreNavigator.instance.getRouteNumberParam('discussionId')!;
-        this.trackPosts = CoreNavigator.instance.getRouteBooleanParam('trackPosts')!;
-        this.postId = CoreNavigator.instance.getRouteNumberParam('postId')!;
-        this.parent = CoreNavigator.instance.getRouteNumberParam('parent')!;
+            : CoreNavigator.getRouteNumberParam('discussionId')!;
+        this.trackPosts = CoreNavigator.getRouteBooleanParam('trackPosts')!;
+        this.postId = CoreNavigator.getRouteNumberParam('postId')!;
+        this.parent = CoreNavigator.getRouteNumberParam('parent')!;
 
-        this.isOnline = CoreApp.instance.isOnline();
-        this.onlineObserver = Network.instance.onChange().subscribe(() => {
+        this.isOnline = CoreApp.isOnline();
+        this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.instance.run(() => {
-                this.isOnline = CoreApp.instance.isOnline();
+            NgZone.run(() => {
+                this.isOnline = CoreApp.isOnline();
             });
         });
 
@@ -155,7 +155,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         if (scrollTo) {
             // Scroll to the post.
             setTimeout(() => {
-                CoreDomUtils.instance.scrollToElementBySelector(
+                CoreDomUtils.scrollToElementBySelector(
                     this.elementRef.nativeElement,
                     this.content,
                     '#addon-mod_forum-post-' + scrollTo,
@@ -181,33 +181,33 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         // Refresh data if this discussion is synchronized automatically.
         this.syncObserver = CoreEvents.on(AddonModForumSyncProvider.AUTO_SYNCED, data => {
             if (data.forumId == this.forumId && this.discussionId == data.discussionId
-                    && data.userId == CoreSites.instance.getCurrentSiteUserId()) {
+                    && data.userId == CoreSites.getCurrentSiteUserId()) {
                 // Refresh the data.
                 this.discussionLoaded = false;
                 this.refreshPosts();
             }
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
 
         // Refresh data if this forum discussion is synchronized from discussions list.
         this.syncManualObserver = CoreEvents.on(AddonModForumSyncProvider.MANUAL_SYNCED, data => {
             if (data.source != 'discussion' && data.forumId == this.forumId &&
-                    data.userId == CoreSites.instance.getCurrentSiteUserId()) {
+                    data.userId == CoreSites.getCurrentSiteUserId()) {
                 // Refresh the data.
                 this.discussionLoaded = false;
                 this.refreshPosts();
             }
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
 
         // Invalidate discussion list if it was not read.
         if (this.discussion.numunread > 0) {
-            AddonModForum.instance.invalidateDiscussionsList(this.forumId);
+            AddonModForum.invalidateDiscussionsList(this.forumId);
         }
 
         // @todo Listen for offline ratings saved and synced.
 
         this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data => {
             if ((this.forumId && this.forumId === data.forumId) || data.cmId === this.cmId) {
-                AddonModForum.instance.invalidateDiscussionsList(this.forumId).finally(() => {
+                AddonModForum.invalidateDiscussionsList(this.forumId).finally(() => {
                     if (typeof data.locked != 'undefined') {
                         this.discussion.locked = data.locked;
                     }
@@ -221,9 +221,9 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                     if (typeof data.deleted != 'undefined' && data.deleted) {
                         if (!data.post?.parentid) {
                             if (this.splitView?.outletActivated) {
-                                CoreNavigator.instance.navigate('../');
+                                CoreNavigator.navigate('../');
                             } else {
-                                CoreNavigator.instance.back();
+                                CoreNavigator.back();
                             }
                         } else {
                             this.discussionLoaded = false;
@@ -241,13 +241,13 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @return Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
-        if (AddonModForumHelper.instance.hasPostDataChanged(this.replyData, this.originalData)) {
+        if (AddonModForumHelper.hasPostDataChanged(this.replyData, this.originalData)) {
             // Show confirmation if some data has been modified.
-            await CoreDomUtils.instance.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
         }
 
         // Delete the local files from the tmp folder.
-        CoreFileUploader.instance.clearTmpFiles(this.replyData.files);
+        CoreFileUploader.clearTmpFiles(this.replyData.files);
 
         this.leavingPage = true;
 
@@ -280,12 +280,12 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      */
     protected async getUserSort(): Promise<SortType> {
         try {
-            const value = await CoreSites.instance.getCurrentSite()!.getLocalSiteConfig<SortType>('AddonModForumDiscussionSort');
+            const value = await CoreSites.getCurrentSite()!.getLocalSiteConfig<SortType>('AddonModForumDiscussionSort');
 
             return value;
         } catch (error) {
             try {
-                const value = await CoreUser.instance.getUserPreference('forum_displaymode');
+                const value = await CoreUser.getUserPreference('forum_displaymode');
 
                 switch (Number(value)) {
                     case 1:
@@ -314,11 +314,11 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      */
     protected fetchForum(): Promise<AddonModForumData> {
         if (this.courseId && this.cmId) {
-            return AddonModForum.instance.getForum(this.courseId, this.cmId);
+            return AddonModForum.getForum(this.courseId, this.cmId);
         }
 
         if (this.courseId && this.forumId) {
-            return AddonModForum.instance.getForumById(this.courseId, this.forumId);
+            return AddonModForum.getForumById(this.courseId, this.forumId);
         }
 
         throw new Error('Cannot get the forum');
@@ -340,11 +340,11 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         try {
             if (sync) {
                 // Try to synchronize the forum.
-                await CoreUtils.instance.ignoreErrors(this.syncDiscussion(!!showErrors));
+                await CoreUtils.ignoreErrors(this.syncDiscussion(!!showErrors));
             }
 
-            const response = await AddonModForum.instance.getDiscussionPosts(this.discussionId, { cmId: this.cmId });
-            const replies = await AddonModForumOffline.instance.getDiscussionReplies(this.discussionId);
+            const response = await AddonModForum.getDiscussionPosts(this.discussionId, { cmId: this.cmId });
+            const replies = await AddonModForumOffline.getDiscussionReplies(this.discussionId);
             const ratingInfo = response.ratinginfo;
             onlinePosts = response.posts;
             this.courseId = response.courseid || this.courseId;
@@ -387,23 +387,23 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             await Promise.all(convertPromises);
 
             // Convert back to array.
-            onlinePosts = CoreUtils.instance.objectToArray(onlinePostsMap);
+            onlinePosts = CoreUtils.objectToArray(onlinePostsMap);
 
             let posts = offlineReplies.concat(onlinePosts);
 
-            this.startingPost = AddonModForum.instance.extractStartingPost(posts);
+            this.startingPost = AddonModForum.extractStartingPost(posts);
 
             // If sort type is nested, normal sorting is disabled and nested posts will be displayed.
             if (this.sort == 'nested') {
                 // Sort first by creation date to make format tree work.
-                AddonModForum.instance.sortDiscussionPosts(posts, 'ASC');
+                AddonModForum.sortDiscussionPosts(posts, 'ASC');
 
                 const rootId = this.startingPost ? this.startingPost.id : (this.discussion ? this.discussion.id : 0);
-                posts = CoreUtils.instance.formatTree(posts, 'parentid', 'id', rootId);
+                posts = CoreUtils.formatTree(posts, 'parentid', 'id', rootId);
             } else {
                 // Set default reply subject.
                 const direction = this.sort == 'flat-newest' ? 'DESC' : 'ASC';
-                AddonModForum.instance.sortDiscussionPosts(posts, direction);
+                AddonModForum.sortDiscussionPosts(posts, direction);
             }
 
             try {
@@ -418,7 +418,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 this.cmId = forum.cmid;
                 this.courseId = forum.course;
                 this.forum = forum;
-                this.availabilityMessage = AddonModForumHelper.instance.getAvailabilityMessage(forum);
+                this.availabilityMessage = AddonModForumHelper.getAvailabilityMessage(forum);
 
                 const promises: Promise<void>[] = [];
 
@@ -430,7 +430,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
                             // Disallow replying if cut-off date is reached and the user has not the capability to override it.
                             // Just in case the posts were fetched from WS when the cut-off date was not reached but it is now.
-                            if (AddonModForumHelper.instance.isCutoffDateReached(forum) && !accessInfo.cancanoverridecutoff) {
+                            if (AddonModForumHelper.isCutoffDateReached(forum) && !accessInfo.cancanoverridecutoff) {
                                 posts.forEach((post) => {
                                     post.capabilities.reply = false;
                                 });
@@ -474,10 +474,10 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                     : {},
             );
 
-            if (AddonModForum.instance.isSetPinStateAvailableForSite()) {
+            if (AddonModForum.isSetPinStateAvailableForSite()) {
                 // Use the canAddDiscussion WS to check if the user can pin discussions.
                 try {
-                    const response = await AddonModForum.instance.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
+                    const response = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
 
                     this.canPin = !!response.canpindiscussions;
                 } catch (error) {
@@ -489,7 +489,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
             // @todo fetch hasOfflineRatings.
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
         } finally {
             this.discussionLoaded = true;
             this.refreshIcon = 'refresh';
@@ -497,14 +497,14 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
             if (forceMarkAsRead || (hasUnreadPosts && this.trackPosts)) {
                 // // Add log in Moodle and mark unread posts as readed.
-                AddonModForum.instance.logDiscussionView(this.discussionId, this.forumId || -1, this.forum.name).catch(() => {
+                AddonModForum.logDiscussionView(this.discussionId, this.forumId || -1, this.forum.name).catch(() => {
                     // Ignore errors.
                 }).finally(() => {
                     // Trigger mark read posts.
                     CoreEvents.trigger(AddonModForumProvider.MARK_READ_EVENT, {
                         courseId: this.courseId,
                         moduleId: this.cmId,
-                    }, CoreSites.instance.getCurrentSiteId());
+                    }, CoreSites.getCurrentSiteId());
                 });
             }
         }
@@ -525,7 +525,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         }
 
         try {
-            const discussion = await AddonModForumHelper.instance.getDiscussionById(forumId, cmId, discussionId);
+            const discussion = await AddonModForumHelper.getDiscussionById(forumId, cmId, discussionId);
 
             this.discussion = discussion;
             this.discussionId = this.discussion.discussion;
@@ -548,16 +548,16 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 .syncDiscussionReplies(this.discussionId)
                 .then((result) => {
                     if (result.warnings && result.warnings.length) {
-                        CoreDomUtils.instance.showErrorModal(result.warnings[0]);
+                        CoreDomUtils.showErrorModal(result.warnings[0]);
                     }
 
                     if (result && result.updated) {
                         // Sync successful, send event.
                         CoreEvents.trigger(AddonModForumSyncProvider.MANUAL_SYNCED, {
                             forumId: this.forumId,
-                            userId: CoreSites.instance.getCurrentSiteUserId(),
+                            userId: CoreSites.getCurrentSiteUserId(),
                             source: 'discussion',
-                        }, CoreSites.instance.getCurrentSiteId());
+                        }, CoreSites.getCurrentSiteId());
                     }
 
                     return;
@@ -569,7 +569,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 .syncRatings(this.cmId, this.discussionId)
                 .then((result) => {
                     if (result.warnings && result.warnings.length) {
-                        CoreDomUtils.instance.showErrorModal(result.warnings[0]);
+                        CoreDomUtils.showErrorModal(result.warnings[0]);
                     }
 
                     return;
@@ -580,7 +580,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             await Promise.all(promises);
         } catch (error) {
             if (showErrors) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.errorsync', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
             }
 
             throw new Error('Failed syncing discussion');
@@ -617,13 +617,13 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         this.syncIcon = 'spinner';
 
         const promises = [
-            AddonModForum.instance.invalidateForumData(this.courseId),
-            AddonModForum.instance.invalidateDiscussionPosts(this.discussionId, this.forumId),
-            AddonModForum.instance.invalidateAccessInformation(this.forumId),
-            AddonModForum.instance.invalidateCanAddDiscussion(this.forumId),
+            AddonModForum.invalidateForumData(this.courseId),
+            AddonModForum.invalidateDiscussionPosts(this.discussionId, this.forumId),
+            AddonModForum.invalidateAccessInformation(this.forumId),
+            AddonModForum.invalidateCanAddDiscussion(this.forumId),
         ];
 
-        return CoreUtils.instance.allPromises(promises).catch(() => {
+        return CoreUtils.allPromises(promises).catch(() => {
             // Ignore errors.
         }).then(() => this.fetchPosts(sync, showErrors));
     }
@@ -637,7 +637,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     changeSort(type: SortType): Promise<any> {
         this.discussionLoaded = false;
         this.sort = type;
-        CoreSites.instance.getCurrentSite()!.setLocalSiteConfig('AddonModForumDiscussionSort', this.sort);
+        CoreSites.getCurrentSite()!.setLocalSiteConfig('AddonModForumDiscussionSort', this.sort);
         this.content.scrollToTop();
 
         return this.fetchPosts();
@@ -649,10 +649,10 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @param locked True to lock the discussion, false to unlock.
      */
     async setLockState(locked: boolean): Promise<void> {
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {
-            const response = await AddonModForum.instance.setLockState(this.forumId, this.discussionId, locked);
+            const response = await AddonModForum.setLockState(this.forumId, this.discussionId, locked);
             this.discussion.locked = response.locked;
 
             const data = {
@@ -661,11 +661,11 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 cmId: this.cmId,
                 locked: this.discussion.locked,
             };
-            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.instance.getCurrentSiteId());
+            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
 
-            CoreDomUtils.instance.showToast('addon.mod_forum.lockupdated', true);
+            CoreDomUtils.showToast('addon.mod_forum.lockupdated', true);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
         } finally {
             modal.dismiss();
         }
@@ -677,10 +677,10 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @param pinned True to pin the discussion, false to unpin it.
      */
     async setPinState(pinned: boolean): Promise<void> {
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {
-            await AddonModForum.instance.setPinState(this.discussionId, pinned);
+            await AddonModForum.setPinState(this.discussionId, pinned);
 
             this.discussion.pinned = pinned;
 
@@ -690,11 +690,11 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 cmId: this.cmId,
                 pinned: this.discussion.pinned,
             };
-            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.instance.getCurrentSiteId());
+            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
 
-            CoreDomUtils.instance.showToast('addon.mod_forum.pinupdated', true);
+            CoreDomUtils.showToast('addon.mod_forum.pinupdated', true);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
         } finally {
             modal.dismiss();
         }
@@ -706,10 +706,10 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @param starred True to star the discussion, false to unstar it.
      */
     async toggleFavouriteState(starred: boolean): Promise<void> {
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {
-            await AddonModForum.instance.toggleFavouriteState(this.discussionId, starred);
+            await AddonModForum.toggleFavouriteState(this.discussionId, starred);
 
             this.discussion.starred = starred;
 
@@ -719,11 +719,11 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 cmId: this.cmId,
                 starred: this.discussion.starred,
             };
-            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.instance.getCurrentSiteId());
+            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
 
-            CoreDomUtils.instance.showToast('addon.mod_forum.favouriteupdated', true);
+            CoreDomUtils.showToast('addon.mod_forum.favouriteupdated', true);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
         } finally {
             modal.dismiss();
         }
@@ -739,7 +739,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             discussionId: this.discussionId,
             cmId: this.cmId,
         };
-        CoreEvents.trigger(AddonModForumProvider.REPLY_DISCUSSION_EVENT, data, CoreSites.instance.getCurrentSiteId());
+        CoreEvents.trigger(AddonModForumProvider.REPLY_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
 
         this.discussionLoaded = false;
         this.refreshPosts().finally(() => {

@@ -69,7 +69,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.currentSite = CoreSites.instance.getCurrentSite();
+        this.currentSite = CoreSites.getCurrentSite();
 
         this.filter = await this.currentSite!.getLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
         this.switchFilter();
@@ -87,15 +87,15 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     protected invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonBlockTimeline.instance.invalidateActionEventsByTimesort());
-        promises.push(AddonBlockTimeline.instance.invalidateActionEventsByCourses());
-        promises.push(CoreCourses.instance.invalidateUserCourses());
-        promises.push(CoreCourseOptionsDelegate.instance.clearAndInvalidateCoursesOptions());
+        promises.push(AddonBlockTimeline.invalidateActionEventsByTimesort());
+        promises.push(AddonBlockTimeline.invalidateActionEventsByCourses());
+        promises.push(CoreCourses.invalidateUserCourses());
+        promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
         if (this.courseIds.length > 0) {
-            promises.push(CoreCourses.instance.invalidateCoursesByField('ids', this.courseIds.join(',')));
+            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds.join(',')));
         }
 
-        return CoreUtils.instance.allPromises(promises);
+        return CoreUtils.allPromises(promises);
     }
 
     /**
@@ -124,7 +124,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
         try {
             await this.fetchMyOverviewTimeline(this.timeline.canLoadMore);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, this.fetchContentDefaultError);
+            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
         }
     }
 
@@ -136,11 +136,11 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      */
     async loadMoreCourse(course: AddonBlockTimelineCourse): Promise<void> {
         try {
-            const courseEvents = await AddonBlockTimeline.instance.getActionEventsByCourse(course.id, course.canLoadMore);
+            const courseEvents = await AddonBlockTimeline.getActionEventsByCourse(course.id, course.canLoadMore);
             course.events = course.events?.concat(courseEvents.events);
             course.canLoadMore = courseEvents.canLoadMore;
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, this.fetchContentDefaultError);
+            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
         }
     }
 
@@ -151,7 +151,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      * @return Promise resolved when done.
      */
     protected async fetchMyOverviewTimeline(afterEventId?: number): Promise<void> {
-        const events = await AddonBlockTimeline.instance.getActionEventsByTimesort(afterEventId);
+        const events = await AddonBlockTimeline.getActionEventsByTimesort(afterEventId);
 
         this.timeline.events = events.events;
         this.timeline.canLoadMore = events.canLoadMore;
@@ -163,8 +163,8 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      * @return Promise resolved when done.
      */
     protected async fetchMyOverviewTimelineByCourses(): Promise<void> {
-        const courses = await CoreCoursesHelper.instance.getUserCoursesWithOptions();
-        const today = CoreTimeUtils.instance.timestamp();
+        const courses = await CoreCoursesHelper.getUserCoursesWithOptions();
+        const today = CoreTimeUtils.timestamp();
 
         this.timelineCourses.courses = courses.filter((course) =>
             (course.startdate || 0) <= today && (!course.enddate || course.enddate >= today));
@@ -172,7 +172,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
         if (this.timelineCourses.courses.length > 0) {
             this.courseIds = this.timelineCourses.courses.map((course) => course.id);
 
-            const courseEvents = await AddonBlockTimeline.instance.getActionEventsByCourses(this.courseIds);
+            const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(this.courseIds);
 
             this.timelineCourses.courses.forEach((course) => {
                 course.events = courseEvents[course.id].events;

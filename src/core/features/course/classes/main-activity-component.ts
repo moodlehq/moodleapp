@@ -56,10 +56,10 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         super(loggerName, courseContentsPage);
 
         // Refresh online status when changes.
-        this.onlineSubscription = Network.instance.onChange().subscribe(() => {
+        this.onlineSubscription = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.instance.run(() => {
-                this.isOnline = CoreApp.instance.isOnline();
+            NgZone.run(() => {
+                this.isOnline = CoreApp.isOnline();
             });
         });
     }
@@ -72,7 +72,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
         this.hasOffline = false;
         this.syncIcon = CoreConstants.ICON_LOADING;
-        this.moduleName = CoreCourse.instance.translateModuleName(this.moduleName || '');
+        this.moduleName = CoreCourse.translateModuleName(this.moduleName || '');
 
         if (this.syncEventName) {
             // Refresh data if this discussion is synchronized automatically.
@@ -122,7 +122,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         this.syncIcon = CoreConstants.ICON_LOADING;
 
         try {
-            await CoreUtils.instance.ignoreErrors(this.invalidateContent());
+            await CoreUtils.ignoreErrors(this.invalidateContent());
 
             await this.loadContent(true, sync, showErrors);
         } finally  {
@@ -190,7 +190,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @return Promise resolved when done.
      */
     protected async loadContent(refresh?: boolean, sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        this.isOnline = CoreApp.instance.isOnline();
+        this.isOnline = CoreApp.isOnline();
 
         if (!this.module) {
             // This can happen if course format changes from single activity to weekly/topics.
@@ -205,7 +205,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
                 return await this.refreshContent(sync);
             }
 
-            CoreDomUtils.instance.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         } finally {
             this.loaded = true;
             this.refreshIcon = CoreConstants.ICON_REFRESH;
@@ -244,13 +244,13 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
             const result = <{warnings?: CoreWSExternalWarning[]}> await this.sync();
 
             if (result?.warnings?.length) {
-                CoreDomUtils.instance.showErrorModal(result.warnings[0]);
+                CoreDomUtils.showErrorModal(result.warnings[0]);
             }
 
             return this.hasSyncSucceed(result);
         } catch (error) {
             if (showErrors) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.errorsync', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
             }
 
             return false;

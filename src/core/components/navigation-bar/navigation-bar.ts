@@ -46,7 +46,7 @@ export class CoreNavigationBarComponent {
         new EventEmitter<unknown>(); // Function to call when arrow is clicked. Will receive as a param the item to load.
 
     showInfo(): void {
-        CoreTextUtils.instance.viewText(this.title, this.info, {
+        CoreTextUtils.viewText(this.title, this.info, {
             component: this.component,
             componentId: this.componentId,
             filter: true,

@@ -72,55 +72,55 @@ export class CoreLocalNotificationsProvider {
      */
     async initializeDatabase(): Promise<void> {
         try {
-            await CoreApp.instance.createTablesFromSchema(APP_SCHEMA);
+            await CoreApp.createTablesFromSchema(APP_SCHEMA);
         } catch (e) {
             // Ignore errors.
         }
 
-        this.resolveAppDB(CoreApp.instance.getDB());
+        this.resolveAppDB(CoreApp.getDB());
     }
 
     /**
      * Init some properties.
      */
     protected async init(): Promise<void> {
-        await Platform.instance.ready();
+        await Platform.ready();
 
         if (!this.isAvailable()) {
             return;
         }
 
         // Listen to events.
-        this.triggerSubscription = LocalNotifications.instance.on('trigger').subscribe((notification: ILocalNotification) => {
+        this.triggerSubscription = LocalNotifications.on('trigger').subscribe((notification: ILocalNotification) => {
             this.trigger(notification);
 
             this.handleEvent('trigger', notification);
         });
 
-        this.clickSubscription = LocalNotifications.instance.on('click').subscribe((notification: ILocalNotification) => {
+        this.clickSubscription = LocalNotifications.on('click').subscribe((notification: ILocalNotification) => {
             this.handleEvent('click', notification);
         });
 
-        this.clearSubscription = LocalNotifications.instance.on('clear').subscribe((notification: ILocalNotification) => {
+        this.clearSubscription = LocalNotifications.on('clear').subscribe((notification: ILocalNotification) => {
             this.handleEvent('clear', notification);
         });
 
-        this.cancelSubscription = LocalNotifications.instance.on('cancel').subscribe((notification: ILocalNotification) => {
+        this.cancelSubscription = LocalNotifications.on('cancel').subscribe((notification: ILocalNotification) => {
             this.handleEvent('cancel', notification);
         });
 
-        this.addSubscription = LocalNotifications.instance.on('schedule').subscribe((notification: ILocalNotification) => {
+        this.addSubscription = LocalNotifications.on('schedule').subscribe((notification: ILocalNotification) => {
             this.handleEvent('schedule', notification);
         });
 
-        this.updateSubscription = LocalNotifications.instance.on('update').subscribe((notification: ILocalNotification) => {
+        this.updateSubscription = LocalNotifications.on('update').subscribe((notification: ILocalNotification) => {
             this.handleEvent('update', notification);
         });
 
         // Create the default channel for local notifications.
         this.createDefaultChannel();
 
-        Translate.instance.onLangChange.subscribe(() => {
+        Translate.onLangChange.subscribe(() => {
             // Update the channel name.
             this.createDefaultChannel();
         });
@@ -145,7 +145,7 @@ export class CoreLocalNotificationsProvider {
 
         const queueId = 'cancel-' + uniqueId;
 
-        await this.queueRunner.run(queueId, () => LocalNotifications.instance.cancel(uniqueId), {
+        await this.queueRunner.run(queueId, () => LocalNotifications.cancel(uniqueId), {
             allowRepeated: true,
         });
     }
@@ -176,7 +176,7 @@ export class CoreLocalNotificationsProvider {
             }
         });
 
-        await this.queueRunner.run(queueId, () => LocalNotifications.instance.cancel(ids), {
+        await this.queueRunner.run(queueId, () => LocalNotifications.cancel(ids), {
             allowRepeated: true,
         });
     }
@@ -188,7 +188,7 @@ export class CoreLocalNotificationsProvider {
      */
     canDisableSound(): boolean {
         // Only allow disabling sound in Android 7 or lower. In iOS and Android 8+ it can easily be done with system settings.
-        return this.isAvailable() && CoreApp.instance.isAndroid() && CoreApp.instance.getPlatformMajorVersion() < 8;
+        return this.isAvailable() && CoreApp.isAndroid() && CoreApp.getPlatformMajorVersion() < 8;
     }
 
     /**
@@ -197,13 +197,13 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when done.
      */
     protected async createDefaultChannel(): Promise<void> {
-        if (!CoreApp.instance.isAndroid()) {
+        if (!CoreApp.isAndroid()) {
             return;
         }
 
-        await Push.instance.createChannel({
+        await Push.createChannel({
             id: 'default-channel-id',
-            description: Translate.instance.instant('addon.calendar.calendarreminders'),
+            description: Translate.instant('addon.calendar.calendarreminders'),
             importance: 4,
         }).catch((error) => {
             this.logger.error('Error changing channel name', error);
@@ -216,7 +216,7 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved with the notifications.
      */
     protected getAllScheduled(): Promise<ILocalNotification[]> {
-        return this.queueRunner.run('allScheduled', () => LocalNotifications.instance.getAllScheduled());
+        return this.queueRunner.run('allScheduled', () => LocalNotifications.getAllScheduled());
     }
 
     /**
@@ -358,11 +358,11 @@ export class CoreLocalNotificationsProvider {
             if (useQueue) {
                 const queueId = 'isTriggered-' + notification.id;
 
-                return this.queueRunner.run(queueId, () => LocalNotifications.instance.isTriggered(notification.id!), {
+                return this.queueRunner.run(queueId, () => LocalNotifications.isTriggered(notification.id!), {
                     allowRepeated: true,
                 });
             } else {
-                return LocalNotifications.instance.isTriggered(notification.id || 0);
+                return LocalNotifications.isTriggered(notification.id || 0);
             }
         }
     }
@@ -384,7 +384,7 @@ export class CoreLocalNotificationsProvider {
      */
     notifyEvent(eventName: string, data: Record<string, unknown>): void {
         // Execute the code in the Angular zone, so change detection doesn't stop working.
-        NgZone.instance.run(() => {
+        NgZone.run(() => {
             const component = <string> data.component;
             if (component) {
                 if (this.observables[eventName] && this.observables[eventName][component]) {
@@ -404,7 +404,7 @@ export class CoreLocalNotificationsProvider {
         if (!data) {
             return {};
         } else if (typeof data == 'string') {
-            return CoreTextUtils.instance.parseJSON(data, {});
+            return CoreTextUtils.parseJSON(data, {});
         } else {
             return data;
         }
@@ -510,7 +510,7 @@ export class CoreLocalNotificationsProvider {
      * @return Promise resolved when the code is retrieved.
      */
     protected requestCode(table: string, id: string): Promise<number> {
-        const deferred = CoreUtils.instance.promiseDefer<number>();
+        const deferred = CoreUtils.promiseDefer<number>();
         const key = table + '#' + id;
         const isQueueEmpty = Object.keys(this.codeRequestsQueue).length == 0;
 
@@ -573,7 +573,7 @@ export class CoreLocalNotificationsProvider {
         notification.data.component = component;
         notification.data.siteId = siteId;
 
-        if (CoreApp.instance.isAndroid()) {
+        if (CoreApp.isAndroid()) {
             notification.icon = notification.icon || 'res://icon';
             notification.smallIcon = notification.smallIcon || 'res://smallicon';
             notification.color = notification.color || CoreConstants.CONFIG.notificoncolor;
@@ -621,7 +621,7 @@ export class CoreLocalNotificationsProvider {
         const triggered = await this.isTriggered(notification, false);
 
         // Cancel the current notification in case it gets scheduled twice.
-        LocalNotifications.instance.cancel(notification.id).finally(async () => {
+        LocalNotifications.cancel(notification.id).finally(async () => {
             if (!triggered) {
                 let soundEnabled: boolean;
 
@@ -629,7 +629,7 @@ export class CoreLocalNotificationsProvider {
                 if (!this.canDisableSound()) {
                     soundEnabled = true;
                 } else {
-                    soundEnabled = await CoreConfig.instance.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true);
+                    soundEnabled = await CoreConfig.get(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true);
                 }
 
                 if (!soundEnabled) {
@@ -642,7 +642,7 @@ export class CoreLocalNotificationsProvider {
 
                 // Remove from triggered, since the notification could be in there with a different time.
                 this.removeTriggered(notification.id || 0);
-                LocalNotifications.instance.schedule(notification);
+                LocalNotifications.schedule(notification);
             }
         });
     }
@@ -682,6 +682,6 @@ export class CoreLocalNotificationsProvider {
 
 }
 
-export class CoreLocalNotifications extends makeSingleton(CoreLocalNotificationsProvider) {}
+export const CoreLocalNotifications = makeSingleton(CoreLocalNotificationsProvider);
 
 export type CoreLocalNotificationsClickCallback<T = unknown> = (value: T) => void;

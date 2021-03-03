@@ -46,14 +46,14 @@ export class CoreRecaptchaComponent implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.siteUrl = this.siteUrl || CoreSites.instance.getCurrentSite()?.getURL();
+        this.siteUrl = this.siteUrl || CoreSites.getCurrentSite()?.getURL();
     }
 
     /**
      * Initialize the lang property.
      */
     protected async initLang(): Promise<void> {
-        this.lang = await CoreLang.instance.getCurrentLanguage();
+        this.lang = await CoreLang.getCurrentLanguage();
     }
 
     /**
@@ -61,12 +61,12 @@ export class CoreRecaptchaComponent implements OnInit {
      */
     async answerRecaptcha(): Promise<void> {
         // Set the iframe src. We use an iframe because reCaptcha V2 doesn't work with file:// protocol.
-        const src = CoreTextUtils.instance.concatenatePaths(this.siteUrl!, 'webservice/recaptcha.php?lang=' + this.lang);
+        const src = CoreTextUtils.concatenatePaths(this.siteUrl!, 'webservice/recaptcha.php?lang=' + this.lang);
 
         // Modal to answer the recaptcha.
         // This is because the size of the recaptcha is dynamic, so it could cause problems if it was displayed inline.
 
-        const modal = await ModalController.instance.create({
+        const modal = await ModalController.create({
             component: CoreRecaptchaModalComponent,
             cssClass: 'core-modal-fullscreen',
             componentProps: {

@@ -39,9 +39,9 @@ export class AddonQbehaviourImmediateCBMHandlerService implements CoreQuestionBe
      *         (e.g. certainty options). Don't return anything if no extra data is required.
      */
     handleQuestion(question: CoreQuestionQuestionParsed): void | Type<unknown>[] {
-        CoreQuestionHelper.instance.extractQbehaviourButtons(question);
+        CoreQuestionHelper.extractQbehaviourButtons(question);
 
-        if (CoreQuestionHelper.instance.extractQbehaviourCBM(question)) {
+        if (CoreQuestionHelper.extractQbehaviourCBM(question)) {
             // Depends on deferredcbm.
             return [AddonQbehaviourDeferredCBMComponent];
         }
@@ -58,4 +58,4 @@ export class AddonQbehaviourImmediateCBMHandlerService implements CoreQuestionBe
 
 }
 
-export class AddonQbehaviourImmediateCBMHandler extends makeSingleton(AddonQbehaviourImmediateCBMHandlerService) {}
+export const AddonQbehaviourImmediateCBMHandler = makeSingleton(AddonQbehaviourImmediateCBMHandlerService);

@@ -40,9 +40,9 @@ export class AddonBadgesPushClickHandlerService implements CorePushNotifications
     async handles(notification: CorePushNotificationsNotificationBasicData): Promise<boolean> {
         const data = notification.customdata || {};
 
-        if (CoreUtils.instance.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'moodle' &&
+        if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'moodle' &&
                 (notification.name == 'badgerecipientnotice' || (notification.name == 'badgecreatornotice' && data.hash))) {
-            return AddonBadges.instance.isPluginEnabled(notification.site);
+            return AddonBadges.isPluginEnabled(notification.site);
         }
 
         return false;
@@ -59,7 +59,7 @@ export class AddonBadgesPushClickHandlerService implements CorePushNotifications
 
         if (data.hash) {
             // We have the hash, open the badge directly.
-            await CoreNavigator.instance.navigateToSitePath(`/badges/${data.hash}`, {
+            await CoreNavigator.navigateToSitePath(`/badges/${data.hash}`, {
                 siteId: notification.site,
             });
 
@@ -67,17 +67,17 @@ export class AddonBadgesPushClickHandlerService implements CorePushNotifications
         }
 
         // No hash, open the list of user badges.
-        await CoreUtils.instance.ignoreErrors(
-            AddonBadges.instance.invalidateUserBadges(
+        await CoreUtils.ignoreErrors(
+            AddonBadges.invalidateUserBadges(
                 0,
                 Number(notification.usertoid),
                 notification.site,
             ),
         );
 
-        await CoreNavigator.instance.navigateToSitePath('/badges', { siteId: notification.site });
+        await CoreNavigator.navigateToSitePath('/badges', { siteId: notification.site });
     }
 
 }
 
-export class AddonBadgesPushClickHandler extends makeSingleton(AddonBadgesPushClickHandlerService) {}
+export const AddonBadgesPushClickHandler = makeSingleton(AddonBadgesPushClickHandlerService);

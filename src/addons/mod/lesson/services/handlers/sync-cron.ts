@@ -35,7 +35,7 @@ export class AddonModLessonSyncCronHandlerService implements CoreCronHandler {
      * @return Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string, force?: boolean): Promise<void> {
-        return AddonModLessonSync.instance.syncAllLessons(siteId, force);
+        return AddonModLessonSync.syncAllLessons(siteId, force);
     }
 
     /**
@@ -44,9 +44,9 @@ export class AddonModLessonSyncCronHandlerService implements CoreCronHandler {
      * @return Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return AddonModLessonSync.instance.syncInterval;
+        return AddonModLessonSync.syncInterval;
     }
 
 }
 
-export class AddonModLessonSyncCronHandler extends makeSingleton(AddonModLessonSyncCronHandlerService) {}
+export const AddonModLessonSyncCronHandler = makeSingleton(AddonModLessonSyncCronHandlerService);

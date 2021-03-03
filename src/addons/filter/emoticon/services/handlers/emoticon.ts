@@ -43,4 +43,4 @@ export class AddonFilterEmoticonHandlerService extends CoreFilterDefaultHandler 
 
 }
 
-export class AddonFilterEmoticonHandler extends makeSingleton(AddonFilterEmoticonHandlerService) {}
+export const AddonFilterEmoticonHandler = makeSingleton(AddonFilterEmoticonHandlerService);

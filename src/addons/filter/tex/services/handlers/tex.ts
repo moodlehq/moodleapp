@@ -43,4 +43,4 @@ export class AddonFilterTexHandlerService extends CoreFilterDefaultHandler {
 
 }
 
-export class AddonFilterTexHandler extends makeSingleton(AddonFilterTexHandlerService) {}
+export const AddonFilterTexHandler = makeSingleton(AddonFilterTexHandlerService);

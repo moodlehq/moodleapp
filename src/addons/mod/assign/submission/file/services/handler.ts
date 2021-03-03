@@ -63,7 +63,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * @return Whether the plugin is empty.
      */
     isEmpty(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): boolean {
-        const files = AddonModAssign.instance.getSubmissionPluginAttachments(plugin);
+        const files = AddonModAssign.getSubmissionPluginAttachments(plugin);
 
         return files.length === 0;
     }
@@ -74,13 +74,13 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * @param assign The assignment.
      */
     clearTmpData(assign: AddonModAssignAssign): void {
-        const files = CoreFileSession.instance.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
+        const files = CoreFileSession.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
 
         // Clear the files in session for this assign.
-        CoreFileSession.instance.clearFiles(AddonModAssignProvider.COMPONENT, assign.id);
+        CoreFileSession.clearFiles(AddonModAssignProvider.COMPONENT, assign.id);
 
         // Now delete the local files from the tmp folder.
-        CoreFileUploader.instance.clearTmpFiles(files);
+        CoreFileUploader.clearTmpFiles(files);
     }
 
     /**
@@ -98,10 +98,10 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         pluginData: AddonModAssignSubmissionFilePluginData,
     ): Promise<void> {
         // We need to re-upload all the existing files.
-        const files = AddonModAssign.instance.getSubmissionPluginAttachments(plugin);
+        const files = AddonModAssign.getSubmissionPluginAttachments(plugin);
 
         // Get the itemId.
-        pluginData.files_filemanager = await AddonModAssignHelper.instance.uploadFiles(assign.id, files);
+        pluginData.files_filemanager = await AddonModAssignHelper.uploadFiles(assign.id, files);
     }
 
     /**
@@ -132,8 +132,8 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         siteId?: string,
     ): Promise<void> {
 
-        await CoreUtils.instance.ignoreErrors(
-            AddonModAssignHelper.instance.deleteStoredSubmissionFiles(
+        await CoreUtils.ignoreErrors(
+            AddonModAssignHelper.deleteStoredSubmissionFiles(
                 assign.id,
                 AddonModAssignSubmissionFileHandlerService.FOLDER_NAME,
                 submission.userid,
@@ -157,7 +157,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
     ): CoreWSExternalFile[] {
-        return AddonModAssign.instance.getSubmissionPluginAttachments(plugin);
+        return AddonModAssign.getSubmissionPluginAttachments(plugin);
     }
 
     /**
@@ -168,9 +168,9 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * @return The size (or promise resolved with size).
      */
     async getSizeForCopy(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): Promise<number> {
-        const files = AddonModAssign.instance.getSubmissionPluginAttachments(plugin);
+        const files = AddonModAssign.getSubmissionPluginAttachments(plugin);
 
-        return CoreFileHelper.instance.getTotalFilesSize(files);
+        return CoreFileHelper.getTotalFilesSize(files);
     }
 
     /**
@@ -188,9 +188,9 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
     ): Promise<number> {
         // Check if there's any change.
         if (this.hasDataChanged(assign, submission, plugin)) {
-            const files = CoreFileSession.instance.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
+            const files = CoreFileSession.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
 
-            return CoreFileHelper.instance.getTotalFilesSize(files);
+            return CoreFileHelper.getTotalFilesSize(files);
         } else {
             // Nothing has changed, we won't upload any file.
             return 0;
@@ -210,9 +210,9 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
     ): Promise<boolean> {
-        const offlineData = await CoreUtils.instance.ignoreErrors(
+        const offlineData = await CoreUtils.ignoreErrors(
             // Check if there's any offline data.
-            AddonModAssignOffline.instance.getSubmission(assign.id, submission.userid),
+            AddonModAssignOffline.getSubmission(assign.id, submission.userid),
             undefined,
         );
 
@@ -223,12 +223,12 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
             numFiles = offlineDataFiles.offline + offlineDataFiles.online.length;
         } else {
             // No offline data, return the number of online files.
-            const pluginFiles = AddonModAssign.instance.getSubmissionPluginAttachments(plugin);
+            const pluginFiles = AddonModAssign.getSubmissionPluginAttachments(plugin);
 
             numFiles = pluginFiles && pluginFiles.length;
         }
 
-        const currentFiles = CoreFileSession.instance.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
+        const currentFiles = CoreFileSession.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
 
         if (currentFiles.length != numFiles) {
             // Number of files has changed.
@@ -238,7 +238,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         const files = await this.getSubmissionFilesToSync(assign, submission, offlineData);
 
         // Check if there is any local file added and list has changed.
-        return CoreFileUploader.instance.areFileListDifferent(currentFiles, files);
+        return CoreFileUploader.areFileListDifferent(currentFiles, files);
     }
 
     /**
@@ -289,14 +289,14 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         }
 
         // Data has changed, we need to upload new files and re-upload all the existing files.
-        const currentFiles = CoreFileSession.instance.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
-        const error = CoreUtils.instance.hasRepeatedFilenames(currentFiles);
+        const currentFiles = CoreFileSession.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
+        const error = CoreUtils.hasRepeatedFilenames(currentFiles);
 
         if (error) {
             throw error;
         }
 
-        pluginData.files_filemanager = await AddonModAssignHelper.instance.uploadOrStoreFiles(
+        pluginData.files_filemanager = await AddonModAssignHelper.uploadOrStoreFiles(
             assign.id,
             AddonModAssignSubmissionFileHandlerService.FOLDER_NAME,
             currentFiles,
@@ -333,7 +333,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
             return;
         }
 
-        pluginData.files_filemanager = await AddonModAssignHelper.instance.uploadFiles(assign.id, files, siteId);
+        pluginData.files_filemanager = await AddonModAssignHelper.uploadFiles(assign.id, files, siteId);
     }
 
     /**
@@ -361,8 +361,8 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
 
         if (filesData.offline) {
             // Has offline files, get them and add them to the list.
-            const storedFiles = <FileEntry[]> await CoreUtils.instance.ignoreErrors(
-                AddonModAssignHelper.instance.getStoredSubmissionFiles(
+            const storedFiles = <FileEntry[]> await CoreUtils.ignoreErrors(
+                AddonModAssignHelper.getStoredSubmissionFiles(
                     assign.id,
                     AddonModAssignSubmissionFileHandlerService.FOLDER_NAME,
                     submission.userid,

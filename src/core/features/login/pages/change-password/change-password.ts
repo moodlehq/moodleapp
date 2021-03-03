@@ -33,16 +33,16 @@ export class CoreLoginChangePasswordPage {
     logoutLabel: string;
 
     constructor() {
-        this.logoutLabel = CoreLoginHelper.instance.getLogoutLabel();
+        this.logoutLabel = CoreLoginHelper.getLogoutLabel();
     }
 
     /**
      * Show a help modal.
      */
     showHelp(): void {
-        CoreDomUtils.instance.showAlert(
-            Translate.instance.instant('core.help'),
-            Translate.instance.instant('core.login.changepasswordhelp'),
+        CoreDomUtils.showAlert(
+            Translate.instant('core.help'),
+            Translate.instant('core.login.changepasswordhelp'),
         );
     }
 
@@ -50,8 +50,8 @@ export class CoreLoginChangePasswordPage {
      * Open the change password page in a browser.
      */
     openChangePasswordPage(): void {
-        CoreLoginHelper.instance.openInAppForEdit(
-            CoreSites.instance.getCurrentSiteId(),
+        CoreLoginHelper.openInAppForEdit(
+            CoreSites.getCurrentSiteId(),
             '/login/change_password.php',
             undefined,
             true,
@@ -63,7 +63,7 @@ export class CoreLoginChangePasswordPage {
      * Login the user.
      */
     login(): void {
-        CoreNavigator.instance.navigateToSiteHome();
+        CoreNavigator.navigateToSiteHome();
         this.changingPassword = false;
     }
 
@@ -71,7 +71,7 @@ export class CoreLoginChangePasswordPage {
      * Logout the user.
      */
     logout(): void {
-        CoreSites.instance.logout();
+        CoreSites.logout();
         this.changingPassword = false;
     }
 

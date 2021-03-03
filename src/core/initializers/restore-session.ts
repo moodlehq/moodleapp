@@ -15,5 +15,5 @@
 import { CoreSites } from '@services/sites';
 
 export default async function(): Promise<void> {
-    await CoreSites.instance.restoreSession();
+    await CoreSites.restoreSession();
 }

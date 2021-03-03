@@ -51,7 +51,7 @@ export class CoreTagSearchLinkHandlerService extends CoreContentLinksHandlerBase
                     query: params.query || '',
                 };
 
-                CoreNavigator.instance.navigateToSitePath('/tag/search', { params: pageParams, siteId });
+                CoreNavigator.navigateToSitePath('/tag/search', { params: pageParams, siteId });
             },
         }];
     }
@@ -64,9 +64,9 @@ export class CoreTagSearchLinkHandlerService extends CoreContentLinksHandlerBase
      * @return Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string): Promise<boolean> {
-        return CoreTag.instance.areTagsAvailable(siteId);
+        return CoreTag.areTagsAvailable(siteId);
     }
 
 }
 
-export class CoreTagSearchLinkHandler extends makeSingleton(CoreTagSearchLinkHandlerService) {}
+export const CoreTagSearchLinkHandler = makeSingleton(CoreTagSearchLinkHandlerService);

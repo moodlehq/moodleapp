@@ -54,7 +54,7 @@ export class AddonModAssignModuleHandlerService implements CoreCourseModuleHandl
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
-        return AddonModAssign.instance.isPluginEnabled();
+        return AddonModAssign.isPluginEnabled();
     }
 
     /**
@@ -65,7 +65,7 @@ export class AddonModAssignModuleHandlerService implements CoreCourseModuleHandl
      */
     getData(module: CoreCourseAnyModuleData): CoreCourseModuleHandlerData {
         return {
-            icon: CoreCourse.instance.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
+            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
             title: module.name,
             class: 'addon-mod_assign-handler',
             showDownloadButton: true,
@@ -75,7 +75,7 @@ export class AddonModAssignModuleHandlerService implements CoreCourseModuleHandl
                 Object.assign(options.params, { module });
                 const routeParams = '/' + courseId + '/' + module.id;
 
-                CoreNavigator.instance.navigateToSitePath(AddonModAssignModuleHandlerService.PAGE_NAME + routeParams, options);
+                CoreNavigator.navigateToSitePath(AddonModAssignModuleHandlerService.PAGE_NAME + routeParams, options);
             },
         };
     }

@@ -49,13 +49,13 @@ export class AddonModForumPostLinkHandlerService extends CoreContentLinksHandler
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: async (siteId): Promise<void> => {
-                const modal = await CoreDomUtils.instance.showModalLoading();
+                const modal = await CoreDomUtils.showModalLoading();
                 const forumId = parseInt(params.forum, 10);
 
                 try {
-                    const module = await CoreCourse.instance.getModuleBasicInfoByInstance(forumId, 'forum', siteId);
+                    const module = await CoreCourse.getModuleBasicInfoByInstance(forumId, 'forum', siteId);
 
-                    await CoreNavigator.instance.navigateToSitePath(
+                    await CoreNavigator.navigateToSitePath(
                         `${AddonModForumModuleHandlerService.PAGE_NAME}/${module.course}/${module.id}/new/0`,
                         { siteId, params: { forumId: module.instance } },
                     );
@@ -83,4 +83,4 @@ export class AddonModForumPostLinkHandlerService extends CoreContentLinksHandler
 
 }
 
-export class AddonModForumPostLinkHandler extends makeSingleton(AddonModForumPostLinkHandlerService) {}
+export const AddonModForumPostLinkHandler = makeSingleton(AddonModForumPostLinkHandlerService);

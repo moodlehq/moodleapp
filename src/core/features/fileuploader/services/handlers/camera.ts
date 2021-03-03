@@ -35,7 +35,7 @@ export class CoreFileUploaderCameraHandlerService implements CoreFileUploaderHan
      * @return Promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
-        return CoreApp.instance.isMobile() || CoreApp.instance.canGetUserMedia();
+        return CoreApp.isMobile() || CoreApp.canGetUserMedia();
     }
 
     /**
@@ -46,7 +46,7 @@ export class CoreFileUploaderCameraHandlerService implements CoreFileUploaderHan
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
         // Camera only supports JPEG and PNG.
-        return CoreUtils.instance.filterByRegexp(mimetypes, /^image\/(jpeg|png)$/);
+        return CoreUtils.filterByRegexp(mimetypes, /^image\/(jpeg|png)$/);
     }
 
     /**
@@ -65,7 +65,7 @@ export class CoreFileUploaderCameraHandlerService implements CoreFileUploaderHan
                 allowOffline?: boolean,
                 mimetypes?: string[],
             ): Promise<CoreFileUploaderHandlerResult> => {
-                const result = await CoreFileUploaderHelper.instance.uploadImage(false, maxSize, upload, mimetypes);
+                const result = await CoreFileUploaderHelper.uploadImage(false, maxSize, upload, mimetypes);
 
                 return {
                     treated: true,
@@ -77,4 +77,4 @@ export class CoreFileUploaderCameraHandlerService implements CoreFileUploaderHan
 
 }
 
-export class CoreFileUploaderCameraHandler extends makeSingleton(CoreFileUploaderCameraHandlerService) {}
+export const CoreFileUploaderCameraHandler = makeSingleton(CoreFileUploaderCameraHandlerService);

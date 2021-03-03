@@ -31,7 +31,7 @@ import { AddonModAssignSubmissionDelegate } from '../../services/submission-dele
             multi: true,
             deps: [],
             useFactory: () => () => {
-                AddonModAssignSubmissionDelegate.instance.registerHandler(AddonModAssignSubmissionFileHandler.instance);
+                AddonModAssignSubmissionDelegate.registerHandler(AddonModAssignSubmissionFileHandler.instance);
             },
         },
     ],

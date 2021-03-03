@@ -55,7 +55,7 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
         answers: CoreQuestionsAnswers,
     ): number {
         // This question type depends on multichoice.
-        return AddonQtypeMultichoiceHandler.instance.isCompleteResponseSingle(answers);
+        return AddonQtypeMultichoiceHandler.isCompleteResponseSingle(answers);
     }
 
     /**
@@ -82,7 +82,7 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
         answers: CoreQuestionsAnswers,
     ): number {
         // This question type depends on multichoice.
-        return AddonQtypeMultichoiceHandler.instance.isGradableResponseSingle(answers);
+        return AddonQtypeMultichoiceHandler.isGradableResponseSingle(answers);
     }
 
     /**
@@ -101,9 +101,9 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
         // This question type depends on multichoice.
-        return AddonQtypeMultichoiceHandler.instance.isSameResponseSingle(prevAnswers, newAnswers);
+        return AddonQtypeMultichoiceHandler.isSameResponseSingle(prevAnswers, newAnswers);
     }
 
 }
 
-export class AddonQtypeCalculatedMultiHandler extends makeSingleton(AddonQtypeCalculatedMultiHandlerService) {}
+export const AddonQtypeCalculatedMultiHandler = makeSingleton(AddonQtypeCalculatedMultiHandlerService);

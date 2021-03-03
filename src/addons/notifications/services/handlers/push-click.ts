@@ -47,7 +47,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
             return true;
         }
 
-        if (CoreUtils.instance.isTrueOrOne(notification.notif)) {
+        if (CoreUtils.isTrueOrOne(notification.notif)) {
             // Notification clicked, mark as read. Don't block for this.
             this.markAsRead(notification);
 
@@ -70,7 +70,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
             return;
         }
 
-        await CoreUtils.instance.ignoreErrors(AddonNotifications.instance.markNotificationRead(notifId, notification.site));
+        await CoreUtils.ignoreErrors(AddonNotifications.markNotificationRead(notifId, notification.site));
 
         CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {}, notification.site);
     }
@@ -85,7 +85,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
 
         if (notification.customdata?.extendedtext) {
             // Display the text in a modal.
-            return CoreTextUtils.instance.viewText(notification.title || '', <string> notification.customdata.extendedtext, {
+            return CoreTextUtils.viewText(notification.title || '', <string> notification.customdata.extendedtext, {
                 displayCopyButton: true,
                 modalOptions: { cssClass: 'core-modal-fullscreen' },
             });
@@ -97,15 +97,15 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
 
             switch (notification.customdata.appurlopenin) {
                 case 'inapp':
-                    CoreUtils.instance.openInApp(url);
+                    CoreUtils.openInApp(url);
 
                     return;
 
                 case 'browser':
-                    return CoreUtils.instance.openInBrowser(url);
+                    return CoreUtils.openInBrowser(url);
 
                 default:
-                    if (CoreContentLinksHelper.instance.handleLink(url, undefined, undefined, true)) {
+                    if (CoreContentLinksHelper.handleLink(url, undefined, undefined, true)) {
                         // Link treated, stop.
                         return;
                     }
@@ -114,16 +114,16 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
 
         // No appurl or cannot be handled by the app. Try to handle the contexturl now.
         if (notification.contexturl) {
-            if (CoreContentLinksHelper.instance.handleLink(notification.contexturl)) {
+            if (CoreContentLinksHelper.handleLink(notification.contexturl)) {
                 // Link treated, stop.
                 return;
             }
         }
 
         // No contexturl or cannot be handled by the app. Open the notifications page.
-        await CoreUtils.instance.ignoreErrors(AddonNotifications.instance.invalidateNotificationsList(notification.site));
+        await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList(notification.site));
 
-        await CoreNavigator.instance.navigateToSitePath(
+        await CoreNavigator.navigateToSitePath(
             AddonNotificationsMainMenuHandlerService.PAGE_NAME,
             { siteId: notification.site },
         );
@@ -131,7 +131,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
 
 }
 
-export class AddonNotificationsPushClickHandler extends makeSingleton(AddonNotificationsPushClickHandlerService) {}
+export const AddonNotificationsPushClickHandler = makeSingleton(AddonNotificationsPushClickHandlerService);
 
 type AddonNotificationsNotificationData = CorePushNotificationsNotificationBasicData & {
     contexturl?: string; // URL related to the notification.

@@ -43,4 +43,4 @@ export class AddonFilterEmailProtectHandlerService extends CoreFilterDefaultHand
 
 }
 
-export class AddonFilterEmailProtectHandler extends makeSingleton(AddonFilterEmailProtectHandlerService) {}
+export const AddonFilterEmailProtectHandler = makeSingleton(AddonFilterEmailProtectHandlerService);

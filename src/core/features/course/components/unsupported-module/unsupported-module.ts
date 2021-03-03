@@ -41,9 +41,9 @@ export class CoreCourseUnsupportedModuleComponent implements OnInit {
             return;
         }
 
-        this.isDisabledInSite = CoreCourseModuleDelegate.instance.isModuleDisabledInSite(this.module.modname);
-        this.isSupportedByTheApp = CoreCourseModuleDelegate.instance.hasHandler(this.module.modname);
-        this.moduleName = CoreCourse.instance.translateModuleName(this.module.modname);
+        this.isDisabledInSite = CoreCourseModuleDelegate.isModuleDisabledInSite(this.module.modname);
+        this.isSupportedByTheApp = CoreCourseModuleDelegate.hasHandler(this.module.modname);
+        this.moduleName = CoreCourse.translateModuleName(this.module.modname);
     }
 
 }

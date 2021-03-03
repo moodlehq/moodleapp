@@ -46,14 +46,14 @@ export class CoreCoursesAvailableCoursesPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async loadCourses(): Promise<void> {
-        const frontpageCourseId = CoreSites.instance.getCurrentSiteHomeId();
+        const frontpageCourseId = CoreSites.getCurrentSiteHomeId();
 
         try {
-            const courses = await CoreCourses.instance.getCoursesByField();
+            const courses = await CoreCourses.getCoursesByField();
 
             this.courses = courses.filter((course) => course.id != frontpageCourseId);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
         }
     }
 
@@ -65,8 +65,8 @@ export class CoreCoursesAvailableCoursesPage implements OnInit {
     refreshCourses(refresher: CustomEvent<IonRefresher>): void {
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCourses.instance.invalidateUserCourses());
-        promises.push(CoreCourses.instance.invalidateCoursesByField());
+        promises.push(CoreCourses.invalidateUserCourses());
+        promises.push(CoreCourses.invalidateCoursesByField());
 
         Promise.all(promises).finally(() => {
             this.loadCourses().finally(() => {

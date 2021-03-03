@@ -36,7 +36,7 @@ export class AddonMessagesContactRequestLinkHandlerService extends CoreContentLi
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId): void => {
-                CoreNavigator.instance.navigateToSitePath('/messages/contacts', { siteId });
+                CoreNavigator.navigateToSitePath('/messages/contacts', { siteId });
             },
         }];
     }
@@ -49,14 +49,14 @@ export class AddonMessagesContactRequestLinkHandlerService extends CoreContentLi
      * @return Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string): Promise<boolean> {
-        const enabled = await AddonMessages.instance.isPluginEnabled(siteId);
+        const enabled = await AddonMessages.isPluginEnabled(siteId);
         if (!enabled) {
             return false;
         }
 
-        return AddonMessages.instance.isGroupMessagingEnabledInSite(siteId);
+        return AddonMessages.isGroupMessagingEnabledInSite(siteId);
     }
 
 }
 
-export class AddonMessagesContactRequestLinkHandler extends makeSingleton(AddonMessagesContactRequestLinkHandlerService) {}
+export const AddonMessagesContactRequestLinkHandler = makeSingleton(AddonMessagesContactRequestLinkHandlerService);

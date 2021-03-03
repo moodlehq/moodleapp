@@ -76,4 +76,4 @@ export class AddonUserProfileFieldCheckboxHandlerService implements CoreUserProf
 
 }
 
-export class AddonUserProfileFieldCheckboxHandler extends makeSingleton(AddonUserProfileFieldCheckboxHandlerService) {}
+export const AddonUserProfileFieldCheckboxHandler = makeSingleton(AddonUserProfileFieldCheckboxHandlerService);

@@ -66,9 +66,9 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
     ) {
-        this.siteId = CoreSites.instance.getCurrentSiteId();
-        this.searchingMessages = Translate.instance.instant('core.searching');
-        this.loadingMessages = Translate.instance.instant('core.loading');
+        this.siteId = CoreSites.getCurrentSiteId();
+        this.searchingMessages = Translate.instant('core.searching');
+        this.loadingMessages = Translate.instant('core.loading');
         this.loadingMessage = this.loadingMessages;
 
         // Refresh the list when a contact request is confirmed.
@@ -79,7 +79,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
                     this.refreshData();
                 }
             },
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
     }
 
@@ -88,8 +88,8 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.route.queryParams.subscribe(async () => {
-            const discussionUserId = CoreNavigator.instance.getRouteNumberParam('discussionUserId') ||
-                CoreNavigator.instance.getRouteNumberParam('userId') || undefined;
+            const discussionUserId = CoreNavigator.getRouteNumberParam('discussionUserId') ||
+                CoreNavigator.getRouteNumberParam('userId') || undefined;
 
             if (this.loaded && this.discussionUserId == discussionUserId) {
                 return;
@@ -104,7 +104,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
             try {
                 await this.fetchData();
-                if (!this.discussionUserId && this.hasContacts && CoreScreen.instance.isTablet) {
+                if (!this.discussionUserId && this.hasContacts && CoreScreen.isTablet) {
                     let contact: AddonMessagesGetContactsContact | undefined;
                     for (const x in this.contacts) {
                         if (this.contacts[x].length > 0) {
@@ -137,7 +137,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
                 await this.performSearch(this.searchString);
             } else {
                 // Update contacts.
-                await AddonMessages.instance.invalidateAllContactsCache();
+                await AddonMessages.invalidateAllContactsCache();
                 await this.fetchData();
             }
         } finally {
@@ -154,7 +154,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
         this.loadingMessage = this.loadingMessages;
 
         try {
-            const contacts = await AddonMessages.instance.getAllContacts();
+            const contacts = await AddonMessages.getAllContacts();
             for (const x in contacts) {
                 if (contacts[x].length > 0) {
                     this.contacts[x] = this.sortUsers(contacts[x]);
@@ -165,7 +165,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
             this.clearSearch();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
         }
     }
 
@@ -208,7 +208,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      * @return Resolved when done.
      */
     search(query: string): Promise<void> {
-        CoreApp.instance.closeKeyboard();
+        CoreApp.closeKeyboard();
 
         this.loaded = false;
         this.loadingMessage = this.searchingMessages;
@@ -226,14 +226,14 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      */
     protected async performSearch(query: string): Promise<void> {
         try {
-            const result = await AddonMessages.instance.searchContacts(query);
+            const result = await AddonMessages.searchContacts(query);
             this.hasContacts = result.length > 0;
             this.searchString = query;
             this.contactTypes = ['search'];
 
             this.contacts.search = this.sortUsers(result);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
         }
     }
 
@@ -249,11 +249,11 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
             userId: discussionUserId,
         };
 
-        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/contacts-35/discussion');
+        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/contacts-35/discussion');
         const path = (splitViewLoaded ? '../' : '') + 'discussion';
 
         // @todo Check why this is failing on ngInit.
-        CoreNavigator.instance.navigate(path, { params });
+        CoreNavigator.navigate(path, { params });
     }
 
     /**

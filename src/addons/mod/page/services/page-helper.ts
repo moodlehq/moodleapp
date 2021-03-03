@@ -54,7 +54,7 @@ export class AddonModPageHelperProvider {
                     // Add the folders without the leading slash.
                     key = content.filepath.substr(1) + key;
                 }
-                paths[CoreTextUtils.instance.decodeURIComponent(key)] = url;
+                paths[CoreTextUtils.decodeURIComponent(key)] = url;
             }
         });
 
@@ -65,10 +65,10 @@ export class AddonModPageHelperProvider {
         }
 
         let url: string;
-        if (CoreFile.instance.isAvailable()) {
+        if (CoreFile.isAvailable()) {
             // The file system is available.
-            url = await CoreFilepool.instance.downloadUrl(
-                CoreSites.instance.getCurrentSiteId(),
+            url = await CoreFilepool.downloadUrl(
+                CoreSites.getCurrentSiteId(),
                 indexUrl,
                 false,
                 AddonModPageProvider.COMPONENT,
@@ -76,14 +76,14 @@ export class AddonModPageHelperProvider {
             );
         } else {
             // We return the live URL.
-            url = await CoreSites.instance.getCurrentSite()?.checkAndFixPluginfileURL(indexUrl) || '';
+            url = await CoreSites.getCurrentSite()?.checkAndFixPluginfileURL(indexUrl) || '';
         }
 
-        const content = await CoreWS.instance.getText(url);
+        const content = await CoreWS.getText(url);
 
         // Now that we have the content, we update the SRC to point back to the external resource.
         // That will be caught by core-format-text.
-        return CoreDomUtils.instance.restoreSourcesInHtml(content, paths);
+        return CoreDomUtils.restoreSourcesInHtml(content, paths);
     }
 
     /**
@@ -102,4 +102,4 @@ export class AddonModPageHelperProvider {
     }
 
 }
-export class AddonModPageHelper extends makeSingleton(AddonModPageHelperProvider) {}
+export const AddonModPageHelper = makeSingleton(AddonModPageHelperProvider);

@@ -39,7 +39,7 @@ export class AddonModLessonMenuModalPage {
      * Close modal.
      */
     closeModal(): void {
-        ModalController.instance.dismiss();
+        ModalController.dismiss();
     }
 
     /**

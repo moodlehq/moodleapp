@@ -26,7 +26,7 @@ import { AddonModQuizAccessOpenCloseDateHandler } from './services/handlers/open
             multi: true,
             deps: [],
             useFactory: () => () => {
-                AddonModQuizAccessRuleDelegate.instance.registerHandler(AddonModQuizAccessOpenCloseDateHandler.instance);
+                AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessOpenCloseDateHandler.instance);
             },
         },
     ],

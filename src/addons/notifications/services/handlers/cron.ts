@@ -35,7 +35,7 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
      * @return Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return CoreApp.instance.isMobile() ? 600000 : 60000; // 1 or 10 minutes.
+        return CoreApp.isMobile() ? 600000 : 60000; // 1 or 10 minutes.
     }
 
     /**
@@ -45,7 +45,7 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
      */
     isSync(): boolean {
         // This is done to use only wifi if using the fallback function.
-        return !AddonNotifications.instance.isPreciseNotificationCountEnabled();
+        return !AddonNotifications.isPreciseNotificationCountEnabled();
     }
 
     /**
@@ -68,13 +68,13 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async execute(siteId?: string, force?: boolean): Promise<void> {
-        if (!CoreSites.instance.isCurrentSite(siteId)) {
+        if (!CoreSites.isCurrentSite(siteId)) {
             return;
         }
 
-        CoreEvents.trigger(AddonNotificationsProvider.READ_CRON_EVENT, {}, CoreSites.instance.getCurrentSiteId());
+        CoreEvents.trigger(AddonNotificationsProvider.READ_CRON_EVENT, {}, CoreSites.getCurrentSiteId());
     }
 
 }
 
-export class AddonNotificationsCronHandler extends makeSingleton(AddonNotificationsCronHandlerService) {}
+export const AddonNotificationsCronHandler = makeSingleton(AddonNotificationsCronHandlerService);

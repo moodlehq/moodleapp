@@ -164,11 +164,11 @@ export class CoreMimetypeUtilsProvider {
      * @param path Alternative path that will override fileurl from file object.
      */
     getEmbeddedHtml(file: CoreWSExternalFile | FileEntry, path?: string): string {
-        const filename = CoreUtils.instance.isFileEntry(file) ? (file as FileEntry).name : file.filename;
-        const extension = !CoreUtils.instance.isFileEntry(file) && file.mimetype
+        const filename = CoreUtils.isFileEntry(file) ? (file as FileEntry).name : file.filename;
+        const extension = !CoreUtils.isFileEntry(file) && file.mimetype
             ? this.getExtension(file.mimetype)
             : (filename && this.getFileExtension(filename));
-        const mimeType = !CoreUtils.instance.isFileEntry(file) && file.mimetype
+        const mimeType = !CoreUtils.isFileEntry(file) && file.mimetype
             ? file.mimetype
             : (extension && this.getMimeType(extension));
 
@@ -181,8 +181,8 @@ export class CoreMimetypeUtilsProvider {
             // @todo linting: See if this can be removed
             (file as { embedType?: string }).embedType = embedType;
 
-            path = path ?? (CoreUtils.instance.isFileEntry(file) ? file.toURL() : file.fileurl);
-            path = path && CoreFile.instance.convertFileSrc(path);
+            path = path ?? (CoreUtils.isFileEntry(file) ? file.toURL() : file.fileurl);
+            path = path && CoreFile.convertFileSrc(path);
 
             switch (embedType) {
                 case 'image':
@@ -407,7 +407,7 @@ export class CoreMimetypeUtilsProvider {
         let mimetype: string | undefined = '';
         let extension: string | undefined = '';
 
-        if (typeof obj == 'object' && CoreUtils.instance.isFileEntry(obj)) {
+        if (typeof obj == 'object' && CoreUtils.isFileEntry(obj)) {
             // It's a FileEntry. Don't use the file function because it's asynchronous and the type isn't reliable.
             filename = obj.name;
         } else if (typeof obj == 'object') {
@@ -449,15 +449,15 @@ export class CoreMimetypeUtilsProvider {
             const value = attr[key];
             translateParams[key] = value;
             translateParams[key.toUpperCase()] = value.toUpperCase();
-            translateParams[CoreTextUtils.instance.ucFirst(key)] = CoreTextUtils.instance.ucFirst(value);
+            translateParams[CoreTextUtils.ucFirst(key)] = CoreTextUtils.ucFirst(value);
         }
 
         // MIME types may include + symbol but this is not permitted in string ids.
         const safeMimetype = mimetype.replace(/\+/g, '_');
         const safeMimetypeStr = mimetypeStr.replace(/\+/g, '_');
-        const safeMimetypeTrns = Translate.instance.instant(langPrefix + safeMimetype, { $a: translateParams });
-        const safeMimetypeStrTrns = Translate.instance.instant(langPrefix + safeMimetypeStr, { $a: translateParams });
-        const defaultTrns = Translate.instance.instant(langPrefix + 'default', { $a: translateParams });
+        const safeMimetypeTrns = Translate.instant(langPrefix + safeMimetype, { $a: translateParams });
+        const safeMimetypeStrTrns = Translate.instant(langPrefix + safeMimetypeStr, { $a: translateParams });
+        const defaultTrns = Translate.instant(langPrefix + 'default', { $a: translateParams });
         let result = mimetype;
 
         if (safeMimetypeTrns != langPrefix + safeMimetype) {
@@ -469,7 +469,7 @@ export class CoreMimetypeUtilsProvider {
         }
 
         if (capitalise) {
-            result = CoreTextUtils.instance.ucFirst(result);
+            result = CoreTextUtils.ucFirst(result);
         }
 
         return result;
@@ -529,7 +529,7 @@ export class CoreMimetypeUtilsProvider {
      */
     getTranslatedGroupName(name: string): string {
         const key = 'assets.mimetypes.group:' + name;
-        const translated = Translate.instance.instant(key);
+        const translated = Translate.instant(key);
 
         return translated != key ? translated : name;
     }
@@ -580,4 +580,4 @@ export class CoreMimetypeUtilsProvider {
 
 }
 
-export class CoreMimetypeUtils extends makeSingleton(CoreMimetypeUtilsProvider) {}
+export const CoreMimetypeUtils = makeSingleton(CoreMimetypeUtilsProvider);

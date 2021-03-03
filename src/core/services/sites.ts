@@ -99,12 +99,12 @@ export class CoreSitesProvider {
      */
     async initializeDatabase(): Promise<void> {
         try {
-            await CoreApp.instance.createTablesFromSchema(APP_SCHEMA);
+            await CoreApp.createTablesFromSchema(APP_SCHEMA);
         } catch (e) {
             // Ignore errors.
         }
 
-        this.resolveAppDB(CoreApp.instance.getDB());
+        this.resolveAppDB(CoreApp.getDB());
     }
 
     /**
@@ -132,11 +132,11 @@ export class CoreSitesProvider {
      */
     async checkSite(siteUrl: string, protocol: string = 'https://'): Promise<CoreSiteCheckResponse> {
         // The formatURL function adds the protocol if is missing.
-        siteUrl = CoreUrlUtils.instance.formatURL(siteUrl);
+        siteUrl = CoreUrlUtils.formatURL(siteUrl);
 
-        if (!CoreUrlUtils.instance.isHttpURL(siteUrl)) {
-            throw new CoreError(Translate.instance.instant('core.login.invalidsite'));
-        } else if (!CoreApp.instance.isOnline()) {
+        if (!CoreUrlUtils.isHttpURL(siteUrl)) {
+            throw new CoreError(Translate.instant('core.login.invalidsite'));
+        } else if (!CoreApp.isOnline()) {
             throw new CoreNetworkError();
         }
 
@@ -159,12 +159,12 @@ export class CoreSitesProvider {
                 }
 
                 // Site doesn't exist. Return the error message.
-                if (CoreTextUtils.instance.getErrorMessageFromError(error)) {
+                if (CoreTextUtils.getErrorMessageFromError(error)) {
                     throw error;
-                } else if (CoreTextUtils.instance.getErrorMessageFromError(secondError)) {
+                } else if (CoreTextUtils.getErrorMessageFromError(secondError)) {
                     throw secondError;
                 } else {
-                    throw new CoreError(Translate.instance.instant('core.cannotconnecttrouble'));
+                    throw new CoreError(Translate.instant('core.cannotconnecttrouble'));
                 }
             }
         }
@@ -194,7 +194,7 @@ export class CoreSitesProvider {
             }
 
             // Site doesn't exist. Try to add or remove 'www'.
-            const treatedUrl = CoreUrlUtils.instance.addOrRemoveWWW(siteUrl);
+            const treatedUrl = CoreUrlUtils.addOrRemoveWWW(siteUrl);
 
             try {
                 await this.siteExists(treatedUrl);
@@ -210,7 +210,7 @@ export class CoreSitesProvider {
                 }
 
                 // Return the error.
-                if (CoreTextUtils.instance.getErrorMessageFromError(error)) {
+                if (CoreTextUtils.getErrorMessageFromError(error)) {
                     throw error;
                 } else {
                     throw secondError;
@@ -245,14 +245,14 @@ export class CoreSitesProvider {
                 // Check that the user can authenticate.
                 if (!config.enablewebservices) {
                     throw new CoreSiteError({
-                        message: Translate.instance.instant('core.login.webservicesnotenabled'),
+                        message: Translate.instant('core.login.webservicesnotenabled'),
                     });
                 } else if (!config.enablemobilewebservice) {
                     throw new CoreSiteError({
-                        message: Translate.instance.instant('core.login.mobileservicesnotenabled'),
+                        message: Translate.instant('core.login.mobileservicesnotenabled'),
                     });
                 } else if (config.maintenanceenabled) {
-                    let message = Translate.instance.instant('core.sitemaintenance');
+                    let message = Translate.instant('core.sitemaintenance');
                     if (config.maintenancemessage) {
                         message += config.maintenancemessage;
                     }
@@ -272,13 +272,13 @@ export class CoreSitesProvider {
                     // Service supported but an error happened. Return error.
                     if (error.errorcode == 'codingerror') {
                         // This could be caused by a redirect. Check if it's the case.
-                        const redirect = await CoreUtils.instance.checkRedirect(siteUrl);
+                        const redirect = await CoreUtils.checkRedirect(siteUrl);
 
                         if (redirect) {
-                            error.error = Translate.instance.instant('core.login.sitehasredirect');
+                            error.error = Translate.instant('core.login.sitehasredirect');
                         } else {
                             // We can't be sure if there is a redirect or not. Display cannot connect error.
-                            error.error = Translate.instance.instant('core.cannotconnecttrouble');
+                            error.error = Translate.instant('core.cannotconnecttrouble');
                         }
                     }
 
@@ -306,22 +306,22 @@ export class CoreSitesProvider {
         let data: CoreSitesLoginTokenResponse;
 
         // Use a valid path first.
-        siteUrl = CoreUrlUtils.instance.removeUrlParams(siteUrl);
+        siteUrl = CoreUrlUtils.removeUrlParams(siteUrl);
 
         try {
-            data = await Http.instance.post(siteUrl + '/login/token.php', {}).pipe(timeout(CoreWS.instance.getRequestTimeout()))
+            data = await Http.post(siteUrl + '/login/token.php', {}).pipe(timeout(CoreWS.getRequestTimeout()))
                 .toPromise();
         } catch (error) {
             // Default error messages are kinda bad, return our own message.
             throw new CoreSiteError({
-                message: Translate.instance.instant('core.cannotconnecttrouble'),
+                message: Translate.instant('core.cannotconnecttrouble'),
             });
         }
 
         if (data === null) {
             // Cannot connect.
             throw new CoreSiteError({
-                message: Translate.instance.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+                message: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
             });
         }
 
@@ -359,7 +359,7 @@ export class CoreSitesProvider {
         service?: string,
         retry?: boolean,
     ): Promise<CoreSiteUserTokenResponse> {
-        if (!CoreApp.instance.isOnline()) {
+        if (!CoreApp.isOnline()) {
             throw new CoreNetworkError();
         }
 
@@ -376,13 +376,13 @@ export class CoreSitesProvider {
         let data: CoreSitesLoginTokenResponse;
 
         try {
-            data = await Http.instance.post(loginUrl, params).pipe(timeout(CoreWS.instance.getRequestTimeout())).toPromise();
+            data = await Http.post(loginUrl, params).pipe(timeout(CoreWS.getRequestTimeout())).toPromise();
         } catch (error) {
-            throw new CoreError(Translate.instance.instant('core.cannotconnecttrouble'));
+            throw new CoreError(Translate.instant('core.cannotconnecttrouble'));
         }
 
         if (typeof data == 'undefined') {
-            throw new CoreError(Translate.instance.instant('core.cannotconnecttrouble'));
+            throw new CoreError(Translate.instant('core.cannotconnecttrouble'));
         } else {
             if (typeof data.token != 'undefined') {
                 return { token: data.token, siteUrl, privateToken: data.privatetoken };
@@ -390,16 +390,16 @@ export class CoreSitesProvider {
                 if (typeof data.error != 'undefined') {
                     // We only allow one retry (to avoid loops).
                     if (!retry && data.errorcode == 'requirecorrectaccess') {
-                        siteUrl = CoreUrlUtils.instance.addOrRemoveWWW(siteUrl);
+                        siteUrl = CoreUrlUtils.addOrRemoveWWW(siteUrl);
 
                         return this.getUserToken(siteUrl, username, password, service, true);
                     } else if (data.errorcode == 'missingparam') {
                         // It seems the server didn't receive all required params, it could be due to a redirect.
-                        const redirect = await CoreUtils.instance.checkRedirect(loginUrl);
+                        const redirect = await CoreUtils.checkRedirect(loginUrl);
 
                         if (redirect) {
                             throw new CoreSiteError({
-                                message: Translate.instance.instant('core.login.sitehasredirect'),
+                                message: Translate.instant('core.login.sitehasredirect'),
                             });
                         }
                     }
@@ -410,7 +410,7 @@ export class CoreSitesProvider {
                     });
                 }
 
-                throw new CoreError(Translate.instance.instant('core.login.invalidaccount'));
+                throw new CoreError(Translate.instant('core.login.invalidaccount'));
             }
         }
     }
@@ -451,7 +451,7 @@ export class CoreSitesProvider {
             const siteId = this.createSiteID(info.siteurl, info.username);
 
             // Check if the site already exists.
-            const site = await CoreUtils.instance.ignoreErrors<CoreSite>(this.getSite(siteId));
+            const site = await CoreUtils.ignoreErrors<CoreSite>(this.getSite(siteId));
 
             if (site) {
                 // Site already exists, update its data and use it.
@@ -546,7 +546,7 @@ export class CoreSitesProvider {
         }
 
         throw new CoreSiteError({
-            message: Translate.instance.instant(errorKey, translateParams),
+            message: Translate.instant(errorKey, translateParams),
             errorcode: errorCode,
             loggedOut: true,
         });
@@ -733,22 +733,22 @@ export class CoreSitesProvider {
 
             siteId = siteId || this.getCurrentSiteId();
 
-            const downloadUrl = CoreApp.instance.getAppStoreUrl(storesConfig);
+            const downloadUrl = CoreApp.getAppStoreUrl(storesConfig);
 
             if (downloadUrl != null) {
                 // Do not block interface.
-                CoreDomUtils.instance.showConfirm(
-                    Translate.instance.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
-                    Translate.instance.instant('core.updaterequired'),
-                    Translate.instance.instant('core.download'),
-                    Translate.instance.instant(siteId ? 'core.mainmenu.logout' : 'core.cancel'),
-                ).then(() => CoreUtils.instance.openInBrowser(downloadUrl)).catch(() => {
+                CoreDomUtils.showConfirm(
+                    Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
+                    Translate.instant('core.updaterequired'),
+                    Translate.instant('core.download'),
+                    Translate.instant(siteId ? 'core.mainmenu.logout' : 'core.cancel'),
+                ).then(() => CoreUtils.openInBrowser(downloadUrl)).catch(() => {
                     // Do nothing.
                 });
             } else {
-                CoreDomUtils.instance.showAlert(
-                    Translate.instance.instant('core.updaterequired'),
-                    Translate.instance.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
+                CoreDomUtils.showAlert(
+                    Translate.instant('core.updaterequired'),
+                    Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
                 );
             }
 
@@ -997,8 +997,8 @@ export class CoreSitesProvider {
      */
     makeSiteFromSiteListEntry(entry: SiteDBEntry): Promise<CoreSite> {
         // Parse info and config.
-        const info = entry.info ? <CoreSiteInfo> CoreTextUtils.instance.parseJSON(entry.info) : undefined;
-        const config = entry.config ? <CoreSiteConfig> CoreTextUtils.instance.parseJSON(entry.config) : undefined;
+        const info = entry.info ? <CoreSiteInfo> CoreTextUtils.parseJSON(entry.info) : undefined;
+        const config = entry.config ? <CoreSiteConfig> CoreTextUtils.parseJSON(entry.config) : undefined;
 
         const site = new CoreSite(entry.id, entry.siteUrl, entry.token, info, entry.privateToken, config, entry.loggedOut == 1);
         site.setOAuthId(entry.oauthId);
@@ -1061,7 +1061,7 @@ export class CoreSitesProvider {
         sites.forEach((site) => {
             if (!ids || ids.indexOf(site.id) > -1) {
                 // Parse info.
-                const siteInfo = site.info ? <CoreSiteInfo> CoreTextUtils.instance.parseJSON(site.info) : undefined;
+                const siteInfo = site.info ? <CoreSiteInfo> CoreTextUtils.parseJSON(site.info) : undefined;
                 const basicInfo: CoreSiteBasicInfo = {
                     id: site.id,
                     siteUrl: site.siteUrl,
@@ -1360,7 +1360,7 @@ export class CoreSitesProvider {
         // Check if URL has http(s) protocol.
         if (!url.match(/^https?:\/\//i)) {
             // URL doesn't have http(s) protocol. Check if it has any protocol.
-            if (CoreUrlUtils.instance.isAbsoluteURL(url)) {
+            if (CoreUrlUtils.isAbsoluteURL(url)) {
                 // It has some protocol. Return empty array.
                 return [];
             } else {
@@ -1602,10 +1602,10 @@ export class CoreSitesProvider {
         // If more than one site is returned it usually means there are different users stored. Use any of them.
         const site = await this.getSite(siteIds[0]);
 
-        const siteUrl = CoreTextUtils.instance.removeEndingSlash(
-            CoreUrlUtils.instance.removeProtocolAndWWW(site.getURL()),
+        const siteUrl = CoreTextUtils.removeEndingSlash(
+            CoreUrlUtils.removeProtocolAndWWW(site.getURL()),
         );
-        const treatedUrl = CoreTextUtils.instance.removeEndingSlash(CoreUrlUtils.instance.removeProtocolAndWWW(url));
+        const treatedUrl = CoreTextUtils.removeEndingSlash(CoreUrlUtils.removeProtocolAndWWW(url));
 
         if (siteUrl == treatedUrl) {
             result.site = site;
@@ -1677,7 +1677,7 @@ export class CoreSitesProvider {
 
 }
 
-export class CoreSites extends makeSingleton(CoreSitesProvider) {}
+export const CoreSites = makeSingleton(CoreSitesProvider);
 
 /**
  * Response of checking if a site exists and its configuration.

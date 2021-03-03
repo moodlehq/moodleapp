@@ -32,7 +32,7 @@ import { AddonQtypeDescriptionHandler } from './services/handlers/description';
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionDelegate.instance.registerHandler(AddonQtypeDescriptionHandler.instance);
+                CoreQuestionDelegate.registerHandler(AddonQtypeDescriptionHandler.instance);
             },
         },
     ],

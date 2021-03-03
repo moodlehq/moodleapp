@@ -83,7 +83,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
     ) {
-        this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
+        this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         // Refresh data if comments are synchronized automatically.
         this.syncObserver = CoreEvents.on<CoreCommentsSyncAutoSyncData>(CoreCommentsSyncProvider.AUTO_SYNCED, (data) => {
@@ -103,7 +103,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 this.comments = [];
                 this.fetchComments(false);
             }
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
     }
 
     /**
@@ -111,18 +111,18 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         // Is implicit the user can delete if he can add.
-        this.addDeleteCommentsAvailable = await CoreComments.instance.isAddCommentsAvailable();
-        this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
+        this.addDeleteCommentsAvailable = await CoreComments.isAddCommentsAvailable();
+        this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         this.commentsLoaded = false;
-        this.contextLevel = CoreNavigator.instance.getRouteParam<ContextLevel>('contextLevel')!;
-        this.instanceId = CoreNavigator.instance.getRouteNumberParam('instanceId')!;
-        this.componentName = CoreNavigator.instance.getRouteParam<string>('componentName')!;
-        this.itemId = CoreNavigator.instance.getRouteNumberParam('itemId')!;
-        this.area = CoreNavigator.instance.getRouteParam('area') || '';
-        this.title = CoreNavigator.instance.getRouteNumberParam('title') ||
-            Translate.instance.instant('core.comments.comments');
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId');
+        this.contextLevel = CoreNavigator.getRouteParam<ContextLevel>('contextLevel')!;
+        this.instanceId = CoreNavigator.getRouteNumberParam('instanceId')!;
+        this.componentName = CoreNavigator.getRouteParam<string>('componentName')!;
+        this.itemId = CoreNavigator.getRouteNumberParam('itemId')!;
+        this.area = CoreNavigator.getRouteParam('area') || '';
+        this.title = CoreNavigator.getRouteNumberParam('title') ||
+            Translate.instant('core.comments.comments');
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
 
         await this.fetchComments(true);
     }
@@ -138,12 +138,12 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         this.loadMoreError = false;
 
         if (sync) {
-            await CoreUtils.instance.ignoreErrors(this.syncComments(showErrors));
+            await CoreUtils.ignoreErrors(this.syncComments(showErrors));
         }
 
         try {
             // Get comments data.
-            const commentsResponse = await CoreComments.instance.getComments(
+            const commentsResponse = await CoreComments.getComments(
                 this.contextLevel,
                 this.instanceId,
                 this.componentName,
@@ -173,9 +173,9 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
             if (error && this.componentName == 'assignsubmission_comments') {
-                CoreDomUtils.instance.showAlertTranslated('core.notice', 'core.comments.commentsnotworking');
+                CoreDomUtils.showAlertTranslated('core.notice', 'core.comments.commentsnotworking');
             } else {
-                CoreDomUtils.instance.showErrorModalDefault(error, Translate.instance.instant('core.error') + ': get_comments');
+                CoreDomUtils.showErrorModalDefault(error, Translate.instant('core.error') + ': get_comments');
             }
         } finally {
             this.commentsLoaded = true;
@@ -232,9 +232,9 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * @param warnings the warnings
      */
     private showSyncWarnings(warnings: string[]): void {
-        const message = CoreTextUtils.instance.buildMessage(warnings);
+        const message = CoreTextUtils.buildMessage(warnings);
         if (message) {
-            CoreDomUtils.instance.showErrorModal(message);
+            CoreDomUtils.showErrorModal(message);
         }
     }
 
@@ -246,7 +246,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      */
     private async syncComments(showErrors: boolean): Promise<void> {
         try {
-            const result = await CoreCommentsSync.instance.syncComments(
+            const result = await CoreCommentsSync.syncComments(
                 this.contextLevel,
                 this.instanceId,
                 this.componentName,
@@ -256,7 +256,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             this.showSyncWarnings(result?.warnings || []);
         } catch (error) {
             if (showErrors) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.errorsync', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
             }
 
             throw new CoreError(error);
@@ -281,7 +281,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             content: this.offlineComment ? this.offlineComment!.content : '',
         };
 
-        const modal = await ModalController.instance.create({
+        const modal = await ModalController.create({
             component: CoreCommentsAddComponent,
             componentProps: params,
         });
@@ -305,7 +305,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 itemId: this.itemId,
                 area: this.area,
                 countChange: 1,
-            }, CoreSites.instance.getCurrentSiteId());
+            }, CoreSites.getCurrentSiteId());
 
         } else if (result?.data?.comment === false) {
             // Comments added in offline mode.
@@ -326,7 +326,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         const modified = 'lastmodified' in comment
             ? comment.lastmodified
             : comment.timecreated;
-        const time = CoreTimeUtils.instance.userDate(
+        const time = CoreTimeUtils.userDate(
             modified * 1000,
             'core.strftimerecentfull',
         );
@@ -342,7 +342,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         };
 
         try {
-            await CoreDomUtils.instance.showDeleteConfirm('core.comments.deletecommentbyon', {
+            await CoreDomUtils.showDeleteConfirm('core.comments.deletecommentbyon', {
                 $a:
                     { user: comment.fullname || '', time: time },
             });
@@ -352,7 +352,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         }
 
         try {
-            const deletedOnline = await CoreComments.instance.deleteComment(deleteComment);
+            const deletedOnline = await CoreComments.deleteComment(deleteComment);
             this.showDelete = false;
 
             if (deletedOnline) {
@@ -367,7 +367,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                         itemId: this.itemId,
                         area: this.area,
                         countChange: -1,
-                    }, CoreSites.instance.getCurrentSiteId());
+                    }, CoreSites.getCurrentSiteId());
                 }
             } else {
                 this.loadOfflineData();
@@ -375,9 +375,9 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
 
             this.invalidateComments();
 
-            CoreDomUtils.instance.showToast('core.comments.eventcommentdeleted', true, 3000);
+            CoreDomUtils.showToast('core.comments.eventcommentdeleted', true, 3000);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Delete comment failed.');
+            CoreDomUtils.showErrorModalDefault(error, 'Delete comment failed.');
         }
     }
 
@@ -387,7 +387,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * @return Resolved when done.
      */
     protected invalidateComments(): Promise<void> {
-        return CoreComments.instance.invalidateCommentsData(
+        return CoreComments.invalidateCommentsData(
             this.contextLevel,
             this.instanceId,
             this.componentName,
@@ -405,7 +405,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
     protected async loadCommentProfile(comment: CoreCommentsDataWithUser): Promise<CoreCommentsDataWithUser> {
         // Get the user profile image.
         try {
-            const user = await CoreUser.instance.getProfile(comment.userid!, undefined, true);
+            const user = await CoreUser.getProfile(comment.userid!, undefined, true);
             comment.profileimageurl = user.profileimageurl;
             comment.fullname = user.fullname;
         } catch {
@@ -426,7 +426,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         let hasDeletedComments = false;
 
         // Load the only offline comment allowed if any.
-        promises.push(CoreCommentsOffline.instance.getComment(
+        promises.push(CoreCommentsOffline.getComment(
             this.contextLevel,
             this.instanceId,
             this.componentName,
@@ -440,7 +440,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             }
 
             if (!this.currentUser) {
-                this.currentUser = await CoreUser.instance.getProfile(this.currentUserId, undefined, true);
+                this.currentUser = await CoreUser.getProfile(this.currentUserId, undefined, true);
             }
 
             if (this.currentUser) {
@@ -453,7 +453,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         }));
 
         // Load deleted comments offline.
-        promises.push(CoreCommentsOffline.instance.getDeletedComments(
+        promises.push(CoreCommentsOffline.getDeletedComments(
             this.contextLevel,
             this.instanceId,
             this.componentName,
@@ -490,7 +490,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         e.preventDefault();
         e.stopPropagation();
 
-        await CoreCommentsOffline.instance.undoDeleteComment(comment.id);
+        await CoreCommentsOffline.undoDeleteComment(comment.id);
 
         comment.deleted = false;
         this.showDelete = false;

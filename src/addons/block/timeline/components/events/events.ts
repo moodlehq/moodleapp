@@ -51,7 +51,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
      * Detect changes on input properties.
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        this.showCourse = CoreUtils.instance.isTrueOrOne(this.showCourse);
+        this.showCourse = CoreUtils.isTrueOrOne(this.showCourse);
 
         if (changes.events || changes.from || changes.to) {
             if (this.events && this.events.length > 0) {
@@ -60,7 +60,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
 
                 const eventsByDay: Record<number, AddonCalendarEvent[]> = {};
                 filteredEvents.forEach((event) => {
-                    const dayTimestamp = CoreTimeUtils.instance.getMidnightForTimestamp(event.timesort);
+                    const dayTimestamp = CoreTimeUtils.getMidnightForTimestamp(event.timesort);
                     if (eventsByDay[dayTimestamp]) {
                         eventsByDay[dayTimestamp].push(event);
                     } else {
@@ -68,7 +68,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
                     }
                 });
 
-                const todaysMidnight = CoreTimeUtils.instance.getMidnightForTimestamp();
+                const todaysMidnight = CoreTimeUtils.getMidnightForTimestamp();
                 this.filteredEvents = [];
                 Object.keys(eventsByDay).forEach((key) => {
                     const dayTimestamp = parseInt(key);
@@ -102,7 +102,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
 
             return start <= event.timesort;
         }).map((event) => {
-            event.iconUrl = CoreCourse.instance.getModuleIconSrc(event.icon.component);
+            event.iconUrl = CoreCourse.getModuleIconSrc(event.icon.component);
 
             return event;
         });
@@ -127,14 +127,14 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
         e.stopPropagation();
 
         // Fix URL format.
-        url = CoreTextUtils.instance.decodeHTMLEntities(url);
+        url = CoreTextUtils.decodeHTMLEntities(url);
 
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const treated = await CoreContentLinksHelper.instance.handleLink(url);
+            const treated = await CoreContentLinksHelper.handleLink(url);
             if (!treated) {
-                return CoreSites.instance.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(url);
+                return CoreSites.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(url);
             }
         } finally {
             modal.dismiss();

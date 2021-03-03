@@ -47,10 +47,10 @@ export class CoreSiteHomeProvider {
      */
     async getNewsForum(siteHomeId?: number): Promise<AddonModForumData> {
         if (!siteHomeId) {
-            siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
+            siteHomeId = CoreSites.getCurrentSiteHomeId();
         }
 
-        const forums = await AddonModForum.instance.getCourseForums(siteHomeId);
+        const forums = await AddonModForum.getCourseForums(siteHomeId);
         const forum = forums.find((forum) => forum.type == 'news');
 
         if (forum) {
@@ -67,7 +67,7 @@ export class CoreSiteHomeProvider {
      * @return Promise resolved when invalidated.
      */
     async invalidateNewsForum(siteHomeId: number): Promise<void> {
-        await AddonModForum.instance.invalidateForumData(siteHomeId);
+        await AddonModForum.invalidateForumData(siteHomeId);
     }
 
     /**
@@ -78,7 +78,7 @@ export class CoreSiteHomeProvider {
      */
     async isAvailable(siteId?: string): Promise<boolean> {
         try {
-            const site = await CoreSites.instance.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
 
             // First check if it's disabled.
             if (this.isDisabledInSite(site)) {
@@ -90,7 +90,7 @@ export class CoreSiteHomeProvider {
             const preSets: CoreSiteWSPreSets = { emergencyCache: false };
 
             try {
-                const sections = await CoreCourse.instance.getSections(siteHomeId, false, true, preSets, site.id);
+                const sections = await CoreCourse.getSections(siteHomeId, false, true, preSets, site.id);
 
                 if (!sections || !sections.length) {
                     throw Error('No sections found');
@@ -127,7 +127,7 @@ export class CoreSiteHomeProvider {
      * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.isDisabledInSite(site);
     }
@@ -139,7 +139,7 @@ export class CoreSiteHomeProvider {
      * @return Whether it's disabled.
      */
     isDisabledInSite(site: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return site.isFeatureDisabled('CoreMainMenuDelegate_CoreSiteHome');
     }
@@ -166,25 +166,25 @@ export class CoreSiteHomeProvider {
             switch (itemNumber) {
                 case FrontPageItemNames['NEWS_ITEMS']:
                     // Get number of news items to show.
-                    add = !!CoreSites.instance.getCurrentSite()?.getStoredConfig('newsitems');
+                    add = !!CoreSites.getCurrentSite()?.getStoredConfig('newsitems');
                     break;
                 case FrontPageItemNames['LIST_OF_CATEGORIES']:
                 case FrontPageItemNames['COMBO_LIST']:
                 case FrontPageItemNames['LIST_OF_COURSE']:
-                    add = CoreCourses.instance.isGetCoursesByFieldAvailable();
+                    add = CoreCourses.isGetCoursesByFieldAvailable();
                     if (add && itemNumber == FrontPageItemNames['COMBO_LIST']) {
                         itemNumber = FrontPageItemNames['LIST_OF_CATEGORIES'];
                     }
                     break;
                 case FrontPageItemNames['ENROLLED_COURSES']:
-                    if (!CoreCourses.instance.isMyCoursesDisabledInSite()) {
-                        const courses = await CoreCourses.instance.getUserCourses();
+                    if (!CoreCourses.isMyCoursesDisabledInSite()) {
+                        const courses = await CoreCourses.getUserCourses();
 
                         add = courses.length > 0;
                     }
                     break;
                 case FrontPageItemNames['COURSE_SEARCH_BOX']:
-                    add = !CoreCourses.instance.isSearchCoursesDisabledInSite();
+                    add = !CoreCourses.isSearchCoursesDisabledInSite();
                     break;
                 default:
                     break;
@@ -201,4 +201,4 @@ export class CoreSiteHomeProvider {
 
 }
 
-export class CoreSiteHome extends makeSingleton(CoreSiteHomeProvider) {}
+export const CoreSiteHome = makeSingleton(CoreSiteHomeProvider);

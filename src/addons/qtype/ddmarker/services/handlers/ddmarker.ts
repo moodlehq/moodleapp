@@ -125,7 +125,7 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreQuestion.instance.compareAllAnswers(prevAnswers, newAnswers);
+        return CoreQuestion.compareAllAnswers(prevAnswers, newAnswers);
     }
 
     /**
@@ -138,7 +138,7 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
     getAdditionalDownloadableFiles(question: CoreQuestionQuestionParsed, usageId?: number): CoreWSExternalFile[] {
         const treatedQuestion: CoreQuestionQuestion = question;
 
-        CoreQuestionHelper.instance.extractQuestionScripts(treatedQuestion, usageId);
+        CoreQuestionHelper.extractQuestionScripts(treatedQuestion, usageId);
 
         if (treatedQuestion.amdArgs && typeof treatedQuestion.amdArgs[1] == 'string') {
             // Moodle 3.6+.
@@ -152,4 +152,4 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
 
 }
 
-export class AddonQtypeDdMarkerHandler extends makeSingleton(AddonQtypeDdMarkerHandlerService) {}
+export const AddonQtypeDdMarkerHandler = makeSingleton(AddonQtypeDdMarkerHandlerService);

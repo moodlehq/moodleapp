@@ -30,7 +30,7 @@ import { AddonBlockTimelineHandler } from './services/block-handler';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockTimelineHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockTimelineHandler.instance);
             },
         },
     ],

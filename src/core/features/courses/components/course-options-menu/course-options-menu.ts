@@ -36,7 +36,7 @@ export class CoreCoursesCourseOptionsMenuComponent implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
+        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
     }
 
     /**
@@ -45,7 +45,7 @@ export class CoreCoursesCourseOptionsMenuComponent implements OnInit {
      * @param action Action name to take.
      */
     action(action: string): void {
-        PopoverController.instance.dismiss(action);
+        PopoverController.dismiss(action);
     }
 
 }

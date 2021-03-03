@@ -149,7 +149,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
         for (const name in newAnswers) {
             if (name.indexOf('choice') != -1) {
                 isSingle = false;
-                if (!CoreUtils.instance.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, name)) {
+                if (!CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, name)) {
                     isMultiSame = false;
                     break;
                 }
@@ -171,7 +171,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
      * @return Whether they're the same.
      */
     isSameResponseSingle(prevAnswers: CoreQuestionsAnswers, newAnswers: CoreQuestionsAnswers): boolean {
-        return CoreUtils.instance.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
+        return CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     }
 
     /**
@@ -198,4 +198,4 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
 
 }
 
-export class AddonQtypeMultichoiceHandler extends makeSingleton(AddonQtypeMultichoiceHandlerService) {}
+export const AddonQtypeMultichoiceHandler = makeSingleton(AddonQtypeMultichoiceHandlerService);

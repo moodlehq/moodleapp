@@ -34,7 +34,7 @@ import { CoreEditorComponentsModule } from '@features/editor/components/componen
             multi: true,
             deps: [],
             useFactory: () => () =>
-                CoreUserProfileFieldDelegate.instance.registerHandler(AddonUserProfileFieldTextareaHandler.instance),
+                CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldTextareaHandler.instance),
         },
     ],
     exports: [

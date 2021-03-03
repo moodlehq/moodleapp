@@ -42,7 +42,7 @@ export class CoreRecaptchaModalComponent implements OnDestroy {
      * Close modal.
      */
     closeModal(): void {
-        ModalController.instance.dismiss({
+        ModalController.dismiss({
             expired: this.expired,
             value: this.value,
         });

@@ -66,7 +66,7 @@ export class AddonModQuizModuleHandlerService implements CoreCourseModuleHandler
      */
     getData(module: CoreCourseAnyModuleData): CoreCourseModuleHandlerData {
         return {
-            icon: CoreCourse.instance.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
+            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
             title: module.name,
             class: 'addon-mod_quiz-handler',
             showDownloadButton: true,
@@ -76,7 +76,7 @@ export class AddonModQuizModuleHandlerService implements CoreCourseModuleHandler
                 Object.assign(options.params, { module });
                 const routeParams = '/' + courseId + '/' + module.id;
 
-                CoreNavigator.instance.navigateToSitePath(AddonModQuizModuleHandlerService.PAGE_NAME + routeParams, options);
+                CoreNavigator.navigateToSitePath(AddonModQuizModuleHandlerService.PAGE_NAME + routeParams, options);
             },
         };
     }
@@ -95,4 +95,4 @@ export class AddonModQuizModuleHandlerService implements CoreCourseModuleHandler
 
 }
 
-export class AddonModQuizModuleHandler extends makeSingleton(AddonModQuizModuleHandlerService) {}
+export const AddonModQuizModuleHandler = makeSingleton(AddonModQuizModuleHandlerService);

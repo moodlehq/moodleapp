@@ -36,11 +36,11 @@ export class AddonBlockTimelineHandlerService extends CoreBlockBaseHandler {
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
-        const enabled = await AddonBlockTimeline.instance.isAvailable();
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const enabled = await AddonBlockTimeline.isAvailable();
+        const currentSite = CoreSites.getCurrentSite();
 
         return enabled && ((currentSite && currentSite.isVersionGreaterEqualThan('3.6')) ||
-            !CoreCourses.instance.isMyCoursesDisabledInSite());
+            !CoreCourses.isMyCoursesDisabledInSite());
     }
 
     /**
@@ -59,4 +59,4 @@ export class AddonBlockTimelineHandlerService extends CoreBlockBaseHandler {
 
 }
 
-export class AddonBlockTimelineHandler extends makeSingleton(AddonBlockTimelineHandlerService) {}
+export const AddonBlockTimelineHandler = makeSingleton(AddonBlockTimelineHandlerService);

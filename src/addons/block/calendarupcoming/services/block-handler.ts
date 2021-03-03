@@ -45,11 +45,11 @@ export class AddonBlockCalendarUpcomingHandlerService extends CoreBlockBaseHandl
             title: 'addon.block_calendarupcoming.pluginname',
             class: 'addon-block-calendar-upcoming',
             component: CoreBlockOnlyTitleComponent,
-            link: AddonCalendar.instance.getMainCalendarPagePath(),
+            link: AddonCalendar.getMainCalendarPagePath(),
             linkParams: linkParams,
         };
     }
 
 }
 
-export class AddonBlockCalendarUpcomingHandler extends makeSingleton(AddonBlockCalendarUpcomingHandlerService) {}
+export const AddonBlockCalendarUpcomingHandler = makeSingleton(AddonBlockCalendarUpcomingHandlerService);

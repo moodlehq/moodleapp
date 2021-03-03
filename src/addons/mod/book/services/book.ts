@@ -85,7 +85,7 @@ export class AddonModBookProvider {
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModBookBookWSData> {
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
         const params: AddonModBookGetBooksByCoursesWSParams = {
             courseids: [courseId],
         };
@@ -93,7 +93,7 @@ export class AddonModBookProvider {
             cacheKey: this.getBookDataCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
             component: AddonModBookProvider.COMPONENT,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy),
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
         const response: AddonModBookGetBooksByCoursesWSResponse = await site.read('mod_book_get_books_by_courses', params, preSets);
@@ -133,19 +133,19 @@ export class AddonModBookProvider {
             throw new CoreWSError('Could not locate the index chapter.');
         }
 
-        if (!CoreFile.instance.isAvailable()) {
+        if (!CoreFile.isAvailable()) {
             // We return the live URL.
-            return CoreSites.instance.getCurrentSite()!.checkAndFixPluginfileURL(indexUrl);
+            return CoreSites.getCurrentSite()!.checkAndFixPluginfileURL(indexUrl);
         }
 
-        const siteId = CoreSites.instance.getCurrentSiteId();
+        const siteId = CoreSites.getCurrentSiteId();
 
-        const url = await CoreFilepool.instance.downloadUrl(siteId, indexUrl, false, AddonModBookProvider.COMPONENT, moduleId);
+        const url = await CoreFilepool.downloadUrl(siteId, indexUrl, false, AddonModBookProvider.COMPONENT, moduleId);
 
-        const content = await CoreWS.instance.getText(url);
+        const content = await CoreWS.getText(url);
 
         // Now that we have the content, we update the SRC to point back to the external resource.
-        return CoreDomUtils.instance.restoreSourcesInHtml(content, contentsMap[chapterId].paths);
+        return CoreDomUtils.restoreSourcesInHtml(content, contentsMap[chapterId].paths);
     }
 
     /**
@@ -197,7 +197,7 @@ export class AddonModBookProvider {
                 key = content.filepath.replace('/' + chapter + '/', '') + content.filename;
             }
 
-            map[chapter].paths[CoreTextUtils.instance.decodeURIComponent(key)] = content.fileurl;
+            map[chapter].paths[CoreTextUtils.decodeURIComponent(key)] = content.fileurl;
         });
 
         return map;
@@ -258,7 +258,7 @@ export class AddonModBookProvider {
             return [];
         }
 
-        return CoreTextUtils.instance.parseJSON(contents[0].content, []);
+        return CoreTextUtils.parseJSON(contents[0].content, []);
     }
 
     /**
@@ -320,7 +320,7 @@ export class AddonModBookProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateBookData(courseId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getBookDataCacheKey(courseId));
     }
@@ -334,15 +334,15 @@ export class AddonModBookProvider {
      * @return Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidateBookData(courseId, siteId));
-        promises.push(CoreFilepool.instance.invalidateFilesByComponent(siteId, AddonModBookProvider.COMPONENT, moduleId));
-        promises.push(CoreCourse.instance.invalidateModule(moduleId, siteId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, AddonModBookProvider.COMPONENT, moduleId));
+        promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
-        return CoreUtils.instance.allPromises(promises);
+        return CoreUtils.allPromises(promises);
     }
 
     /**
@@ -362,7 +362,7 @@ export class AddonModBookProvider {
      * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     async isPluginEnabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.canDownloadFiles();
     }
@@ -382,7 +382,7 @@ export class AddonModBookProvider {
             chapterid: chapterId,
         };
 
-        await CoreCourseLogHelper.instance.logSingle(
+        await CoreCourseLogHelper.logSingle(
             'mod_book_view_book',
             params,
             AddonModBookProvider.COMPONENT,
@@ -396,7 +396,7 @@ export class AddonModBookProvider {
 
 }
 
-export class AddonModBook extends makeSingleton(AddonModBookProvider) {}
+export const AddonModBook = makeSingleton(AddonModBookProvider);
 
 /**
  * A book chapter inside the toc list.

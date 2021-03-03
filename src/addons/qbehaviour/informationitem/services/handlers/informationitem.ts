@@ -45,10 +45,10 @@ export class AddonQbehaviourInformationItemHandlerService implements CoreQuestio
         question: CoreQuestionQuestionWithAnswers,
     ): CoreQuestionState | Promise<CoreQuestionState> {
         if (question.answers?.['-seen']) {
-            return CoreQuestion.instance.getState('complete');
+            return CoreQuestion.getState('complete');
         }
 
-        return CoreQuestion.instance.getState(question.state || 'todo');
+        return CoreQuestion.getState(question.state || 'todo');
     }
 
     /**
@@ -61,7 +61,7 @@ export class AddonQbehaviourInformationItemHandlerService implements CoreQuestio
      *         (e.g. certainty options). Don't return anything if no extra data is required.
      */
     handleQuestion(question: CoreQuestionQuestionParsed): void | Type<unknown>[] {
-        if (CoreQuestionHelper.instance.extractQbehaviourSeenInput(question)) {
+        if (CoreQuestionHelper.extractQbehaviourSeenInput(question)) {
             return [AddonQbehaviourInformationItemComponent];
         }
     }
@@ -77,4 +77,4 @@ export class AddonQbehaviourInformationItemHandlerService implements CoreQuestio
 
 }
 
-export class AddonQbehaviourInformationItemHandler extends makeSingleton(AddonQbehaviourInformationItemHandlerService) {}
+export const AddonQbehaviourInformationItemHandler = makeSingleton(AddonQbehaviourInformationItemHandlerService);

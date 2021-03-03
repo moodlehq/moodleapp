@@ -46,10 +46,10 @@ export class CoreCourseListModTypePage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.title = CoreNavigator.instance.getRouteParam('title') || '';
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId');
-        this.modName = CoreNavigator.instance.getRouteParam('modName');
-        this.downloadEnabled = !CoreSites.instance.getCurrentSite()?.isOfflineDisabled();
+        this.title = CoreNavigator.getRouteParam('title') || '';
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+        this.modName = CoreNavigator.getRouteParam('modName');
+        this.downloadEnabled = !CoreSites.getCurrentSite()?.isOfflineDisabled();
 
         try {
             await this.fetchData();
@@ -70,7 +70,7 @@ export class CoreCourseListModTypePage implements OnInit {
 
         try {
             // Get all the modules in the course.
-            let sections = await CoreCourse.instance.getSections(this.courseId, false, true);
+            let sections = await CoreCourse.getSections(this.courseId, false, true);
 
             sections = sections.filter((section) => {
                 if (!section.modules) {
@@ -78,7 +78,7 @@ export class CoreCourseListModTypePage implements OnInit {
                 }
 
                 section.modules = section.modules.filter((mod) => {
-                    if (mod.uservisible === false || !CoreCourse.instance.moduleHasView(mod)) {
+                    if (mod.uservisible === false || !CoreCourse.moduleHasView(mod)) {
                         // Ignore this module.
                         return false;
                     }
@@ -86,7 +86,7 @@ export class CoreCourseListModTypePage implements OnInit {
                     if (this.modName === 'resources') {
                         // Check that the module is a resource.
                         if (typeof this.archetypes[mod.modname] == 'undefined') {
-                            this.archetypes[mod.modname] = CoreCourseModuleDelegate.instance.supportsFeature<number>(
+                            this.archetypes[mod.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
                                 mod.modname,
                                 CoreConstants.FEATURE_MOD_ARCHETYPE,
                                 CoreConstants.MOD_ARCHETYPE_OTHER,
@@ -105,11 +105,11 @@ export class CoreCourseListModTypePage implements OnInit {
                 return section.modules.length > 0;
             });
 
-            const result = CoreCourseHelper.instance.addHandlerDataForModules(sections, this.courseId);
+            const result = CoreCourseHelper.addHandlerDataForModules(sections, this.courseId);
 
             this.sections = result.sections;
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error getting data');
+            CoreDomUtils.showErrorModalDefault(error, 'Error getting data');
         }
     }
 
@@ -120,7 +120,7 @@ export class CoreCourseListModTypePage implements OnInit {
      * @return Promise resolved when done.
      */
     async refreshData(refresher: CustomEvent<IonRefresher>): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(CoreCourse.instance.invalidateSections(this.courseId || 0));
+        await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId || 0));
 
         try {
             await this.fetchData();

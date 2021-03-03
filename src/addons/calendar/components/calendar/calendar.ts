@@ -89,14 +89,14 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         differs: KeyValueDiffers,
     ) {
 
-        this.currentSiteId = CoreSites.instance.getCurrentSiteId();
+        this.currentSiteId = CoreSites.getCurrentSiteId();
 
-        if (CoreLocalNotifications.instance.isAvailable()) {
+        if (CoreLocalNotifications.isAvailable()) {
             // Re-schedule events if default time changes.
             this.obsDefaultTimeChange = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
                 this.weeks.forEach((week) => {
                     week.days.forEach((day) => {
-                        AddonCalendar.instance.scheduleEventsNotifications(day.eventsFormated!);
+                        AddonCalendar.scheduleEventsNotifications(day.eventsFormated!);
                     });
                 });
             }, this.currentSiteId);
@@ -144,9 +144,9 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
      */
     ngDoCheck(): void {
-        this.canNavigate = typeof this.canNavigate == 'undefined' ? true : CoreUtils.instance.isTrueOrOne(this.canNavigate);
+        this.canNavigate = typeof this.canNavigate == 'undefined' ? true : CoreUtils.isTrueOrOne(this.canNavigate);
         this.displayNavButtons = typeof this.displayNavButtons == 'undefined' ? true :
-            CoreUtils.instance.isTrueOrOne(this.displayNavButtons);
+            CoreUtils.isTrueOrOne(this.displayNavButtons);
 
         if (this.weeks) {
             // Check if there's any change in the filter object.
@@ -168,9 +168,9 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         promises.push(this.loadCategories());
 
         // Get offline events.
-        promises.push(AddonCalendarOffline.instance.getAllEditedEvents().then((events) => {
+        promises.push(AddonCalendarOffline.getAllEditedEvents().then((events) => {
             // Classify them by month.
-            this.offlineEvents = AddonCalendarHelper.instance.classifyIntoMonths(events);
+            this.offlineEvents = AddonCalendarHelper.classifyIntoMonths(events);
 
             // Get the IDs of events edited in offline.
             const filtered = events.filter((event) => event.id! > 0);
@@ -180,14 +180,14 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         }));
 
         // Get events deleted in offline.
-        promises.push(AddonCalendarOffline.instance.getAllDeletedEventsIds().then((ids) => {
+        promises.push(AddonCalendarOffline.getAllDeletedEventsIds().then((ids) => {
             this.deletedEvents = ids;
 
             return;
         }));
 
         // Get time format to use.
-        promises.push(AddonCalendar.instance.getCalendarTimeFormat().then((value) => {
+        promises.push(AddonCalendar.getCalendarTimeFormat().then((value) => {
             this.timeFormat = value;
 
             return;
@@ -199,7 +199,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
             await this.fetchEvents();
 
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
         }
 
         this.loaded = true;
@@ -214,22 +214,22 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         // Don't pass courseId and categoryId, we'll filter them locally.
         let result: { daynames: Partial<AddonCalendarDayName>[]; weeks: Partial<AddonCalendarWeek>[] };
         try {
-            result = await AddonCalendar.instance.getMonthlyEvents(this.year!, this.month!);
+            result = await AddonCalendar.getMonthlyEvents(this.year!, this.month!);
         } catch (error) {
-            if (!CoreApp.instance.isOnline()) {
+            if (!CoreApp.isOnline()) {
                 // Allow navigating to non-cached months in offline (behave as if using emergency cache).
-                result = await AddonCalendarHelper.instance.getOfflineMonthWeeks(this.year!, this.month!);
+                result = await AddonCalendarHelper.getOfflineMonthWeeks(this.year!, this.month!);
             } else {
                 throw error;
             }
         }
 
         // Calculate the period name. We don't use the one in result because it's in server's language.
-        this.periodName = CoreTimeUtils.instance.userDate(
+        this.periodName = CoreTimeUtils.userDate(
             new Date(this.year!, this.month! - 1).getTime(),
             'core.strftimemonthyear',
         );
-        this.weekDays = AddonCalendar.instance.getWeekDays(result.daynames[0].dayno);
+        this.weekDays = AddonCalendar.getWeekDays(result.daynames[0].dayno);
         this.weeks = result.weeks as AddonCalendarWeek[];
         this.calculateIsCurrentMonth();
 
@@ -239,7 +239,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
                 day.filteredEvents = day.filteredEvents || [];
                 day.events.forEach((event) => {
                     /// Format online events.
-                    day.eventsFormated!.push(AddonCalendarHelper.instance.formatEventData(event));
+                    day.eventsFormated!.push(AddonCalendarHelper.formatEventData(event));
                 });
             });
         });
@@ -280,7 +280,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         }
 
         try {
-            const cats = await CoreCourses.instance.getCategories(0, true);
+            const cats = await CoreCourses.getCategories(0, true);
             this.categoriesRetrieved = true;
             this.categories = {};
 
@@ -299,14 +299,14 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     filterEvents(): void {
         this.weeks.forEach((week) => {
             week.days.forEach((day) => {
-                day.filteredEvents = AddonCalendarHelper.instance.getFilteredEvents(
+                day.filteredEvents = AddonCalendarHelper.getFilteredEvents(
                     day.eventsFormated!,
                     this.filter!,
                     this.categories,
                 );
 
                 // Re-calculate some properties.
-                AddonCalendarHelper.instance.calculateDayData(day, day.filteredEvents);
+                AddonCalendarHelper.calculateDayData(day, day.filteredEvents);
             });
         });
     }
@@ -322,10 +322,10 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
         // Don't invalidate monthly events after a change, it has already been handled.
         if (!afterChange) {
-            promises.push(AddonCalendar.instance.invalidateMonthlyEvents(this.year!, this.month!));
+            promises.push(AddonCalendar.invalidateMonthlyEvents(this.year!, this.month!));
         }
-        promises.push(CoreCourses.instance.invalidateCategories(0, true));
-        promises.push(AddonCalendar.instance.invalidateTimeFormat());
+        promises.push(CoreCourses.invalidateCategories(0, true));
+        promises.push(AddonCalendar.invalidateTimeFormat());
 
         this.categoriesRetrieved = false; // Get categories again.
 
@@ -345,7 +345,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         try {
             await this.fetchEvents();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.decreaseMonth();
         }
         this.loaded = true;
@@ -362,7 +362,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         try {
             await this.fetchEvents();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.increaseMonth();
         }
         this.loaded = true;
@@ -394,7 +394,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     calculateIsCurrentMonth(): void {
         const now = new Date();
 
-        this.currentTime = CoreTimeUtils.instance.timestamp();
+        this.currentTime = CoreTimeUtils.timestamp();
 
         this.isCurrentMonth = this.year == now.getFullYear() && this.month == now.getMonth() + 1;
         this.isPastMonth = this.year! < now.getFullYear() || (this.year == now.getFullYear() && this.month! < now.getMonth() + 1);
@@ -417,7 +417,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
             await this.fetchEvents();
             this.isCurrentMonth = true;
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.year = initialYear;
             this.month = initialMonth;
         }
@@ -454,13 +454,13 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      */
     protected mergeEvents(): void {
         const monthOfflineEvents: { [day: number]: AddonCalendarEventToDisplay[] } =
-            this.offlineEvents[AddonCalendarHelper.instance.getMonthId(this.year!, this.month!)];
+            this.offlineEvents[AddonCalendarHelper.getMonthId(this.year!, this.month!)];
 
         this.weeks.forEach((week) => {
             week.days.forEach((day) => {
 
                 // Schedule notifications for the events retrieved (only future events will be scheduled).
-                AddonCalendar.instance.scheduleEventsNotifications(day.eventsFormated!);
+                AddonCalendar.scheduleEventsNotifications(day.eventsFormated!);
 
                 if (monthOfflineEvents || this.deletedEvents.length) {
                     // There is offline data, merge it.
@@ -480,7 +480,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
                     if (monthOfflineEvents && monthOfflineEvents[day.mday]) {
                         // Add the offline events (either new or edited).
                         day.eventsFormated =
-                            AddonCalendarHelper.instance.sortEvents(day.eventsFormated!.concat(monthOfflineEvents[day.mday]));
+                            AddonCalendarHelper.sortEvents(day.eventsFormated!.concat(monthOfflineEvents[day.mday]));
                     }
                 }
             });

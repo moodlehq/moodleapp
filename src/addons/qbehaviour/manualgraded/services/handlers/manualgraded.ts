@@ -46,7 +46,7 @@ export class AddonQbehaviourManualGradedHandlerService implements CoreQuestionBe
         siteId?: string,
     ): CoreQuestionState | Promise<CoreQuestionState> {
         // Same implementation as the deferred feedback. Use that function instead of replicating it.
-        return AddonQbehaviourDeferredFeedbackHandler.instance.determineNewStateDeferred(
+        return AddonQbehaviourDeferredFeedbackHandler.determineNewStateDeferred(
             component,
             attemptId,
             question,
@@ -66,4 +66,4 @@ export class AddonQbehaviourManualGradedHandlerService implements CoreQuestionBe
 
 }
 
-export class AddonQbehaviourManualGradedHandler extends makeSingleton(AddonQbehaviourManualGradedHandlerService) {}
+export const AddonQbehaviourManualGradedHandler = makeSingleton(AddonQbehaviourManualGradedHandlerService);

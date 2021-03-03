@@ -68,7 +68,7 @@ export class CoreFilterProvider {
      * @since 3.4
      */
     async canGetAvailableInContext(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.canGetAvailableInContextInSite(site);
     }
@@ -81,7 +81,7 @@ export class CoreFilterProvider {
      * @since 3.4
      */
     canGetAvailableInContextInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!(site?.wsAvailable('core_filters_get_available_in_context'));
     }
@@ -116,7 +116,7 @@ export class CoreFilterProvider {
      * @return Promise resolved with boolean: whether it's disabled.
      */
     async checkFiltersDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.checkFiltersDisabledInSite(site);
     }
@@ -128,7 +128,7 @@ export class CoreFilterProvider {
      * @return Whether it's disabled.
      */
     checkFiltersDisabledInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!(site?.isFeatureDisabled('CoreFilterDelegate'));
     }
@@ -225,19 +225,19 @@ export class CoreFilterProvider {
         }
 
         if (options.filter) {
-            text = await CoreFilterDelegate.instance.filterText(text, filters, options, [], siteId);
+            text = await CoreFilterDelegate.filterText(text, filters, options, [], siteId);
         }
 
         if (options.clean) {
-            text = CoreTextUtils.instance.cleanTags(text, options.singleLine);
+            text = CoreTextUtils.cleanTags(text, options.singleLine);
         }
 
         if (options.shortenLength && options.shortenLength > 0) {
-            text = CoreTextUtils.instance.shortenText(text, options.shortenLength);
+            text = CoreTextUtils.shortenText(text, options.shortenLength);
         }
 
         if (options.highlight) {
-            text = CoreTextUtils.instance.highlightText(text, options.highlight);
+            text = CoreTextUtils.highlightText(text, options.highlight);
         }
 
         return text;
@@ -274,7 +274,7 @@ export class CoreFilterProvider {
         siteId?: string,
     ): Promise<CoreFilterClassifiedFilters> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         siteId = site.getId();
 
@@ -345,7 +345,7 @@ export class CoreFilterProvider {
 
         // Check if we have the contexts in the memory cache.
         const siteContexts = this.contextsCache[site.getId()];
-        const isOnline = CoreApp.instance.isOnline();
+        const isOnline = CoreApp.isOnline();
         const result: CoreFilterClassifiedFilters = {};
         let allFound = true;
 
@@ -377,7 +377,7 @@ export class CoreFilterProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAllAvailableInContext(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getAvailableInContextsPrefixCacheKey());
     }
@@ -393,7 +393,7 @@ export class CoreFilterProvider {
         contexts: CoreFiltersGetAvailableInContextWSParamContext[],
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getAvailableInContextsCacheKey(contexts));
     }
@@ -481,7 +481,7 @@ export class CoreFilterProvider {
 
 }
 
-export class CoreFilter extends makeSingleton(CoreFilterProvider) {}
+export const CoreFilter = makeSingleton(CoreFilterProvider);
 
 /**
  * Params of core_filters_get_available_in_context WS.

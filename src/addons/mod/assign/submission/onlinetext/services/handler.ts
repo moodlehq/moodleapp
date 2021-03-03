@@ -60,7 +60,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      * @return Whether the plugin is empty.
      */
     isEmpty(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): boolean {
-        const text = AddonModAssign.instance.getSubmissionPluginText(plugin, true);
+        const text = AddonModAssign.getSubmissionPluginText(plugin, true);
 
         // If the text is empty, we can ignore files because they won't be visible anyways.
         return text.trim().length === 0;
@@ -85,13 +85,13 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
         siteId?: string,
     ): Promise<void> {
 
-        const text = AddonModAssign.instance.getSubmissionPluginText(plugin, true);
-        const files = AddonModAssign.instance.getSubmissionPluginAttachments(plugin);
+        const text = AddonModAssign.getSubmissionPluginText(plugin, true);
+        const files = AddonModAssign.getSubmissionPluginAttachments(plugin);
         let itemId = 0;
 
         if (files.length) {
             // Re-upload the files.
-            itemId = await AddonModAssignHelper.instance.uploadFiles(assign.id, files, siteId);
+            itemId = await AddonModAssignHelper.uploadFiles(assign.id, files, siteId);
         }
 
         pluginData.onlinetext_editor = {
@@ -125,7 +125,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
     ): CoreWSExternalFile[] {
-        return AddonModAssign.instance.getSubmissionPluginAttachments(plugin);
+        return AddonModAssign.getSubmissionPluginAttachments(plugin);
     }
 
     /**
@@ -136,10 +136,10 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      * @return The size (or promise resolved with size).
      */
     async getSizeForCopy(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): Promise<number> {
-        const text = AddonModAssign.instance.getSubmissionPluginText(plugin, true);
-        const files = AddonModAssign.instance.getSubmissionPluginAttachments(plugin);
+        const text = AddonModAssign.getSubmissionPluginText(plugin, true);
+        const files = AddonModAssign.getSubmissionPluginAttachments(plugin);
 
-        const filesSize = await CoreFileHelper.instance.getTotalFilesSize(files);
+        const filesSize = await CoreFileHelper.getTotalFilesSize(files);
 
         return text.length + filesSize;
     }
@@ -158,7 +158,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
     ): number {
-        const text = AddonModAssign.instance.getSubmissionPluginText(plugin, true);
+        const text = AddonModAssign.getSubmissionPluginText(plugin, true);
 
         return text.length;
     }
@@ -174,7 +174,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
         const text = inputData.onlinetext_editor_text;
         const files = plugin.fileareas && plugin.fileareas[0] && plugin.fileareas[0].files || [];
 
-        return CoreTextUtils.instance.restorePluginfileUrls(text, files || []);
+        return CoreTextUtils.restorePluginfileUrls(text, files || []);
     }
 
     /**
@@ -195,7 +195,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
 
         // Get the original text from plugin or offline.
         const offlineData =
-            await CoreUtils.instance.ignoreErrors(AddonModAssignOffline.instance.getSubmission(assign.id, submission.userid));
+            await CoreUtils.ignoreErrors(AddonModAssignOffline.getSubmission(assign.id, submission.userid));
 
         let initialText = '';
         if (offlineData && offlineData.plugindata && offlineData.plugindata.onlinetext_editor) {
@@ -226,7 +226,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
     isEnabledForEdit(): boolean {
         // There's a bug in Moodle 3.1.0 that doesn't allow submitting HTML, so we'll disable this plugin in that case.
         // Bug was fixed in 3.1.1 minor release and in 3.2.
-        const currentSite = CoreSites.instance.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
 
         return !!currentSite?.isVersionGreaterEqualThan('3.1.1') || !!currentSite?.checkIfAppUsesLocalMobile();
     }
@@ -255,20 +255,20 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
         let text = this.getTextToSubmit(plugin, inputData);
 
         // Check word limit.
-        const configs = AddonModAssignHelper.instance.getPluginConfig(assign, 'assignsubmission', plugin.type);
+        const configs = AddonModAssignHelper.getPluginConfig(assign, 'assignsubmission', plugin.type);
         if (parseInt(configs.wordlimitenabled, 10)) {
-            const words = CoreTextUtils.instance.countWords(text);
+            const words = CoreTextUtils.countWords(text);
             const wordlimit = parseInt(configs.wordlimit, 10);
             if (words > wordlimit) {
                 const params = { $a: { count: words, limit: wordlimit } };
-                const message = Translate.instance.instant('addon.mod_assign_submission_onlinetext.wordlimitexceeded', params);
+                const message = Translate.instant('addon.mod_assign_submission_onlinetext.wordlimitexceeded', params);
 
                 throw new CoreError(message);
             }
         }
 
         // Add some HTML to the text if needed.
-        text = CoreTextUtils.instance.formatHtmlLines(text);
+        text = CoreTextUtils.formatHtmlLines(text);
 
         pluginData.onlinetext_editor = {
             text: text,

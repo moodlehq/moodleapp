@@ -32,7 +32,7 @@ import { AddonModQuizAccessTimeLimitHandler } from './services/handlers/timelimi
             multi: true,
             deps: [],
             useFactory: () => () => {
-                AddonModQuizAccessRuleDelegate.instance.registerHandler(AddonModQuizAccessTimeLimitHandler.instance);
+                AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessTimeLimitHandler.instance);
             },
         },
     ],

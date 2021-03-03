@@ -101,9 +101,9 @@ export class CoreGradesProvider {
         siteId?: string,
         ignoreCache: boolean = false,
     ): Promise<CoreGradesGradeItem[] | CoreGradesTable> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -139,7 +139,7 @@ export class CoreGradesProvider {
         siteId?: string,
         ignoreCache: boolean = false,
     ): Promise<CoreGradesGradeItem[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
         groupId = groupId || 0;
@@ -188,7 +188,7 @@ export class CoreGradesProvider {
         siteId?: string,
         ignoreCache: boolean = false,
     ): Promise<CoreGradesTable> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -223,7 +223,7 @@ export class CoreGradesProvider {
      * @return Promise to be resolved when the grades are retrieved.
      */
     async getCoursesGrades(siteId?: string): Promise<CoreGradesGradeOverview[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         this.logger.debug('Get course grades');
 
@@ -253,7 +253,7 @@ export class CoreGradesProvider {
      * @return Promise resolved when the data is invalidated.
      */
     invalidateAllCourseGradesData(courseId: number, siteId?: string): Promise<void> {
-        return CoreSites.instance.getSite(siteId)
+        return CoreSites.getSite(siteId)
             .then((site) => site.invalidateWsCacheForKeyStartingWith(this.getCourseGradesPrefixCacheKey(courseId)));
     }
 
@@ -266,7 +266,7 @@ export class CoreGradesProvider {
      * @return Promise resolved when the data is invalidated.
      */
     invalidateCourseGradesData(courseId: number, userId?: number, siteId?: string): Promise<void> {
-        return CoreSites.instance.getSite(siteId).then((site) => {
+        return CoreSites.getSite(siteId).then((site) => {
             userId = userId || site.getUserId();
 
             return site.invalidateWsCacheForKey(this.getCourseGradesCacheKey(courseId, userId));
@@ -280,7 +280,7 @@ export class CoreGradesProvider {
      * @return Promise resolved when the data is invalidated.
      */
     invalidateCoursesGradesData(siteId?: string): Promise<void> {
-        return CoreSites.instance.getSite(siteId).then((site) => site.invalidateWsCacheForKey(this.getCoursesGradesCacheKey()));
+        return CoreSites.getSite(siteId).then((site) => site.invalidateWsCacheForKey(this.getCoursesGradesCacheKey()));
     }
 
     /**
@@ -293,7 +293,7 @@ export class CoreGradesProvider {
      * @return Promise resolved when the data is invalidated.
      */
     invalidateCourseGradesItemsData(courseId: number, userId: number, groupId?: number, siteId?: string): Promise<void> {
-        return CoreSites.instance.getSite(siteId)
+        return CoreSites.getSite(siteId)
             .then((site) => site.invalidateWsCacheForKey(this.getCourseGradesItemsCacheKey(courseId, userId, groupId)));
     }
 
@@ -305,7 +305,7 @@ export class CoreGradesProvider {
      * @since  Moodle 3.2
      */
     isCourseGradesEnabled(siteId?: string): Promise<boolean> {
-        return CoreSites.instance.getSite(siteId).then((site) => {
+        return CoreSites.getSite(siteId).then((site) => {
             if (!site.wsAvailable('gradereport_overview_get_course_grades')) {
                 return false;
             }
@@ -328,7 +328,7 @@ export class CoreGradesProvider {
             return Promise.reject(null);
         }
 
-        return CoreCourses.instance.getUserCourse(courseId, true, siteId)
+        return CoreCourses.getUserCourse(courseId, true, siteId)
             .then((course) => !(course && typeof course.showgrades != 'undefined' && !course.showgrades));
     }
 
@@ -340,7 +340,7 @@ export class CoreGradesProvider {
      * @since  Moodle 3.2
      */
     async isGradeItemsAvalaible(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.wsAvailable('gradereport_user_get_grade_items');
     }
@@ -354,15 +354,15 @@ export class CoreGradesProvider {
      * @return Promise resolved when done.
      */
     async logCourseGradesView(courseId: number, userId: number, name?: string): Promise<void> {
-        userId = userId || CoreSites.instance.getCurrentSiteUserId();
+        userId = userId || CoreSites.getCurrentSiteUserId();
 
         const wsName = 'gradereport_user_view_grade_report';
 
         if (!name) {
             // eslint-disable-next-line promise/catch-or-return
-            CoreCourses.instance.getUserCourse(courseId, true)
+            CoreCourses.getUserCourse(courseId, true)
                 .catch(() => ({}))
-                .then(course => CorePushNotifications.instance.logViewEvent(
+                .then(course => CorePushNotifications.logViewEvent(
                     courseId,
                     'fullname' in course ? course.fullname : '',
                     'grades',
@@ -370,10 +370,10 @@ export class CoreGradesProvider {
                     { userid: userId },
                 ));
         } else {
-            CorePushNotifications.instance.logViewEvent(courseId, name, 'grades', wsName, { userid: userId });
+            CorePushNotifications.logViewEvent(courseId, name, 'grades', wsName, { userid: userId });
         }
 
-        const site = await CoreSites.instance.getCurrentSite();
+        const site = await CoreSites.getCurrentSite();
 
         await site?.write(wsName, { courseid: courseId, userid: userId });
     }
@@ -386,23 +386,23 @@ export class CoreGradesProvider {
      */
     async logCoursesGradesView(courseId?: number): Promise<void> {
         if (!courseId) {
-            courseId = CoreSites.instance.getCurrentSiteHomeId();
+            courseId = CoreSites.getCurrentSiteHomeId();
         }
 
         const params = {
             courseid: courseId,
         };
 
-        CorePushNotifications.instance.logViewListEvent('grades', 'gradereport_overview_view_grade_report', params);
+        CorePushNotifications.logViewListEvent('grades', 'gradereport_overview_view_grade_report', params);
 
-        const site = await CoreSites.instance.getCurrentSite();
+        const site = await CoreSites.getCurrentSite();
 
         await site?.write('gradereport_overview_view_grade_report', params);
     }
 
 }
 
-export class CoreGrades extends makeSingleton(CoreGradesProvider) {}
+export const CoreGrades = makeSingleton(CoreGradesProvider);
 
 /**
  * Params of gradereport_user_get_grade_items WS.

@@ -45,10 +45,10 @@ const routes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreMainMenuDelegate.instance.registerHandler(AddonNotificationsMainMenuHandler.instance);
-                CoreCronDelegate.instance.register(AddonNotificationsCronHandler.instance);
-                CorePushNotificationsDelegate.instance.registerClickHandler(AddonNotificationsPushClickHandler.instance);
-                CoreSettingsDelegate.instance.registerHandler(AddonNotificationsSettingsHandler.instance);
+                CoreMainMenuDelegate.registerHandler(AddonNotificationsMainMenuHandler.instance);
+                CoreCronDelegate.register(AddonNotificationsCronHandler.instance);
+                CorePushNotificationsDelegate.registerClickHandler(AddonNotificationsPushClickHandler.instance);
+                CoreSettingsDelegate.registerHandler(AddonNotificationsSettingsHandler.instance);
             },
         },
     ],

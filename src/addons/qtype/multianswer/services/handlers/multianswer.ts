@@ -70,8 +70,8 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
         answers: CoreQuestionsAnswers,
     ): number {
         // Get all the inputs in the question to check if they've all been answered.
-        const names = CoreQuestion.instance.getBasicAnswers<boolean>(
-            CoreQuestionHelper.instance.getAllInputNamesFromHtml(question.html || ''),
+        const names = CoreQuestion.getBasicAnswers<boolean>(
+            CoreQuestionHelper.getAllInputNamesFromHtml(question.html || ''),
         );
         for (const name in names) {
             const value = answers[name];
@@ -132,7 +132,7 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreQuestion.instance.compareAllAnswers(prevAnswers, newAnswers);
+        return CoreQuestion.compareAllAnswers(prevAnswers, newAnswers);
     }
 
     /**
@@ -159,4 +159,4 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
 
 }
 
-export class AddonQtypeMultiAnswerHandler extends makeSingleton(AddonQtypeMultiAnswerHandlerService) {}
+export const AddonQtypeMultiAnswerHandler = makeSingleton(AddonQtypeMultiAnswerHandlerService);

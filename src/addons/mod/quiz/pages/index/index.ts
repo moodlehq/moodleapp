@@ -38,8 +38,8 @@ export class AddonModQuizIndexPage implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.module = CoreNavigator.instance.getRouteParam('module');
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId');
+        this.module = CoreNavigator.getRouteParam('module');
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
         this.title = this.module?.name;
     }
 

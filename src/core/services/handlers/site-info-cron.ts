@@ -33,11 +33,11 @@ export class CoreSiteInfoCronHandler implements CoreCronHandler {
      */
     async execute(siteId?: string): Promise<void> {
         if (!siteId) {
-            const siteIds = await CoreSites.instance.getSitesIds();
+            const siteIds = await CoreSites.getSitesIds();
 
-            await Promise.all(siteIds.map((siteId) => CoreSites.instance.updateSiteInfo(siteId)));
+            await Promise.all(siteIds.map((siteId) => CoreSites.updateSiteInfo(siteId)));
         } else {
-            await CoreSites.instance.updateSiteInfo(siteId);
+            await CoreSites.updateSiteInfo(siteId);
         }
     }
 

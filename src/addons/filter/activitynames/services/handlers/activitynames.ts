@@ -43,4 +43,4 @@ export class AddonFilterActivityNamesHandlerService extends CoreFilterDefaultHan
 
 }
 
-export class AddonFilterActivityNamesHandler extends makeSingleton(AddonFilterActivityNamesHandlerService) {}
+export const AddonFilterActivityNamesHandler = makeSingleton(AddonFilterActivityNamesHandlerService);

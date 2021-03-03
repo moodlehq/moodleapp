@@ -72,4 +72,4 @@ export class CoreSettingsDelegateService extends CoreSortedDelegate<CoreSettings
 
 }
 
-export class CoreSettingsDelegate extends makeSingleton(CoreSettingsDelegateService) {}
+export const CoreSettingsDelegate = makeSingleton(CoreSettingsDelegateService);

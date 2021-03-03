@@ -46,4 +46,4 @@ export class AddonBlockRssClientHandlerService extends CoreBlockBaseHandler {
 
 }
 
-export class AddonBlockRssClientHandler extends makeSingleton(AddonBlockRssClientHandlerService) {}
+export const AddonBlockRssClientHandler = makeSingleton(AddonBlockRssClientHandlerService);

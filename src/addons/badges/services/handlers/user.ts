@@ -37,7 +37,7 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
      * @return Always enabled.
      */
     isEnabled(): Promise<boolean> {
-        return AddonBadges.instance.isPluginEnabled();
+        return AddonBadges.isPluginEnabled();
     }
 
     /**
@@ -73,7 +73,7 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
             action: (event, user, courseId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                CoreNavigator.instance.navigateToSitePath('/badges', {
+                CoreNavigator.navigateToSitePath('/badges', {
                     params: CoreObject.withoutEmpty({ courseId, userId: user.id }),
                 });
             },
@@ -82,4 +82,4 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
 
 }
 
-export class AddonBadgesUserHandler extends makeSingleton(AddonBadgesUserHandlerService) {}
+export const AddonBadgesUserHandler = makeSingleton(AddonBadgesUserHandlerService);

@@ -65,7 +65,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
 
                     if (this.text) {
                         // Open a new state with the text.
-                        CoreTextUtils.instance.viewText(this.plugin.name, this.text, {
+                        CoreTextUtils.viewText(this.plugin.name, this.text, {
                             component: this.component,
                             componentId: this.assign.cmid,
                             filter: true,
@@ -89,12 +89,12 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     async editComment(): Promise<void> {
         try {
             const inputData = await this.editFeedback();
-            const text = AddonModAssignFeedbackCommentsHandler.instance.getTextFromInputData(this.plugin, inputData);
+            const text = AddonModAssignFeedbackCommentsHandler.getTextFromInputData(this.plugin, inputData);
 
             // Update the text and save it as draft.
             this.isSent = false;
             this.text = this.replacePluginfileUrls(text);
-            AddonModAssignFeedbackDelegate.instance.saveFeedbackDraft(this.assign.id, this.userId, this.plugin, {
+            AddonModAssignFeedbackDelegate.saveFeedbackDraft(this.assign.id, this.userId, this.plugin, {
                 text: text,
                 format: 1,
             });
@@ -111,7 +111,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     protected async getText(): Promise<string> {
         // Check if the user already modified the comment.
         const draft: AddonModAssignFeedbackCommentsDraftData | undefined =
-            await AddonModAssignFeedbackDelegate.instance.getPluginDraftData(this.assign.id, this.userId, this.plugin);
+            await AddonModAssignFeedbackDelegate.getPluginDraftData(this.assign.id, this.userId, this.plugin);
 
         if (draft) {
             this.isSent = false;
@@ -120,8 +120,8 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
         }
 
         // There is no draft saved. Check if we have anything offline.
-        const offlineData = await CoreUtils.instance.ignoreErrors(
-            AddonModAssignOffline.instance.getSubmissionGrade(this.assign.id, this.userId),
+        const offlineData = await CoreUtils.ignoreErrors(
+            AddonModAssignOffline.getSubmissionGrade(this.assign.id, this.userId),
             undefined,
         );
 
@@ -130,7 +130,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
 
             // Save offline as draft.
             this.isSent = false;
-            AddonModAssignFeedbackDelegate.instance.saveFeedbackDraft(
+            AddonModAssignFeedbackDelegate.saveFeedbackDraft(
                 this.assign.id,
                 this.userId,
                 this.plugin,
@@ -143,7 +143,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
         // No offline data found, return online text.
         this.isSent = true;
 
-        return AddonModAssign.instance.getSubmissionPluginText(this.plugin);
+        return AddonModAssign.getSubmissionPluginText(this.plugin);
     }
 
     /**
@@ -155,7 +155,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     replacePluginfileUrls(text: string): string {
         const files = this.plugin.fileareas && this.plugin.fileareas[0] && this.plugin.fileareas[0].files;
 
-        return CoreTextUtils.instance.replacePluginfileUrls(text, files || []);
+        return CoreTextUtils.replacePluginfileUrls(text, files || []);
     }
 
 }

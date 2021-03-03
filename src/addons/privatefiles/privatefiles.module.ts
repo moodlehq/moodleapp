@@ -39,7 +39,7 @@ const routes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreMainMenuDelegate.instance.registerHandler(AddonPrivateFilesMainMenuHandler.instance);
+                CoreMainMenuDelegate.registerHandler(AddonPrivateFilesMainMenuHandler.instance);
             },
         },
     ],

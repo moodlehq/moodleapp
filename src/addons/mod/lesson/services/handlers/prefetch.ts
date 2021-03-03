@@ -54,7 +54,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      */
     protected async askUserPassword(): Promise<string> {
         // Create and show the modal.
-        const modal = await ModalController.instance.create({
+        const modal = await ModalController.create({
             component: AddonModLessonPasswordModalComponent,
         });
 
@@ -78,9 +78,9 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved with the size.
      */
     async getDownloadSize(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreFileSizeSum> {
-        const siteId = CoreSites.instance.getCurrentSiteId();
+        const siteId = CoreSites.getCurrentSiteId();
 
-        let lesson = await AddonModLesson.instance.getLesson(courseId, module.id, { siteId });
+        let lesson = await AddonModLesson.getLesson(courseId, module.id, { siteId });
 
         // Get the lesson password if it's needed.
         const passwordData = await this.getLessonPassword(lesson.id, {
@@ -95,10 +95,10 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         let files = lesson.mediafiles || [];
         files = files.concat(this.getIntroFilesFromInstance(module, lesson));
 
-        const result = await CorePluginFileDelegate.instance.getFilesDownloadSize(files);
+        const result = await CorePluginFileDelegate.getFilesDownloadSize(files);
 
         // Get the pages to calculate the size.
-        const pages = await AddonModLesson.instance.getPages(lesson.id, {
+        const pages = await AddonModLesson.getPages(lesson.id, {
             cmId: module.id,
             password: passwordData.password,
             siteId,
@@ -123,10 +123,10 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         options: AddonModLessonGetPasswordOptions = {},
     ): Promise<AddonModLessonGetPasswordResult> {
 
-        options.siteId = options.siteId || CoreSites.instance.getCurrentSiteId();
+        options.siteId = options.siteId || CoreSites.getCurrentSiteId();
 
         // Get access information to check if password is needed.
-        const accessInfo = await AddonModLesson.instance.getAccessInformation(lessonId, options);
+        const accessInfo = await AddonModLesson.getAccessInformation(lessonId, options);
 
         if (!accessInfo.preventaccessreasons.length) {
             // Password not needed.
@@ -134,7 +134,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         }
 
         const passwordNeeded = accessInfo.preventaccessreasons.length == 1 &&
-            AddonModLesson.instance.isPasswordProtected(accessInfo);
+            AddonModLesson.isPasswordProtected(accessInfo);
 
         if (!passwordNeeded) {
             // Lesson cannot be played, reject.
@@ -142,7 +142,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         }
 
         // The lesson requires a password. Check if there is one in DB.
-        let password = await CoreUtils.instance.ignoreErrors(AddonModLesson.instance.getStoredPassword(lessonId));
+        let password = await CoreUtils.ignoreErrors(AddonModLesson.getStoredPassword(lessonId));
 
         if (password) {
             try {
@@ -173,9 +173,9 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         // Only invalidate the data that doesn't ignore cache when prefetching.
         await Promise.all([
-            AddonModLesson.instance.invalidateLessonData(courseId),
-            CoreCourse.instance.invalidateModule(moduleId),
-            CoreGroups.instance.invalidateActivityAllowedGroups(moduleId),
+            AddonModLesson.invalidateLessonData(courseId),
+            CoreCourse.invalidateModule(moduleId),
+            CoreGroups.invalidateActivityAllowedGroups(moduleId),
         ]);
     }
 
@@ -188,16 +188,16 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      */
     async invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         // Invalidate data to determine if module is downloadable.
-        const siteId = CoreSites.instance.getCurrentSiteId();
+        const siteId = CoreSites.getCurrentSiteId();
 
-        const lesson = await AddonModLesson.instance.getLesson(courseId, module.id, {
+        const lesson = await AddonModLesson.getLesson(courseId, module.id, {
             readingStrategy: CoreSitesReadingStrategy.PreferCache,
             siteId,
         });
 
         await Promise.all([
-            AddonModLesson.instance.invalidateLessonData(courseId, siteId),
-            AddonModLesson.instance.invalidateAccessInformation(lesson.id, siteId),
+            AddonModLesson.invalidateLessonData(courseId, siteId),
+            AddonModLesson.invalidateAccessInformation(lesson.id, siteId),
         ]);
     }
 
@@ -209,19 +209,19 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @return Whether the module can be downloaded. The promise should never be rejected.
      */
     async isDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
-        const siteId = CoreSites.instance.getCurrentSiteId();
+        const siteId = CoreSites.getCurrentSiteId();
 
-        const lesson = await AddonModLesson.instance.getLesson(courseId, module.id, { siteId });
-        const accessInfo = await AddonModLesson.instance.getAccessInformation(lesson.id, { cmId: module.id, siteId });
+        const lesson = await AddonModLesson.getLesson(courseId, module.id, { siteId });
+        const accessInfo = await AddonModLesson.getAccessInformation(lesson.id, { cmId: module.id, siteId });
 
         // If it's a student and lesson isn't offline, it isn't downloadable.
-        if (!accessInfo.canviewreports && !AddonModLesson.instance.isLessonOffline(lesson)) {
+        if (!accessInfo.canviewreports && !AddonModLesson.isLessonOffline(lesson)) {
             return false;
         }
 
         // It's downloadable if there are no prevent access reasons or there is just 1 and it's password.
         return !accessInfo.preventaccessreasons.length ||
-            (accessInfo.preventaccessreasons.length == 1 && AddonModLesson.instance.isPasswordProtected(accessInfo));
+            (accessInfo.preventaccessreasons.length == 1 && AddonModLesson.isPasswordProtected(accessInfo));
     }
 
     /**
@@ -230,7 +230,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved with a boolean indicating if the handler is enabled.
      */
     isEnabled(): Promise<boolean> {
-        return AddonModLesson.instance.isPluginEnabled();
+        return AddonModLesson.isPluginEnabled();
     }
 
     /**
@@ -256,8 +256,8 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved when done.
      */
     protected async prefetchLesson(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean): Promise<void> {
-        const siteId = CoreSites.instance.getCurrentSiteId();
-        courseId = courseId || module.course || CoreSites.instance.getCurrentSiteHomeId();
+        const siteId = CoreSites.getCurrentSiteId();
+        courseId = courseId || module.course || CoreSites.getCurrentSiteHomeId();
 
         const commonOptions = {
             readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
@@ -268,7 +268,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
             ...commonOptions, // Include all common options.
         };
 
-        let lesson = await AddonModLesson.instance.getLesson(courseId, module.id, commonOptions);
+        let lesson = await AddonModLesson.getLesson(courseId, module.id, commonOptions);
 
         // Get the lesson password if it's needed.
         const passwordData = await this.getLessonPassword(lesson.id, {
@@ -281,7 +281,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         let accessInfo = passwordData.accessInfo;
         const password = passwordData.password;
 
-        if (AddonModLesson.instance.isLessonOffline(lesson) && !AddonModLesson.instance.leftDuringTimed(accessInfo)) {
+        if (AddonModLesson.isLessonOffline(lesson) && !AddonModLesson.leftDuringTimed(accessInfo)) {
             // The user didn't left during a timed session. Call launch retake to make sure there is a started retake.
             accessInfo = await this.launchRetake(lesson.id, password, modOptions, siteId);
         }
@@ -290,9 +290,9 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
 
         // Download intro files and media files.
         const files = (lesson.mediafiles || []).concat(this.getIntroFilesFromInstance(module, lesson));
-        promises.push(CoreFilepool.instance.addFilesToQueue(siteId, files, this.component, module.id));
+        promises.push(CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id));
 
-        if (AddonModLesson.instance.isLessonOffline(lesson)) {
+        if (AddonModLesson.isLessonOffline(lesson)) {
             promises.push(this.prefetchPlayData(lesson, password, accessInfo.attemptscount, modOptions));
         }
 
@@ -319,11 +319,11 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         siteId: string,
     ): Promise<AddonModLessonGetAccessInformationWSResponse> {
         // The user didn't left during a timed session. Call launch retake to make sure there is a started retake.
-        await AddonModLesson.instance.launchRetake(lessonId, password, undefined, false, siteId);
+        await AddonModLesson.launchRetake(lessonId, password, undefined, false, siteId);
 
         const results = await Promise.all([
-            CoreUtils.instance.ignoreErrors(CoreFilepool.instance.updatePackageDownloadTime(siteId, this.component, module.id)),
-            AddonModLesson.instance.getAccessInformation(lessonId, modOptions),
+            CoreUtils.ignoreErrors(CoreFilepool.updatePackageDownloadTime(siteId, this.component, module.id)),
+            AddonModLesson.getAccessInformation(lessonId, modOptions),
         ]);
 
         return results[1];
@@ -352,11 +352,11 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         await Promise.all([
             this.prefetchPagesData(lesson, passwordOptions),
             // Prefetch user timers to be able to calculate timemodified in offline.
-            CoreUtils.instance.ignoreErrors(AddonModLesson.instance.getTimers(lesson.id, modOptions)),
+            CoreUtils.ignoreErrors(AddonModLesson.getTimers(lesson.id, modOptions)),
             // Prefetch viewed pages in last retake to calculate progress.
-            AddonModLesson.instance.getContentPagesViewedOnline(lesson.id, retake, modOptions),
+            AddonModLesson.getContentPagesViewedOnline(lesson.id, retake, modOptions),
             // Prefetch question attempts in last retake for offline calculations.
-            AddonModLesson.instance.getQuestionsAttemptsOnline(lesson.id, retake, modOptions),
+            AddonModLesson.getQuestionsAttemptsOnline(lesson.id, retake, modOptions),
         ]);
     }
 
@@ -371,7 +371,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         lesson: AddonModLessonLessonWSData,
         options: AddonModLessonPasswordOptions,
     ): Promise<void> {
-        const pages = await AddonModLesson.instance.getPages(lesson.id, options);
+        const pages = await AddonModLesson.getPages(lesson.id, options);
 
         let hasRandomBranch = false;
 
@@ -388,7 +388,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
             }
 
             // Get the page data. We don't pass accessInfo because we don't need to calculate the offline data.
-            const pageData = await AddonModLesson.instance.getPageData(lesson, data.page.id, {
+            const pageData = await AddonModLesson.getPageData(lesson, data.page.id, {
                 includeContents: true,
                 includeOfflineData: false,
                 ...options, // Include all options.
@@ -402,7 +402,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
                 pageFiles = pageFiles.concat(answer.responsefiles);
             });
 
-            await CoreFilepool.instance.addFilesToQueue(options.siteId!, pageFiles, this.component, module.id);
+            await CoreFilepool.addFilesToQueue(options.siteId!, pageFiles, this.component, module.id);
         });
 
         // Prefetch the list of possible jumps for offline navigation. Do it here because we know hasRandomBranch.
@@ -425,11 +425,11 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         modOptions: CoreCourseCommonModWSOptions,
     ): Promise<void> {
         try {
-            await AddonModLesson.instance.getPagesPossibleJumps(lessonId, modOptions);
+            await AddonModLesson.getPagesPossibleJumps(lessonId, modOptions);
         } catch (error) {
             if (hasRandomBranch) {
                 // The WebSevice probably failed because RANDOMBRANCH aren't supported if the user hasn't seen any page.
-                throw new CoreError(Translate.instance.instant('addon.mod_lesson.errorprefetchrandombranch'));
+                throw new CoreError(Translate.instant('addon.mod_lesson.errorprefetchrandombranch'));
             }
 
             throw error;
@@ -449,10 +449,10 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         lessonId: number,
         modOptions: CoreCourseCommonModWSOptions,
     ): Promise<void> {
-        const groupInfo = await CoreGroups.instance.getActivityGroupInfo(moduleId, false, undefined, modOptions.siteId, true);
+        const groupInfo = await CoreGroups.getActivityGroupInfo(moduleId, false, undefined, modOptions.siteId, true);
 
         await Promise.all(groupInfo.groups?.map(async (group) => {
-            await AddonModLesson.instance.getRetakesOverview(lessonId, {
+            await AddonModLesson.getRetakesOverview(lessonId, {
                 groupId: group.id,
                 ...modOptions, // Include all options.
             });
@@ -473,7 +473,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         modOptions: CoreCourseCommonModWSOptions,
     ): Promise<void> {
         // Always get all participants, even if there are no groups.
-        const data = await AddonModLesson.instance.getRetakesOverview(lessonId, modOptions);
+        const data = await AddonModLesson.getRetakesOverview(lessonId, modOptions);
         if (!data || !data.students) {
             return;
         }
@@ -485,7 +485,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
                 return;
             }
 
-            const attempt = await AddonModLesson.instance.getUserRetake(lessonId, lastRetake.try, {
+            const attempt = await AddonModLesson.getUserRetake(lessonId, lastRetake.try, {
                 userId: student.id,
                 ...modOptions, // Include all options.
             });
@@ -502,11 +502,11 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
                 }
 
                 answerPage.answerdata?.answers?.forEach((answer) => {
-                    files.push(...CoreFilepool.instance.extractDownloadableFilesFromHtmlAsFakeFileObjects(answer[0]));
+                    files.push(...CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(answer[0]));
                 });
             });
 
-            await CoreFilepool.instance.addFilesToQueue(modOptions.siteId!, files, this.component, moduleId);
+            await CoreFilepool.addFilesToQueue(modOptions.siteId!, files, this.component, moduleId);
         }));
     }
 
@@ -526,15 +526,15 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<AddonModLessonGetPasswordResult> {
 
-        options.siteId = options.siteId || CoreSites.instance.getCurrentSiteId();
+        options.siteId = options.siteId || CoreSites.getCurrentSiteId();
 
-        const lesson = await AddonModLesson.instance.getLessonWithPassword(lessonId, {
+        const lesson = await AddonModLesson.getLessonWithPassword(lessonId, {
             password,
             ...options, // Include all options.
         });
 
         // Password is ok, store it and return the data.
-        await AddonModLesson.instance.storePassword(lesson.id, password, options.siteId);
+        await AddonModLesson.storePassword(lesson.id, password, options.siteId);
 
         return {
             password,
@@ -552,12 +552,12 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved when done.
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModLessonSyncResult> {
-        return AddonModLessonSync.instance.syncLesson(module.instance!, false, false, siteId);
+        return AddonModLessonSync.syncLesson(module.instance!, false, false, siteId);
     }
 
 }
 
-export class AddonModLessonPrefetchHandler extends makeSingleton(AddonModLessonPrefetchHandlerService) {}
+export const AddonModLessonPrefetchHandler = makeSingleton(AddonModLessonPrefetchHandlerService);
 
 /**
  * Options to pass to get lesson password.

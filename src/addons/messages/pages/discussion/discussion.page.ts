@@ -118,10 +118,10 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     constructor(
         protected route: ActivatedRoute,
     ) {
-        this.siteId = CoreSites.instance.getCurrentSiteId();
-        this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
-        this.groupMessagingEnabled = AddonMessages.instance.isGroupMessagingEnabled();
-        this.muteEnabled = AddonMessages.instance.isMuteConversationEnabled();
+        this.siteId = CoreSites.getCurrentSiteId();
+        this.currentUserId = CoreSites.getCurrentSiteUserId();
+        this.groupMessagingEnabled = AddonMessages.isGroupMessagingEnabled();
+        this.muteEnabled = AddonMessages.isMuteConversationEnabled();
 
         this.logger = CoreLogger.getInstance('AddonMessagesDiscussionPage');
 
@@ -134,7 +134,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
                 // Show first warning if any.
                 if (data.warnings && data.warnings[0]) {
-                    CoreDomUtils.instance.showErrorModal(data.warnings[0]);
+                    CoreDomUtils.showErrorModal(data.warnings[0]);
                 }
             }
         }, this.siteId);
@@ -164,14 +164,14 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      */
     async ngOnInit(): Promise<void> {
         // Disable the profile button if we're already coming from a profile.
-        const backViewPage = CoreNavigator.instance.getPreviousPath();
-        this.showInfo = !backViewPage || !CoreTextUtils.instance.matchesGlob(backViewPage, '**/user/profile');
+        const backViewPage = CoreNavigator.getPreviousPath();
+        this.showInfo = !backViewPage || !CoreTextUtils.matchesGlob(backViewPage, '**/user/profile');
 
         this.route.queryParams.subscribe(async (params) => {
             this.loaded = false;
-            this.conversationId = CoreNavigator.instance.getRouteNumberParam('conversationId', params) || undefined;
-            this.userId = CoreNavigator.instance.getRouteNumberParam('userId', params) || undefined;
-            this.showKeyboard = CoreNavigator.instance.getRouteBooleanParam('showKeyboard', params) || false;
+            this.conversationId = CoreNavigator.getRouteNumberParam('conversationId', params) || undefined;
+            this.userId = CoreNavigator.getRouteNumberParam('userId', params) || undefined;
+            this.showKeyboard = CoreNavigator.getRouteBooleanParam('showKeyboard', params) || false;
 
             await this.fetchData();
 
@@ -245,12 +245,12 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     protected async fetchData(): Promise<void> {
         let loader: CoreIonLoadingElement | undefined;
         if (this.showLoadingModal) {
-            loader = await CoreDomUtils.instance.showModalLoading();
+            loader = await CoreDomUtils.showModalLoading();
         }
 
         if (!this.groupMessagingEnabled && this.userId) {
             // Get the user profile to retrieve the user fullname and image.
-            CoreUser.instance.getProfile(this.userId, undefined, true).then((user) => {
+            CoreUser.getProfile(this.userId, undefined, true).then((user) => {
                 if (!this.title) {
                     this.title = user.fullname;
                 }
@@ -264,9 +264,9 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
         // Synchronize messages if needed.
         try {
-            const syncResult = await AddonMessagesSync.instance.syncDiscussion(this.conversationId, this.userId);
+            const syncResult = await AddonMessagesSync.syncDiscussion(this.conversationId, this.userId);
             if (syncResult.warnings && syncResult.warnings[0]) {
-                CoreDomUtils.instance.showErrorModal(syncResult.warnings[0]);
+                CoreDomUtils.showErrorModal(syncResult.warnings[0]);
             }
         } catch {
             // Ignore errors;
@@ -285,8 +285,8 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
                 if (this.userId) {
                     // Get the member info. Invalidate first to make sure we get the latest status.
-                    promises.push(AddonMessages.instance.invalidateMemberInfo(this.userId).then(async () => {
-                        this.otherMember = await AddonMessages.instance.getMemberInfo(this.userId!);
+                    promises.push(AddonMessages.invalidateMemberInfo(this.userId).then(async () => {
+                        this.otherMember = await AddonMessages.getMemberInfo(this.userId!);
 
                         if (!exists && this.otherMember) {
                             this.conversationImage = this.otherMember.profileimageurl;
@@ -303,7 +303,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             } else {
                 if (this.userId) {
                     // Fake the user member info.
-                    promises.push(CoreUser.instance.getProfile(this.userId!).then(async (user) => {
+                    promises.push(CoreUser.getProfile(this.userId!).then(async (user) => {
                         this.otherMember = {
                             id: user.id,
                             fullname: user.fullname,
@@ -319,8 +319,8 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                             canmessage: true,
                             requirescontact: false,
                         };
-                        this.otherMember.isblocked = await AddonMessages.instance.isBlocked(this.userId!);
-                        this.otherMember.iscontact = await AddonMessages.instance.isContact(this.userId!);
+                        this.otherMember.isblocked = await AddonMessages.isBlocked(this.userId!);
+                        this.otherMember.iscontact = await AddonMessages.isContact(this.userId!);
                         this.blockIcon = this.otherMember.isblocked ? 'fas-user-lock' : 'fas-user-check';
 
                         return;
@@ -350,7 +350,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             await Promise.all(promises);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
         } finally {
             this.checkCanDelete();
             this.resizeContent();
@@ -411,15 +411,15 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
         try {
             // Wait for synchronization process to finish.
-            await AddonMessagesSync.instance.waitForSyncConversation(this.conversationId, this.userId);
+            await AddonMessagesSync.waitForSyncConversation(this.conversationId, this.userId);
 
             let messages: AddonMessagesConversationMessageFormatted[] = [];
             // Fetch messages. Invalidate the cache before fetching.
             if (this.groupMessagingEnabled) {
-                await AddonMessages.instance.invalidateConversationMessages(this.conversationId!);
+                await AddonMessages.invalidateConversationMessages(this.conversationId!);
                 messages =  await this.getConversationMessages(this.pagesLoaded);
             } else {
-                await AddonMessages.instance.invalidateDiscussionCache(this.userId!);
+                await AddonMessages.invalidateDiscussionCache(this.userId!);
                 messages = await this.getDiscussionMessages(this.pagesLoaded);
             }
 
@@ -472,7 +472,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         }
 
         // Sort the messages.
-        AddonMessages.instance.sortMessages(this.messages);
+        AddonMessages.sortMessages(this.messages);
 
         // Calculate which messages need to display the date or user data.
         this.messages.forEach((message, index) => {
@@ -567,17 +567,17 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         // Try to get the conversationId if we don't have it.
         if (!conversationId && userId) {
             try {
-                if (userId == this.currentUserId && AddonMessages.instance.isSelfConversationEnabled()) {
-                    fallbackConversation = await AddonMessages.instance.getSelfConversation();
+                if (userId == this.currentUserId && AddonMessages.isSelfConversationEnabled()) {
+                    fallbackConversation = await AddonMessages.getSelfConversation();
                 } else {
-                    fallbackConversation = await AddonMessages.instance.getConversationBetweenUsers(userId, undefined, true);
+                    fallbackConversation = await AddonMessages.getConversationBetweenUsers(userId, undefined, true);
                 }
                 conversationId = fallbackConversation.id;
             } catch (error) {
                 // Probably conversation does not exist or user is offline. Try to load offline messages.
                 this.isSelf = userId == this.currentUserId;
 
-                const messages = await AddonMessagesOffline.instance.getMessages(userId);
+                const messages = await AddonMessagesOffline.getMessages(userId);
 
                 if (messages && messages.length) {
                 // We have offline messages, this probably means that the conversation didn't exist. Don't display error.
@@ -598,10 +598,10 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
 
         // Retrieve the conversation. Invalidate data first to get the right unreadcount.
-        await AddonMessages.instance.invalidateConversation(conversationId!);
+        await AddonMessages.invalidateConversation(conversationId!);
 
         try {
-            this.conversation = await AddonMessages.instance.getConversation(conversationId!, undefined, true);
+            this.conversation = await AddonMessages.getConversation(conversationId!, undefined, true);
         } catch (error) {
             // Get conversation failed, use the fallback one if we have it.
             if (fallbackConversation) {
@@ -649,7 +649,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
         const excludePending = offset > 0;
 
-        const result = await AddonMessages.instance.getConversationMessages(this.conversationId, {
+        const result = await AddonMessages.getConversationMessages(this.conversationId, {
             excludePending: excludePending,
             limitFrom: offset,
         });
@@ -703,7 +703,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         const excludePending = lfReceivedUnread > 0 || lfReceivedRead > 0 || lfSentUnread > 0 || lfSentRead > 0;
 
         // Get next messages.
-        const result = await AddonMessages.instance.getDiscussion(
+        const result = await AddonMessages.getDiscussion(
             this.userId!,
             excludePending,
             lfReceivedUnread,
@@ -752,7 +752,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     protected async markMessagesAsRead(forceMark: boolean): Promise<void> {
         let readChanged = false;
 
-        if (AddonMessages.instance.isMarkAllMessagesReadEnabled()) {
+        if (AddonMessages.isMarkAllMessagesReadEnabled()) {
             let messageUnreadFound = false;
 
             // Mark all messages at a time if there is any unread message.
@@ -771,9 +771,9 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 this.setUnreadLabelPosition();
 
                 if (this.groupMessagingEnabled) {
-                    await AddonMessages.instance.markAllConversationMessagesRead(this.conversationId!);
+                    await AddonMessages.markAllConversationMessagesRead(this.conversationId!);
                 } else {
-                    await AddonMessages.instance.markAllMessagesRead(this.userId);
+                    await AddonMessages.markAllMessagesRead(this.userId);
 
                     // Mark all messages as read.
                     this.messages.forEach((message) => {
@@ -791,9 +791,9 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             // Mark each message as read one by one.
             this.messages.forEach((message) => {
-                // If the message is unread, call AddonMessages.instance.markMessageRead.
+                // If the message is unread, call AddonMessages.markMessageRead.
                 if (message.useridfrom != this.currentUserId && 'read' in message && !message.read) {
-                    promises.push(AddonMessages.instance.markMessageRead(message.id).then(() => {
+                    promises.push(AddonMessages.markMessageRead(message.id).then(() => {
                         readChanged = true;
                         message.read = true;
 
@@ -927,7 +927,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             return Promise.resolve();
         }
 
-        const deferred = CoreUtils.instance.promiseDefer<void>();
+        const deferred = CoreUtils.promiseDefer<void>();
 
         setTimeout(() => this.waitForFetch().finally(() => {
             deferred.resolve();
@@ -973,7 +973,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      */
     copyMessage(message: AddonMessagesConversationMessageFormatted): void {
         const text = 'smallmessage' in message ? message.smallmessage || message.text || '' : message.text || '';
-        CoreUtils.instance.copyToClipboard(CoreTextUtils.instance.decodeHTMLEntities(text));
+        CoreUtils.copyToClipboard(CoreTextUtils.decodeHTMLEntities(text));
     }
 
     /**
@@ -999,23 +999,23 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 name: 'deleteforall',
                 checked: false,
                 value: true,
-                label: Translate.instance.instant('addon.messages.deleteforeveryone'),
+                label: Translate.instant('addon.messages.deleteforeveryone'),
             }];
         }
 
         try {
-            const data: boolean[] = await CoreDomUtils.instance.showConfirm(
-                Translate.instance.instant(langKey),
+            const data: boolean[] = await CoreDomUtils.showConfirm(
+                Translate.instant(langKey),
                 undefined,
                 undefined,
                 undefined,
                 options,
             );
 
-            const modal = await CoreDomUtils.instance.showModalLoading('core.deleting', true);
+            const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
 
             try {
-                await AddonMessages.instance.deleteMessage(message, data && data[0]);
+                await AddonMessages.deleteMessage(message, data && data[0]);
                 // Remove message from the list without having to wait for re-fetch.
                 this.messages.splice(index, 1);
                 this.removeMessage(message.hash!);
@@ -1026,7 +1026,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 modal.dismiss();
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errordeletemessage', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errordeletemessage', true);
         }
     }
 
@@ -1065,7 +1065,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             } catch (error) {
                 this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
                 this.pagesLoaded--;
-                CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
+                CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
             } finally {
                 infiniteComplete && infiniteComplete();
             }
@@ -1147,7 +1147,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         if (this.newMessages > 0) {
             const messages = Array.from(document.querySelectorAll('.addon-message-not-mine'));
 
-            CoreDomUtils.instance.scrollToElement(this.content!, <HTMLElement> messages[messages.length - this.newMessages]);
+            CoreDomUtils.scrollToElement(this.content!, <HTMLElement> messages[messages.length - this.newMessages]);
         }
     }
 
@@ -1186,9 +1186,9 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             try {
                 let data: AddonMessagesSendMessageResults;
                 if (this.conversationId) {
-                    data = await AddonMessages.instance.sendMessageToConversation(this.conversation!, text);
+                    data = await AddonMessages.sendMessageToConversation(this.conversation!, text);
                 } else {
-                    data = await AddonMessages.instance.sendMessage(this.userId!, text);
+                    data = await AddonMessages.sendMessage(this.userId!, text);
                 }
 
 
@@ -1235,9 +1235,9 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
                 // Only close the keyboard if an error happens.
                 // We want the user to be able to send multiple messages without the keyboard being closed.
-                CoreApp.instance.closeKeyboard();
+                CoreApp.closeKeyboard();
 
-                CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.messagenotsent', true);
+                CoreDomUtils.showErrorModalDefault(error, 'addon.messages.messagenotsent', true);
                 this.removeMessage(message.hash!);
             }
         }
@@ -1310,7 +1310,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     async viewInfo(): Promise<void> {
         if (this.isGroup) {
             // Display the group information.
-            const modal = await ModalController.instance.create({
+            const modal = await ModalController.create({
                 component: AddonMessagesConversationInfoComponent,
                 componentProps: {
                     conversationId: this.conversationId,
@@ -1322,7 +1322,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             const result = await modal.onDidDismiss();
 
             if (typeof result.data != 'undefined') {
-                const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/**/discussion');
+                const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/**/discussion');
 
                 // Open user conversation.
                 if (splitViewLoaded) {
@@ -1334,12 +1334,12 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                     );
                 } else {
                     // Open the discussion in a new view.
-                    CoreNavigator.instance.navigateToSitePath('/messages/discussion', { params: { userId: result.data.userId } });
+                    CoreNavigator.navigateToSitePath('/messages/discussion', { params: { userId: result.data.userId } });
                 }
             }
         } else {
             // Open the user profile.
-            CoreNavigator.instance.navigateToSitePath('/user/profile', { params: { userId: this.userId } });
+            CoreNavigator.navigateToSitePath('/user/profile', { params: { userId: this.userId } });
         }
     }
 
@@ -1356,12 +1356,12 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         this.favouriteIcon = CoreConstants.ICON_LOADING;
 
         try {
-            await AddonMessages.instance.setFavouriteConversation(this.conversation.id, !this.conversation.isfavourite);
+            await AddonMessages.setFavouriteConversation(this.conversation.id, !this.conversation.isfavourite);
 
             this.conversation.isfavourite = !this.conversation.isfavourite;
 
             // Get the conversation data so it's cached. Don't block the user for this.
-            AddonMessages.instance.getConversation(this.conversation.id, undefined, true);
+            AddonMessages.getConversation(this.conversation.id, undefined, true);
 
             CoreEvents.trigger<AddonMessagesUpdateConversationListEventData>(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
                 conversationId: this.conversation.id,
@@ -1369,7 +1369,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 value: this.conversation.isfavourite,
             }, this.siteId);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error changing favourite state.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error changing favourite state.');
         } finally {
             this.favouriteIcon = 'fas-star';
             this.favouriteIconSlash = this.conversation.isfavourite;
@@ -1390,11 +1390,11 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         this.muteIcon = CoreConstants.ICON_LOADING;
 
         try {
-            await AddonMessages.instance.muteConversation(this.conversation.id, !this.conversation.ismuted);
+            await AddonMessages.muteConversation(this.conversation.id, !this.conversation.ismuted);
             this.conversation.ismuted = !this.conversation.ismuted;
 
             // Get the conversation data so it's cached. Don't block the user for this.
-            AddonMessages.instance.getConversation(this.conversation.id, undefined, true);
+            AddonMessages.getConversation(this.conversation.id, undefined, true);
 
             CoreEvents.trigger<AddonMessagesUpdateConversationListEventData>(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
                 conversationId: this.conversation.id,
@@ -1403,7 +1403,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             }, this.siteId);
 
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error changing muted state.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error changing muted state.');
         } finally {
             this.muteIcon = this.conversation.ismuted ? 'fas-bell' : 'fas-bell-slash';
             done && done();
@@ -1457,25 +1457,25 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             throw new CoreError('No member selected to be blocked.');
         }
 
-        const template = Translate.instance.instant('addon.messages.blockuserconfirm', { $a: this.otherMember.fullname });
-        const okText = Translate.instance.instant('addon.messages.blockuser');
+        const template = Translate.instant('addon.messages.blockuserconfirm', { $a: this.otherMember.fullname });
+        const okText = Translate.instant('addon.messages.blockuser');
 
         try {
-            await CoreDomUtils.instance.showConfirm(template, undefined, okText);
+            await CoreDomUtils.showConfirm(template, undefined, okText);
             this.blockIcon = CoreConstants.ICON_LOADING;
 
-            const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+            const modal = await CoreDomUtils.showModalLoading('core.sending', true);
             this.showLoadingModal = true;
 
             try {
                 try {
-                    await AddonMessages.instance.blockContact(this.otherMember.id);
+                    await AddonMessages.blockContact(this.otherMember.id);
                 } finally {
                     modal.dismiss();
                     this.showLoadingModal = false;
                 }
             } catch (error) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.error', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
             } finally {
                 this.blockIcon = this.otherMember.isblocked ? 'fas-user-lock' : 'fas-user-check';
             }
@@ -1497,12 +1497,12 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         const confirmMessage = 'addon.messages.' + (this.isSelf ? 'deleteallselfconfirm' : 'deleteallconfirm');
 
         try {
-            await CoreDomUtils.instance.showDeleteConfirm(confirmMessage);
+            await CoreDomUtils.showDeleteConfirm(confirmMessage);
             this.deleteIcon = CoreConstants.ICON_LOADING;
 
             try {
                 try {
-                    await AddonMessages.instance.deleteConversation(this.conversation.id);
+                    await AddonMessages.deleteConversation(this.conversation.id);
 
                     CoreEvents.trigger<AddonMessagesUpdateConversationListEventData>(
                         AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT,
@@ -1518,7 +1518,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                     done && done();
                 }
             } catch (error) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'Error deleting conversation.');
+                CoreDomUtils.showErrorModalDefault(error, 'Error deleting conversation.');
             } finally {
                 this.deleteIcon = 'fas-trash';
             }
@@ -1538,26 +1538,26 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             throw new CoreError('No member selected to be unblocked.');
         }
 
-        const template = Translate.instance.instant('addon.messages.unblockuserconfirm', { $a: this.otherMember.fullname });
-        const okText = Translate.instance.instant('addon.messages.unblockuser');
+        const template = Translate.instant('addon.messages.unblockuserconfirm', { $a: this.otherMember.fullname });
+        const okText = Translate.instant('addon.messages.unblockuser');
 
         try {
-            await CoreDomUtils.instance.showConfirm(template, undefined, okText);
+            await CoreDomUtils.showConfirm(template, undefined, okText);
 
             this.blockIcon = CoreConstants.ICON_LOADING;
 
-            const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+            const modal = await CoreDomUtils.showModalLoading('core.sending', true);
             this.showLoadingModal = true;
 
             try {
                 try {
-                    await AddonMessages.instance.unblockContact(this.otherMember.id);
+                    await AddonMessages.unblockContact(this.otherMember.id);
                 } finally {
                     modal.dismiss();
                     this.showLoadingModal = false;
                 }
             } catch (error) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.error', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
             } finally {
                 this.blockIcon = this.otherMember.isblocked ? 'fas-user-lock' : 'fas-user-check';
             }
@@ -1577,26 +1577,26 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             throw new CoreError('No member selected to be requested.');
         }
 
-        const template = Translate.instance.instant('addon.messages.addcontactconfirm', { $a: this.otherMember.fullname });
-        const okText = Translate.instance.instant('core.add');
+        const template = Translate.instant('addon.messages.addcontactconfirm', { $a: this.otherMember.fullname });
+        const okText = Translate.instant('core.add');
 
         try {
-            await CoreDomUtils.instance.showConfirm(template, undefined, okText);
+            await CoreDomUtils.showConfirm(template, undefined, okText);
 
             this.addRemoveIcon = CoreConstants.ICON_LOADING;
 
-            const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+            const modal = await CoreDomUtils.showModalLoading('core.sending', true);
             this.showLoadingModal = true;
 
             try {
                 try {
-                    await AddonMessages.instance.createContactRequest(this.otherMember.id);
+                    await AddonMessages.createContactRequest(this.otherMember.id);
                 } finally {
                     modal.dismiss();
                     this.showLoadingModal = false;
                 }
             } catch (error) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.error', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
             } finally {
                 this.addRemoveIcon = 'fas-user-plus';
             }
@@ -1616,18 +1616,18 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             throw new CoreError('No member selected to be confirmed.');
         }
 
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
         this.showLoadingModal = true;
 
         try {
             try {
-                await AddonMessages.instance.confirmContactRequest(this.otherMember.id);
+                await AddonMessages.confirmContactRequest(this.otherMember.id);
             } finally {
                 modal.dismiss();
                 this.showLoadingModal = false;
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.error', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
         }
     }
 
@@ -1642,18 +1642,18 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             throw new CoreError('No member selected to be declined.');
         }
 
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
         this.showLoadingModal = true;
 
         try {
             try {
-                await AddonMessages.instance.declineContactRequest(this.otherMember.id);
+                await AddonMessages.declineContactRequest(this.otherMember.id);
             } finally {
                 modal.dismiss();
                 this.showLoadingModal = false;
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.error', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
         }
     }
 
@@ -1668,26 +1668,26 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             throw new CoreError('No member selected to be removed.');
         }
 
-        const template = Translate.instance.instant('addon.messages.removecontactconfirm', { $a: this.otherMember.fullname });
-        const okText = Translate.instance.instant('core.remove');
+        const template = Translate.instant('addon.messages.removecontactconfirm', { $a: this.otherMember.fullname });
+        const okText = Translate.instant('core.remove');
 
         try {
-            await CoreDomUtils.instance.showConfirm(template, undefined, okText);
+            await CoreDomUtils.showConfirm(template, undefined, okText);
 
             this.addRemoveIcon = CoreConstants.ICON_LOADING;
 
-            const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+            const modal = await CoreDomUtils.showModalLoading('core.sending', true);
             this.showLoadingModal = true;
 
             try {
                 try {
-                    await AddonMessages.instance.removeContact(this.otherMember.id);
+                    await AddonMessages.removeContact(this.otherMember.id);
                 } finally {
                     modal.dismiss();
                     this.showLoadingModal = false;
                 }
             } catch (error) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.error', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
             } finally {
                 this.addRemoveIcon = 'fas-user-plus';
             }

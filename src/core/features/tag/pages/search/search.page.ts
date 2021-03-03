@@ -45,8 +45,8 @@ export class CoreTagSearchPage implements OnInit {
      * View loaded.
      */
     ngOnInit(): void {
-        this.collectionId = CoreNavigator.instance.getRouteNumberParam('collectionId') || 0;
-        this.query = CoreNavigator.instance.getRouteParam('query') || '';
+        this.collectionId = CoreNavigator.getRouteNumberParam('collectionId') || 0;
+        this.query = CoreNavigator.getRouteParam('query') || '';
 
         this.fetchData().finally(() => {
             this.loaded = true;
@@ -60,7 +60,7 @@ export class CoreTagSearchPage implements OnInit {
                 this.fetchTags(),
             ]);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading tags.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading tags.');
         }
     }
 
@@ -70,11 +70,11 @@ export class CoreTagSearchPage implements OnInit {
      * @return Resolved when done.
      */
     async fetchCollections(): Promise<void> {
-        const collections = await CoreTag.instance.getTagCollections();
+        const collections = await CoreTag.getTagCollections();
 
         collections.forEach((collection) => {
             if (!collection.name && collection.isdefault) {
-                collection.name = Translate.instance.instant('core.tag.defautltagcoll');
+                collection.name = Translate.instant('core.tag.defautltagcoll');
             }
         });
 
@@ -87,15 +87,15 @@ export class CoreTagSearchPage implements OnInit {
      * @return Resolved when done.
      */
     async fetchTags(): Promise<void> {
-        this.cloud = await CoreTag.instance.getTagCloud(this.collectionId, undefined, undefined, this.query);
+        this.cloud = await CoreTag.getTagCloud(this.collectionId, undefined, undefined, this.query);
     }
 
     /**
      * Go to tag index page.
      */
     openTag(tag: CoreTagCloudTag): void {
-        const url = CoreTextUtils.instance.decodeURI(tag.viewurl);
-        CoreContentLinksHelper.instance.handleLink(url);
+        const url = CoreTextUtils.decodeURI(tag.viewurl);
+        CoreContentLinksHelper.handleLink(url);
     }
 
     /**
@@ -104,9 +104,9 @@ export class CoreTagSearchPage implements OnInit {
      * @param refresher Refresher event.
      */
     refreshData(refresher?: CustomEvent<IonRefresher>): void {
-        CoreUtils.instance.allPromises([
-            CoreTag.instance.invalidateTagCollections(),
-            CoreTag.instance.invalidateTagCloud(this.collectionId, undefined, undefined, this.query),
+        CoreUtils.allPromises([
+            CoreTag.invalidateTagCollections(),
+            CoreTag.invalidateTagCloud(this.collectionId, undefined, undefined, this.query),
         ]).finally(() => this.fetchData().finally(() => {
             refresher?.detail.complete();
         }));
@@ -121,10 +121,10 @@ export class CoreTagSearchPage implements OnInit {
     searchTags(query: string): Promise<void> {
         this.searching = true;
         this.query = query;
-        CoreApp.instance.closeKeyboard();
+        CoreApp.closeKeyboard();
 
         return this.fetchTags().catch((error) => {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading tags.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading tags.');
         }).finally(() => {
             this.searching = false;
         });

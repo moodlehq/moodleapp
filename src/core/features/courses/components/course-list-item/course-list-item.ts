@@ -44,11 +44,11 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        CoreCoursesHelper.instance.loadCourseColorAndImage(this.course);
+        CoreCoursesHelper.loadCourseColorAndImage(this.course);
 
         // Check if the user is enrolled in the course.
         try {
-            const course = await CoreCourses.instance.getUserCourse(this.course.id);
+            const course = await CoreCourses.getUserCourse(this.course.id);
             this.course.progress = course.progress;
             this.course.completionusertracked = course.completionusertracked;
 
@@ -92,9 +92,9 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
      */
     openCourse(): void {
         if (this.isEnrolled) {
-            CoreCourseHelper.instance.openCourse(this.course);
+            CoreCourseHelper.openCourse(this.course);
         } else {
-            CoreNavigator.instance.navigate('courses/preview', { params: { course: this.course } });
+            CoreNavigator.navigate('courses/preview', { params: { course: this.course } });
         }
     }
 

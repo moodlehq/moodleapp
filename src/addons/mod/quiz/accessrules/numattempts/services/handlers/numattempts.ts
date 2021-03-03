@@ -50,4 +50,4 @@ export class AddonModQuizAccessNumAttemptsHandlerService implements AddonModQuiz
 
 }
 
-export class AddonModQuizAccessNumAttemptsHandler extends makeSingleton(AddonModQuizAccessNumAttemptsHandlerService) {}
+export const AddonModQuizAccessNumAttemptsHandler = makeSingleton(AddonModQuizAccessNumAttemptsHandlerService);

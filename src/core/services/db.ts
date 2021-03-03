@@ -37,7 +37,7 @@ export class CoreDbProvider {
      */
     getDB(name: string, forceNew?: boolean): SQLiteDB {
         if (typeof this.dbInstances[name] === 'undefined' || forceNew) {
-            if (Platform.instance.is('cordova')) {
+            if (Platform.is('cordova')) {
                 this.dbInstances[name] = new SQLiteDB(name);
             } else {
                 this.dbInstances[name] = new SQLiteDBMock(name);
@@ -65,13 +65,13 @@ export class CoreDbProvider {
                 // In WebSQL we cannot delete the database, just empty it.
                 return db.emptyDatabase();
             } else {
-                return SQLite.instance.deleteDatabase({
+                return SQLite.deleteDatabase({
                     name,
                     location: 'default',
                 });
             }
-        } else if (Platform.instance.is('cordova')) {
-            return SQLite.instance.deleteDatabase({
+        } else if (Platform.is('cordova')) {
+            return SQLite.deleteDatabase({
                 name,
                 location: 'default',
             });
@@ -80,4 +80,4 @@ export class CoreDbProvider {
 
 }
 
-export class CoreDB extends makeSingleton(CoreDbProvider) {}
+export const CoreDB = makeSingleton(CoreDbProvider);

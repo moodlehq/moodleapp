@@ -32,7 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
             multi: true,
             deps: [],
             useFactory: () => () =>
-                CoreUserProfileFieldDelegate.instance.registerHandler(AddonUserProfileFieldMenuHandler.instance),
+                CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldMenuHandler.instance),
         },
     ],
     exports: [

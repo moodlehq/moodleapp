@@ -59,7 +59,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     stateParams.month = date.getMonth() + 1;
 
                     // @todo: Add checkMenu param.
-                    CoreNavigator.instance.navigateToSitePath('/calendar/index', { params: stateParams, siteId });
+                    CoreNavigator.navigateToSitePath('/calendar/index', { params: stateParams, siteId });
 
                 } else if (params.view == 'day') {
                     // Daily view, open the page.
@@ -73,7 +73,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     stateParams.month = date.getMonth() + 1;
                     stateParams.day = date.getDate();
 
-                    CoreNavigator.instance.navigateToSitePath('/calendar/day', { params: stateParams, siteId });
+                    CoreNavigator.navigateToSitePath('/calendar/day', { params: stateParams, siteId });
 
                 } else if (params.view == 'upcoming' || params.view == 'upcoming_mini') {
                     // Upcoming view, open the calendar tab.
@@ -83,7 +83,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     };
 
                     // @todo: Add checkMenu param.
-                    CoreNavigator.instance.navigateToSitePath('/calendar/index', { params: stateParams, siteId });
+                    CoreNavigator.navigateToSitePath('/calendar/index', { params: stateParams, siteId });
 
                 }
             },
@@ -105,15 +105,15 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
             return false;
         }
 
-        return AddonCalendar.instance.isDisabled(siteId).then((disabled) => {
+        return AddonCalendar.isDisabled(siteId).then((disabled) => {
             if (disabled) {
                 return false;
             }
 
-            return AddonCalendar.instance.canViewMonth(siteId);
+            return AddonCalendar.canViewMonth(siteId);
         });
     }
 
 }
 
-export class AddonCalendarViewLinkHandler extends makeSingleton(AddonCalendarViewLinkHandlerService) {}
+export const AddonCalendarViewLinkHandler = makeSingleton(AddonCalendarViewLinkHandlerService);

@@ -32,8 +32,8 @@ export class AddonModForumIndexPage implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.module = CoreNavigator.instance.getRouteParam<CoreCourseAnyModuleData>('module')!;
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId')!;
+        this.module = CoreNavigator.getRouteParam<CoreCourseAnyModuleData>('module')!;
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
         this.title = this.module?.name;
     }
 

@@ -51,13 +51,13 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
         let dashboardAvailable = false;
 
         // Check if blocks and 3.6 dashboard is enabled.
-        promises.push(CoreBlockDelegate.instance.areBlocksDisabled(siteId).then((disabled) => {
+        promises.push(CoreBlockDelegate.areBlocksDisabled(siteId).then((disabled) => {
             blocksEnabled = !disabled;
 
             return;
         }));
 
-        promises.push(CoreCoursesDashboard.instance.isAvailable().then((available) => {
+        promises.push(CoreCoursesDashboard.isAvailable().then((available) => {
             dashboardAvailable = available;
 
             return;
@@ -66,13 +66,13 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
         await Promise.all(promises);
 
         if (dashboardAvailable && blocksEnabled) {
-            const blocks = await CoreCoursesDashboard.instance.getDashboardBlocks(undefined, siteId);
+            const blocks = await CoreCoursesDashboard.getDashboardBlocks(undefined, siteId);
 
-            return CoreBlockDelegate.instance.hasSupportedBlock(blocks);
+            return CoreBlockDelegate.hasSupportedBlock(blocks);
         }
 
         // Check if my overview is enabled. If it's enabled we will fake enabled blocks.
-        const timelineEnabled = await AddonBlockTimeline.instance.isAvailable();
+        const timelineEnabled = await AddonBlockTimeline.isAvailable();
 
         return timelineEnabled && blocksEnabled;
     }
@@ -94,4 +94,4 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
 
 }
 
-export class CoreDashboardHomeHandler extends makeSingleton(CoreDashboardHomeHandlerService) {}
+export const CoreDashboardHomeHandler = makeSingleton(CoreDashboardHomeHandlerService);

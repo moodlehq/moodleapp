@@ -67,16 +67,16 @@ export class CoreIframeComponent implements OnChanges {
 
         this.initialized = true;
 
-        this.iframeWidth = (this.iframeWidth && CoreDomUtils.instance.formatPixelsSize(this.iframeWidth)) || '100%';
-        this.iframeHeight = (this.iframeHeight && CoreDomUtils.instance.formatPixelsSize(this.iframeHeight)) || '100%';
-        this.allowFullscreen = CoreUtils.instance.isTrueOrOne(this.allowFullscreen);
+        this.iframeWidth = (this.iframeWidth && CoreDomUtils.formatPixelsSize(this.iframeWidth)) || '100%';
+        this.iframeHeight = (this.iframeHeight && CoreDomUtils.formatPixelsSize(this.iframeHeight)) || '100%';
+        this.allowFullscreen = CoreUtils.isTrueOrOne(this.allowFullscreen);
 
         // Show loading only with external URLs.
-        this.loading = !this.src || !CoreUrlUtils.instance.isLocalFileUrl(this.src);
+        this.loading = !this.src || !CoreUrlUtils.isLocalFileUrl(this.src);
 
         // @todo const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        // CoreIframeUtils.instance.treatFrame(iframe, false, this.navCtrl);
-        CoreIframeUtils.instance.treatFrame(iframe, false);
+        // CoreIframeUtils.treatFrame(iframe, false, this.navCtrl);
+        CoreIframeUtils.treatFrame(iframe, false);
 
         iframe.addEventListener('load', () => {
             this.loading = false;
@@ -85,7 +85,7 @@ export class CoreIframeComponent implements OnChanges {
 
         iframe.addEventListener('error', () => {
             this.loading = false;
-            CoreDomUtils.instance.showErrorModal('core.errorloadingcontent', true);
+            CoreDomUtils.showErrorModal('core.errorloadingcontent', true);
         });
 
         if (this.loading) {
@@ -100,11 +100,11 @@ export class CoreIframeComponent implements OnChanges {
      */
     async ngOnChanges(changes: {[name: string]: SimpleChange }): Promise<void> {
         if (changes.src) {
-            const url = CoreUrlUtils.instance.getYoutubeEmbedUrl(changes.src.currentValue) || changes.src.currentValue;
+            const url = CoreUrlUtils.getYoutubeEmbedUrl(changes.src.currentValue) || changes.src.currentValue;
 
-            await CoreIframeUtils.instance.fixIframeCookies(url);
+            await CoreIframeUtils.fixIframeCookies(url);
 
-            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(CoreFile.instance.convertFileSrc(url));
+            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url));
 
             // Now that the URL has been set, initialize the iframe. Wait for the iframe to the added to the DOM.
             setTimeout(() => {

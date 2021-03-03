@@ -457,4 +457,4 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
 
 }
 
-export class CoreQuestionDelegate extends makeSingleton(CoreQuestionDelegateService) {}
+export const CoreQuestionDelegate = makeSingleton(CoreQuestionDelegateService);

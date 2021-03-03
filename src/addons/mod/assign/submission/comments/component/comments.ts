@@ -33,7 +33,7 @@ export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSub
     constructor() {
         super();
 
-        this.commentsEnabled = !CoreComments.instance.areCommentsDisabledInSite();
+        this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
     }
 
     /**
@@ -42,7 +42,7 @@ export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSub
      * @return Promise resolved when done.
      */
     invalidate(): Promise<void> {
-        return CoreComments.instance.invalidateCommentsData(
+        return CoreComments.invalidateCommentsData(
             'module',
             this.assign.cmid,
             'assignsubmission_comments',

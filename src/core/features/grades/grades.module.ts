@@ -22,7 +22,7 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { CoreGradesCourseOptionHandler } from './services/handlers/course-option';
-import CoreGradesMainMenuHandler, { CoreGradesMainMenuHandlerService } from './services/handlers/mainmenu';
+import { CoreGradesMainMenuHandler, CoreGradesMainMenuHandlerService } from './services/handlers/mainmenu';
 import { CoreGradesOverviewLinkHandler } from './services/handlers/overview-link';
 import { CoreGradesUserHandler } from './services/handlers/user';
 import { CoreGradesUserLinkHandler } from './services/handlers/user-link';
@@ -53,11 +53,11 @@ const courseIndexRoutes: Routes = [
             multi: true,
             deps: [],
             useValue: () => {
-                CoreMainMenuDelegate.instance.registerHandler(CoreGradesMainMenuHandler.instance);
-                CoreUserDelegate.instance.registerHandler(CoreGradesUserHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(CoreGradesUserLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(CoreGradesOverviewLinkHandler.instance);
-                CoreCourseOptionsDelegate.instance.registerHandler(CoreGradesCourseOptionHandler.instance);
+                CoreMainMenuDelegate.registerHandler(CoreGradesMainMenuHandler.instance);
+                CoreUserDelegate.registerHandler(CoreGradesUserHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreGradesUserLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreGradesOverviewLinkHandler.instance);
+                CoreCourseOptionsDelegate.registerHandler(CoreGradesCourseOptionHandler.instance);
             },
         },
     ],

@@ -45,7 +45,7 @@ export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabledForSite(siteId?: string): Promise<boolean> {
-        return CoreSiteHome.instance.isAvailable(siteId);
+        return CoreSiteHome.isAvailable(siteId);
     }
 
     /**
@@ -54,7 +54,7 @@ export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
      * @return Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHomeHandlerToDisplay {
-        const site = CoreSites.instance.getCurrentSite();
+        const site = CoreSites.getCurrentSite();
         const displaySiteHome = site?.getInfo() && site?.getInfo()?.userhomepage === 0;
 
         return {
@@ -68,4 +68,4 @@ export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
 
 }
 
-export class CoreSiteHomeHomeHandler extends makeSingleton(CoreSiteHomeHomeHandlerService) {}
+export const CoreSiteHomeHomeHandler = makeSingleton(CoreSiteHomeHomeHandlerService);

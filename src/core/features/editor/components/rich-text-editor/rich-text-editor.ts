@@ -141,17 +141,17 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.canScanQR = CoreUtils.instance.canScanQR();
-        this.isPhone = Platform.instance.is('mobile') && !Platform.instance.is('tablet');
+        this.canScanQR = CoreUtils.canScanQR();
+        this.isPhone = Platform.is('mobile') && !Platform.is('tablet');
         this.toolbarHidden = this.isPhone;
-        this.direction = Platform.instance.isRTL ? 'rtl' : 'ltr';
+        this.direction = Platform.isRTL ? 'rtl' : 'ltr';
     }
 
     /**
      * Init editor.
      */
     async ngAfterContentInit(): Promise<void> {
-        this.rteEnabled = await CoreDomUtils.instance.isRichTextEditorEnabled();
+        this.rteEnabled = await CoreDomUtils.isRichTextEditorEnabled();
 
         // Setup the editor.
         this.editorElement = this.editor?.nativeElement as HTMLDivElement;
@@ -218,7 +218,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
             // Save a draft so the original content is saved.
             this.lastDraft = newValue;
-            CoreEditorOffline.instance.saveDraft(
+            CoreEditorOffline.saveDraft(
                 this.contextLevel || '',
                 this.contextInstanceId || 0,
                 this.elementId || '',
@@ -240,9 +240,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         });
 
         // Change the side when the language changes.
-        this.languageChangedSubscription = Translate.instance.onLangChange.subscribe(() => {
+        this.languageChangedSubscription = Translate.onLangChange.subscribe(() => {
             setTimeout(() => {
-                this.direction = Platform.instance.isRTL ? 'rtl' : 'ltr';
+                this.direction = Platform.isRTL ? 'rtl' : 'ltr';
             });
         });
     }
@@ -255,11 +255,11 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     protected maximizeEditorSize(): Promise<number> {
         // this.content.resize();
 
-        const deferred = CoreUtils.instance.promiseDefer<number>();
+        const deferred = CoreUtils.promiseDefer<number>();
 
         setTimeout(async () => {
-            let contentVisibleHeight = await CoreDomUtils.instance.getContentHeight(this.content);
-            if (!CoreApp.instance.isAndroid()) {
+            let contentVisibleHeight = await CoreDomUtils.getContentHeight(this.content);
+            if (!CoreApp.isAndroid()) {
                 // In Android we ignore the keyboard height because it is not part of the web view.
                 contentVisibleHeight -= this.kbHeight;
             }
@@ -274,11 +274,11 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
                 // Editor is ready, adjust Height if needed.
                 let height;
 
-                if (CoreApp.instance.isAndroid()) {
+                if (CoreApp.isAndroid()) {
                     // In Android we ignore the keyboard height because it is not part of the web view.
-                    const contentHeight = await CoreDomUtils.instance.getContentHeight(this.content);
+                    const contentHeight = await CoreDomUtils.getContentHeight(this.content);
                     height = contentHeight - this.getSurroundingHeight(this.element);
-                } else if (CoreApp.instance.isIOS() && this.kbHeight > 0 && CoreApp.instance.getPlatformMajorVersion() < 12) {
+                } else if (CoreApp.isIOS() && this.kbHeight > 0 && CoreApp.getPlatformMajorVersion() < 12) {
                     // Keyboard open in iOS 11 or previous. The window height changes when the keyboard is open.
                     height = window.innerHeight - this.getSurroundingHeight(this.element);
 
@@ -289,12 +289,12 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
                 } else {
                     // Header is fixed, use the content to calculate the editor height.
-                    const contentHeight = await CoreDomUtils.instance.getContentHeight(this.content);
+                    const contentHeight = await CoreDomUtils.getContentHeight(this.content);
                     height = contentHeight - this.kbHeight - this.getSurroundingHeight(this.element);
                 }
 
                 if (height > this.minHeight) {
-                    this.element.style.height = CoreDomUtils.instance.formatPixelsSize(height - 1);
+                    this.element.style.height = CoreDomUtils.formatPixelsSize(height - 1);
                 } else {
                     this.element.style.height = '';
                 }
@@ -321,7 +321,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
                 for (let x = 0; x < parent.children.length; x++) {
                     const child = <HTMLElement> parent.children[x];
                     if (child.tagName && child != element) {
-                        height += CoreDomUtils.instance.getElementHeight(child, false, true, true);
+                        height += CoreDomUtils.getElementHeight(child, false, true, true);
                     }
                 }
             }
@@ -329,14 +329,14 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         }
 
         const computedStyle = getComputedStyle(element);
-        height += CoreDomUtils.instance.getComputedStyleMeasure(computedStyle, 'paddingTop') +
-            CoreDomUtils.instance.getComputedStyleMeasure(computedStyle, 'paddingBottom');
+        height += CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingTop') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingBottom');
 
         if (element.parentElement?.tagName == 'ION-CONTENT') {
             const cs2 = getComputedStyle(element);
 
-            height -= CoreDomUtils.instance.getComputedStyleMeasure(cs2, 'paddingTop') +
-                CoreDomUtils.instance.getComputedStyleMeasure(cs2, 'paddingBottom');
+            height -= CoreDomUtils.getComputedStyleMeasure(cs2, 'paddingTop') +
+                CoreDomUtils.getComputedStyleMeasure(cs2, 'paddingBottom');
         }
 
         return height;
@@ -540,14 +540,14 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * Treating videos and audios in here is complex, so if a user manually adds one he won't be able to play it in the editor.
      */
     protected treatExternalContent(): void {
-        if (!CoreSites.instance.isLoggedIn() || !this.editorElement) {
+        if (!CoreSites.isLoggedIn() || !this.editorElement) {
             // Only treat external content if the user is logged in.
             return;
         }
 
         const elements = Array.from(this.editorElement.querySelectorAll('img'));
-        const siteId = CoreSites.instance.getCurrentSiteId();
-        const canDownloadFiles = CoreSites.instance.getCurrentSite()!.canDownloadFiles();
+        const siteId = CoreSites.getCurrentSiteId();
+        const canDownloadFiles = CoreSites.getCurrentSite()!.canDownloadFiles();
         elements.forEach(async (el) => {
             if (el.getAttribute('data-original-src')) {
                 // Already treated.
@@ -556,14 +556,14 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
             const url = el.src;
 
-            if (!url || !CoreUrlUtils.instance.isDownloadableUrl(url) ||
-                    (!canDownloadFiles && CoreUrlUtils.instance.isPluginFileUrl(url))) {
+            if (!url || !CoreUrlUtils.isDownloadableUrl(url) ||
+                    (!canDownloadFiles && CoreUrlUtils.isPluginFileUrl(url))) {
                 // Nothing to treat.
                 return;
             }
 
             // Check if it's downloaded.
-            const finalUrl = await CoreFilepool.instance.getSrcByUrl(siteId, url, this.component, this.componentId);
+            const finalUrl = await CoreFilepool.getSrcByUrl(siteId, url, this.component, this.componentId);
 
             // Check again if it's already treated, this function can be called concurrently more than once.
             if (!el.getAttribute('data-original-src')) {
@@ -760,7 +760,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         const selection = window.getSelection()?.toString();
 
         // When RTE is focused with a whole paragraph in desktop the stopBubble will not fire click.
-        if (CoreApp.instance.isMobile() || !this.rteEnabled || document.activeElement != this.editorElement || selection == '') {
+        if (CoreApp.isMobile() || !this.rteEnabled || document.activeElement != this.editorElement || selection == '') {
             this.stopBubble(event);
         }
     }
@@ -804,7 +804,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
         const length = await this.toolbarSlides.length();
 
-        const width = CoreDomUtils.instance.getElementWidth(this.toolbar.nativeElement);
+        const width = CoreDomUtils.getElementWidth(this.toolbar.nativeElement);
 
         if (!width) {
             // Width is not available yet, try later.
@@ -876,8 +876,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * @return {boolean} Whether it should auto save drafts.
      */
     protected shouldAutoSaveDrafts(): boolean {
-        return !!CoreSites.instance.getCurrentSite() &&
-                (typeof this.autoSave == 'undefined' || CoreUtils.instance.isTrueOrOne(this.autoSave)) &&
+        return !!CoreSites.getCurrentSite() &&
+                (typeof this.autoSave == 'undefined' || CoreUtils.isTrueOrOne(this.autoSave)) &&
                 typeof this.contextLevel != 'undefined' &&
                 typeof this.contextInstanceId != 'undefined' &&
                 typeof this.elementId != 'undefined';
@@ -890,7 +890,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      */
     protected async restoreDraft(): Promise<void> {
         try {
-            const entry = await CoreEditorOffline.instance.resumeDraft(
+            const entry = await CoreEditorOffline.resumeDraft(
                 this.contextLevel || '',
                 this.contextInstanceId || 0,
                 this.elementId || '',
@@ -947,7 +947,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
             }
 
             try {
-                await CoreEditorOffline.instance.saveDraft(
+                await CoreEditorOffline.saveDraft(
                     this.contextLevel || '',
                     this.contextInstanceId || 0,
                     this.elementId || '',
@@ -975,7 +975,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
             if (data.form && form && data.form == form) {
                 try {
-                    await CoreEditorOffline.instance.deleteDraft(
+                    await CoreEditorOffline.deleteDraft(
                         this.contextLevel || '',
                         this.contextInstanceId || 0,
                         this.elementId || '',
@@ -985,7 +985,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
                     // Error deleting draft. Shouldn't happen.
                 }
             }
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
     }
 
     /**
@@ -1015,7 +1015,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         this.stopBubble(event);
 
         // Scan for a QR code.
-        const text = await CoreUtils.instance.scanQR();
+        const text = await CoreUtils.scanQR();
 
         if (text) {
             document.execCommand('insertText', false, text);

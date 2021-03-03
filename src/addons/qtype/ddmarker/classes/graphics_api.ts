@@ -65,7 +65,7 @@ export class AddonQtypeDdMarkerGraphicsApi {
             return;
         }
 
-        const position = CoreDomUtils.instance.getElementXY(bgImg, undefined, 'ddarea');
+        const position = CoreDomUtils.getElementXY(bgImg, undefined, 'ddarea');
 
         dropZones.style.left = position[0] + 'px';
         dropZones.style.top = position[1] + 'px';

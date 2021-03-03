@@ -32,7 +32,7 @@ export class CoreCourseOfflineProvider {
      * @return Promise resolved when done.
      */
     async deleteManualCompletion(cmId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(MANUAL_COMPLETION_TABLE, { cmid: cmId });
     }
@@ -44,7 +44,7 @@ export class CoreCourseOfflineProvider {
      * @return Promise resolved with the list of completions.
      */
     async getAllManualCompletions(siteId?: string): Promise<CoreCourseManualCompletionDBRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return await site.getDb().getRecords(MANUAL_COMPLETION_TABLE);
     }
@@ -57,7 +57,7 @@ export class CoreCourseOfflineProvider {
      * @return Promise resolved with the list of completions.
      */
     async getCourseManualCompletions(courseId: number, siteId?: string): Promise<CoreCourseManualCompletionDBRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return await site.getDb().getRecords(MANUAL_COMPLETION_TABLE, { courseid: courseId });
     }
@@ -70,7 +70,7 @@ export class CoreCourseOfflineProvider {
      * @return Promise resolved with the completion, rejected if failure or not found.
      */
     async getManualCompletion(cmId: number, siteId?: string): Promise<CoreCourseManualCompletionDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return await site.getDb().getRecord(MANUAL_COMPLETION_TABLE, { cmid: cmId });
     }
@@ -94,7 +94,7 @@ export class CoreCourseOfflineProvider {
     ): Promise<CoreStatusWithWarningsWSResponse> {
 
         // Store the offline data.
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const entry: CoreCourseManualCompletionDBRecord = {
             cmid: cmId,
             completed: completed ? 1 : 0,
@@ -112,4 +112,4 @@ export class CoreCourseOfflineProvider {
 
 }
 
-export class CoreCourseOffline extends makeSingleton(CoreCourseOfflineProvider) { }
+export const CoreCourseOffline = makeSingleton(CoreCourseOfflineProvider);

@@ -145,7 +145,7 @@ export class CoreTextUtilsProvider {
      * @return URL to view the address.
      */
     buildAddressURL(address: string): SafeUrl {
-        return this.sanitizer.bypassSecurityTrustUrl((CoreApp.instance.isAndroid() ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
+        return this.sanitizer.bypassSecurityTrustUrl((CoreApp.isAndroid() ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
                 encodeURIComponent(address));
     }
 
@@ -193,7 +193,7 @@ export class CoreTextUtilsProvider {
         let builtMessage = messages[0];
 
         for (let i = 1; i < messages.length; i++) {
-            builtMessage = Translate.instance.instant('core.twoparagraphs', { p1: builtMessage, p2: messages[i] });
+            builtMessage = Translate.instant('core.twoparagraphs', { p1: builtMessage, p2: messages[i] });
         }
 
         return builtMessage;
@@ -208,7 +208,7 @@ export class CoreTextUtilsProvider {
      */
     bytesToSize(bytes: number, precision: number = 2): string {
         if (typeof bytes == 'undefined' || bytes === null || bytes < 0) {
-            return Translate.instance.instant('core.notapplicable');
+            return Translate.instant('core.notapplicable');
         }
 
         if (precision < 0) {
@@ -216,7 +216,7 @@ export class CoreTextUtilsProvider {
         }
 
         const keys = ['core.sizeb', 'core.sizekb', 'core.sizemb', 'core.sizegb', 'core.sizetb'];
-        const units = Translate.instance.instant(keys);
+        const units = Translate.instant(keys);
         let pos = 0;
 
         if (bytes >= 1024) {
@@ -228,7 +228,7 @@ export class CoreTextUtilsProvider {
             bytes = Number(Math.round(parseFloat(bytes + 'e+' + precision)) + 'e-' + precision);
         }
 
-        return Translate.instance.instant('core.humanreadablesize', { size: bytes, unit: units[keys[pos]] });
+        return Translate.instant('core.humanreadablesize', { size: bytes, unit: units[keys[pos]] });
     }
 
     /**
@@ -983,7 +983,7 @@ export class CoreTextUtilsProvider {
             return Promise.resolve('');
         }
 
-        return CoreLang.instance.getCurrentLanguage().then((language) => {
+        return CoreLang.getCurrentLanguage().then((language) => {
             // Match the current language.
             const anyLangRegEx = /<(?:lang|span)[^>]+lang="[a-zA-Z0-9_-]+"[^>]*>(.*?)<\/(?:lang|span)>/g;
             let currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)</(?:lang|span)>', 'g');
@@ -1082,7 +1082,7 @@ export class CoreTextUtilsProvider {
             ...options,
         };
 
-        const modal = await ModalController.instance.create(modalOptions);
+        const modal = await ModalController.create(modalOptions);
 
         await modal.present();
     }
@@ -1104,4 +1104,4 @@ export type CoreTextUtilsViewTextOptions = {
     modalOptions?: Partial<ModalOptions>; // Modal options.
 };
 
-export class CoreTextUtils extends makeSingleton(CoreTextUtilsProvider) {}
+export const CoreTextUtils = makeSingleton(CoreTextUtilsProvider);

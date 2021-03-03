@@ -108,7 +108,7 @@ export class CoreQuestionBaseComponent {
             if (!label || option.name === undefined || option.value === undefined) {
                 // Something went wrong when extracting the questions data. Abort.
                 this.logger.warn('Aborting because of an error parsing options.', question.slot, option.name);
-                CoreQuestionHelper.instance.showComponentError(this.onAbort);
+                CoreQuestionHelper.showComponentError(this.onAbort);
 
                 return true;
             }
@@ -163,7 +163,7 @@ export class CoreQuestionBaseComponent {
 
             if (typeof optionEl.value == 'undefined') {
                 this.logger.warn('Aborting because couldn\'t find input.', this.question?.slot);
-                CoreQuestionHelper.instance.showComponentError(this.onAbort);
+                CoreQuestionHelper.showComponentError(this.onAbort);
 
                 return true;
             }
@@ -213,19 +213,19 @@ export class CoreQuestionBaseComponent {
         if (!this.question) {
             this.logger.warn('Aborting because of no question received.');
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         this.hostElement.classList.add('core-question-container');
 
-        const element = CoreDomUtils.instance.convertToElement(this.question.html);
+        const element = CoreDomUtils.convertToElement(this.question.html);
 
         // Extract question text.
-        this.question.text = CoreDomUtils.instance.getContentsOfElement(element, '.qtext');
+        this.question.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
         if (typeof this.question.text == 'undefined') {
             this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         return element;
@@ -261,15 +261,15 @@ export class CoreQuestionBaseComponent {
 
         if (review) {
             // Search the answer and the attachments.
-            question.answer = CoreDomUtils.instance.getContentsOfElement(questionEl, '.qtype_essay_response');
+            question.answer = CoreDomUtils.getContentsOfElement(questionEl, '.qtype_essay_response');
 
             if (question.parsedSettings) {
                 question.attachments = Array.from(
-                    CoreQuestionHelper.instance.getResponseFileAreaFiles(question, 'attachments'),
+                    CoreQuestionHelper.getResponseFileAreaFiles(question, 'attachments'),
                 );
             } else {
-                question.attachments = CoreQuestionHelper.instance.getQuestionAttachmentsFromHtml(
-                    CoreDomUtils.instance.getContentsOfElement(questionEl, '.attachments') || '',
+                question.attachments = CoreQuestionHelper.getQuestionAttachmentsFromHtml(
+                    CoreDomUtils.getContentsOfElement(questionEl, '.attachments') || '',
                 );
             }
 
@@ -277,13 +277,13 @@ export class CoreQuestionBaseComponent {
         }
 
         const textarea = <HTMLTextAreaElement> questionEl.querySelector('textarea[name*=_answer]');
-        question.hasDraftFiles = question.allowsAnswerFiles && CoreQuestionHelper.instance.hasDraftFileUrls(questionEl.innerHTML);
+        question.hasDraftFiles = question.allowsAnswerFiles && CoreQuestionHelper.hasDraftFileUrls(questionEl.innerHTML);
 
         if (!textarea && (question.hasInlineText || !question.allowsAttachments)) {
             // Textarea not found, we might be in review. Search the answer and the attachments.
-            question.answer = CoreDomUtils.instance.getContentsOfElement(questionEl, '.qtype_essay_response');
-            question.attachments = CoreQuestionHelper.instance.getQuestionAttachmentsFromHtml(
-                CoreDomUtils.instance.getContentsOfElement(questionEl, '.attachments') || '',
+            question.answer = CoreDomUtils.getContentsOfElement(questionEl, '.qtype_essay_response');
+            question.attachments = CoreQuestionHelper.getQuestionAttachmentsFromHtml(
+                CoreDomUtils.getContentsOfElement(questionEl, '.attachments') || '',
             );
 
             return questionEl;
@@ -291,13 +291,13 @@ export class CoreQuestionBaseComponent {
 
         if (textarea) {
             const input = <HTMLInputElement> questionEl.querySelector('input[type="hidden"][name*=answerformat]');
-            let content = CoreTextUtils.instance.decodeHTML(textarea.innerHTML || '');
+            let content = CoreTextUtils.decodeHTML(textarea.innerHTML || '');
 
             if (question.hasDraftFiles && question.responsefileareas) {
-                content = CoreTextUtils.instance.replaceDraftfileUrls(
-                    CoreSites.instance.getCurrentSite()!.getURL(),
+                content = CoreTextUtils.replaceDraftfileUrls(
+                    CoreSites.getCurrentSite()!.getURL(),
                     content,
-                    CoreQuestionHelper.instance.getResponseFileAreaFiles(question, 'answer'),
+                    CoreQuestionHelper.getResponseFileAreaFiles(question, 'answer'),
                 ).text;
             }
 
@@ -340,7 +340,7 @@ export class CoreQuestionBaseComponent {
             }
 
             if (fileManagerUrl) {
-                const params = CoreUrlUtils.instance.extractUrlParams(fileManagerUrl);
+                const params = CoreUrlUtils.extractUrlParams(fileManagerUrl);
                 const maxBytes = Number(params.maxbytes);
                 const areaMaxBytes = Number(params.areamaxbytes);
 
@@ -362,29 +362,29 @@ export class CoreQuestionBaseComponent {
         if (!this.question) {
             this.logger.warn('Aborting because of no question received.');
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
-        const element = CoreDomUtils.instance.convertToElement(this.question.html);
+        const element = CoreDomUtils.convertToElement(this.question.html);
 
         // Get question content.
         const content = <HTMLElement> element.querySelector(contentSelector);
         if (!content) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         // Remove sequencecheck and validation error.
-        CoreDomUtils.instance.removeElement(content, 'input[name*=sequencecheck]');
-        CoreDomUtils.instance.removeElement(content, '.validationerror');
+        CoreDomUtils.removeElement(content, 'input[name*=sequencecheck]');
+        CoreDomUtils.removeElement(content, '.validationerror');
 
         // Replace Moodle's correct/incorrect and feedback classes with our own.
-        CoreQuestionHelper.instance.replaceCorrectnessClasses(element);
-        CoreQuestionHelper.instance.replaceFeedbackClasses(element);
+        CoreQuestionHelper.replaceCorrectnessClasses(element);
+        CoreQuestionHelper.replaceFeedbackClasses(element);
 
         // Treat the correct/incorrect icons.
-        CoreQuestionHelper.instance.treatCorrectnessIcons(element);
+        CoreQuestionHelper.treatCorrectnessIcons(element);
 
         // Set the question text.
         this.question.text = content.innerHTML;
@@ -409,7 +409,7 @@ export class CoreQuestionBaseComponent {
         if (!input) {
             this.logger.warn('Aborting because couldn\'t find input.', this.question!.slot);
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         question.input = {
@@ -417,7 +417,7 @@ export class CoreQuestionBaseComponent {
             name: input.name,
             value: input.value,
             readOnly: input.readOnly,
-            isInline: !!CoreDomUtils.instance.closest(input, '.qtext'), // The answer can be inside the question text.
+            isInline: !!CoreDomUtils.closest(input, '.qtext'), // The answer can be inside the question text.
         };
 
         // Check if question is marked as correct.
@@ -443,8 +443,8 @@ export class CoreQuestionBaseComponent {
             // Handle correct/incorrect classes and icons.
             const content = <HTMLElement> questionEl.querySelector('.qtext');
 
-            CoreQuestionHelper.instance.replaceCorrectnessClasses(content);
-            CoreQuestionHelper.instance.treatCorrectnessIcons(content);
+            CoreQuestionHelper.replaceCorrectnessClasses(content);
+            CoreQuestionHelper.treatCorrectnessIcons(content);
 
             question.text = content.innerHTML;
         }
@@ -469,7 +469,7 @@ export class CoreQuestionBaseComponent {
         if (!rows || !rows.length) {
             this.logger.warn('Aborting because couldn\'t find any row.', question.slot);
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         question.rows = [];
@@ -481,7 +481,7 @@ export class CoreQuestionBaseComponent {
             if (!columns || columns.length < 2) {
                 this.logger.warn('Aborting because couldn\'t the right columns.', question.slot);
 
-                return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+                return CoreQuestionHelper.showComponentError(this.onAbort);
             }
 
             // Get the select and the options.
@@ -491,7 +491,7 @@ export class CoreQuestionBaseComponent {
             if (!select || !options || !options.length) {
                 this.logger.warn('Aborting because couldn\'t find select or options.', question.slot);
 
-                return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+                return CoreQuestionHelper.showComponentError(this.onAbort);
             }
 
             const rowModel: AddonModQuizQuestionMatchSelect = {
@@ -516,7 +516,7 @@ export class CoreQuestionBaseComponent {
                 if (typeof optionEl.value == 'undefined') {
                     this.logger.warn('Aborting because couldn\'t find the value of an option.', question.slot);
 
-                    return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+                    return CoreQuestionHelper.showComponentError(this.onAbort);
                 }
 
                 const option: AddonModQuizQuestionSelectOption = {
@@ -557,7 +557,7 @@ export class CoreQuestionBaseComponent {
 
         // Get the prompt.
         const question = <AddonModQuizMultichoiceQuestion> this.question!;
-        question.prompt = CoreDomUtils.instance.getContentsOfElement(questionEl, '.prompt');
+        question.prompt = CoreDomUtils.getContentsOfElement(questionEl, '.prompt');
 
         // Search radio buttons first (single choice).
         let options = <HTMLInputElement[]> Array.from(questionEl.querySelectorAll('input[type="radio"]'));
@@ -570,7 +570,7 @@ export class CoreQuestionBaseComponent {
                 // No checkbox found either. Abort.
                 this.logger.warn('Aborting because of no radio and checkbox found.', question.slot);
 
-                return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+                return CoreQuestionHelper.showComponentError(this.onAbort);
             }
         }
 
@@ -609,7 +609,7 @@ export class CoreQuestionBaseComponent {
                 // Something went wrong when extracting the questions data. Abort.
                 this.logger.warn('Aborting because of an error parsing options.', question.slot, option.name);
 
-                return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+                return CoreQuestionHelper.showComponentError(this.onAbort);
             }
 
             option.text = label.innerHTML;

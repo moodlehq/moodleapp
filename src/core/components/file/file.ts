@@ -72,35 +72,35 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.canDelete = CoreUtils.instance.isTrueOrOne(this.canDelete);
-        this.alwaysDownload = CoreUtils.instance.isTrueOrOne(this.alwaysDownload);
-        this.canDownload = CoreUtils.instance.isTrueOrOne(this.canDownload);
+        this.canDelete = CoreUtils.isTrueOrOne(this.canDelete);
+        this.alwaysDownload = CoreUtils.isTrueOrOne(this.alwaysDownload);
+        this.canDownload = CoreUtils.isTrueOrOne(this.canDownload);
 
         this.fileUrl = this.file.fileurl;
         this.timemodified = this.file.timemodified || 0;
-        this.siteId = CoreSites.instance.getCurrentSiteId();
+        this.siteId = CoreSites.getCurrentSiteId();
         this.fileSize = this.file.filesize;
         this.fileName = this.file.filename || '';
 
-        if (CoreUtils.instance.isTrueOrOne(this.showSize) && this.fileSize && this.fileSize >= 0) {
-            this.fileSizeReadable = CoreTextUtils.instance.bytesToSize(this.fileSize, 2);
+        if (CoreUtils.isTrueOrOne(this.showSize) && this.fileSize && this.fileSize >= 0) {
+            this.fileSizeReadable = CoreTextUtils.bytesToSize(this.fileSize, 2);
         }
 
-        this.showTime = CoreUtils.instance.isTrueOrOne(this.showTime) && this.timemodified > 0;
+        this.showTime = CoreUtils.isTrueOrOne(this.showTime) && this.timemodified > 0;
 
         if (this.file.isexternalfile) {
             this.alwaysDownload = true; // Always show the download button in external files.
         }
 
-        this.fileIcon = this.file.mimetype ? CoreMimetypeUtils.instance.getMimetypeIcon(this.file.mimetype) :
-            CoreMimetypeUtils.instance.getFileIcon(this.fileName);
+        this.fileIcon = this.file.mimetype ? CoreMimetypeUtils.getMimetypeIcon(this.file.mimetype) :
+            CoreMimetypeUtils.getFileIcon(this.fileName);
 
         if (this.canDownload) {
             this.calculateState();
 
             try {
                 // Update state when receiving events about this file.
-                const eventName = await CoreFilepool.instance.getFileEventNameByUrl(this.siteId, this.fileUrl);
+                const eventName = await CoreFilepool.getFileEventNameByUrl(this.siteId, this.fileUrl);
 
                 this.observer = CoreEvents.on(eventName, () => {
                     this.calculateState();
@@ -121,9 +121,9 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const state = await CoreFilepool.instance.getFileStateByUrl(this.siteId, this.fileUrl, this.timemodified);
+        const state = await CoreFilepool.getFileStateByUrl(this.siteId, this.fileUrl, this.timemodified);
 
-        const site = await CoreSites.instance.getSite(this.siteId);
+        const site = await CoreSites.getSite(this.siteId);
 
         this.canDownload = site.canDownloadFiles();
 
@@ -137,13 +137,13 @@ export class CoreFileComponent implements OnInit, OnDestroy {
      * @return Promise resolved when file is opened.
      */
     protected openFile(): Promise<void> {
-        return CoreFileHelper.instance.downloadAndOpenFile(this.file!, this.component, this.componentId, this.state, (event) => {
+        return CoreFileHelper.downloadAndOpenFile(this.file!, this.component, this.componentId, this.state, (event) => {
             if (event && 'calculating' in event && event.calculating) {
                 // The process is calculating some data required for the download, show the spinner.
                 this.isDownloading = true;
             }
         }).catch((error) => {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.errordownloading', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
         });
     }
 
@@ -167,18 +167,18 @@ export class CoreFileComponent implements OnInit, OnDestroy {
 
         if (!this.canDownload || !this.state || this.state == CoreConstants.NOT_DOWNLOADABLE) {
             // File cannot be downloaded, just open it.
-            if (CoreUrlUtils.instance.isLocalFileUrl(this.fileUrl)) {
-                CoreUtils.instance.openFile(this.fileUrl);
+            if (CoreUrlUtils.isLocalFileUrl(this.fileUrl)) {
+                CoreUtils.openFile(this.fileUrl);
             } else {
-                CoreUtils.instance.openOnlineFile(CoreUrlUtils.instance.unfixPluginfileURL(this.fileUrl));
+                CoreUtils.openOnlineFile(CoreUrlUtils.unfixPluginfileURL(this.fileUrl));
             }
 
             return;
         }
 
-        if (!CoreApp.instance.isOnline() && (!openAfterDownload || (openAfterDownload &&
-                !CoreFileHelper.instance.isStateDownloaded(this.state)))) {
-            CoreDomUtils.instance.showErrorModal('core.networkerrormsg', true);
+        if (!CoreApp.isOnline() && (!openAfterDownload || (openAfterDownload &&
+                !CoreFileHelper.isStateDownloaded(this.state)))) {
+            CoreDomUtils.showErrorModal('core.networkerrormsg', true);
 
             return;
         }
@@ -188,25 +188,25 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             try {
                 await this.openFile();
             } catch (error) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.errordownloading', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
             }
         } else {
             try {
                 // File doesn't need to be opened (it's a prefetch). Show confirm modal if file size is defined and it's big.
-                const size = await CorePluginFileDelegate.instance.getFileSize(this.file, this.siteId);
+                const size = await CorePluginFileDelegate.getFileSize(this.file, this.siteId);
 
                 if (size) {
-                    await CoreDomUtils.instance.confirmDownloadSize({ size: size, total: true });
+                    await CoreDomUtils.confirmDownloadSize({ size: size, total: true });
                 }
 
                 // User confirmed, add the file to queue.
                 // @todo: Is the invalidate really needed?
-                await CoreUtils.instance.ignoreErrors(CoreFilepool.instance.invalidateFileByUrl(this.siteId, this.fileUrl));
+                await CoreUtils.ignoreErrors(CoreFilepool.invalidateFileByUrl(this.siteId, this.fileUrl));
 
                 this.isDownloading = true;
 
                 try {
-                    await CoreFilepool.instance.addToQueueByUrl(
+                    await CoreFilepool.addToQueueByUrl(
                         this.siteId,
                         this.fileUrl,
                         this.component,
@@ -218,11 +218,11 @@ export class CoreFileComponent implements OnInit, OnDestroy {
                         this.file,
                     );
                 } catch (error) {
-                    CoreDomUtils.instance.showErrorModalDefault(error, 'core.errordownloading', true);
+                    CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
                     this.calculateState();
                 }
             } catch (error) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.errordownloading', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
             }
         }
     }

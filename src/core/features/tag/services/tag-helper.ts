@@ -30,7 +30,7 @@ export class CoreTagHelperProvider {
      */
     parseFeedContent(content: string): CoreTagFeedElement[] {
         const items: CoreTagFeedElement[] = [];
-        const element = CoreDomUtils.instance.convertToElement(content);
+        const element = CoreDomUtils.convertToElement(content);
 
         Array.from(element.querySelectorAll('ul.tag_feed > li.media')).forEach((itemElement) => {
             const item: CoreTagFeedElement = { details: [] };
@@ -80,7 +80,7 @@ export class CoreTagHelperProvider {
 
 }
 
-export class CoreTagHelper extends makeSingleton(CoreTagHelperProvider) {}
+export const CoreTagHelper = makeSingleton(CoreTagHelperProvider);
 
 /**
  * Feed area element type.

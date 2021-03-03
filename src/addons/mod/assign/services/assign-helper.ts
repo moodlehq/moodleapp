@@ -64,7 +64,7 @@ export class AddonModAssignHelperProvider {
 
         const promises = submission.plugins
             ? submission.plugins.map((plugin) =>
-                AddonModAssignSubmissionDelegate.instance.canPluginEditOffline(assign, submission, plugin).then((canEditPlugin) => {
+                AddonModAssignSubmissionDelegate.canPluginEditOffline(assign, submission, plugin).then((canEditPlugin) => {
                     if (!canEditPlugin) {
                         canEdit = false;
                     }
@@ -95,7 +95,7 @@ export class AddonModAssignHelperProvider {
         }
 
         submission.plugins?.forEach((plugin) => {
-            AddonModAssignSubmissionDelegate.instance.clearTmpData(assign, submission, plugin, inputData);
+            AddonModAssignSubmissionDelegate.clearTmpData(assign, submission, plugin, inputData);
         });
     }
 
@@ -111,7 +111,7 @@ export class AddonModAssignHelperProvider {
         const pluginData: AddonModAssignSavePluginData = {};
         const promises = previousSubmission.plugins
             ? previousSubmission.plugins.map((plugin) =>
-                AddonModAssignSubmissionDelegate.instance.copyPluginSubmissionData(assign, plugin, pluginData))
+                AddonModAssignSubmissionDelegate.copyPluginSubmissionData(assign, plugin, pluginData))
             : [];
 
         await Promise.all(promises);
@@ -119,7 +119,7 @@ export class AddonModAssignHelperProvider {
         // We got the plugin data. Now we need to submit it.
         if (Object.keys(pluginData).length) {
             // There's something to save.
-            return AddonModAssign.instance.saveSubmissionOnline(assign.id, pluginData);
+            return AddonModAssign.saveSubmissionOnline(assign.id, pluginData);
         }
     }
 
@@ -163,9 +163,9 @@ export class AddonModAssignHelperProvider {
      * @return Promise resolved when done.
      */
     async deleteStoredSubmissionFiles(assignId: number, folderName: string, userId?: number, siteId?: string): Promise<void> {
-        const folderPath = await AddonModAssignOffline.instance.getSubmissionPluginFolder(assignId, folderName, userId, siteId);
+        const folderPath = await AddonModAssignOffline.getSubmissionPluginFolder(assignId, folderName, userId, siteId);
 
-        await CoreFile.instance.removeDir(folderPath);
+        await CoreFile.removeDir(folderPath);
     }
 
     /**
@@ -186,7 +186,7 @@ export class AddonModAssignHelperProvider {
 
         const promises = feedback.plugins
             ? feedback.plugins.map((plugin) =>
-                AddonModAssignFeedbackDelegate.instance.discardPluginFeedbackData(assignId, userId, plugin, siteId))
+                AddonModAssignFeedbackDelegate.discardPluginFeedbackData(assignId, userId, plugin, siteId))
             : [];
 
         await Promise.all(promises);
@@ -205,7 +205,7 @@ export class AddonModAssignHelperProvider {
         }
 
         const anyNotEmpty = submission.plugins?.some((plugin) =>
-            !AddonModAssignSubmissionDelegate.instance.isPluginEmpty(assign, plugin));
+            !AddonModAssignSubmissionDelegate.isPluginEmpty(assign, plugin));
 
         // If any plugin is not empty, we consider that the submission is not empty either.
         if (anyNotEmpty) {
@@ -232,25 +232,25 @@ export class AddonModAssignHelperProvider {
     ): Promise<AddonModAssignParticipant[]> {
 
         groupId = groupId || 0;
-        options.siteId = options.siteId || CoreSites.instance.getCurrentSiteId();
+        options.siteId = options.siteId || CoreSites.getCurrentSiteId();
 
         // Create new options including all existing ones.
         const modOptions: CoreCourseCommonModWSOptions = { cmId: assign.cmid, ...options };
 
-        const participants = await AddonModAssign.instance.listParticipants(assign.id, groupId, modOptions);
+        const participants = await AddonModAssign.listParticipants(assign.id, groupId, modOptions);
 
         if (groupId || participants && participants.length > 0) {
             return participants;
         }
 
         // If no participants returned and all groups specified, get participants by groups.
-        const groupsInfo = await CoreGroups.instance.getActivityGroupInfo(assign.cmid, false, undefined, modOptions.siteId);
+        const groupsInfo = await CoreGroups.getActivityGroupInfo(assign.cmid, false, undefined, modOptions.siteId);
 
         const participantsIndexed: {[id: number]: AddonModAssignParticipant} = {};
 
         const promises = groupsInfo.groups
             ? groupsInfo.groups.map((userGroup) =>
-                AddonModAssign.instance.listParticipants(assign.id, userGroup.id, modOptions).then((participantsFromList) => {
+                AddonModAssign.listParticipants(assign.id, userGroup.id, modOptions).then((participantsFromList) => {
                     // Do not get repeated users.
                     participantsFromList.forEach((participant) => {
                         participantsIndexed[participant.id] = participant;
@@ -262,7 +262,7 @@ export class AddonModAssignHelperProvider {
 
         await Promise.all(promises);
 
-        return CoreUtils.instance.objectToArray(participantsIndexed);
+        return CoreUtils.objectToArray(participantsIndexed);
     }
 
     /**
@@ -323,9 +323,9 @@ export class AddonModAssignHelperProvider {
         userId?: number,
         siteId?: string,
     ): Promise<(FileEntry | DirectoryEntry)[]> {
-        const folderPath = await AddonModAssignOffline.instance.getSubmissionPluginFolder(assignId, folderName, userId, siteId);
+        const folderPath = await AddonModAssignOffline.getSubmissionPluginFolder(assignId, folderName, userId, siteId);
 
-        return CoreFile.instance.getDirectoryContents(folderPath);
+        return CoreFile.getDirectoryContents(folderPath);
     }
 
     /**
@@ -340,7 +340,7 @@ export class AddonModAssignHelperProvider {
 
         const promises = previousSubmission.plugins
             ? previousSubmission.plugins.map((plugin) =>
-                AddonModAssignSubmissionDelegate.instance.getPluginSizeForCopy(assign, plugin).then((size) => {
+                AddonModAssignSubmissionDelegate.getPluginSizeForCopy(assign, plugin).then((size) => {
                     totalSize += (size || 0);
 
                     return;
@@ -370,7 +370,7 @@ export class AddonModAssignHelperProvider {
 
         const promises = submission.plugins
             ? submission.plugins.map((plugin) =>
-                AddonModAssignSubmissionDelegate.instance.getPluginSizeForEdit(assign, submission, plugin, inputData)
+                AddonModAssignSubmissionDelegate.getPluginSizeForEdit(assign, submission, plugin, inputData)
                     .then((size) => {
                         totalSize += (size || 0);
 
@@ -406,7 +406,7 @@ export class AddonModAssignHelperProvider {
         const blind = assign.blindmarking && !assign.revealidentities;
         const promises: Promise<void>[] = [];
         const result: AddonModAssignSubmissionFormatted[] = [];
-        const participants: {[id: number]: AddonModAssignParticipant} = CoreUtils.instance.arrayToObject(parts, 'id');
+        const participants: {[id: number]: AddonModAssignParticipant} = CoreUtils.arrayToObject(parts, 'id');
 
         submissions.forEach((submission) => {
             submission.submitid = submission.userid && submission.userid > 0 ? submission.userid : submission.blindid;
@@ -439,7 +439,7 @@ export class AddonModAssignHelperProvider {
                 // Blind but not blinded! (Moodle < 3.1.1, 3.2).
                 delete submission.userid;
 
-                promise = AddonModAssign.instance.getAssignmentUserMappings(assign.id, submission.submitid, modOptions)
+                promise = AddonModAssign.getAssignmentUserMappings(assign.id, submission.submitid, modOptions)
                     .then((blindId) => {
                         submission.blindid = blindId;
 
@@ -460,7 +460,7 @@ export class AddonModAssignHelperProvider {
         await Promise.all(promises);
 
         // Create a submission for each participant left in the list (the participants already treated were removed).
-        CoreUtils.instance.objectToArray(participants).forEach((participant: AddonModAssignParticipant) => {
+        CoreUtils.objectToArray(participants).forEach((participant: AddonModAssignParticipant) => {
             const submission = this.createEmptySubmission();
 
             submission.submitid = participant.id;
@@ -511,8 +511,8 @@ export class AddonModAssignHelperProvider {
 
         const promises = feedback.plugins.map((plugin) =>
             this.prepareFeedbackPluginData(assign.id, userId, feedback).then(async (inputData) => {
-                const changed = await CoreUtils.instance.ignoreErrors(
-                    AddonModAssignFeedbackDelegate.instance.hasPluginDataChanged(assign, submission, plugin, inputData, userId),
+                const changed = await CoreUtils.ignoreErrors(
+                    AddonModAssignFeedbackDelegate.hasPluginDataChanged(assign, submission, plugin, inputData, userId),
                     false,
                 );
                 if (changed) {
@@ -522,7 +522,7 @@ export class AddonModAssignHelperProvider {
                 return;
             }));
 
-        await CoreUtils.instance.allPromises(promises);
+        await CoreUtils.allPromises(promises);
 
         return hasChanged;
     }
@@ -548,7 +548,7 @@ export class AddonModAssignHelperProvider {
 
         const promises = submission.plugins
             ? submission.plugins.map((plugin) =>
-                AddonModAssignSubmissionDelegate.instance.hasPluginDataChanged(assign, submission, plugin, inputData)
+                AddonModAssignSubmissionDelegate.hasPluginDataChanged(assign, submission, plugin, inputData)
                     .then((changed) => {
                         if (changed) {
                             hasChanged = true;
@@ -560,7 +560,7 @@ export class AddonModAssignHelperProvider {
                     }))
             : [];
 
-        await CoreUtils.instance.allPromises(promises);
+        await CoreUtils.allPromises(promises);
 
         return hasChanged;
     }
@@ -584,7 +584,7 @@ export class AddonModAssignHelperProvider {
         const pluginData: Record<string, unknown> = {};
         const promises = feedback.plugins
             ? feedback.plugins.map((plugin) =>
-                AddonModAssignFeedbackDelegate.instance.preparePluginFeedbackData(assignId, userId, plugin, pluginData, siteId))
+                AddonModAssignFeedbackDelegate.preparePluginFeedbackData(assignId, userId, plugin, pluginData, siteId))
             : [];
 
         await Promise.all(promises);
@@ -614,7 +614,7 @@ export class AddonModAssignHelperProvider {
 
         const pluginData: AddonModAssignSavePluginData = {};
         const promises = submission.plugins.map((plugin) =>
-            AddonModAssignSubmissionDelegate.instance.preparePluginSubmissionData(
+            AddonModAssignSubmissionDelegate.preparePluginSubmissionData(
                 assign,
                 submission,
                 plugin,
@@ -647,9 +647,9 @@ export class AddonModAssignHelperProvider {
         siteId?: string,
     ): Promise<CoreFileUploaderStoreFilesResult> {
         // Get the folder where to store the files.
-        const folderPath = await AddonModAssignOffline.instance.getSubmissionPluginFolder(assignId, folderName, userId, siteId);
+        const folderPath = await AddonModAssignOffline.getSubmissionPluginFolder(assignId, folderName, userId, siteId);
 
-        return CoreFileUploader.instance.storeFilesToUpload(folderPath, files);
+        return CoreFileUploader.storeFilesToUpload(folderPath, files);
     }
 
     /**
@@ -662,7 +662,7 @@ export class AddonModAssignHelperProvider {
      * @return Promise resolved with the itemId.
      */
     uploadFile(assignId: number, file: CoreWSExternalFile | FileEntry, itemId?: number, siteId?: string): Promise<number> {
-        return CoreFileUploader.instance.uploadOrReuploadFile(file, itemId, AddonModAssignProvider.COMPONENT, assignId, siteId);
+        return CoreFileUploader.uploadOrReuploadFile(file, itemId, AddonModAssignProvider.COMPONENT, assignId, siteId);
     }
 
     /**
@@ -676,7 +676,7 @@ export class AddonModAssignHelperProvider {
      * @return Promise resolved with the itemId.
      */
     uploadFiles(assignId: number, files: (CoreWSExternalFile | FileEntry)[], siteId?: string): Promise<number> {
-        return CoreFileUploader.instance.uploadOrReuploadFiles(files, AddonModAssignProvider.COMPONENT, assignId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, AddonModAssignProvider.COMPONENT, assignId, siteId);
     }
 
     /**

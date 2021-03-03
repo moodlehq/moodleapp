@@ -58,4 +58,4 @@ export class AddonMessageOutputAirnotifierHandlerService implements AddonMessage
 
 }
 
-export class AddonMessageOutputAirnotifierHandler extends makeSingleton(AddonMessageOutputAirnotifierHandlerService) {}
+export const AddonMessageOutputAirnotifierHandler = makeSingleton(AddonMessageOutputAirnotifierHandlerService);

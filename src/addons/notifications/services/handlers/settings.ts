@@ -38,7 +38,7 @@ export class AddonNotificationsSettingsHandlerService implements CoreSettingsHan
      */
     async isEnabled(): Promise<boolean> {
         // Preferences or notification sound setting available.
-        return CoreLocalNotifications.instance.isAvailable() || AddonNotifications.instance.isNotificationPreferencesEnabled();
+        return CoreLocalNotifications.isAvailable() || AddonNotifications.isNotificationPreferencesEnabled();
     }
 
     /**
@@ -57,4 +57,4 @@ export class AddonNotificationsSettingsHandlerService implements CoreSettingsHan
 
 }
 
-export class AddonNotificationsSettingsHandler extends makeSingleton(AddonNotificationsSettingsHandlerService) {}
+export const AddonNotificationsSettingsHandler = makeSingleton(AddonNotificationsSettingsHandlerService);

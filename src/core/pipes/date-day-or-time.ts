@@ -62,10 +62,10 @@ export class CoreDateDayOrTimePipe implements PipeTransform {
         }
 
         return moment(timestamp * 1000).calendar(null, {
-            sameDay: CoreTimeUtils.instance.convertPHPToMoment(Translate.instance.instant('core.strftimetime')),
-            lastDay: Translate.instance.instant('core.dflastweekdate'),
-            lastWeek: Translate.instance.instant('core.dflastweekdate'),
-            sameElse: CoreTimeUtils.instance.convertPHPToMoment(Translate.instance.instant('core.strftimedatefullshort')),
+            sameDay: CoreTimeUtils.convertPHPToMoment(Translate.instant('core.strftimetime')),
+            lastDay: Translate.instant('core.dflastweekdate'),
+            lastWeek: Translate.instant('core.dflastweekdate'),
+            sameElse: CoreTimeUtils.convertPHPToMoment(Translate.instant('core.strftimedatefullshort')),
         });
     }
 

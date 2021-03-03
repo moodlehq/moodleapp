@@ -28,7 +28,7 @@ import { AddonBlockGlossaryRandomHandler } from './services/block-handler';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockGlossaryRandomHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockGlossaryRandomHandler.instance);
             },
         },
     ],

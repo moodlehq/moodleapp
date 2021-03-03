@@ -109,4 +109,4 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
 
 }
 
-export class AddonFilterDisplayH5PHandler extends makeSingleton(AddonFilterDisplayH5PHandlerService) {}
+export const AddonFilterDisplayH5PHandler = makeSingleton(AddonFilterDisplayH5PHandlerService);

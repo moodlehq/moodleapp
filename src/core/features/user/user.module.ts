@@ -65,11 +65,11 @@ const courseIndexRoutes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreUserDelegate.instance.registerHandler(CoreUserProfileMailHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(CoreUserProfileLinkHandler.instance);
-                CoreCronDelegate.instance.register(CoreUserSyncCronHandler.instance);
-                CoreTagAreaDelegate.instance.registerHandler(CoreUserTagAreaHandler.instance);
-                CoreCourseOptionsDelegate.instance.registerHandler(CoreUserCourseOptionHandler.instance);
+                CoreUserDelegate.registerHandler(CoreUserProfileMailHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreUserProfileLinkHandler.instance);
+                CoreCronDelegate.register(CoreUserSyncCronHandler.instance);
+                CoreTagAreaDelegate.registerHandler(CoreUserTagAreaHandler.instance);
+                CoreCourseOptionsDelegate.registerHandler(CoreUserCourseOptionHandler.instance);
             },
         },
     ],

@@ -43,7 +43,7 @@ export class AddonBlockRecentlyAccessedItemsProvider {
      * @return Promise resolved when the info is retrieved.
      */
     async getRecentItems(siteId?: string): Promise<AddonBlockRecentlyAccessedItemsItem[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getRecentItemsCacheKey(),
@@ -53,9 +53,9 @@ export class AddonBlockRecentlyAccessedItemsProvider {
             await site.read('block_recentlyaccesseditems_get_recent_items', undefined, preSets);
 
         return items.map((item) => {
-            const modicon = item.icon && CoreDomUtils.instance.getHTMLElementAttribute(item.icon, 'src');
+            const modicon = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'src');
 
-            item.iconUrl = CoreCourse.instance.getModuleIconSrc(item.modname, modicon || undefined);
+            item.iconUrl = CoreCourse.getModuleIconSrc(item.modname, modicon || undefined);
 
             return item;
         });
@@ -68,13 +68,13 @@ export class AddonBlockRecentlyAccessedItemsProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateRecentItems(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getRecentItemsCacheKey());
     }
 
 }
-export class AddonBlockRecentlyAccessedItems extends makeSingleton(AddonBlockRecentlyAccessedItemsProvider) {}
+export const AddonBlockRecentlyAccessedItems = makeSingleton(AddonBlockRecentlyAccessedItemsProvider);
 
 
 /**

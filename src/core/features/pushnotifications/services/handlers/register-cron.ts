@@ -43,13 +43,13 @@ export class CorePushNotificationsRegisterCronHandlerService implements CoreCron
      * @return Promise resolved when done, rejected if failure.
      */
     async execute(siteId?: string): Promise<void> {
-        if (!siteId || !CorePushNotifications.instance.canRegisterOnMoodle()) {
+        if (!siteId || !CorePushNotifications.canRegisterOnMoodle()) {
             // It's not a specific site, don't do anything.
             return;
         }
 
         // Register the device again.
-        await CorePushNotifications.instance.registerDeviceOnMoodle(siteId, true);
+        await CorePushNotifications.registerDeviceOnMoodle(siteId, true);
     }
 
     /**
@@ -72,4 +72,4 @@ export class CorePushNotificationsRegisterCronHandlerService implements CoreCron
 
 }
 
-export class CorePushNotificationsRegisterCronHandler extends makeSingleton(CorePushNotificationsRegisterCronHandlerService) {}
+export const CorePushNotificationsRegisterCronHandler = makeSingleton(CorePushNotificationsRegisterCronHandlerService);

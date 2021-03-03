@@ -30,7 +30,7 @@ import { AddonBlockMyOverviewHandler } from './services/block-handler';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockMyOverviewHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockMyOverviewHandler.instance);
             },
         },
     ],

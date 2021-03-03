@@ -31,11 +31,11 @@ import { CoreFileUploaderVideoHandler } from './services/handlers/video';
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreFileUploaderDelegate.instance.registerHandler(CoreFileUploaderAlbumHandler.instance);
-                CoreFileUploaderDelegate.instance.registerHandler(CoreFileUploaderAudioHandler.instance);
-                CoreFileUploaderDelegate.instance.registerHandler(CoreFileUploaderCameraHandler.instance);
-                CoreFileUploaderDelegate.instance.registerHandler(CoreFileUploaderVideoHandler.instance);
-                CoreFileUploaderDelegate.instance.registerHandler(CoreFileUploaderFileHandler.instance);
+                CoreFileUploaderDelegate.registerHandler(CoreFileUploaderAlbumHandler.instance);
+                CoreFileUploaderDelegate.registerHandler(CoreFileUploaderAudioHandler.instance);
+                CoreFileUploaderDelegate.registerHandler(CoreFileUploaderCameraHandler.instance);
+                CoreFileUploaderDelegate.registerHandler(CoreFileUploaderVideoHandler.instance);
+                CoreFileUploaderDelegate.registerHandler(CoreFileUploaderFileHandler.instance);
             },
         },
     ],

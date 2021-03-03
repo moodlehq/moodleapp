@@ -70,7 +70,7 @@ export class AddonModQuizHelperProvider {
         const rules = accessInfo?.activerulenames;
 
         // Check if the user needs to input preflight data.
-        const preflightCheckRequired = await AddonModQuizAccessRuleDelegate.instance.isPreflightCheckRequired(
+        const preflightCheckRequired = await AddonModQuizAccessRuleDelegate.isPreflightCheckRequired(
             rules,
             quiz,
             attempt,
@@ -87,7 +87,7 @@ export class AddonModQuizHelperProvider {
         }
 
         // Get some fixed preflight data from access rules (data that doesn't require user interaction).
-        await AddonModQuizAccessRuleDelegate.instance.getFixedPreflightData(rules, quiz, preflightData, attempt, prefetch, siteId);
+        await AddonModQuizAccessRuleDelegate.getFixedPreflightData(rules, quiz, preflightData, attempt, prefetch, siteId);
 
         try {
             // All the preflight data is gathered, now validate it.
@@ -106,7 +106,7 @@ export class AddonModQuizHelperProvider {
             // Show error and ask for the preflight again.
             // Wait to show the error because we want it to be shown over the preflight modal.
             setTimeout(() => {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.error', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
             }, 100);
 
             return this.getAndCheckPreflightData(
@@ -147,19 +147,19 @@ export class AddonModQuizHelperProvider {
 
         // Check if there is any unsupported rule.
         rules.forEach((rule) => {
-            if (!AddonModQuizAccessRuleDelegate.instance.isAccessRuleSupported(rule)) {
+            if (!AddonModQuizAccessRuleDelegate.isAccessRuleSupported(rule)) {
                 notSupported.push(rule);
             }
         });
 
         if (notSupported.length) {
             throw new CoreError(
-                Translate.instance.instant('addon.mod_quiz.errorrulesnotsupported') + ' ' + JSON.stringify(notSupported),
+                Translate.instant('addon.mod_quiz.errorrulesnotsupported') + ' ' + JSON.stringify(notSupported),
             );
         }
 
         // Create and show the modal.
-        const modal = await ModalController.instance.create({
+        const modal = await ModalController.create({
             component: AddonModQuizPreflightModalComponent,
             componentProps: {
                 title: title,
@@ -190,9 +190,9 @@ export class AddonModQuizHelperProvider {
      * @return Question's mark.
      */
     getQuestionMarkFromHtml(html: string): string | undefined {
-        const element = CoreDomUtils.instance.convertToElement(html);
+        const element = CoreDomUtils.convertToElement(html);
 
-        return CoreDomUtils.instance.getContentsOfElement(element, '.grade');
+        return CoreDomUtils.getContentsOfElement(element, '.grade');
     }
 
     /**
@@ -204,7 +204,7 @@ export class AddonModQuizHelperProvider {
      */
     async getQuizIdByAttemptId(attemptId: number, options: { cmId?: number; siteId?: string } = {}): Promise<number> {
         // Use getAttemptReview to retrieve the quiz ID.
-        const reviewData = await AddonModQuiz.instance.getAttemptReview(attemptId, options);
+        const reviewData = await AddonModQuiz.getAttemptReview(attemptId, options);
 
         if (reviewData.attempt.quiz) {
             return reviewData.attempt.quiz;
@@ -224,28 +224,28 @@ export class AddonModQuizHelperProvider {
      * @return Promise resolved when done.
      */
     async handleReviewLink(attemptId: number, page?: number, courseId?: number, quizId?: number, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
             if (!quizId) {
                 quizId = await this.getQuizIdByAttemptId(attemptId, { siteId });
             }
 
-            const module = await CoreCourse.instance.getModuleBasicInfoByInstance(quizId, 'quiz', siteId);
+            const module = await CoreCourse.getModuleBasicInfoByInstance(quizId, 'quiz', siteId);
 
             courseId = courseId || module.course;
 
             // Go to the review page.
-            await CoreNavigator.instance.navigateToSitePath(`mod_quiz/${courseId}/${module.id}/review/${attemptId}`, {
+            await CoreNavigator.navigateToSitePath(`mod_quiz/${courseId}/${module.id}/review/${attemptId}`, {
                 params: {
                     page: page == undefined || isNaN(page) ? -1 : page,
                 },
                 siteId,
             });
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'An error occurred while loading the required data.');
+            CoreDomUtils.showErrorModalDefault(error, 'An error occurred while loading the required data.');
         } finally {
             modal.dismiss();
         }
@@ -271,18 +271,18 @@ export class AddonModQuizHelperProvider {
     ): Promise<AddonModQuizAttempt> {
         const formattedAttempt = <AddonModQuizAttempt> attempt;
 
-        formattedAttempt.rescaledGrade = AddonModQuiz.instance.rescaleGrade(attempt.sumgrades, quiz, false);
-        formattedAttempt.finished = AddonModQuiz.instance.isAttemptFinished(attempt.state);
-        formattedAttempt.readableState = AddonModQuiz.instance.getAttemptReadableState(quiz, attempt);
+        formattedAttempt.rescaledGrade = AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false);
+        formattedAttempt.finished = AddonModQuiz.isAttemptFinished(attempt.state);
+        formattedAttempt.readableState = AddonModQuiz.getAttemptReadableState(quiz, attempt);
 
         if (quiz.showMarkColumn && formattedAttempt.finished) {
-            formattedAttempt.readableMark = AddonModQuiz.instance.formatGrade(attempt.sumgrades, quiz.decimalpoints);
+            formattedAttempt.readableMark = AddonModQuiz.formatGrade(attempt.sumgrades, quiz.decimalpoints);
         } else {
             formattedAttempt.readableMark = '';
         }
 
         if (quiz.showGradeColumn && formattedAttempt.finished) {
-            formattedAttempt.readableGrade = AddonModQuiz.instance.formatGrade(
+            formattedAttempt.readableGrade = AddonModQuiz.formatGrade(
                 Number(formattedAttempt.rescaledGrade),
                 quiz.decimalpoints,
             );
@@ -295,7 +295,7 @@ export class AddonModQuizHelperProvider {
         }
 
         if (isLastAttempt || isLastAttempt === undefined) {
-            formattedAttempt.finishedOffline = await AddonModQuiz.instance.isAttemptFinishedOffline(attempt.id, siteId);
+            formattedAttempt.finishedOffline = await AddonModQuiz.isAttemptFinishedOffline(attempt.id, siteId);
         }
 
         return formattedAttempt;
@@ -310,12 +310,12 @@ export class AddonModQuizHelperProvider {
     setQuizCalculatedData(quiz: AddonModQuizQuizWSData, options: AddonModQuizCombinedReviewOptions): AddonModQuizQuizData {
         const formattedQuiz = <AddonModQuizQuizData> quiz;
 
-        formattedQuiz.sumGradesFormatted = AddonModQuiz.instance.formatGrade(quiz.sumgrades, quiz.decimalpoints);
-        formattedQuiz.gradeFormatted = AddonModQuiz.instance.formatGrade(quiz.grade, quiz.decimalpoints);
+        formattedQuiz.sumGradesFormatted = AddonModQuiz.formatGrade(quiz.sumgrades, quiz.decimalpoints);
+        formattedQuiz.gradeFormatted = AddonModQuiz.formatGrade(quiz.grade, quiz.decimalpoints);
 
         formattedQuiz.showAttemptColumn = quiz.attempts != 1;
         formattedQuiz.showGradeColumn = options.someoptions.marks >= AddonModQuizProvider.QUESTION_OPTIONS_MARK_AND_MAX &&
-            AddonModQuiz.instance.quizHasGrades(quiz);
+            AddonModQuiz.quizHasGrades(quiz);
         formattedQuiz.showMarkColumn = formattedQuiz.showGradeColumn && quiz.grade != quiz.sumgrades;
         formattedQuiz.showFeedbackColumn = !!quiz.hasfeedback && !!options.alloptions.overallfeedback;
 
@@ -357,12 +357,12 @@ export class AddonModQuizHelperProvider {
             if (attempt) {
                 if (attempt.state != AddonModQuizProvider.ATTEMPT_OVERDUE && !attempt.finishedOffline) {
                     // We're continuing an attempt. Call getAttemptData to validate the preflight data.
-                    await AddonModQuiz.instance.getAttemptData(attempt.id, attempt.currentpage!, preflightData, modOptions);
+                    await AddonModQuiz.getAttemptData(attempt.id, attempt.currentpage!, preflightData, modOptions);
 
                     if (offline) {
                         // Get current page stored in local.
-                        const storedAttempt = await CoreUtils.instance.ignoreErrors(
-                            AddonModQuizOffline.instance.getAttemptById(attempt.id),
+                        const storedAttempt = await CoreUtils.ignoreErrors(
+                            AddonModQuizOffline.getAttemptById(attempt.id),
                         );
 
                         attempt.currentpage = storedAttempt?.currentpage ?? attempt.currentpage;
@@ -370,15 +370,15 @@ export class AddonModQuizHelperProvider {
                 } else {
                     // Attempt is overdue or finished in offline, we can only see the summary.
                     // Call getAttemptSummary to validate the preflight data.
-                    await AddonModQuiz.instance.getAttemptSummary(attempt.id, preflightData, modOptions);
+                    await AddonModQuiz.getAttemptSummary(attempt.id, preflightData, modOptions);
                 }
             } else {
                 // We're starting a new attempt, call startAttempt.
-                attempt = await AddonModQuiz.instance.startAttempt(quiz.id, preflightData, false, siteId);
+                attempt = await AddonModQuiz.startAttempt(quiz.id, preflightData, false, siteId);
             }
 
             // Preflight data validated.
-            AddonModQuizAccessRuleDelegate.instance.notifyPreflightCheckPassed(
+            AddonModQuizAccessRuleDelegate.notifyPreflightCheckPassed(
                 rules,
                 quiz,
                 attempt,
@@ -389,9 +389,9 @@ export class AddonModQuizHelperProvider {
 
             return attempt;
         } catch (error) {
-            if (CoreUtils.instance.isWebServiceError(error)) {
+            if (CoreUtils.isWebServiceError(error)) {
                 // The WebService returned an error, assume the preflight failed.
-                AddonModQuizAccessRuleDelegate.instance.notifyPreflightCheckFailed(
+                AddonModQuizAccessRuleDelegate.notifyPreflightCheckFailed(
                     rules,
                     quiz,
                     attempt,
@@ -407,7 +407,7 @@ export class AddonModQuizHelperProvider {
 
 }
 
-export class AddonModQuizHelper extends makeSingleton(AddonModQuizHelperProvider) {}
+export const AddonModQuizHelper = makeSingleton(AddonModQuizHelperProvider);
 
 /**
  * Quiz data with calculated data.

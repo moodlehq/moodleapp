@@ -41,10 +41,10 @@ const mainMenuRoutes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreContentLinksDelegate.instance.registerHandler(AddonBadgesMyBadgesLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonBadgesBadgeLinkHandler.instance);
-                CoreUserDelegate.instance.registerHandler(AddonBadgesUserHandler.instance);
-                CorePushNotificationsDelegate.instance.registerClickHandler(AddonBadgesPushClickHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonBadgesMyBadgesLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonBadgesBadgeLinkHandler.instance);
+                CoreUserDelegate.registerHandler(AddonBadgesUserHandler.instance);
+                CorePushNotificationsDelegate.registerClickHandler(AddonBadgesPushClickHandler.instance);
             },
         },
     ],

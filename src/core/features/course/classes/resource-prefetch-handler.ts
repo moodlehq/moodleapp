@@ -57,12 +57,12 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @return Promise resolved when all content is downloaded.
      */
     async downloadOrPrefetch(module: CoreCourseWSModule, courseId: number, prefetch?: boolean, dirPath?: string): Promise<void> {
-        if (!CoreApp.instance.isOnline()) {
+        if (!CoreApp.isOnline()) {
             // Cannot download in offline.
             throw new CoreNetworkError();
         }
 
-        const siteId = CoreSites.instance.getCurrentSiteId();
+        const siteId = CoreSites.getCurrentSiteId();
 
         if (this.isDownloading(module.id, siteId)) {
             // There's already a download ongoing for this module, return the promise.
@@ -92,7 +92,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
         dirPath?: string,
     ): Promise<void> {
         // Get module info to be able to handle links.
-        await CoreCourse.instance.getModuleBasicInfo(module.id, siteId);
+        await CoreCourse.getModuleBasicInfo(module.id, siteId);
 
         // Load module contents (ignore cache so we always have the latest data).
         await this.loadContents(module, courseId, true);
@@ -106,11 +106,11 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
         if (dirPath) {
             // Download intro files in filepool root folder.
             promises.push(
-                CoreFilepool.instance.downloadOrPrefetchFiles(siteId, introFiles, prefetch, false, this.component, module.id),
+                CoreFilepool.downloadOrPrefetchFiles(siteId, introFiles, prefetch, false, this.component, module.id),
             );
 
             // Download content files inside dirPath.
-            promises.push(CoreFilepool.instance.downloadOrPrefetchPackage(
+            promises.push(CoreFilepool.downloadOrPrefetchPackage(
                 siteId,
                 contentFiles,
                 prefetch,
@@ -121,7 +121,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
             ));
         } else {
             // No dirPath, download everything in filepool root folder.
-            promises.push(CoreFilepool.instance.downloadOrPrefetchPackage(
+            promises.push(CoreFilepool.downloadOrPrefetchPackage(
                 siteId,
                 introFiles.concat(contentFiles),
                 prefetch,
@@ -130,7 +130,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
             ));
         }
 
-        promises.push(CoreFilterHelper.instance.getFilters('module', module.id, { courseId }));
+        promises.push(CoreFilterHelper.getFilters('module', module.id, { courseId }));
 
         await Promise.all(promises);
     }
@@ -162,11 +162,11 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        const siteId = CoreSites.instance.getCurrentSiteId();
+        const siteId = CoreSites.getCurrentSiteId();
 
         await Promise.all([
-            CoreCourse.instance.invalidateModule(moduleId),
-            CoreFilepool.instance.invalidateFilesByComponent(siteId, this.component, moduleId),
+            CoreCourse.invalidateModule(moduleId),
+            CoreFilepool.invalidateFilesByComponent(siteId, this.component, moduleId),
         ]);
     }
 
@@ -179,7 +179,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @return Promise resolved when loaded.
      */
     loadContents(module: CoreCourseWSModule, courseId: number, ignoreCache?: boolean): Promise<void> {
-        return CoreCourse.instance.loadModuleContents(module, courseId, undefined, false, ignoreCache);
+        return CoreCourse.loadModuleContents(module, courseId, undefined, false, ignoreCache);
     }
 
     /**

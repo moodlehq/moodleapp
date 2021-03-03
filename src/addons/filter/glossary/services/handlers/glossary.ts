@@ -43,4 +43,4 @@ export class AddonFilterGlossaryHandlerService extends CoreFilterDefaultHandler 
 
 }
 
-export class AddonFilterGlossaryHandler extends makeSingleton(AddonFilterGlossaryHandlerService) {}
+export const AddonFilterGlossaryHandler = makeSingleton(AddonFilterGlossaryHandlerService);

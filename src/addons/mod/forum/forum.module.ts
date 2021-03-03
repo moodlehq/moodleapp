@@ -60,7 +60,7 @@ const mainMenuRoutes: Routes = [
                 loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
             },
         ],
-        () => CoreScreen.instance.isMobile,
+        () => CoreScreen.isMobile,
     ),
 ];
 
@@ -76,7 +76,7 @@ const courseContentsRoutes: Routes = conditionalRoutes(
             loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
         },
     ],
-    () => CoreScreen.instance.isTablet,
+    () => CoreScreen.isTablet,
 );
 
 @NgModule({
@@ -95,15 +95,15 @@ const courseContentsRoutes: Routes = conditionalRoutes(
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreCourseModuleDelegate.instance.registerHandler(AddonModForumModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.instance.registerHandler(AddonModForumPrefetchHandler.instance);
-                CoreCronDelegate.instance.register(AddonModForumSyncCronHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModForumDiscussionLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModForumIndexLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModForumListLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModForumPostLinkHandler.instance);
-                CoreTagAreaDelegate.instance.registerHandler(AddonModForumTagAreaHandler.instance);
-                CorePushNotificationsDelegate.instance.registerClickHandler(AddonModForumPushClickHandler.instance);
+                CoreCourseModuleDelegate.registerHandler(AddonModForumModuleHandler.instance);
+                CoreCourseModulePrefetchDelegate.registerHandler(AddonModForumPrefetchHandler.instance);
+                CoreCronDelegate.register(AddonModForumSyncCronHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModForumDiscussionLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModForumIndexLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModForumListLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModForumPostLinkHandler.instance);
+                CoreTagAreaDelegate.registerHandler(AddonModForumTagAreaHandler.instance);
+                CorePushNotificationsDelegate.registerClickHandler(AddonModForumPushClickHandler.instance);
             },
         },
     ],

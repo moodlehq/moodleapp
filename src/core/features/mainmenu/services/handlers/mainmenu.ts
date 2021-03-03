@@ -43,7 +43,7 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabledForSite(): Promise<boolean> {
-        return CoreMainMenuHomeDelegate.instance.getHandlers().length > 0;
+        return CoreMainMenuHomeDelegate.getHandlers().length > 0;
     }
 
     /**
@@ -63,4 +63,4 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
 
 }
 
-export class CoreMainMenuHomeHandler extends makeSingleton(CoreMainMenuHomeHandlerService) {}
+export const CoreMainMenuHomeHandler = makeSingleton(CoreMainMenuHomeHandlerService);

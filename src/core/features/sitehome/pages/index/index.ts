@@ -62,26 +62,26 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * Page being initialized.
      */
     ngOnInit(): void {
-        this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
-        this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
-        this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
+        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-            this.searchEnabled = !CoreCourses.instance.isSearchCoursesDisabledInSite();
-            this.downloadCourseEnabled = !CoreCourses.instance.isDownloadCourseDisabledInSite();
-            this.downloadCoursesEnabled = !CoreCourses.instance.isDownloadCoursesDisabledInSite();
+            this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
+            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+            this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
             this.switchDownload(this.downloadEnabled && this.downloadCourseEnabled && this.downloadCoursesEnabled);
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
 
-        this.currentSite = CoreSites.instance.getCurrentSite()!;
-        this.siteHomeId = CoreSites.instance.getCurrentSiteHomeId();
+        this.currentSite = CoreSites.getCurrentSite()!;
+        this.siteHomeId = CoreSites.getCurrentSiteHomeId();
 
-        const module = CoreNavigator.instance.getRouteParam<CoreCourseModule>('module');
+        const module = CoreNavigator.getRouteParam<CoreCourseModule>('module');
         if (module) {
-            const modParams = CoreNavigator.instance.getRouteParam<Params>('modParams');
-            CoreCourseHelper.instance.openModule(module, this.siteHomeId, undefined, modParams);
+            const modParams = CoreNavigator.getRouteParam<Params>('modParams');
+            CoreCourseHelper.openModule(module, this.siteHomeId, undefined, modParams);
         }
 
         this.loadContent().finally(() => {
@@ -99,15 +99,15 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
         const config = this.currentSite!.getStoredConfig() || { numsections: 1, frontpageloggedin: undefined };
 
-        this.items = await CoreSiteHome.instance.getFrontPageItems(config.frontpageloggedin);
+        this.items = await CoreSiteHome.getFrontPageItems(config.frontpageloggedin);
         this.hasContent = this.items.length > 0;
 
         if (this.items.some((item) => item == 'NEWS_ITEMS')) {
             // Get the news forum.
             try {
-                const forum = await CoreSiteHome.instance.getNewsForum();
-                this.newsForumModule = await CoreCourse.instance.getModuleBasicInfo(forum.cmid);
-                this.newsForumModule.handlerData = CoreCourseModuleDelegate.instance.getModuleDataFor(
+                const forum = await CoreSiteHome.getNewsForum();
+                this.newsForumModule = await CoreCourse.getModuleBasicInfo(forum.cmid);
+                this.newsForumModule.handlerData = CoreCourseModuleDelegate.getModuleDataFor(
                     this.newsForumModule.modname,
                     this.newsForumModule,
                     this.siteHomeId,
@@ -120,12 +120,12 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         }
 
         try {
-            const sections = await CoreCourse.instance.getSections(this.siteHomeId!, false, true);
+            const sections = await CoreCourse.getSections(this.siteHomeId!, false, true);
 
             // Check "Include a topic section" setting from numsections.
             this.section = config.numsections ? sections.find((section) => section.section == 1) : undefined;
             if (this.section) {
-                const result = CoreCourseHelper.instance.addHandlerDataForModules(
+                const result = CoreCourseHelper.addHandlerDataForModules(
                     [this.section],
                     this.siteHomeId,
                     undefined,
@@ -136,7 +136,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             }
 
             // Add log in Moodle.
-            CoreCourse.instance.logView(
+            CoreCourse.logView(
                 this.siteHomeId!,
                 undefined,
                 undefined,
@@ -145,7 +145,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
                 // Ignore errors.
             });
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
         }
     }
 
@@ -157,7 +157,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     doRefresh(refresher?: CustomEvent<IonRefresher>): void {
         const promises: Promise<unknown>[] = [];
 
-        promises.push(CoreCourse.instance.invalidateSections(this.siteHomeId!));
+        promises.push(CoreCourse.invalidateSections(this.siteHomeId!));
         promises.push(this.currentSite!.invalidateConfig().then(async () => {
             // Config invalidated, fetch it again.
             const config: CoreSiteConfig = await this.currentSite!.getConfig();
@@ -168,7 +168,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
         if (this.section && this.section.modules) {
             // Invalidate modules prefetch data.
-            promises.push(CoreCourseModulePrefetchDelegate.instance.invalidateModules(this.section.modules, this.siteHomeId));
+            promises.push(CoreCourseModulePrefetchDelegate.invalidateModules(this.section.modules, this.siteHomeId));
         }
 
         if (this.courseBlocksComponent) {
@@ -218,7 +218,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     openSearch(): void {
-        CoreNavigator.instance.navigateToSitePath('courses/search');
+        CoreNavigator.navigateToSitePath('courses/search');
     }
 
     /**

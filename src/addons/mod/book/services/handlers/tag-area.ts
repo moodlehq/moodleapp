@@ -36,7 +36,7 @@ export class AddonModBookTagAreaHandlerService implements CoreTagAreaHandler {
      * @return Whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean> {
-        return AddonModBook.instance.isPluginEnabled();
+        return AddonModBook.isPluginEnabled();
     }
 
     /**
@@ -46,15 +46,15 @@ export class AddonModBookTagAreaHandlerService implements CoreTagAreaHandler {
      * @return Area items (or promise resolved with the items).
      */
     async parseContent(content: string): Promise<CoreTagFeedElement[]> {
-        const items = CoreTagHelper.instance.parseFeedContent(content);
+        const items = CoreTagHelper.parseFeedContent(content);
 
         // Find module ids of the returned books, they are needed by the link delegate.
         await Promise.all(items.map((item) => {
-            const params = item.url ? CoreUrlUtils.instance.extractUrlParams(item.url) : {};
+            const params = item.url ? CoreUrlUtils.extractUrlParams(item.url) : {};
             if (params.b && !params.id) {
                 const bookId = parseInt(params.b, 10);
 
-                return CoreCourse.instance.getModuleBasicInfoByInstance(bookId, 'book').then((module) => {
+                return CoreCourse.getModuleBasicInfoByInstance(bookId, 'book').then((module) => {
                     item.url += '&id=' + module.id;
 
                     return;
@@ -76,4 +76,4 @@ export class AddonModBookTagAreaHandlerService implements CoreTagAreaHandler {
 
 }
 
-export class AddonModBookTagAreaHandler extends makeSingleton(AddonModBookTagAreaHandlerService) {}
+export const AddonModBookTagAreaHandler = makeSingleton(AddonModBookTagAreaHandlerService);

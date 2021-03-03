@@ -27,7 +27,7 @@ import { AddonQtypeNumericalHandler } from './services/handlers/numerical';
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionDelegate.instance.registerHandler(AddonQtypeNumericalHandler.instance);
+                CoreQuestionDelegate.registerHandler(AddonQtypeNumericalHandler.instance);
             },
         },
     ],

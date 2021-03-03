@@ -43,14 +43,14 @@ export class CoreViewerTextComponent {
      * Close modal.
      */
     closeModal(): void {
-        ModalController.instance.dismiss();
+        ModalController.dismiss();
     }
 
     /**
      * Copy the text to clipboard.
      */
     copyText(): void {
-        CoreUtils.instance.copyToClipboard(this.content || '');
+        CoreUtils.copyToClipboard(this.content || '');
     }
 
 }

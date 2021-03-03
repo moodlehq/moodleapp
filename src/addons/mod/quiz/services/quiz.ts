@@ -87,10 +87,10 @@ export class AddonModQuizProvider {
      */
     formatGrade(grade?: number | null, decimals?: number): string {
         if (grade === undefined || grade == -1 || grade === null || isNaN(grade)) {
-            return Translate.instance.instant('addon.mod_quiz.notyetgraded');
+            return Translate.instant('addon.mod_quiz.notyetgraded');
         }
 
-        return CoreUtils.instance.formatFloat(CoreTextUtils.instance.roundToDecimals(grade, decimals));
+        return CoreUtils.formatFloat(CoreTextUtils.roundToDecimals(grade, decimals));
     }
 
     /**
@@ -166,7 +166,7 @@ export class AddonModQuizProvider {
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<AddonModQuizGetAttemptAccessInformationWSResponse> {
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModQuizGetAttemptAccessInformationWSParams = {
             quizid: quizId,
@@ -176,7 +176,7 @@ export class AddonModQuizProvider {
             cacheKey: this.getAttemptAccessInformationCacheKey(quizId, attemptId),
             component: AddonModQuizProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         return site.read('mod_quiz_get_attempt_access_information', params, preSets);
@@ -219,12 +219,12 @@ export class AddonModQuizProvider {
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<AddonModQuizGetAttemptDataResponse> {
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModQuizGetAttemptDataWSParams = {
             attemptid: attemptId,
             page: page,
-            preflightdata: CoreUtils.instance.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -235,12 +235,12 @@ export class AddonModQuizProvider {
             cacheKey: this.getAttemptDataCacheKey(attemptId, page),
             component: AddonModQuizProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         const result = await site.read<AddonModQuizGetAttemptDataWSResponse>('mod_quiz_get_attempt_data', params, preSets);
 
-        result.questions = CoreQuestion.instance.parseQuestions(result.questions);
+        result.questions = CoreQuestion.parseQuestions(result.questions);
 
         return result;
     }
@@ -297,12 +297,12 @@ export class AddonModQuizProvider {
         const dueDate = this.getAttemptDueDate(quiz, attempt);
 
         if (attempt.state === AddonModQuizProvider.ATTEMPT_OVERDUE) {
-            return Translate.instance.instant(
+            return Translate.instant(
                 'addon.mod_quiz.overduemustbesubmittedby',
-                { $a: CoreTimeUtils.instance.userDate(dueDate) },
+                { $a: CoreTimeUtils.userDate(dueDate) },
             );
         } else if (dueDate) {
-            return Translate.instance.instant('addon.mod_quiz.mustbesubmittedby', { $a: CoreTimeUtils.instance.userDate(dueDate) });
+            return Translate.instant('addon.mod_quiz.mustbesubmittedby', { $a: CoreTimeUtils.userDate(dueDate) });
         }
     }
 
@@ -315,23 +315,23 @@ export class AddonModQuizProvider {
      */
     getAttemptReadableState(quiz: AddonModQuizQuizWSData, attempt: AddonModQuizAttempt): string[] {
         if (attempt.finishedOffline) {
-            return [Translate.instance.instant('addon.mod_quiz.finishnotsynced')];
+            return [Translate.instant('addon.mod_quiz.finishnotsynced')];
         }
 
         switch (attempt.state) {
             case AddonModQuizProvider.ATTEMPT_IN_PROGRESS:
-                return [Translate.instance.instant('addon.mod_quiz.stateinprogress')];
+                return [Translate.instant('addon.mod_quiz.stateinprogress')];
 
             case AddonModQuizProvider.ATTEMPT_OVERDUE: {
                 const sentences: string[] = [];
                 const dueDate = this.getAttemptDueDate(quiz, attempt);
 
-                sentences.push(Translate.instance.instant('addon.mod_quiz.stateoverdue'));
+                sentences.push(Translate.instant('addon.mod_quiz.stateoverdue'));
 
                 if (dueDate) {
-                    sentences.push(Translate.instance.instant(
+                    sentences.push(Translate.instant(
                         'addon.mod_quiz.stateoverduedetails',
-                        { $a: CoreTimeUtils.instance.userDate(dueDate) },
+                        { $a: CoreTimeUtils.userDate(dueDate) },
                     ));
                 }
 
@@ -340,15 +340,15 @@ export class AddonModQuizProvider {
 
             case AddonModQuizProvider.ATTEMPT_FINISHED:
                 return [
-                    Translate.instance.instant('addon.mod_quiz.statefinished'),
-                    Translate.instance.instant(
+                    Translate.instant('addon.mod_quiz.statefinished'),
+                    Translate.instant(
                         'addon.mod_quiz.statefinisheddetails',
-                        { $a: CoreTimeUtils.instance.userDate(attempt.timefinish! * 1000) },
+                        { $a: CoreTimeUtils.userDate(attempt.timefinish! * 1000) },
                     ),
                 ];
 
             case AddonModQuizProvider.ATTEMPT_ABANDONED:
-                return [Translate.instance.instant('addon.mod_quiz.stateabandoned')];
+                return [Translate.instant('addon.mod_quiz.stateabandoned')];
 
             default:
                 return [];
@@ -364,16 +364,16 @@ export class AddonModQuizProvider {
     getAttemptReadableStateName(state: string): string {
         switch (state) {
             case AddonModQuizProvider.ATTEMPT_IN_PROGRESS:
-                return Translate.instance.instant('addon.mod_quiz.stateinprogress');
+                return Translate.instant('addon.mod_quiz.stateinprogress');
 
             case AddonModQuizProvider.ATTEMPT_OVERDUE:
-                return Translate.instance.instant('addon.mod_quiz.stateoverdue');
+                return Translate.instant('addon.mod_quiz.stateoverdue');
 
             case AddonModQuizProvider.ATTEMPT_FINISHED:
-                return Translate.instance.instant('addon.mod_quiz.statefinished');
+                return Translate.instant('addon.mod_quiz.statefinished');
 
             case AddonModQuizProvider.ATTEMPT_ABANDONED:
-                return Translate.instance.instant('addon.mod_quiz.stateabandoned');
+                return Translate.instant('addon.mod_quiz.stateabandoned');
 
             default:
                 return '';
@@ -414,7 +414,7 @@ export class AddonModQuizProvider {
     ): Promise<AddonModQuizGetAttemptReviewResponse> {
         const page = typeof options.page == 'undefined' ? -1 : options.page;
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params = {
             attemptid: attemptId,
@@ -425,12 +425,12 @@ export class AddonModQuizProvider {
             cacheErrors: ['noreview'],
             component: AddonModQuizProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         const result = await site.read<AddonModQuizGetAttemptReviewWSResponse>('mod_quiz_get_attempt_review', params, preSets);
 
-        result.questions = CoreQuestion.instance.parseQuestions(result.questions);
+        result.questions = CoreQuestion.parseQuestions(result.questions);
 
         return result;
     }
@@ -459,11 +459,11 @@ export class AddonModQuizProvider {
         options: AddonModQuizGetAttemptSummaryOptions = {},
     ): Promise<CoreQuestionQuestionParsed[]> {
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModQuizGetAttemptSummaryWSParams = {
             attemptid: attemptId,
-            preflightdata: CoreUtils.instance.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -474,15 +474,15 @@ export class AddonModQuizProvider {
             cacheKey: this.getAttemptSummaryCacheKey(attemptId),
             component: AddonModQuizProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         const response = await site.read<AddonModQuizGetAttemptSummaryWSResponse>('mod_quiz_get_attempt_summary', params, preSets);
 
-        const questions = CoreQuestion.instance.parseQuestions(response.questions);
+        const questions = CoreQuestion.parseQuestions(response.questions);
 
         if (options.loadLocal) {
-            return AddonModQuizOffline.instance.loadQuestionsLocalStates(attemptId, questions, site.getId());
+            return AddonModQuizOffline.loadQuestionsLocalStates(attemptId, questions, site.getId());
         }
 
         return questions;
@@ -520,7 +520,7 @@ export class AddonModQuizProvider {
         quizId: number,
         options: AddonModQuizUserOptions = {},
     ): Promise<AddonModQuizCombinedReviewOptions> {
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const userId = options.userId || site.getUserId();
         const params: AddonModQuizGetCombinedReviewOptionsWSParams = {
@@ -531,7 +531,7 @@ export class AddonModQuizProvider {
             cacheKey: this.getCombinedReviewOptionsCacheKey(quizId, userId),
             component: AddonModQuizProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         const response = await site.read<AddonModQuizGetCombinedReviewOptionsWSResponse>(
@@ -542,8 +542,8 @@ export class AddonModQuizProvider {
 
         // Convert the arrays to objects with name -> value.
         return {
-            someoptions: <Record<string, number>> CoreUtils.instance.objectToKeyValueMap(response.someoptions, 'name', 'value'),
-            alloptions: <Record<string, number>> CoreUtils.instance.objectToKeyValueMap(response.alloptions, 'name', 'value'),
+            someoptions: <Record<string, number>> CoreUtils.objectToKeyValueMap(response.someoptions, 'name', 'value'),
+            alloptions: <Record<string, number>> CoreUtils.objectToKeyValueMap(response.alloptions, 'name', 'value'),
             warnings: response.warnings,
         };
     }
@@ -582,7 +582,7 @@ export class AddonModQuizProvider {
         grade: number,
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<AddonModQuizGetQuizFeedbackForGradeWSResponse> {
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModQuizGetQuizFeedbackForGradeWSParams = {
             quizid: quizId,
@@ -593,7 +593,7 @@ export class AddonModQuizProvider {
             updateFrequency: CoreSite.FREQUENCY_RARELY,
             component: AddonModQuizProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         return site.read('mod_quiz_get_quiz_feedback_for_grade', params, preSets);
@@ -636,7 +636,7 @@ export class AddonModQuizProvider {
         userId?: number,
     ): Promise<CoreGradesFormattedItem | CoreGradesFormattedRow | undefined> {
 
-        const items = await CoreGradesHelper.instance.getGradeModuleItems(
+        const items = await CoreGradesHelper.getGradeModuleItems(
             courseId,
             moduleId,
             userId,
@@ -669,17 +669,17 @@ export class AddonModQuizProvider {
         const messages: string[] = [];
 
         questions.forEach((question) => {
-            if (question.type != 'random' && !CoreQuestionDelegate.instance.isQuestionSupported(question.type)) {
+            if (question.type != 'random' && !CoreQuestionDelegate.isQuestionSupported(question.type)) {
                 // The question isn't supported.
-                messages.push(Translate.instance.instant('core.question.questionmessage', {
+                messages.push(Translate.instant('core.question.questionmessage', {
                     $a: question.slot,
-                    $b: Translate.instance.instant('core.question.errorquestionnotsupported', { $a: question.type }),
+                    $b: Translate.instant('core.question.errorquestionnotsupported', { $a: question.type }),
                 }));
             } else {
-                let message = CoreQuestionDelegate.instance.getPreventSubmitMessage(question);
+                let message = CoreQuestionDelegate.getPreventSubmitMessage(question);
                 if (message) {
-                    message = Translate.instance.instant(message);
-                    messages.push(Translate.instance.instant('core.question.questionmessage', { $a: question.slot, $b: message }));
+                    message = Translate.instant(message);
+                    messages.push(Translate.instant('core.question.questionmessage', { $a: question.slot, $b: message }));
                 }
             }
         });
@@ -713,7 +713,7 @@ export class AddonModQuizProvider {
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModQuizQuizWSData> {
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModQuizGetQuizzesByCoursesWSParams = {
             courseids: [courseId],
@@ -722,7 +722,7 @@ export class AddonModQuizProvider {
             cacheKey: this.getQuizDataCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
             component: AddonModQuizProvider.COMPONENT,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         const response = await site.read<AddonModQuizGetQuizzesByCoursesWSResponse>(
@@ -786,7 +786,7 @@ export class AddonModQuizProvider {
         quizId: number,
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<AddonModQuizGetQuizAccessInformationWSResponse> {
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModQuizGetQuizAccessInformationWSParams = {
             quizid: quizId,
@@ -795,7 +795,7 @@ export class AddonModQuizProvider {
             cacheKey: this.getQuizAccessInformationCacheKey(quizId),
             component: AddonModQuizProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         return site.read('mod_quiz_get_quiz_access_information', params, preSets);
@@ -818,13 +818,13 @@ export class AddonModQuizProvider {
 
         switch (method) {
             case AddonModQuizProvider.GRADEHIGHEST:
-                return Translate.instance.instant('addon.mod_quiz.gradehighest');
+                return Translate.instant('addon.mod_quiz.gradehighest');
             case AddonModQuizProvider.GRADEAVERAGE:
-                return Translate.instance.instant('addon.mod_quiz.gradeaverage');
+                return Translate.instant('addon.mod_quiz.gradeaverage');
             case AddonModQuizProvider.ATTEMPTFIRST:
-                return Translate.instance.instant('addon.mod_quiz.attemptfirst');
+                return Translate.instant('addon.mod_quiz.attemptfirst');
             case AddonModQuizProvider.ATTEMPTLAST:
-                return Translate.instance.instant('addon.mod_quiz.attemptlast');
+                return Translate.instant('addon.mod_quiz.attemptlast');
             default:
                 return '';
         }
@@ -848,7 +848,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved with the access information.
      */
     async getQuizRequiredQtypes(quizId: number, options: CoreCourseCommonModWSOptions = {}): Promise<string[]> {
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModQuizGetQuizRequiredQtypesWSParams = {
             quizid: quizId,
@@ -858,7 +858,7 @@ export class AddonModQuizProvider {
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
             component: AddonModQuizProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         const response = await site.read<AddonModQuizGetQuizRequiredQtypesWSResponse>(
@@ -946,7 +946,7 @@ export class AddonModQuizProvider {
         const notSupported: string[] = [];
 
         questionTypes.forEach((type) => {
-            if (type != 'random' && !CoreQuestionDelegate.instance.isQuestionSupported(type)) {
+            if (type != 'random' && !CoreQuestionDelegate.isQuestionSupported(type)) {
                 notSupported.push(type);
             }
         });
@@ -964,7 +964,7 @@ export class AddonModQuizProvider {
         const notSupported: string[] = [];
 
         rulesNames.forEach((name) => {
-            if (!AddonModQuizAccessRuleDelegate.instance.isAccessRuleSupported(name)) {
+            if (!AddonModQuizAccessRuleDelegate.isAccessRuleSupported(name)) {
                 notSupported.push(name);
             }
         });
@@ -1008,7 +1008,7 @@ export class AddonModQuizProvider {
         const status = options.status || 'all';
         const includePreviews = typeof options.includePreviews == 'undefined' ? true : options.includePreviews;
 
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const userId = options.userId || site.getUserId();
         const params: AddonModQuizGetUserAttemptsWSParams = {
@@ -1022,7 +1022,7 @@ export class AddonModQuizProvider {
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
             component: AddonModQuizProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         const response = await site.read<AddonModQuizGetUserAttemptsWSResponse>('mod_quiz_get_user_attempts', params, preSets);
@@ -1059,7 +1059,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved with the best grade data.
      */
     async getUserBestGrade(quizId: number, options: AddonModQuizUserOptions = {}): Promise<AddonModQuizGetUserBestGradeWSResponse> {
-        const site = await CoreSites.instance.getSite(options.siteId);
+        const site = await CoreSites.getSite(options.siteId);
 
         const userId = options.userId || site.getUserId();
         const params: AddonModQuizGetUserBestGradeWSParams = {
@@ -1070,7 +1070,7 @@ export class AddonModQuizProvider {
             cacheKey: this.getUserBestGradeCacheKey(quizId, userId),
             component: AddonModQuizProvider.COMPONENT,
             componentId: options.cmId,
-            ...CoreSites.instance.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         return site.read('mod_quiz_get_user_best_grade', params, preSets);
@@ -1093,7 +1093,7 @@ export class AddonModQuizProvider {
         siteId?: string,
         userId?: number,
     ): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const promises: Promise<void>[] = [];
 
@@ -1126,7 +1126,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAttemptAccessInformation(quizId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getAttemptAccessInformationCommonCacheKey(quizId));
     }
@@ -1140,7 +1140,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAttemptAccessInformationForAttempt(quizId: number, attemptId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getAttemptAccessInformationCacheKey(quizId, attemptId));
     }
@@ -1153,7 +1153,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAttemptData(attemptId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getAttemptDataCommonCacheKey(attemptId));
     }
@@ -1167,7 +1167,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAttemptDataForPage(attemptId: number, page: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getAttemptDataCacheKey(attemptId, page));
     }
@@ -1180,7 +1180,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAttemptReview(attemptId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getAttemptReviewCommonCacheKey(attemptId));
     }
@@ -1194,7 +1194,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAttemptReviewForPage(attemptId: number, page: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getAttemptReviewCacheKey(attemptId, page));
     }
@@ -1207,7 +1207,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAttemptSummary(attemptId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getAttemptSummaryCacheKey(attemptId));
     }
@@ -1220,7 +1220,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateCombinedReviewOptions(quizId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getCombinedReviewOptionsCommonCacheKey(quizId));
     }
@@ -1234,7 +1234,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateCombinedReviewOptionsForUser(quizId: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.invalidateWsCacheForKey(this.getCombinedReviewOptionsCacheKey(quizId, userId || site.getUserId()));
     }
@@ -1249,7 +1249,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Get required data to call the invalidate functions.
         const quiz = await this.getQuiz(courseId, moduleId, {
@@ -1273,7 +1273,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateFeedback(quizId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getFeedbackForGradeCommonCacheKey(quizId));
     }
@@ -1287,7 +1287,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateFeedbackForGrade(quizId: number, grade: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getFeedbackForGradeCacheKey(quizId, grade));
     }
@@ -1299,8 +1299,8 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the files are invalidated.
      */
     async invalidateFiles(moduleId: number): Promise<void> {
-        await CoreFilepool.instance.invalidateFilesByComponent(
-            CoreSites.instance.getCurrentSiteId(),
+        await CoreFilepool.invalidateFilesByComponent(
+            CoreSites.getCurrentSiteId(),
             AddonModQuizProvider.COMPONENT,
             moduleId,
         );
@@ -1315,9 +1315,9 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateGradeFromGradebook(courseId: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
-        await CoreGradesHelper.instance.invalidateGradeModuleItems(courseId, userId || site.getUserId(), undefined, siteId);
+        await CoreGradesHelper.invalidateGradeModuleItems(courseId, userId || site.getUserId(), undefined, siteId);
     }
 
     /**
@@ -1328,7 +1328,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateQuizAccessInformation(quizId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getQuizAccessInformationCacheKey(quizId));
     }
@@ -1341,7 +1341,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateQuizRequiredQtypes(quizId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getQuizRequiredQtypesCacheKey(quizId));
     }
@@ -1354,7 +1354,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateUserAttempts(quizId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getUserAttemptsCommonCacheKey(quizId));
     }
@@ -1368,7 +1368,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateUserAttemptsForUser(quizId: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getUserAttemptsCacheKey(quizId, userId || site.getUserId()));
     }
@@ -1381,7 +1381,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateUserBestGrade(quizId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getUserBestGradeCommonCacheKey(quizId));
     }
@@ -1395,7 +1395,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateUserBestGradeForUser(quizId: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getUserBestGradeCacheKey(quizId, userId || site.getUserId()));
     }
@@ -1408,7 +1408,7 @@ export class AddonModQuizProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateQuizData(courseId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getQuizDataCacheKey(courseId));
     }
@@ -1432,7 +1432,7 @@ export class AddonModQuizProvider {
      */
     async isAttemptFinishedOffline(attemptId: number, siteId?: string): Promise<boolean> {
         try {
-            const attempt = await AddonModQuizOffline.instance.getAttemptById(attemptId, siteId);
+            const attempt = await AddonModQuizOffline.getAttemptById(attemptId, siteId);
 
             return !!attempt.finished;
         } catch {
@@ -1476,7 +1476,7 @@ export class AddonModQuizProvider {
      */
     async isLastAttemptOfflineUnfinished(quiz: AddonModQuizQuizWSData, siteId?: string, userId?: number): Promise<boolean> {
         try {
-            const attempts = await AddonModQuizOffline.instance.getQuizAttempts(quiz.id, siteId, userId);
+            const attempts = await AddonModQuizOffline.getQuizAttempts(quiz.id, siteId, userId);
 
             const last = attempts.pop();
 
@@ -1503,7 +1503,7 @@ export class AddonModQuizProvider {
      * @return Whether it's blocked.
      */
     isQuestionBlocked(question: CoreQuestionQuestionParsed): boolean {
-        const element = CoreDomUtils.instance.convertToElement(question.html);
+        const element = CoreDomUtils.convertToElement(question.html);
 
         return !!element.querySelector('.mod_quiz-blocked_question_warning');
     }
@@ -1516,7 +1516,7 @@ export class AddonModQuizProvider {
      */
     isQuizOffline(quiz: AddonModQuizQuizWSData): boolean {
         // Don't allow downloading the quiz if offline is disabled to prevent wasting a lot of data when opening it.
-        return !!quiz.allowofflineattempts && !CoreSites.instance.getCurrentSite()?.isOfflineDisabled();
+        return !!quiz.allowofflineattempts && !CoreSites.getCurrentSite()?.isOfflineDisabled();
     }
 
     /**
@@ -1538,12 +1538,12 @@ export class AddonModQuizProvider {
         quiz?: AddonModQuizQuizWSData,
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonModQuizViewAttemptWSParams = {
             attemptid: attemptId,
             page: page,
-            preflightdata: CoreUtils.instance.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -1553,10 +1553,10 @@ export class AddonModQuizProvider {
 
         promises.push(site.write('mod_quiz_view_attempt', params));
         if (offline) {
-            promises.push(AddonModQuizOffline.instance.setAttemptCurrentPage(attemptId, page, site.getId()));
+            promises.push(AddonModQuizOffline.setAttemptCurrentPage(attemptId, page, site.getId()));
         }
         if (quiz) {
-            CorePushNotifications.instance.logViewEvent(
+            CorePushNotifications.logViewEvent(
                 quiz.id,
                 quiz.name,
                 'quiz',
@@ -1583,7 +1583,7 @@ export class AddonModQuizProvider {
             attemptid: attemptId,
         };
 
-        return CoreCourseLogHelper.instance.logSingle(
+        return CoreCourseLogHelper.logSingle(
             'mod_quiz_view_attempt_review',
             params,
             AddonModQuizProvider.COMPONENT,
@@ -1614,14 +1614,14 @@ export class AddonModQuizProvider {
     ): Promise<void> {
         const params: AddonModQuizViewAttemptSummaryWSParams = {
             attemptid: attemptId,
-            preflightdata: CoreUtils.instance.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
             ),
         };
 
-        return CoreCourseLogHelper.instance.logSingle(
+        return CoreCourseLogHelper.logSingle(
             'mod_quiz_view_attempt_summary',
             params,
             AddonModQuizProvider.COMPONENT,
@@ -1646,7 +1646,7 @@ export class AddonModQuizProvider {
             quizid: id,
         };
 
-        return CoreCourseLogHelper.instance.logSingle(
+        return CoreCourseLogHelper.logSingle(
             'mod_quiz_view_quiz',
             params,
             AddonModQuizProvider.COMPONENT,
@@ -1707,14 +1707,14 @@ export class AddonModQuizProvider {
         timeUp?: boolean,
         siteId?: string,
     ): Promise<string> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonModQuizProcessAttemptWSParams = {
             attemptid: attemptId,
-            data: CoreUtils.instance.objectToArrayOfObjects(data, 'name', 'value'),
+            data: CoreUtils.objectToArrayOfObjects(data, 'name', 'value'),
             finishattempt: !!finish,
             timeup: !!timeUp,
-            preflightdata: CoreUtils.instance.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -1760,9 +1760,9 @@ export class AddonModQuizProvider {
         });
 
         // Convert the question array to an object.
-        const questions = CoreUtils.instance.arrayToObject(questionsArray, 'slot');
+        const questions = CoreUtils.arrayToObject(questionsArray, 'slot');
 
-        return AddonModQuizOffline.instance.processAttempt(quiz, attempt, questions, data, finish, siteId);
+        return AddonModQuizOffline.processAttempt(quiz, attempt, questions, data, finish, siteId);
     }
 
     /**
@@ -1861,12 +1861,12 @@ export class AddonModQuizProvider {
         preflightData: Record<string, string>,
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonModQuizSaveAttemptWSParams = {
             attemptid: attemptId,
-            data: CoreUtils.instance.objectToArrayOfObjects(data, 'name', 'value'),
-            preflightdata: CoreUtils.instance.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            data: CoreUtils.objectToArrayOfObjects(data, 'name', 'value'),
+            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -1893,13 +1893,13 @@ export class AddonModQuizProvider {
      * @return Whether time left should be displayed.
      */
     shouldShowTimeLeft(rules: string[], attempt: AddonModQuizAttemptWSData, endTime: number): boolean {
-        const timeNow = CoreTimeUtils.instance.timestamp();
+        const timeNow = CoreTimeUtils.timestamp();
 
         if (attempt.state != AddonModQuizProvider.ATTEMPT_IN_PROGRESS) {
             return false;
         }
 
-        return AddonModQuizAccessRuleDelegate.instance.shouldShowTimeLeft(rules, attempt, endTime, timeNow);
+        return AddonModQuizAccessRuleDelegate.shouldShowTimeLeft(rules, attempt, endTime, timeNow);
     }
 
     /**
@@ -1917,11 +1917,11 @@ export class AddonModQuizProvider {
         forceNew?: boolean,
         siteId?: string,
     ): Promise<AddonModQuizAttemptWSData> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const params: AddonModQuizStartAttemptWSParams = {
             quizid: quizId,
-            preflightdata: CoreUtils.instance.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -1941,7 +1941,7 @@ export class AddonModQuizProvider {
 
 }
 
-export class AddonModQuiz extends makeSingleton(AddonModQuizProvider) {}
+export const AddonModQuiz = makeSingleton(AddonModQuizProvider);
 
 /**
  * Common options with user ID.

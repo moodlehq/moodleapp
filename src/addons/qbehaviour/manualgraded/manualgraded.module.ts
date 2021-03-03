@@ -26,7 +26,7 @@ import { AddonQbehaviourManualGradedHandler } from './services/handlers/manualgr
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionBehaviourDelegate.instance.registerHandler(AddonQbehaviourManualGradedHandler.instance);
+                CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourManualGradedHandler.instance);
             },
         },
     ],

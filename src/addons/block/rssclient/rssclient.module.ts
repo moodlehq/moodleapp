@@ -30,7 +30,7 @@ import { AddonBlockRssClientComponentsModule } from './components/components.mod
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockRssClientHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockRssClientHandler.instance);
             },
         },
     ],

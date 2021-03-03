@@ -51,7 +51,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
      */
     ngOnInit(): void {
         this.route.queryParams.subscribe(async () => {
-            this.conversationId = CoreNavigator.instance.getRouteNumberParam('conversationId') || 0;
+            this.conversationId = CoreNavigator.getRouteNumberParam('conversationId') || 0;
 
             this.loaded = false;
             this.fetchData().finally(() => {
@@ -68,13 +68,13 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
     protected async fetchData(): Promise<void> {
         // Get the conversation data first.
         try {
-            const conversation = await AddonMessages.instance.getConversation(this.conversationId, false, true, 0, 0);
+            const conversation = await AddonMessages.getConversation(this.conversationId, false, true, 0, 0);
             this.conversation = conversation;
 
             // Now get the members.
             await this.fetchMembers();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error getting members.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error getting members.');
         }
     }
 
@@ -89,7 +89,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
 
         const limitFrom = loadingMore ? this.members.length : 0;
 
-        const data = await AddonMessages.instance.getConversationMembers(this.conversationId, limitFrom);
+        const data = await AddonMessages.getConversationMembers(this.conversationId, limitFrom);
         if (loadingMore) {
             this.members = this.members.concat(data.members);
         } else {
@@ -109,7 +109,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
         try {
             await this.fetchMembers(true);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error getting members.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error getting members.');
             this.loadMoreError = true;
         } finally {
             infiniteComplete && infiniteComplete();
@@ -125,8 +125,8 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
     async refreshData(refresher?: CustomEvent<IonRefresher>): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonMessages.instance.invalidateConversation(this.conversationId));
-        promises.push(AddonMessages.instance.invalidateConversationMembers(this.conversationId));
+        promises.push(AddonMessages.invalidateConversation(this.conversationId));
+        promises.push(AddonMessages.invalidateConversationMembers(this.conversationId));
 
         await Promise.all(promises);
 
@@ -141,7 +141,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
      * @param userId User conversation to load.
      */
     closeModal(userId?: number): void {
-        ModalController.instance.dismiss(userId);
+        ModalController.dismiss(userId);
     }
 
 }

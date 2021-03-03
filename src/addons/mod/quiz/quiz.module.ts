@@ -58,14 +58,14 @@ const routes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreCourseModuleDelegate.instance.registerHandler(AddonModQuizModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.instance.registerHandler(AddonModQuizPrefetchHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModQuizGradeLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModQuizIndexLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModQuizListLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModQuizReviewLinkHandler.instance);
-                CorePushNotificationsDelegate.instance.registerClickHandler(AddonModQuizPushClickHandler.instance);
-                CoreCronDelegate.instance.register(AddonModQuizSyncCronHandler.instance);
+                CoreCourseModuleDelegate.registerHandler(AddonModQuizModuleHandler.instance);
+                CoreCourseModulePrefetchDelegate.registerHandler(AddonModQuizPrefetchHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModQuizGradeLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModQuizIndexLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModQuizListLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModQuizReviewLinkHandler.instance);
+                CorePushNotificationsDelegate.registerClickHandler(AddonModQuizPushClickHandler.instance);
+                CoreCronDelegate.register(AddonModQuizSyncCronHandler.instance);
             },
         },
     ],

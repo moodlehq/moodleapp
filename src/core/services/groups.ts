@@ -66,7 +66,7 @@ export class CoreGroupsProvider {
         siteId?: string,
         ignoreCache?: boolean,
     ): Promise<CoreGroupGetActivityAllowedGroupsWSResponse> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
@@ -116,7 +116,7 @@ export class CoreGroupsProvider {
      */
     async getActivityAllowedGroupsIfEnabled(cmId: number, userId?: number, siteId?: string, ignoreCache?: boolean):
     Promise<CoreGroupGetActivityAllowedGroupsWSResponse> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Get real groupmode, in case it's forced by the course.
         const hasGroups = await this.activityHasGroups(cmId, siteId, ignoreCache);
@@ -173,7 +173,7 @@ export class CoreGroupsProvider {
         } else {
             // The "canaccessallgroups" field was added in 3.4. Add all participants for visible groups in previous versions.
             if (result.canaccessallgroups || (typeof result.canaccessallgroups == 'undefined' && groupInfo.visibleGroups)) {
-                groupInfo.groups!.push({ id: 0, name: Translate.instance.instant('core.allparticipants') });
+                groupInfo.groups!.push({ id: 0, name: Translate.instant('core.allparticipants') });
                 groupInfo.defaultGroupId = 0;
             } else {
                 groupInfo.defaultGroupId = result.groups[0].id;
@@ -194,7 +194,7 @@ export class CoreGroupsProvider {
      * @return Promise resolved when the group mode is retrieved.
      */
     async getActivityGroupMode(cmId: number, siteId?: string, ignoreCache?: boolean): Promise<number> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const params: CoreGroupGetActivityGroupmodeWSParams = {
             cmid: cmId,
         };
@@ -235,7 +235,7 @@ export class CoreGroupsProvider {
      * @return Promise resolved when the groups are retrieved.
      */
     async getAllUserGroups(siteId?: string): Promise<CoreGroup[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         siteId = siteId || site.getId();
 
         if (site.isVersionGreaterEqualThan('3.6')) {
@@ -272,7 +272,7 @@ export class CoreGroupsProvider {
      * @return Promise resolved when the groups are retrieved.
      */
     async getUserGroupsInCourse(courseId: number, siteId?: string, userId?: number): Promise<CoreGroup[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
         const data: CoreGroupGetCourseUserGroupsWSParams = {
             userid: userId,
@@ -322,7 +322,7 @@ export class CoreGroupsProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateActivityAllowedGroups(cmId: number, userId?: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
         await site.invalidateWsCacheForKey(this.getActivityAllowedGroupsCacheKey(cmId, userId));
@@ -336,7 +336,7 @@ export class CoreGroupsProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateActivityGroupMode(cmId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getActivityGroupModeCacheKey(cmId));
     }
@@ -364,7 +364,7 @@ export class CoreGroupsProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAllUserGroups(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         if (site.isVersionGreaterEqualThan('3.6')) {
             return this.invalidateUserGroupsInCourse(0, siteId);
@@ -382,7 +382,7 @@ export class CoreGroupsProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateUserGroups(courses: CoreCourseBase[] | number[], siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
         const promises = this.getCourseIds(courses).map((courseId) => this.invalidateUserGroupsInCourse(courseId, site.id, userId));
@@ -399,7 +399,7 @@ export class CoreGroupsProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateUserGroupsInCourse(courseId: number, siteId?: string, userId?: number): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
         await site.invalidateWsCacheForKey(this.getUserGroupsInCourseCacheKey(courseId, userId));
@@ -431,7 +431,7 @@ export class CoreGroupsProvider {
 
 }
 
-export class CoreGroups extends makeSingleton(CoreGroupsProvider) {}
+export const CoreGroups = makeSingleton(CoreGroupsProvider);
 
 /**
  * Specific group info.

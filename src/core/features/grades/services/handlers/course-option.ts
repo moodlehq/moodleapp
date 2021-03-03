@@ -46,7 +46,7 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
             return Promise.resolve();
         }
 
-        return CoreCourses.instance.invalidateUserCourses();
+        return CoreCourses.invalidateUserCourses();
     }
 
     /**
@@ -79,7 +79,7 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
             return navOptions.grades;
         }
 
-        return CoreGrades.instance.isPluginEnabledForCourse(courseId);
+        return CoreGrades.isPluginEnabledForCourse(courseId);
     }
 
     /**
@@ -100,9 +100,9 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
      * @return Promise resolved when done.
      */
     async prefetch(course: CoreEnrolledCourseDataWithExtraInfoAndOptions): Promise<void> {
-        await CoreGrades.instance.getCourseGradesTable(course.id, undefined, undefined, true);
+        await CoreGrades.getCourseGradesTable(course.id, undefined, undefined, true);
     }
 
 }
 
-export class CoreGradesCourseOptionHandler extends makeSingleton(CoreGradesCourseOptionHandlerService) {}
+export const CoreGradesCourseOptionHandler = makeSingleton(CoreGradesCourseOptionHandlerService);

@@ -62,10 +62,10 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         protected fb: FormBuilder,
     ) {
 
-        const canScanQR = CoreUtils.instance.canScanQR();
+        const canScanQR = CoreUtils.canScanQR();
         if (canScanQR) {
             if (typeof CoreConstants.CONFIG.displayqroncredentialscreen == 'undefined') {
-                this.showScanQR = CoreLoginHelper.instance.isFixedUrlSet();
+                this.showScanQR = CoreLoginHelper.isFixedUrlSet();
             } else {
                 this.showScanQR = !!CoreConstants.CONFIG.displayqroncredentialscreen;
             }
@@ -78,27 +78,27 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * Initialize the component.
      */
     ngOnInit(): void {
-        const siteUrl = CoreNavigator.instance.getRouteParam<string>('siteUrl');
+        const siteUrl = CoreNavigator.getRouteParam<string>('siteUrl');
         if (!siteUrl) {
-            CoreDomUtils.instance.showErrorModal('Site URL not supplied.');
-            CoreNavigator.instance.back();
+            CoreDomUtils.showErrorModal('Site URL not supplied.');
+            CoreNavigator.back();
 
             return;
         }
 
         this.siteUrl = siteUrl;
-        this.siteName = CoreNavigator.instance.getRouteParam('siteName');
-        this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && CoreNavigator.instance.getRouteParam('logoUrl') || undefined;
-        this.siteConfig = CoreNavigator.instance.getRouteParam('siteConfig');
-        this.urlToOpen = CoreNavigator.instance.getRouteParam('urlToOpen');
+        this.siteName = CoreNavigator.getRouteParam('siteName');
+        this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && CoreNavigator.getRouteParam('logoUrl') || undefined;
+        this.siteConfig = CoreNavigator.getRouteParam('siteConfig');
+        this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
 
         this.credForm = this.fb.group({
-            username: [CoreNavigator.instance.getRouteParam<string>('username') || '', Validators.required],
+            username: [CoreNavigator.getRouteParam<string>('username') || '', Validators.required],
             password: ['', Validators.required],
         });
 
         this.treatSiteConfig();
-        this.isFixedUrlSet = CoreLoginHelper.instance.isFixedUrlSet();
+        this.isFixedUrlSet = CoreLoginHelper.isFixedUrlSet();
 
         if (this.isFixedUrlSet) {
             // Fixed URL, we need to check if it uses browser SSO login.
@@ -123,7 +123,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         const protocol = siteUrl.indexOf('http://') === 0 ? 'http://' : undefined;
 
         try {
-            const result = await CoreSites.instance.checkSite(siteUrl, protocol);
+            const result = await CoreSites.checkSite(siteUrl, protocol);
 
             this.siteChecked = true;
             this.siteUrl = result.siteUrl;
@@ -132,16 +132,16 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.treatSiteConfig();
 
             if (result && result.warning) {
-                CoreDomUtils.instance.showErrorModal(result.warning, true, 4000);
+                CoreDomUtils.showErrorModal(result.warning, true, 4000);
             }
 
-            if (CoreLoginHelper.instance.isSSOLoginNeeded(result.code)) {
+            if (CoreLoginHelper.isSSOLoginNeeded(result.code)) {
                 // SSO. User needs to authenticate in a browser.
                 this.isBrowserSSO = true;
 
                 // Check that there's no SSO authentication ongoing and the view hasn't changed.
-                if (!CoreApp.instance.isSSOAuthenticationOngoing() && !this.viewLeft) {
-                    CoreLoginHelper.instance.confirmAndOpenBrowserForSSOLogin(
+                if (!CoreApp.isSSOAuthenticationOngoing() && !this.viewLeft) {
+                    CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(
                         result.siteUrl,
                         result.code,
                         result.service,
@@ -153,7 +153,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             }
 
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
         } finally {
             this.pageLoaded = true;
         }
@@ -165,14 +165,14 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     protected treatSiteConfig(): void {
         if (this.siteConfig) {
             this.siteName = CoreConstants.CONFIG.sitename ? CoreConstants.CONFIG.sitename : this.siteConfig.sitename;
-            this.logoUrl = CoreLoginHelper.instance.getLogoUrl(this.siteConfig);
-            this.authInstructions = this.siteConfig.authinstructions || Translate.instance.instant('core.login.loginsteps');
+            this.logoUrl = CoreLoginHelper.getLogoUrl(this.siteConfig);
+            this.authInstructions = this.siteConfig.authinstructions || Translate.instant('core.login.loginsteps');
 
-            const disabledFeatures = CoreLoginHelper.instance.getDisabledFeatures(this.siteConfig);
-            this.identityProviders = CoreLoginHelper.instance.getValidIdentityProviders(this.siteConfig, disabledFeatures);
+            const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
+            this.identityProviders = CoreLoginHelper.getValidIdentityProviders(this.siteConfig, disabledFeatures);
             this.canSignup = this.siteConfig.registerauth == 'email' &&
-                    !CoreLoginHelper.instance.isEmailSignupDisabled(this.siteConfig, disabledFeatures);
-            this.showForgottenPassword = !CoreLoginHelper.instance.isForgottenPasswordDisabled(this.siteConfig, disabledFeatures);
+                    !CoreLoginHelper.isEmailSignupDisabled(this.siteConfig, disabledFeatures);
+            this.showForgottenPassword = !CoreLoginHelper.isForgottenPasswordDisabled(this.siteConfig, disabledFeatures);
 
             if (!this.eventThrown && !this.viewLeft) {
                 this.eventThrown = true;
@@ -197,7 +197,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             e.stopPropagation();
         }
 
-        CoreApp.instance.closeKeyboard();
+        CoreApp.closeKeyboard();
 
         // Get input data.
         const siteUrl = this.siteUrl;
@@ -217,29 +217,29 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         }
 
         if (!username) {
-            CoreDomUtils.instance.showErrorModal('core.login.usernamerequired', true);
+            CoreDomUtils.showErrorModal('core.login.usernamerequired', true);
 
             return;
         }
         if (!password) {
-            CoreDomUtils.instance.showErrorModal('core.login.passwordrequired', true);
+            CoreDomUtils.showErrorModal('core.login.passwordrequired', true);
 
             return;
         }
 
-        if (!CoreApp.instance.isOnline()) {
-            CoreDomUtils.instance.showErrorModal('core.networkerrormsg', true);
+        if (!CoreApp.isOnline()) {
+            CoreDomUtils.showErrorModal('core.networkerrormsg', true);
 
             return;
         }
 
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         // Start the authentication process.
         try {
-            const data = await CoreSites.instance.getUserToken(siteUrl, username, password);
+            const data = await CoreSites.getUserToken(siteUrl, username, password);
 
-            const id = await CoreSites.instance.newSite(data.siteUrl, data.token, data.privateToken);
+            const id = await CoreSites.newSite(data.siteUrl, data.token, data.privateToken);
 
             // Reset fields so the data is not in the view anymore.
             this.credForm.controls['username'].reset();
@@ -248,12 +248,12 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.siteId = id;
 
             // @todo test that this is working properly.
-            await CoreNavigator.instance.navigateToSiteHome({ params: { urlToOpen: this.urlToOpen } });
+            await CoreNavigator.navigateToSiteHome({ params: { urlToOpen: this.urlToOpen } });
         } catch (error) {
-            CoreLoginHelper.instance.treatUserTokenError(siteUrl, error, username, password);
+            CoreLoginHelper.treatUserTokenError(siteUrl, error, username, password);
 
             if (error.loggedout) {
-                CoreNavigator.instance.navigate('/login/sites', { reset: true });
+                CoreNavigator.navigate('/login/sites', { reset: true });
             } else if (error.errorcode == 'forcepasswordchangenotice') {
                 // Reset password field.
                 this.credForm.controls.password.reset();
@@ -261,7 +261,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         } finally {
             modal.dismiss();
 
-            CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, true);
+            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, true);
         }
     }
 
@@ -269,7 +269,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * Forgotten password button clicked.
      */
     forgottenPassword(): void {
-        CoreLoginHelper.instance.forgottenPasswordClicked(this.siteUrl, this.credForm.value.username, this.siteConfig);
+        CoreLoginHelper.forgottenPasswordClicked(this.siteUrl, this.credForm.value.username, this.siteConfig);
     }
 
     /**
@@ -278,8 +278,8 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * @param provider The provider that was clicked.
      */
     oauthClicked(provider: CoreSiteIdentityProvider): void {
-        if (!CoreLoginHelper.instance.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig?.launchurl)) {
-            CoreDomUtils.instance.showErrorModal('Invalid data.');
+        if (!CoreLoginHelper.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig?.launchurl)) {
+            CoreDomUtils.showErrorModal('Invalid data.');
         }
     }
 
@@ -288,19 +288,19 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      */
     showInstructionsAndScanQR(): void {
         // Show some instructions first.
-        CoreDomUtils.instance.showAlertWithOptions({
-            header: Translate.instance.instant('core.login.faqwhereisqrcode'),
-            message: Translate.instance.instant(
+        CoreDomUtils.showAlertWithOptions({
+            header: Translate.instant('core.login.faqwhereisqrcode'),
+            message: Translate.instant(
                 'core.login.faqwhereisqrcodeanswer',
                 { $image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML },
             ),
             buttons: [
                 {
-                    text: Translate.instance.instant('core.cancel'),
+                    text: Translate.instant('core.cancel'),
                     role: 'cancel',
                 },
                 {
-                    text: Translate.instance.instant('core.next'),
+                    text: Translate.instant('core.next'),
                     handler: (): void => {
                         this.scanQR();
                     },

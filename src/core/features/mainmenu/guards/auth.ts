@@ -40,14 +40,14 @@ export class CoreMainMenuAuthGuard implements CanLoad, CanActivate {
      * Check if the current user should be redirected to the authentication page.
      */
     private async guard(): Promise<true | UrlTree> {
-        if (!CoreSites.instance.isLoggedIn()) {
-            return Router.instance.parseUrl('/login');
+        if (!CoreSites.isLoggedIn()) {
+            return Router.parseUrl('/login');
         }
 
-        if (CoreLoginHelper.instance.isSiteLoggedOut()) {
-            await CoreSites.instance.logout();
+        if (CoreLoginHelper.isSiteLoggedOut()) {
+            await CoreSites.logout();
 
-            return Router.instance.parseUrl('/login');
+            return Router.parseUrl('/login');
         }
 
         return true;

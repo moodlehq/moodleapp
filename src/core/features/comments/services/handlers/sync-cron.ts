@@ -33,7 +33,7 @@ export class CoreCommentsSyncCronHandlerService implements CoreCronHandler {
      * @return Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string, force?: boolean): Promise<void> {
-        return CoreCommentsSync.instance.syncAllComments(siteId, force);
+        return CoreCommentsSync.syncAllComments(siteId, force);
     }
 
     /**

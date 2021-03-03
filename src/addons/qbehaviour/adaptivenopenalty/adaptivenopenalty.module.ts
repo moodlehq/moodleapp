@@ -26,7 +26,7 @@ import { AddonQbehaviourAdaptiveNoPenaltyHandler } from './services/handlers/ada
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionBehaviourDelegate.instance.registerHandler(AddonQbehaviourAdaptiveNoPenaltyHandler.instance);
+                CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourAdaptiveNoPenaltyHandler.instance);
             },
         },
     ],

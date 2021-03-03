@@ -32,7 +32,7 @@ export class AddonCalendarSettingsPage implements OnInit {
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
-        this.defaultTime = await AddonCalendar.instance.getDefaultNotificationTime();
+        this.defaultTime = await AddonCalendar.getDefaultNotificationTime();
     }
 
     /**
@@ -41,12 +41,12 @@ export class AddonCalendarSettingsPage implements OnInit {
      * @param newTime New time.
      */
     updateDefaultTime(newTime: number): void {
-        AddonCalendar.instance.setDefaultNotificationTime(newTime);
+        AddonCalendar.setDefaultNotificationTime(newTime);
 
         CoreEvents.trigger(
             AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED,
             { time: newTime },
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
     }
 

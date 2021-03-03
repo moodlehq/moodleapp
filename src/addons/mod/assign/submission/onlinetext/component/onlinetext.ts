@@ -50,7 +50,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
     ) {
         super();
         this.element = element.nativeElement;
-        this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
+        this.currentUserId = CoreSites.getCurrentSiteUserId();
     }
 
     /**
@@ -58,8 +58,8 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
      */
     async ngOnInit(): Promise<void> {
         // Get the text. Check if we have anything offline.
-        const offlineData = await CoreUtils.instance.ignoreErrors(
-            AddonModAssignOffline.instance.getSubmission(this.assign.id),
+        const offlineData = await CoreUtils.ignoreErrors(
+            AddonModAssignOffline.getSubmission(this.assign.id),
             undefined,
         );
 
@@ -71,7 +71,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
                 this.text = (<AddonModAssignSubmissionOnlineTextPluginData>offlineData.plugindata).onlinetext_editor.text;
             } else {
                 // No offline data found, return online text.
-                this.text = AddonModAssign.instance.getSubmissionPluginText(this.plugin);
+                this.text = AddonModAssign.getSubmissionPluginText(this.plugin);
             }
 
 
@@ -84,7 +84,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
 
                     if (this.text) {
                         // Open a new state with the interpolated contents.
-                        CoreTextUtils.instance.viewText(this.plugin.name, this.text, {
+                        CoreTextUtils.viewText(this.plugin.name, this.text, {
                             component: this.component,
                             componentId: this.assign.cmid,
                             filter: true,
@@ -101,7 +101,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
 
             // Calculate initial words.
             if (this.wordLimitEnabled) {
-                this.words = CoreTextUtils.instance.countWords(this.text);
+                this.words = CoreTextUtils.countWords(this.text);
             }
         } finally {
             this.loaded = true;
@@ -122,7 +122,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
             // Wait before calculating, if the user keeps inputing we won't calculate.
             // This is to prevent slowing down devices, this calculation can be slow if the text is long.
             this.wordCountTimeout = window.setTimeout(() => {
-                this.words = CoreTextUtils.instance.countWords(text);
+                this.words = CoreTextUtils.countWords(text);
             }, 1500);
         }
     }

@@ -101,7 +101,7 @@ export class CoreEmulatorCaptureHelperProvider {
             params.maxTime = options.duration * 1000;
         }
 
-        const modal = await ModalController.instance.create({
+        const modal = await ModalController.create({
             component: CoreEmulatorCaptureMediaComponent,
             cssClass: 'core-modal-fullscreen',
             componentProps: params,
@@ -143,7 +143,7 @@ export class CoreEmulatorCaptureHelperProvider {
 
         if (result.mimetype) {
             // Found a supported mimetype in the mimetypes array, get the extension.
-            result.extension = CoreMimetypeUtils.instance.getExtension(result.mimetype);
+            result.extension = CoreMimetypeUtils.getExtension(result.mimetype);
         } else if (type == 'video') {
             // No mimetype found, use default extension.
             result.mimetype = this.videoMimeType;
@@ -201,7 +201,7 @@ export class CoreEmulatorCaptureHelperProvider {
 
 }
 
-export class CoreEmulatorCaptureHelper extends makeSingleton(CoreEmulatorCaptureHelperProvider) {}
+export const CoreEmulatorCaptureHelper = makeSingleton(CoreEmulatorCaptureHelperProvider);
 
 export interface MockCameraOptions extends CameraOptions {
     mimetypes?: string[]; // Allowed mimetypes.

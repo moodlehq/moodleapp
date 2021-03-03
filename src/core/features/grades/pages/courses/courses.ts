@@ -58,8 +58,8 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      * @param refresher Refresher.
      */
     async refreshCourses(refresher: IonRefresher): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(CoreGrades.instance.invalidateCoursesGradesData());
-        await CoreUtils.instance.ignoreErrors(this.fetchCourses());
+        await CoreUtils.ignoreErrors(CoreGrades.invalidateCoursesGradesData());
+        await CoreUtils.ignoreErrors(this.fetchCourses());
 
         refresher?.complete();
     }
@@ -71,7 +71,7 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
         try {
             await this.fetchCourses();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading courses');
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading courses');
 
             this.courses.setItems([]);
         }
@@ -81,8 +81,8 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      * Update the list of courses.
      */
     private async fetchCourses(): Promise<void> {
-        const grades = await CoreGrades.instance.getCoursesGrades();
-        const courses = await CoreGradesHelper.instance.getGradesCourseData(grades);
+        const grades = await CoreGrades.getCoursesGrades();
+        const courses = await CoreGradesHelper.getGradesCourseData(grades);
 
         this.courses.setItems(courses);
     }
@@ -114,7 +114,7 @@ class CoreGradesCoursesManager extends CorePageItemsListManager<CoreGradesGradeO
      * @inheritdoc
      */
     protected async logActivity(): Promise<void>  {
-        await CoreGrades.instance.logCoursesGradesView();
+        await CoreGrades.logCoursesGradesView();
     }
 
 }

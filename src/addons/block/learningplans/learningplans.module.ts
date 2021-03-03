@@ -30,7 +30,7 @@ import { CoreBlockComponentsModule } from '@features/block/components/components
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockLearningPlansHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockLearningPlansHandler.instance);
             },
         },
     ],

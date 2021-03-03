@@ -87,7 +87,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
      * @param tab Tab.
      */
     protected initTab(tab: CoreTabsOutletTab): void {
-        tab.id = tab.id || 'core-tab-outlet-' + CoreUtils.instance.getUniqueId('CoreTabsOutletComponent');
+        tab.id = tab.id || 'core-tab-outlet-' + CoreUtils.getUniqueId('CoreTabsOutletComponent');
         if (typeof tab.enabled == 'undefined') {
             tab.enabled = true;
         }
@@ -132,7 +132,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
      * @return Promise resolved with true if tab is successfully loaded.
      */
     protected async loadTab(tabToSelect: CoreTabsOutletTab): Promise<boolean> {
-        return CoreNavigator.instance.navigate(tabToSelect.page, {
+        return CoreNavigator.navigate(tabToSelect.page, {
             params: tabToSelect.pageParams,
         });
     }

@@ -24,7 +24,7 @@ export class CanLeaveGuard implements CanDeactivate<unknown> {
             return true;
         }
 
-        return CoreUtils.instance.ignoreErrors(component.canLeave(), false);
+        return CoreUtils.ignoreErrors(component.canLeave(), false);
     }
 
     isCanLeave(component: unknown | null): component is CanLeave {

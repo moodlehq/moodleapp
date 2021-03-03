@@ -44,7 +44,7 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
 
         promises.push(super.downloadOrPrefetch(module, courseId, prefetch));
         // Ignore errors since this WS isn't available in some Moodle versions.
-        promises.push(CoreUtils.instance.ignoreErrors(AddonModBook.instance.getBook(courseId, module.id)));
+        promises.push(CoreUtils.ignoreErrors(AddonModBook.getBook(courseId, module.id)));
         await Promise.all(promises);
     }
 
@@ -56,7 +56,7 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
      * @return Promise resolved with list of intro files.
      */
     async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
-        const book = await CoreUtils.instance.ignoreErrors(AddonModBook.instance.getBook(courseId, module.id));
+        const book = await CoreUtils.ignoreErrors(AddonModBook.getBook(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, book);
     }
@@ -69,7 +69,7 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        await AddonModBook.instance.invalidateContent(moduleId, courseId);
+        await AddonModBook.invalidateContent(moduleId, courseId);
     }
 
     /**
@@ -78,9 +78,9 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
      * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     isEnabled(): Promise<boolean> {
-        return AddonModBook.instance.isPluginEnabled();
+        return AddonModBook.isPluginEnabled();
     }
 
 }
 
-export class AddonModBookPrefetchHandler extends makeSingleton(AddonModBookPrefetchHandlerService) {}
+export const AddonModBookPrefetchHandler = makeSingleton(AddonModBookPrefetchHandlerService);

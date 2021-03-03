@@ -44,11 +44,11 @@ const routes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreCourseModuleDelegate.instance.registerHandler(AddonModPageModuleHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModPageIndexLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonModPageListLinkHandler.instance);
-                CoreCourseModulePrefetchDelegate.instance.registerHandler(AddonModPagePrefetchHandler.instance);
-                CorePluginFileDelegate.instance.registerHandler(AddonModPagePluginFileHandler.instance);
+                CoreCourseModuleDelegate.registerHandler(AddonModPageModuleHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModPageIndexLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModPageListLinkHandler.instance);
+                CoreCourseModulePrefetchDelegate.registerHandler(AddonModPagePrefetchHandler.instance);
+                CorePluginFileDelegate.registerHandler(AddonModPagePluginFileHandler.instance);
             },
         },
     ],

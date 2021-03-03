@@ -38,10 +38,10 @@ import { CorePushNotifications } from './services/pushnotifications';
             deps: [],
             useFactory: () => async () => {
                 // Register the handlers.
-                CoreCronDelegate.instance.register(CorePushNotificationsRegisterCronHandler.instance);
-                CoreCronDelegate.instance.register(CorePushNotificationsUnregisterCronHandler.instance);
+                CoreCronDelegate.register(CorePushNotificationsRegisterCronHandler.instance);
+                CoreCronDelegate.register(CorePushNotificationsUnregisterCronHandler.instance);
 
-                await CorePushNotifications.instance.initialize();
+                await CorePushNotifications.initialize();
             },
         },
     ],

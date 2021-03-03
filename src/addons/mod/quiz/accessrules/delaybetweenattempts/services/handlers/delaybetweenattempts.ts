@@ -50,5 +50,4 @@ export class AddonModQuizAccessDelayBetweenAttemptsHandlerService implements Add
 
 }
 
-export class AddonModQuizAccessDelayBetweenAttemptsHandler
-    extends makeSingleton(AddonModQuizAccessDelayBetweenAttemptsHandlerService) {}
+export const AddonModQuizAccessDelayBetweenAttemptsHandler = makeSingleton(AddonModQuizAccessDelayBetweenAttemptsHandlerService);

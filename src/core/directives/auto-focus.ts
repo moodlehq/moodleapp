@@ -55,7 +55,7 @@ export class CoreAutoFocusDirective implements OnInit {
      * Function after the view is initialized.
      */
     protected autoFocus(): void {
-        const autoFocus = CoreUtils.instance.isTrueOrOne(this.coreAutoFocus);
+        const autoFocus = CoreUtils.isTrueOrOne(this.coreAutoFocus);
         if (autoFocus) {
             // Wait a bit to make sure the view is loaded.
             setTimeout(() => {
@@ -67,7 +67,7 @@ export class CoreAutoFocusDirective implements OnInit {
                     element = this.element.querySelector('textarea') || element;
                 }
 
-                CoreDomUtils.instance.focusElement(element);
+                CoreDomUtils.focusElement(element);
             }, 200);
         }
     }

@@ -101,8 +101,8 @@ describe('CoreFormatTextDirective', () => {
         expect(image).not.toBeNull();
         expect(image.src).toEqual('file://local-path/');
 
-        expect(CoreSites.instance.getSite).toHaveBeenCalledWith(site.getId());
-        expect(CoreFilepool.instance.getSrcByUrl).toHaveBeenCalledTimes(1);
+        expect(CoreSites.getSite).toHaveBeenCalledWith(site.getId());
+        expect(CoreFilepool.getSrcByUrl).toHaveBeenCalledTimes(1);
     });
 
     it.todo('should format text');

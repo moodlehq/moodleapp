@@ -66,18 +66,18 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         options = options || {};
 
         // Invalidate the data for the quiz and attempt.
-        await CoreUtils.instance.ignoreErrors(
-            AddonModQuiz.instance.invalidateAllQuizData(quiz.id, courseId, options.attemptId, siteId),
+        await CoreUtils.ignoreErrors(
+            AddonModQuiz.invalidateAllQuizData(quiz.id, courseId, options.attemptId, siteId),
         );
 
         if (options.removeAttempt && options.attemptId) {
             const promises: Promise<unknown>[] = [];
 
-            promises.push(AddonModQuizOffline.instance.removeAttemptAndAnswers(options.attemptId, siteId));
+            promises.push(AddonModQuizOffline.removeAttemptAndAnswers(options.attemptId, siteId));
 
             if (options.onlineQuestions) {
                 for (const slot in options.onlineQuestions) {
-                    promises.push(CoreQuestionDelegate.instance.deleteOfflineData(
+                    promises.push(CoreQuestionDelegate.deleteOfflineData(
                         options.onlineQuestions[slot],
                         AddonModQuizProvider.COMPONENT,
                         quiz.coursemodule,
@@ -92,7 +92,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         if (options.updated) {
             try {
                 // Data has been sent. Update prefetched data.
-                const module = await CoreCourse.instance.getModuleBasicInfoByInstance(quiz.id, 'quiz', siteId);
+                const module = await CoreCourse.getModuleBasicInfoByInstance(quiz.id, 'quiz', siteId);
 
                 await this.prefetchAfterUpdateQuiz(module, quiz, courseId, undefined, siteId);
             } catch {
@@ -100,17 +100,17 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             }
         }
 
-        await CoreUtils.instance.ignoreErrors(this.setSyncTime(quiz.id, siteId));
+        await CoreUtils.ignoreErrors(this.setSyncTime(quiz.id, siteId));
 
         // Check if online attempt was finished because of the sync.
         let attemptFinished = false;
-        if (options.onlineAttempt && !AddonModQuiz.instance.isAttemptFinished(options.onlineAttempt.state)) {
+        if (options.onlineAttempt && !AddonModQuiz.isAttemptFinished(options.onlineAttempt.state)) {
             // Attempt wasn't finished at start. Check if it's finished now.
-            const attempts = await AddonModQuiz.instance.getUserAttempts(quiz.id, { cmId: quiz.coursemodule, siteId });
+            const attempts = await AddonModQuiz.getUserAttempts(quiz.id, { cmId: quiz.coursemodule, siteId });
 
             const attempt = attempts.find(attempt => attempt.id == options?.onlineAttempt?.id);
 
-            attemptFinished = attempt ? AddonModQuiz.instance.isAttemptFinished(attempt.state) : false;
+            attemptFinished = attempt ? AddonModQuiz.isAttemptFinished(attempt.state) : false;
         }
 
         return { warnings, attemptFinished, updated: !!options.updated || !!options.removeAttempt };
@@ -125,7 +125,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
      */
     async hasDataToSync(quizId: number, siteId?: string): Promise<boolean> {
         try {
-            const attempts = await AddonModQuizOffline.instance.getQuizAttempts(quizId, siteId);
+            const attempts = await AddonModQuizOffline.getQuizAttempts(quizId, siteId);
 
             return !!attempts.length;
         } catch {
@@ -155,19 +155,19 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         let shouldDownload = false;
 
         // Get the module updates to check if the data was updated or not.
-        const result = await CoreCourseModulePrefetchDelegate.instance.getModuleUpdates(module, courseId, true, siteId);
+        const result = await CoreCourseModulePrefetchDelegate.getModuleUpdates(module, courseId, true, siteId);
 
         if (result?.updates?.length) {
             // Only prefetch if files haven't changed.
             shouldDownload = !result.updates.find((entry) => entry.name.match(regex!));
 
             if (shouldDownload) {
-                await AddonModQuizPrefetchHandler.instance.download(module, courseId, undefined, false, false);
+                await AddonModQuizPrefetchHandler.download(module, courseId, undefined, false, false);
             }
         }
 
         // Prefetch finished or not needed, set the right status.
-        await AddonModQuizPrefetchHandler.instance.setStatusAfterPrefetch(quiz, {
+        await AddonModQuizPrefetchHandler.setStatusAfterPrefetch(quiz, {
             cmId: module.id,
             readingStrategy: shouldDownload ? CoreSitesReadingStrategy.PreferCache : undefined,
             siteId,
@@ -194,7 +194,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
      */
     protected async syncAllQuizzesFunc(siteId: string, force: boolean): Promise<void> {
         // Get all offline attempts.
-        const attempts = await AddonModQuizOffline.instance.getAllAttempts(siteId);
+        const attempts = await AddonModQuizOffline.getAllAttempts(siteId);
 
         const quizIds: Record<number, boolean> = {}; // To prevent duplicates.
 
@@ -206,12 +206,12 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             }
             quizIds[attempt.quizid] = true;
 
-            if (CoreSync.instance.isBlocked(AddonModQuizProvider.COMPONENT, attempt.quizid, siteId)) {
+            if (CoreSync.isBlocked(AddonModQuizProvider.COMPONENT, attempt.quizid, siteId)) {
                 return;
             }
 
             // Quiz not blocked, try to synchronize it.
-            const quiz = await AddonModQuiz.instance.getQuizById(attempt.courseid, attempt.quizid, { siteId });
+            const quiz = await AddonModQuiz.getQuizById(attempt.courseid, attempt.quizid, { siteId });
 
             const data = await (force ? this.syncQuiz(quiz, false, siteId) : this.syncQuizIfNeeded(quiz, false, siteId));
 
@@ -261,7 +261,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
      * @return Promise resolved in success.
      */
     syncQuiz(quiz: AddonModQuizQuizWSData, askPreflight?: boolean, siteId?: string): Promise<AddonModQuizSyncResult> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (this.isSyncing(quiz.id, siteId)) {
             // There's already a sync ongoing for this quiz, return the promise.
@@ -269,11 +269,11 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         }
 
         // Verify that quiz isn't blocked.
-        if (CoreSync.instance.isBlocked(AddonModQuizProvider.COMPONENT, quiz.id, siteId)) {
+        if (CoreSync.isBlocked(AddonModQuizProvider.COMPONENT, quiz.id, siteId)) {
             this.logger.debug('Cannot sync quiz ' + quiz.id + ' because it is blocked.');
-            this.componentTranslate = this.componentTranslate || CoreCourse.instance.translateModuleName('quiz');
+            this.componentTranslate = this.componentTranslate || CoreCourse.translateModuleName('quiz');
 
-            throw new CoreError(Translate.instance.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
+            throw new CoreError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
         return this.addOngoingSync(quiz.id, this.performSyncQuiz(quiz, askPreflight, siteId), siteId);
@@ -288,7 +288,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
      * @return Promise resolved in success.
      */
     async performSyncQuiz(quiz: AddonModQuizQuizWSData, askPreflight?: boolean, siteId?: string): Promise<AddonModQuizSyncResult> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const warnings: string[] = [];
         const courseId = quiz.course;
@@ -301,34 +301,34 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         this.logger.debug('Try to sync quiz ' + quiz.id + ' in site ' + siteId);
 
         // Sync offline logs.
-        await CoreUtils.instance.ignoreErrors(
-            CoreCourseLogHelper.instance.syncActivity(AddonModQuizProvider.COMPONENT, quiz.id, siteId),
+        await CoreUtils.ignoreErrors(
+            CoreCourseLogHelper.syncActivity(AddonModQuizProvider.COMPONENT, quiz.id, siteId),
         );
 
         // Get all the offline attempts for the quiz. It should always be 0 or 1 attempt
-        const offlineAttempts = await AddonModQuizOffline.instance.getQuizAttempts(quiz.id, siteId);
+        const offlineAttempts = await AddonModQuizOffline.getQuizAttempts(quiz.id, siteId);
 
         if (!offlineAttempts.length) {
             // Nothing to sync, finish.
             return this.finishSync(siteId, quiz, courseId, warnings);
         }
 
-        if (!CoreApp.instance.isOnline()) {
+        if (!CoreApp.isOnline()) {
             // Cannot sync in offline.
-            throw new CoreError(Translate.instance.instant('core.cannotconnect'));
+            throw new CoreError(Translate.instant('core.cannotconnect'));
         }
 
         const offlineAttempt = offlineAttempts.pop()!;
 
         // Now get the list of online attempts to make sure this attempt exists and isn't finished.
-        const onlineAttempts = await AddonModQuiz.instance.getUserAttempts(quiz.id, modOptions);
+        const onlineAttempts = await AddonModQuiz.getUserAttempts(quiz.id, modOptions);
 
         const lastAttemptId = onlineAttempts.length ? onlineAttempts[onlineAttempts.length - 1].id : undefined;
         const onlineAttempt = onlineAttempts.find((attempt) => attempt.id == offlineAttempt.id);
 
-        if (!onlineAttempt || AddonModQuiz.instance.isAttemptFinished(onlineAttempt.state)) {
+        if (!onlineAttempt || AddonModQuiz.isAttemptFinished(onlineAttempt.state)) {
             // Attempt not found or it's finished in online. Discard it.
-            warnings.push(Translate.instance.instant('addon.mod_quiz.warningattemptfinished'));
+            warnings.push(Translate.instant('addon.mod_quiz.warningattemptfinished'));
 
             return this.finishSync(siteId, quiz, courseId, warnings, {
                 attemptId: offlineAttempt.id,
@@ -339,7 +339,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         }
 
         // Get the data stored in offline.
-        const answersList = await AddonModQuizOffline.instance.getAttemptAnswers(offlineAttempt.id, siteId);
+        const answersList = await AddonModQuizOffline.getAttemptAnswers(offlineAttempt.id, siteId);
 
         if (!answersList.length) {
             // No answers stored, finish.
@@ -351,13 +351,13 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             });
         }
 
-        const offlineAnswers = CoreQuestion.instance.convertAnswersArrayToObject(answersList);
-        const offlineQuestions = AddonModQuizOffline.instance.classifyAnswersInQuestions(offlineAnswers);
+        const offlineAnswers = CoreQuestion.convertAnswersArrayToObject(answersList);
+        const offlineQuestions = AddonModQuizOffline.classifyAnswersInQuestions(offlineAnswers);
 
         // We're going to need preflightData, get it.
-        const info = await AddonModQuiz.instance.getQuizAccessInformation(quiz.id, modOptions);
+        const info = await AddonModQuiz.getQuizAccessInformation(quiz.id, modOptions);
 
-        const preflightData = await AddonModQuizPrefetchHandler.instance.getPreflightData(
+        const preflightData = await AddonModQuizPrefetchHandler.getPreflightData(
             quiz,
             info,
             onlineAttempt,
@@ -367,8 +367,8 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         );
 
         // Now get the online questions data.
-        const onlineQuestions = await AddonModQuiz.instance.getAllQuestionsData(quiz, onlineAttempt, preflightData, {
-            pages: AddonModQuiz.instance.getPagesFromLayoutAndQuestions(onlineAttempt.layout || '', offlineQuestions),
+        const onlineQuestions = await AddonModQuiz.getAllQuestionsData(quiz, onlineAttempt, preflightData, {
+            pages: AddonModQuiz.getPagesFromLayoutAndQuestions(onlineAttempt.layout || '', offlineQuestions),
             readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
             siteId,
         });
@@ -381,7 +381,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             const slot = Number(slotString);
             const onlineQuestion = onlineQuestions[slot];
 
-            await CoreQuestionDelegate.instance.prepareSyncData(
+            await CoreQuestionDelegate.prepareSyncData(
                 onlineQuestion,
                 offlineQuestions[slot].answers,
                 AddonModQuizProvider.COMPONENT,
@@ -391,24 +391,24 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         }));
 
         // Get the answers to send.
-        const answers = AddonModQuizOffline.instance.extractAnswersFromQuestions(offlineQuestions);
+        const answers = AddonModQuizOffline.extractAnswersFromQuestions(offlineQuestions);
         const finish = !!offlineAttempt.finished && !discardedData;
 
         if (discardedData) {
             if (offlineAttempt.finished) {
-                warnings.push(Translate.instance.instant('addon.mod_quiz.warningdatadiscardedfromfinished'));
+                warnings.push(Translate.instant('addon.mod_quiz.warningdatadiscardedfromfinished'));
             } else {
-                warnings.push(Translate.instance.instant('addon.mod_quiz.warningdatadiscarded'));
+                warnings.push(Translate.instant('addon.mod_quiz.warningdatadiscarded'));
             }
         }
 
         // Send the answers.
-        await AddonModQuiz.instance.processAttempt(quiz, onlineAttempt, answers, preflightData, finish, false, false, siteId);
+        await AddonModQuiz.processAttempt(quiz, onlineAttempt, answers, preflightData, finish, false, false, siteId);
 
         if (!finish) {
             // Answers sent, now set the current page.
             // Don't pass the quiz instance because we don't want to trigger a Firebase event in this case.
-            await CoreUtils.instance.ignoreErrors(AddonModQuiz.instance.logViewAttempt(
+            await CoreUtils.ignoreErrors(AddonModQuiz.logViewAttempt(
                 onlineAttempt.id,
                 offlineAttempt.currentpage,
                 preflightData,
@@ -454,9 +454,9 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
             if (onlineQuestion) {
                 // We found the online data for the question, validate that the sequence check is ok.
-                if (!CoreQuestionDelegate.instance.validateSequenceCheck(onlineQuestion, offlineSequenceCheck)) {
+                if (!CoreQuestionDelegate.validateSequenceCheck(onlineQuestion, offlineSequenceCheck)) {
                     // Sequence check is not valid, remove the offline data.
-                    await AddonModQuizOffline.instance.removeQuestionAndAnswers(attemptId, slot, siteId);
+                    await AddonModQuizOffline.removeQuestionAndAnswers(attemptId, slot, siteId);
 
                     discardedData = true;
                     delete offlineQuestions[slot];
@@ -468,7 +468,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
                 // Online question not found, it can happen for 2 reasons:
                 // 1- It's a sequential quiz and the question is in a page already passed.
                 // 2- Quiz layout has changed (shouldn't happen since it's blocked if there are attempts).
-                await AddonModQuizOffline.instance.removeQuestionAndAnswers(attemptId, slot, siteId);
+                await AddonModQuizOffline.removeQuestionAndAnswers(attemptId, slot, siteId);
 
                 discardedData = true;
                 delete offlineQuestions[slot];
@@ -480,7 +480,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
 }
 
-export class AddonModQuizSync extends makeSingleton(AddonModQuizSyncProvider) {}
+export const AddonModQuizSync = makeSingleton(AddonModQuizSyncProvider, ['component', 'syncInterval']);
 
 /**
  * Data returned by a quiz sync.

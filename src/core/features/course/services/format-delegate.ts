@@ -375,4 +375,4 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
 
 }
 
-export class CoreCourseFormatDelegate extends makeSingleton(CoreCourseFormatDelegateService) {}
+export const CoreCourseFormatDelegate = makeSingleton(CoreCourseFormatDelegateService);

@@ -39,7 +39,7 @@ export class AddonQbehaviourInteractiveCountbackHandlerService implements CoreQu
      */
     handleQuestion(question: CoreQuestionQuestionParsed): void {
         // Just extract the button, it doesn't need any specific component.
-        CoreQuestionHelper.instance.extractQbehaviourButtons(question);
+        CoreQuestionHelper.extractQbehaviourButtons(question);
     }
 
     /**
@@ -53,4 +53,4 @@ export class AddonQbehaviourInteractiveCountbackHandlerService implements CoreQu
 
 }
 
-export class AddonQbehaviourInteractiveCountbackHandler extends makeSingleton(AddonQbehaviourInteractiveCountbackHandlerService) {}
+export const AddonQbehaviourInteractiveCountbackHandler = makeSingleton(AddonQbehaviourInteractiveCountbackHandlerService);

@@ -63,7 +63,7 @@ export class CoreH5PProvider {
      * @since 3.8
      */
     async canGetTrustedH5PFile(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.canGetTrustedH5PFileInSite(site);
     }
@@ -76,7 +76,7 @@ export class CoreH5PProvider {
      * @since 3.8
      */
     canGetTrustedH5PFileInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!(site?.wsAvailable('core_h5p_get_trusted_h5p_file'));
     }
@@ -99,7 +99,7 @@ export class CoreH5PProvider {
 
         options = options || {};
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const data: CoreH5pGetTrustedH5pFileWSParams = {
             url: this.treatH5PUrl(url, site.getURL()),
@@ -157,7 +157,7 @@ export class CoreH5PProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateAllGetTrustedH5PFile(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getTrustedH5PFilePrefixCacheKey());
     }
@@ -170,7 +170,7 @@ export class CoreH5PProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateGetTrustedH5PFile(url: string, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getTrustedH5PFileCacheKey(url));
     }
@@ -182,7 +182,7 @@ export class CoreH5PProvider {
      * @return Promise resolved with boolean: whether is disabled.
      */
     async isOfflineDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.isOfflineDisabledInSite(site);
     }
@@ -194,7 +194,7 @@ export class CoreH5PProvider {
      * @return Whether is disabled.
      */
     isOfflineDisabledInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!(site?.isFeatureDisabled('NoDelegate_H5POffline'));
     }
@@ -207,16 +207,23 @@ export class CoreH5PProvider {
      * @return Treated url.
      */
     treatH5PUrl(url: string, siteUrl: string): string {
-        if (url.indexOf(CoreTextUtils.instance.concatenatePaths(siteUrl, '/webservice/pluginfile.php')) === 0) {
+        if (url.indexOf(CoreTextUtils.concatenatePaths(siteUrl, '/webservice/pluginfile.php')) === 0) {
             url = url.replace('/webservice/pluginfile', '/pluginfile');
         }
 
-        return CoreUrlUtils.instance.removeUrlParams(url);
+        return CoreUrlUtils.removeUrlParams(url);
     }
 
 }
 
-export class CoreH5P extends makeSingleton(CoreH5PProvider) {}
+export const CoreH5P = makeSingleton(CoreH5PProvider, [
+    'h5pCore',
+    'h5pFramework',
+    'h5pPlayer',
+    'h5pStorage',
+    'h5pValidator',
+    'queueRunner',
+]);
 
 /**
  * Params of core_h5p_get_trusted_h5p_file WS.

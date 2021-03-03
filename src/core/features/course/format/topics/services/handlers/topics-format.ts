@@ -37,4 +37,4 @@ export class CoreCourseFormatTopicsHandlerService implements CoreCourseFormatHan
 
 }
 
-export class CoreCourseFormatTopicsHandler extends makeSingleton(CoreCourseFormatTopicsHandlerService) {}
+export const CoreCourseFormatTopicsHandler = makeSingleton(CoreCourseFormatTopicsHandlerService);

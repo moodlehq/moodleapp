@@ -59,7 +59,7 @@ export class CoreLocalFileComponent implements OnInit {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.manage = CoreUtils.instance.isTrueOrOne(this.manage);
+        this.manage = CoreUtils.isTrueOrOne(this.manage);
 
         if (!this.file) {
             return;
@@ -68,12 +68,12 @@ export class CoreLocalFileComponent implements OnInit {
         this.loadFileBasicData(this.file);
 
         // Get the size and timemodified.
-        const metadata = await CoreFile.instance.getMetadata(this.file);
+        const metadata = await CoreFile.getMetadata(this.file);
         if (metadata.size >= 0) {
-            this.size = CoreTextUtils.instance.bytesToSize(metadata.size, 2);
+            this.size = CoreTextUtils.bytesToSize(metadata.size, 2);
         }
 
-        this.timemodified = CoreTimeUtils.instance.userDate(metadata.modificationTime.getTime(), 'core.strftimedatetimeshort');
+        this.timemodified = CoreTimeUtils.userDate(metadata.modificationTime.getTime(), 'core.strftimedatetimeshort');
 
     }
 
@@ -82,11 +82,11 @@ export class CoreLocalFileComponent implements OnInit {
      */
     protected loadFileBasicData(file: FileEntry): void {
         this.fileName = file.name;
-        this.fileIcon = CoreMimetypeUtils.instance.getFileIcon(file.name);
-        this.fileExtension = CoreMimetypeUtils.instance.getFileExtension(file.name);
+        this.fileIcon = CoreMimetypeUtils.getFileIcon(file.name);
+        this.fileExtension = CoreMimetypeUtils.getFileExtension(file.name);
 
         // Let's calculate the relative path for the file.
-        this.relativePath = CoreFile.instance.removeBasePath(file.toURL());
+        this.relativePath = CoreFile.removeBasePath(file.toURL());
         if (!this.relativePath) {
             // Didn't find basePath, use fullPath but if the user tries to manage the file it'll probably fail.
             this.relativePath = file.fullPath;
@@ -106,21 +106,21 @@ export class CoreLocalFileComponent implements OnInit {
         e.preventDefault();
         e.stopPropagation();
 
-        if (CoreUtils.instance.isTrueOrOne(this.overrideClick) && this.onClick.observers.length) {
+        if (CoreUtils.isTrueOrOne(this.overrideClick) && this.onClick.observers.length) {
             this.onClick.emit();
 
             return;
         }
 
-        if (!CoreFileHelper.instance.isOpenableInApp(this.file!)) {
+        if (!CoreFileHelper.isOpenableInApp(this.file!)) {
             try {
-                await CoreFileHelper.instance.showConfirmOpenUnsupportedFile();
+                await CoreFileHelper.showConfirmOpenUnsupportedFile();
             } catch (error) {
                 return; // Cancelled, stop.
             }
         }
 
-        CoreUtils.instance.openFile(this.file!.toURL());
+        CoreUtils.openFile(this.file!.toURL());
     }
 
     /**
@@ -149,34 +149,34 @@ export class CoreLocalFileComponent implements OnInit {
         if (newName == this.file!.name) {
             // Name hasn't changed, stop.
             this.editMode = false;
-            CoreDomUtils.instance.triggerFormCancelledEvent(this.formElement, CoreSites.instance.getCurrentSiteId());
+            CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
             return;
         }
 
-        const modal = await CoreDomUtils.instance.showModalLoading();
-        const fileAndDir = CoreFile.instance.getFileAndDirectoryFromPath(this.relativePath!);
-        const newPath = CoreTextUtils.instance.concatenatePaths(fileAndDir.directory, newName);
+        const modal = await CoreDomUtils.showModalLoading();
+        const fileAndDir = CoreFile.getFileAndDirectoryFromPath(this.relativePath!);
+        const newPath = CoreTextUtils.concatenatePaths(fileAndDir.directory, newName);
 
         try {
             // Check if there's a file with this name.
-            await CoreFile.instance.getFile(newPath);
+            await CoreFile.getFile(newPath);
 
             // There's a file with this name, show error and stop.
-            CoreDomUtils.instance.showErrorModal('core.errorfileexistssamename', true);
+            CoreDomUtils.showErrorModal('core.errorfileexistssamename', true);
         } catch {
             try {
                 // File doesn't exist, move it.
-                const fileEntry = await CoreFile.instance.moveFile(this.relativePath!, newPath);
+                const fileEntry = await CoreFile.moveFile(this.relativePath!, newPath);
 
-                CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, false, CoreSites.instance.getCurrentSiteId());
+                CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
                 this.editMode = false;
                 this.file = fileEntry;
                 this.loadFileBasicData(this.file);
                 this.onRename.emit({ file: this.file });
             } catch (error) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.errorrenamefile', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.errorrenamefile', true);
             }
         } finally {
             modal.dismiss();
@@ -196,15 +196,15 @@ export class CoreLocalFileComponent implements OnInit {
 
         try {
             // Ask confirmation.
-            await CoreDomUtils.instance.showDeleteConfirm('core.confirmdeletefile');
+            await CoreDomUtils.showDeleteConfirm('core.confirmdeletefile');
 
-            modal = await CoreDomUtils.instance.showModalLoading('core.deleting', true);
+            modal = await CoreDomUtils.showModalLoading('core.deleting', true);
 
-            await CoreFile.instance.removeFile(this.relativePath!);
+            await CoreFile.removeFile(this.relativePath!);
 
             this.onDelete.emit();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.errordeletefile', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.errordeletefile', true);
         } finally {
             modal?.dismiss();
         }

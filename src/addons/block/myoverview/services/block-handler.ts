@@ -35,8 +35,8 @@ export class AddonBlockMyOverviewHandlerService extends CoreBlockBaseHandler {
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
-        return (CoreSites.instance.getCurrentSite()?.isVersionGreaterEqualThan('3.6')) ||
-            !CoreCourses.instance.isMyCoursesDisabledInSite();
+        return (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.6')) ||
+            !CoreCourses.isMyCoursesDisabledInSite();
     }
 
     /**
@@ -55,4 +55,4 @@ export class AddonBlockMyOverviewHandlerService extends CoreBlockBaseHandler {
 
 }
 
-export class AddonBlockMyOverviewHandler extends makeSingleton(AddonBlockMyOverviewHandlerService) {}
+export const AddonBlockMyOverviewHandler = makeSingleton(AddonBlockMyOverviewHandlerService);

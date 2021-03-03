@@ -75,7 +75,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.tagsEnabled = CoreTag.instance.areTagsAvailableInSite();
+        this.tagsEnabled = CoreTag.areTagsAvailableInSite();
         this.loadContent();
     }
 
@@ -84,7 +84,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      */
     async showToc(): Promise<void> {
         // Create the toc modal.
-        const modal = await ModalController.instance.create({
+        const modal = await ModalController.create({
             component: AddonModBookTocComponent,
             componentProps: {
                 moduleId: this.module!.id,
@@ -130,7 +130,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      * @return Resolved when done.
      */
     protected invalidateContent(): Promise<void> {
-        return AddonModBook.instance.invalidateContent(this.module!.id, this.courseId!);
+        return AddonModBook.invalidateContent(this.module!.id, this.courseId!);
     }
 
     /**
@@ -144,7 +144,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         let downloadResult: CoreCourseResourceDownloadResult | undefined;
 
         // Try to get the book data. Ignore errors since this WS isn't available in some Moodle versions.
-        promises.push(CoreUtils.instance.ignoreErrors(AddonModBook.instance.getBook(this.courseId!, this.module!.id))
+        promises.push(CoreUtils.ignoreErrors(AddonModBook.getBook(this.courseId!, this.module!.id))
             .then((book) => {
                 if (!book) {
                     return;
@@ -170,8 +170,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         try {
             await Promise.all(promises);
 
-            this.contentsMap = AddonModBook.instance.getContentsMap(this.module!.contents);
-            this.chapters = AddonModBook.instance.getTocList(this.module!.contents);
+            this.contentsMap = AddonModBook.getContentsMap(this.module!.contents);
+            this.chapters = AddonModBook.getTocList(this.module!.contents);
 
             if (typeof this.currentChapter == 'undefined' && typeof this.initialChapterId != 'undefined' && this.chapters) {
                 // Initial chapter set. Validate that the chapter exists.
@@ -184,7 +184,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
             if (typeof this.currentChapter == 'undefined') {
                 // Load the first chapter.
-                this.currentChapter = AddonModBook.instance.getFirstChapter(this.chapters);
+                this.currentChapter = AddonModBook.getFirstChapter(this.chapters);
             }
 
             // Show chapter.
@@ -212,23 +212,23 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         this.content?.scrollToTop();
 
         try {
-            const content = await AddonModBook.instance.getChapterContent(this.contentsMap, chapterId, this.module!.id);
+            const content = await AddonModBook.getChapterContent(this.contentsMap, chapterId, this.module!.id);
 
             this.tags = this.tagsEnabled ? this.contentsMap[this.currentChapter].tags : [];
 
             this.chapterContent = content;
-            this.previousChapter = AddonModBook.instance.getPreviousChapter(this.chapters, chapterId);
-            this.nextChapter = AddonModBook.instance.getNextChapter(this.chapters, chapterId);
+            this.previousChapter = AddonModBook.getPreviousChapter(this.chapters, chapterId);
+            this.nextChapter = AddonModBook.getNextChapter(this.chapters, chapterId);
 
             this.previousNavBarTitle = this.previousChapter && this.displayTitlesInNavBar
-                ? Translate.instance.instant('addon.mod_book.navprevtitle', { $a: this.previousChapter.title })
+                ? Translate.instant('addon.mod_book.navprevtitle', { $a: this.previousChapter.title })
                 : '';
             this.nextNavBarTitle = this.nextChapter && this.displayTitlesInNavBar
-                ? Translate.instance.instant('addon.mod_book.navnexttitle', { $a: this.nextChapter.title })
+                ? Translate.instant('addon.mod_book.navnexttitle', { $a: this.nextChapter.title })
                 : '';
 
             // Chapter loaded, log view. We don't return the promise because we don't want to block the user for this.
-            await CoreUtils.instance.ignoreErrors(AddonModBook.instance.logView(
+            await CoreUtils.ignoreErrors(AddonModBook.logView(
                 this.module!.instance!,
                 logChapterId ? chapterId : undefined,
                 this.module!.name,
@@ -236,10 +236,10 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
             // Module is completed when last chapter is viewed, so we only check completion if the last is reached.
             if (!this.nextChapter) {
-                CoreCourse.instance.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+                CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.mod_book.errorchapter', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_book.errorchapter', true);
 
             throw error;
         } finally {

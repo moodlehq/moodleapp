@@ -22,7 +22,7 @@ import { AddonBlockHtmlHandler } from './services/block-handler';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockHtmlHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockHtmlHandler.instance);
             },
         },
     ],

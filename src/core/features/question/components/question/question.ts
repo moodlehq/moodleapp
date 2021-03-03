@@ -65,18 +65,18 @@ export class CoreQuestionComponent implements OnInit {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.offlineEnabled = CoreUtils.instance.isTrueOrOne(this.offlineEnabled);
+        this.offlineEnabled = CoreUtils.isTrueOrOne(this.offlineEnabled);
 
         if (!this.question || (this.question.type != 'random' &&
-                !CoreQuestionDelegate.instance.isQuestionSupported(this.question.type))) {
+                !CoreQuestionDelegate.isQuestionSupported(this.question.type))) {
             this.loaded = true;
 
             return;
         }
 
         // Get the component to render the question.
-        this.componentClass = await CoreUtils.instance.ignoreErrors(
-            CoreQuestionDelegate.instance.getComponentForQuestion(this.question),
+        this.componentClass = await CoreUtils.ignoreErrors(
+            CoreQuestionDelegate.getComponentForQuestion(this.question),
         );
 
         if (!this.componentClass) {
@@ -100,29 +100,29 @@ export class CoreQuestionComponent implements OnInit {
         };
 
         // Treat the question.
-        CoreQuestionHelper.instance.extractQuestionScripts(this.question, this.usageId);
+        CoreQuestionHelper.extractQuestionScripts(this.question, this.usageId);
 
         // Handle question behaviour.
-        const behaviour = CoreQuestionDelegate.instance.getBehaviourForQuestion(
+        const behaviour = CoreQuestionDelegate.getBehaviourForQuestion(
             this.question,
             this.preferredBehaviour || '',
         );
-        if (!CoreQuestionBehaviourDelegate.instance.isBehaviourSupported(behaviour)) {
+        if (!CoreQuestionBehaviourDelegate.isBehaviourSupported(behaviour)) {
             // Behaviour not supported, abort.
             this.logger.warn('Aborting question because the behaviour is not supported.', this.question.slot);
-            CoreQuestionHelper.instance.showComponentError(
+            CoreQuestionHelper.showComponentError(
                 this.onAbort,
-                Translate.instance.instant('addon.mod_quiz.errorbehaviournotsupported') + ' ' + behaviour,
+                Translate.instant('addon.mod_quiz.errorbehaviournotsupported') + ' ' + behaviour,
             );
 
             return;
         }
 
         // Get the sequence check (hidden input). This is required.
-        this.seqCheck = CoreQuestionHelper.instance.getQuestionSequenceCheckFromHtml(this.question.html);
+        this.seqCheck = CoreQuestionHelper.getQuestionSequenceCheckFromHtml(this.question.html);
         if (!this.seqCheck) {
             this.logger.warn('Aborting question because couldn\'t retrieve sequence check.', this.question.slot);
-            CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            CoreQuestionHelper.showComponentError(this.onAbort);
 
             return;
         }
@@ -130,31 +130,31 @@ export class CoreQuestionComponent implements OnInit {
 
         // Load local answers if offline is enabled.
         if (this.offlineEnabled && this.component && this.attemptId) {
-            await CoreQuestionHelper.instance.loadLocalAnswers(this.question, this.component, this.attemptId);
+            await CoreQuestionHelper.loadLocalAnswers(this.question, this.component, this.attemptId);
         } else {
             this.question.localAnswers = {};
         }
 
-        CoreQuestionHelper.instance.extractQbehaviourRedoButton(this.question);
+        CoreQuestionHelper.extractQbehaviourRedoButton(this.question);
 
         // Extract the validation error of the question.
-        this.validationError = CoreQuestionHelper.instance.getValidationErrorFromHtml(this.question.html);
+        this.validationError = CoreQuestionHelper.getValidationErrorFromHtml(this.question.html);
 
         // Load the local answers in the HTML.
-        CoreQuestionHelper.instance.loadLocalAnswersInHtml(this.question);
+        CoreQuestionHelper.loadLocalAnswersInHtml(this.question);
 
         // Try to extract the feedback and comment for the question.
-        CoreQuestionHelper.instance.extractQuestionFeedback(this.question);
-        CoreQuestionHelper.instance.extractQuestionComment(this.question);
+        CoreQuestionHelper.extractQuestionFeedback(this.question);
+        CoreQuestionHelper.extractQuestionComment(this.question);
 
         try {
             // Handle behaviour.
-            this.behaviourComponents = await CoreQuestionBehaviourDelegate.instance.handleQuestion(
+            this.behaviourComponents = await CoreQuestionBehaviourDelegate.handleQuestion(
                 this.preferredBehaviour || '',
                 this.question,
             );
         } finally {
-            this.question.html = CoreDomUtils.instance.removeElementFromHtml(this.question.html, '.im-controls');
+            this.question.html = CoreDomUtils.removeElementFromHtml(this.question.html, '.im-controls');
             this.loaded = true;
         }
     }

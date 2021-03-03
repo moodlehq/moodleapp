@@ -45,7 +45,7 @@ export class CoreCourseTagAreaHandlerService implements CoreTagAreaHandler {
      */
     parseContent(content: string): CoreCouseTagItems[] {
         const items: CoreCouseTagItems[] = [];
-        const element = CoreDomUtils.instance.convertToElement(content);
+        const element = CoreDomUtils.convertToElement(content);
 
         Array.from(element.querySelectorAll('div.coursebox')).forEach((coursebox) => {
             const courseId = parseInt(coursebox.getAttribute('data-courseid') || '', 10);
@@ -75,7 +75,7 @@ export class CoreCourseTagAreaHandlerService implements CoreTagAreaHandler {
 
 }
 
-export class CoreCourseTagAreaHandler extends makeSingleton(CoreCourseTagAreaHandlerService) {}
+export const CoreCourseTagAreaHandler = makeSingleton(CoreCourseTagAreaHandlerService);
 
 export type CoreCouseTagItems = {
     courseId: number;

@@ -29,4 +29,4 @@ export class CoreCourseFormatSocialHandlerService extends CoreCourseFormatSingle
 
 }
 
-export class CoreCourseFormatSocialHandler extends makeSingleton(CoreCourseFormatSocialHandlerService) {}
+export const CoreCourseFormatSocialHandler = makeSingleton(CoreCourseFormatSocialHandlerService);

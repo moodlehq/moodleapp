@@ -52,7 +52,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     protected pictureObserver: CoreEventObserver;
 
     constructor() {
-        this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
+        this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         this.pictureObserver = CoreEvents.on<CoreUserProfilePictureUpdatedData>(
             CoreUserProvider.PROFILE_PICTURE_UPDATED,
@@ -61,7 +61,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
                     this.avatarUrl = data.picture;
                 }
             },
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
     }
 
@@ -109,7 +109,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
             return false;
         }
 
-        if (CoreUtils.instance.isFalseOrZero(this.user.isonline)) {
+        if (CoreUtils.isFalseOrZero(this.user.isonline)) {
             return false;
         }
 
@@ -120,7 +120,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
             return this.user.lastaccess * 1000 >= time;
         } else {
             // You have to have Internet access first.
-            return !!this.user.isonline && CoreApp.instance.isOnline();
+            return !!this.user.isonline && CoreApp.isOnline();
         }
     }
 
@@ -138,7 +138,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
         event.stopPropagation();
 
         // @todo Decide which navCtrl to use. If this component is inside a split view, use the split view's master nav.
-        CoreNavigator.instance.navigateToSitePath('user', {
+        CoreNavigator.navigateToSitePath('user', {
             params: {
                 userId: this.userId,
                 courseId: this.courseId,

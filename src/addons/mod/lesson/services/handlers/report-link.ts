@@ -81,7 +81,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
             return false;
         }
 
-        return AddonModLesson.instance.isPluginEnabled(siteId);
+        return AddonModLesson.isPluginEnabled(siteId);
     }
 
     /**
@@ -96,11 +96,11 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
      */
     protected async openReportOverview(moduleId: number, courseId?: number, groupId?: number, siteId?: string): Promise<void> {
 
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
             // Get the module object.
-            const module = await CoreCourse.instance.getModuleBasicInfo(moduleId, siteId);
+            const module = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
 
             const params = {
                 module: module,
@@ -109,9 +109,9 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
                 group: groupId === undefined || isNaN(groupId) ? null : groupId,
             };
 
-            CoreNavigator.instance.navigateToSitePath(AddonModLessonModuleHandlerService.PAGE_NAME, { params, siteId });
+            CoreNavigator.navigateToSitePath(AddonModLessonModuleHandlerService.PAGE_NAME, { params, siteId });
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error processing link.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error processing link.');
         } finally {
             modal.dismiss();
         }
@@ -137,11 +137,11 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
         courseId?: number,
     ): Promise<void> {
 
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
             // Get the module object.
-            const module = await CoreCourse.instance.getModuleBasicInfo(moduleId, siteId);
+            const module = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
 
             courseId = courseId || module.course;
             const params = {
@@ -149,12 +149,12 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
                 retake: retake || 0,
             };
 
-            CoreNavigator.instance.navigateToSitePath(
+            CoreNavigator.navigateToSitePath(
                 AddonModLessonModuleHandlerService.PAGE_NAME + `/user-retake/${courseId}/${module.instance}`,
                 { params, siteId },
             );
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error processing link.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error processing link.');
         } finally {
             modal.dismiss();
         }
@@ -162,4 +162,4 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
 
 }
 
-export class AddonModLessonReportLinkHandler extends makeSingleton(AddonModLessonReportLinkHandlerService) {}
+export const AddonModLessonReportLinkHandler = makeSingleton(AddonModLessonReportLinkHandlerService);

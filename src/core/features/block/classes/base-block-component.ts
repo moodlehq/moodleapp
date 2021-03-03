@@ -52,12 +52,12 @@ export abstract class CoreBlockBaseComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         if (this.block.configs && this.block.configs.length > 0) {
             this.block.configs.map((config) => {
-                config.value = CoreTextUtils.instance.parseJSON(config.value);
+                config.value = CoreTextUtils.parseJSON(config.value);
 
                 return config;
             });
 
-            this.block.configsRecord = CoreUtils.instance.arrayToObject(this.block.configs, 'name');
+            this.block.configsRecord = CoreUtils.arrayToObject(this.block.configs, 'name');
         }
 
         await this.loadContent();
@@ -124,7 +124,7 @@ export abstract class CoreBlockBaseComponent implements OnInit {
             this.logger.error(error);
 
             // Error getting data, fail.
-            CoreDomUtils.instance.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         }
 
         this.loaded = true;

@@ -38,7 +38,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        if (!AddonModForum.instance.isSetPinStateAvailableForSite()) {
+        if (!AddonModForum.isSetPinStateAvailableForSite()) {
             this.canPin = false;
 
             return;
@@ -46,7 +46,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
 
         // Use the canAddDiscussion WS to check if the user can pin discussions.
         try {
-            const response = await AddonModForum.instance.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
+            const response = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
 
             this.canPin = !!response.canpindiscussions;
         } catch (error) {
@@ -60,10 +60,10 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
      * @param locked True to lock the discussion, false to unlock.
      */
     async setLockState(locked: boolean): Promise<void> {
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {
-            const response = await AddonModForum.instance.setLockState(this.forumId, this.discussion.discussion, locked);
+            const response = await AddonModForum.setLockState(this.forumId, this.discussion.discussion, locked);
             const data = {
                 forumId: this.forumId,
                 discussionId: this.discussion.discussion,
@@ -71,12 +71,12 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
                 locked: response.locked,
             };
 
-            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.instance.getCurrentSiteId());
-            PopoverController.instance.dismiss({ action: 'lock', value: locked });
-            CoreDomUtils.instance.showToast('addon.mod_forum.lockupdated', true);
+            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
+            PopoverController.dismiss({ action: 'lock', value: locked });
+            CoreDomUtils.showToast('addon.mod_forum.lockupdated', true);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
-            PopoverController.instance.dismiss();
+            CoreDomUtils.showErrorModal(error);
+            PopoverController.dismiss();
         } finally {
             modal.dismiss();
         }
@@ -88,10 +88,10 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
      * @param pinned True to pin the discussion, false to unpin it.
      */
     async setPinState(pinned: boolean): Promise<void> {
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {
-            await AddonModForum.instance.setPinState(this.discussion.discussion, pinned);
+            await AddonModForum.setPinState(this.discussion.discussion, pinned);
 
             const data = {
                 forumId: this.forumId,
@@ -100,12 +100,12 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
                 pinned: pinned,
             };
 
-            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.instance.getCurrentSiteId());
-            PopoverController.instance.dismiss({ action: 'pin', value: pinned });
-            CoreDomUtils.instance.showToast('addon.mod_forum.pinupdated', true);
+            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
+            PopoverController.dismiss({ action: 'pin', value: pinned });
+            CoreDomUtils.showToast('addon.mod_forum.pinupdated', true);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
-            PopoverController.instance.dismiss();
+            CoreDomUtils.showErrorModal(error);
+            PopoverController.dismiss();
         } finally {
             modal.dismiss();
         }
@@ -117,10 +117,10 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
      * @param starred True to star the discussion, false to unstar it.
      */
     async toggleFavouriteState(starred: boolean): Promise<void> {
-        const modal = await CoreDomUtils.instance.showModalLoading('core.sending', true);
+        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {
-            await AddonModForum.instance.toggleFavouriteState(this.discussion.discussion, starred);
+            await AddonModForum.toggleFavouriteState(this.discussion.discussion, starred);
 
             const data = {
                 forumId: this.forumId,
@@ -129,12 +129,12 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
                 starred: starred,
             };
 
-            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.instance.getCurrentSiteId());
-            PopoverController.instance.dismiss({ action: 'star', value: starred });
-            CoreDomUtils.instance.showToast('addon.mod_forum.favouriteupdated', true);
+            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
+            PopoverController.dismiss({ action: 'star', value: starred });
+            CoreDomUtils.showToast('addon.mod_forum.favouriteupdated', true);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
-            PopoverController.instance.dismiss();
+            CoreDomUtils.showErrorModal(error);
+            PopoverController.dismiss();
         } finally {
             modal.dismiss();
         }

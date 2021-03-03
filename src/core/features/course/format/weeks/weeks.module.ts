@@ -26,7 +26,7 @@ import { CoreCourseFormatWeeksHandler } from './services/handlers/weeks-format';
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreCourseFormatDelegate.instance.registerHandler(CoreCourseFormatWeeksHandler.instance);
+                CoreCourseFormatDelegate.registerHandler(CoreCourseFormatWeeksHandler.instance);
             },
         },
     ],

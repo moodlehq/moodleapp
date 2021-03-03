@@ -37,8 +37,8 @@ const mainMenuHomeRoutes: Routes = [
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreContentLinksDelegate.instance.registerHandler(CoreSiteHomeIndexLinkHandler.instance);
-                CoreMainMenuHomeDelegate.instance.registerHandler(CoreSiteHomeHomeHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreSiteHomeIndexLinkHandler.instance);
+                CoreMainMenuHomeDelegate.registerHandler(CoreSiteHomeHomeHandler.instance);
             },
         },
     ],

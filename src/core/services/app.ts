@@ -66,7 +66,7 @@ export class CoreAppProvider {
 
     constructor() {
         this.schemaVersionsManager = new Promise(resolve => this.resolveSchemaVersionsManager = resolve);
-        this.db = CoreDB.instance.getDB(DBNAME);
+        this.db = CoreDB.getDB(DBNAME);
         this.logger = CoreLogger.getInstance('CoreAppProvider');
 
         // @todo
@@ -131,7 +131,7 @@ export class CoreAppProvider {
      */
     closeKeyboard(): void {
         if (this.isMobile()) {
-            Keyboard.instance.hide();
+            Keyboard.hide();
         }
     }
 
@@ -214,7 +214,7 @@ export class CoreAppProvider {
             return 0;
         }
 
-        return Number(Device.instance.version?.split('.')[0]);
+        return Number(Device.version?.split('.')[0]);
     }
 
     /**
@@ -233,7 +233,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in an Android mobile or tablet device.
      */
     isAndroid(): boolean {
-        return this.isMobile() && Platform.instance.is('android');
+        return this.isMobile() && Platform.is('android');
     }
 
     /**
@@ -252,7 +252,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in an iOS mobile or tablet device.
      */
     isIOS(): boolean {
-        return this.isMobile() && !Platform.instance.is('android');
+        return this.isMobile() && !Platform.is('android');
     }
 
     /**
@@ -318,7 +318,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in a mobile or tablet device.
      */
     isMobile(): boolean {
-        return Platform.instance.is('cordova');
+        return Platform.is('cordova');
     }
 
     /**
@@ -327,7 +327,7 @@ export class CoreAppProvider {
      * @return Whether the app the current window is wider than a mobile.
      */
     isWide(): boolean {
-        return Platform.instance.width() > 768;
+        return Platform.width() > 768;
     }
 
     /**
@@ -340,8 +340,8 @@ export class CoreAppProvider {
             return false;
         }
 
-        let online = Network.instance.type !== null && Network.instance.type != Network.instance.Connection.NONE &&
-            Network.instance.type != Network.instance.Connection.UNKNOWN;
+        let online = Network.type !== null && Network.type != Network.Connection.NONE &&
+            Network.type != Network.Connection.UNKNOWN;
 
         // Double check we are not online because we cannot rely 100% in Cordova APIs. Also, check it in browser.
         if (!online && navigator.onLine) {
@@ -357,17 +357,17 @@ export class CoreAppProvider {
      * @return Whether the device uses a limited connection.
      */
     isNetworkAccessLimited(): boolean {
-        const type = Network.instance.type;
+        const type = Network.type;
         if (type === null) {
             // Plugin not defined, probably in browser.
             return false;
         }
 
         const limited = [
-            Network.instance.Connection.CELL_2G,
-            Network.instance.Connection.CELL_3G,
-            Network.instance.Connection.CELL_4G,
-            Network.instance.Connection.CELL,
+            Network.Connection.CELL_2G,
+            Network.Connection.CELL_3G,
+            Network.Connection.CELL_4G,
+            Network.Connection.CELL,
         ];
 
         return limited.indexOf(type) > -1;
@@ -398,7 +398,7 @@ export class CoreAppProvider {
     openKeyboard(): void {
         // Open keyboard is not supported in desktop and in iOS.
         if (this.isAndroid()) {
-            Keyboard.instance.show();
+            Keyboard.show();
         }
     }
 
@@ -457,7 +457,7 @@ export class CoreAppProvider {
      * NOT when the browser is opened.
      */
     startSSOAuthentication(): void {
-        this.ssoAuthenticationDeferred = CoreUtils.instance.promiseDefer<void>();
+        this.ssoAuthenticationDeferred = CoreUtils.promiseDefer<void>();
 
         // Resolve it automatically after 10 seconds (it should never take that long).
         const cancelTimeout = setTimeout(() => this.finishSSOAuthentication(), 10000);
@@ -503,7 +503,7 @@ export class CoreAppProvider {
      * @param timeout Maximum time to wait, use null to wait forever.
      */
     async waitForResume(timeout: number | null = null): Promise<void> {
-        let deferred: PromiseDefer<void> | null = CoreUtils.instance.promiseDefer<void>();
+        let deferred: PromiseDefer<void> | null = CoreUtils.promiseDefer<void>();
 
         const stopWaiting = () => {
             if (!deferred) {
@@ -517,7 +517,7 @@ export class CoreAppProvider {
             deferred = null;
         };
 
-        const resumeSubscription = Platform.instance.resume.subscribe(stopWaiting);
+        const resumeSubscription = Platform.resume.subscribe(stopWaiting);
         const timeoutId = timeout ? setTimeout(stopWaiting, timeout) : false;
 
         await deferred.promise;
@@ -669,7 +669,7 @@ export class CoreAppProvider {
 
 }
 
-export class CoreApp extends makeSingleton(CoreAppProvider) {}
+export const CoreApp = makeSingleton(CoreAppProvider, ['isAndroid']);
 
 /**
  * Data stored for a redirect to another page/site.

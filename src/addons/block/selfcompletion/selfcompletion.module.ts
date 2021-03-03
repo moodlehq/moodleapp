@@ -28,7 +28,7 @@ import { AddonBlockSelfCompletionHandler } from './services/block-handler';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockSelfCompletionHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockSelfCompletionHandler.instance);
             },
         },
     ],

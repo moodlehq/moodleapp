@@ -45,7 +45,7 @@ export class CoreLoginSitesPage implements OnInit {
      * @return Promise resolved when done.
      */
     async ngOnInit(): Promise<void> {
-        const sites = await CoreUtils.instance.ignoreErrors(CoreSites.instance.getSortedSites(), [] as CoreSiteBasicInfo[]);
+        const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
 
         // Remove protocol from the url to show more url text.
         this.sites = sites.map((site) => {
@@ -63,7 +63,7 @@ export class CoreLoginSitesPage implements OnInit {
      * Go to the page to add a site.
      */
     add(): void {
-        CoreLoginHelper.instance.goToAddSite(false, true);
+        CoreLoginHelper.goToAddSite(false, true);
     }
 
     /**
@@ -81,28 +81,28 @@ export class CoreLoginSitesPage implements OnInit {
         // @todo: Format text: siteName.
 
         try {
-            await CoreDomUtils.instance.showDeleteConfirm('core.login.confirmdeletesite', { sitename: siteName });
+            await CoreDomUtils.showDeleteConfirm('core.login.confirmdeletesite', { sitename: siteName });
         } catch (error) {
             // User cancelled, stop.
             return;
         }
 
         try {
-            await CoreSites.instance.deleteSite(site.id);
+            await CoreSites.deleteSite(site.id);
 
             const index = this.sites.findIndex((listedSite) => listedSite.id == site.id);
             index >= 0 && this.sites.splice(index, 1);
             this.showDelete = false;
 
             // If there are no sites left, go to add site.
-            const hasSites = await CoreSites.instance.hasSites();
+            const hasSites = await CoreSites.hasSites();
 
             if (!hasSites) {
-                CoreLoginHelper.instance.goToAddSite(true, true);
+                CoreLoginHelper.goToAddSite(true, true);
             }
         } catch (error) {
             this.logger.error('Error deleting site ' + site.id, error);
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.login.errordeletesite', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.login.errordeletesite', true);
         }
     }
 
@@ -113,19 +113,19 @@ export class CoreLoginSitesPage implements OnInit {
      * @return Promise resolved when done.
      */
     async login(siteId: string): Promise<void> {
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const loggedIn = await CoreSites.instance.loadSite(siteId);
+            const loggedIn = await CoreSites.loadSite(siteId);
 
             if (loggedIn) {
-                await CoreNavigator.instance.navigateToSiteHome();
+                await CoreNavigator.navigateToSiteHome();
 
                 return;
             }
         } catch (error) {
             this.logger.error('Error loading site ' + siteId, error);
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading site.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading site.');
         } finally {
             modal.dismiss();
         }

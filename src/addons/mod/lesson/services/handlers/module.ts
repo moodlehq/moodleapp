@@ -53,7 +53,7 @@ export class AddonModLessonModuleHandlerService implements CoreCourseModuleHandl
      * @return Promise resolved with boolean: whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean> {
-        return AddonModLesson.instance.isPluginEnabled();
+        return AddonModLesson.isPluginEnabled();
     }
 
     /**
@@ -72,7 +72,7 @@ export class AddonModLessonModuleHandlerService implements CoreCourseModuleHandl
         forCoursePage?: boolean, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): CoreCourseModuleHandlerData {
         return {
-            icon: CoreCourse.instance.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
+            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
             title: module.name,
             class: 'addon-mod_lesson-handler',
             showDownloadButton: true,
@@ -82,7 +82,7 @@ export class AddonModLessonModuleHandlerService implements CoreCourseModuleHandl
                 Object.assign(options.params, { module });
                 const routeParams = '/' + courseId + '/' + module.id;
 
-                CoreNavigator.instance.navigateToSitePath(AddonModLessonModuleHandlerService.PAGE_NAME + routeParams, options);
+                CoreNavigator.navigateToSitePath(AddonModLessonModuleHandlerService.PAGE_NAME + routeParams, options);
             },
         };
     }
@@ -102,4 +102,4 @@ export class AddonModLessonModuleHandlerService implements CoreCourseModuleHandl
 
 }
 
-export class AddonModLessonModuleHandler extends makeSingleton(AddonModLessonModuleHandlerService) {}
+export const AddonModLessonModuleHandler = makeSingleton(AddonModLessonModuleHandlerService);

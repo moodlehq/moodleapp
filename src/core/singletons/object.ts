@@ -38,7 +38,7 @@ export class CoreObject {
      * @param keys Keys to remove from the new object.
      * @return New object without the specified keys.
      */
-    static without<T, K extends keyof T>(obj: T, keys: K[]): Omit<T, keyof { [k in K]: unknown }> {
+    static without<T, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
         const newObject: T = { ...obj };
 
         for (const key of keys) {

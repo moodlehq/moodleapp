@@ -44,9 +44,9 @@ const routes: Routes = [
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreCronDelegate.instance.register(CoreCommentsSyncCronHandler.instance);
+                CoreCronDelegate.register(CoreCommentsSyncCronHandler.instance);
 
-                CoreComments.instance.initialize();
+                CoreComments.initialize();
             },
         },
     ],

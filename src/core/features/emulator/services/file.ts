@@ -58,7 +58,7 @@ export class FileMock extends File {
      * @return Returns a Promise that resolves to true if the directory exists or rejects with an error.
      */
     async checkDir(path: string, dir: string): Promise<boolean> {
-        const fullPath = CoreTextUtils.instance.concatenatePaths(path, dir);
+        const fullPath = CoreTextUtils.concatenatePaths(path, dir);
 
         await this.resolveDirectoryUrl(fullPath);
 
@@ -73,7 +73,7 @@ export class FileMock extends File {
      * @return Returns a Promise that resolves with a boolean or rejects with an error.
      */
     async checkFile(path: string, file: string): Promise<boolean> {
-        const entry = await this.resolveLocalFilesystemUrl(CoreTextUtils.instance.concatenatePaths(path, file));
+        const entry = await this.resolveLocalFilesystemUrl(CoreTextUtils.concatenatePaths(path, file));
 
         if (entry.isFile) {
             return true;
@@ -144,7 +144,7 @@ export class FileMock extends File {
     async copyFileOrDir(sourcePath: string, sourceName: string, destPath: string, destName: string): Promise<Entry> {
         const destFixed = this.fixPathAndName(destPath, destName);
 
-        const source = await this.resolveLocalFilesystemUrl(CoreTextUtils.instance.concatenatePaths(sourcePath, sourceName));
+        const source = await this.resolveLocalFilesystemUrl(CoreTextUtils.concatenatePaths(sourcePath, sourceName));
 
         const destParentDir = await this.resolveDirectoryUrl(destFixed.path);
 
@@ -424,7 +424,7 @@ export class FileMock extends File {
     async moveFileOrDir(sourcePath: string, sourceName: string, destPath: string, destName: string): Promise<Entry> {
         const destFixed = this.fixPathAndName(destPath, destName);
 
-        const source = await this.resolveLocalFilesystemUrl(CoreTextUtils.instance.concatenatePaths(sourcePath, sourceName));
+        const source = await this.resolveLocalFilesystemUrl(CoreTextUtils.concatenatePaths(sourcePath, sourceName));
 
         const destParentDir = await this.resolveDirectoryUrl(destFixed.path);
 
@@ -440,7 +440,7 @@ export class FileMock extends File {
      */
     protected fixPathAndName(path: string, name: string): {path: string; name: string} {
 
-        const fullPath = CoreTextUtils.instance.concatenatePaths(path, name);
+        const fullPath = CoreTextUtils.concatenatePaths(path, name);
 
         return {
             path: fullPath.substring(0, fullPath.lastIndexOf('/')),

@@ -46,13 +46,13 @@ export class CoreEmulatorHelperProvider {
         window.FileTransferError = FileTransferErrorMock;
 
         promises.push((<FileMock> this.file).load().then((basePath: string) => {
-            CoreFile.instance.setHTMLBasePath(basePath);
+            CoreFile.setHTMLBasePath(basePath);
 
             return;
         }));
 
 
-        return CoreUtils.instance.allPromises(promises);
+        return CoreUtils.allPromises(promises);
     }
 
 }

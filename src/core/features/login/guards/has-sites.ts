@@ -42,14 +42,14 @@ export class CoreLoginHasSitesGuard implements CanActivate, CanLoad {
      * Check if the user has any sites stored.
      */
     private async guard(): Promise<true | UrlTree> {
-        const sites = await CoreUtils.instance.ignoreErrors(CoreSites.instance.getSites(), []);
+        const sites = await CoreUtils.ignoreErrors(CoreSites.getSites(), []);
 
         if (sites.length > 0) {
             return true;
         }
 
-        const [path, params] = CoreLoginHelper.instance.getAddSiteRouteInfo();
-        const route = Router.instance.parseUrl(path);
+        const [path, params] = CoreLoginHelper.getAddSiteRouteInfo();
+        const route = Router.parseUrl(path);
 
         route.queryParams = params;
 

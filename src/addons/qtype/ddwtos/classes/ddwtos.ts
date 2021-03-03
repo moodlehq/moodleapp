@@ -389,7 +389,7 @@ export class AddonQtypeDdwtosQuestion {
             const groupNo = this.getGroup(drag) ?? -1;
             const choiceNo = this.getChoice(drag) ?? -1;
 
-            position = CoreDomUtils.instance.getElementXY(
+            position = CoreDomUtils.getElementXY(
                 this.container,
                 this.selectors.dragHome(groupNo, choiceNo),
                 'answercontainer',
@@ -397,7 +397,7 @@ export class AddonQtypeDdwtosQuestion {
             drag.classList.add('unplaced');
         } else {
             // Get the drop zone position.
-            position = CoreDomUtils.instance.getElementXY(
+            position = CoreDomUtils.getElementXY(
                 this.container,
                 this.selectors.dropForPlace(placeNo),
                 'addon-qtype-ddwtos-container',
@@ -434,7 +434,7 @@ export class AddonQtypeDdwtosQuestion {
             return;
         }
 
-        const deferred = CoreUtils.instance.promiseDefer<void>();
+        const deferred = CoreUtils.promiseDefer<void>();
 
         setTimeout(async () => {
             try {
@@ -498,7 +498,7 @@ export class AddonQtypeDdwtosQuestion {
 
         // Find max height and width.
         groupItems.forEach((item) => {
-            item.innerHTML = CoreTextUtils.instance.decodeHTML(item.innerHTML);
+            item.innerHTML = CoreTextUtils.decodeHTML(item.innerHTML);
             maxWidth = Math.max(maxWidth, Math.ceil(item.offsetWidth));
             maxHeight = Math.max(maxHeight, Math.ceil(item.offsetHeight));
         });

@@ -80,4 +80,4 @@ export class AddonModQuizAccessTimeLimitHandlerService implements AddonModQuizAc
 
 }
 
-export class AddonModQuizAccessTimeLimitHandler extends makeSingleton(AddonModQuizAccessTimeLimitHandlerService) {}
+export const AddonModQuizAccessTimeLimitHandler = makeSingleton(AddonModQuizAccessTimeLimitHandlerService);

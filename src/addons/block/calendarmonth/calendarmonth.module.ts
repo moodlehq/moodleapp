@@ -28,7 +28,7 @@ import { AddonBlockCalendarMonthHandler } from './services/block-handler';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockCalendarMonthHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockCalendarMonthHandler.instance);
             },
         },
     ],

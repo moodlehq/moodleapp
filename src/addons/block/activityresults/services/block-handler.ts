@@ -44,4 +44,4 @@ export class AddonBlockActivityResultsHandlerService extends CoreBlockBaseHandle
 
 }
 
-export class AddonBlockActivityResultsHandler extends makeSingleton(AddonBlockActivityResultsHandlerService) {}
+export const AddonBlockActivityResultsHandler = makeSingleton(AddonBlockActivityResultsHandlerService);

@@ -37,7 +37,7 @@ export class CoreTagProvider {
      * @since 3.7
      */
     async areTagsAvailable(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.areTagsAvailableInSite(site);
     }
@@ -49,7 +49,7 @@ export class CoreTagProvider {
      * @return True if available.
      */
     areTagsAvailableInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.instance.getCurrentSite();
+        site = site || CoreSites.getCurrentSite();
 
         return !!site && site.wsAvailable('core_tag_get_tagindex_per_area') &&
             site.wsAvailable('core_tag_get_tag_cloud') &&
@@ -85,7 +85,7 @@ export class CoreTagProvider {
     ): Promise<CoreTagCloud> {
         limit = limit || CoreTagProvider.SEARCH_LIMIT;
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const params: CoreTagGetTagCloudWSParams = {
             tagcollid: collectionId,
             isstandard: isStandard,
@@ -113,7 +113,7 @@ export class CoreTagProvider {
      * @since 3.7
      */
     async getTagCollections(siteId?: string): Promise<CoreTagCollection[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const preSets: CoreSiteWSPreSets = {
             updateFrequency: CoreSite.FREQUENCY_RARELY,
             cacheKey: this.getTagCollectionsKey(),
@@ -154,7 +154,7 @@ export class CoreTagProvider {
         page: number = 0,
         siteId?: string,
     ): Promise<CoreTagIndex[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const params: CoreTagGetTagindexPerAreaWSParams = {
             tagindex: {
                 id,
@@ -179,7 +179,7 @@ export class CoreTagProvider {
         } catch (error) {
             // Workaround for WS not passing parameter to error string.
             if (error && error.errorcode == 'notagsfound') {
-                error.message = Translate.instance.instant('core.tag.notagsfound', { $a: name || id || '' });
+                error.message = Translate.instant('core.tag.notagsfound', { $a: name || id || '' });
             }
 
             throw error;
@@ -214,7 +214,7 @@ export class CoreTagProvider {
         recursive: boolean = true,
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const key = this.getTagCloudKey(collectionId, isStandard, sort, search, fromContextId, contextId, recursive);
 
         return site.invalidateWsCacheForKey(key);
@@ -226,7 +226,7 @@ export class CoreTagProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateTagCollections(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const key = this.getTagCollectionsKey();
 
         return site.invalidateWsCacheForKey(key);
@@ -254,7 +254,7 @@ export class CoreTagProvider {
         recursive: boolean = true,
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const key = this.getTagIndexPerAreaKey(id, name, collectionId, areaId, fromContextId, contextId, recursive);
 
         return site.invalidateWsCacheForKey(key);
@@ -331,7 +331,7 @@ export class CoreTagProvider {
 
 }
 
-export class CoreTag extends makeSingleton(CoreTagProvider) {}
+export const CoreTag = makeSingleton(CoreTagProvider);
 
 /**
  * Params of core_tag_get_tag_cloud WS.

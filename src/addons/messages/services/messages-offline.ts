@@ -41,7 +41,7 @@ export class AddonMessagesOfflineProvider {
      * @return Promise resolved if stored, rejected if failure.
      */
     async deleteConversationMessage(conversationId: number, message: string, timeCreated: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(CONVERSATION_MESSAGES_TABLE, {
             conversationid: conversationId,
@@ -58,7 +58,7 @@ export class AddonMessagesOfflineProvider {
      * @return Promise resolved if stored, rejected if failure.
      */
     async deleteConversationMessages(conversationId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(CONVERSATION_MESSAGES_TABLE, {
             conversationid: conversationId,
@@ -75,7 +75,7 @@ export class AddonMessagesOfflineProvider {
      * @return Promise resolved if stored, rejected if failure.
      */
     async deleteMessage(toUserId: number, message: string, timeCreated: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(MESSAGES_TABLE, {
             touserid: toUserId,
@@ -93,7 +93,7 @@ export class AddonMessagesOfflineProvider {
     async getAllDeviceOfflineMessages(
         siteId?: string,
     ): Promise<AddonMessagesOfflineAnyMessagesFormatted[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const [
             messages,
@@ -124,7 +124,7 @@ export class AddonMessagesOfflineProvider {
     async getAllMessages(
         siteId?: string,
     ): Promise<AddonMessagesOfflineAnyMessagesFormatted[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const [
             messages,
@@ -155,7 +155,7 @@ export class AddonMessagesOfflineProvider {
         userIdFrom?: number,
         siteId?: string,
     ): Promise<AddonMessagesOfflineConversationMessagesDBRecordFormatted[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const messages: AddonMessagesOfflineConversationMessagesDBRecord[] = await site.getDb().getRecords(
             CONVERSATION_MESSAGES_TABLE,
@@ -173,7 +173,7 @@ export class AddonMessagesOfflineProvider {
      * @return Promise resolved with messages.
      */
     async getMessages(toUserId: number, siteId?: string): Promise<AddonMessagesOfflineMessagesDBRecordFormatted[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const messages: AddonMessagesOfflineMessagesDBRecord[] =
             await site.getDb().getRecords(MESSAGES_TABLE, { touserid: toUserId });
@@ -228,7 +228,7 @@ export class AddonMessagesOfflineProvider {
                 text: message.text,
                 timecreated: message.timecreated,
                 deviceoffline: message.deviceoffline,
-                conversation: message.conversation ? CoreTextUtils.instance.parseJSON(message.conversation, undefined) : undefined,
+                conversation: message.conversation ? CoreTextUtils.parseJSON(message.conversation, undefined) : undefined,
                 pending: true,
                 useridfrom: userIdFrom,
             };
@@ -278,13 +278,13 @@ export class AddonMessagesOfflineProvider {
         message: string,
         siteId?: string,
     ): Promise<AddonMessagesOfflineConversationMessagesDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const entry: AddonMessagesOfflineConversationMessagesDBRecord = {
             conversationid: conversation.id,
             text: message,
             timecreated: Date.now(),
-            deviceoffline: CoreApp.instance.isOnline() ? 0 : 1,
+            deviceoffline: CoreApp.isOnline() ? 0 : 1,
             conversation: JSON.stringify({
                 name: conversation.name || '',
                 subname: conversation.subname || '',
@@ -308,14 +308,14 @@ export class AddonMessagesOfflineProvider {
      * @return Promise resolved if stored, rejected if failure.
      */
     async saveMessage(toUserId: number, message: string, siteId?: string): Promise<AddonMessagesOfflineMessagesDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const entry: AddonMessagesOfflineMessagesDBRecord = {
             touserid: toUserId,
             useridfrom: site.getUserId(),
             smallmessage: message,
             timecreated: new Date().getTime(),
-            deviceoffline: CoreApp.instance.isOnline() ? 0 : 1,
+            deviceoffline: CoreApp.isOnline() ? 0 : 1,
         };
 
         await site.getDb().insertRecord(MESSAGES_TABLE, entry);
@@ -336,7 +336,7 @@ export class AddonMessagesOfflineProvider {
         value: boolean,
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const db = site.getDb();
 
@@ -364,7 +364,7 @@ export class AddonMessagesOfflineProvider {
 
 }
 
-export class AddonMessagesOffline extends makeSingleton(AddonMessagesOfflineProvider) {}
+export const AddonMessagesOffline = makeSingleton(AddonMessagesOfflineProvider);
 
 export type AddonMessagesOfflineMessagesDBRecordFormatted = AddonMessagesOfflineMessagesDBRecord & {
     pending?: boolean; // Will be likely true.

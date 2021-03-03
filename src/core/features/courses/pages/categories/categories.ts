@@ -39,14 +39,14 @@ export class CoreCoursesCategoriesPage implements OnInit {
     protected categoryId = 0;
 
     constructor() {
-        this.title = Translate.instance.instant('core.courses.categories');
+        this.title = Translate.instant('core.courses.categories');
     }
 
     /**
      * View loaded.
      */
     ngOnInit(): void {
-        this.categoryId = CoreNavigator.instance.getRouteNumberParam('id') || 0;
+        this.categoryId = CoreNavigator.getRouteNumberParam('id') || 0;
 
         this.fetchCategories().finally(() => {
             this.categoriesLoaded = true;
@@ -60,7 +60,7 @@ export class CoreCoursesCategoriesPage implements OnInit {
      */
     protected async fetchCategories(): Promise<void> {
         try{
-            const categories: CoreCategoryData[] = await CoreCourses.instance.getCategories(this.categoryId, true);
+            const categories: CoreCategoryData[] = await CoreCourses.getCategories(this.categoryId, true);
 
             this.currentCategory = undefined;
 
@@ -81,19 +81,19 @@ export class CoreCoursesCategoriesPage implements OnInit {
                 return a.depth > b.depth ? 1 : -1;
             });
 
-            this.categories = CoreUtils.instance.formatTree(categories, 'parent', 'id', this.categoryId);
+            this.categories = CoreUtils.formatTree(categories, 'parent', 'id', this.categoryId);
 
             if (this.currentCategory) {
                 this.title = this.currentCategory.name;
 
                 try {
-                    this.courses = await CoreCourses.instance.getCoursesByField('category', this.categoryId);
+                    this.courses = await CoreCourses.getCoursesByField('category', this.categoryId);
                 } catch (error) {
-                    CoreDomUtils.instance.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
+                    CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
                 }
             }
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'core.courses.errorloadcategories', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcategories', true);
         }
     }
 
@@ -105,10 +105,10 @@ export class CoreCoursesCategoriesPage implements OnInit {
     refreshCategories(refresher?: CustomEvent<IonRefresher>): void {
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCourses.instance.invalidateUserCourses());
-        promises.push(CoreCourses.instance.invalidateCategories(this.categoryId, true));
-        promises.push(CoreCourses.instance.invalidateCoursesByField('category', this.categoryId));
-        promises.push(CoreSites.instance.getCurrentSite()!.invalidateConfig());
+        promises.push(CoreCourses.invalidateUserCourses());
+        promises.push(CoreCourses.invalidateCategories(this.categoryId, true));
+        promises.push(CoreCourses.invalidateCoursesByField('category', this.categoryId));
+        promises.push(CoreSites.getCurrentSite()!.invalidateConfig());
 
         Promise.all(promises).finally(() => {
             this.fetchCategories().finally(() => {

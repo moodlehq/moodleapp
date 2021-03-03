@@ -59,7 +59,7 @@ export class AddonUserProfileFieldTextHandlerService implements CoreUserProfileF
         return {
             type: 'text',
             name: name,
-            value: CoreTextUtils.instance.cleanTags(<string> formValues[name]),
+            value: CoreTextUtils.cleanTags(<string> formValues[name]),
         };
     }
 
@@ -75,4 +75,4 @@ export class AddonUserProfileFieldTextHandlerService implements CoreUserProfileF
 
 }
 
-export class AddonUserProfileFieldTextHandler extends makeSingleton(AddonUserProfileFieldTextHandlerService) {}
+export const AddonUserProfileFieldTextHandler = makeSingleton(AddonUserProfileFieldTextHandlerService);

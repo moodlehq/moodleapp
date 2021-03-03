@@ -33,12 +33,12 @@ export class CoreCoursesHelperProvider {
      * @return Promise resolved with the list of courses and the category.
      */
     async getCoursesForPopover(courseId?: number): Promise<{courses: Partial<CoreEnrolledCourseData>[]; categoryId?: number}> {
-        const courses: Partial<CoreEnrolledCourseData>[] = await CoreCourses.instance.getUserCourses(false);
+        const courses: Partial<CoreEnrolledCourseData>[] = await CoreCourses.getUserCourses(false);
 
         // Add "All courses".
         courses.unshift({
             id: -1,
-            fullname: Translate.instance.instant('core.fulllistofcourses'),
+            fullname: Translate.instant('core.fulllistofcourses'),
             categoryid: -1,
         });
 
@@ -109,15 +109,15 @@ export class CoreCoursesHelperProvider {
             return;
         }));
 
-        if (CoreCourses.instance.isGetCoursesByFieldAvailable() && (loadCategoryNames ||
+        if (CoreCourses.isGetCoursesByFieldAvailable() && (loadCategoryNames ||
                 (typeof courses[0].overviewfiles == 'undefined' && typeof courses[0].displayname == 'undefined'))) {
             const courseIds = courses.map((course) => course.id).join(',');
 
             courseInfoAvailable = true;
 
             // Get the extra data for the courses.
-            promises.push(CoreCourses.instance.getCoursesByField('ids', courseIds).then((coursesInfos) => {
-                coursesInfo = CoreUtils.instance.arrayToObject(coursesInfos, 'id');
+            promises.push(CoreCourses.getCoursesByField('ids', courseIds).then((coursesInfos) => {
+                coursesInfo = CoreUtils.arrayToObject(coursesInfos, 'id');
 
                 return;
             }));
@@ -136,7 +136,7 @@ export class CoreCoursesHelperProvider {
      * @return course colors RGB.
      */
     protected async loadCourseSiteColors(): Promise<(string | undefined)[]> {
-        const site = CoreSites.instance.getCurrentSite();
+        const site = CoreSites.getCurrentSite();
         const colors: (string | undefined)[] = [];
 
         if (site?.isVersionGreaterEqualThan('3.8')) {
@@ -188,7 +188,7 @@ export class CoreCoursesHelperProvider {
         loadCategoryNames: boolean = false,
     ): Promise<CoreEnrolledCourseDataWithOptions[]> {
 
-        let courses: CoreEnrolledCourseDataWithOptions[] = await CoreCourses.instance.getUserCourses();
+        let courses: CoreEnrolledCourseDataWithOptions[] = await CoreCourses.getUserCourses();
         if (courses.length <= 0) {
             return [];
         }
@@ -196,9 +196,9 @@ export class CoreCoursesHelperProvider {
         const promises: Promise<void>[] = [];
         const courseIds = courses.map((course) => course.id);
 
-        if (CoreCourses.instance.canGetAdminAndNavOptions()) {
+        if (CoreCourses.canGetAdminAndNavOptions()) {
             // Load course options of the course.
-            promises.push(CoreCourses.instance.getCoursesAdminAndNavOptions(courseIds).then((options) => {
+            promises.push(CoreCourses.getCoursesAdminAndNavOptions(courseIds).then((options) => {
                 courses.forEach((course) => {
                     course.navOptions = options.navOptions[course.id];
                     course.admOptions = options.admOptions[course.id];
@@ -262,7 +262,7 @@ export class CoreCoursesHelperProvider {
             }
 
             try {
-                const completion = await AddonCourseCompletion.instance.getCompletion(course.id);
+                const completion = await AddonCourseCompletion.getCompletion(course.id);
 
                 course.completed = completion?.completed;
             } catch {
@@ -276,7 +276,7 @@ export class CoreCoursesHelperProvider {
 
 }
 
-export class CoreCoursesHelper extends makeSingleton(CoreCoursesHelperProvider) { }
+export const CoreCoursesHelper = makeSingleton(CoreCoursesHelperProvider);
 
 /**
  * Course with colors info and course image.

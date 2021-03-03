@@ -787,8 +787,8 @@ export class SQLiteDB {
      * Initialize the database.
      */
     init(): void {
-        this.promise = Platform.instance.ready()
-            .then(() => SQLite.instance.create({
+        this.promise = Platform.ready()
+            .then(() => SQLite.create({
                 name: this.name,
                 location: 'default',
             }))

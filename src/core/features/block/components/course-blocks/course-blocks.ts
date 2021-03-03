@@ -67,8 +67,8 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
     async invalidateBlocks(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        if (CoreBlockHelper.instance.canGetCourseBlocks()) {
-            promises.push(CoreCourse.instance.invalidateCourseBlocks(this.courseId));
+        if (CoreBlockHelper.canGetCourseBlocks()) {
+            promises.push(CoreCourse.invalidateCourseBlocks(this.courseId));
         }
 
         // Invalidate the blocks.
@@ -89,9 +89,9 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
     async loadContent(): Promise<void> {
 
         try {
-            this.blocks = await CoreBlockHelper.instance.getCourseBlocks(this.courseId);
+            this.blocks = await CoreBlockHelper.getCourseBlocks(this.courseId);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModal(error);
+            CoreDomUtils.showErrorModal(error);
 
             this.blocks = [];
         }
@@ -115,7 +115,7 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
      * @return Promise resolved when done.
      */
     async doRefresh(): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(this.invalidateBlocks());
+        await CoreUtils.ignoreErrors(this.invalidateBlocks());
 
         await this.loadContent();
     }

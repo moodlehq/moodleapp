@@ -38,9 +38,9 @@ export class AddonMessagesIndexLinkHandlerService extends CoreContentLinksHandle
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: async (siteId): Promise<void> => {
-                const pageName = await AddonMessages.instance.getMainMessagesPagePathInSite(siteId);
+                const pageName = await AddonMessages.getMainMessagesPagePathInSite(siteId);
 
-                CoreNavigator.instance.navigateToSitePath(pageName, { siteId });
+                CoreNavigator.navigateToSitePath(pageName, { siteId });
             },
         }];
     }
@@ -53,9 +53,9 @@ export class AddonMessagesIndexLinkHandlerService extends CoreContentLinksHandle
      * @return Whether the handler is enabled for the URL and site.
      */
     isEnabled(siteId: string): Promise<boolean> {
-        return AddonMessages.instance.isPluginEnabled(siteId);
+        return AddonMessages.isPluginEnabled(siteId);
     }
 
 }
 
-export class AddonMessagesIndexLinkHandler extends makeSingleton(AddonMessagesIndexLinkHandlerService) {}
+export const AddonMessagesIndexLinkHandler = makeSingleton(AddonMessagesIndexLinkHandlerService);

@@ -42,9 +42,9 @@ const routes: Routes = [
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreMainMenuDelegate.instance.registerHandler(CoreTagMainMenuHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(CoreTagIndexLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(CoreTagSearchLinkHandler.instance);
+                CoreMainMenuDelegate.registerHandler(CoreTagMainMenuHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreTagIndexLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreTagSearchLinkHandler.instance);
             },
         },
     ],

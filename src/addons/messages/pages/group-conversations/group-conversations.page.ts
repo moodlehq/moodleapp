@@ -108,9 +108,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
     ) {
-        this.loadingMessage = Translate.instance.instant('core.loading');
-        this.siteId = CoreSites.instance.getCurrentSiteId();
-        this.currentUserId = CoreSites.instance.getCurrentSiteUserId();
+        this.loadingMessage = Translate.instant('core.loading');
+        this.siteId = CoreSites.getCurrentSiteId();
+        this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         // Update conversations when new message is received.
         this.newMessagesObserver = CoreEvents.on<AddonMessagesNewMessagedEventData>(
@@ -145,7 +145,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
                     // Sort the affected list.
                     const option = this.getConversationOption(conversation);
-                    option.conversations = AddonMessages.instance.sortConversations(option.conversations || []);
+                    option.conversations = AddonMessages.sortConversations(option.conversations || []);
 
                     if (isNewer) {
                     // The last message is newer than the previous one, scroll to top to keep viewing the conversation.
@@ -168,8 +168,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                     conversation.unreadcount = 0;
 
                     // Conversations changed, invalidate them and refresh unread counts.
-                    AddonMessages.instance.invalidateConversations(this.siteId);
-                    AddonMessages.instance.refreshUnreadConversationCounts(this.siteId);
+                    AddonMessages.invalidateConversations(this.siteId);
+                    AddonMessages.refreshUnreadConversationCounts(this.siteId);
                 }
             }
         }, this.siteId);
@@ -186,7 +186,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         );
 
         // Refresh the view when the app is resumed.
-        this.appResumeSubscription = Platform.instance.resume.subscribe(() => {
+        this.appResumeSubscription = Platform.resume.subscribe(() => {
             if (!this.loaded) {
                 return;
             }
@@ -221,10 +221,10 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         );
 
         // If a message push notification is received, refresh the view.
-        this.pushObserver = CorePushNotificationsDelegate.instance.on<CorePushNotificationsNotificationBasicData>('receive')
+        this.pushObserver = CorePushNotificationsDelegate.on<CorePushNotificationsNotificationBasicData>('receive')
             .subscribe((notification) => {
                 // New message received. If it's from current site, refresh the data.
-                if (CoreUtils.instance.isFalseOrZero(notification.notif) && notification.site == this.siteId) {
+                if (CoreUtils.isFalseOrZero(notification.notif) && notification.site == this.siteId) {
                 // Don't refresh unread counts, it's refreshed from the main menu handler in this case.
                     this.refreshData(undefined, false);
                 }
@@ -281,9 +281,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.route.queryParams.subscribe(async (params) => {
             // Conversation to load.
-            this.conversationId = CoreNavigator.instance.getRouteNumberParam('conversationId', params) || undefined;
+            this.conversationId = CoreNavigator.getRouteNumberParam('conversationId', params) || undefined;
             if (!this.conversationId) {
-                this.discussionUserId = CoreNavigator.instance.getRouteNumberParam('discussionUserId', params) || undefined;
+                this.discussionUserId = CoreNavigator.getRouteNumberParam('discussionUserId', params) || undefined;
             }
 
             if (this.conversationId || this.discussionUserId) {
@@ -292,7 +292,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             }
 
             await this.fetchData();
-            if (!this.conversationId && !this.discussionUserId && CoreScreen.instance.isTablet) {
+            if (!this.conversationId && !this.discussionUserId && CoreScreen.isTablet) {
                 // Load the first conversation.
                 let conversation: AddonMessagesConversationForList;
                 const expandedOption = this.getExpandedOption();
@@ -321,9 +321,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         promises.push(this.fetchConversationCounts());
 
         // View updated by the events observers.
-        promises.push(AddonMessages.instance.getContactRequestsCount(this.siteId));
+        promises.push(AddonMessages.getContactRequestsCount(this.siteId));
         if (refreshUnreadCounts) {
-            promises.push(AddonMessages.instance.refreshUnreadConversationCounts(this.siteId));
+            promises.push(AddonMessages.refreshUnreadConversationCounts(this.siteId));
         }
 
         try {
@@ -356,7 +356,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             // Load the data for the expanded option.
             await this.fetchDataForExpandedOption();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
         }
         this.loaded = true;
     }
@@ -409,14 +409,14 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         AddonMessagesOfflineAnyMessagesFormatted[] = [];
 
         // Get the conversations and, if needed, the offline messages. Always try to get the latest data.
-        promises.push(AddonMessages.instance.invalidateConversations(this.siteId).then(async () => {
-            data = await AddonMessages.instance.getConversations(option.type, option.favourites, limitFrom, this.siteId);
+        promises.push(AddonMessages.invalidateConversations(this.siteId).then(async () => {
+            data = await AddonMessages.getConversations(option.type, option.favourites, limitFrom, this.siteId);
 
             return;
         }));
 
         if (!loadingMore) {
-            promises.push(AddonMessagesOffline.instance.getAllMessages().then((messages) => {
+            promises.push(AddonMessagesOffline.getAllMessages().then((messages) => {
                 offlineMessages = messages;
 
                 return;
@@ -425,7 +425,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
         if (getCounts) {
             promises.push(this.fetchConversationCounts());
-            promises.push(AddonMessages.instance.refreshUnreadConversationCounts(this.siteId));
+            promises.push(AddonMessages.refreshUnreadConversationCounts(this.siteId));
         }
 
         await Promise.all(promises);
@@ -441,7 +441,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 await this.loadOfflineMessages(option, offlineMessages);
 
                 // Sort the conversations, the offline messages could affect the order.
-                option.conversations = AddonMessages.instance.sortConversations(option.conversations);
+                option.conversations = AddonMessages.sortConversations(option.conversations);
             }
         }
     }
@@ -453,9 +453,9 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      */
     protected async fetchConversationCounts(): Promise<void> {
         // Always try to get the latest data.
-        await AddonMessages.instance.invalidateConversationCounts(this.siteId);
+        await AddonMessages.invalidateConversationCounts(this.siteId);
 
-        const counts = await AddonMessages.instance.getConversationCounts(this.siteId);
+        const counts = await AddonMessages.getConversationCounts(this.siteId);
         this.favourites.count = counts.favourites;
         this.individual.count = counts.individual + counts.self; // Self is only returned if it's not favourite.
         this.group.count = counts.group;
@@ -509,7 +509,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Navigate to contacts view.
      */
     gotoContacts(): void {
-        CoreNavigator.instance.navigateToSitePath('contacts');
+        CoreNavigator.navigateToSitePath('contacts');
     }
 
     /**
@@ -534,16 +534,16 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             params.message = messageId;
         }
 
-        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/group-conversations/discussion');
+        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/group-conversations/discussion');
         const path = (splitViewLoaded ? '../' : '') + 'discussion';
-        CoreNavigator.instance.navigate(path, { params });
+        CoreNavigator.navigate(path, { params });
     }
 
     /**
      * Navigate to message settings.
      */
     gotoSettings(): void {
-        CoreNavigator.instance.navigateToSitePath(AddonMessagesSettingsHandlerService.PAGE_NAME);
+        CoreNavigator.navigateToSitePath(AddonMessagesSettingsHandlerService.PAGE_NAME);
     }
 
     /**
@@ -557,7 +557,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         try {
             await this.fetchDataForOption(option, true);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
             option.loadMoreError = true;
         }
 
@@ -625,7 +625,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                     }
                 } else {
                     // Get the user data and create a new conversation if it belongs to the current option.
-                    promises.push(CoreUser.instance.getProfile(message.touserid, undefined, true).catch(() => {
+                    promises.push(CoreUser.getProfile(message.touserid, undefined, true).catch(() => {
                         // User not found.
                     }).then((user) => {
                         const conversation: AddonMessagesConversationForList = {
@@ -711,7 +711,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     async refreshData(refresher?: CustomEvent<IonRefresher>, refreshUnreadCounts: boolean = true): Promise<void> {
         // Don't invalidate conversations and so, they always try to get latest data.
         try {
-            await AddonMessages.instance.invalidateContactRequestsCountCache(this.siteId);
+            await AddonMessages.invalidateContactRequestsCountCache(this.siteId);
         } finally {
             try {
                 await this.fetchData(refreshUnreadCounts);
@@ -736,7 +736,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         } else {
             // Pass getCounts=true to update the counts everytime the user expands an option.
             this.expandOption(option, true).catch((error) => {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
+                CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
             });
         }
     }
@@ -790,7 +790,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Navigate to the search page.
      */
     gotoSearch(): void {
-        CoreNavigator.instance.navigateToSitePath('search');
+        CoreNavigator.navigateToSitePath('search');
     }
 
     /**

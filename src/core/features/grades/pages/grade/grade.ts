@@ -40,7 +40,7 @@ export class CoreGradesGradePage implements OnInit {
     constructor(route: ActivatedRoute) {
         this.courseId = parseInt(route.snapshot.params.courseId ?? route.snapshot.parent?.params.courseId);
         this.gradeId = parseInt(route.snapshot.params.gradeId);
-        this.userId = parseInt(route.snapshot.queryParams.userId ?? CoreSites.instance.getCurrentSiteUserId());
+        this.userId = parseInt(route.snapshot.queryParams.userId ?? CoreSites.getCurrentSiteUserId());
     }
 
     /**
@@ -55,10 +55,10 @@ export class CoreGradesGradePage implements OnInit {
      */
     async fetchGrade(): Promise<void> {
         try {
-            this.grade = await CoreGradesHelper.instance.getGradeItem(this.courseId, this.gradeId, this.userId);
+            this.grade = await CoreGradesHelper.getGradeItem(this.courseId, this.gradeId, this.userId);
             this.gradeLoaded = true;
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading grade item');
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading grade item');
         }
     }
 
@@ -68,8 +68,8 @@ export class CoreGradesGradePage implements OnInit {
      * @param refresher Refresher.
      */
     async refreshGrade(refresher: IonRefresher): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(CoreGrades.instance.invalidateCourseGradesData(this.courseId, this.userId));
-        await CoreUtils.instance.ignoreErrors(this.fetchGrade());
+        await CoreUtils.ignoreErrors(CoreGrades.invalidateCourseGradesData(this.courseId, this.userId));
+        await CoreUtils.ignoreErrors(this.fetchGrade());
 
         refresher.complete();
     }

@@ -41,7 +41,7 @@ export class AddonModQuizAccessTimeLimitComponent implements OnInit {
             return;
         }
 
-        this.readableTimeLimit = CoreTimeUtils.instance.formatTime(this.quiz?.timelimit);
+        this.readableTimeLimit = CoreTimeUtils.formatTime(this.quiz?.timelimit);
     }
 
 }

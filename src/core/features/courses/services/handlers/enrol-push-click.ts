@@ -38,7 +38,7 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
      * @return Whether the notification click is handled by this handler
      */
     async handles(notification: CorePushNotificationsNotificationBasicData): Promise<boolean> {
-        return CoreUtils.instance.isTrueOrOne(notification.notif) && notification.moodlecomponent?.indexOf('enrol_') === 0 &&
+        return CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent?.indexOf('enrol_') === 0 &&
             notification.name == 'expiry_notification';
     }
 
@@ -51,10 +51,10 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
     async handleClick(notification: CoreCoursesEnrolNotificationData): Promise<void> {
         const courseId = notification.courseid;
 
-        const modal = await CoreDomUtils.instance.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const result = await CoreCourseHelper.instance.getCourse(courseId, notification.site);
+            const result = await CoreCourseHelper.getCourse(courseId, notification.site);
 
             const params: Params = {
                 course: result.course,
@@ -73,9 +73,9 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
                 page = 'courses/preview';;
             }
 
-            await CoreNavigator.instance.navigateToSitePath(page, { params, siteId: notification.site });
+            await CoreNavigator.navigateToSitePath(page, { params, siteId: notification.site });
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error getting course.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error getting course.');
         } finally {
             modal.dismiss();
         }
@@ -83,7 +83,7 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
 
 }
 
-export class CoreCoursesEnrolPushClickHandler extends makeSingleton(CoreCoursesEnrolPushClickHandlerService) {}
+export const CoreCoursesEnrolPushClickHandler = makeSingleton(CoreCoursesEnrolPushClickHandlerService);
 
 type CoreCoursesEnrolNotificationData = CorePushNotificationsNotificationBasicData & {
     courseid: number; // Course ID related to the notification.

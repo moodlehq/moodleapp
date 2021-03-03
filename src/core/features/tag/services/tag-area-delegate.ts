@@ -95,4 +95,4 @@ export class CoreTagAreaDelegateService extends CoreDelegate<CoreTagAreaHandler>
 
 }
 
-export class CoreTagAreaDelegate extends makeSingleton(CoreTagAreaDelegateService) {}
+export const CoreTagAreaDelegate = makeSingleton(CoreTagAreaDelegateService);

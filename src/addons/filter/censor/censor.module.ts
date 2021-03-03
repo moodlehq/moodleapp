@@ -27,7 +27,7 @@ import { AddonFilterCensorHandler } from './services/handlers/censor';
             provide: APP_INITIALIZER,
             multi: true,
             deps: [],
-            useFactory: () => () => CoreFilterDelegate.instance.registerHandler(AddonFilterCensorHandler.instance),
+            useFactory: () => () => CoreFilterDelegate.registerHandler(AddonFilterCensorHandler.instance),
         },
     ],
 })

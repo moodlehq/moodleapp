@@ -34,7 +34,7 @@ export class AddonCalendarSyncCronHandlerService implements CoreCronHandler {
      * @return Promise resolved when done, rejected if failure.
      */
     async execute(siteId?: string, force?: boolean): Promise<void> {
-        await AddonCalendarSync.instance.syncAllEvents(siteId, force);
+        await AddonCalendarSync.syncAllEvents(siteId, force);
     }
 
     /**
@@ -43,9 +43,9 @@ export class AddonCalendarSyncCronHandlerService implements CoreCronHandler {
      * @return Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return AddonCalendarSync.instance.syncInterval;
+        return AddonCalendarSync.syncInterval;
     }
 
 }
 
-export class AddonCalendarSyncCronHandler extends makeSingleton(AddonCalendarSyncCronHandlerService) {}
+export const AddonCalendarSyncCronHandler = makeSingleton(AddonCalendarSyncCronHandlerService);

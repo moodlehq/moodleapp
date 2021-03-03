@@ -60,9 +60,9 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
 
             this.notificationsLoaded = false;
             this.refreshNotifications();
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
 
-        this.pushObserver = CorePushNotificationsDelegate.instance.on('receive').subscribe((notification) => {
+        this.pushObserver = CorePushNotificationsDelegate.on('receive').subscribe((notification) => {
             // New notification received. If it's from current site, refresh the data.
             if (!this.isCurrentView) {
                 this.pendingRefresh = true;
@@ -70,7 +70,7 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
                 return;
             }
 
-            if (!CoreUtils.instance.isTrueOrOne(notification.notif) || !CoreSites.instance.isCurrentSite(notification.site)) {
+            if (!CoreUtils.isTrueOrOne(notification.notif) || !CoreSites.isCurrentSite(notification.site)) {
                 return;
             }
 
@@ -89,7 +89,7 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
         this.loadMoreError = false;
 
         try {
-            const result = await AddonNotificationsHelper.instance.getNotifications(refresh ? [] : this.notifications);
+            const result = await AddonNotificationsHelper.getNotifications(refresh ? [] : this.notifications);
 
             const notifications = result.notifications.map((notification) => this.formatText(notification));
 
@@ -102,7 +102,7 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
 
             this.markNotificationsAsRead(notifications);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.notifications.errorgetnotifications', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.notifications.errorgetnotifications', true);
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
         } finally {
             this.notificationsLoaded = true;
@@ -117,9 +117,9 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
     async markAllNotificationsAsRead(): Promise<void> {
         this.loadingMarkAllNotificationsAsRead = true;
 
-        await CoreUtils.instance.ignoreErrors(AddonNotifications.instance.markAllNotificationsAsRead());
+        await CoreUtils.ignoreErrors(AddonNotifications.markAllNotificationsAsRead());
 
-        CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {}, CoreSites.instance.getCurrentSiteId());
+        CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {}, CoreSites.getCurrentSiteId());
 
         // All marked as read, refresh the list.
         this.notificationsLoaded = false;
@@ -140,18 +140,18 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
                     return;
                 }
 
-                await AddonNotifications.instance.markNotificationRead(notification.id);
+                await AddonNotifications.markNotificationRead(notification.id);
             });
 
-            await CoreUtils.instance.ignoreErrors(Promise.all(promises));
+            await CoreUtils.ignoreErrors(Promise.all(promises));
 
-            await CoreUtils.instance.ignoreErrors(AddonNotifications.instance.invalidateNotificationsList());
+            await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
 
-            CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {}, CoreSites.instance.getCurrentSiteId());
+            CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {}, CoreSites.getCurrentSiteId());
         }
 
         // Check if mark all notifications as read is enabled and there are some to read.
-        if (!AddonNotifications.instance.isMarkAllNotificationsAsReadEnabled()) {
+        if (!AddonNotifications.isMarkAllNotificationsAsReadEnabled()) {
             this.canMarkAllNotificationsAsRead = false;
 
             return;
@@ -160,7 +160,7 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
         try {
             this.loadingMarkAllNotificationsAsRead = true;
 
-            const unread = await AddonNotifications.instance.getUnreadNotificationsCount();
+            const unread = await AddonNotifications.getUnreadNotificationsCount();
 
             this.canMarkAllNotificationsAsRead = unread > 0;
         } finally {
@@ -175,7 +175,7 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
      * @return Promise<any> Promise resolved when done.
      */
     async refreshNotifications(refresher?: CustomEvent<IonRefresher>): Promise<void> {
-        await CoreUtils.instance.ignoreErrors(AddonNotifications.instance.invalidateNotificationsList());
+        await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
 
         try {
             await this.fetchNotifications(true);
@@ -209,7 +209,7 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
 
         formattedNotification.mobiletext = formattedNotification.displayfullhtml ?
             notification.fullmessagehtml :
-            CoreTextUtils.instance.replaceNewLines(formattedNotification.mobiletext!.replace(/-{4,}/ig, ''), '<br>');
+            CoreTextUtils.replaceNewLines(formattedNotification.mobiletext!.replace(/-{4,}/ig, ''), '<br>');
 
         return formattedNotification;
     }

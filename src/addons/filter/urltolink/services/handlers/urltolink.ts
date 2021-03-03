@@ -43,4 +43,4 @@ export class AddonFilterUrlToLinkHandlerService extends CoreFilterDefaultHandler
 
 }
 
-export class AddonFilterUrlToLinkHandler extends makeSingleton(AddonFilterUrlToLinkHandlerService) {}
+export const AddonFilterUrlToLinkHandler = makeSingleton(AddonFilterUrlToLinkHandlerService);

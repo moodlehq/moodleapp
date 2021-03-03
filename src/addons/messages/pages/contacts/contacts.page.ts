@@ -61,7 +61,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
 
     constructor() {
 
-        this.siteId = CoreSites.instance.getCurrentSiteId();
+        this.siteId = CoreSites.getCurrentSiteId();
 
         // Update the contact requests badge.
         this.contactRequestsCountObserver = CoreEvents.on<AddonMessagesContactRequestCountEventData>(
@@ -97,7 +97,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
                     }
                 }
             },
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
 
     }
@@ -106,13 +106,13 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
      * Page being initialized.
      */
     async ngOnInit(): Promise<void> {
-        AddonMessages.instance.getContactRequestsCount(this.siteId); // Badge already updated by the observer.
+        AddonMessages.getContactRequestsCount(this.siteId); // Badge already updated by the observer.
 
         if (this.selected == 'confirmed') {
             try {
 
                 await this.confirmedFetchData();
-                if (this.confirmedContacts.length && CoreScreen.instance.isTablet) {
+                if (this.confirmedContacts.length && CoreScreen.isTablet) {
                     this.selectUser(this.confirmedContacts[0].id, true);
                 }
             } finally {
@@ -121,7 +121,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
         } else {
             try {
                 await this.requestsFetchData();
-                if (this.requests.length && CoreScreen.instance.isTablet) {
+                if (this.requests.length && CoreScreen.isTablet) {
                     this.selectUser(this.requests[0].id, true);
                 }
             } finally {
@@ -143,16 +143,16 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
 
         if (limitFrom === 0) {
             // Always try to get latest data from server.
-            await AddonMessages.instance.invalidateUserContacts();
+            await AddonMessages.invalidateUserContacts();
         }
 
         try {
-            const result = await AddonMessages.instance.getUserContacts(limitFrom);
+            const result = await AddonMessages.getUserContacts(limitFrom);
             this.confirmedContacts = refresh ? result.contacts : this.confirmedContacts.concat(result.contacts);
             this.confirmedCanLoadMore = result.canLoadMore;
         } catch (error) {
             this.confirmedLoadMoreError = true;
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
         }
     }
 
@@ -169,16 +169,16 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
 
         if (limitFrom === 0) {
             // Always try to get latest data from server.
-            await AddonMessages.instance.invalidateContactRequestsCache();
+            await AddonMessages.invalidateContactRequestsCache();
         }
 
         try {
-            const result = await AddonMessages.instance.getContactRequests(limitFrom);
+            const result = await AddonMessages.getContactRequests(limitFrom);
             this.requests = refresh ? result.requests : this.requests.concat(result.requests);
             this.requestsCanLoadMore = result.canLoadMore;
         } catch (error) {
             this.requestsLoadMoreError = true;
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
         }
     }
 
@@ -195,7 +195,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
                 await this.confirmedFetchData(true);
             } else {
                 // Refresh the number of contacts requests to update badges.
-                AddonMessages.instance.refreshContactRequestsCount();
+                AddonMessages.refreshContactRequestsCount();
 
                 // No need to invalidate contact requests, we always try to get the latest.
                 await this.requestsFetchData(true);
@@ -228,7 +228,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
      * Navigate to the search page.
      */
     gotoSearch(): void {
-        CoreNavigator.instance.navigateToSitePath('search');
+        CoreNavigator.navigateToSitePath('search');
     }
 
     selectTab(selected: string): void {
@@ -246,22 +246,22 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
      * @param onInit Whether the contact was selected on initial load.
      */
     selectUser(userId: number, onInit = false): void {
-        if (userId == this.selectedUserId && CoreScreen.instance.isTablet) {
+        if (userId == this.selectedUserId && CoreScreen.isTablet) {
             // No user conversation to open or it is already opened.
             return;
         }
 
-        if (onInit && CoreScreen.instance.isMobile) {
+        if (onInit && CoreScreen.isMobile) {
             // Do not open a conversation by default when split view is not visible.
             return;
         }
 
         this.selectedUserId = userId;
 
-        const splitViewLoaded = CoreNavigator.instance.isCurrentPathInTablet('**/messages/contacts/discussion');
+        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/contacts/discussion');
         const path = (splitViewLoaded ? '../' : '') + 'discussion';
 
-        CoreNavigator.instance.navigate(path, { params : { userId } });
+        CoreNavigator.navigate(path, { params : { userId } });
     }
 
     /**

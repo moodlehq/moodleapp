@@ -57,8 +57,8 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.title = this.title || Translate.instance.instant('addon.mod_quiz.startattempt');
-        this.siteId = this.siteId || CoreSites.instance.getCurrentSiteId();
+        this.title = this.title || Translate.instant('addon.mod_quiz.startattempt');
+        this.siteId = this.siteId || CoreSites.getCurrentSiteId();
         this.rules = this.rules || [];
 
         if (!this.quiz) {
@@ -68,7 +68,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
         try {
             await Promise.all(this.rules.map(async (rule) => {
                 // Check if preflight is required for rule and, if so, get the component to render it.
-                const required = await AddonModQuizAccessRuleDelegate.instance.isPreflightCheckRequiredForRule(
+                const required = await AddonModQuizAccessRuleDelegate.isPreflightCheckRequiredForRule(
                     rule,
                     this.quiz!,
                     this.attempt,
@@ -80,7 +80,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
                     return;
                 }
 
-                const component = await AddonModQuizAccessRuleDelegate.instance.getPreflightComponent(rule);
+                const component = await AddonModQuizAccessRuleDelegate.getPreflightComponent(rule);
                 if (!component) {
                     return;
                 }
@@ -99,7 +99,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
             }));
 
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error loading rules');
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading rules');
         } finally {
             this.loaded = true;
         }
@@ -116,19 +116,19 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
 
         if (!this.preflightForm.valid) {
             // Form not valid. Scroll to the first element with errors.
-            const hasScrolled = CoreDomUtils.instance.scrollToInputError(
+            const hasScrolled = CoreDomUtils.scrollToInputError(
                 this.elementRef.nativeElement,
                 this.content,
             );
 
             if (!hasScrolled) {
                 // Input not found, show an error modal.
-                CoreDomUtils.instance.showErrorModal('core.errorinvalidform', true);
+                CoreDomUtils.showErrorModal('core.errorinvalidform', true);
             }
         } else {
-            CoreDomUtils.instance.triggerFormSubmittedEvent(this.formElement, false, this.siteId);
+            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, this.siteId);
 
-            ModalController.instance.dismiss(this.preflightForm.value);
+            ModalController.dismiss(this.preflightForm.value);
         }
     }
 
@@ -136,9 +136,9 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
      * Close modal.
      */
     closeModal(): void {
-        CoreDomUtils.instance.triggerFormCancelledEvent(this.formElement, this.siteId);
+        CoreDomUtils.triggerFormCancelledEvent(this.formElement, this.siteId);
 
-        ModalController.instance.dismiss();
+        ModalController.dismiss();
     }
 
 }

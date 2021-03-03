@@ -106,4 +106,4 @@ export class CoreMainMenuDelegateService extends CoreSortedDelegate<CoreMainMenu
 
 }
 
-export class CoreMainMenuDelegate extends makeSingleton(CoreMainMenuDelegateService) {}
+export const CoreMainMenuDelegate = makeSingleton(CoreMainMenuDelegateService);

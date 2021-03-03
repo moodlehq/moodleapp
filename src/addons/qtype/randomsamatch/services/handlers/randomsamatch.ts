@@ -28,4 +28,4 @@ export class AddonQtypeRandomSaMatchHandlerService extends AddonQtypeMatchHandle
 
 }
 
-export class AddonQtypeRandomSaMatchHandler extends makeSingleton(AddonQtypeRandomSaMatchHandlerService) {}
+export const AddonQtypeRandomSaMatchHandler = makeSingleton(AddonQtypeRandomSaMatchHandlerService);

@@ -15,5 +15,5 @@
 import { CoreScreen } from '@services/screen';
 
 export default function(): void {
-    CoreScreen.instance.watchViewport();
+    CoreScreen.watchViewport();
 }

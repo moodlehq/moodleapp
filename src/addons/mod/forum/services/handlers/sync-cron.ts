@@ -34,7 +34,7 @@ export class AddonModForumSyncCronHandlerService implements CoreCronHandler {
      * @return Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string, force?: boolean): Promise<void> {
-        return AddonModForumSync.instance.syncAllForums(siteId, force);
+        return AddonModForumSync.syncAllForums(siteId, force);
     }
 
     /**
@@ -43,9 +43,9 @@ export class AddonModForumSyncCronHandlerService implements CoreCronHandler {
      * @return Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return AddonModForumSync.instance.syncInterval;
+        return AddonModForumSync.syncInterval;
     }
 
 }
 
-export class AddonModForumSyncCronHandler extends makeSingleton(AddonModForumSyncCronHandlerService) {}
+export const AddonModForumSyncCronHandler = makeSingleton(AddonModForumSyncCronHandlerService);

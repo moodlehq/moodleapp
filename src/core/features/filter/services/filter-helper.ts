@@ -74,7 +74,7 @@ export class CoreFilterHelperProvider {
      * @return Promise resolved with the contexts.
      */
     async getBlocksContexts(courseId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
-        const blocks = await CoreCourse.instance.getCourseBlocks(courseId, siteId);
+        const blocks = await CoreCourse.getCourseBlocks(courseId, siteId);
 
         const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
 
@@ -115,7 +115,7 @@ export class CoreFilterHelperProvider {
 
         const contexts = await getFilters();
 
-        const filters = await CoreFilter.instance.getAvailableInContexts(contexts, siteId);
+        const filters = await CoreFilter.getAvailableInContexts(contexts, siteId);
 
         this.storeInMemoryCache(options.courseId ?? -1, contextLevel, filters, siteId);
 
@@ -130,7 +130,7 @@ export class CoreFilterHelperProvider {
      * @return Promise resolved with the contexts.
      */
     async getCourseContexts(courseId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
-        const courseIds = await CoreCourses.instance.getCourseIdsIfEnrolled(courseId, siteId);
+        const courseIds = await CoreCourses.getCourseIdsIfEnrolled(courseId, siteId);
 
         const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
 
@@ -152,7 +152,7 @@ export class CoreFilterHelperProvider {
      * @return Promise resolved with the contexts.
      */
     async getCourseModulesContexts(courseId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
-        const sections = await CoreCourse.instance.getSections(courseId, false, true, undefined, siteId);
+        const sections = await CoreCourse.getSections(courseId, false, true, undefined, siteId);
 
         const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
 
@@ -195,16 +195,16 @@ export class CoreFilterHelperProvider {
         options.filter = false;
 
         try {
-            const site = await CoreSites.instance.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
 
             siteId = site.getId();
 
-            const canGet = await CoreFilter.instance.canGetFilters(siteId);
+            const canGet = await CoreFilter.canGetFilters(siteId);
             if (!canGet) {
                 options.filter = true;
 
                 // We cannot check which filters are available, apply them all.
-                return CoreFilterDelegate.instance.getEnabledFilters(contextLevel, instanceId);
+                return CoreFilterDelegate.getEnabledFilters(contextLevel, instanceId);
             }
 
             let hasFilters = true;
@@ -233,14 +233,14 @@ export class CoreFilterHelperProvider {
                 const getFilters = this.getCourseContexts.bind(this, instanceId, siteId);
 
                 return this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
-            } else if (contextLevel == 'block' && options.courseId && CoreCourse.instance.canGetCourseBlocks(site)) {
+            } else if (contextLevel == 'block' && options.courseId && CoreCourse.canGetCourseBlocks(site)) {
                 // Get all the course blocks filters with a single call to decrease number of WS calls.
                 const getFilters = this.getBlocksContexts.bind(this, options.courseId, siteId);
 
                 return this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
             }
 
-            return CoreFilter.instance.getAvailableInContext(contextLevel, instanceId, siteId);
+            return CoreFilter.getAvailableInContext(contextLevel, instanceId, siteId);
         } catch (error) {
             this.logger.error('Error getting filters, return an empty array', error, contextLevel, instanceId);
 
@@ -268,7 +268,7 @@ export class CoreFilterHelperProvider {
 
         const filters = await this.getFilters(contextLevel, instanceId, options, siteId);
 
-        text = await CoreFilter.instance.formatText(text, options, filters, siteId);
+        text = await CoreFilter.formatText(text, options, filters, siteId);
 
         return { text, filters: filters };
     }
@@ -298,7 +298,7 @@ export class CoreFilterHelperProvider {
 
         const cachedData = this.moduleContextsCache[siteId][courseId][contextLevel];
 
-        if (!CoreApp.instance.isOnline() || Date.now() <= cachedData.time + site.getExpirationDelay(CoreSite.FREQUENCY_RARELY)) {
+        if (!CoreApp.isOnline() || Date.now() <= cachedData.time + site.getExpirationDelay(CoreSite.FREQUENCY_RARELY)) {
             // We can use cache, return the filters if found.
             return cachedData.contexts[contextLevel] && cachedData.contexts[contextLevel][instanceId];
         }
@@ -314,12 +314,12 @@ export class CoreFilterHelperProvider {
     async siteHasFiltersToTreat(options?: CoreFilterFormatTextOptions, siteId?: string): Promise<boolean> {
         options = options || {};
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // Get filters at site level.
-        const filters = await CoreFilter.instance.getAvailableInContext('system', 0, site.getId());
+        const filters = await CoreFilter.getAvailableInContext('system', 0, site.getId());
 
-        return CoreFilterDelegate.instance.shouldBeApplied(filters, options, site);
+        return CoreFilterDelegate.shouldBeApplied(filters, options, site);
     }
 
     /**
@@ -345,4 +345,4 @@ export class CoreFilterHelperProvider {
 
 }
 
-export class CoreFilterHelper extends makeSingleton(CoreFilterHelperProvider) {}
+export const CoreFilterHelper = makeSingleton(CoreFilterHelperProvider);

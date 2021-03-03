@@ -50,4 +50,4 @@ export class AddonBlockSelfCompletionHandlerService extends CoreBlockBaseHandler
 
 }
 
-export class AddonBlockSelfCompletionHandler extends makeSingleton(AddonBlockSelfCompletionHandlerService) {}
+export const AddonBlockSelfCompletionHandler = makeSingleton(AddonBlockSelfCompletionHandlerService);

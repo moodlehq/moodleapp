@@ -128,9 +128,9 @@ export class AddonQtypeMatchHandlerService implements CoreQuestionHandler {
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreQuestion.instance.compareAllAnswers(prevAnswers, newAnswers);
+        return CoreQuestion.compareAllAnswers(prevAnswers, newAnswers);
     }
 
 }
 
-export class AddonQtypeMatchHandler extends makeSingleton(AddonQtypeMatchHandlerService) {}
+export const AddonQtypeMatchHandler = makeSingleton(AddonQtypeMatchHandlerService);

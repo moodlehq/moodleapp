@@ -45,4 +45,4 @@ export class AddonBlockLearningPlansHandlerService extends CoreBlockBaseHandler 
 
 }
 
-export class AddonBlockLearningPlansHandler extends makeSingleton(AddonBlockLearningPlansHandlerService) {}
+export const AddonBlockLearningPlansHandler = makeSingleton(AddonBlockLearningPlansHandlerService);

@@ -45,4 +45,4 @@ export class AddonBlockGlossaryRandomHandlerService extends CoreBlockBaseHandler
 
 }
 
-export class AddonBlockGlossaryRandomHandler extends makeSingleton(AddonBlockGlossaryRandomHandlerService) {}
+export const AddonBlockGlossaryRandomHandler = makeSingleton(AddonBlockGlossaryRandomHandlerService);

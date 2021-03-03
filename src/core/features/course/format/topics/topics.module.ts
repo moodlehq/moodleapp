@@ -26,7 +26,7 @@ import { CoreCourseFormatTopicsHandler } from './services/handlers/topics-format
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreCourseFormatDelegate.instance.registerHandler(CoreCourseFormatTopicsHandler.instance);
+                CoreCourseFormatDelegate.registerHandler(CoreCourseFormatTopicsHandler.instance);
             },
         },
     ],

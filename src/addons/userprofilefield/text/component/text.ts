@@ -44,7 +44,7 @@ export class AddonUserProfileFieldTextComponent extends CoreUserProfileFieldBase
         }
 
         // Check if it's a password or text.
-        this.inputType = CoreUtils.instance.isTrueOrOne(field.param3) ? 'password' : 'text';
+        this.inputType = CoreUtils.isTrueOrOne(field.param3) ? 'password' : 'text';
     }
 
 }

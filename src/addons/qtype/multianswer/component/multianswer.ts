@@ -41,7 +41,7 @@ export class AddonQtypeMultiAnswerComponent extends CoreQuestionBaseComponent im
      * The question has been rendered.
      */
     questionRendered(): void {
-        CoreQuestionHelper.instance.treatCorrectnessIconsClicks(
+        CoreQuestionHelper.treatCorrectnessIconsClicks(
             this.hostElement,
             this.component,
             this.componentId,

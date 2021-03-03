@@ -43,4 +43,4 @@ export class AddonFilterCensorHandlerService extends CoreFilterDefaultHandler {
 
 }
 
-export class AddonFilterCensorHandler extends makeSingleton(AddonFilterCensorHandlerService) {}
+export const AddonFilterCensorHandler = makeSingleton(AddonFilterCensorHandlerService);

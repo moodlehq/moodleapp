@@ -26,7 +26,7 @@ import { AddonQtypeTrueFalseHandler } from './services/handlers/truefalse';
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionDelegate.instance.registerHandler(AddonQtypeTrueFalseHandler.instance);
+                CoreQuestionDelegate.registerHandler(AddonQtypeTrueFalseHandler.instance);
             },
         },
     ],

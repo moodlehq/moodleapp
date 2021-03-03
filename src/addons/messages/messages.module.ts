@@ -60,21 +60,21 @@ const mainMenuChildrenRoutes: Routes = [
             deps: [],
             useFactory: () => () => {
                 // Register handlers.
-                CoreMainMenuDelegate.instance.registerHandler(AddonMessagesMainMenuHandler.instance);
-                CoreCronDelegate.instance.register(AddonMessagesMainMenuHandler.instance);
-                CoreCronDelegate.instance.register(AddonMessagesSyncCronHandler.instance);
-                CoreSettingsDelegate.instance.registerHandler(AddonMessagesSettingsHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonMessagesIndexLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonMessagesDiscussionLinkHandler.instance);
-                CoreContentLinksDelegate.instance.registerHandler(AddonMessagesContactRequestLinkHandler.instance);
-                CorePushNotificationsDelegate.instance.registerClickHandler(AddonMessagesPushClickHandler.instance);
-                CoreUserDelegate.instance.registerHandler(AddonMessagesSendMessageUserHandler.instance);
+                CoreMainMenuDelegate.registerHandler(AddonMessagesMainMenuHandler.instance);
+                CoreCronDelegate.register(AddonMessagesMainMenuHandler.instance);
+                CoreCronDelegate.register(AddonMessagesSyncCronHandler.instance);
+                CoreSettingsDelegate.registerHandler(AddonMessagesSettingsHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonMessagesIndexLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonMessagesDiscussionLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonMessagesContactRequestLinkHandler.instance);
+                CorePushNotificationsDelegate.registerClickHandler(AddonMessagesPushClickHandler.instance);
+                CoreUserDelegate.registerHandler(AddonMessagesSendMessageUserHandler.instance);
 
                 // Sync some discussions when device goes online.
-                Network.instance.onConnect().subscribe(() => {
+                Network.onConnect().subscribe(() => {
                     // Execute the callback in the Angular zone, so change detection doesn't stop working.
-                    NgZone.instance.run(() => {
-                        AddonMessagesSync.instance.syncAllDiscussions(undefined, true);
+                    NgZone.run(() => {
+                        AddonMessagesSync.syncAllDiscussions(undefined, true);
                     });
                 });
             },

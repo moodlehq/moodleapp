@@ -46,7 +46,7 @@ export class ZipMock extends Zip {
             await this.file.createDir(destination, folder, true);
 
             // Folder created, add it to the destination path.
-            destination = CoreTextUtils.instance.concatenatePaths(destination, folder);
+            destination = CoreTextUtils.concatenatePaths(destination, folder);
         }
     }
 
@@ -106,7 +106,7 @@ export class ZipMock extends Zip {
                     const fileData = await file.async('blob');
 
                     // File read and parent folder created, now write the file.
-                    const parentFolder = CoreTextUtils.instance.concatenatePaths(destination, fileDir);
+                    const parentFolder = CoreTextUtils.concatenatePaths(destination, fileDir);
 
                     await this.file.writeFile(parentFolder, fileName, fileData, { replace: true });
                 } else {

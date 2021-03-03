@@ -67,7 +67,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Promise of the current download.
      */
     async addOngoingDownload(id: number, promise: Promise<void>, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const uniqueId = this.getUniqueId(id);
 
@@ -125,7 +125,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
         try {
             const files = await this.getFiles(module, courseId);
 
-            return await CorePluginFileDelegate.instance.getFilesDownloadSize(files);
+            return await CorePluginFileDelegate.getFilesDownloadSize(files);
         } catch {
             return { size: -1, total: false };
         }
@@ -140,9 +140,9 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getDownloadedSize(module: CoreCourseAnyModuleData, courseId: number): Promise<number> {
-        const siteId = CoreSites.instance.getCurrentSiteId();
+        const siteId = CoreSites.getCurrentSiteId();
 
-        return CoreFilepool.instance.getFilesSizeByComponent(siteId, this.component, module.id);
+        return CoreFilepool.getFilesSizeByComponent(siteId, this.component, module.id);
     }
 
     /**
@@ -184,12 +184,12 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
             if (typeof instance.introfiles != 'undefined') {
                 return instance.introfiles;
             } else if (instance.intro) {
-                return CoreFilepool.instance.extractDownloadableFilesFromHtmlAsFakeFileObjects(instance.intro);
+                return CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(instance.intro);
             }
         }
 
         if ('description' in module && module.description) {
-            return CoreFilepool.instance.extractDownloadableFilesFromHtmlAsFakeFileObjects(module.description);
+            return CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(module.description);
         }
 
         return [];
@@ -203,7 +203,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Promise of the current download.
      */
     async getOngoingDownload(id: number, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (this.isDownloading(id, siteId)) {
             // There's already a download ongoing, return the promise.
@@ -244,7 +244,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        return CoreCourse.instance.invalidateModule(module.id);
+        return CoreCourse.invalidateModule(module.id);
     }
 
     /**
@@ -268,7 +268,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return True if downloading, false otherwise.
      */
     isDownloading(id: number, siteId?: string): boolean {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         return !!(this.downloadPromises[siteId] && this.downloadPromises[siteId][this.getUniqueId(id)]);
     }
@@ -330,7 +330,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        return CoreFilepool.instance.removeFilesByComponent(CoreSites.instance.getCurrentSiteId(), this.component, module.id);
+        return CoreFilepool.removeFilesByComponent(CoreSites.getCurrentSiteId(), this.component, module.id);
     }
 
 }

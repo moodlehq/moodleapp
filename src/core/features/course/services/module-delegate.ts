@@ -290,7 +290,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @return Promise resolved with boolean: whether module is disabled.
      */
     async isModuleDisabled(modname: string, siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return this.isModuleDisabledInSite(modname, site);
     }
@@ -306,7 +306,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
         const handler = this.getHandler(modname, false);
 
         if (handler) {
-            site = site || CoreSites.instance.getCurrentSite();
+            site = site || CoreSites.getCurrentSite();
 
             if (!site) {
                 return true;
@@ -338,7 +338,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      */
     getModuleIconSrc(modname: string, modicon?: string): string {
         return this.executeFunctionOnEnabled<string>(modname, 'getIconSrc') ||
-            CoreCourse.instance.getModuleIconSrc(modname, modicon);
+            CoreCourse.getModuleIconSrc(modname, modicon);
     }
 
     /**
@@ -368,4 +368,4 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
 
 }
 
-export class CoreCourseModuleDelegate extends makeSingleton(CoreCourseModuleDelegateService) {}
+export const CoreCourseModuleDelegate = makeSingleton(CoreCourseModuleDelegateService);

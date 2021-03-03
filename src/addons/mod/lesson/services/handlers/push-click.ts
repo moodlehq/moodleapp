@@ -38,10 +38,10 @@ export class AddonModLessonPushClickHandlerService implements CorePushNotificati
      * @return Whether the notification click is handled by this handler.
      */
     async handles(notification: NotificationData): Promise<boolean> {
-        if (CoreUtils.instance.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_lesson' &&
+        if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_lesson' &&
                 notification.name == 'graded_essay') {
 
-            return CoreGrades.instance.isPluginEnabledForCourse(Number(notification.courseid), notification.site);
+            return CoreGrades.isPluginEnabledForCourse(Number(notification.courseid), notification.site);
         }
 
         return false;
@@ -58,12 +58,12 @@ export class AddonModLessonPushClickHandlerService implements CorePushNotificati
         const courseId = Number(notification.courseid);
         const moduleId = Number(data.cmid);
 
-        return CoreGradesHelper.instance.goToGrades(courseId, undefined, moduleId, notification.site);
+        return CoreGradesHelper.goToGrades(courseId, undefined, moduleId, notification.site);
     }
 
 }
 
-export class AddonModLessonPushClickHandler extends makeSingleton(AddonModLessonPushClickHandlerService) {}
+export const AddonModLessonPushClickHandler = makeSingleton(AddonModLessonPushClickHandlerService);
 
 type NotificationData = CorePushNotificationsNotificationBasicData & {
     courseid: number;

@@ -26,7 +26,7 @@ import { AddonQbehaviourImmediateFeedbackHandler } from './services/handlers/imm
             multi: true,
             deps: [],
             useFactory: () => () => {
-                CoreQuestionBehaviourDelegate.instance.registerHandler(AddonQbehaviourImmediateFeedbackHandler.instance);
+                CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourImmediateFeedbackHandler.instance);
             },
         },
     ],

@@ -58,18 +58,18 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
 
         this.onLoading = new EventEmitter<boolean>();
 
-        this.disabled = CoreComments.instance.areCommentsDisabledInSite();
+        this.disabled = CoreComments.areCommentsDisabledInSite();
 
         // Update visibility if current site info is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             const wasDisabled = this.disabled;
 
-            this.disabled = CoreComments.instance.areCommentsDisabledInSite();
+            this.disabled = CoreComments.areCommentsDisabledInSite();
 
             if (wasDisabled && !this.disabled) {
                 this.fetchData();
             }
-        }, CoreSites.instance.getCurrentSiteId());
+        }, CoreSites.getCurrentSiteId());
 
         // Refresh comments if event received.
         this.refreshCommentsObserver = CoreEvents.on<CoreCommentsRefreshCommentsEventData>(
@@ -80,10 +80,10 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
                     this.undefinedOrEqual(data, 'component') && this.undefinedOrEqual(data, 'itemId') &&
                     this.undefinedOrEqual(data, 'area')) {
 
-                    CoreUtils.instance.ignoreErrors(this.doRefresh());
+                    CoreUtils.ignoreErrors(this.doRefresh());
                 }
             },
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
 
         // Refresh comments count if event received.
@@ -101,7 +101,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
                     this.commentsCount = newNumber + '';
                 }
             },
-            CoreSites.instance.getCurrentSiteId(),
+            CoreSites.getCurrentSiteId(),
         );
     }
 
@@ -133,7 +133,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
         this.commentsLoaded = false;
         this.onLoading.emit(true);
 
-        const commentsCount = await CoreComments.instance.getCommentsCount(
+        const commentsCount = await CoreComments.getCommentsCount(
             this.contextLevel,
             this.instanceId,
             this.component,
@@ -163,7 +163,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
      * @return Promise resolved when done.
      */
     async invalidateComments(): Promise<void> {
-        await CoreComments.instance.invalidateCommentsData(
+        await CoreComments.invalidateCommentsData(
             this.contextLevel,
             this.instanceId,
             this.component,
@@ -185,7 +185,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
             return;
         }
 
-        CoreNavigator.instance.navigateToSitePath(
+        CoreNavigator.navigateToSitePath(
             'comments/' + this.contextLevel + '/' + this.instanceId + '/' + this.component + '/' + this.itemId + '/',
             {
                 params: {

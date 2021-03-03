@@ -54,21 +54,21 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
         if (!this.question) {
             this.logger.warn('Aborting because of no question received.');
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         this.ddQuestion = this.question;
-        const element = CoreDomUtils.instance.convertToElement(this.question.html);
+        const element = CoreDomUtils.convertToElement(this.question.html);
 
         // Get D&D area, form and question text.
         const ddArea = element.querySelector('.ddarea');
         const ddForm = element.querySelector('.ddform');
 
-        this.ddQuestion.text = CoreDomUtils.instance.getContentsOfElement(element, '.qtext');
+        this.ddQuestion.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
         if (!ddArea || !ddForm || typeof this.ddQuestion.text == 'undefined') {
             this.logger.warn('Aborting because of an error parsing question.', this.ddQuestion.slot);
 
-            return CoreQuestionHelper.instance.showComponentError(this.onAbort);
+            return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         // Build the D&D area HTML.
@@ -140,10 +140,10 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
         }
         // Download background image (3.6+ sites).
         let imgSrc = this.imgSrc;
-        const site = CoreSites.instance.getCurrentSite();
+        const site = CoreSites.getCurrentSite();
 
-        if (this.imgSrc && site?.canDownloadFiles() && CoreUrlUtils.instance.isPluginFileUrl(this.imgSrc)) {
-            imgSrc = await CoreFilepool.instance.getSrcByUrl(
+        if (this.imgSrc && site?.canDownloadFiles() && CoreUrlUtils.isPluginFileUrl(this.imgSrc)) {
+            imgSrc = await CoreFilepool.getSrcByUrl(
                 site.id!,
                 this.imgSrc,
                 this.component,
@@ -155,7 +155,7 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
         }
 
         if (this.questionTextEl) {
-            await CoreDomUtils.instance.waitForImages(this.questionTextEl.nativeElement);
+            await CoreDomUtils.waitForImages(this.questionTextEl.nativeElement);
         }
 
         // Create the instance.

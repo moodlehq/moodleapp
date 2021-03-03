@@ -59,15 +59,15 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
     async canUseCheckUpdates(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
         // Teachers cannot use the WS because it doesn't check student submissions.
         try {
-            const assign = await AddonModAssign.instance.getAssignment(courseId, module.id);
+            const assign = await AddonModAssign.getAssignment(courseId, module.id);
 
-            const data = await AddonModAssign.instance.getSubmissions(assign.id, { cmId: module.id });
+            const data = await AddonModAssign.getSubmissions(assign.id, { cmId: module.id });
             if (data.canviewsubmissions) {
                 return false;
             }
 
             // Check if the user can view their own submission.
-            await AddonModAssign.instance.getSubmissionStatus(assign.id, { cmId: module.id });
+            await AddonModAssign.getSubmissionStatus(assign.id, { cmId: module.id });
 
             return true;
         } catch {
@@ -83,21 +83,21 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved with the list of files.
      */
     async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
-        const siteId = CoreSites.instance.getCurrentSiteId();
+        const siteId = CoreSites.getCurrentSiteId();
 
         try {
-            const assign = await AddonModAssign.instance.getAssignment(courseId, module.id, { siteId });
+            const assign = await AddonModAssign.getAssignment(courseId, module.id, { siteId });
             // Get intro files and attachments.
             let files = assign.introattachments || [];
             files = files.concat(this.getIntroFilesFromInstance(module, assign));
 
             // Now get the files in the submissions.
-            const submissionData = await AddonModAssign.instance.getSubmissions(assign.id, { cmId: module.id, siteId });
+            const submissionData = await AddonModAssign.getSubmissions(assign.id, { cmId: module.id, siteId });
 
             if (submissionData.canviewsubmissions) {
                 // Teacher, get all submissions.
                 const submissions =
-                    await AddonModAssignHelper.instance.getSubmissionsUserData(assign, submissionData.submissions, 0, { siteId });
+                    await AddonModAssignHelper.getSubmissionsUserData(assign, submissionData.submissions, 0, { siteId });
 
                 // Get all the files in the submissions.
                 const promises = submissions.map((submission) =>
@@ -117,7 +117,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                 await Promise.all(promises);
             } else {
                 // Student, get only his/her submissions.
-                const userId = CoreSites.instance.getCurrentSiteUserId();
+                const userId = CoreSites.getCurrentSiteUserId();
                 const blindMarking = !!assign.blindmarking && !assign.revealidentities;
 
                 const submissionFiles = await this.getSubmissionFiles(assign, userId, blindMarking, siteId);
@@ -147,12 +147,12 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         siteId?: string,
     ): Promise<CoreWSExternalFile[]> {
 
-        const submissionStatus = await AddonModAssign.instance.getSubmissionStatusWithRetry(assign, {
+        const submissionStatus = await AddonModAssign.getSubmissionStatusWithRetry(assign, {
             userId: submitId,
             isBlind: blindMarking,
             siteId,
         });
-        const userSubmission = AddonModAssign.instance.getSubmissionObjectFromAttempt(assign, submissionStatus.lastattempt);
+        const userSubmission = AddonModAssign.getSubmissionObjectFromAttempt(assign, submissionStatus.lastattempt);
 
         if (!submissionStatus.lastattempt || !userSubmission) {
             return [];
@@ -163,14 +163,14 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         if (userSubmission.plugins) {
             // Add submission plugin files.
             userSubmission.plugins.forEach((plugin) => {
-                promises.push(AddonModAssignSubmissionDelegate.instance.getPluginFiles(assign, userSubmission, plugin, siteId));
+                promises.push(AddonModAssignSubmissionDelegate.getPluginFiles(assign, userSubmission, plugin, siteId));
             });
         }
 
         if (submissionStatus.feedback && submissionStatus.feedback.plugins) {
             // Add feedback plugin files.
             submissionStatus.feedback.plugins.forEach((plugin) => {
-                promises.push(AddonModAssignFeedbackDelegate.instance.getPluginFiles(assign, userSubmission, plugin, siteId));
+                promises.push(AddonModAssignFeedbackDelegate.getPluginFiles(assign, userSubmission, plugin, siteId));
             });
         }
 
@@ -187,7 +187,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        await AddonModAssign.instance.invalidateContent(moduleId, courseId);
+        await AddonModAssign.invalidateContent(moduleId, courseId);
     }
 
     /**
@@ -198,7 +198,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved when invalidated.
      */
     async invalidateModule(module: CoreCourseAnyModuleData): Promise<void> {
-        return CoreCourse.instance.invalidateModule(module.id);
+        return CoreCourse.invalidateModule(module.id);
     }
 
     /**
@@ -207,7 +207,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     async isEnabled(): Promise<boolean> {
-        return AddonModAssign.instance.isPluginEnabled();
+        return AddonModAssign.isPluginEnabled();
     }
 
     /**
@@ -229,9 +229,9 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved when done.
      */
     protected async prefetchAssign(module: CoreCourseAnyModuleData, courseId?: number): Promise<void> {
-        const userId = CoreSites.instance.getCurrentSiteUserId();
-        courseId = courseId || module.course || CoreSites.instance.getCurrentSiteHomeId();
-        const siteId = CoreSites.instance.getCurrentSiteId();
+        const userId = CoreSites.getCurrentSiteUserId();
+        courseId = courseId || module.course || CoreSites.getCurrentSiteHomeId();
+        const siteId = CoreSites.getCurrentSiteId();
 
         const options: CoreSitesCommonWSOptions = {
             readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
@@ -244,25 +244,25 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         };
 
         // Get assignment to retrieve all its submissions.
-        const assign = await AddonModAssign.instance.getAssignment(courseId, module.id, options);
+        const assign = await AddonModAssign.getAssignment(courseId, module.id, options);
         const promises: Promise<any>[] = [];
         const blindMarking = assign.blindmarking && !assign.revealidentities;
 
         if (blindMarking) {
             promises.push(
-                CoreUtils.instance.ignoreErrors(AddonModAssign.instance.getAssignmentUserMappings(assign.id, -1, modOptions)),
+                CoreUtils.ignoreErrors(AddonModAssign.getAssignmentUserMappings(assign.id, -1, modOptions)),
             );
         }
 
         promises.push(this.prefetchSubmissions(assign, courseId, module.id, userId, siteId));
 
-        promises.push(CoreCourseHelper.instance.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
+        promises.push(CoreCourseHelper.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
 
         // Download intro files and attachments. Do not call getFiles because it'd call some WS twice.
         let files = assign.introattachments || [];
         files = files.concat(this.getIntroFilesFromInstance(module, assign));
 
-        promises.push(CoreFilepool.instance.addFilesToQueue(siteId, files, this.component, module.id));
+        promises.push(CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id));
 
         await Promise.all(promises);
 
@@ -292,7 +292,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         };
 
         // Get submissions.
-        const submissions = await AddonModAssign.instance.getSubmissions(assign.id, modOptions);
+        const submissions = await AddonModAssign.getSubmissions(assign.id, modOptions);
         const promises: Promise<any>[] = [];
 
         promises.push(this.prefetchParticipantSubmissions(
@@ -344,7 +344,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         };
 
         // Always prefetch groupInfo.
-        const groupInfo = await CoreGroups.instance.getActivityGroupInfo(assign.cmid, false, undefined, siteId);
+        const groupInfo = await CoreGroups.getActivityGroupInfo(assign.cmid, false, undefined, siteId);
         if (!canviewsubmissions) {
 
             return;
@@ -356,7 +356,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         }
 
         const promises = groupInfo.groups.map((group) =>
-            AddonModAssignHelper.instance.getSubmissionsUserData(assign, submissions, group.id, options)
+            AddonModAssignHelper.getSubmissionsUserData(assign, submissions, group.id, options)
                 .then((submissions: AddonModAssignSubmissionFormatted[]) => {
 
                     const subPromises: Promise<any>[] = submissions.map((submission) => {
@@ -373,7 +373,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
                     if (!assign.markingworkflow) {
                         // Get assignment grades only if workflow is not enabled to check grading date.
-                        subPromises.push(AddonModAssign.instance.getAssignmentGrades(assign.id, modOptions));
+                        subPromises.push(AddonModAssign.getAssignmentGrades(assign.id, modOptions));
                     }
 
                     // Prefetch the submission of the current user even if it does not exist, this will be create it.
@@ -391,11 +391,11 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                     return Promise.all(subPromises);
                 }).then(async () => {
                     // Participiants already fetched, we don't need to ignore cache now.
-                    const participants = await AddonModAssignHelper.instance.getParticipants(assign, group.id, { siteId });
+                    const participants = await AddonModAssignHelper.getParticipants(assign, group.id, { siteId });
 
                     // Fail silently (Moodle < 3.2).
-                    await CoreUtils.instance.ignoreErrors(
-                        CoreUser.instance.prefetchUserAvatars(participants, 'profileimageurl', siteId),
+                    await CoreUtils.ignoreErrors(
+                        CoreUser.prefetchUserAvatars(participants, 'profileimageurl', siteId),
                     );
 
                     return;
@@ -421,7 +421,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         options: AddonModAssignSubmissionStatusOptions = {},
         resolveOnNoPermission = false,
     ): Promise<void> {
-        const submission = await AddonModAssign.instance.getSubmissionStatusWithRetry(assign, options);
+        const submission = await AddonModAssign.getSubmissionStatusWithRetry(assign, options);
         const siteId = options.siteId!;
         const userId = options.userId;
 
@@ -429,7 +429,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
             const promises: Promise<any>[] = [];
             const blindMarking = !!assign.blindmarking && !assign.revealidentities;
             let userIds: number[] = [];
-            const userSubmission = AddonModAssign.instance.getSubmissionObjectFromAttempt(assign, submission.lastattempt);
+            const userSubmission = AddonModAssign.getSubmissionObjectFromAttempt(assign, submission.lastattempt);
 
             if (submission.lastattempt) {
                 // Get IDs of the members who need to submit.
@@ -443,14 +443,14 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                         userSubmission.plugins.forEach((plugin) => {
                             // Prefetch the plugin WS data.
                             promises.push(
-                                AddonModAssignSubmissionDelegate.instance.prefetch(assign, userSubmission, plugin, siteId),
+                                AddonModAssignSubmissionDelegate.prefetch(assign, userSubmission, plugin, siteId),
                             );
 
                             // Prefetch the plugin files.
                             promises.push(
-                                AddonModAssignSubmissionDelegate.instance.getPluginFiles(assign, userSubmission, plugin, siteId)
+                                AddonModAssignSubmissionDelegate.getPluginFiles(assign, userSubmission, plugin, siteId)
                                     .then((files) =>
-                                        CoreFilepool.instance.addFilesToQueue(siteId, files, this.component, module.id))
+                                        CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id))
                                     .catch(() => {
                                         // Ignore errors.
                                     }),
@@ -467,10 +467,10 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
             // Prefetch grade items.
             if (userId) {
-                promises.push(CoreCourse.instance.getModuleBasicGradeInfo(moduleId, siteId).then((gradeInfo) => {
+                promises.push(CoreCourse.getModuleBasicGradeInfo(moduleId, siteId).then((gradeInfo) => {
                     if (gradeInfo) {
                         promises.push(
-                            CoreGradesHelper.instance.getGradeModuleItems(courseId, moduleId, userId, undefined, siteId, true),
+                            CoreGradesHelper.getGradeModuleItems(courseId, moduleId, userId, undefined, siteId, true),
                         );
                     }
 
@@ -489,12 +489,12 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                 if (submission.feedback.plugins && userSubmission && userSubmission.id) {
                     submission.feedback.plugins.forEach((plugin) => {
                         // Prefetch the plugin WS data.
-                        promises.push(AddonModAssignFeedbackDelegate.instance.prefetch(assign, userSubmission, plugin, siteId));
+                        promises.push(AddonModAssignFeedbackDelegate.prefetch(assign, userSubmission, plugin, siteId));
 
                         // Prefetch the plugin files.
                         promises.push(
-                            AddonModAssignFeedbackDelegate.instance.getPluginFiles(assign, userSubmission, plugin, siteId)
-                                .then((files) => CoreFilepool.instance.addFilesToQueue(siteId, files, this.component, module.id))
+                            AddonModAssignFeedbackDelegate.getPluginFiles(assign, userSubmission, plugin, siteId)
+                                .then((files) => CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id))
                                 .catch(() => {
                                     // Ignore errors.
                                 }),
@@ -504,7 +504,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
             }
 
             // Prefetch user profiles.
-            promises.push(CoreUser.instance.prefetchProfiles(userIds, courseId, siteId));
+            promises.push(CoreUser.prefetchProfiles(userIds, courseId, siteId));
 
             await Promise.all(promises);
         } catch (error) {
@@ -524,7 +524,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved when done.
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
-        return AddonModAssignSync.instance.syncAssign(module.instance!, siteId);
+        return AddonModAssignSync.syncAssign(module.instance!, siteId);
     }
 
 }

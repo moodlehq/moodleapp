@@ -65,26 +65,26 @@ export class CoreAttachmentsComponent implements OnInit {
         this.maxSize = this.maxSize !== null ? Number(this.maxSize) : NaN;
 
         if (this.maxSize === 0) {
-            const currentSite = CoreSites.instance.getCurrentSite();
+            const currentSite = CoreSites.getCurrentSite();
             const siteInfo = currentSite?.getInfo();
 
             if (siteInfo?.usermaxuploadfilesize) {
                 this.maxSize = siteInfo.usermaxuploadfilesize;
-                this.maxSizeReadable = CoreTextUtils.instance.bytesToSize(this.maxSize, 2);
+                this.maxSizeReadable = CoreTextUtils.bytesToSize(this.maxSize, 2);
             } else {
-                this.maxSizeReadable = Translate.instance.instant('core.unknown');
+                this.maxSizeReadable = Translate.instant('core.unknown');
             }
         } else if (this.maxSize > 0) {
-            this.maxSizeReadable = CoreTextUtils.instance.bytesToSize(this.maxSize, 2);
+            this.maxSizeReadable = CoreTextUtils.bytesToSize(this.maxSize, 2);
         } else if (this.maxSize === -1) {
-            this.maxSizeReadable = Translate.instance.instant('core.unlimited');
+            this.maxSizeReadable = Translate.instant('core.unlimited');
         } else {
-            this.maxSizeReadable = Translate.instance.instant('core.unknown');
+            this.maxSizeReadable = Translate.instant('core.unknown');
         }
 
         if (this.maxSubmissions === undefined || this.maxSubmissions < 0) {
             this.maxSubmissionsReadable = this.maxSubmissions === undefined ?
-                Translate.instance.instant('core.unknown') : undefined;
+                Translate.instant('core.unknown') : undefined;
             this.unlimitedFiles = true;
         } else {
             this.maxSubmissionsReadable = String(this.maxSubmissions);
@@ -93,7 +93,7 @@ export class CoreAttachmentsComponent implements OnInit {
         this.acceptedTypes = this.acceptedTypes?.trim();
 
         if (this.acceptedTypes && this.acceptedTypes != '*') {
-            this.fileTypes = CoreFileUploader.instance.prepareFiletypeList(this.acceptedTypes);
+            this.fileTypes = CoreFileUploader.prepareFiletypeList(this.acceptedTypes);
         }
     }
 
@@ -103,8 +103,8 @@ export class CoreAttachmentsComponent implements OnInit {
     async add(): Promise<void> {
         const allowOffline = !!this.allowOffline && this.allowOffline !== 'false';
 
-        if (!allowOffline && !CoreApp.instance.isOnline()) {
-            CoreDomUtils.instance.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
+        if (!allowOffline && !CoreApp.isOnline()) {
+            CoreDomUtils.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
 
             return;
         }
@@ -112,11 +112,11 @@ export class CoreAttachmentsComponent implements OnInit {
         const mimetypes = this.fileTypes && this.fileTypes.mimetypes;
 
         try {
-            const result = await CoreFileUploaderHelper.instance.selectFile(this.maxSize, allowOffline, undefined, mimetypes);
+            const result = await CoreFileUploaderHelper.selectFile(this.maxSize, allowOffline, undefined, mimetypes);
 
             this.files?.push(result);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'Error selecting file.');
+            CoreDomUtils.showErrorModalDefault(error, 'Error selecting file.');
         }
     }
 
@@ -131,7 +131,7 @@ export class CoreAttachmentsComponent implements OnInit {
 
         if (askConfirm) {
             try {
-                await CoreDomUtils.instance.showDeleteConfirm('core.confirmdeletefile');
+                await CoreDomUtils.showDeleteConfirm('core.confirmdeletefile');
             } catch {
                 // User cancelled.
                 return;

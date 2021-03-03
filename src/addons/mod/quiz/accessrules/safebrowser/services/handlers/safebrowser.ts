@@ -50,4 +50,4 @@ export class AddonModQuizAccessSafeBrowserHandlerService implements AddonModQuiz
 
 }
 
-export class AddonModQuizAccessSafeBrowserHandler extends makeSingleton(AddonModQuizAccessSafeBrowserHandlerService) {}
+export const AddonModQuizAccessSafeBrowserHandler = makeSingleton(AddonModQuizAccessSafeBrowserHandlerService);

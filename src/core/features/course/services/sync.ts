@@ -62,7 +62,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      */
     protected async syncAllCoursesFunc(force: boolean, siteId: string): Promise<void> {
         await Promise.all([
-            CoreCourseLogHelper.instance.syncSite(siteId),
+            CoreCourseLogHelper.syncSite(siteId),
             this.syncCoursesCompletion(siteId, force),
         ]);
     }
@@ -75,7 +75,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncCoursesCompletion(siteId: string, force: boolean): Promise<void> {
-        const completions = await CoreCourseOffline.instance.getAllManualCompletions(siteId);
+        const completions = await CoreCourseOffline.getAllManualCompletions(siteId);
 
         // Sync all courses.
         await Promise.all(completions.map(async (completion) => {
@@ -115,7 +115,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      * @return Promise resolved if sync is successful, rejected otherwise.
      */
     async syncCourse(courseId: number, siteId?: string): Promise<CoreCourseSyncResult> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (this.isSyncing(courseId, siteId)) {
             // There's already a sync ongoing for this discussion, return the promise.
@@ -141,8 +141,8 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
         };
 
         // Get offline responses to be sent.
-        const completions = await CoreUtils.instance.ignoreErrors(
-            CoreCourseOffline.instance.getCourseManualCompletions(courseId, siteId),
+        const completions = await CoreUtils.ignoreErrors(
+            CoreCourseOffline.getCourseManualCompletions(courseId, siteId),
             <CoreCourseManualCompletionDBRecord[]> [],
         );
 
@@ -155,14 +155,14 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
             return result;
         }
 
-        if (!CoreApp.instance.isOnline()) {
+        if (!CoreApp.isOnline()) {
             // Cannot sync in offline.
             throw new CoreNetworkError();
         }
 
         // Get the current completion status to check if any completion was modified in web.
         // This can be retrieved on core_course_get_contents since 3.6 but this is an easy way to get them.
-        const onlineCompletions = await CoreCourse.instance.getActivitiesCompletionStatus(
+        const onlineCompletions = await CoreCourse.getActivitiesCompletionStatus(
             courseId,
             siteId,
             undefined,
@@ -177,13 +177,13 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
 
             // Check if the completion was modified in online. If so, discard it.
             if (onlineComp && onlineComp.timecompleted * 1000 > entry.timecompleted) {
-                await CoreCourseOffline.instance.deleteManualCompletion(entry.cmid, siteId);
+                await CoreCourseOffline.deleteManualCompletion(entry.cmid, siteId);
 
                 // Completion deleted, add a warning if the completion status doesn't match.
                 if (onlineComp.state != entry.completed) {
-                    result.warnings.push(Translate.instance.instant('core.course.warningofflinemanualcompletiondeleted', {
+                    result.warnings.push(Translate.instant('core.course.warningofflinemanualcompletiondeleted', {
                         name: entry.coursename || courseId,
-                        error: Translate.instance.instant('core.course.warningmanualcompletionmodified'),
+                        error: Translate.instant('core.course.warningmanualcompletionmodified'),
                     }));
                 }
 
@@ -191,13 +191,13 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
             }
 
             try {
-                await CoreCourse.instance.markCompletedManuallyOnline(entry.cmid, !!entry.completed, siteId);
+                await CoreCourse.markCompletedManuallyOnline(entry.cmid, !!entry.completed, siteId);
 
                 result.updated = true;
 
-                await CoreCourseOffline.instance.deleteManualCompletion(entry.cmid, siteId);
+                await CoreCourseOffline.deleteManualCompletion(entry.cmid, siteId);
             } catch (error) {
-                if (!CoreUtils.instance.isWebServiceError(error)) {
+                if (!CoreUtils.isWebServiceError(error)) {
                     // Couldn't connect to server, reject.
                     throw error;
                 }
@@ -205,12 +205,12 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
                 // The WebService has thrown an error, this means that the completion cannot be submitted. Delete it.
                 result.updated = true;
 
-                await CoreCourseOffline.instance.deleteManualCompletion(entry.cmid, siteId);
+                await CoreCourseOffline.deleteManualCompletion(entry.cmid, siteId);
 
                 // Completion deleted, add a warning.
-                result.warnings.push(Translate.instance.instant('core.course.warningofflinemanualcompletiondeleted', {
+                result.warnings.push(Translate.instant('core.course.warningofflinemanualcompletiondeleted', {
                     name: entry.coursename || courseId,
-                    error: CoreTextUtils.instance.getErrorMessageFromError(error),
+                    error: CoreTextUtils.getErrorMessageFromError(error),
                 }));
             }
         }));
@@ -218,14 +218,14 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
         if (result.updated) {
             try {
                 // Update data.
-                await CoreCourse.instance.invalidateSections(courseId, siteId);
+                await CoreCourse.invalidateSections(courseId, siteId);
 
-                const currentSite = CoreSites.instance.getCurrentSite();
+                const currentSite = CoreSites.getCurrentSite();
 
                 if (currentSite?.isVersionGreaterEqualThan('3.6')) {
-                    await CoreCourse.instance.getSections(courseId, false, true, undefined, siteId);
+                    await CoreCourse.getSections(courseId, false, true, undefined, siteId);
                 } else {
-                    await CoreCourse.instance.getActivitiesCompletionStatus(courseId, siteId);
+                    await CoreCourse.getActivitiesCompletionStatus(courseId, siteId);
                 }
             } catch {
                 // Ignore errors.
@@ -241,7 +241,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
 
 }
 
-export class CoreCourseSync extends makeSingleton(CoreCourseSyncProvider) {}
+export const CoreCourseSync = makeSingleton(CoreCourseSyncProvider, ['component', 'syncInterval']);
 
 /**
  * Result of course sync.

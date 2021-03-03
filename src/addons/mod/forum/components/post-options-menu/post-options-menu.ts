@@ -48,17 +48,17 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit, OnDestroy 
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.isOnline = CoreApp.instance.isOnline();
+        this.isOnline = CoreApp.isOnline();
 
-        this.onlineObserver = Network.instance.onChange().subscribe(() => {
+        this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.instance.run(() => {
-                this.isOnline = CoreApp.instance.isOnline();
+            NgZone.run(() => {
+                this.isOnline = CoreApp.isOnline();
             });
         });
 
         if (this.post.id > 0) {
-            const site = CoreSites.instance.getCurrentSite()!;
+            const site = CoreSites.getCurrentSite()!;
             this.url = site.createSiteUrl('/mod/forum/discuss.php', { d: this.post.discussionid.toString() }, 'p' + this.post.id);
             this.offlinePost = false;
         } else {
@@ -73,12 +73,12 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit, OnDestroy 
             if (this.forumId) {
                 try {
                     this.post =
-                        await AddonModForum.instance.getDiscussionPost(this.forumId, this.post.discussionid, this.post.id, {
+                        await AddonModForum.getDiscussionPost(this.forumId, this.post.discussionid, this.post.id, {
                             cmId: this.cmId,
                             readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
                         });
                 } catch (error) {
-                    CoreDomUtils.instance.showErrorModalDefault(error, 'Error getting discussion post.');
+                    CoreDomUtils.showErrorModalDefault(error, 'Error getting discussion post.');
                 }
             } else {
                 this.loaded = true;
@@ -87,8 +87,8 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit, OnDestroy 
             }
         }
 
-        this.canDelete = !!this.post.capabilities.delete && AddonModForum.instance.isDeletePostAvailable();
-        this.canEdit = !!this.post.capabilities.edit && AddonModForum.instance.isUpdatePostAvailable();
+        this.canDelete = !!this.post.capabilities.delete && AddonModForum.isDeletePostAvailable();
+        this.canEdit = !!this.post.capabilities.edit && AddonModForum.isUpdatePostAvailable();
         this.wordCount = (this.post.haswordcount && this.post.wordcount) || null;
         this.loaded = true;
     }
@@ -104,7 +104,7 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit, OnDestroy 
      * Close the popover.
      */
     dismiss(): void {
-        PopoverController.instance.dismiss();
+        PopoverController.dismiss();
     }
 
     /**
@@ -112,9 +112,9 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit, OnDestroy 
      */
     deletePost(): void {
         if (!this.offlinePost) {
-            PopoverController.instance.dismiss({ action: 'delete' });
+            PopoverController.dismiss({ action: 'delete' });
         } else {
-            PopoverController.instance.dismiss({ action: 'deleteoffline' });
+            PopoverController.dismiss({ action: 'deleteoffline' });
         }
     }
 
@@ -123,9 +123,9 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit, OnDestroy 
      */
     editPost(): void {
         if (!this.offlinePost) {
-            PopoverController.instance.dismiss({ action: 'edit' });
+            PopoverController.dismiss({ action: 'edit' });
         } else {
-            PopoverController.instance.dismiss({ action: 'editoffline' });
+            PopoverController.dismiss({ action: 'editoffline' });
         }
     }
 

@@ -46,14 +46,14 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
      * @param componentId Component ID.
      */
     clearTmpData(question: CoreQuestionQuestionParsed, component: string, componentId: string | number): void {
-        const questionComponentId = CoreQuestion.instance.getQuestionComponentId(question, componentId);
-        const files = CoreFileSession.instance.getFiles(component, questionComponentId);
+        const questionComponentId = CoreQuestion.getQuestionComponentId(question, componentId);
+        const files = CoreFileSession.getFiles(component, questionComponentId);
 
         // Clear the files in session for this question.
-        CoreFileSession.instance.clearFiles(component, questionComponentId);
+        CoreFileSession.clearFiles(component, questionComponentId);
 
         // Now delete the local files from the tmp folder.
-        CoreFileUploader.instance.clearTmpFiles(files);
+        CoreFileUploader.clearTmpFiles(files);
     }
 
     /**
@@ -71,7 +71,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         componentId: string | number,
         siteId?: string,
     ): Promise<void> {
-        return CoreQuestionHelper.instance.deleteStoredQuestionFiles(question, component, componentId, siteId);
+        return CoreQuestionHelper.deleteStoredQuestionFiles(question, component, componentId, siteId);
     }
 
     /**
@@ -103,7 +103,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             };
         }
 
-        const element = CoreDomUtils.instance.convertToElement(question.html);
+        const element = CoreDomUtils.convertToElement(question.html);
 
         return {
             text: !!element.querySelector('textarea[name*=_answer]'),
@@ -142,7 +142,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
      * @return Prevent submit message. Undefined or empty if can be submitted.
      */
     getPreventSubmitMessage(question: CoreQuestionQuestionParsed): string | undefined {
-        const element = CoreDomUtils.instance.convertToElement(question.html);
+        const element = CoreDomUtils.convertToElement(question.html);
         const uploadFilesSupported = typeof question.responsefileareas != 'undefined';
 
         if (!uploadFilesSupported && element.querySelector('div[id*=filemanager]')) {
@@ -150,7 +150,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             return 'core.question.errorattachmentsnotsupportedinsite';
         }
 
-        if (!uploadFilesSupported && CoreQuestionHelper.instance.hasDraftFileUrls(element.innerHTML)) {
+        if (!uploadFilesSupported && CoreQuestionHelper.hasDraftFileUrls(element.innerHTML)) {
             return 'core.question.errorembeddedfilesnotsupportedinsite';
         }
     }
@@ -184,8 +184,8 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             return -1;
         }
 
-        const questionComponentId = CoreQuestion.instance.getQuestionComponentId(question, componentId);
-        const attachments = CoreFileSession.instance.getFiles(component, questionComponentId);
+        const questionComponentId = CoreQuestion.getQuestionComponentId(question, componentId);
+        const attachments = CoreFileSession.getFiles(component, questionComponentId);
 
         if (!allowedOptions.text) {
             return attachments && attachments.length >= Number(question.parsedSettings.attachmentsrequired) ? 1 : 0;
@@ -224,8 +224,8 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             return -1;
         }
 
-        const questionComponentId = CoreQuestion.instance.getQuestionComponentId(question, componentId);
-        const attachments = CoreFileSession.instance.getFiles(component, questionComponentId);
+        const questionComponentId = CoreQuestion.getQuestionComponentId(question, componentId);
+        const attachments = CoreFileSession.getFiles(component, questionComponentId);
 
         // Determine if the given response has online text or attachments.
         return (answers.answer && answers.answer !== '') || (attachments && attachments.length > 0) ? 1 : 0;
@@ -253,7 +253,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
 
         // First check the inline text.
         const answerIsEqual = allowedOptions.text ?
-            CoreUtils.instance.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') : true;
+            CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') : true;
 
         if (!allowedOptions.attachments || !uploadFilesSupported || !answerIsEqual) {
             // No need to check attachments.
@@ -261,11 +261,11 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         }
 
         // Check attachments now.
-        const questionComponentId = CoreQuestion.instance.getQuestionComponentId(question, componentId);
-        const attachments = CoreFileSession.instance.getFiles(component, questionComponentId);
-        const originalAttachments = CoreQuestionHelper.instance.getResponseFileAreaFiles(question, 'attachments');
+        const questionComponentId = CoreQuestion.getQuestionComponentId(question, componentId);
+        const attachments = CoreFileSession.getFiles(component, questionComponentId);
+        const originalAttachments = CoreQuestionHelper.getResponseFileAreaFiles(question, 'attachments');
 
-        return !CoreFileUploader.instance.areFileListDifferent(attachments, originalAttachments);
+        return !CoreFileUploader.areFileListDifferent(attachments, originalAttachments);
     }
 
     /**
@@ -288,7 +288,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         siteId?: string,
     ): Promise<void> {
 
-        const element = CoreDomUtils.instance.convertToElement(question.html);
+        const element = CoreDomUtils.convertToElement(question.html);
         const attachmentsInput = <HTMLInputElement> element.querySelector('.attachments input[name*=_attachments]');
 
         // Search the textarea to get its name.
@@ -326,29 +326,29 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     ): Promise<void> {
 
         // Treat attachments if any.
-        const questionComponentId = CoreQuestion.instance.getQuestionComponentId(question, componentId);
-        const attachments = CoreFileSession.instance.getFiles(component, questionComponentId);
+        const questionComponentId = CoreQuestion.getQuestionComponentId(question, componentId);
+        const attachments = CoreFileSession.getFiles(component, questionComponentId);
         const draftId = Number(attachmentsInput.value);
 
         if (offline) {
             // Get the folder where to store the files.
-            const folderPath = CoreQuestion.instance.getQuestionFolder(question.type, component, questionComponentId, siteId);
+            const folderPath = CoreQuestion.getQuestionFolder(question.type, component, questionComponentId, siteId);
 
-            const result = await CoreFileUploader.instance.storeFilesToUpload(folderPath, attachments);
+            const result = await CoreFileUploader.storeFilesToUpload(folderPath, attachments);
 
             // Store the files in the answers.
             answers[attachmentsInput.name + '_offline'] = JSON.stringify(result);
         } else {
             // Check if any attachment was deleted.
-            const originalAttachments = CoreQuestionHelper.instance.getResponseFileAreaFiles(question, 'attachments');
-            const filesToDelete = CoreFileUploader.instance.getFilesToDelete(originalAttachments, attachments);
+            const originalAttachments = CoreQuestionHelper.getResponseFileAreaFiles(question, 'attachments');
+            const filesToDelete = CoreFileUploader.getFilesToDelete(originalAttachments, attachments);
 
             if (filesToDelete.length > 0) {
                 // Delete files.
-                await CoreFileUploader.instance.deleteDraftFiles(draftId, filesToDelete, siteId);
+                await CoreFileUploader.deleteDraftFiles(draftId, filesToDelete, siteId);
             }
 
-            await CoreFileUploader.instance.uploadFiles(draftId, attachments, siteId);
+            await CoreFileUploader.uploadFiles(draftId, attachments, siteId);
         }
     }
 
@@ -370,7 +370,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         siteId?: string,
     ): Promise<void> {
 
-        const element = CoreDomUtils.instance.convertToElement(question.html);
+        const element = CoreDomUtils.convertToElement(question.html);
         const attachmentsInput = <HTMLInputElement> element.querySelector('.attachments input[name*=_attachments]');
 
         if (attachmentsInput) {
@@ -382,7 +382,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             return;
         }
 
-        const attachmentsData: CoreFileUploaderStoreFilesResult = CoreTextUtils.instance.parseJSON(
+        const attachmentsData: CoreFileUploaderStoreFilesResult = CoreTextUtils.parseJSON(
             <string> answers.attachments_offline,
             {
                 online: [],
@@ -392,12 +392,12 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         delete answers.attachments_offline;
 
         // Check if any attachment was deleted.
-        const originalAttachments = CoreQuestionHelper.instance.getResponseFileAreaFiles(question, 'attachments');
-        const filesToDelete = CoreFileUploader.instance.getFilesToDelete(originalAttachments, attachmentsData.online);
+        const originalAttachments = CoreQuestionHelper.getResponseFileAreaFiles(question, 'attachments');
+        const filesToDelete = CoreFileUploader.getFilesToDelete(originalAttachments, attachmentsData.online);
 
         if (filesToDelete.length > 0) {
             // Delete files.
-            await CoreFileUploader.instance.deleteDraftFiles(Number(answers.attachments), filesToDelete, siteId);
+            await CoreFileUploader.deleteDraftFiles(Number(answers.attachments), filesToDelete, siteId);
         }
 
         if (!attachmentsData.offline) {
@@ -406,9 +406,9 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
 
         // Upload the offline files.
         const offlineFiles =
-            <FileEntry[]> await CoreQuestionHelper.instance.getStoredQuestionFiles(question, component, componentId, siteId);
+            <FileEntry[]> await CoreQuestionHelper.getStoredQuestionFiles(question, component, componentId, siteId);
 
-        await CoreFileUploader.instance.uploadFiles(
+        await CoreFileUploader.uploadFiles(
             Number(answers.attachments),
             [...attachmentsData.online, ...offlineFiles],
             siteId,
@@ -430,15 +430,15 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         textarea: HTMLTextAreaElement,
         siteId?: string,
     ): Promise<void> {
-        if (CoreQuestionHelper.instance.hasDraftFileUrls(question.html) && question.responsefileareas) {
+        if (CoreQuestionHelper.hasDraftFileUrls(question.html) && question.responsefileareas) {
             // Restore draftfile URLs.
-            const site = await CoreSites.instance.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
 
-            answers[textarea.name] = CoreTextUtils.instance.restoreDraftfileUrls(
+            answers[textarea.name] = CoreTextUtils.restoreDraftfileUrls(
                 site.getURL(),
                 <string> answers[textarea.name],
                 question.html,
-                CoreQuestionHelper.instance.getResponseFileAreaFiles(question, 'answer'),
+                CoreQuestionHelper.getResponseFileAreaFiles(question, 'answer'),
             );
         }
 
@@ -449,16 +449,16 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             isPlainText = question.parsedSettings.responseformat == 'monospaced' ||
                 question.parsedSettings.responseformat == 'plain';
         } else {
-            const questionEl = CoreDomUtils.instance.convertToElement(question.html);
+            const questionEl = CoreDomUtils.convertToElement(question.html);
             isPlainText = !!questionEl.querySelector('.qtype_essay_monospaced') || !!questionEl.querySelector('.qtype_essay_plain');
         }
 
         if (!isPlainText) {
             // Add some HTML to the text if needed.
-            answers[textarea.name] = CoreTextUtils.instance.formatHtmlLines(<string> answers[textarea.name]);
+            answers[textarea.name] = CoreTextUtils.formatHtmlLines(<string> answers[textarea.name]);
         }
     }
 
 }
 
-export class AddonQtypeEssayHandler extends makeSingleton(AddonQtypeEssayHandlerService) {}
+export const AddonQtypeEssayHandler = makeSingleton(AddonQtypeEssayHandlerService);

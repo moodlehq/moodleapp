@@ -35,15 +35,15 @@ export class CoreCourseUnsupportedModulePage implements OnInit {
      * @inheritDoc
      */
     ngOnInit(): void {
-        this.module = CoreNavigator.instance.getRouteParam('module');
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId');
+        this.module = CoreNavigator.getRouteParam('module');
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
     }
 
     /**
      * Expand the description.
      */
     expandDescription(): void {
-        CoreTextUtils.instance.viewText(Translate.instance.instant('core.description'), this.module!.description!, {
+        CoreTextUtils.viewText(Translate.instant('core.description'), this.module!.description!, {
             filter: true,
             contextLevel: 'module',
             instanceId: this.module!.id,

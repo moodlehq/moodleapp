@@ -47,7 +47,7 @@ export class CoreUserTagAreaHandlerService implements CoreTagAreaHandler {
      */
     parseContent(content: string): CoreUserTagFeedElement[] {
         const items: CoreUserTagFeedElement[] = [];
-        const element = CoreDomUtils.instance.convertToElement(content);
+        const element = CoreDomUtils.convertToElement(content);
 
         Array.from(element.querySelectorAll('div.user-box')).forEach((userbox: HTMLElement) => {
             const avatarLink = userbox.querySelector('a:first-child');
@@ -90,7 +90,7 @@ export class CoreUserTagAreaHandlerService implements CoreTagAreaHandler {
 
 }
 
-export class CoreUserTagAreaHandler extends makeSingleton(CoreUserTagAreaHandlerService) {}
+export const CoreUserTagAreaHandler = makeSingleton(CoreUserTagAreaHandlerService);
 
 export type CoreUserTagFeedElement = CoreTagFeedElement & {
     user: CoreUserBasicData;

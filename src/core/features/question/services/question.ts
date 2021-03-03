@@ -141,7 +141,7 @@ export class CoreQuestionProvider {
      */
     compareAllAnswers(prevAnswers: Record<string, unknown>, newAnswers: Record<string, unknown>): boolean {
         // Get all the keys.
-        const keys = CoreUtils.instance.mergeArraysWithoutDuplicates(Object.keys(prevAnswers), Object.keys(newAnswers));
+        const keys = CoreUtils.mergeArraysWithoutDuplicates(Object.keys(prevAnswers), Object.keys(newAnswers));
 
         // Check that all the keys have the same value on both objects.
         for (const i in keys) {
@@ -149,7 +149,7 @@ export class CoreQuestionProvider {
 
             // Ignore extra answers like sequencecheck or certainty.
             if (!this.isExtraAnswer(key[0])) {
-                if (!CoreUtils.instance.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, key)) {
+                if (!CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, key)) {
                     return false;
                 }
             }
@@ -190,7 +190,7 @@ export class CoreQuestionProvider {
      * @return Promise resolved with the answer.
      */
     async getAnswer(component: string, attemptId: number, name: string, siteId?: string): Promise<CoreQuestionAnswerDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecord(QUESTION_ANSWERS_TABLE_NAME, { component, attemptid: attemptId, name });
     }
@@ -204,7 +204,7 @@ export class CoreQuestionProvider {
      * @return Promise resolved with the answers.
      */
     async getAttemptAnswers(component: string, attemptId: number, siteId?: string): Promise<CoreQuestionAnswerDBRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecords(QUESTION_ANSWERS_TABLE_NAME, { component, attemptid: attemptId });
     }
@@ -218,7 +218,7 @@ export class CoreQuestionProvider {
      * @return Promise resolved with the questions.
      */
     async getAttemptQuestions(component: string, attemptId: number, siteId?: string): Promise<CoreQuestionDBRecord[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecords(QUESTION_TABLE_NAME, { component, attemptid: attemptId });
     }
@@ -269,7 +269,7 @@ export class CoreQuestionProvider {
      * @return Promise resolved with the question.
      */
     async getQuestion(component: string, attemptId: number, slot: number, siteId?: string): Promise<CoreQuestionDBRecord> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecord(QUESTION_TABLE_NAME, { component, attemptid: attemptId, slot });
     }
@@ -291,7 +291,7 @@ export class CoreQuestionProvider {
         filter?: boolean,
         siteId?: string,
     ): Promise<CoreQuestionAnswerDBRecord[]> {
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
 
         const answers = await db.getRecords<CoreQuestionAnswerDBRecord>(
             QUESTION_ANSWERS_TABLE_NAME,
@@ -327,12 +327,12 @@ export class CoreQuestionProvider {
      * @return Folder path.
      */
     getQuestionFolder(type: string, component: string, componentId: string, siteId?: string): string {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const siteFolderPath = CoreFile.instance.getSiteFolder(siteId);
+        const siteFolderPath = CoreFile.getSiteFolder(siteId);
         const questionFolderPath = 'offlinequestion/' + type + '/' + component + '/' + componentId;
 
-        return CoreTextUtils.instance.concatenatePaths(siteFolderPath, questionFolderPath);
+        return CoreTextUtils.concatenatePaths(siteFolderPath, questionFolderPath);
     }
 
     /**
@@ -389,7 +389,7 @@ export class CoreQuestionProvider {
                 return;
             }
 
-            question.parsedSettings = CoreTextUtils.instance.parseJSON(question.settings, null);
+            question.parsedSettings = CoreTextUtils.parseJSON(question.settings, null);
         });
 
         return parsedQuestions;
@@ -404,7 +404,7 @@ export class CoreQuestionProvider {
      * @return Promise resolved when done.
      */
     async removeAttemptAnswers(component: string, attemptId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(QUESTION_ANSWERS_TABLE_NAME, { component, attemptid: attemptId });
     }
@@ -418,7 +418,7 @@ export class CoreQuestionProvider {
      * @return Promise resolved when done.
      */
     async removeAttemptQuestions(component: string, attemptId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(QUESTION_TABLE_NAME, { component, attemptid: attemptId });
     }
@@ -433,7 +433,7 @@ export class CoreQuestionProvider {
      * @return Promise resolved when done.
      */
     async removeAnswer(component: string, attemptId: number, name: string, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(QUESTION_ANSWERS_TABLE_NAME, { component, attemptid: attemptId, name });
     }
@@ -448,7 +448,7 @@ export class CoreQuestionProvider {
      * @return Promise resolved when done.
      */
     async removeQuestion(component: string, attemptId: number, slot: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(QUESTION_TABLE_NAME, { component, attemptid: attemptId,  slot });
     }
@@ -463,7 +463,7 @@ export class CoreQuestionProvider {
      * @return Promise resolved when done.
      */
     async removeQuestionAnswers(component: string, attemptId: number, slot: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.getDb().deleteRecords(QUESTION_ANSWERS_TABLE_NAME, { component, attemptid: attemptId, questionslot: slot });
     }
@@ -503,9 +503,9 @@ export class CoreQuestionProvider {
         timemodified?: number,
         siteId?: string,
     ): Promise<void> {
-        timemodified = timemodified || CoreTimeUtils.instance.timestamp();
+        timemodified = timemodified || CoreTimeUtils.timestamp();
 
-        const db = await CoreSites.instance.getSiteDb(siteId);
+        const db = await CoreSites.getSiteDb(siteId);
         const promises: Promise<unknown>[] = [];
 
         for (const name in answers) {
@@ -548,7 +548,7 @@ export class CoreQuestionProvider {
         siteId?: string,
     ): Promise<void> {
 
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
         const entry: CoreQuestionDBRecord = {
             component,
             componentid: componentId,
@@ -564,7 +564,7 @@ export class CoreQuestionProvider {
 
 }
 
-export class CoreQuestion extends makeSingleton(CoreQuestionProvider) {}
+export const CoreQuestion = makeSingleton(CoreQuestionProvider);
 
 /**
  * Question state.

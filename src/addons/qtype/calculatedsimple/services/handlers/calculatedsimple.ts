@@ -57,7 +57,7 @@ export class AddonQtypeCalculatedSimpleHandlerService implements CoreQuestionHan
         componentId: string | number,
     ): number {
         // This question type depends on calculated.
-        return AddonQtypeCalculatedHandler.instance.isCompleteResponse(question, answers, component, componentId);
+        return AddonQtypeCalculatedHandler.isCompleteResponse(question, answers, component, componentId);
     }
 
     /**
@@ -86,7 +86,7 @@ export class AddonQtypeCalculatedSimpleHandlerService implements CoreQuestionHan
         componentId: string | number,
     ): number {
         // This question type depends on calculated.
-        return AddonQtypeCalculatedHandler.instance.isGradableResponse(question, answers, component, componentId);
+        return AddonQtypeCalculatedHandler.isGradableResponse(question, answers, component, componentId);
     }
 
     /**
@@ -107,9 +107,9 @@ export class AddonQtypeCalculatedSimpleHandlerService implements CoreQuestionHan
         componentId: string | number,
     ): boolean {
         // This question type depends on calculated.
-        return AddonQtypeCalculatedHandler.instance.isSameResponse(question, prevAnswers, newAnswers, component, componentId);
+        return AddonQtypeCalculatedHandler.isSameResponse(question, prevAnswers, newAnswers, component, componentId);
     }
 
 }
 
-export class AddonQtypeCalculatedSimpleHandler extends makeSingleton(AddonQtypeCalculatedSimpleHandlerService) {}
+export const AddonQtypeCalculatedSimpleHandler = makeSingleton(AddonQtypeCalculatedSimpleHandlerService);

@@ -87,13 +87,13 @@ export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
      */
     async initBlock(): Promise<void> {
         try {
-            const data = await CoreBlockDelegate.instance.getBlockDisplayData(this.block, this.contextLevel, this.instanceId);
+            const data = await CoreBlockDelegate.getBlockDisplayData(this.block, this.contextLevel, this.instanceId);
 
             if (!data) {
                 // Block not supported, don't render it. But, site plugins might not have finished loading.
                 // Subscribe to the observable in block delegate that will tell us if blocks are updated.
                 // We can retry init later if that happens.
-                this.blockSubscription = CoreBlockDelegate.instance.blocksUpdateObservable.subscribe(
+                this.blockSubscription = CoreBlockDelegate.blocksUpdateObservable.subscribe(
                     (): void => {
                         this.blockSubscription?.unsubscribe();
                         delete this.blockSubscription;

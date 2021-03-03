@@ -31,4 +31,4 @@ export class AddonModQuizIndexLinkHandlerService extends CoreContentLinksModuleI
 
 }
 
-export class AddonModQuizIndexLinkHandler extends makeSingleton(AddonModQuizIndexLinkHandlerService) {}
+export const AddonModQuizIndexLinkHandler = makeSingleton(AddonModQuizIndexLinkHandlerService);

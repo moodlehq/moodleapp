@@ -43,7 +43,7 @@ export class CoreMainMenuProvider {
      * @return Promise resolved with the current main menu handlers.
      */
     getCurrentMainMenuHandlers(): CoreMainMenuHandlerToDisplay[] {
-        return CoreMainMenuDelegate.instance.getHandlers()
+        return CoreMainMenuDelegate.getHandlers()
             .filter(handler => !handler.onlyInMore)
             .slice(0, this.getNumItems());
     }
@@ -55,7 +55,7 @@ export class CoreMainMenuProvider {
      * @return List of custom menu items.
      */
     async getCustomMenuItems(siteId?: string): Promise<CoreMainMenuCustomItem[]> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const itemsString = site.getStoredConfig('tool_mobile_custommenuitems');
         const map: CustomMenuItemsMap = {};
@@ -111,7 +111,7 @@ export class CoreMainMenuProvider {
             return result;
         }
 
-        const currentLang = await CoreLang.instance.getCurrentLanguage();
+        const currentLang = await CoreLang.getCurrentLanguage();
 
         const fallbackLang = CoreConstants.CONFIG.default_lang || 'en';
 
@@ -181,7 +181,7 @@ export class CoreMainMenuProvider {
      */
     getTabPlacement(): string {
         const tablet = !!(window.innerWidth && window.innerWidth >= 576 && (window.innerHeight >= 576 ||
-                ((CoreApp.instance.isKeyboardVisible() || CoreApp.instance.isKeyboardOpening()) && window.innerHeight >= 200)));
+                ((CoreApp.isKeyboardVisible() || CoreApp.isKeyboardOpening()) && window.innerHeight >= 200)));
 
         if (tablet != this.tablet) {
             this.tablet = tablet;
@@ -226,14 +226,14 @@ export class CoreMainMenuProvider {
      * @return Whether it's disabled.
      */
     protected isResponsiveMainMenuItemsDisabledInCurrentSite(): boolean {
-        const site = CoreSites.instance.getCurrentSite();
+        const site = CoreSites.getCurrentSite();
 
         return !!site?.isFeatureDisabled('NoDelegate_ResponsiveMainMenuItems');
     }
 
 }
 
-export class CoreMainMenu extends makeSingleton(CoreMainMenuProvider) {}
+export const CoreMainMenu = makeSingleton(CoreMainMenuProvider);
 
 /**
  * Custom main menu item.

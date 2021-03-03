@@ -28,7 +28,7 @@ import { AddonBlockSiteMainMenuHandler } from './services/block-handler';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockSiteMainMenuHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockSiteMainMenuHandler.instance);
             },
         },
     ],

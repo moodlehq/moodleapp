@@ -37,9 +37,9 @@ export class AddonModLessonListLinkHandlerService extends CoreContentLinksModule
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
-        return AddonModLesson.instance.isPluginEnabled(siteId);
+        return AddonModLesson.isPluginEnabled(siteId);
     }
 
 }
 
-export class AddonModLessonListLinkHandler extends makeSingleton(AddonModLessonListLinkHandlerService) {}
+export const AddonModLessonListLinkHandler = makeSingleton(AddonModLessonListLinkHandlerService);

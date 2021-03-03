@@ -47,9 +47,9 @@ export class AddonModBookIndexLinkHandlerService extends CoreContentLinksModuleI
      * @return Whether the handler is enabled for the URL and site.
      */
     isEnabled(siteId: string): Promise<boolean> {
-        return AddonModBook.instance.isPluginEnabled(siteId);
+        return AddonModBook.isPluginEnabled(siteId);
     }
 
 }
 
-export class AddonModBookIndexLinkHandler extends makeSingleton(AddonModBookIndexLinkHandlerService) {}
+export const AddonModBookIndexLinkHandler = makeSingleton(AddonModBookIndexLinkHandlerService);

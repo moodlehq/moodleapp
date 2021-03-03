@@ -44,7 +44,7 @@ export class AddonFilterMultilangHandlerService extends CoreFilterDefaultHandler
         options: CoreFilterFormatTextOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
         siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<string> {
-        let language = await CoreLang.instance.getCurrentLanguage();
+        let language = await CoreLang.getCurrentLanguage();
 
         // Match the current language.
         const anyLangRegEx = /<(?:lang|span)[^>]+lang="[a-zA-Z0-9_-]+"[^>]*>(.*?)<\/(?:lang|span)>/g;
@@ -84,4 +84,4 @@ export class AddonFilterMultilangHandlerService extends CoreFilterDefaultHandler
 
 }
 
-export class AddonFilterMultilangHandler extends makeSingleton(AddonFilterMultilangHandlerService) {}
+export const AddonFilterMultilangHandler = makeSingleton(AddonFilterMultilangHandlerService);

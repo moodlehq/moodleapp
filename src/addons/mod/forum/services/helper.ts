@@ -65,7 +65,7 @@ export class AddonModForumHelperProvider {
         timeCreated?: number,
         siteId?: string,
     ): Promise<number[] | null> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
         groupIds = (groupIds && groupIds.length > 0) ? groupIds : [0];
 
         let saveOffline = false;
@@ -81,7 +81,7 @@ export class AddonModForumHelperProvider {
                 options.attachmentsid = offlineAttachments;
             }
 
-            await AddonModForumOffline.instance.addNewDiscussion(
+            await AddonModForumOffline.addNewDiscussion(
                 forumId,
                 name,
                 courseId,
@@ -116,10 +116,10 @@ export class AddonModForumHelperProvider {
 
         // If we are editing an offline discussion, discard previous first.
         if (timeCreated) {
-            await AddonModForumOffline.instance.deleteNewDiscussion(forumId, timeCreated, siteId);
+            await AddonModForumOffline.deleteNewDiscussion(forumId, timeCreated, siteId);
         }
 
-        if (saveOffline || !CoreApp.instance.isOnline()) {
+        if (saveOffline || !CoreApp.isOnline()) {
             await storeOffline();
 
             return null;
@@ -128,14 +128,14 @@ export class AddonModForumHelperProvider {
         const errors: Error[] = [];
         const discussionIds: number[] = [];
         const promises = groupIds.map(async (groupId, index) => {
-            const groupOptions = CoreUtils.instance.clone(options);
+            const groupOptions = CoreUtils.clone(options);
 
             if (groupOptions && attachmentsIds[index]) {
                 groupOptions.attachmentsid = attachmentsIds[index];
             }
 
             try {
-                const discussionId = await AddonModForum.instance.addNewDiscussionOnline(
+                const discussionId = await AddonModForum.addNewDiscussionOnline(
                     forumId,
                     subject,
                     message,
@@ -155,7 +155,7 @@ export class AddonModForumHelperProvider {
         if (errors.length == groupIds.length) {
             // All requests have failed.
             for (let i = 0; i < errors.length; i++) {
-                if (CoreUtils.instance.isWebServiceError(errors[i]) || (attachments && attachments.length > 0)) {
+                if (CoreUtils.isWebServiceError(errors[i]) || (attachments && attachments.length > 0)) {
                     // The WebService has thrown an error or offline not supported, reject.
                     throw errors[i];
                 }
@@ -219,7 +219,7 @@ export class AddonModForumHelperProvider {
 
         // Get user data.
         promises.push(
-            CoreUtils.instance.ignoreErrors(
+            CoreUtils.ignoreErrors(
                 CoreUser.instance
                     .getProfile(offlineReply.userid, offlineReply.courseid, true)
                     .then(user => {
@@ -247,10 +247,10 @@ export class AddonModForumHelperProvider {
      * @return Promise resolved when deleted.
      */
     async deleteNewDiscussionStoredFiles(forumId: number, timecreated: number, siteId?: string): Promise<void> {
-        const folderPath = await AddonModForumOffline.instance.getNewDiscussionFolder(forumId, timecreated, siteId);
+        const folderPath = await AddonModForumOffline.getNewDiscussionFolder(forumId, timecreated, siteId);
 
         // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exist.
-        await CoreUtils.instance.ignoreErrors(CoreFile.instance.removeDir(folderPath));
+        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**
@@ -263,10 +263,10 @@ export class AddonModForumHelperProvider {
      * @return Promise resolved when deleted.
      */
     async deleteReplyStoredFiles(forumId: number, postId: number, siteId?: string, userId?: number): Promise<void> {
-        const folderPath = await AddonModForumOffline.instance.getReplyFolder(forumId, postId, siteId, userId);
+        const folderPath = await AddonModForumOffline.getReplyFolder(forumId, postId, siteId, userId);
 
         // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exist.
-        await CoreUtils.instance.ignoreErrors(CoreFile.instance.removeDir(folderPath));
+        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**
@@ -277,19 +277,19 @@ export class AddonModForumHelperProvider {
      */
     getAvailabilityMessage(forum: AddonModForumData): string | null {
         if (this.isCutoffDateReached(forum)) {
-            return Translate.instance.instant('addon.mod_forum.cutoffdatereached');
+            return Translate.instant('addon.mod_forum.cutoffdatereached');
         }
 
         if (this.isDueDateReached(forum)) {
-            const dueDate = CoreTimeUtils.instance.userDate(forum.duedate * 1000);
+            const dueDate = CoreTimeUtils.userDate(forum.duedate * 1000);
 
-            return Translate.instance.instant('addon.mod_forum.thisforumisdue', { $a: dueDate });
+            return Translate.instant('addon.mod_forum.thisforumisdue', { $a: dueDate });
         }
 
         if ((forum.duedate ?? 0) > 0) {
-            const dueDate = CoreTimeUtils.instance.userDate(forum.duedate! * 1000);
+            const dueDate = CoreTimeUtils.userDate(forum.duedate! * 1000);
 
-            return Translate.instance.instant('addon.mod_forum.thisforumhasduedate', { $a: dueDate });
+            return Translate.instant('addon.mod_forum.thisforumhasduedate', { $a: dueDate });
         }
 
         return null;
@@ -307,10 +307,10 @@ export class AddonModForumHelperProvider {
      * @return Promise resolved with the discussion data.
      */
     getDiscussionById(forumId: number, cmId: number, discussionId: number, siteId?: string): Promise<AddonModForumDiscussion> {
-        siteId = siteId || CoreSites.instance.getCurrentSiteId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
         const findDiscussion = async (page: number): Promise<AddonModForumDiscussion> => {
-            const response = await AddonModForum.instance.getDiscussions(forumId, {
+            const response = await AddonModForum.getDiscussions(forumId, {
                 cmId,
                 page,
                 siteId,
@@ -344,9 +344,9 @@ export class AddonModForumHelperProvider {
      * @return Promise resolved with the files.
      */
     async getNewDiscussionStoredFiles(forumId: number, timecreated: number, siteId?: string): Promise<FileEntry[]> {
-        const folderPath = await AddonModForumOffline.instance.getNewDiscussionFolder(forumId, timecreated, siteId);
+        const folderPath = await AddonModForumOffline.getNewDiscussionFolder(forumId, timecreated, siteId);
 
-        return CoreFileUploader.instance.getStoredFiles(folderPath);
+        return CoreFileUploader.getStoredFiles(folderPath);
     }
 
     /**
@@ -359,9 +359,9 @@ export class AddonModForumHelperProvider {
      * @return Promise resolved with the files.
      */
     async getReplyStoredFiles(forumId: number, postId: number, siteId?: string, userId?: number): Promise<FileEntry[]> {
-        const folderPath = await AddonModForumOffline.instance.getReplyFolder(forumId, postId, siteId, userId);
+        const folderPath = await AddonModForumOffline.getReplyFolder(forumId, postId, siteId, userId);
 
-        return CoreFileUploader.instance.getStoredFiles(folderPath);
+        return CoreFileUploader.getStoredFiles(folderPath);
     }
 
     /**
@@ -385,7 +385,7 @@ export class AddonModForumHelperProvider {
             return true;
         }
 
-        return CoreFileUploader.instance.areFileListDifferent(post.files, original.files);
+        return CoreFileUploader.areFileListDifferent(post.files, original.files);
     }
 
     /**
@@ -428,9 +428,9 @@ export class AddonModForumHelperProvider {
         siteId?: string,
     ): Promise<CoreFileUploaderStoreFilesResult> {
         // Get the folder where to store the files.
-        const folderPath = await AddonModForumOffline.instance.getNewDiscussionFolder(forumId, timecreated, siteId);
+        const folderPath = await AddonModForumOffline.getNewDiscussionFolder(forumId, timecreated, siteId);
 
-        return CoreFileUploader.instance.storeFilesToUpload(folderPath, files);
+        return CoreFileUploader.storeFilesToUpload(folderPath, files);
     }
 
     /**
@@ -446,9 +446,9 @@ export class AddonModForumHelperProvider {
      */
     async storeReplyFiles(forumId: number, postId: number, files: any[], siteId?: string, userId?: number): Promise<void> {
         // Get the folder where to store the files.
-        const folderPath = await AddonModForumOffline.instance.getReplyFolder(forumId, postId, siteId, userId);
+        const folderPath = await AddonModForumOffline.getReplyFolder(forumId, postId, siteId, userId);
 
-        await CoreFileUploader.instance.storeFilesToUpload(folderPath, files);
+        await CoreFileUploader.storeFilesToUpload(folderPath, files);
     }
 
     /**
@@ -485,7 +485,7 @@ export class AddonModForumHelperProvider {
         if (offline) {
             return this.storeNewDiscussionFiles(forumId, timecreated, files, siteId);
         } else {
-            return CoreFileUploader.instance.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
+            return CoreFileUploader.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
         }
     }
 
@@ -511,10 +511,10 @@ export class AddonModForumHelperProvider {
         if (offline) {
             return this.storeReplyFiles(forumId, postId, files, siteId, userId);
         } else {
-            return CoreFileUploader.instance.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
+            return CoreFileUploader.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
         }
     }
 
 }
 
-export class AddonModForumHelper extends makeSingleton(AddonModForumHelperProvider) {}
+export const AddonModForumHelper = makeSingleton(AddonModForumHelperProvider);

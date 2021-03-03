@@ -43,4 +43,4 @@ export class AddonFilterTidyHandlerService extends CoreFilterDefaultHandler {
 
 }
 
-export class AddonFilterTidyHandler extends makeSingleton(AddonFilterTidyHandlerService) {}
+export const AddonFilterTidyHandler = makeSingleton(AddonFilterTidyHandlerService);

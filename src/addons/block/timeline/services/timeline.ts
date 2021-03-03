@@ -53,7 +53,7 @@ export class AddonBlockTimelineProvider {
         afterEventId?: number,
         siteId?: string,
     ): Promise<{ events: AddonCalendarEvent[]; canLoadMore?: number }> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const time = moment().subtract(14, 'days').unix(); // Check two weeks ago.
 
@@ -104,7 +104,7 @@ export class AddonBlockTimelineProvider {
         courseIds: number[],
         siteId?: string,
     ): Promise<{[courseId: string]: { events: AddonCalendarEvent[]; canLoadMore: number } }> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const time = moment().subtract(14, 'days').unix(); // Check two weeks ago.
 
@@ -156,7 +156,7 @@ export class AddonBlockTimelineProvider {
         afterEventId?: number,
         siteId?: string,
     ): Promise<{ events: AddonCalendarEvent[]; canLoadMore?: number }> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         const timesortfrom = moment().subtract(14, 'days').unix(); // Check two weeks ago.
         const limitnum = AddonBlockTimelineProvider.EVENTS_LIMIT;
@@ -226,7 +226,7 @@ export class AddonBlockTimelineProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateActionEventsByCourses(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getActionEventsByCoursesCacheKey());
     }
@@ -238,7 +238,7 @@ export class AddonBlockTimelineProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateActionEventsByTimesort(siteId?: string): Promise<void> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getActionEventsByTimesortPrefixCacheKey());
     }
@@ -250,10 +250,10 @@ export class AddonBlockTimelineProvider {
      * @return Promise resolved with true if available, resolved with false or rejected otherwise.
      */
     async isAvailable(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.instance.getSite(siteId);
+        const site = await CoreSites.getSite(siteId);
 
         // First check if dashboard is disabled.
-        if (CoreCoursesDashboard.instance.isDisabledInSite(site)) {
+        if (CoreCoursesDashboard.isDisabledInSite(site)) {
             return false;
         }
 
@@ -287,4 +287,4 @@ export class AddonBlockTimelineProvider {
 
 }
 
-export class AddonBlockTimeline extends makeSingleton(AddonBlockTimelineProvider) {}
+export const AddonBlockTimeline = makeSingleton(AddonBlockTimelineProvider);

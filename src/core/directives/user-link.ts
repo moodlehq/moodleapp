@@ -50,7 +50,7 @@ export class CoreUserLinkDirective implements OnInit {
             event.stopPropagation();
 
             // @todo If this directive is inside a split view, use the split view's master nav.
-            CoreNavigator.instance.navigateToSitePath('user', {
+            CoreNavigator.navigateToSitePath('user', {
                 params: CoreObject.withoutEmpty({
                     userId: this.userId,
                     courseId: this.courseId,

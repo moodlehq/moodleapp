@@ -30,7 +30,7 @@ import { AddonBlockTagsComponentsModule } from './components/components.module';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreBlockDelegate.instance.registerHandler(AddonBlockTagsHandler.instance);
+                CoreBlockDelegate.registerHandler(AddonBlockTagsHandler.instance);
             },
         },
     ],

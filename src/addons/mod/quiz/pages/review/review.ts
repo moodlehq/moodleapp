@@ -82,17 +82,17 @@ export class AddonModQuizReviewPage implements OnInit {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.cmId = CoreNavigator.instance.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.instance.getRouteNumberParam('courseId')!;
-        this.attemptId = CoreNavigator.instance.getRouteNumberParam('attemptId')!;
-        this.currentPage = CoreNavigator.instance.getRouteNumberParam('page') || -1;
+        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
+        this.attemptId = CoreNavigator.getRouteNumberParam('attemptId')!;
+        this.currentPage = CoreNavigator.getRouteNumberParam('page') || -1;
         this.showAll = this.currentPage == -1;
 
         try {
             await this.fetchData();
 
-            CoreUtils.instance.ignoreErrors(
-                AddonModQuiz.instance.logViewAttemptReview(this.attemptId, this.quiz!.id, this.quiz!.name),
+            CoreUtils.ignoreErrors(
+                AddonModQuiz.logViewAttemptReview(this.attemptId, this.quiz!.id, this.quiz!.name),
             );
         } finally {
             this.loaded = true;
@@ -123,7 +123,7 @@ export class AddonModQuizReviewPage implements OnInit {
         try {
             await this.loadPage(page);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquestions', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquestions', true);
         } finally {
             this.loaded = true;
 
@@ -143,9 +143,9 @@ export class AddonModQuizReviewPage implements OnInit {
      */
     protected async fetchData(): Promise<void> {
         try {
-            this.quiz = await AddonModQuiz.instance.getQuiz(this.courseId, this.cmId);
+            this.quiz = await AddonModQuiz.getQuiz(this.courseId, this.cmId);
 
-            this.options = await AddonModQuiz.instance.getCombinedReviewOptions(this.quiz.id, { cmId: this.cmId });
+            this.options = await AddonModQuiz.getCombinedReviewOptions(this.quiz.id, { cmId: this.cmId });
 
             // Load the navigation data.
             await this.loadNavigation();
@@ -153,7 +153,7 @@ export class AddonModQuizReviewPage implements OnInit {
             // Load questions.
             await this.loadPage(this.currentPage);
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquiz', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquiz', true);
         }
     }
 
@@ -164,7 +164,7 @@ export class AddonModQuizReviewPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async loadPage(page: number): Promise<void> {
-        const data = await AddonModQuiz.instance.getAttemptReview(this.attemptId, { page, cmId: this.quiz!.coursemodule });
+        const data = await AddonModQuiz.getAttemptReview(this.attemptId, { page, cmId: this.quiz!.coursemodule });
 
         this.attempt = data.attempt;
         this.attempt.currentpage = page;
@@ -179,10 +179,10 @@ export class AddonModQuizReviewPage implements OnInit {
 
         this.questions.forEach((question) => {
             // Get the readable mark for each question.
-            question.readableMark = AddonModQuizHelper.instance.getQuestionMarkFromHtml(question.html);
+            question.readableMark = AddonModQuizHelper.getQuestionMarkFromHtml(question.html);
 
             // Extract the question info box.
-            CoreQuestionHelper.instance.extractQuestionInfoBox(question, '.info');
+            CoreQuestionHelper.extractQuestionInfoBox(question, '.info');
         });
     }
 
@@ -193,12 +193,12 @@ export class AddonModQuizReviewPage implements OnInit {
      */
     protected async loadNavigation(): Promise<void> {
         // Get all questions in single page to retrieve all the questions.
-        const data = await AddonModQuiz.instance.getAttemptReview(this.attemptId, { page: -1, cmId: this.quiz!.coursemodule });
+        const data = await AddonModQuiz.getAttemptReview(this.attemptId, { page: -1, cmId: this.quiz!.coursemodule });
 
         this.navigation = data.questions;
 
         this.navigation.forEach((question) => {
-            question.stateClass = CoreQuestionHelper.instance.getQuestionStateClass(question.state || '');
+            question.stateClass = CoreQuestionHelper.getQuestionStateClass(question.state || '');
         });
 
         const lastQuestion = data.questions[data.questions.length - 1];
@@ -213,13 +213,13 @@ export class AddonModQuizReviewPage implements OnInit {
     async refreshData(refresher: IonRefresher): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonModQuiz.instance.invalidateQuizData(this.courseId));
-        promises.push(AddonModQuiz.instance.invalidateAttemptReview(this.attemptId));
+        promises.push(AddonModQuiz.invalidateQuizData(this.courseId));
+        promises.push(AddonModQuiz.invalidateAttemptReview(this.attemptId));
         if (this.quiz) {
-            promises.push(AddonModQuiz.instance.invalidateCombinedReviewOptionsForUser(this.quiz.id));
+            promises.push(AddonModQuiz.invalidateCombinedReviewOptionsForUser(this.quiz.id));
         }
 
-        await CoreUtils.instance.ignoreErrors(Promise.all(promises));
+        await CoreUtils.ignoreErrors(Promise.all(promises));
 
         try {
             await this.fetchData();
@@ -234,7 +234,7 @@ export class AddonModQuizReviewPage implements OnInit {
      * @param slot Slot of the question to scroll to.
      */
     protected scrollToQuestion(slot: number): void {
-        CoreDomUtils.instance.scrollToElementBySelector(
+        CoreDomUtils.scrollToElementBySelector(
             this.elementRef.nativeElement,
             this.content,
             `#addon-mod_quiz-question-${slot}`,
@@ -251,7 +251,7 @@ export class AddonModQuizReviewPage implements OnInit {
             return;
         }
 
-        this.readableState = AddonModQuiz.instance.getAttemptReadableStateName(this.attempt!.state || '');
+        this.readableState = AddonModQuiz.getAttemptReadableStateName(this.attempt!.state || '');
 
         if (this.attempt.state != AddonModQuizProvider.ATTEMPT_FINISHED) {
             return;
@@ -263,11 +263,11 @@ export class AddonModQuizReviewPage implements OnInit {
         const timeTaken = (this.attempt.timefinish || 0) - (this.attempt.timestart || 0);
         if (timeTaken > 0) {
             // Format time taken.
-            this.timeTaken = CoreTimeUtils.instance.formatTime(timeTaken);
+            this.timeTaken = CoreTimeUtils.formatTime(timeTaken);
 
             // Calculate overdue time.
             if (this.quiz.timelimit && timeTaken > this.quiz.timelimit + 60) {
-                this.overTime = CoreTimeUtils.instance.formatTime(timeTaken - this.quiz.timelimit);
+                this.overTime = CoreTimeUtils.formatTime(timeTaken - this.quiz.timelimit);
             }
         } else {
             this.timeTaken = undefined;
@@ -275,33 +275,33 @@ export class AddonModQuizReviewPage implements OnInit {
 
         // Treat grade.
         if (this.options!.someoptions.marks >= AddonModQuizProvider.QUESTION_OPTIONS_MARK_AND_MAX &&
-                AddonModQuiz.instance.quizHasGrades(this.quiz)) {
+                AddonModQuiz.quizHasGrades(this.quiz)) {
 
             if (data.grade === null || typeof data.grade == 'undefined') {
-                this.readableGrade = AddonModQuiz.instance.formatGrade(data.grade, this.quiz.decimalpoints);
+                this.readableGrade = AddonModQuiz.formatGrade(data.grade, this.quiz.decimalpoints);
             } else {
                 // Show raw marks only if they are different from the grade (like on the entry page).
                 if (this.quiz.grade != this.quiz.sumgrades) {
-                    this.readableMark = Translate.instance.instant('addon.mod_quiz.outofshort', { $a: {
-                        grade: AddonModQuiz.instance.formatGrade(this.attempt.sumgrades, this.quiz.decimalpoints),
-                        maxgrade: AddonModQuiz.instance.formatGrade(this.quiz.sumgrades, this.quiz.decimalpoints),
+                    this.readableMark = Translate.instant('addon.mod_quiz.outofshort', { $a: {
+                        grade: AddonModQuiz.formatGrade(this.attempt.sumgrades, this.quiz.decimalpoints),
+                        maxgrade: AddonModQuiz.formatGrade(this.quiz.sumgrades, this.quiz.decimalpoints),
                     } });
                 }
 
                 // Now the scaled grade.
                 const gradeObject: Record<string, unknown> = {
-                    grade: AddonModQuiz.instance.formatGrade(Number(data.grade), this.quiz.decimalpoints),
-                    maxgrade: AddonModQuiz.instance.formatGrade(this.quiz.grade, this.quiz.decimalpoints),
+                    grade: AddonModQuiz.formatGrade(Number(data.grade), this.quiz.decimalpoints),
+                    maxgrade: AddonModQuiz.formatGrade(this.quiz.grade, this.quiz.decimalpoints),
                 };
 
                 if (this.quiz.grade != 100) {
-                    gradeObject.percent = CoreTextUtils.instance.roundToDecimals(
+                    gradeObject.percent = CoreTextUtils.roundToDecimals(
                         this.attempt.sumgrades! * 100 / this.quiz.sumgrades!,
                         0,
                     );
-                    this.readableGrade = Translate.instance.instant('addon.mod_quiz.outofpercent', { $a: gradeObject });
+                    this.readableGrade = Translate.instant('addon.mod_quiz.outofpercent', { $a: gradeObject });
                 } else {
-                    this.readableGrade = Translate.instance.instant('addon.mod_quiz.outof', { $a: gradeObject });
+                    this.readableGrade = Translate.instant('addon.mod_quiz.outof', { $a: gradeObject });
                 }
             }
         }
@@ -309,7 +309,7 @@ export class AddonModQuizReviewPage implements OnInit {
         // Treat additional data.
         this.additionalData.forEach((data) => {
             // Remove help links from additional data.
-            data.content = CoreDomUtils.instance.removeElementFromHtml(data.content, '.helptooltip');
+            data.content = CoreDomUtils.removeElementFromHtml(data.content, '.helptooltip');
         });
     }
 
@@ -325,7 +325,7 @@ export class AddonModQuizReviewPage implements OnInit {
 
     async openNavigation(): Promise<void> {
         // Create the navigation modal.
-        const modal = await ModalController.instance.create({
+        const modal = await ModalController.create({
             component: AddonModQuizNavigationModalComponent,
             componentProps: {
                 navigation: this.navigation,
