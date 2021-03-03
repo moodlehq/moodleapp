@@ -19,7 +19,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreLang } from '@services/lang';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
-import { CoreSettingsHelper, CoreColorScheme } from '../../services/settings-helper';
+import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../services/settings-helper';
 
 /**
  * Page that displays the general settings.
@@ -33,8 +33,8 @@ export class CoreSettingsGeneralPage {
 
     languages: { code: string; name: string }[] = [];
     selectedLanguage = '';
-    fontSizes: { size: number; style: number; selected: boolean }[] = [];
-    selectedFontSize = 0;
+    zoomLevels: { value: CoreZoomLevel; style: number; selected: boolean }[] = [];
+    selectedZoomLevel = CoreZoomLevel.NORMAL;
     richTextEditor = true;
     debugDisplay = false;
     analyticsSupported = false;
@@ -84,17 +84,14 @@ export class CoreSettingsGeneralPage {
             }
         }
 
-        this.selectedFontSize = await CoreConfig.get(
-            CoreConstants.SETTINGS_FONT_SIZE,
-            CoreConstants.CONFIG.font_sizes[0],
-        );
+        this.selectedZoomLevel = await CoreSettingsHelper.getZoomLevel();
 
-        this.fontSizes = CoreConstants.CONFIG.font_sizes.map((size) =>
+        this.zoomLevels = Object.keys(CoreConstants.CONFIG.zoomlevels).map((value: CoreZoomLevel) =>
             ({
-                size,
+                value,
                 // Absolute pixel size based on 1.4rem body text when this size is selected.
-                style: Math.round(size * 16 / 100),
-                selected: size === this.selectedFontSize,
+                style: Math.round(CoreConstants.CONFIG.zoomlevels[value] * 16 / 100),
+                selected: value === this.selectedZoomLevel,
             }));
 
 
@@ -118,17 +115,17 @@ export class CoreSettingsGeneralPage {
     }
 
     /**
-     * Called when a new font size is selected.
+     * Called when a new zoom level is selected.
      */
-    fontSizeChanged(): void {
-        this.fontSizes = this.fontSizes.map((fontSize) => {
-            fontSize.selected = fontSize.size === this.selectedFontSize;
+    zoomLevelChanged(): void {
+        this.zoomLevels = this.zoomLevels.map((fontSize) => {
+            fontSize.selected = fontSize.value === this.selectedZoomLevel;
 
             return fontSize;
         });
 
-        CoreSettingsHelper.setFontSize(this.selectedFontSize);
-        CoreConfig.set(CoreConstants.SETTINGS_FONT_SIZE, this.selectedFontSize);
+        CoreSettingsHelper.applyZoomLevel(this.selectedZoomLevel);
+        CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, this.selectedZoomLevel);
     }
 
     /**

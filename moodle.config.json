@@ -71,11 +71,11 @@
             "password": "moodle"
         }
     },
-    "font_sizes": [
-        100,
-        110,
-        120
-    ],
+    "zoomlevels": {
+        "normal": 100,
+        "low": 110,
+        "high": 120
+    },
     "customurlscheme": "moodlemobile",
     "siteurl": "",
     "sitename": "",

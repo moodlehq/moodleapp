@@ -28,9 +28,8 @@ import { IonSlides } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreApp } from '@services/app';
-import { CoreConfig } from '@services/config';
-import { CoreConstants } from '@/core/constants';
 import { Platform, Translate } from '@singletons';
+import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 
 /**
  * Class to abstract some common code for tabs.
@@ -373,9 +372,9 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             return;
         }
 
-        const fontSize = await CoreConfig.get(CoreConstants.SETTINGS_FONT_SIZE, CoreConstants.CONFIG.font_sizes[0]);
+        const zoomLevel = await CoreSettingsHelper.getZoom();
 
-        this.maxSlides = Math.floor(width / (fontSize / CoreConstants.CONFIG.font_sizes[0] * CoreTabsBaseComponent.MIN_TAB_WIDTH));
+        this.maxSlides = Math.floor(width / (zoomLevel / 100 * CoreTabsBaseComponent.MIN_TAB_WIDTH));
     }
 
     /**
