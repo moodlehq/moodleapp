@@ -19,7 +19,7 @@ import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreWSExternalFile } from '@services/ws';
-import { CoreCourse, CoreCourseWSModule } from '../services/course';
+import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from '../services/course';
 import { CoreCourseModulePrefetchHandlerBase } from './module-prefetch-handler';
 
 /**
@@ -178,7 +178,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @return Promise resolved when loaded.
      */
-    loadContents(module: CoreCourseWSModule, courseId: number, ignoreCache?: boolean): Promise<void> {
+    loadContents(module: CoreCourseAnyModuleData, courseId: number, ignoreCache?: boolean): Promise<void> {
         return CoreCourse.loadModuleContents(module, courseId, undefined, false, ignoreCache);
     }
 

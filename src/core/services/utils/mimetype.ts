@@ -65,7 +65,7 @@ export class CoreMimetypeUtilsProvider {
      * @param extension Extension.
      * @return Whether it can be embedded.
      */
-    canBeEmbedded(extension: string): boolean {
+    canBeEmbedded(extension?: string): boolean {
         return this.isExtensionInGroup(extension, ['web_image', 'web_video', 'web_audio']);
     }
 

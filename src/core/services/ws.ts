@@ -1077,46 +1077,14 @@ export type CoreWarningsWSResponse = {
  * Structure of files returned by WS.
  */
 export type CoreWSExternalFile = {
-    /**
-     * Downloadable file url.
-     */
-    fileurl: string;
-
-    /**
-     * File name.
-     */
-    filename?: string;
-
-    /**
-     * File path.
-     */
-    filepath?: string;
-
-    /**
-     * File size.
-     */
-    filesize?: number;
-
-    /**
-     * Time modified.
-     */
-    timemodified?: number;
-
-    /**
-     * File mime type.
-     */
-    mimetype?: string;
-
-    /**
-     * Whether is an external file.
-     */
-    isexternalfile?: number;
-
-    /**
-     * The repository type for external files.
-     */
-    repositorytype?: string;
-
+    fileurl: string; // Downloadable file url.
+    filename?: string; // File name.
+    filepath?: string; // File path.
+    filesize?: number; // File size.
+    timemodified?: number; // Time modified.
+    mimetype?: string; // File mime type.
+    isexternalfile?: number; // Whether is an external file.
+    repositorytype?: string; // The repository type for external files.
 };
 
 /**
