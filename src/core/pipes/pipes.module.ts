@@ -21,6 +21,7 @@ import { CoreTimeAgoPipe } from './time-ago';
 import { CoreBytesToSizePipe } from './bytes-to-size';
 import { CoreDurationPipe } from './duration';
 import { CoreDateDayOrTimePipe } from './date-day-or-time';
+import { CoreToLocaleStringPipe } from './to-locale-string';
 
 @NgModule({
     declarations: [
@@ -32,6 +33,7 @@ import { CoreDateDayOrTimePipe } from './date-day-or-time';
         CoreSecondsToHMSPipe,
         CoreDurationPipe,
         CoreDateDayOrTimePipe,
+        CoreToLocaleStringPipe,
     ],
     imports: [],
     exports: [
@@ -43,6 +45,7 @@ import { CoreDateDayOrTimePipe } from './date-day-or-time';
         CoreSecondsToHMSPipe,
         CoreDurationPipe,
         CoreDateDayOrTimePipe,
+        CoreToLocaleStringPipe,
     ],
 })
 export class CorePipesModule {}

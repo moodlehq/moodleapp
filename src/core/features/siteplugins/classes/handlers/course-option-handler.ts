@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Md5 } from 'ts-md5';
+
 import {
     CoreCourseOptionsHandler,
     CoreCourseOptionsHandlerData,
@@ -74,10 +76,8 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
         return {
             title: this.title,
             class: this.handlerSchema.displaydata?.class,
-            page: '@todo CoreSitePluginsCourseOptionComponent',
-            pageParams: {
-                handlerUniqueName: this.name,
-            },
+            page: `siteplugins/${this.name}`,
+            pageParams: {},
         };
     }
 
@@ -85,18 +85,19 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
      * @inheritdoc
      */
     getMenuDisplayData(course: CoreCourseAnyCourseDataWithOptions): CoreCourseOptionsMenuHandlerData {
+        const args = {
+            courseid: course.id,
+        };
+        const hash = <string> Md5.hashAsciiStr(JSON.stringify(args));
+
         return {
             title: this.title,
             class: this.handlerSchema.displaydata?.class,
             icon: this.handlerSchema.displaydata?.icon || '',
-            page: '@todo CoreSitePluginsPluginPage',
+            page: `siteplugins/${this.plugin.component}/${this.handlerSchema.method}/${hash}`,
             pageParams: {
                 title: this.title,
-                component: this.plugin.component,
-                method: this.handlerSchema.method,
-                args: {
-                    courseid: course.id,
-                },
+                args,
                 initResult: this.initResult,
                 ptrEnabled: this.handlerSchema.ptrenabled,
             },

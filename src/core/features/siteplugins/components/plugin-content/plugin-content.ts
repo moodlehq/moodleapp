@@ -13,11 +13,14 @@
 // limitations under the License.
 
 import { Component, OnInit, Input, Output, EventEmitter, DoCheck, KeyValueDiffers, ViewChild, KeyValueDiffer } from '@angular/core';
+import { Subject } from 'rxjs';
+import { Md5 } from 'ts-md5';
+
 import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
+import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { Subject } from 'rxjs';
 
 /**
  * Component to render a site plugin content.
@@ -145,17 +148,21 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
             jsData = this.data;
         }
 
-        // @todo
-        // this.navCtrl.push('CoreSitePluginsPluginPage', {
-        //     title: title,
-        //     component: component || this.component,
-        //     method: method || this.method,
-        //     args: args,
-        //     initResult: this.initResult,
-        //     jsData: jsData,
-        //     preSets: preSets,
-        //     ptrEnabled: ptrEnabled,
-        // });
+        component = component || this.component;
+        method = method || this.method;
+        args = args || {};
+        const hash = <string> Md5.hashAsciiStr(JSON.stringify(args));
+
+        CoreNavigator.navigateToSitePath(`siteplugins/${component}/${method}/${hash}`, {
+            params: {
+                title,
+                args,
+                initResult: this.initResult,
+                jsData,
+                preSets,
+                ptrEnabled,
+            },
+        });
     }
 
     /**

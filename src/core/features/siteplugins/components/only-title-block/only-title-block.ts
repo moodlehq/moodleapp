@@ -13,10 +13,12 @@
 // limitations under the License.
 
 import { OnInit, Component } from '@angular/core';
+import { Md5 } from 'ts-md5';
 
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
-import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
+import { CoreSitePlugins, CoreSitePluginsUserHandlerData } from '@features/siteplugins/services/siteplugins';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Component to render blocks with only a title and link.
@@ -51,18 +53,23 @@ export class CoreSitePluginsOnlyTitleBlockComponent  extends CoreBlockBaseCompon
             return;
         }
 
-        // @todo
-        // navCtrl.push('CoreSitePluginsPluginPage', {
-        //     title: this.title,
-        //     component: handler.plugin.component,
-        //     method: handler.handlerSchema.method,
-        //     initResult: handler.initResult,
-        //     args: {
-        //         contextlevel: this.contextLevel,
-        //         instanceid: this.instanceId,
-        //     },
-        //     ptrEnabled: handler.handlerSchema.ptrenabled,
-        // });
+        const args = {
+            contextlevel: this.contextLevel,
+            instanceid: this.instanceId,
+        };
+        const hash = <string> Md5.hashAsciiStr(JSON.stringify(args));
+
+        CoreNavigator.navigateToSitePath(
+            `siteplugins/${handler.plugin.component}/${handler.handlerSchema.method}/${hash}`,
+            {
+                params: {
+                    title: this.title,
+                    args,
+                    initResult: handler.initResult,
+                    ptrEnabled: (<CoreSitePluginsUserHandlerData> handler.handlerSchema).ptrenabled,
+                },
+            },
+        );
     }
 
 }

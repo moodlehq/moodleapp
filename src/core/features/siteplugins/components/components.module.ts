@@ -18,7 +18,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
 import { CoreSitePluginsPluginContentComponent } from './plugin-content/plugin-content';
 import { CoreSitePluginsModuleIndexComponent } from './module-index/module-index';
-import { CoreSitePluginsCourseOptionComponent } from './course-option/course-option';
 import { CoreSitePluginsCourseFormatComponent } from './course-format/course-format';
 import { CoreSitePluginsUserProfileFieldComponent } from './user-profile-field/user-profile-field';
 import { CoreSitePluginsQuestionComponent } from './question/question';
@@ -37,7 +36,6 @@ import { CoreSitePluginsOnlyTitleBlockComponent } from './only-title-block/only-
         CoreSitePluginsModuleIndexComponent,
         CoreSitePluginsBlockComponent,
         CoreSitePluginsOnlyTitleBlockComponent,
-        CoreSitePluginsCourseOptionComponent,
         CoreSitePluginsCourseFormatComponent,
         CoreSitePluginsUserProfileFieldComponent,
         CoreSitePluginsQuestionComponent,
@@ -57,7 +55,6 @@ import { CoreSitePluginsOnlyTitleBlockComponent } from './only-title-block/only-
         CoreSitePluginsModuleIndexComponent,
         CoreSitePluginsBlockComponent,
         CoreSitePluginsOnlyTitleBlockComponent,
-        CoreSitePluginsCourseOptionComponent,
         CoreSitePluginsCourseFormatComponent,
         CoreSitePluginsUserProfileFieldComponent,
         CoreSitePluginsQuestionComponent,

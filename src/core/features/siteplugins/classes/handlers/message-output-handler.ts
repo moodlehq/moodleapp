@@ -44,11 +44,9 @@ export class CoreSitePluginsMessageOutputHandler extends CoreSitePluginsBaseHand
             priority: this.handlerSchema.priority || 0,
             label: this.title,
             icon: this.handlerSchema.displaydata?.icon || 'fas-question',
-            page: '@todo CoreSitePluginsPluginPage',
+            page: `siteplugins/${this.plugin.component}/${this.handlerSchema.method}/0`,
             pageParams: {
                 title: this.title,
-                component: this.plugin.component,
-                method: this.handlerSchema.method,
                 initResult: this.initResult,
                 ptrEnabled: this.handlerSchema.ptrenabled,
             },

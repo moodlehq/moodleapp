@@ -43,6 +43,7 @@ import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { AddonCalendarOfflineEventDBRecord } from '../../services/database/calendar-offline';
 import { CoreError } from '@classes/errors/error';
 import { CoreNavigator } from '@services/navigator';
+import { CanLeave } from '@guards/can-leave';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -52,7 +53,7 @@ import { CoreNavigator } from '@services/navigator';
     templateUrl: 'edit-event.html',
     styleUrls: ['edit-event.scss'],
 })
-export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
+export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(CoreEditorRichTextEditorComponent) descriptionEditor!: CoreEditorRichTextEditorComponent;
     @ViewChild('editEventForm') formElement!: ElementRef;
@@ -605,15 +606,17 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy {
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved if we can leave it, rejected if not.
+     * @return Resolved with true if we can leave it, rejected if not.
      */
-    async ionViewCanLeave(): Promise<void> {
+    async canLeave(): Promise<boolean> {
         if (AddonCalendarHelper.hasEventDataChanged(this.form.value, this.originalData)) {
             // Show confirmation if some data has been modified.
             await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
         }
 
         CoreDomUtils.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
+
+        return true;
     }
 
     /**

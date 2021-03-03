@@ -15,6 +15,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreCourse } from '@features/course/services/course';
+import { CanLeave } from '@guards/can-leave';
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
@@ -29,7 +30,7 @@ import { AddonModAssign, AddonModAssignAssign } from '../../services/assign';
     selector: 'page-addon-mod-assign-submission-review',
     templateUrl: 'submission-review.html',
 })
-export class AddonModAssignSubmissionReviewPage implements OnInit {
+export class AddonModAssignSubmissionReviewPage implements OnInit, CanLeave {
 
     @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
 
@@ -71,7 +72,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    ionViewCanLeave(): boolean | Promise<void> {
+    async canLeave(): Promise<boolean> {
         if (!this.submissionComponent || this.forceLeave) {
             return true;
         }

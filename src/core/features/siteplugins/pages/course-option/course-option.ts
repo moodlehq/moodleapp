@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
-
-import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
+
+import { CoreSitePluginsPluginContentComponent } from '@features/siteplugins/components/plugin-content/plugin-content';
+import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
+import { CoreNavigator } from '@services/navigator';
 
 /**
- * Component that displays the index of a course option site plugin.
+ * Page that displays the index of a course option site plugin.
  */
 @Component({
     selector: 'core-site-plugins-course-option',
     templateUrl: 'core-siteplugins-course-option.html',
 })
-export class CoreSitePluginsCourseOptionComponent implements OnInit {
-
-    @Input() courseId?: number;
-    @Input() handlerUniqueName?: string;
+export class CoreSitePluginsCourseOptionPage implements OnInit {
 
     @ViewChild(CoreSitePluginsPluginContentComponent) content?: CoreSitePluginsPluginContentComponent;
 
+    courseId?: number;
+    handlerUniqueName?: string;
     component?: string;
     method?: string;
     args?: Record<string, unknown>;
@@ -43,6 +43,9 @@ export class CoreSitePluginsCourseOptionComponent implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+        this.handlerUniqueName = CoreNavigator.getRouteParam('handlerUniqueName');
+
         if (!this.handlerUniqueName) {
             return;
         }
@@ -73,6 +76,57 @@ export class CoreSitePluginsCourseOptionComponent implements OnInit {
         } finally {
             refresher.complete();
         }
+    }
+
+    /**
+     * The page is about to enter and become the active page.
+     */
+    ionViewWillEnter(): void {
+        this.content?.callComponentFunction('ionViewWillEnter');
+    }
+
+    /**
+     * The page has fully entered and is now the active page. This event will fire, whether it was the first load or a cached page.
+     */
+    ionViewDidEnter(): void {
+        this.content?.callComponentFunction('ionViewDidEnter');
+    }
+
+    /**
+     * The page is about to leave and no longer be the active page.
+     */
+    ionViewWillLeave(): void {
+        this.content?.callComponentFunction('ionViewWillLeave');
+    }
+
+    /**
+     * The page has finished leaving and is no longer the active page.
+     */
+    ionViewDidLeave(): void {
+        this.content?.callComponentFunction('ionViewDidLeave');
+    }
+
+    /**
+     * The page is about to be destroyed and have its elements removed.
+     */
+    ionViewWillUnload(): void {
+        this.content?.callComponentFunction('ionViewWillUnload');
+    }
+
+    /**
+     * Check if we can leave the page or not.
+     *
+     * @return Resolved if we can leave it, rejected if not.
+     */
+    async canLeave(): Promise<boolean> {
+        if (!this.content) {
+            return true;
+        }
+
+
+        const result = await this.content.callComponentFunction('canLeave');
+
+        return result === undefined || result === null ? true : !!result;
     }
 
 }

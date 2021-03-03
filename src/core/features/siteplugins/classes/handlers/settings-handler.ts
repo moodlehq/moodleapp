@@ -49,11 +49,9 @@ export class CoreSitePluginsSettingsHandler extends CoreSitePluginsBaseHandler i
             title: this.title,
             icon: this.handlerSchema.displaydata?.icon,
             class: this.handlerSchema.displaydata?.class,
-            page: '@todo CoreSitePluginsPluginPage',
+            page: `siteplugins/${this.plugin.component}/${this.handlerSchema.method}/0`,
             params: {
                 title: this.title,
-                component: this.plugin.component,
-                method: this.handlerSchema.method,
                 initResult: this.initResult,
                 ptrEnabled: this.handlerSchema.ptrenabled,
             },

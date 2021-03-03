@@ -31,6 +31,7 @@ import { CoreXAPIModule } from './xapi/xapi.module';
 import { CoreViewerModule } from './viewer/viewer.module';
 import { CoreSearchModule } from './search/search.module';
 import { CoreCommentsModule } from './comments/comments.module';
+import { CoreSitePluginsModule } from './siteplugins/siteplugins.module';
 
 @NgModule({
     imports: [
@@ -51,6 +52,7 @@ import { CoreCommentsModule } from './comments/comments.module';
         CoreH5PModule,
         CoreViewerModule,
         CoreCommentsModule,
+        CoreSitePluginsModule,
     ],
 })
 export class CoreFeaturesModule {}

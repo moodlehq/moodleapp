@@ -24,7 +24,7 @@ import {
     CoreSitePluginsCourseModuleHandlerData,
     CoreSitePluginsPlugin,
 } from '@features/siteplugins/services/siteplugins';
-import { CoreNavigationOptions } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 
@@ -95,11 +95,13 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
                 event.preventDefault();
                 event.stopPropagation();
 
-                // @todo navCtrl.push('CoreSitePluginsModuleIndexPage', {
-                //     title: module.name,
-                //     module: module,
-                //     courseId: courseId
-                // }, options);
+                options = options || {};
+                options.params = {
+                    title: module.name,
+                    module,
+                };
+
+                CoreNavigator.navigateToSitePath(`siteplugins/module/${courseId}/${module.id}`, options);
             };
         }
 

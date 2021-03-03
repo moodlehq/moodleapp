@@ -20,8 +20,10 @@ import {
 } from '@features/siteplugins/services/siteplugins';
 import { CoreUserProfile } from '@features/user/services/user';
 import { CoreUserDelegateService, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
+import { Md5 } from 'ts-md5';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 
 /**
@@ -90,17 +92,23 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
                 event.preventDefault();
                 event.stopPropagation();
 
-                // @todo navCtrl.push('CoreSitePluginsPluginPage', {
-                //     title: this.title,
-                //     component: this.plugin.component,
-                //     method: this.handlerSchema.method,
-                //     args: {
-                //         courseid: courseId,
-                //         userid: user.id
-                //     },
-                //     initResult: this.initResult,
-                //     ptrEnabled: this.handlerSchema.ptrenabled,
-                // });
+                const args = {
+                    courseid: courseId,
+                    userid: user.id,
+                };
+                const hash = <string> Md5.hashAsciiStr(JSON.stringify(args));
+
+                CoreNavigator.navigateToSitePath(
+                    `siteplugins/${this.plugin.component}/${this.handlerSchema.method}/${hash}`,
+                    {
+                        params: {
+                            title: this.title,
+                            args,
+                            initResult: this.initResult,
+                            ptrEnabled: this.handlerSchema.ptrenabled,
+                        },
+                    },
+                );
             },
         };
     }

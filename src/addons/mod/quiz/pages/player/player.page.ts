@@ -44,6 +44,7 @@ import {
 } from '../../services/quiz';
 import { AddonModQuizAttempt, AddonModQuizHelper } from '../../services/quiz-helper';
 import { AddonModQuizSync } from '../../services/quiz-sync';
+import { CanLeave } from '@guards/can-leave';
 
 /**
  * Page that allows attempting a quiz.
@@ -53,7 +54,7 @@ import { AddonModQuizSync } from '../../services/quiz-sync';
     templateUrl: 'player.html',
     styleUrls: ['player.scss'],
 })
-export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
+export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChildren(CoreQuestionComponent) questionComponents?: QueryList<CoreQuestionComponent>;
@@ -144,9 +145,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    async ionViewCanLeave(): Promise<void> {
+    async canLeave(): Promise<boolean> {
         if (this.forceLeave || this.quizAborted || !this.questions.length || this.showSummary) {
-            return;
+            return true;
         }
 
         // Save answers.
@@ -164,6 +165,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
         } finally {
             modal.dismiss();
         }
+
+        return true;
     }
 
     /**
