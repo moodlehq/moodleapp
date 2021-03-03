@@ -19,6 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTabsOutletComponent, CoreTabsOutletTab } from '@components/tabs-outlet/tabs-outlet';
 import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../../services/home-delegate';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Page that displays the Home.
@@ -60,31 +61,42 @@ export class CoreMainMenuHomePage implements OnInit {
      * Init handlers on change (size or handlers).
      */
     initHandlers(handlers: CoreMainMenuHomeHandlerToDisplay[]): void {
-        // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.
-        const newTabs: CoreMainMenuHomeHandlerToDisplay[] = handlers.map((handler) => {
-            handler.page = '/main/home/' + handler.page;
+        // Re-build the list of tabs.
+        const handlersMap = CoreUtils.arrayToObject(handlers, 'title');
+        const newTabs = handlers.map((handler): CoreTabsOutletTab => {
+            const tab = this.tabs.find(tab => tab.title == handler.title);
 
-            // Check if the handler is already in the tabs list. If so, use it.
-            const tab = this.tabs.find((tab) => tab.title == handler.title);
+            // If a handler is already in the list, use existing object to prevent re-creating the tab.
+            if (tab) {
+                return tab;
+            }
 
-            return tab || handler;
+            return {
+                page: `/main/home/${handler.page}`,
+                pageParams: handler.pageParams,
+                title: handler.title,
+                class: handler.class,
+                icon: handler.icon,
+                badge: handler.badge,
+            };
         });
 
         // Sort them by priority so new handlers are in the right position.
-        newTabs.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+        newTabs.sort((a, b) => (handlersMap[b.title].priority || 0) - (handlersMap[a.title].priority || 0));
 
         if (typeof this.selectedTab == 'undefined' && newTabs.length > 0) {
             let maxPriority = 0;
-            let maxIndex = 0;
 
-            newTabs.forEach((tab, index) => {
-                if ((tab.selectPriority || 0) > maxPriority) {
-                    maxPriority = tab.selectPriority || 0;
-                    maxIndex = index;
+            this.selectedTab = Object.entries(newTabs).reduce((maxIndex, [index, tab]) => {
+                const selectPriority = handlersMap[tab.title].selectPriority ?? 0;
+
+                if (selectPriority > maxPriority) {
+                    maxPriority = selectPriority;
+                    maxIndex = Number(index);
                 }
-            });
 
-            this.selectedTab = maxIndex;
+                return maxIndex;
+            }, 0);
         }
 
         this.tabs = newTabs;
