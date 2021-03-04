@@ -64,7 +64,7 @@ import { CORE_SITEHOME_SERVICES } from '@features/sitehome/sitehome.module';
 import { CORE_TAG_SERVICES } from '@features/tag/tag.module';
 import { CORE_USER_SERVICES } from '@features/user/user.module';
 import { CORE_XAPI_SERVICES } from '@features/xapi/xapi.module';
-// @todo import { CoreSitePluginsProvider } from '@features/siteplugins/services/siteplugins';
+import { CoreSitePluginsProvider } from '@features/siteplugins/services/siteplugins';
 
 // Import other libraries and providers.
 import { DomSanitizer } from '@angular/platform-browser';
@@ -93,7 +93,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { CoreCourseDirectivesModule } from '@features/course/directives/directives.module';
 import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
-// @todo import { CoreSitePluginsDirectivesModule } from '@features/siteplugins/directives/directives.module';
+import { CoreSitePluginsDirectivesModule } from '@features/siteplugins/directives/directives.module';
 import { CoreUserComponentsModule } from '@features/user/components/components.module';
 import { CoreQuestionComponentsModule } from '@features/question/components/components.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
@@ -103,17 +103,15 @@ import { CoreSearchComponentsModule } from '@features/search/components/componen
 // Import some components so they can be injected dynamically.
 import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
 import { CoreCourseFormatSingleActivityComponent } from '@features/course/format/singleactivity/components/singleactivity';
-// @todo
-// import { CoreSitePluginsModuleIndexComponent } from '@features/siteplugins/components/module-index/module-index';
-// import { CoreSitePluginsBlockComponent } from '@features/siteplugins/components/block/block';
-// import { CoreSitePluginsCourseOptionComponent } from '@features/siteplugins/components/course-option/course-option';
-// import { CoreSitePluginsCourseFormatComponent } from '@features/siteplugins/components/course-format/course-format';
-// import { CoreSitePluginsQuestionComponent } from '@features/siteplugins/components/question/question';
-// import { CoreSitePluginsQuestionBehaviourComponent } from '@features/siteplugins/components/question-behaviour/question-behaviour';
-// import { CoreSitePluginsUserProfileFieldComponent } from '@features/siteplugins/components/user-profile-field/user-profile-field';
-// import { CoreSitePluginsQuizAccessRuleComponent } from '@features/siteplugins/components/quiz-access-rule/quiz-access-rule';
-// import { CoreSitePluginsAssignFeedbackComponent } from '@features/siteplugins/components/assign-feedback/assign-feedback';
-// import { CoreSitePluginsAssignSubmissionComponent } from '@features/siteplugins/components/assign-submission/assign-submission';
+import { CoreSitePluginsModuleIndexComponent } from '@features/siteplugins/components/module-index/module-index';
+import { CoreSitePluginsBlockComponent } from '@features/siteplugins/components/block/block';
+import { CoreSitePluginsCourseFormatComponent } from '@features/siteplugins/components/course-format/course-format';
+import { CoreSitePluginsQuestionComponent } from '@features/siteplugins/components/question/question';
+import { CoreSitePluginsQuestionBehaviourComponent } from '@features/siteplugins/components/question-behaviour/question-behaviour';
+import { CoreSitePluginsUserProfileFieldComponent } from '@features/siteplugins/components/user-profile-field/user-profile-field';
+import { CoreSitePluginsQuizAccessRuleComponent } from '@features/siteplugins/components/quiz-access-rule/quiz-access-rule';
+import { CoreSitePluginsAssignFeedbackComponent } from '@features/siteplugins/components/assign-feedback/assign-feedback';
+import { CoreSitePluginsAssignSubmissionComponent } from '@features/siteplugins/components/assign-submission/assign-submission';
 
 // Import addon providers. Do not import database module because it causes circular dependencies.
 import { ADDON_BADGES_SERVICES } from '@addons/badges/badges.module';
@@ -169,8 +167,8 @@ export class CoreCompileProvider {
     protected readonly IMPORTS = [
         CoreSharedModule, CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreUserComponentsModule,
         CoreCourseDirectivesModule, CoreQuestionComponentsModule, AddonModAssignComponentsModule,
-        CoreBlockComponentsModule, CoreEditorComponentsModule, CoreSearchComponentsModule,
-        // @todo AddonModWorkshopComponentsModule, CoreSitePluginsDirectivesModule,
+        CoreBlockComponentsModule, CoreEditorComponentsModule, CoreSearchComponentsModule, CoreSitePluginsDirectivesModule,
+        // @todo AddonModWorkshopComponentsModule,
     ];
 
     constructor(protected injector: Injector, compilerFactory: JitCompilerFactory) {
@@ -272,7 +270,7 @@ export class CoreCompileProvider {
             ...CORE_SETTINGS_SERVICES,
             // @todo ...CORE_SHAREDFILES_SERVICES,
             ...CORE_SITEHOME_SERVICES,
-            // @todo ...CoreSitePluginsProvider,
+            CoreSitePluginsProvider,
             ...CORE_TAG_SERVICES,
             ...CORE_USER_SERVICES,
             ...CORE_XAPI_SERVICES,
@@ -348,16 +346,15 @@ export class CoreCompileProvider {
         instance['CoreCourseResourcePrefetchHandlerBase'] = CoreCourseResourcePrefetchHandlerBase;
         instance['CoreCourseUnsupportedModuleComponent'] = CoreCourseUnsupportedModuleComponent;
         instance['CoreCourseFormatSingleActivityComponent'] = CoreCourseFormatSingleActivityComponent;
-        // @todo instance['CoreSitePluginsModuleIndexComponent'] = CoreSitePluginsModuleIndexComponent;
-        // instance['CoreSitePluginsBlockComponent'] = CoreSitePluginsBlockComponent;
-        // instance['CoreSitePluginsCourseOptionComponent'] = CoreSitePluginsCourseOptionComponent;
-        // instance['CoreSitePluginsCourseFormatComponent'] = CoreSitePluginsCourseFormatComponent;
-        // instance['CoreSitePluginsQuestionComponent'] = CoreSitePluginsQuestionComponent;
-        // instance['CoreSitePluginsQuestionBehaviourComponent'] = CoreSitePluginsQuestionBehaviourComponent;
-        // instance['CoreSitePluginsUserProfileFieldComponent'] = CoreSitePluginsUserProfileFieldComponent;
-        // instance['CoreSitePluginsQuizAccessRuleComponent'] = CoreSitePluginsQuizAccessRuleComponent;
-        // instance['CoreSitePluginsAssignFeedbackComponent'] = CoreSitePluginsAssignFeedbackComponent;
-        // instance['CoreSitePluginsAssignSubmissionComponent'] = CoreSitePluginsAssignSubmissionComponent;
+        instance['CoreSitePluginsModuleIndexComponent'] = CoreSitePluginsModuleIndexComponent;
+        instance['CoreSitePluginsBlockComponent'] = CoreSitePluginsBlockComponent;
+        instance['CoreSitePluginsCourseFormatComponent'] = CoreSitePluginsCourseFormatComponent;
+        instance['CoreSitePluginsQuestionComponent'] = CoreSitePluginsQuestionComponent;
+        instance['CoreSitePluginsQuestionBehaviourComponent'] = CoreSitePluginsQuestionBehaviourComponent;
+        instance['CoreSitePluginsUserProfileFieldComponent'] = CoreSitePluginsUserProfileFieldComponent;
+        instance['CoreSitePluginsQuizAccessRuleComponent'] = CoreSitePluginsQuizAccessRuleComponent;
+        instance['CoreSitePluginsAssignFeedbackComponent'] = CoreSitePluginsAssignFeedbackComponent;
+        instance['CoreSitePluginsAssignSubmissionComponent'] = CoreSitePluginsAssignSubmissionComponent;
         instance['CoreGeolocationError'] = CoreGeolocationError;
         instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason;
     }
