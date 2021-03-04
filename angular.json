@@ -40,7 +40,10 @@
           },
           "configurations": {
             "production": {
-              "optimization": true,
+              "optimization": {
+                "scripts": false,
+                "styles": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
@@ -52,8 +55,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
+                  "maximumWarning": "50mb",
+                  "maximumError": "100mb"
                 }
               ]
             },
