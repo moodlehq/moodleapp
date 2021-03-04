@@ -12,27 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Component, ViewChild } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModLessonUserRetakePage } from './user-retake.page';
+import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
+import { AddonModForumIndexComponent } from '../../components/index';
 
-const routes: Routes = [
-    {
-        path: '',
-        component: AddonModLessonUserRetakePage,
-    },
-];
-
-@NgModule({
-    imports: [
-        RouterModule.forChild(routes),
-        CoreSharedModule,
-    ],
-    declarations: [
-        AddonModLessonUserRetakePage,
-    ],
-    exports: [RouterModule],
+@Component({
+    selector: 'page-addon-mod-forum-index',
+    templateUrl: 'index.html',
 })
-export class AddonModLessonUserRetakePageModule {}
+export class AddonModForumIndexPage extends CoreCourseModuleMainActivityPage<AddonModForumIndexComponent> {
+
+    @ViewChild(AddonModForumIndexComponent) activityComponent?: AddonModForumIndexComponent;
+
+}

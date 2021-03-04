@@ -15,10 +15,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { CoreSharedModule } from '@/core/shared.module';
+import { AddonModQuizComponentsModule } from './components/components.module';
+
+import { AddonModQuizIndexPage } from './pages/index/index.page';
+
 const routes: Routes = [
     {
         path: ':courseId/:cmId',
-        loadChildren: () => import('./pages/index/index.module').then( m => m.AddonModQuizIndexPageModule),
+        component: AddonModQuizIndexPage,
     },
     {
         path: ':courseId/:cmId/player',
@@ -35,6 +40,13 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CoreSharedModule,
+        AddonModQuizComponentsModule,
+    ],
+    declarations: [
+        AddonModQuizIndexPage,
+    ],
 })
 export class AddonModQuizLazyModule {}

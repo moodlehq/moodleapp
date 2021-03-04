@@ -13,10 +13,9 @@
 // limitations under the License.
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CoreCourseWSModule } from '@features/course/services/course';
+import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModBookIndexComponent } from '../../components/index/index';
-import { AddonModBookBookWSData } from '../../services/book';
 
 /**
  * Page that displays a book.
@@ -25,33 +24,18 @@ import { AddonModBookBookWSData } from '../../services/book';
     selector: 'page-addon-mod-book-index',
     templateUrl: 'index.html',
 })
-export class AddonModBookIndexPage implements OnInit {
+export class AddonModBookIndexPage extends CoreCourseModuleMainActivityPage<AddonModBookIndexComponent> implements OnInit {
 
-    @ViewChild(AddonModBookIndexComponent) bookComponent?: AddonModBookIndexComponent;
+    @ViewChild(AddonModBookIndexComponent) activityComponent?: AddonModBookIndexComponent;
 
-    title?: string;
-    module?: CoreCourseWSModule;
-    courseId?: number;
     chapterId?: number;
-
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.module = CoreNavigator.getRouteParam('module');
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+        super.ngOnInit();
         this.chapterId = CoreNavigator.getRouteNumberParam('chapterId');
-        this.title = this.module?.name;
-    }
-
-    /**
-     * Update some data based on the book instance.
-     *
-     * @param book Book instance.
-     */
-    updateData(book: AddonModBookBookWSData): void {
-        this.title = book.name || this.title;
     }
 
 }
