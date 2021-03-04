@@ -1,11 +1,11 @@
 <ion-card>
     <form (ngSubmit)="submitForm($event)" role="search" #searchForm>
         <ion-item>
-            <ion-label>
-                <ion-input type="search" name="search" [(ngModel)]="searchText" [placeholder]="placeholder"
-                    [autocorrect]="autocorrect" [spellcheck]="spellcheck" [core-auto-focus]="autoFocus"
-                    [disabled]="disabled" role="searchbox" (ionFocus)="focus($event)"></ion-input>
-            </ion-label>
+            <ion-label></ion-label>
+            <ion-input type="search" name="search" [(ngModel)]="searchText" [placeholder]="placeholder"
+                [autocorrect]="autocorrect" [spellcheck]="spellcheck" [core-auto-focus]="autoFocus"
+                [disabled]="disabled" role="searchbox" (ionFocus)="focus($event)">
+            </ion-input>
             <ion-button slot="end" fill="clear" type="submit" size="small" [attr.aria-label]="searchLabel"
                 [disabled]="disabled || !searchText || (searchText.length < lengthCheck)">
                 <ion-icon name="fas-search" slot="icon-only"></ion-icon>

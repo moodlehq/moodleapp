@@ -15,7 +15,8 @@
         <form [formGroup]="form" *ngIf="!error" #editEventForm>
             <!-- Event name. -->
             <ion-item class="ion-text-wrap">
-                    <ion-label position="stacked"><h2 [core-mark-required]="true">
+                <ion-label position="stacked">
+                    <h2 [core-mark-required]="true">
                         {{ 'addon.calendar.eventname' | translate }}
                     </h2>
                 </ion-label>
