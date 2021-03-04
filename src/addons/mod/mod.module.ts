@@ -19,6 +19,7 @@ import { AddonModBookModule } from './book/book.module';
 import { AddonModFolderModule } from './folder/folder.module';
 import { AddonModForumModule } from './forum/forum.module';
 import { AddonModLabelModule } from './label/label.module';
+import { AddonModImscpModule } from './imscp/imscp.module';
 import { AddonModLessonModule } from './lesson/lesson.module';
 import { AddonModPageModule } from './page/page.module';
 import { AddonModQuizModule } from './quiz/quiz.module';
@@ -38,6 +39,7 @@ import { AddonModUrlModule } from './url/url.module';
         AddonModLabelModule,
         AddonModResourceModule,
         AddonModFolderModule,
+        AddonModImscpModule,
     ],
     providers: [],
     exports: [],
