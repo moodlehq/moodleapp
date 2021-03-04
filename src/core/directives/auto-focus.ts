@@ -21,6 +21,8 @@ import { CoreUtils } from '@services/utils/utils';
  * Directive to auto focus an element when a view is loaded.
  *
  * You can apply it conditionallity assigning it a boolean value: <ion-input [core-auto-focus]="{{showKeyboard}}">
+ *
+ * @deprecated since 3.9.5. ion-input now supports an [autofocus] attribute, please use that one instead.
  */
 @Directive({
     selector: '[core-auto-focus]',
@@ -39,16 +41,7 @@ export class CoreAutoFocusDirective implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        // @todo
-        // if (this.navCtrl.isTransitioning()) {
-        //     // Navigating to a new page. Wait for the transition to be over.
-        //     const subscription = this.navCtrl.viewDidEnter.subscribe(() => {
-        //         this.autoFocus();
-        //         subscription.unsubscribe();
-        //     });
-        // } else {
         this.autoFocus();
-        // }
     }
 
     /**
