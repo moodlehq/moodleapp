@@ -58,6 +58,7 @@ import { CORE_MAINMENU_SERVICES } from '@features/mainmenu/mainmenu.module';
 import { CORE_PUSHNOTIFICATIONS_SERVICES } from '@features/pushnotifications/pushnotifications.module';
 import { CORE_QUESTION_SERVICES } from '@features/question/question.module';
 // @todo import { CORE_SHAREDFILES_SERVICES } from '@features/sharedfiles/sharedfiles.module';
+import { CORE_RATING_SERVICES } from '@features/rating/rating.module';
 import { CORE_SEARCH_SERVICES } from '@features/search/search.module';
 import { CORE_SETTINGS_SERVICES } from '@features/settings/settings.module';
 import { CORE_SITEHOME_SERVICES } from '@features/sitehome/sitehome.module';
@@ -266,6 +267,7 @@ export class CoreCompileProvider {
             ...CORE_LOGIN_SERVICES,
             ...CORE_QUESTION_SERVICES,
             ...CORE_PUSHNOTIFICATIONS_SERVICES,
+            ...CORE_RATING_SERVICES,
             ...CORE_SEARCH_SERVICES,
             ...CORE_SETTINGS_SERVICES,
             // @todo ...CORE_SHAREDFILES_SERVICES,
