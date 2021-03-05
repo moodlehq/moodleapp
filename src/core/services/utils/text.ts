@@ -238,11 +238,7 @@ export class CoreTextUtilsProvider {
      * @param singleLine True if new lines should be removed (all the text in a single line).
      * @return Clean text.
      */
-    cleanTags(text: string, singleLine?: boolean): string {
-        if (typeof text != 'string') {
-            return text;
-        }
-
+    cleanTags(text: string | undefined, singleLine?: boolean): string {
         if (!text) {
             return '';
         }

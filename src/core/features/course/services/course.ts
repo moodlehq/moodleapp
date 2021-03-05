@@ -1439,18 +1439,20 @@ export type CoreCourseModuleWSCompletionData = {
 };
 
 export type CoreCourseModuleContentFile = {
-    type: string; // A file or a folder or external link.
+    // Common properties with CoreWSExternalFile.
     filename: string; // Filename.
     filepath: string; // Filepath.
     filesize: number; // Filesize.
     fileurl: string; // Downloadable file url.
-    content?: string; // Raw content, will be used when type is content.
-    timecreated: number; // Time created.
     timemodified: number; // Time modified.
-    sortorder: number; // Content sort order.
     mimetype?: string; // File mime type.
     isexternalfile?: number; // Whether is an external file.
     repositorytype?: string; // The repository type for external files.
+
+    type: string; // A file or a folder or external link.
+    content?: string; // Raw content, will be used when type is content.
+    timecreated: number; // Time created.
+    sortorder: number; // Content sort order.
     userid: number; // User who added this content to moodle.
     author: string; // Content owner.
     license: string; // Content license.

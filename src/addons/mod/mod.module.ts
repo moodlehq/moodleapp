@@ -22,6 +22,7 @@ import { AddonModLabelModule } from './label/label.module';
 import { AddonModLessonModule } from './lesson/lesson.module';
 import { AddonModPageModule } from './page/page.module';
 import { AddonModQuizModule } from './quiz/quiz.module';
+import { AddonModResourceModule } from './resource/resource.module';
 import { AddonModUrlModule } from './url/url.module';
 
 @NgModule({
@@ -35,6 +36,7 @@ import { AddonModUrlModule } from './url/url.module';
         AddonModQuizModule,
         AddonModUrlModule,
         AddonModLabelModule,
+        AddonModResourceModule,
         AddonModFolderModule,
     ],
     providers: [],
