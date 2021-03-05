@@ -542,7 +542,11 @@ export class CoreMimetypeUtilsProvider {
      * @param groups List of groups to check.
      * @return Whether the extension belongs to any of the groups.
      */
-    isExtensionInGroup(extension: string, groups: string[]): boolean {
+    isExtensionInGroup(extension: string | undefined, groups: string[]): boolean {
+        if (!extension) {
+            return false;
+        }
+
         extension = this.cleanExtension(extension);
 
         if (groups?.length && this.extToMime[extension]?.groups) {

@@ -1404,7 +1404,7 @@ export class CoreSite {
      * @param url URL to check.
      * @return Whether the URL belongs to this site.
      */
-    containsUrl(url: string): boolean {
+    containsUrl(url?: string): boolean {
         if (!url) {
             return false;
         }
