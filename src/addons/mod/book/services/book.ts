@@ -25,7 +25,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFile } from '@services/file';
-import { CoreWSError } from '@classes/errors/wserror';
+import { CoreError } from '@classes/errors/error';
 
 /**
  * Constants to define how the chapters and subchapters of a book should be displayed in that table of contents.
@@ -104,7 +104,7 @@ export class AddonModBookProvider {
             return book;
         }
 
-        throw new CoreWSError('Book not found');
+        throw new CoreError('Book not found');
     }
 
     /**
@@ -130,7 +130,7 @@ export class AddonModBookProvider {
         const indexUrl = contentsMap[chapterId] ? contentsMap[chapterId].indexUrl : undefined;
         if (!indexUrl) {
             // It shouldn't happen.
-            throw new CoreWSError('Could not locate the index chapter.');
+            throw new CoreError('Could not locate the index chapter.');
         }
 
         if (!CoreFile.isAvailable()) {
