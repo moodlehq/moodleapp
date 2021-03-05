@@ -74,8 +74,11 @@ import {
     CoreSitePluginsBlockHandlerData,
     CoreSitePluginsHandlerCommonData,
     CoreSitePluginsInitHandlerData,
+    CoreSitePluginsMainMenuHomeHandlerData,
 } from './siteplugins';
 import { makeSingleton } from '@singletons';
+import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
+import { CoreSitePluginsMainMenuHomeHandler } from '../classes/handlers/main-menu-home-handler';
 
 const HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
 
@@ -533,6 +536,10 @@ export class CoreSitePluginsHelperProvider {
 
                 case 'AddonWorkshopAssessmentStrategyDelegate':
                     uniqueName = await this.registerWorkshopAssessmentStrategyHandler(plugin, handlerName, handlerSchema);
+                    break;
+
+                case 'CoreMainMenuHomeDelegate':
+                    uniqueName = await this.registerMainMenuHomeHandler(plugin, handlerName, handlerSchema, initResult);
                     break;
 
                 default:
@@ -1128,6 +1135,41 @@ export class CoreSitePluginsHelperProvider {
         }));
 
         CoreEvents.trigger(CoreEvents.SITE_PLUGINS_COURSE_RESTRICT_UPDATED, {});
+    }
+
+    /**
+     * Given a handler in a plugin, register it in the main menu home delegate.
+     *
+     * @param plugin Data of the plugin.
+     * @param handlerName Name of the handler in the plugin.
+     * @param handlerSchema Data about the handler.
+     * @param initResult Result of the init WS call.
+     * @return A string to identify the handler.
+     */
+    protected registerMainMenuHomeHandler(
+        plugin: CoreSitePluginsPlugin,
+        handlerName: string,
+        handlerSchema: CoreSitePluginsMainMenuHomeHandlerData,
+        initResult: CoreSitePluginsContent | null,
+    ): string | undefined {
+        if (!handlerSchema.displaydata) {
+            // Required data not provided, stop.
+            this.logger.warn('Ignore site plugin because it doesn\'t provide displaydata', plugin, handlerSchema);
+
+            return;
+        }
+
+        this.logger.debug('Register site plugin in main menu home delegate:', plugin, handlerSchema, initResult);
+
+        // Create and register the handler.
+        const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
+        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname');
+
+        CoreMainMenuHomeDelegate.registerHandler(
+            new CoreSitePluginsMainMenuHomeHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult),
+        );
+
+        return uniqueName;
     }
 
 }

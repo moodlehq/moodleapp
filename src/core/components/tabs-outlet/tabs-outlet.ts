@@ -21,6 +21,7 @@ import {
     AfterViewInit,
     ViewChild,
     ElementRef,
+    SimpleChange,
 } from '@angular/core';
 import { IonTabs } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -71,17 +72,6 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     }
 
     /**
-     * Component being initialized.
-     */
-    async ngOnInit(): Promise<void> {
-        super.ngOnInit();
-
-        this.tabs.forEach((tab) => {
-            this.initTab(tab);
-        });
-    }
-
-    /**
      * Init tab info.
      *
      * @param tab Tab.
@@ -117,12 +107,16 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(): void {
-        this.tabs.forEach((tab) => {
-            this.initTab(tab);
-        });
+    ngOnChanges(changes: Record<string, SimpleChange>): void {
+        if (changes.tabs) {
+            this.tabs.forEach((tab) => {
+                this.initTab(tab);
+            });
 
-        super.ngOnChanges();
+            this.calculateSlides();
+        }
+
+        super.ngOnChanges(changes);
     }
 
     /**

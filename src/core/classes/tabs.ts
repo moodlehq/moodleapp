@@ -23,6 +23,7 @@ import {
     AfterViewInit,
     ViewChild,
     ElementRef,
+    SimpleChange,
 } from '@angular/core';
 import { IonSlides } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
@@ -153,7 +154,8 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ngOnChanges(changes: Record<string, SimpleChange>): void {
         // Wait for ngAfterViewInit so it works in the case that each tab has its own component.
         if (!this.initialized && this.hideUntil && this.afterViewInitTriggered) {
             // Tabs should be shown, initialize them.

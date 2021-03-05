@@ -784,7 +784,7 @@ export type CoreSitePluginsPlugin = CoreSitePluginsWSPlugin & {
 export type CoreSitePluginsHandlerData = CoreSitePluginsInitHandlerData | CoreSitePluginsCourseOptionHandlerData |
 CoreSitePluginsMainMenuHandlerData | CoreSitePluginsCourseModuleHandlerData | CoreSitePluginsCourseFormatHandlerData |
 CoreSitePluginsUserHandlerData | CoreSitePluginsSettingsHandlerData | CoreSitePluginsMessageOutputHandlerData |
-CoreSitePluginsBlockHandlerData;
+CoreSitePluginsBlockHandlerData | CoreSitePluginsMainMenuHomeHandlerData;
 
 /**
  * Plugin handler data common to all delegates.
@@ -919,4 +919,16 @@ export type CoreSitePluginsInitHandlerData = CoreSitePluginsHandlerCommonData & 
     methodTemplates?: CoreSitePluginsContentTemplate[];
     methodJSResult?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     methodOtherdata?: Record<string, unknown>;
+};
+
+/**
+ * Main menu home handler specific data.
+ */
+export type CoreSitePluginsMainMenuHomeHandlerData = CoreSitePluginsHandlerCommonData & {
+    displaydata?: {
+        title?: string;
+        class?: string;
+    };
+    priority?: number;
+    ptrenabled?: boolean;
 };
