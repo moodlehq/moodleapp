@@ -15,7 +15,7 @@
     <nav>
         <ion-list>
             <ion-item class="ion-text-wrap" *ngFor="let chapter of chapters" (click)="loadChapter(chapter.id)"
-                [class.core-nav-item-selected]="selected == chapter.id"
+                [class.core-selected-item]="selected == chapter.id"
                 [class.item-dimmed]="chapter.hidden">
                 <ion-label>
                     <p [class.ion-padding-left]="addPadding && chapter.level == 1 ? true : null">
