@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ContextLevel } from '@/core/constants';
 import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef, Optional } from '@angular/core';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
+import { CoreRatingInfo, CoreRatingProvider } from '@features/rating/services/rating';
+import { CoreRatingOffline } from '@features/rating/services/rating-offline';
+import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { CoreUser } from '@features/user/services/user';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
@@ -34,7 +38,6 @@ import {
     AddonModForumDiscussion,
     AddonModForumPost,
     AddonModForumProvider,
-    AddonModForumRatingInfo,
 } from '../../services/forum';
 import { AddonModForumHelper } from '../../services/helper';
 import { AddonModForumOffline } from '../../services/offline';
@@ -101,8 +104,8 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     protected syncObserver?: CoreEventObserver;
     protected syncManualObserver?: CoreEventObserver;
 
-    ratingInfo?: AddonModForumRatingInfo;
-    hasOfflineRatings!: boolean;
+    ratingInfo?: CoreRatingInfo;
+    hasOfflineRatings = false;
     protected ratingOfflineObserver?: CoreEventObserver;
     protected ratingSyncObserver?: CoreEventObserver;
     protected changeDiscObserver?: CoreEventObserver;
@@ -203,7 +206,20 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             AddonModForum.invalidateDiscussionsList(this.forumId);
         }
 
-        // @todo Listen for offline ratings saved and synced.
+        // Listen for offline ratings saved and synced.
+        this.ratingOfflineObserver = CoreEvents.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
+            if (data.component == 'mod_forum' && data.ratingArea == 'post' && data.contextLevel == ContextLevel.MODULE &&
+                    data.instanceId == this.cmId && data.itemSetId == this.discussionId) {
+                this.hasOfflineRatings = true;
+            }
+        });
+
+        this.ratingSyncObserver = CoreEvents.on(CoreRatingSyncProvider.SYNCED_EVENT, async (data) => {
+            if (data.component == 'mod_forum' && data.ratingArea == 'post' && data.contextLevel == ContextLevel.MODULE &&
+                    data.instanceId == this.cmId && data.itemSetId == this.discussionId) {
+                this.hasOfflineRatings = false;
+            }
+        });
 
         this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data => {
             if ((this.forumId && this.forumId === data.forumId) || data.cmId === this.cmId) {
@@ -345,7 +361,8 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
             const response = await AddonModForum.getDiscussionPosts(this.discussionId, { cmId: this.cmId });
             const replies = await AddonModForumOffline.getDiscussionReplies(this.discussionId);
-            const ratingInfo = response.ratinginfo;
+            this.ratingInfo = response.ratinginfo;
+
             onlinePosts = response.posts;
             this.courseId = response.courseid || this.courseId;
             this.forumId = response.forumid || this.forumId;
@@ -462,7 +479,6 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             }
 
             this.posts = posts;
-            this.ratingInfo = ratingInfo;
             this.postSubjects = this.getAllPosts().reduce(
                 (postSubjects, post) => {
                     postSubjects[post.id] = post.subject;
@@ -487,7 +503,8 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 this.canPin = false;
             }
 
-            // @todo fetch hasOfflineRatings.
+            this.hasOfflineRatings =
+                await CoreRatingOffline.hasRatings('mod_forum', 'post', ContextLevel.MODULE, this.cmId, this.discussionId);
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
         } finally {

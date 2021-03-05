@@ -52,6 +52,7 @@ import { AddonModForumOffline, AddonModForumReplyOptions } from '../../services/
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModForumPostOptionsMenuComponent } from '../post-options-menu/post-options-menu';
 import { AddonModForumEditPostComponent } from '../edit-post/edit-post';
+import { CoreRatingInfo } from '@features/rating/services/rating';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -75,7 +76,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     @Input() forum!: AddonModForumData; // The forum the post belongs to. Required for attachments and offline posts.
     @Input() accessInfo!: AddonModForumAccessInformation; // Forum access information.
     @Input() parentSubject?: string; // Subject of parent post.
-    @Input() ratingInfo?: any; // TODO CoreRatingInfo; // Rating info item.
+    @Input() ratingInfo?: CoreRatingInfo; // Rating info item.
     @Input() leavingPage?: boolean; // Whether the page that contains this post is being left and will be destroyed.
     @Input() highlight = false;
     @Output() onPostChange: EventEmitter<void> = new EventEmitter<void>(); // Event emitted when a reply is posted or modified.

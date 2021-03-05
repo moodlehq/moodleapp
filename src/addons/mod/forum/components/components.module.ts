@@ -18,6 +18,7 @@ import { CoreCourseComponentsModule } from '@features/course/components/componen
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreTagComponentsModule } from '@features/tag/components/components.module';
+import { CoreRatingComponentsModule } from '@features/rating/components/components.module';
 
 import { AddonModForumDiscussionOptionsMenuComponent } from './discussion-options-menu/discussion-options-menu';
 import { AddonModForumEditPostComponent } from './edit-post/edit-post';
@@ -40,6 +41,7 @@ import { AddonModForumSortOrderSelectorComponent } from './sort-order-selector/s
         CoreCourseComponentsModule,
         CoreTagComponentsModule,
         CoreEditorComponentsModule,
+        CoreRatingComponentsModule,
     ],
     exports: [
         AddonModForumIndexComponent,

@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ContextLevel } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
+import { CoreRatingSync } from '@features/rating/services/rating-sync';
 import { CoreApp } from '@services/app';
 import { CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
@@ -327,14 +329,44 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved if sync is successful, rejected otherwise.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async syncRatings(cmId?: number, discussionId?: number, force?: boolean, siteId?: string): Promise<{
-        updated: boolean;
-        warnings: string[];
-    }> {
-        // @todo
+    async syncRatings(cmId?: number, discussionId?: number, force?: boolean, siteId?: string): Promise<AddonModForumSyncResult> {
+        siteId = siteId || CoreSites.getCurrentSiteId();
 
-        return { updated: true, warnings: [] };
+        const results =
+            await CoreRatingSync.syncRatings('mod_forum', 'post', ContextLevel.MODULE, cmId, discussionId, force, siteId);
+
+        let updated = false;
+        const warnings: string[] = [];
+        const promises: Promise<void>[] = [];
+
+        results.forEach((result) => {
+            if (result.updated.length) {
+                updated = true;
+
+                // Invalidate discussions of updated ratings.
+                promises.push(AddonModForum.invalidateDiscussionPosts(result.itemSet!.itemSetId, undefined, siteId));
+            }
+
+            if (result.warnings.length) {
+                // Fetch forum to construct the warning message.
+                promises.push(AddonModForum.getForum(result.itemSet!.courseId!, result.itemSet!.instanceId, { siteId })
+                    .then((forum) => {
+                        result.warnings.forEach((warning) => {
+                            warnings.push(Translate.instant('core.warningofflinedatadeleted', {
+                                component: this.componentTranslate,
+                                name: forum.name,
+                                error: warning,
+                            }));
+                        });
+
+                        return;
+                    }));
+            }
+        });
+
+        await CoreUtils.allPromises(promises);
+
+        return { updated, warnings };
     }
 
     /**
