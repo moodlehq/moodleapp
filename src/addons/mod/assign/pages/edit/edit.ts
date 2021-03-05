@@ -16,6 +16,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
+import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
@@ -44,7 +45,7 @@ import { AddonModAssignSync } from '../../services/assign-sync';
     selector: 'page-addon-mod-assign-edit',
     templateUrl: 'edit.html',
 })
-export class AddonModAssignEditPage implements OnInit, OnDestroy {
+export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild('editSubmissionForm') formElement?: ElementRef;
 
@@ -92,9 +93,9 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
      *
      * @return Resolved if we can leave it, rejected if not.
      */
-    async ionViewCanLeave(): Promise<void> {
+    async canLeave(): Promise<boolean> {
         if (this.forceLeave) {
-            return;
+            return true;
         }
 
         // Check if data has changed.
@@ -107,6 +108,8 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy {
         AddonModAssignHelper.clearSubmissionPluginTmpData(this.assign!, this.userSubmission, this.getInputData());
 
         CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+
+        return true;
     }
 
     /**

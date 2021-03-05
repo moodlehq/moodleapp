@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -32,6 +32,17 @@ import { AddonModLessonPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModLessonPushClickHandler } from './services/handlers/push-click';
 import { AddonModLessonReportLinkHandler } from './services/handlers/report-link';
 import { AddonModLessonSyncCronHandler } from './services/handlers/sync-cron';
+import { AddonModLessonProvider } from './services/lesson';
+import { AddonModLessonHelperProvider } from './services/lesson-helper';
+import { AddonModLessonOfflineProvider } from './services/lesson-offline';
+import { AddonModLessonSyncProvider } from './services/lesson-sync';
+
+export const ADDON_MOD_LESSON_SERVICES: Type<unknown>[] = [
+    AddonModLessonProvider,
+    AddonModLessonOfflineProvider,
+    AddonModLessonSyncProvider,
+    AddonModLessonHelperProvider,
+];
 
 const routes: Routes = [
     {

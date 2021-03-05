@@ -12,11 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { NgModule, Type } from '@angular/core';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreEditorComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/database/editor';
+import { CoreEditorOfflineProvider } from './services/editor-offline';
+
+export const CORE_EDITOR_SERVICES: Type<unknown>[] = [
+    CoreEditorOfflineProvider,
+];
 
 @NgModule({
     declarations: [

@@ -187,15 +187,6 @@ export class CoreUtilsProvider {
     }
 
     /**
-     * Blocks leaving a view.
-     *
-     * @deprecated, use ionViewCanLeave instead.
-     */
-    blockLeaveView(): void {
-        return;
-    }
-
-    /**
      * Check if a URL has a redirect.
      *
      * @param url The URL to check.

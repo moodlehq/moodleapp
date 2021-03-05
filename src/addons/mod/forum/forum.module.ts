@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
@@ -38,6 +38,17 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { AddonModForumTagAreaHandler } from './services/handlers/tag-area';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonModForumPushClickHandler } from './services/handlers/push-click';
+import { AddonModForumProvider } from './services/forum';
+import { AddonModForumOfflineProvider } from './services/offline';
+import { AddonModForumHelperProvider } from './services/helper';
+import { AddonModForumSyncProvider } from './services/sync';
+
+export const ADDON_MOD_FORUM_SERVICES: Type<unknown>[] = [
+    AddonModForumProvider,
+    AddonModForumOfflineProvider,
+    AddonModForumHelperProvider,
+    AddonModForumSyncProvider,
+];
 
 const mainMenuRoutes: Routes = [
     {

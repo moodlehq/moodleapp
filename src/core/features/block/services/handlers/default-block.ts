@@ -18,7 +18,7 @@ import { CoreBlockBaseHandler } from '../../classes/base-block-handler';
 /**
  * Default handler used when a block type doesn't have a specific implementation.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CoreBlockDefaultHandler extends CoreBlockBaseHandler {
 
     name = 'CoreBlockDefault';

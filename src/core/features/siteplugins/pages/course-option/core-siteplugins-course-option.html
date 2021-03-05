@@ -1,0 +1,9 @@
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!ptrEnabled || !content || !content.dataLoaded"
+        (ionRefresh)="refreshData($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-site-plugins-plugin-content *ngIf="component && method" [component]="component" [method]="method" [args]="args"
+        [initResult]="initResult">
+    </core-site-plugins-plugin-content>
+</ion-content>

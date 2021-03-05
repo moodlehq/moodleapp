@@ -27,12 +27,15 @@ import { CoreUserProfileField } from '@features/user/services/user';
 export abstract class CoreUserProfileFieldBaseComponent implements OnInit {
 
     @Input() field?: AuthEmailSignupProfileField | CoreUserProfileField; // The profile field to be rendered.
+    @Input() signup = false; // True if editing the field in signup. Defaults to false.
     @Input() edit = false; // True if editing the field. Defaults to false.
     @Input() disabled = false; // True if disabled. Defaults to false.
-    @Input() form?: FormGroup; // Form where to add the form control.
+    @Input() form?: FormGroup; // Form where to add the form control. Required if edit=true or signup=true.
+    @Input() registerAuth?: string; // Register auth method. E.g. 'email'.
     @Input() contextLevel?: string; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
-    @Input() courseId?: number; // The course the field belongs to (if any).
+    @Input() courseId?: number; // Course ID the field belongs to (if any). It can be used to improve performance with filters.
+
 
     control?: FormControl;
     modelName = '';

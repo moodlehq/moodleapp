@@ -32,6 +32,9 @@ export class AddonQbehaviourDeferredCBMComponent {
     @Input() offlineEnabled?: boolean | string; // Whether the question can be answered in offline.
     @Input() contextLevel?: string; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
+    @Input() courseId?: number; // Course ID the question belongs to (if any). It can be used to improve performance with filters.
+    @Input() review?: boolean; // Whether the user is in review mode.
+    @Input() preferredBehaviour?: string; // Preferred behaviour.
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort = new EventEmitter<void>(); // Should emit an event if the question should be aborted.
 

@@ -70,7 +70,7 @@ export interface AddonModQuizAccessRuleHandler extends CoreDelegateHandler {
      *
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getPreflightComponent?(): Type<unknown> | Promise<Type<unknown>>;
+    getPreflightComponent?(): undefined | Type<unknown> | Promise<Type<unknown>>;
 
     /**
      * Function called when the preflight check has passed. This is a chance to record that fact in some way.

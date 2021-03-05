@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/user';
 import { CoreUserComponentsModule } from './components/components.module';
-import { CoreUserDelegate } from './services/user-delegate';
+import { CoreUserDelegate, CoreUserDelegateService } from './services/user-delegate';
 import { CoreUserProfileMailHandler } from './services/handlers/profile-mail';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreUserProfileLinkHandler } from './services/handlers/profile-link';
@@ -30,6 +30,20 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreUserCourseOptionHandler } from './services/handlers/course-option';
+import { CoreUserProfileFieldDelegateService } from './services/user-profile-field-delegate';
+import { CoreUserProvider } from './services/user';
+import { CoreUserHelperProvider } from './services/user-helper';
+import { CoreUserOfflineProvider } from './services/user-offline';
+import { CoreUserSyncProvider } from './services/user-sync';
+
+export const CORE_USER_SERVICES: Type<unknown>[] = [
+    CoreUserDelegateService,
+    CoreUserProfileFieldDelegateService,
+    CoreUserProvider,
+    CoreUserHelperProvider,
+    CoreUserOfflineProvider,
+    CoreUserSyncProvider,
+];
 
 const routes: Routes = [
     {

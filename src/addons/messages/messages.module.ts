@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
@@ -33,9 +33,17 @@ import { AddonMessagesPushClickHandler } from './services/handlers/push-click';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonMessagesSendMessageUserHandler } from './services/handlers/user-send-message';
 import { Network, NgZone } from '@singletons';
-import { AddonMessagesSync } from './services/messages-sync';
+import { AddonMessagesSync, AddonMessagesSyncProvider } from './services/messages-sync';
 import { AddonMessagesSyncCronHandler } from './services/handlers/sync-cron';
 import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
+import { AddonMessagesProvider } from './services/messages';
+import { AddonMessagesOfflineProvider } from './services/messages-offline';
+
+export const ADDON_MESSAGES_SERVICES: Type<unknown>[] = [
+    AddonMessagesProvider,
+    AddonMessagesOfflineProvider,
+    AddonMessagesSyncProvider,
+];
 
 const mainMenuChildrenRoutes: Routes = [
     {

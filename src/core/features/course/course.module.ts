@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -24,14 +24,33 @@ import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/course';
 import { SITE_SCHEMA as LOG_SITE_SCHEMA } from './services/database/log';
 import { SITE_SCHEMA as PREFETCH_SITE_SCHEMA } from './services/database/module-prefetch';
 import { CoreCourseIndexRoutingModule } from './pages/index/index-routing.module';
-import { CoreCourseModulePrefetchDelegate } from './services/module-prefetch-delegate';
+import { CoreCourseModulePrefetchDelegate, CoreCourseModulePrefetchDelegateService } from './services/module-prefetch-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreCourseLogCronHandler } from './services/handlers/log-cron';
 import { CoreCourseSyncCronHandler } from './services/handlers/sync-cron';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreCourseTagAreaHandler } from './services/handlers/course-tag-area';
 import { CoreCourseModulesTagAreaHandler } from './services/handlers/modules-tag-area';
-import { CoreCourse } from './services/course';
+import { CoreCourse, CoreCourseProvider } from './services/course';
+import { CoreCourseHelperProvider } from './services/course-helper';
+import { CoreCourseLogHelperProvider } from './services/log-helper';
+import { CoreCourseFormatDelegateService } from './services/format-delegate';
+import { CoreCourseModuleDelegateService } from './services/module-delegate';
+import { CoreCourseOptionsDelegateService } from './services/course-options-delegate';
+import { CoreCourseOfflineProvider } from './services/course-offline';
+import { CoreCourseSyncProvider } from './services/sync';
+
+export const CORE_COURSE_SERVICES: Type<unknown>[] = [
+    CoreCourseProvider,
+    CoreCourseHelperProvider,
+    CoreCourseLogHelperProvider,
+    CoreCourseFormatDelegateService,
+    CoreCourseModuleDelegateService,
+    CoreCourseModulePrefetchDelegateService,
+    CoreCourseOptionsDelegateService,
+    CoreCourseOfflineProvider,
+    CoreCourseSyncProvider,
+];
 
 const routes: Routes = [
     {

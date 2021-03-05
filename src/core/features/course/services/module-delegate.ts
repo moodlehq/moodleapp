@@ -82,7 +82,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      *
      * @return The icon src.
      */
-    getIconSrc?(): string;
+    getIconSrc?(): string | undefined;
 
     /**
      * Check if this type of module supports a certain feature.
@@ -336,7 +336,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @param modicon The mod icon string.
      * @return The icon src.
      */
-    getModuleIconSrc(modname: string, modicon?: string): string {
+    getModuleIconSrc(modname: string, modicon?: string): string | undefined {
         return this.executeFunctionOnEnabled<string>(modname, 'getIconSrc') ||
             CoreCourse.getModuleIconSrc(modname, modicon);
     }

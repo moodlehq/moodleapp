@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -25,6 +25,13 @@ import { AddonModPageListLinkHandler } from './services/handlers/list-link';
 import { AddonModPageModuleHandler, AddonModPageModuleHandlerService } from './services/handlers/module';
 import { AddonModPagePluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModPagePrefetchHandler } from './services/handlers/prefetch';
+import { AddonModPageProvider } from './services/page';
+import { AddonModPageHelperProvider } from './services/page-helper';
+
+export const ADDON_MOD_PAGE_SERVICES: Type<unknown>[] = [
+    AddonModPageProvider,
+    AddonModPageHelperProvider,
+];
 
 const routes: Routes = [
     {

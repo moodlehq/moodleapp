@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { CoreBlockDefaultHandler } from './services/handlers/default-block';
+import { NgModule, Type } from '@angular/core';
+
+import { CoreBlockDelegateService } from './services/block-delegate';
+import { CoreBlockHelperProvider } from './services/block-helper';
+
+export const CORE_BLOCK_SERVICES: Type<unknown>[] = [
+    CoreBlockDelegateService,
+    CoreBlockHelperProvider,
+];
 
 @NgModule({
-    providers: [
-        CoreBlockDefaultHandler,
-    ],
+    providers: [],
 })
-export class CoreBlockModule {
-}
+export class CoreBlockModule {}

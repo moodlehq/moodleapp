@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { NgModule, Type } from '@angular/core';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 
 import { CoreSearchComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/search-history-db';
+import { CoreSearchHistoryProvider } from './services/search-history.service';
+
+export const CORE_SEARCH_SERVICES: Type<unknown>[] = [
+    CoreSearchHistoryProvider,
+];
 
 @NgModule({
     imports: [

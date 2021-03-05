@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreMainMenuRoutingModule } from '../mainmenu/mainmenu-routing.module';
@@ -22,6 +22,15 @@ import { CoreTagIndexLinkHandler } from './services/handlers/index-link';
 import { CoreTagSearchLinkHandler } from './services/handlers/search-link';
 import { CoreTagComponentsModule } from './components/components.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreTagAreaDelegateService } from './services/tag-area-delegate';
+import { CoreTagHelperProvider } from './services/tag-helper';
+import { CoreTagProvider } from './services/tag';
+
+export const CORE_TAG_SERVICES: Type<unknown>[] = [
+    CoreTagAreaDelegateService,
+    CoreTagHelperProvider,
+    CoreTagProvider,
+];
 
 const routes: Routes = [
     {

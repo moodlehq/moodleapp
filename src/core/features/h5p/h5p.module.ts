@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreH5PComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/database/h5p';
+import { CoreH5PProvider } from './services/h5p';
 import { CoreH5PPluginFileHandler } from './services/handlers/pluginfile';
+
+export const CORE_H5P_SERVICES: Type<unknown>[] = [
+    CoreH5PProvider,
+];
 
 @NgModule({
     imports: [

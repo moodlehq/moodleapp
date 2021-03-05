@@ -16,6 +16,11 @@ import { NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
+import { CoreLoginHelperProvider } from './services/login-helper';
+
+export const CORE_LOGIN_SERVICES = [
+    CoreLoginHelperProvider,
+];
 
 const appRoutes: Routes = [
     {

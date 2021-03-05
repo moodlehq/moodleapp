@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -25,6 +25,11 @@ import { AddonModBookIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModBookListLinkHandler } from './services/handlers/list-link';
 import { AddonModBookPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModBookTagAreaHandler } from './services/handlers/tag-area';
+import { AddonModBookProvider } from './services/book';
+
+export const ADDON_MOD_BOOK_SERVICES: Type<unknown>[] = [
+    AddonModBookProvider,
+];
 
 const routes: Routes = [
     {

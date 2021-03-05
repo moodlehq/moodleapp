@@ -12,13 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { AddonPrivateFilesMainMenuHandler, AddonPrivateFilesMainMenuHandlerService } from './services/handlers/mainmenu';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { AddonPrivateFilesProvider } from './services/privatefiles';
+import { AddonPrivateFilesHelperProvider } from './services/privatefiles-helper';
+
+export const ADDON_PRIVATEFILES_SERVICES: Type<unknown>[] = [
+    AddonPrivateFilesProvider,
+    AddonPrivateFilesHelperProvider,
+];
 
 const routes: Routes = [
     {

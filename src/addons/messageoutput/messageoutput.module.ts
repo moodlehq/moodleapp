@@ -12,9 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { NgModule, Type } from '@angular/core';
 
 import { AddonMessageOutputAirnotifierModule } from './airnotifier/airnotifier.module';
+import { AddonMessageOutputDelegateService } from './services/messageoutput-delegate';
+
+export const ADDON_MESSAGEOUTPUT_SERVICES: Type<unknown>[] = [
+    AddonMessageOutputDelegateService,
+];
 
 @NgModule({
     declarations: [

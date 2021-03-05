@@ -12,10 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { NgModule, Type } from '@angular/core';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { SITE_SCHEMA } from './services/database/xapi';
+import { CoreXAPIOfflineProvider } from './services/offline';
+import { CoreXAPIProvider } from './services/xapi';
+
+export const CORE_XAPI_SERVICES: Type<unknown>[] = [
+    CoreXAPIProvider,
+    CoreXAPIOfflineProvider,
+];
 
 @NgModule({
     imports: [],

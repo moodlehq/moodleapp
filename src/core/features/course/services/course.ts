@@ -41,6 +41,7 @@ import { CoreCourseHelper, CoreCourseModuleCompletionData } from './course-helpe
 import { CoreCourseFormatDelegate } from './format-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreCourseLogCronHandler } from './handlers/log-cron';
+import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -1026,7 +1027,7 @@ export class CoreCourseProvider {
         const loading = await CoreDomUtils.showModalLoading();
 
         // Wait for site plugins to be fetched.
-        // @todo await this.sitePluginsProvider.waitFetchPlugins();
+        await CoreSitePlugins.waitFetchPlugins();
 
         if (!('format' in course) || typeof course.format == 'undefined') {
             const result = await CoreCourseHelper.getCourse(course.id);
@@ -1034,7 +1035,9 @@ export class CoreCourseProvider {
             course = result.course;
         }
 
-        if (course) { // @todo Replace with: if (!this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
+        const format = 'format' in course && `format_${course.format}`;
+
+        if (!format || !CoreSitePlugins.sitePluginPromiseExists(`format_${format}`)) {
             // No custom format plugin. We don't need to wait for anything.
             await CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, params);
             loading.dismiss();
@@ -1044,11 +1047,12 @@ export class CoreCourseProvider {
 
         // This course uses a custom format plugin, wait for the format plugin to finish loading.
         try {
-            /* @todo await this.sitePluginsProvider.sitePluginLoaded('format_' + course.format);
+            await CoreSitePlugins.sitePluginLoaded(format);
+
             // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
-            if (this.sitePluginsProvider.sitePluginsFinishedLoading) {
-                return CoreCourseFormatDelegate.openCourse(course, params);
-            }*/
+            if (CoreSitePlugins.sitePluginsFinishedLoading) {
+                return CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, params);
+            }
 
             // Wait for plugins to be loaded.
             const deferred = CoreUtils.promiseDefer<void>();

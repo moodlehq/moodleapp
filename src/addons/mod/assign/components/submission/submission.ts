@@ -56,6 +56,7 @@ import { CoreGroups } from '@services/groups';
 import { CoreSync } from '@services/sync';
 import { AddonModAssignSubmissionPluginComponent } from '../submission-plugin/submission-plugin';
 import { AddonModAssignModuleHandlerService } from '../../services/handlers/module';
+import { CanLeave } from '@guards/can-leave';
 
 /**
  * Component that displays an assignment submission.
@@ -65,7 +66,7 @@ import { AddonModAssignModuleHandlerService } from '../../services/handlers/modu
     templateUrl: 'addon-mod-assign-submission.html',
     styleUrls: ['submission.scss'],
 })
-export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
+export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(CoreTabsComponent) tabs!: CoreTabsComponent;
     @ViewChildren(AddonModAssignSubmissionPluginComponent) submissionComponents!:
@@ -252,21 +253,20 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Check if the user can leave the view. If there are changes to be saved, it will ask for confirm.
      *
-     * @return Promise resolved if can leave the view, rejected otherwise.
+     * @return Promise resolved with true if can leave the view, rejected otherwise.
      */
-    async canLeave(): Promise<void> {
+    async canLeave(): Promise<boolean> {
         // Check if there is data to save.
         const modified = await this.hasDataToSave();
 
         if (modified) {
             // Modified, confirm user wants to go back.
-            try {
-                await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
-                await this.discardDrafts();
-            } catch {
-                // Cancelled by the user.
-            }
+            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+
+            await this.discardDrafts();
         }
+
+        return true;
     }
 
     /**

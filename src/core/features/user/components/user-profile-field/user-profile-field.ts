@@ -16,6 +16,7 @@ import { Component, Input, OnInit, Type } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
+import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
 import { CoreUtils } from '@services/utils/utils';
 
@@ -28,7 +29,7 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class CoreUserProfileFieldComponent implements OnInit {
 
-    @Input() field?: AuthEmailSignupProfileField; // The profile field to be rendered.
+    @Input() field?: AuthEmailSignupProfileField | CoreUserProfileField; // The profile field to be rendered.
     @Input() signup = false; // True if editing the field in signup. Defaults to false.
     @Input() edit = false; // True if editing the field. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control. Required if edit=true or signup=true.
@@ -54,7 +55,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
         this.data.edit = CoreUtils.isTrueOrOne(this.edit);
         if (this.edit) {
             this.data.signup = CoreUtils.isTrueOrOne(this.signup);
-            this.data.disabled = CoreUtils.isTrueOrOne(this.field.locked);
+            this.data.disabled = 'locked' in this.field && CoreUtils.isTrueOrOne(this.field.locked);
             this.data.form = this.form;
             this.data.registerAuth = this.registerAuth;
             this.data.contextLevel = this.contextLevel;
@@ -66,7 +67,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
 }
 
 export type CoreUserProfileFieldComponentData = {
-    field?: AuthEmailSignupProfileField;
+    field?: AuthEmailSignupProfileField | CoreUserProfileField;
     edit?: boolean;
     signup?: boolean;
     disabled?: boolean;

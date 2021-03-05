@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -25,6 +25,11 @@ import { AddonModImscpListLinkHandler } from './services/handlers/list-link';
 import { AddonModImscpModuleHandler, AddonModImscpModuleHandlerService } from './services/handlers/module';
 import { AddonModImscpPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModImscpPrefetchHandler } from './services/handlers/prefetch';
+import { AddonModImscpProvider } from './services/imscp';
+
+export const ADDON_MOD_IMSCP_SERVICES: Type<unknown>[] = [
+    AddonModImscpProvider,
+];
 
 const routes: Routes = [
     {
