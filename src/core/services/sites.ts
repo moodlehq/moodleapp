@@ -655,7 +655,7 @@ export class CoreSitesProvider {
      * @return Release number or empty.
      */
     getReleaseNumber(rawRelease: string): string {
-        const matches = rawRelease.match(/^\d(\.\d(\.\d+)?)?/);
+        const matches = rawRelease.match(/^\d+(\.\d+(\.\d+)?)?/);
         if (matches) {
             return matches[0];
         }
