@@ -1486,7 +1486,7 @@ export class AddonModLessonProvider {
 
         const response = await site.read<AddonModLessonGetLessonWSResponse>('mod_lesson_get_lesson', params, preSets);
 
-        if (typeof response.lesson.ongoing != 'undefined') {
+        if (typeof response.lesson.ongoing == 'undefined') {
             // Basic data not received, password is wrong. Remove stored password.
             this.removeStoredPassword(lessonId, site.id);
 

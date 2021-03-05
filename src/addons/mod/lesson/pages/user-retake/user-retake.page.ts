@@ -55,7 +55,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
     loaded?: boolean; // Whether the data has been loaded.
     timeTakenReadable?: string; // Time taken in a readable format.
 
-    protected lessonId!: number; // The lesson ID the retake belongs to.
+    protected cmId!: number; // The lesson ID the retake belongs to.
     protected userId?: number; // User ID to see the retakes.
     protected retakeNumber?: number; // Number of the initial retake to see.
     protected previousSelectedRetake?: number; // To be able to detect the previous selected retake when it has changed.
@@ -64,7 +64,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.lessonId = CoreNavigator.getRouteNumberParam('lessonId')!;
+        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
         this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
         this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSiteUserId();
         this.retakeNumber = CoreNavigator.getRouteNumberParam('retake');
@@ -111,11 +111,11 @@ export class AddonModLessonUserRetakePage implements OnInit {
      */
     protected async fetchData(): Promise<void> {
         try {
-            this.lesson = await AddonModLesson.getLessonById(this.courseId, this.lessonId);
+            this.lesson = await AddonModLesson.getLesson(this.courseId, this.cmId);
 
             // Get the retakes overview for all participants.
             const data = await AddonModLesson.getRetakesOverview(this.lesson.id, {
-                cmId: this.lesson.coursemodule,
+                cmId: this.cmId,
             });
 
             // Search the student.
@@ -185,8 +185,8 @@ export class AddonModLessonUserRetakePage implements OnInit {
     protected async setRetake(retakeNumber: number): Promise<void> {
         this.selectedRetake = retakeNumber;
 
-        const retakeData = await AddonModLesson.getUserRetake(this.lessonId, retakeNumber, {
-            cmId: this.lesson!.coursemodule,
+        const retakeData = await AddonModLesson.getUserRetake(this.lesson!.id, retakeNumber, {
+            cmId: this.cmId,
             userId: this.userId,
         });
 
