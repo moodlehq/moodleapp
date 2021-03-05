@@ -13,7 +13,6 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <!-- @todo -->
     <core-loading [hideUntil]="loaded">
         <core-tabs-outlet *ngIf="tabs.length > 0" [selectedIndex]="selectedTab" [hideUntil]="loaded" [tabs]="tabs">
         </core-tabs-outlet>

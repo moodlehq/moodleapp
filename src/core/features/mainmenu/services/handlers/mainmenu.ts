@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
-import { CoreMainMenuHomeDelegate } from '../home-delegate';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../mainmenu-delegate';
 
 /**
@@ -29,27 +28,14 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
     priority = 1100;
 
     /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @return Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
-    isEnabled(): Promise<boolean> {
-        return this.isEnabledForSite();
+    async isEnabled(): Promise<boolean> {
+        return true;
     }
 
     /**
-     * Check if the handler is enabled on a certain site.
-     *
-     * @return Whether or not the handler is enabled on a site level.
-     */
-    async isEnabledForSite(): Promise<boolean> {
-        return CoreMainMenuHomeDelegate.getHandlers().length > 0;
-    }
-
-    /**
-     * Returns the data needed to render the handler.
-     *
-     * @return Data needed to render the handler.
+     * @inheritdoc
      */
     getDisplayData(): CoreMainMenuHandlerData {
         return {
