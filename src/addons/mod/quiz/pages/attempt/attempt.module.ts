@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModQuizAttemptPage } from './attempt';
+import { AddonModQuizAttemptPage } from './attempt.page';
 
 const routes: Routes = [
     {

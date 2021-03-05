@@ -13,23 +13,28 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-
-import { AddonModForumData } from '@addons/mod/forum/services/forum';
-import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
+import { CoreCourseAnyModuleData } from '../services/course';
+import { CoreCourseModuleMainResourceComponent } from './main-resource-component';
 
+/**
+/**
+ * Template class to easily create CoreCourseModuleMainComponent of resources (or activities without syncing).
+ */
 @Component({
-    selector: 'page-addon-mod-forum-index',
-    templateUrl: 'index.html',
+    template: '',
 })
-export class AddonModForumIndexPage implements OnInit {
+export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseModuleMainResourceComponent> implements OnInit {
+
+    activityComponent?: ActivityType;
 
     title!: string;
     module!: CoreCourseAnyModuleData;
     courseId!: number;
 
+
     /**
-     * @inheritdoc
+     * Component being initialized.
      */
     ngOnInit(): void {
         this.module = CoreNavigator.getRouteParam<CoreCourseAnyModuleData>('module')!;
@@ -38,12 +43,26 @@ export class AddonModForumIndexPage implements OnInit {
     }
 
     /**
-     * Update some data based on the forum instance.
+     * Update some data based on the activity instance.
      *
-     * @param forum Forum instance.
+     * @param activity Activity instance.
      */
-    updateData(forum: AddonModForumData): void {
-        this.title = forum.name || this.title;
+    updateData(activity: { name: string}): void {
+        this.title = activity.name || this.title;
+    }
+
+    /**
+     * User entered the page.
+     */
+    ionViewDidEnter(): void {
+        this.activityComponent?.ionViewDidEnter();
+    }
+
+    /**
+     * User left the page.
+     */
+    ionViewDidLeave(): void {
+        this.activityComponent?.ionViewDidLeave();
     }
 
 }

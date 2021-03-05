@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { CoreCourseWSModule } from '@features/course/services/course';
-import { CoreNavigator } from '@services/navigator';
+import { Component, ViewChild } from '@angular/core';
+import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModAssignIndexComponent } from '../../components/index/index';
-import { AddonModAssignAssign } from '../../services/assign';
 
 /**
  * Page that displays an assign.
@@ -25,44 +23,8 @@ import { AddonModAssignAssign } from '../../services/assign';
     selector: 'page-addon-mod-assign-index',
     templateUrl: 'index.html',
 })
-export class AddonModAssignIndexPage implements OnInit {
+export class AddonModAssignIndexPage extends CoreCourseModuleMainActivityPage<AddonModAssignIndexComponent> {
 
-    @ViewChild(AddonModAssignIndexComponent) assignComponent?: AddonModAssignIndexComponent;
-
-    title?: string;
-    module?: CoreCourseWSModule;
-    courseId?: number;
-
-    /**
-     * Component being initialized.
-     */
-    ngOnInit(): void {
-        this.module = CoreNavigator.getRouteParam('module');
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
-        this.title = this.module?.name;
-    }
-
-    /**
-     * Update some data based on the assign instance.
-     *
-     * @param assign Assign instance.
-     */
-    updateData(assign: AddonModAssignAssign): void {
-        this.title = assign.name || this.title;
-    }
-
-    /**
-     * User entered the page.
-     */
-    ionViewDidEnter(): void {
-        this.assignComponent?.ionViewDidEnter();
-    }
-
-    /**
-     * User left the page.
-     */
-    ionViewDidLeave(): void {
-        this.assignComponent?.ionViewDidLeave();
-    }
+    @ViewChild(AddonModAssignIndexComponent) activityComponent?: AddonModAssignIndexComponent;
 
 }

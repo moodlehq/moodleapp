@@ -13,28 +13,22 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModPageComponentsModule } from '../../components/components.module';
-import { AddonModPageIndexPage } from './index';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
-const routes: Routes = [
-    {
-        path: '',
-        component: AddonModPageIndexPage,
-    },
-];
+import { AddonModFolderIndexComponent } from './index/index';
 
 @NgModule({
-    imports: [
-        RouterModule.forChild(routes),
-        CoreSharedModule,
-        AddonModPageComponentsModule,
-    ],
     declarations: [
-        AddonModPageIndexPage,
+        AddonModFolderIndexComponent,
     ],
-    exports: [RouterModule],
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
+    exports: [
+        AddonModFolderIndexComponent,
+    ],
 })
-export class AddonModPageIndexPageModule {}
+export class AddonModFolderComponentsModule {}

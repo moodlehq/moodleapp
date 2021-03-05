@@ -15,10 +15,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { CoreSharedModule } from '@/core/shared.module';
+import { AddonModLessonComponentsModule } from './components/components.module';
+
+import { AddonModLessonIndexPage } from './pages/index/index.page';
+
 const routes: Routes = [
     {
         path: ':courseId/:cmId',
-        loadChildren: () => import('./pages/index/index.module').then( m => m.AddonModLessonIndexPageModule),
+        component: AddonModLessonIndexPage,
     },
     {
         path: 'player/:courseId/:lessonId',
@@ -31,6 +36,13 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CoreSharedModule,
+        AddonModLessonComponentsModule,
+    ],
+    declarations: [
+        AddonModLessonIndexPage,
+    ],
 })
 export class AddonModLessonLazyModule {}

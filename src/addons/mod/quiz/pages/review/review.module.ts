@@ -17,7 +17,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionComponentsModule } from '@features/question/components/components.module';
-import { AddonModQuizReviewPage } from './review';
+import { AddonModQuizReviewPage } from './review.page';
 
 const routes: Routes = [
     {

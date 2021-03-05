@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 
 import { AddonModAssignModule } from './assign/assign.module';
 import { AddonModBookModule } from './book/book.module';
+import { AddonModFolderModule } from './folder/folder.module';
 import { AddonModForumModule } from './forum/forum.module';
 import { AddonModLabelModule } from './label/label.module';
 import { AddonModLessonModule } from './lesson/lesson.module';
@@ -32,6 +33,7 @@ import { AddonModQuizModule } from './quiz/quiz.module';
         AddonModPageModule,
         AddonModQuizModule,
         AddonModLabelModule,
+        AddonModFolderModule,
     ],
     providers: [],
     exports: [],

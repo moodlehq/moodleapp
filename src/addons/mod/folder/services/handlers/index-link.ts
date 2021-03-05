@@ -12,27 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Injectable } from '@angular/core';
+import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
+import { makeSingleton } from '@singletons';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModLessonUserRetakePage } from './user-retake.page';
+/**
+ * Handler to treat links to resource.
+ */
+@Injectable({ providedIn: 'root' })
+export class AddonModFolderIndexLinkHandlerService extends CoreContentLinksModuleIndexHandler {
 
-const routes: Routes = [
-    {
-        path: '',
-        component: AddonModLessonUserRetakePage,
-    },
-];
+    name = 'AddonModFolderLinkHandler';
 
-@NgModule({
-    imports: [
-        RouterModule.forChild(routes),
-        CoreSharedModule,
-    ],
-    declarations: [
-        AddonModLessonUserRetakePage,
-    ],
-    exports: [RouterModule],
-})
-export class AddonModLessonUserRetakePageModule {}
+    constructor() {
+        super('AddonModFolder', 'folder', 'f');
+    }
+
+}
+export const AddonModFolderIndexLinkHandler = makeSingleton(AddonModFolderIndexLinkHandlerService);

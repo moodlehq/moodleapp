@@ -12,27 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Injectable } from '@angular/core';
+import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
+import { makeSingleton } from '@singletons';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModLessonUserRetakePage } from './user-retake.page';
+/**
+ * Handler to treat links to folder list page.
+ */
+@Injectable({ providedIn: 'root' })
+export class AddonModFolderListLinkHandlerService extends CoreContentLinksModuleListHandler {
 
-const routes: Routes = [
-    {
-        path: '',
-        component: AddonModLessonUserRetakePage,
-    },
-];
+    name = 'AddonModFolderListLinkHandler';
 
-@NgModule({
-    imports: [
-        RouterModule.forChild(routes),
-        CoreSharedModule,
-    ],
-    declarations: [
-        AddonModLessonUserRetakePage,
-    ],
-    exports: [RouterModule],
-})
-export class AddonModLessonUserRetakePageModule {}
+    constructor() {
+        super('AddonModFolder', 'folder');
+    }
+
+}
+export const AddonModFolderListLinkHandler = makeSingleton(AddonModFolderListLinkHandlerService);

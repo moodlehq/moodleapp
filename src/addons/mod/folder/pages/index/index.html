@@ -7,16 +7,19 @@
             <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId">
             </core-format-text>
         </ion-title>
+
         <ion-buttons slot="end">
             <!-- The buttons defined by the component will be added in here. -->
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!activityComponent?.loaded" (ionRefresh)="activityComponent?.doRefresh($event)">
+    <ion-refresher slot="fixed" [disabled]="subfolder || !activityComponent?.loaded"
+        (ionRefresh)="activityComponent?.doRefresh($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <addon-mod-page-index [module]="module" [courseId]="courseId" (dataRetrieved)="updateData($event)">
-    </addon-mod-page-index>
+    <addon-mod-folder-index [module]="module" [courseId]="courseId" [folderInstance]="folderInstance" [subfolder]="subfolder"
+        (dataRetrieved)="updateData($event)">
+    </addon-mod-folder-index>
 </ion-content>

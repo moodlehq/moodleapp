@@ -13,11 +13,9 @@
 // limitations under the License.
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-
-import { CoreCourseWSModule } from '@features/course/services/course';
+import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModLessonIndexComponent } from '../../components/index/index';
-import { AddonModLessonLessonWSData } from '../../services/lesson';
 
 /**
  * Page that displays the lesson entry page.
@@ -26,13 +24,10 @@ import { AddonModLessonLessonWSData } from '../../services/lesson';
     selector: 'page-addon-mod-lesson-index',
     templateUrl: 'index.html',
 })
-export class AddonModLessonIndexPage implements OnInit {
+export class AddonModLessonIndexPage extends CoreCourseModuleMainActivityPage<AddonModLessonIndexComponent> implements OnInit {
 
-    @ViewChild(AddonModLessonIndexComponent) lessonComponent?: AddonModLessonIndexComponent;
+    @ViewChild(AddonModLessonIndexComponent) activityComponent?: AddonModLessonIndexComponent;
 
-    title?: string;
-    module?: CoreCourseWSModule;
-    courseId?: number;
     group?: number; // The group to display.
     action?: string; // The "action" to display first.
 
@@ -40,34 +35,9 @@ export class AddonModLessonIndexPage implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.module = CoreNavigator.getRouteParam('module');
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+        super.ngOnInit();
         this.group = CoreNavigator.getRouteNumberParam('group');
         this.action = CoreNavigator.getRouteParam('action');
-        this.title = this.module?.name;
-    }
-
-    /**
-     * Update some data based on the lesson instance.
-     *
-     * @param lesson Lesson instance.
-     */
-    updateData(lesson: AddonModLessonLessonWSData): void {
-        this.title = lesson.name || this.title;
-    }
-
-    /**
-     * User entered the page.
-     */
-    ionViewDidEnter(): void {
-        this.lessonComponent?.ionViewDidEnter();
-    }
-
-    /**
-     * User left the page.
-     */
-    ionViewDidLeave(): void {
-        this.lessonComponent?.ionViewDidLeave();
     }
 
 }

@@ -20,7 +20,7 @@ import { CoreScreen } from '@services/screen';
 import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonModForumComponentsModule } from './components/components.module';
-import { AddonModForumIndexPage } from './pages/index';
+import { AddonModForumIndexPage } from './pages/index/index.page';
 
 const mobileRoutes: Routes = [
     {

@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModLessonPlayerPage } from './player';
+import { AddonModLessonPlayerPage } from './player.page';
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { CanLeaveGuard } from '@guards/can-leave';
 

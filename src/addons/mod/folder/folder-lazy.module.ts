@@ -16,13 +16,19 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModQuizComponentsModule } from '../../components/components.module';
-import { AddonModQuizIndexPage } from './index';
+import { AddonModFolderComponentsModule } from './components/components.module';
+
+import { AddonModFolderIndexPage } from './pages/index/index.page';
 
 const routes: Routes = [
     {
-        path: '',
-        component: AddonModQuizIndexPage,
+        path: ':courseId/:cmId/:hash',
+        component: AddonModFolderIndexPage,
+    },
+    {
+        path: ':courseId/:cmId',
+        redirectTo: ':courseId/:cmId/', // Fake "hash".
+        pathMatch: 'full',
     },
 ];
 
@@ -30,11 +36,10 @@ const routes: Routes = [
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-        AddonModQuizComponentsModule,
+        AddonModFolderComponentsModule,
     ],
     declarations: [
-        AddonModQuizIndexPage,
+        AddonModFolderIndexPage,
     ],
-    exports: [RouterModule],
 })
-export class AddonModQuizIndexPageModule {}
+export class AddonModFolderLazyModule {}
