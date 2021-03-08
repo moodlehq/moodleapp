@@ -75,8 +75,7 @@
                 <core-tag-list [tags]="post.tags"></core-tag-list>
             </ion-label>
         </ion-item>
-        <!-- @todo -->
-        <!-- <core-rating-rate *ngIf="forum && ratingInfo"
+        <core-rating-rate *ngIf="forum && ratingInfo"
             [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id"
             [itemSetId]="discussionId" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale"
             [userId]="post.author.id" (onUpdate)="ratingUpdated()">
@@ -84,7 +83,7 @@
         <core-rating-aggregate *ngIf="forum && ratingInfo"
             [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id"
             [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale">
-        </core-rating-aggregate> -->
+        </core-rating-aggregate>
 
         <ion-item *ngIf="post.id > 0 && post.capabilities.reply && !post.isprivatereply"
             class="ion-no-padding ion-text-end addon-forum-reply-button">

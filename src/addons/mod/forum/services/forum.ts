@@ -17,6 +17,7 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFileEntry } from '@features/fileuploader/services/fileuploader';
+import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreUser } from '@features/user/services/user';
 import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
@@ -553,7 +554,7 @@ export class AddonModForumProvider {
         posts: AddonModForumPost[];
         courseid?: number;
         forumid?: number;
-        ratinginfo?: AddonModForumRatingInfo;
+        ratinginfo?: CoreRatingInfo;
     }> {
         // Convenience function to translate legacy data to new format.
         const translateLegacyPostsFormat = (posts: AddonModForumLegacyPost[]): AddonModForumPost[] => posts.map((post) => {
@@ -1527,40 +1528,6 @@ export type AddonModForumLegacyPost = {
 };
 
 /**
- * Forum rating info.
- */
-export type AddonModForumRatingInfo = {
-    contextid: number; // Context id.
-    component: string; // Context name.
-    ratingarea: string; // Rating area name.
-    canviewall?: boolean; // Whether the user can view all the individual ratings.
-    canviewany?: boolean; // Whether the user can view aggregate of ratings of others.
-    scales?: { // Different scales used information.
-        id: number; // Scale id.
-        courseid?: number; // Course id.
-        name?: string; // Scale name (when a real scale is used).
-        max: number; // Max value for the scale.
-        isnumeric: boolean; // Whether is a numeric scale.
-        items?: { // Scale items. Only returned for not numerical scales.
-            value: number; // Scale value/option id.
-            name: string; // Scale name.
-        }[];
-    }[];
-    ratings?: { // The ratings.
-        itemid: number; // Item id.
-        scaleid?: number; // Scale id.
-        userid?: number; // User who rated id.
-        aggregate?: number; // Aggregated ratings grade.
-        aggregatestr?: string; // Aggregated ratings as string.
-        aggregatelabel?: string; // The aggregation label.
-        count?: number; // Ratings count (used when aggregating).
-        rating?: number; // The rating the user gave.
-        canrate?: boolean; // Whether the user can rate the item.
-        canviewaggregate?: boolean; // Whether the user can view the aggregated grade.
-    }[];
-};
-
-/**
  * Options to pass to get discussions.
  */
 export type AddonModForumGetDiscussionsOptions = CoreCourseCommonModWSOptions & {
@@ -1994,7 +1961,7 @@ export type AddonModForumGetDiscussionPostsWSResponse = {
     posts: AddonModForumWSPost[];
     forumid: number; // The forum id.
     courseid: number; // The forum course id.
-    ratinginfo?: AddonModForumRatingInfo; // Rating information.
+    ratinginfo?: CoreRatingInfo; // Rating information.
     warnings?: CoreWSExternalWarning[];
 };
 
@@ -2012,7 +1979,7 @@ export type AddonModForumGetForumDiscussionPostsWSParams = {
  */
 export type AddonModForumGetForumDiscussionPostsWSResponse = {
     posts: AddonModForumLegacyPost[];
-    ratinginfo?: AddonModForumRatingInfo; // Rating information.
+    ratinginfo?: CoreRatingInfo; // Rating information.
     warnings?: CoreWSExternalWarning[];
 };
 

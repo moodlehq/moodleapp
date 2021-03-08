@@ -50,6 +50,10 @@ import { CoreScreen } from '@services/screen';
 import { CoreArray } from '@singletons/array';
 import { AddonModForumPrefetchHandler } from '../../services/handlers/prefetch';
 import { AddonModForumModuleHandlerService } from '../../services/handlers/module';
+import { CoreRatingProvider } from '@features/rating/services/rating';
+import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
+import { CoreRatingOffline } from '@features/rating/services/rating-offline';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Component that displays a forum entry page.
@@ -88,9 +92,9 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     protected viewDiscObserver?: CoreEventObserver;
     protected changeDiscObserver?: CoreEventObserver;
 
-    hasOfflineRatings?: boolean;
-    protected ratingOfflineObserver: any;
-    protected ratingSyncObserver: any;
+    hasOfflineRatings = false;
+    protected ratingOfflineObserver?: CoreEventObserver;
+    protected ratingSyncObserver?: CoreEventObserver;
 
     constructor(
         route: ActivatedRoute,
@@ -166,7 +170,21 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             }
         });
 
-        // @todo Listen for offline ratings saved and synced.
+        // Listen for offline ratings saved and synced.
+        this.ratingOfflineObserver = CoreEvents.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
+            if (this.forum && data.component == 'mod_forum' && data.ratingArea == 'post' &&
+                    data.contextLevel == ContextLevel.MODULE && data.instanceId == this.forum.cmid) {
+                this.hasOfflineRatings = true;
+            }
+        });
+
+        this.ratingSyncObserver = CoreEvents.on(CoreRatingSyncProvider.SYNCED_EVENT, async (data) => {
+            if (this.forum && data.component == 'mod_forum' && data.ratingArea == 'post' &&
+                    data.contextLevel == ContextLevel.MODULE && data.instanceId == this.forum.cmid) {
+                this.hasOfflineRatings =
+                    await CoreRatingOffline.hasRatings('mod_forum', 'post', ContextLevel.MODULE, this.forum.cmid);
+            }
+        });
     }
 
     async ngAfterViewInit(): Promise<void> {
@@ -224,7 +242,11 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             await Promise.all([
                 this.fetchOfflineDiscussions(),
                 this.fetchDiscussions(refresh),
-                // @todo fetch hasOfflineRatings.
+                CoreRatingOffline.hasRatings('mod_forum', 'post', ContextLevel.MODULE, this.forum!.cmid).then((hasRatings) => {
+                    this.hasOfflineRatings = hasRatings;
+
+                    return;
+                }),
             ]);
         } catch (error) {
             if (refresh) {
