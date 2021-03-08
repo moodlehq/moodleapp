@@ -23,6 +23,9 @@
 @import "./components/rubrics.scss";
 @import "./components/mod-label.scss";
 
+/* Some styles from 3rd party libraries. */
+@import "./bootstrap.scss";
+
 /* Core CSS required for Ionic components to work properly */
 @import "~@ionic/angular/css/core.css";
 
