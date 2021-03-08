@@ -19,3 +19,4 @@ jobs:
     - run: npx tslint -c ionic-migration.json -p tsconfig.json
     - run: npm run test:ci
     - run: npm run build:prod
+    - run: result=$(npx check-es-compat www/*.js 2> /dev/null | grep -v -E "Array\.prototype\.includes|Promise\.prototype\.finally|String\.prototype\.(matchAll|trimRight)|globalThis" | grep -Po "(?<=error).*?(?=\s+ecmascript)" | wc -l); test $result -eq 0

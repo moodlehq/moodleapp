@@ -1,12 +1,15 @@
-# This file is used by the build system to adjust CSS and JS output to support the specified browsers below.
-# For additional information regarding the format and rule options, please see:
-# https://github.com/browserslist/browserslist#queries
+# This file indicates the platforms supported. These targets will only be polyfilled automatically in CSS,
+# JavaScript polyfills have to be configured manually in `src/polyfills.ts`.
+#
+# In order to see which browsers are supported you can run `npx browserslist` (or visit https://browserslist.dev/).
+#
+# Keep in mind that not all versions of all browsers will be displayed, here's all the versions available:
+# https://caniuse.com/ciu/comparison
+#
+# From time to time, you'll want to update the database by running `npx browserslist@latest --update-db`.
+#
+# More info: https://github.com/browserslist/browserslist
 
-# You can see what browsers were selected by your queries by running:
-#   npx browserslist
-
-> 0.5%
-last 2 versions
-Firefox ESR
-not dead
-not IE 9-11 # For IE 9-11 support, remove 'not'.
+Android >= 5
+iOS >= 11
+Chrome >= 61
