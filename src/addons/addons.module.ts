@@ -26,11 +26,13 @@ import { AddonMessagesModule } from './messages/messages.module';
 import { AddonModModule } from './mod/mod.module';
 import { AddonQbehaviourModule } from './qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from './qtype/qtype.module';
+import { AddonBlogModule } from './blog/blog.module';
 
 @NgModule({
     imports: [
         AddonBlockModule,
         AddonBadgesModule,
+        AddonBlogModule,
         AddonCalendarModule,
         AddonMessagesModule,
         AddonPrivateFilesModule,

@@ -13,44 +13,39 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { AddonCalendar } from '../calendar';
-import { makeSingleton } from '@singletons';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
+import { makeSingleton } from '@singletons';
+import { AddonBlog } from '../blog';
 
 /**
  * Handler to inject an option into main menu.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonCalendarMainMenuHandlerService implements CoreMainMenuHandler {
+export class AddonBlogMainMenuHandlerService implements CoreMainMenuHandler {
 
-    static readonly PAGE_NAME = 'calendar';
+    static readonly PAGE_NAME = 'blog';
 
-    name = 'AddonCalendar';
-    priority = 900;
+    name = 'AddonBlog';
+    priority = 450;
 
     /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @return Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return !AddonCalendar.isCalendarDisabledInSite();
+        return AddonBlog.isPluginEnabled();
     }
 
     /**
-     * Returns the data needed to render the handler.
-     *
-     * @return Data needed to render the handler.
+     * @inheritdoc
      */
     getDisplayData(): CoreMainMenuHandlerData {
         return {
-            icon: 'far-calendar',
-            title: 'addon.calendar.calendar',
-            page: AddonCalendar.getMainCalendarPagePath(),
-            class: 'addon-calendar-handler',
+            icon: 'far-newspaper',
+            title: 'addon.blog.siteblogheading',
+            page: AddonBlogMainMenuHandlerService.PAGE_NAME,
+            class: 'addon-blog-handler',
         };
     }
 
 }
-
-export const AddonCalendarMainMenuHandler = makeSingleton(AddonCalendarMainMenuHandlerService);
+export const AddonBlogMainMenuHandler = makeSingleton(AddonBlogMainMenuHandlerService);

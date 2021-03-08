@@ -77,6 +77,10 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
 
         // Calculate distance from edge.
         const content = this.element.nativeElement.closest('ion-content') as IonContent;
+        if (!content) {
+            return;
+        }
+
         const scrollElement = await content.getScrollElement();
 
         const infiniteHeight = this.element.nativeElement.getBoundingClientRect().height;
