@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, AfterViewInit, Input, ElementRef, ContentChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Input, ElementRef, ContentChild } from '@angular/core';
 import { IonInput } from '@ionic/angular';
 
 import { CoreApp } from '@services/app';
@@ -37,7 +37,6 @@ import { CoreUtils } from '@services/utils/utils';
     selector: 'core-show-password',
     templateUrl: 'core-show-password.html',
     styleUrls: ['show-password.scss'],
-    encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
 
