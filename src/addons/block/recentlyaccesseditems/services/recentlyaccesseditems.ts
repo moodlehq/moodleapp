@@ -56,6 +56,7 @@ export class AddonBlockRecentlyAccessedItemsProvider {
             const modicon = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'src');
 
             item.iconUrl = CoreCourse.getModuleIconSrc(item.modname, modicon || undefined);
+            item.iconTitle = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'title');
 
             return item;
         });
@@ -99,4 +100,5 @@ export type AddonBlockRecentlyAccessedItemsItem = {
  */
 export type AddonBlockRecentlyAccessedItemsItemCalculatedData = {
     iconUrl: string; // Icon URL. Calculated by the app.
+    iconTitle?: string | null; // Icon title.
 };

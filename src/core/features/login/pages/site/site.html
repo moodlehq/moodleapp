@@ -27,7 +27,7 @@
                     <h2>{{ 'core.login.siteaddress' | translate }}</h2>
                 </ion-label>
                 <ion-input name="url" type="url" placeholder="{{ 'core.login.siteaddressplaceholder' | translate }}"
-                    formControlName="siteUrl" [core-auto-focus]="showKeyboard && !showScanQR">
+                    formControlName="siteUrl" [autofocus]="showKeyboard && !showScanQR">
                 </ion-input>
             </ion-item>
         </ng-container>
@@ -37,7 +37,7 @@
                     <h2>{{ 'core.login.siteaddress' | translate }}</h2>
                 </ion-label>
                 <ion-input name="url" placeholder="{{ 'core.login.siteaddressplaceholder' | translate }}" formControlName="siteUrl"
-                    [core-auto-focus]="showKeyboard && !showScanQR" (ionChange)="searchSite($event, siteForm.value.siteUrl)">
+                    [autofocus]="showKeyboard && !showScanQR" (ionChange)="searchSite($event, siteForm.value.siteUrl)">
                 </ion-input>
             </ion-item>
 
@@ -49,7 +49,7 @@
                 </ion-item>
                 <ion-item button *ngIf="enteredSiteUrl" (click)="connect($event, enteredSiteUrl.url)"
                     [attr.aria-label]="'core.login.connect' | translate" detail-push class="core-login-entered-site">
-                    <ion-thumbnail slot="start">
+                    <ion-thumbnail slot="start" aria-hidden="true">
                         <ion-icon name="fas-pen"></ion-icon>
                     </ion-thumbnail>
                     <ion-label>
@@ -101,7 +101,8 @@
 
     <ng-container *ngIf="showScanQR && !hasSites && !enteredSiteUrl">
         <div class="ion-text-center ion-padding ion-margin-top">{{ 'core.login.or' | translate }}</div>
-        <ion-button expand="block" color="light" class="ion-margin" lines="none" (click)="showInstructionsAndScanQR()">
+        <ion-button expand="block" color="light" class="ion-margin" lines="none" (click)="showInstructionsAndScanQR()"
+            aria-haspopup="true">
             <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'core.scanqr' | translate }}</ion-label>
         </ion-button>
@@ -109,7 +110,8 @@
 
     <!-- Help. -->
     <ion-list lines="none" class="ion-margin-top">
-        <ion-item button class="ion-text-center ion-text-wrap core-login-need-help" (click)="showHelp()" detail="false">
+        <ion-item button class="ion-text-center ion-text-wrap core-login-need-help" (click)="showHelp()" detail="false"
+            aria-haspopup="true">
             <ion-label>{{ 'core.needhelp' | translate }}</ion-label>
         </ion-item>
     </ion-list>

@@ -98,7 +98,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
     mediaFile?: CoreWSExternalFile; // Media file of the lesson.
     activityLink?: AddonModLessonActivityLink; // Next activity link data.
 
-    protected lessonId!: number; // Lesson ID.
+    protected cmId!: number; // Course module ID.
     protected password?: string; // Lesson password (if any).
     protected forceLeave = false; // If true, don't perform any check when leaving the view.
     protected offline?: boolean; // Whether we are in offline mode.
@@ -118,22 +118,19 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.lessonId = CoreNavigator.getRouteNumberParam('lessonId')!;
+        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
         this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
         this.password = CoreNavigator.getRouteParam('password');
         this.review = !!CoreNavigator.getRouteBooleanParam('review');
         this.currentPage = CoreNavigator.getRouteNumberParam('pageId');
         this.retakeToReview = CoreNavigator.getRouteNumberParam('retake');
 
-        // Block the lesson so it cannot be synced.
-        CoreSync.blockOperation(this.component, this.lessonId);
-
         try {
             // Fetch the Lesson data.
             const success = await this.fetchLessonData();
             if (success) {
                 // Review data loaded or new retake started, remove any retake being finished in sync.
-                AddonModLessonSync.deleteRetakeFinishedInSync(this.lessonId);
+                AddonModLessonSync.deleteRetakeFinishedInSync(this.lesson!.id);
             }
         } finally {
             this.loaded = true;
@@ -144,8 +141,10 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      * Component being destroyed.
      */
     ngOnDestroy(): void {
-        // Unblock the lesson so it can be synced.
-        CoreSync.unblockOperation(this.component, this.lessonId);
+        if (this.lesson) {
+            // Unblock the lesson so it can be synced.
+            CoreSync.unblockOperation(this.component, this.lesson.id);
+        }
     }
 
     /**
@@ -214,7 +213,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
             // Get the possible jumps now.
             this.jumps = await AddonModLesson.getPagesPossibleJumps(this.lesson!.id, {
-                cmId: this.lesson!.coursemodule,
+                cmId: this.cmId,
                 readingStrategy: CoreSitesReadingStrategy.PreferCache,
             });
 
@@ -259,14 +258,18 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      */
     protected async fetchLessonData(): Promise<boolean> {
         try {
-            // Wait for any ongoing sync to finish. We won't sync a lesson while it's being played.
-            await AddonModLessonSync.waitForSync(this.lessonId);
+            this.lesson = await AddonModLesson.getLesson(this.courseId, this.cmId);
 
-            this.lesson = await AddonModLesson.getLessonById(this.courseId, this.lessonId);
             this.title = this.lesson.name; // Temporary title.
 
+            // Block the lesson so it cannot be synced.
+            CoreSync.blockOperation(this.component, this.lesson.id);
+
+            // Wait for any ongoing sync to finish. We won't sync a lesson while it's being played.
+            await AddonModLessonSync.waitForSync(this.lesson.id);
+
             // If lesson has offline data already, use offline mode.
-            this.offline = await AddonModLessonOffline.hasOfflineData(this.lessonId);
+            this.offline = await AddonModLessonOffline.hasOfflineData(this.lesson.id);
 
             if (!this.offline && !CoreApp.isOnline() && AddonModLesson.isLessonOffline(this.lesson) &&
                 !this.review) {
@@ -275,7 +278,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             }
 
             const options = {
-                cmId: this.lesson.coursemodule,
+                cmId: this.cmId,
                 readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
             };
             this.accessInfo = await this.callFunction<AddonModLessonGetAccessInformationWSResponse>(
@@ -306,7 +309,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
                 // Lesson uses password, get the whole lesson object.
                 const options = {
                     password: this.password,
-                    cmId: this.lesson.coursemodule,
+                    cmId: this.cmId,
                     readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
                 };
                 promises.push(this.callFunction<AddonModLessonLessonWSData>(
@@ -322,7 +325,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             if (this.offline) {
                 // Offline mode, get the list of possible jumps to allow navigation.
                 promises.push(AddonModLesson.getPagesPossibleJumps(this.lesson.id, {
-                    cmId: this.lesson.coursemodule,
+                    cmId: this.cmId,
                     readingStrategy: CoreSitesReadingStrategy.PreferCache,
                 }).then((jumpList) => {
                     this.jumps = jumpList;
@@ -344,7 +347,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
             if (this.review && this.retakeToReview && CoreUtils.isWebServiceError(error)) {
                 // The user cannot review the retake. Unmark the retake as being finished in sync.
-                await AddonModLessonSync.deleteRetakeFinishedInSync(this.lessonId);
+                await AddonModLessonSync.deleteRetakeFinishedInSync(this.lesson!.id);
             }
 
             CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
@@ -373,7 +376,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             if (result?.warnings?.length) {
                 // Some data was deleted. Check if the retake has changed.
                 const info = await AddonModLesson.getAccessInformation(this.lesson!.id, {
-                    cmId: this.lesson!.coursemodule,
+                    cmId: this.cmId,
                 });
 
                 if (info.attemptscount != this.accessInfo!.attemptscount) {
@@ -485,7 +488,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
         if (this.lesson!.timelimit && !this.accessInfo!.canmanage) {
             // Get the last lesson timer.
             const timers = await AddonModLesson.getTimers(this.lesson!.id, {
-                cmId: this.lesson!.coursemodule,
+                cmId: this.cmId,
                 readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
             });
 
@@ -510,12 +513,12 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             this.loadingMenu = true;
             const options = {
                 password: this.password,
-                cmId: this.lesson!.coursemodule,
+                cmId: this.cmId,
                 readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
             };
 
             const pages = await this.callFunction<AddonModLessonGetPagesPageWSData[]>(
-                AddonModLesson.getPages.bind(AddonModLesson.instance, this.lessonId, options),
+                AddonModLesson.getPages.bind(AddonModLesson.instance, this.lesson!.id, options),
                 options,
             );
 
@@ -543,7 +546,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             password: this.password,
             review: this.review,
             includeContents: true,
-            cmId: this.lesson!.coursemodule,
+            cmId: this.cmId,
             readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
             accessInfo: this.accessInfo,
             jumps: this.jumps,
@@ -638,15 +641,15 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
                 // Lesson allows offline and the user changed some data in server. Update cached data.
                 const retake = this.accessInfo!.attemptscount;
                 const options = {
-                    cmId: this.lesson!.coursemodule,
+                    cmId: this.cmId,
                     readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
                 };
 
                 // Update in background the list of content pages viewed or question attempts.
                 if (AddonModLesson.isQuestionPage(this.pageData?.page?.type || -1)) {
-                    AddonModLesson.getQuestionsAttemptsOnline(this.lessonId, retake, options);
+                    AddonModLesson.getQuestionsAttemptsOnline(this.lesson!.id, retake, options);
                 } else {
-                    AddonModLesson.getContentPagesViewedOnline(this.lessonId, retake, options);
+                    AddonModLesson.getContentPagesViewedOnline(this.lesson!.id, retake, options);
                 }
             }
 

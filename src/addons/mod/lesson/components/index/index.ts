@@ -424,7 +424,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             pageId = continueLast ? this.accessInfo.lastpageseen : this.accessInfo.firstpageid;
         }
 
-        await CoreNavigator.navigate(`../player/${this.courseId}/${this.lesson.id}`, {
+        await CoreNavigator.navigate('player', {
             params: {
                 pageId: pageId,
                 password: this.password,
@@ -472,7 +472,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        CoreNavigator.navigate(`../player/${this.courseId}/${this.lesson.id}`, {
+        CoreNavigator.navigate('player', {
             params: {
                 pageId: this.retakeToReview.pageid,
                 password: this.password,
@@ -695,7 +695,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * @return Promise resolved when done.
      */
     async openRetake(userId: number): Promise<void> {
-        await CoreNavigator.navigate(`../user-retake/${this.courseId}/${this.lesson!.id}`, {
+        await CoreNavigator.navigate('user-retake', {
             params: {
                 userId,
             },

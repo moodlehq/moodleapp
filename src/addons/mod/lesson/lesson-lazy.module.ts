@@ -26,11 +26,11 @@ const routes: Routes = [
         component: AddonModLessonIndexPage,
     },
     {
-        path: 'player/:courseId/:lessonId',
+        path: ':courseId/:cmId/player',
         loadChildren: () => import('./pages/player/player.module').then( m => m.AddonModLessonPlayerPageModule),
     },
     {
-        path: 'user-retake/:courseId/:lessonId',
+        path: ':courseId/:cmId/user-retake',
         loadChildren: () => import('./pages/user-retake/user-retake.module').then( m => m.AddonModLessonUserRetakePageModule),
     },
 ];

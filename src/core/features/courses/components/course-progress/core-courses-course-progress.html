@@ -11,7 +11,7 @@
             [class.core-course-with-buttons]="courseOptionMenuEnabled || (downloadCourseEnabled && showDownload)"
             [class.core-course-with-spinner]="(downloadCourseEnabled && prefetchCourseData.icon == 'spinner') || showSpinner">
             <p *ngIf="course.categoryname || (course.displayname && course.shortname && course.fullname != course.displayname)"
-                class="core-course-additional-info">
+                class="core-course-additional-info" aria-hidden="true">
                 <span *ngIf="course.categoryname" class="core-course-category">
                     <core-format-text [text]="course.categoryname"></core-format-text>
                 </span>
@@ -24,7 +24,10 @@
                 </span>
             </p>
             <h2>
-                <ion-icon name="fas-star" *ngIf="course.isfavourite"></ion-icon>
+                <ion-icon name="fas-star" *ngIf="course.isfavourite" [attr.aria-label]="'core.courses.favourite' | translate">
+                </ion-icon>
+                <span class="sr-only" *ngIf="course.isfavourite">{{ 'core.courses.aria:favourite' | translate }}</span>
+                <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
                 <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id"></core-format-text>
             </h2>
         </ion-label>
@@ -50,9 +53,10 @@
             </ion-button>
         </div>
     </ion-item>
-    <ion-item *ngIf="showAll && course.progress! >= 0 && course.completionusertracked !== false"
-        lines="none">
-        <ion-label><core-progress-bar [progress]="course.progress"></core-progress-bar></ion-label>
+    <ion-item *ngIf="showAll && course.progress! >= 0 && course.completionusertracked !== false" lines="none">
+        <ion-label>
+            <core-progress-bar [progress]="course.progress"></core-progress-bar>
+        </ion-label>
     </ion-item>
     <ng-content></ng-content>
 </ion-card>

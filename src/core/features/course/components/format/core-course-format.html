@@ -21,8 +21,9 @@
                     [class.core-section-download]="downloadEnabled">
                     <ion-button class="core-button-select button-no-uppercase" (click)="showSectionSelector()"
                         aria-haspopup="true" [attr.aria-expanded]="sectionSelectorExpanded"
-                        id="core-course-section-button" expand="block"> <!-- @todo: attr.aria-label? -->
-                        <ion-icon name="fas-folder" slot="start"></ion-icon>
+                        id="core-course-section-button" expand="block">
+                        <ion-icon name="fas-folder" slot="start" aria-hidden="true"></ion-icon>
+                        <span class="sr-only" *ngIf="selectedSection">{{ 'core.course.sections' | translate }}:</span>
                         <span class="core-button-select-text">
                             <core-format-text *ngIf="selectedSection" [text]="selectedSection.name" contextLevel="course"
                                 [contextInstanceId]="course?.id" [clean]="true" [singleLine]="true">

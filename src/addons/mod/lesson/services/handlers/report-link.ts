@@ -122,11 +122,9 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
      *
      * @param moduleId Module ID.
      * @param userId User ID.
-     * @param courseId Course ID.
      * @param retake Retake to open.
-     * @param groupId Group ID.
      * @param siteId Site ID.
-     * @param navCtrl The NavController to use to navigate.
+     * @param courseId Course ID.
      * @return Promise resolved when done.
      */
     protected async openUserRetake(
@@ -150,7 +148,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
             };
 
             CoreNavigator.navigateToSitePath(
-                AddonModLessonModuleHandlerService.PAGE_NAME + `/user-retake/${courseId}/${module.instance}`,
+                AddonModLessonModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/user-retake`,
                 { params, siteId },
             );
         } catch (error) {

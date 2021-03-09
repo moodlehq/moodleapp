@@ -14,7 +14,7 @@
 
         <!-- Form to edit the file's name. -->
         <ion-input type="text" name="filename" [placeholder]="'core.filename' | translate" autocapitalize="none" autocorrect="off"
-            (click)="$event.stopPropagation()" [core-auto-focus] [(ngModel)]="newFileName" *ngIf="editMode">
+            (click)="$event.stopPropagation()" [autofocus]="true" [(ngModel)]="newFileName" *ngIf="editMode">
         </ion-input>
 
         <div class="buttons" slot="end" *ngIf="manage">

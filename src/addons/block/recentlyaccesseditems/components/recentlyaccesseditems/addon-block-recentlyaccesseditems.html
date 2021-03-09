@@ -6,9 +6,11 @@
         <div *ngFor="let item of items">
             <ion-card>
                 <ion-item class="core-course-module-handler item-media ion-text-wrap" detail="false" (click)="action($event, item)"
-                    [title]="item.name" button>
+                    button>
                     <img slot="start" [src]="item.iconUrl" alt="" role="presentation" *ngIf="item.iconUrl" class="core-module-icon">
                     <ion-label>
+                        <!-- Add the icon title so accessibility tools read it. -->
+                        <span class="sr-only" *ngIf="item.iconTitle">{{ item.iconTitle }}</span>
                         <h2>
                             <core-format-text [text]="item.name" contextLevel="module" [contextInstanceId]="item.cmid"
                                 [courseId]="item.courseid"></core-format-text>
