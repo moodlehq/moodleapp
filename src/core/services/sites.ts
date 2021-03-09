@@ -498,6 +498,9 @@ export class CoreSitesProvider {
                 this.currentSite = candidateSite;
                 // Store session.
                 this.login(siteId);
+            } else if (this.currentSite && this.currentSite.getId() == siteId) {
+                // Current site has just been updated, trigger the event.
+                CoreEvents.trigger(CoreEvents.SITE_UPDATED, info, siteId);
             }
 
             CoreEvents.trigger(CoreEvents.SITE_ADDED, info, siteId);

@@ -118,21 +118,29 @@ export class CoreTextUtilsProvider {
      * @param text Text to add.
      * @return Modified error.
      */
-    addTextToError(error: string | CoreTextErrorObject, text: string): string | CoreTextErrorObject {
+    addTextToError(error: string | CoreError | CoreTextErrorObject | undefined | null, text: string): string | CoreTextErrorObject {
         if (typeof error == 'string') {
             return error + text;
         }
 
-        if (error) {
-            if (typeof error.message == 'string') {
-                error.message += text;
-            } else if (typeof error.error == 'string') {
-                error.error += text;
-            } else if (typeof error.content == 'string') {
-                error.content += text;
-            } else if (typeof error.body == 'string') {
-                error.body += text;
-            }
+        if (error instanceof CoreError) {
+            error.message += text;
+
+            return error;
+        }
+
+        if (!error) {
+            return text;
+        }
+
+        if (typeof error.message == 'string') {
+            error.message += text;
+        } else if (typeof error.error == 'string') {
+            error.error += text;
+        } else if (typeof error.content == 'string') {
+            error.content += text;
+        } else if (typeof error.body == 'string') {
+            error.body += text;
         }
 
         return error;

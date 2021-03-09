@@ -18,8 +18,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreLoginHelper, CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
 import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
@@ -50,7 +49,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     isBrowserSSO = false;
     isFixedUrlSet = false;
     showForgottenPassword = true;
-    showScanQR: boolean;
+    showScanQR = false;
 
     protected siteConfig?: CoreSitePublicConfigResponse;
     protected eventThrown = false;
@@ -60,19 +59,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
     constructor(
         protected fb: FormBuilder,
-    ) {
-
-        const canScanQR = CoreUtils.canScanQR();
-        if (canScanQR) {
-            if (typeof CoreConstants.CONFIG.displayqroncredentialscreen == 'undefined') {
-                this.showScanQR = CoreLoginHelper.isFixedUrlSet();
-            } else {
-                this.showScanQR = !!CoreConstants.CONFIG.displayqroncredentialscreen;
-            }
-        } else {
-            this.showScanQR = false;
-        }
-    }
+    ) {}
 
     /**
      * Initialize the component.
@@ -91,6 +78,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && CoreNavigator.getRouteParam('logoUrl') || undefined;
         this.siteConfig = CoreNavigator.getRouteParam('siteConfig');
         this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
+        this.showScanQR = CoreLoginHelper.displayQRInCredentialsScreen();
 
         this.credForm = this.fb.group({
             username: [CoreNavigator.getRouteParam<string>('username') || '', Validators.required],
@@ -285,37 +273,17 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
     /**
      * Show instructions and scan QR code.
-     */
-    showInstructionsAndScanQR(): void {
-        // Show some instructions first.
-        CoreDomUtils.showAlertWithOptions({
-            header: Translate.instant('core.login.faqwhereisqrcode'),
-            message: Translate.instant(
-                'core.login.faqwhereisqrcodeanswer',
-                { $image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML },
-            ),
-            buttons: [
-                {
-                    text: Translate.instant('core.cancel'),
-                    role: 'cancel',
-                },
-                {
-                    text: Translate.instant('core.next'),
-                    handler: (): void => {
-                        this.scanQR();
-                    },
-                },
-            ],
-        });
-    }
-
-    /**
-     * Scan a QR code and put its text in the URL input.
      *
      * @return Promise resolved when done.
      */
-    async scanQR(): Promise<void> {
-        // @todo Scan for a QR code.
+    async showInstructionsAndScanQR(): Promise<void> {
+        try {
+            await CoreLoginHelper.showScanQRInstructions();
+
+            await CoreLoginHelper.scanQR();
+        } catch {
+            // Ignore errors.
+        }
     }
 
     /**

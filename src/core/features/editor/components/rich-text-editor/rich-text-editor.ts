@@ -1018,9 +1018,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         const text = await CoreUtils.scanQR();
 
         if (text) {
+            this.editorElement?.focus(); // Make sure the editor is focused.
             document.execCommand('insertText', false, text);
         }
-        // this.content.resize(); // Resize content, otherwise the content height becomes 1 for some reason.
     }
 
     /**

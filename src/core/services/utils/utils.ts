@@ -26,9 +26,11 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreWSError } from '@classes/errors/wserror';
-import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, QRScanner, Translate } from '@singletons';
+import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, QRScanner, Translate, ModalController } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
+import { CoreViewerQRScannerComponent } from '@features/viewer/components/qr-scanner/qr-scanner';
+import { CoreCanceledError } from '@classes/errors/cancelederror';
 
 type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -1489,12 +1491,20 @@ export class CoreUtilsProvider {
      * @param title Title of the modal. Defaults to "QR reader".
      * @return Promise resolved with the captured text or undefined if cancelled or error.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    scanQR(title?: string): Promise<string> {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        return new Promise((resolve, reject): void => {
-            // @todo
+    async scanQR(title?: string): Promise<string> {
+        const modal = await ModalController.create({
+            component: CoreViewerQRScannerComponent,
+            cssClass: 'core-modal-fullscreen',
+            componentProps: {
+                title,
+            },
         });
+
+        await modal.present();
+
+        const result = await modal.onWillDismiss();
+
+        return result.data;
     }
 
     /**
@@ -1503,12 +1513,6 @@ export class CoreUtilsProvider {
      * @return Promise resolved with the QR string, rejected if error or cancelled.
      */
     async startScanQR(): Promise<string | undefined> {
-        try {
-            return this.startScanQR();
-        } catch (error) {
-            // do nothing
-        }
-
         if (!CoreApp.isMobile()) {
             return Promise.reject('QRScanner isn\'t available in browser.');
         }
@@ -1580,7 +1584,7 @@ export class CoreUtilsProvider {
         } else if (typeof data != 'undefined') {
             this.qrScanData.deferred.resolve(data as string);
         } else {
-            this.qrScanData.deferred.reject(CoreDomUtils.createCanceledError());
+            this.qrScanData.deferred.reject(new CoreCanceledError());
         }
 
         delete this.qrScanData;

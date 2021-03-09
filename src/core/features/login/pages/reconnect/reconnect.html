@@ -61,6 +61,14 @@
                 </ion-col>
             </ion-row>
         </ion-grid>
+
+        <ng-container *ngIf="showScanQR">
+            <div class="ion-text-center ion-padding">{{ 'core.login.or' | translate }}</div>
+            <ion-button expand="block" color="light" class="ion-margin" lines="none" (click)="showInstructionsAndScanQR()">
+                <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
+                <ion-label>{{ 'core.scanqr' | translate }}</ion-label>
+            </ion-button>
+        </ng-container>
     </form>
 
     <!-- Forgotten password option. -->
