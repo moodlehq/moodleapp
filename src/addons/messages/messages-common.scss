@@ -11,12 +11,12 @@
             }
         }
 
-        .note {
-            position: absolute;
-            top: 0;
-            right: 0;
-            margin:  4px 8px;
-            font-size: 1.3rem;
+        ion-note {
+            ion-badge {
+                margin-left: 6px;
+                margin-right: 6px;
+                vertical-align: middle;
+            }
         }
 
         .addon-message-last-message {
@@ -43,6 +43,11 @@
             margin-top: 10px;
         }
     }
+
+    ion-item-divider ion-badge {
+        margin-left: 16px;
+        margin-right: 16px;
+    }
 }
 
 :host-context([dir=rtl]) {
@@ -51,11 +56,6 @@
         h2  ion-icon {
             margin-right: 2px;
             margin-left: 0;
-        }
-
-        .note {
-            left: 0;
-            right: unset;
         }
 
         .addon-message-last-message-user {

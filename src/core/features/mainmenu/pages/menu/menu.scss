@@ -29,6 +29,7 @@
             height: 100%;
             flex-direction: column;
             ion-tab-button {
+                display: contents;
                 width: 100%;
                 ion-badge {
                     top: calc(50% - 20px);
