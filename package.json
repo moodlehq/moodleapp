@@ -107,6 +107,7 @@
     "cordova-sqlite-storage": "^4.0.0",
     "cordova-support-google-services": "^1.2.1",
     "cordova.plugins.diagnostic": "^5.0.2",
+    "core-js": "^3.9.1",
     "es6-promise-plugin": "^4.2.2",
     "jszip": "^3.5.0",
     "moment": "^2.29.0",
