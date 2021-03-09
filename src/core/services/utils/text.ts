@@ -522,10 +522,10 @@ export class CoreTextUtilsProvider {
     /**
      * Get the error message from an error object.
      *
-     * @param error Error object.
+     * @param error Error.
      * @return Error message, undefined if not found.
      */
-    getErrorMessageFromError(error?: string | CoreError | CoreTextErrorObject): string | undefined {
+    getErrorMessageFromError(error?: string | CoreError | CoreTextErrorObject | null): string | undefined {
         if (typeof error == 'string') {
             return error;
         }
@@ -534,7 +534,11 @@ export class CoreTextUtilsProvider {
             return error.message;
         }
 
-        return error && (error.message || error.error || error.content || error.body);
+        if (!error) {
+            return undefined;
+        }
+
+        return error.message || error.error || error.content || error.body;
     }
 
     /**
