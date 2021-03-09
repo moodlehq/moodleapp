@@ -530,7 +530,6 @@ export type CoreCommentsArea = {
     canpostorhascomments: boolean; // Canpostorhascomments.
 };
 
-
 /**
  * Params of core_comment_add_comments WS.
  */

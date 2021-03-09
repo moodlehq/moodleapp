@@ -25,7 +25,6 @@ import { CoreEvents } from '@singletons/events';
 import { CoreRating } from './rating';
 import { CoreRatingItemSet, CoreRatingOffline } from './rating-offline';
 
-
 /**
  * Service to sync ratings.
  */

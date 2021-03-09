@@ -1732,7 +1732,6 @@ export class CoreDomUtilsProvider {
             cssClass: fullScreen ? 'core-modal-fullscreen' : '',
         });
 
-
         await modal.present();
     }
 

@@ -34,7 +34,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreConstants } from '@/core/constants';
 
-
 /**
  * Page that displays the calendar events.
  */

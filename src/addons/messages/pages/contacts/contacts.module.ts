@@ -45,7 +45,6 @@ const routes: Routes = [
     ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
 ];
 
-
 @NgModule({
     imports: [
         RouterModule.forChild(routes),

@@ -109,7 +109,6 @@ export const SITE_SCHEMA: CoreSiteSchema = {
     ],
 };
 
-
 /**
  * Data stored in DB for badge.
  */

@@ -55,7 +55,6 @@ export class AddonCalendarHelperProvider {
 
     protected eventTypeIcons: string[] = [];
 
-
     /**
      * Returns event icon based on event type.
      *

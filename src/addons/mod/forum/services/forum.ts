@@ -1928,7 +1928,6 @@ export type AddonModForumDeletePostWSParams = {
  */
 export type AddonModForumDeletePostWSResponse = CoreStatusWithWarningsWSResponse;
 
-
 /**
  * Params of mod_forum_get_discussion_post WS.
  */
@@ -1943,7 +1942,6 @@ export type AddonModForumGetDiscussionPostWSResponse = {
     post: AddonModForumWSPost;
     warnings?: CoreWSExternalWarning[];
 };
-
 
 /**
  * Params of mod_forum_get_discussion_posts WS.

@@ -48,7 +48,6 @@ export const enum AddonModBookNavStyle {
 
 const ROOT_CACHE_KEY = 'mmaModBook:';
 
-
 /**
  * Service that provides some features for books.
  */

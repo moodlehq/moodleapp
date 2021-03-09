@@ -208,7 +208,6 @@ export class CoreCourseProvider {
             preSets.emergencyCache = false;
         }
 
-
         const data = await site.read<CoreCourseCompletionActivityStatusWSResponse>(
             'core_completion_get_activities_completion_status',
             params,
@@ -550,7 +549,6 @@ export class CoreCourseProvider {
             // On 3.1 won't get grading info and will return undefined.
             return grade;
         }
-
 
     }
 

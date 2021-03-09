@@ -326,7 +326,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                         return;
                     }));
 
-
                 }
 
                 // Fetch the messages for the first time.
@@ -595,7 +594,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 return false;
             }
         }
-
 
         // Retrieve the conversation. Invalidate data first to get the right unreadcount.
         await AddonMessages.invalidateConversation(conversationId!);
@@ -1190,7 +1188,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 } else {
                     data = await AddonMessages.sendMessage(this.userId!, text);
                 }
-
 
                 this.messagesBeingSent--;
                 let failure = false;

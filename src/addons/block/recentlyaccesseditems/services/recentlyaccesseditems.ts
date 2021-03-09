@@ -77,7 +77,6 @@ export class AddonBlockRecentlyAccessedItemsProvider {
 }
 export const AddonBlockRecentlyAccessedItems = makeSingleton(AddonBlockRecentlyAccessedItemsProvider);
 
-
 /**
  * Result of WS block_recentlyaccesseditems_get_recent_items.
  */

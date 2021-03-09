@@ -28,7 +28,6 @@ import {
     QUESTION_TABLE_NAME,
 } from './database/question';
 
-
 const QUESTION_PREFIX_REGEX = /q\d+:(\d+)_/;
 const STATES: Record<string, CoreQuestionState> = {
     todo: {

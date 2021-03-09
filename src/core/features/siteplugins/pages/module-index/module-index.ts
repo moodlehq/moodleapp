@@ -100,7 +100,6 @@ export class CoreSitePluginsModuleIndexPage implements OnInit, CanLeave {
             return true;
         }
 
-
         const result = await this.content.callComponentFunction('canLeave');
 
         return result === undefined || result === null ? true : !!result;

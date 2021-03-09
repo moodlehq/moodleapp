@@ -29,7 +29,6 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
     name = 'AddonModAssignSubmissionCommentsHandler';
     type = 'comments';
 
-
     /**
      * Whether the plugin can be edited in offline for existing submissions. In general, this should return false if the
      * plugin uses Moodle filters. The reason is that the app only prefetches filtered data, and the user should edit

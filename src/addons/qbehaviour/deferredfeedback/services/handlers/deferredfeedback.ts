@@ -176,7 +176,6 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
 
 export const AddonQbehaviourDeferredFeedbackHandler = makeSingleton(AddonQbehaviourDeferredFeedbackHandlerService);
 
-
 /**
  * Check if a response is complete.
  *

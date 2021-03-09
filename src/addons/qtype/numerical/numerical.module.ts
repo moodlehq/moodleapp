@@ -17,7 +17,6 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { AddonQtypeNumericalHandler } from './services/handlers/numerical';
 
-
 @NgModule({
     declarations: [
     ],

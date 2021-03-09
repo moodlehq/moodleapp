@@ -175,7 +175,6 @@ export class AddonModPageProvider {
 
 export const AddonModPage = makeSingleton(AddonModPageProvider);
 
-
 /**
  * Page returned by mod_page_get_pages_by_courses.
  */

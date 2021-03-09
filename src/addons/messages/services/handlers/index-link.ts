@@ -29,7 +29,6 @@ export class AddonMessagesIndexLinkHandlerService extends CoreContentLinksHandle
     name = 'AddonMessagesIndexLinkHandler';
     pattern = /\/message\/index\.php((?![?&](id|user1|user2)=\d+).)*$/;
 
-
     /**
      * Get the list of actions for a link (url).
      *

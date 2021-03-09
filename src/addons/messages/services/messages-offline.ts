@@ -106,7 +106,6 @@ export class AddonMessagesOfflineProvider {
             ),
         ]);
 
-
         const messageResult:
         AddonMessagesOfflineAnyMessagesFormatted[] =
             this.parseMessages(messages);
@@ -378,7 +377,6 @@ export type AddonMessagesOfflineConversationMessagesDBRecordFormatted =
         pending: boolean; // Will be always true.
         useridfrom?: number; // User Id who send the message, will be likely us.
     };
-
 
 export type AddonMessagesOfflineAnyMessagesFormatted =
     AddonMessagesOfflineConversationMessagesDBRecordFormatted | AddonMessagesOfflineMessagesDBRecordFormatted;

@@ -159,7 +159,6 @@ export class CoreSearchBoxComponent implements OnInit {
         if (!this.formElement) {
             this.formElement = event.detail.target.closest('form');
 
-
             this.formElement?.addEventListener('blur', () => {
                 // Wait the new element to be focused.
                 setTimeout(() => {

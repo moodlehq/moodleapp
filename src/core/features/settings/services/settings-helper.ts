@@ -115,7 +115,6 @@ export class CoreSettingsHelperProvider {
         const promises: Promise<number | void>[] = cleanSchemas.map((name) => site.getDb().deleteRecords(name));
         const filepoolService = CoreFilepool.instance;
 
-
         promises.push(site.deleteFolder().then(() => {
             filepoolService.clearAllPackagesStatus(siteId);
             filepoolService.clearFilepool(siteId);

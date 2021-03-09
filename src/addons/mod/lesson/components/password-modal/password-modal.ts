@@ -19,7 +19,6 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { ModalController } from '@singletons';
 
-
 /**
  * Modal that asks the password for a lesson.
  */

@@ -46,7 +46,6 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     previousItem = '';
     nextItem = '';
 
-
     constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
         super('AddonModImscpIndexComponent', courseContentsPage);
     }

@@ -25,7 +25,6 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CoreCourses } from '../courses';
 
-
 /**
  * Handler for course request push notifications clicks.
  */

@@ -290,7 +290,6 @@ export class AddonModAssignOfflineProvider {
         const promises:
         Promise<AddonModAssignSubmissionsDBRecordFormatted[] | AddonModAssignSubmissionsGradingDBRecordFormatted[]>[] = [];
 
-
         promises.push(this.getAssignSubmissions(assignId, siteId));
         promises.push(this.getAssignSubmissionsGrade(assignId, siteId));
 

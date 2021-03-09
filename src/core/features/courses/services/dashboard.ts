@@ -122,7 +122,6 @@ export class CoreCoursesDashboardProvider {
 
 export const CoreCoursesDashboard = makeSingleton(CoreCoursesDashboardProvider);
 
-
 /**
  * Params of core_block_get_dashboard_blocks WS.
  */

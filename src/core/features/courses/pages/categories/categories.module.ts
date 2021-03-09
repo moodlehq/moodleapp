@@ -20,7 +20,6 @@ import { CoreCoursesComponentsModule } from '../../components/components.module'
 
 import { CoreCoursesCategoriesPage } from './categories';
 
-
 const routes: Routes = [
     {
         path: '',

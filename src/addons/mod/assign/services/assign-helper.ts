@@ -212,7 +212,6 @@ export class AddonModAssignHelperProvider {
             return false;
         }
 
-
         // If all the plugins were empty (or there were no plugins), we consider the submission to be empty.
         return true;
     }
@@ -708,7 +707,6 @@ export class AddonModAssignHelperProvider {
 
 }
 export const AddonModAssignHelper = makeSingleton(AddonModAssignHelperProvider);
-
 
 /**
  * Assign submission with some calculated data.

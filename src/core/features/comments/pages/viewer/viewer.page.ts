@@ -518,7 +518,6 @@ export type CoreCommentsDataWithUser = CoreCommentsData & {
     deleted?: boolean;
 };
 
-
 export type CoreCommentsOfflineWithUser = CoreCommentsDBRecord & {
     profileimageurl?: string;
     fullname?: string;

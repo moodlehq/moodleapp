@@ -94,7 +94,6 @@ export class CoreSettingsGeneralPage {
                 selected: value === this.selectedZoomLevel,
             }));
 
-
         this.richTextEditor = await CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
 
         this.debugDisplay = await CoreConfig.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false);

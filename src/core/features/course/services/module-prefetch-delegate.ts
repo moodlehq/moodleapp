@@ -508,7 +508,6 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             return downloadedSize;
         }
 
-
         const cachedSize = await site.getComponentCacheSize(handler.component, module.id);
 
         return cachedSize + downloadedSize;

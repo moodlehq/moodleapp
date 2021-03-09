@@ -18,7 +18,6 @@ import { CoreQuestionBehaviourDelegate } from '@features/question/services/behav
 import { CoreQuestionBehaviourButton, CoreQuestionQuestion } from '@features/question/services/question-helper';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
 
-
 /**
  * Component that displays a question behaviour created using a site plugin.
  */

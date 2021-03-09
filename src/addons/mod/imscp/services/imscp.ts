@@ -343,7 +343,6 @@ export class AddonModImscpProvider {
 }
 export const AddonModImscp = makeSingleton(AddonModImscpProvider);
 
-
 /**
  * Params of mod_imscp_view_imscp WS.
  */
@@ -386,7 +385,6 @@ type AddonModImscpGetImscpsByCoursesWSResponse = {
     imscps: AddonModImscpImscp[];
     warnings?: CoreWSExternalWarning[];
 };
-
 
 export type AddonModImscpTocItem = {
     href: string;

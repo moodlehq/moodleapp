@@ -29,7 +29,6 @@ import { AddonCalendarFilter, AddonCalendarEventIcons } from '../../services/cal
 })
 export class AddonCalendarFilterPopoverComponent implements OnInit {
 
-
     @Input() filter: AddonCalendarFilter = {
         filtered: false,
         courseId: -1,
@@ -53,7 +52,6 @@ export class AddonCalendarFilterPopoverComponent implements OnInit {
             this.typeIcons[value] = AddonCalendarEventIcons[name];
             this.types.push(value);
         });
-
 
     }
 

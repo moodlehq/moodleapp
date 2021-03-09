@@ -139,7 +139,6 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         this.fetchData();
     }
 
-
     /**
      * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
      */

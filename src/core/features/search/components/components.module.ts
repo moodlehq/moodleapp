@@ -17,7 +17,6 @@ import { NgModule } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchBoxComponent } from './search-box/search-box';
 
-
 @NgModule({
     declarations: [
         CoreSearchBoxComponent,

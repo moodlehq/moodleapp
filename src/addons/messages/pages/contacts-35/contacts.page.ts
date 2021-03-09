@@ -62,7 +62,6 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
     searchString = '';
 
-
     constructor(
         protected route: ActivatedRoute,
     ) {

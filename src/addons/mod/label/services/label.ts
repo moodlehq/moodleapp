@@ -165,7 +165,6 @@ export class AddonModLabelProvider {
 }
 export const AddonModLabel = makeSingleton(AddonModLabelProvider);
 
-
 /**
  * Label returned by mod_label_get_labels_by_courses.
  */

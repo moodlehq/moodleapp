@@ -146,7 +146,6 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
             <CoreCourseManualCompletionDBRecord[]> [],
         );
 
-
         if (!completions || !completions.length) {
             // Nothing to sync, set sync time.
             await this.setSyncTime(courseId, siteId);
