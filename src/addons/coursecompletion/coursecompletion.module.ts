@@ -12,33 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-// @todo import { AddonCourseCompletionCourseOptionHandler } from './services/course-option-handler';
-// @todo import { AddonCourseCompletionUserHandler } from './services/user-handler';
-// @todo import { AddonCourseCompletionComponentsModule } from './components/components.module';
-// @todo import { CoreCourseOptionsDelegate } from '@features/course/services/options-delegate';
-// @todo import { CoreUserDelegate } from '@features/user/services/user-delegate';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { Routes } from '@angular/router';
+import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
+import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreUserDelegate } from '@features/user/services/user-delegate';
+import { AddonCourseCompletionProvider } from './services/coursecompletion';
+import { AddonCourseCompletionCourseOptionHandler } from './services/handlers/course-option';
+import { AddonCourseCompletionUserHandler } from './services/handlers/user';
+
+export const ADDON_COURSECOMPLETION_SERVICES: Type<unknown>[] = [
+    AddonCourseCompletionProvider,
+];
+
+const routes: Routes = [
+    {
+        path: 'coursecompletion',
+        loadChildren: () => import('./coursecompletion-lazy.module').then(m => m.AddonCourseCompletionLazyModule),
+    },
+];
 
 @NgModule({
     imports: [
-        // AddonCourseCompletionComponentsModule,
+        CoreMainMenuTabRoutingModule.forChild(routes),
+        CoreCourseIndexRoutingModule.forChild({ children: routes }),
     ],
     providers: [
-        // AddonCourseCompletionCourseOptionHandler,
-        // AddonCourseCompletionUserHandler,
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            deps: [],
+            useFactory: () => async () => {
+                CoreUserDelegate.registerHandler(AddonCourseCompletionUserHandler.instance);
+                CoreCourseOptionsDelegate.registerHandler(AddonCourseCompletionCourseOptionHandler.instance);
+            },
+        },
     ],
 })
-export class AddonCourseCompletionModule {
-
-    /* @todo constructor(
-        courseOptionsDelegate: CoreCourseOptionsDelegate,
-        courseOptionHandler: AddonCourseCompletionCourseOptionHandler,
-        userDelegate: CoreUserDelegate,
-        userHandler: AddonCourseCompletionUserHandler,
-    ) {
-        // Register handlers.
-        courseOptionsDelegate.registerHandler(courseOptionHandler);
-        userDelegate.registerHandler(userHandler);
-    }*/
-
-}
+export class AddonCourseCompletionModule {}

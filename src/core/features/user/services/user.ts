@@ -820,8 +820,21 @@ export class CoreUserProvider {
     }
 
 }
-
 export const CoreUser = makeSingleton(CoreUserProvider);
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CoreUserProvider.PROFILE_REFRESHED]: CoreUserProfileRefreshedData;
+        [CoreUserProvider.PROFILE_PICTURE_UPDATED]: CoreUserProfilePictureUpdatedData;
+    }
+
+}
 
 /**
  * Data passed to PROFILE_REFRESHED event.

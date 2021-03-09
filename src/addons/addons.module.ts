@@ -20,6 +20,7 @@ import { AddonFilterModule } from './filter/filter.module';
 import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield.module';
 import { AddonBadgesModule } from './badges/badges.module';
 import { AddonCalendarModule } from './calendar/calendar.module';
+import { AddonCourseCompletionModule } from './coursecompletion/coursecompletion.module';
 import { AddonNotificationsModule } from './notifications/notifications.module';
 import { AddonMessageOutputModule } from './messageoutput/messageoutput.module';
 import { AddonMessagesModule } from './messages/messages.module';
@@ -35,6 +36,7 @@ import { AddonRemoteThemesModule } from './remotethemes/remotethemes.module';
         AddonBadgesModule,
         AddonBlogModule,
         AddonCalendarModule,
+        AddonCourseCompletionModule,
         AddonMessagesModule,
         AddonPrivateFilesModule,
         AddonFilterModule,

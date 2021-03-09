@@ -117,6 +117,7 @@ import { CoreSitePluginsAssignSubmissionComponent } from '@features/siteplugins/
 // Import addon providers. Do not import database module because it causes circular dependencies.
 import { ADDON_BADGES_SERVICES } from '@addons/badges/badges.module';
 import { ADDON_CALENDAR_SERVICES } from '@addons/calendar/calendar.module';
+import { ADDON_COURSECOMPLETION_SERVICES } from '@addons/coursecompletion/coursecompletion.module';
 // @todo import { ADDON_COMPETENCY_SERVICES } from '@addons/competency/competency.module';
 import { ADDON_MESSAGEOUTPUT_SERVICES } from '@addons/messageoutput/messageoutput.module';
 import { ADDON_MESSAGES_SERVICES } from '@addons/messages/messages.module';
@@ -281,6 +282,7 @@ export class CoreCompileProvider {
             ...extraProviders,
             ...ADDON_BADGES_SERVICES,
             ...ADDON_CALENDAR_SERVICES,
+            ...ADDON_COURSECOMPLETION_SERVICES,
             // @todo ...ADDON_COMPETENCY_SERVICES,
             ...ADDON_MESSAGEOUTPUT_SERVICES,
             ...ADDON_MESSAGES_SERVICES,
