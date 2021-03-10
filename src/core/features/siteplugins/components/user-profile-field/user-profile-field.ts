@@ -20,7 +20,6 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
 
-
 /**
  * Component that displays a user profile field created using a site plugin.
  */

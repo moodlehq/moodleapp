@@ -46,7 +46,6 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, CanLeave {
     protected blindMarking = false; // Whether it uses blind marking.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
 
-
     constructor(
         protected route: ActivatedRoute,
     ) { }

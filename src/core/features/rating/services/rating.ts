@@ -513,7 +513,6 @@ export type CoreRatingItemRating = {
     timemodified: number; // Time modified (timestamp).
 };
 
-
 /**
  * Params of core_rating_get_item_ratings WS.
  */
@@ -534,7 +533,6 @@ export type CoreRatingGetItemRatingsWSResponse = {
     ratings: CoreRatingItemRating[];
     warnings?: CoreWSExternalWarning[];
 };
-
 
 /**
  * Params of core_rating_add_rating WS.

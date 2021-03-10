@@ -123,10 +123,6 @@
                 <ion-icon *ngIf="conversation.ismuted" name="fas-volume-mute"
                     [title]="'addon.messages.mutedconversation' | translate"></ion-icon>
             </h2>
-            <ion-note *ngIf="conversation.lastmessagedate > 0 || conversation.unreadcount">
-                <ion-badge *ngIf="conversation.unreadcount > 0">{{ conversation.unreadcount }}</ion-badge>
-                <span *ngIf="conversation.lastmessagedate > 0">{{conversation.lastmessagedate | coreDateDayOrTime}}</span>
-            </ion-note>
             <p *ngIf="conversation.subname"><core-format-text [text]="conversation.subname" contextLevel="system"
                 [contextInstanceId]="0"></core-format-text></p>
             <p class="addon-message-last-message">
@@ -139,5 +135,9 @@
                     class="addon-message-last-message-text" contextLevel="system" [contextInstanceId]="0"></core-format-text>
             </p>
         </ion-label>
+        <ion-note *ngIf="conversation.lastmessagedate > 0 || conversation.unreadcount" slot="end">
+            <ion-badge *ngIf="conversation.unreadcount > 0">{{ conversation.unreadcount }}</ion-badge>
+            <span *ngIf="conversation.lastmessagedate > 0">{{conversation.lastmessagedate | coreDateDayOrTime}}</span>
+        </ion-note>
     </ion-item>
 </ng-template>

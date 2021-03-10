@@ -58,7 +58,6 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
     protected contactRequestsCountObserver: CoreEventObserver;
     protected memberInfoObserver: CoreEventObserver;
 
-
     constructor() {
 
         this.siteId = CoreSites.getCurrentSiteId();

@@ -251,7 +251,6 @@ export class AddonModResourceModuleHandlerService implements CoreCourseModuleHan
 }
 export const AddonModResourceModuleHandler = makeSingleton(AddonModResourceModuleHandlerService);
 
-
 type AddonResourceHandlerData = {
     icon: string;
     extra: string;

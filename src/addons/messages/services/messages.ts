@@ -1413,7 +1413,6 @@ export class AddonMessagesProvider {
         return AddonMessagesMainMenuHandlerService.PAGE_NAME + ( enabled ? '/group-conversations' : '');
     }
 
-
     /**
      * Get messages according to the params.
      *
@@ -1748,7 +1747,6 @@ export class AddonMessagesProvider {
     async invalidateConversationBetweenUsers(otherUserId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
-
 
         await site.invalidateWsCacheForKey(this.getCacheKeyForConversationBetweenUsers(userId, otherUserId));
     }
@@ -3065,7 +3063,6 @@ export type AddonMessagesConversationMessageFormatted =
         showTail?: boolean; // Calculated in the app. Whether to show a "tail" in the message.
     };
 
-
 /**
  * Data returned by core_message_get_user_message_preferences WS.
  */
@@ -3558,7 +3555,6 @@ export type AddonMessagesGetUserContactsWSResponse = {
         timecreated: number; // The timecreated timestamp for the conversation.
     }[];
 }[];
-
 
 /**
  * Params of core_message_get_contact_requests WS.

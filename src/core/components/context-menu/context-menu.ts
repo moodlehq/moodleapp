@@ -44,7 +44,6 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     protected instanceId: string;
     protected parentContextMenu?: CoreContextMenuComponent;
 
-
     constructor(
         elementRef: ElementRef,
     ) {

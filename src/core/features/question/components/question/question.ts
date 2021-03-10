@@ -128,7 +128,6 @@ export class CoreQuestionComponent implements OnInit {
             return;
         }
 
-
         // Load local answers if offline is enabled.
         if (this.offlineEnabled && this.component && this.attemptId) {
             await CoreQuestionHelper.loadLocalAnswers(this.question, this.component, this.attemptId);

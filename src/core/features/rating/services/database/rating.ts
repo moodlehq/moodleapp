@@ -76,7 +76,6 @@ export const RATINGS_SITE_SCHEMA: CoreSiteSchema = {
     ],
 };
 
-
 /**
  * Primary data to identify a stored rating.
  */

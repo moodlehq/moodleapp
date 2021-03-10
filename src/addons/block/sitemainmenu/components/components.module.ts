@@ -19,7 +19,6 @@ import { CoreCourseComponentsModule } from '@features/course/components/componen
 
 import { AddonBlockSiteMainMenuComponent } from './sitemainmenu/sitemainmenu';
 
-
 @NgModule({
     declarations: [
         AddonBlockSiteMainMenuComponent,

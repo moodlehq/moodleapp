@@ -128,7 +128,6 @@ export class CoreAttachmentsComponent implements OnInit {
      */
     async delete(index: number, askConfirm?: boolean): Promise<void> {
 
-
         if (askConfirm) {
             try {
                 await CoreDomUtils.showDeleteConfirm('core.confirmdeletefile');

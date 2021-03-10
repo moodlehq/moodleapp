@@ -871,7 +871,6 @@ export class AddonQtypeDdMarkerQuestion {
 
 }
 
-
 /**
  * Encapsulates operations on dd area.
  */

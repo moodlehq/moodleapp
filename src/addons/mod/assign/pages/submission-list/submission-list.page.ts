@@ -346,7 +346,6 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
 
 }
 
-
 /**
  * Helper class to manage submissions.
  */

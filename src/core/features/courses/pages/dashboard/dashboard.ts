@@ -138,7 +138,6 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
         });
     }
 
-
     /**
      * Toggle download enabled.
      */
@@ -178,6 +177,5 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.updateSiteObserver?.off();
     }
-
 
 }

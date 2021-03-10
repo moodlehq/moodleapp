@@ -322,7 +322,6 @@ export type CoreCommentsSyncResult = {
     updated: boolean; // Whether some data was sent to the server or offline data was updated.
 };
 
-
 /**
  * Data passed to AUTO_SYNCED event.
  */

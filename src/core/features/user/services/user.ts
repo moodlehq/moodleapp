@@ -730,7 +730,6 @@ export class CoreUserProvider {
             return CoreUserOffline.setPreference(name, value);
         }
 
-
         try {
             // Update the preference in the site.
             const preferences = [

@@ -124,7 +124,6 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
             this.refreshData();
         });
 
-
         // If a message push notification is received, refresh the view.
         this.pushObserver = CorePushNotificationsDelegate.on<CorePushNotificationsNotificationBasicData>('receive')
             .subscribe((notification) => {

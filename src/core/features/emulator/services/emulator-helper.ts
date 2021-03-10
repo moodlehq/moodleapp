@@ -51,7 +51,6 @@ export class CoreEmulatorHelperProvider {
             return;
         }));
 
-
         return CoreUtils.allPromises(promises);
     }
 

@@ -1104,7 +1104,6 @@ export type CoreWSDate = {
     timestamp: number; // Timestamp.
 };
 
-
 /**
  * PreSets accepted by the WS call.
  */

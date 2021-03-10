@@ -1509,7 +1509,6 @@ export class CoreUtilsProvider {
             // do nothing
         }
 
-
         if (!CoreApp.isMobile()) {
             return Promise.reject('QRScanner isn\'t available in browser.');
         }

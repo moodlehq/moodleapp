@@ -204,7 +204,7 @@ const appConfig = {
         'no-fallthrough': 'off',
         'no-invalid-this': 'error',
         'no-irregular-whitespace': 'error',
-        'no-multiple-empty-lines': 'error',
+        'no-multiple-empty-lines': ['error', { "max": 1 }],
         'no-new-wrappers': 'error',
         'no-sequences': 'error',
         'no-trailing-spaces': 'error',

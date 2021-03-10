@@ -41,7 +41,6 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
         super('AddonBlockRecentlyAccessedItemsComponent');
     }
 
-
     /**
      * Perform the invalidate content function.
      *

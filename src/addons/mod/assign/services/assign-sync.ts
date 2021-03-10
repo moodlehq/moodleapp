@@ -178,7 +178,6 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
-
         this.logger.debug('Try to sync assign ' + assignId + ' in site ' + siteId);
 
         const syncPromise = this.performSyncAssign(assignId, siteId);
@@ -552,7 +551,6 @@ export type AddonModAssignSyncResult = {
     courseId?: number; // Course the assign belongs to (if known).
     gradesBlocked: number[]; // Whether some grade couldn't be synced because it was blocked. UserId fields of the blocked grade.
 };
-
 
 /**
  * Data passed to AUTO_SYNCED event.

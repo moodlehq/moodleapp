@@ -93,7 +93,6 @@ export class CoreSitePluginsProvider {
             appplatform: 'browser',
         };
 
-
         if (args.appismobile) {
             defaultArgs.appplatform = CoreApp.isIOS() ? 'ios' : 'android';
         }
@@ -581,7 +580,6 @@ export class CoreSitePluginsProvider {
             }
 
             const result = await this.getContent(component, method, args, preSets);
-
 
             // Prefetch the files in the content.
             if (result.files.length) {

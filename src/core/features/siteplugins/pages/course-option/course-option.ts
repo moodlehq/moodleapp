@@ -123,7 +123,6 @@ export class CoreSitePluginsCourseOptionPage implements OnInit {
             return true;
         }
 
-
         const result = await this.content.callComponentFunction('canLeave');
 
         return result === undefined || result === null ? true : !!result;

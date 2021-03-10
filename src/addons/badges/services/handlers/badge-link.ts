@@ -20,7 +20,6 @@ import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonBadges } from '../badges';
 
-
 /**
  * Handler to treat links to user participants page.
  */

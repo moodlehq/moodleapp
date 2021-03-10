@@ -36,7 +36,6 @@ export abstract class CoreUserProfileFieldBaseComponent implements OnInit {
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the field belongs to (if any). It can be used to improve performance with filters.
 
-
     control?: FormControl;
     modelName = '';
     value?: string;

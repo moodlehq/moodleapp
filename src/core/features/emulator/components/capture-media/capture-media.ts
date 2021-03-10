@@ -370,7 +370,6 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             const height = this.streamVideo?.nativeElement.videoHeight;
             const loadingModal = await CoreDomUtils.showModalLoading();
 
-
             this.imgCanvas.nativeElement.width = width;
             this.imgCanvas.nativeElement.height = height;
             this.imgCanvas.nativeElement.getContext('2d').drawImage(this.streamVideo?.nativeElement, 0, 0, width, height);

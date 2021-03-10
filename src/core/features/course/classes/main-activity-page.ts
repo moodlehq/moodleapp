@@ -32,7 +32,6 @@ export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseMod
     module!: CoreCourseAnyModuleData;
     courseId!: number;
 
-
     /**
      * Component being initialized.
      */

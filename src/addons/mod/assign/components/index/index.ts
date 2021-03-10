@@ -275,7 +275,6 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             cmId: this.module!.id,
         });
 
-
         this.summary = submissionStatus.gradingsummary;
         if (!this.summary) {
             this.needsGradingAvalaible = false;

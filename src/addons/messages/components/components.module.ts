@@ -18,7 +18,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonMessagesConversationInfoComponent } from './conversation-info/conversation-info';
 
-
 @NgModule({
     declarations: [
         AddonMessagesConversationInfoComponent,

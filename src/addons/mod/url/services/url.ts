@@ -258,7 +258,6 @@ type AddonModUrlViewUrlWSParams = {
     urlid: number; // Url instance id.
 };
 
-
 /**
  * URL returnd by mod_url_get_urls_by_courses.
  */

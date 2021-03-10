@@ -266,7 +266,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
                     // Ignore errors.
                 });
 
-
         if (this.showAll) {
             // Remove site home from the list of courses.
             const siteHomeId = CoreSites.getCurrentSiteHomeId();
@@ -284,7 +283,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         } else {
             await Promise.all((courses as CoreEnrolledCourseData[]).map(courseFillterFullname));
         }
-
 
         // Sort courses by name.
         this.courses = courses.sort((a, b) => {

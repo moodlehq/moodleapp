@@ -8,7 +8,7 @@
             [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="blog"
-            [priority]="750" content="{{'addon.blog.blog' | translate}}" [iconAction]="'fa-newspaper-o'" (action)="gotoBlog()">
+            [priority]="750" content="{{'addon.blog.blog' | translate}}" [iconAction]="'far-newspaper'" (action)="gotoBlog()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="discussions.loaded && !(hasOffline || hasOfflineRatings) && isOnline"
             [priority]="700" [content]="'addon.mod_forum.refreshdiscussions' | translate" [iconAction]="refreshIcon" [closeOnClick]="false"

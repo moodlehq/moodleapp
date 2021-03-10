@@ -761,7 +761,6 @@ export class AddonModAssignProvider {
         promises.push(this.invalidateAssignmentData(courseId, siteId));
         promises.push(CoreGrades.invalidateAllCourseGradesData(courseId));
 
-
         await Promise.all(promises);
     }
 
@@ -1562,7 +1561,6 @@ export type AddonModAssignSubmissionFeedback = {
     plugins?: AddonModAssignPlugin[]; // Plugins info.
 };
 
-
 /**
  * Params of mod_assign_list_participants WS.
  */
@@ -1692,7 +1690,6 @@ type AddonModAssignGetSubmissionStatusWSParams = {
     groupid?: number; // Filter by users in group (used for generating the grading summary). Empty or 0 for all groups information.
 };
 
-
 /**
  * Result of WS mod_assign_get_submission_status.
  */
@@ -1811,7 +1808,6 @@ type AddonModAssignSubmitGradingFormWSParams = {
     userid: number; // The user id the submission belongs to.
     jsonformdata: string; // The data from the grading form, encoded as a json array.
 };
-
 
 /**
  * Params of mod_assign_save_grade WS.

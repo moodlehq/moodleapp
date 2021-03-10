@@ -449,7 +449,6 @@ export type CoreGroup = {
     courseid?: number; // Coure Id.
 };
 
-
 /**
  * Group info for an activity.
  */

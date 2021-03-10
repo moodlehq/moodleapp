@@ -478,7 +478,6 @@ export class CoreCronDelegateService {
 
 export const CoreCronDelegate = makeSingleton(CoreCronDelegateService);
 
-
 /**
  * Interface that all cron handlers must implement.
  */

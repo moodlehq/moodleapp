@@ -722,7 +722,6 @@ export class AddonCalendarProvider {
         const originalEvent = record as AddonCalendarGetEventsEvent;
         const recordAsRecord = record as AddonCalendarEventDBRecord;
 
-
         // Calculate data to match the new WS.
         eventConverted.descriptionformat = originalEvent.format;
         eventConverted.iscourseevent = originalEvent.eventtype == AddonCalendarEventType.COURSE;
@@ -946,7 +945,6 @@ export class AddonCalendarProvider {
         promises.push(CoreCourses.getUserCourses(false, siteId).then((courses) => {
             params.events!.courseids = courses.map((course) => course.id);
             params.events!.courseids.push(site.getSiteHomeId()); // Add front page.
-
 
             return;
         }));
@@ -1941,7 +1939,6 @@ export type AddonCalendarCalendarDay = {
     rarrow: string; // Rarrow.
 };
 
-
 /**
  * Params of core_calendar_get_calendar_monthly_view WS.
  */
@@ -2035,7 +2032,6 @@ export type AddonCalendarDayName = {
     fullname: string; // Fullname.
 };
 
-
 /**
  * Params of core_calendar_get_calendar_upcoming_view WS.
  */
@@ -2089,7 +2085,6 @@ export type AddonCalendarGetAllowedEventTypesWSResponse = {
     allowedeventtypes: AddonCalendarEventType[];
     warnings?: CoreWSExternalWarning[];
 };
-
 
 /**
  * Params of core_calendar_get_calendar_events WS.
@@ -2186,7 +2181,6 @@ type AddonCalendarGetCalendarDayViewWSParams = {
     courseid?: number; // Course being viewed.
     categoryid?: number; // Category being viewed.
 };
-
 
 /**
  * Params of core_calendar_submit_create_update_form WS.

@@ -1190,7 +1190,6 @@ type AddonModAssignSubmissionFeedbackFormatted = AddonModAssignSubmissionFeedbac
     advancedgrade?: boolean; // Calculated in the app. Whether it uses advanced grading.
 };
 
-
 type AddonModAssignSubmissionGrade = {
     method: string;
     grade?: number | string;

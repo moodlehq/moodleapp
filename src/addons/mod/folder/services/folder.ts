@@ -160,7 +160,6 @@ export class AddonModFolderProvider {
 }
 export const AddonModFolder = makeSingleton(AddonModFolderProvider);
 
-
 /**
  * Folder returned by mod_folder_get_folders_by_courses.
  */

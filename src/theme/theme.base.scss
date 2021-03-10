@@ -136,6 +136,11 @@ ion-item-divider {
         opacity: 0.25;
         padding-inline-end: 16px;
     }
+
+    &.ios {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
 }
 
 // Ionic list.
@@ -371,8 +376,13 @@ ion-select.core-button-select,
         margin-inline-end: auto;
     }
 
+    &.ion-activated {
+        --color: var(--ion-color-primary-contrast);
+    }
+
 }
 ion-button.core-button-select {
+    --border-radius: 0;
     &::part(native) {
         text-transform: none;
         font-weight: 400;

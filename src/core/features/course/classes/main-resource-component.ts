@@ -13,9 +13,13 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
+import { AddonBlog } from '@addons/blog/services/blog';
+import { AddonBlogMainMenuHandlerService } from '@addons/blog/services/handlers/mainmenu';
 import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, Optional, Inject } from '@angular/core';
+import { Params } from '@angular/router';
 import { IonRefresher } from '@ionic/angular';
 import { CoreApp } from '@services/app';
+import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 
@@ -90,7 +94,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.componentId = this.module?.id;
         this.externalUrl = this.module?.url;
         this.courseId = this.courseId || this.module?.course;
-        // @todo this.blog = await this.blogProvider.isPluginEnabled();
+        this.blog = await AddonBlog.isPluginEnabled();
     }
 
     /**
@@ -223,8 +227,9 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * Go to blog posts.
      */
     async gotoBlog(): Promise<void> {
-        // const params: Params = { cmId: this.module?.id };
-        // @todo return CoreNavigator.navigateToSitePath('AddonBlogEntriesPage', { params });
+        const params: Params = { cmId: this.module?.id };
+
+        CoreNavigator.navigateToSitePath(AddonBlogMainMenuHandlerService.PAGE_NAME, { params });
     }
 
     /**

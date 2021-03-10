@@ -49,7 +49,6 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      */
     getComponent?(plugin: AddonModAssignPlugin): Type<unknown> | undefined | Promise<Type<unknown> | undefined>;
 
-
     /**
      * Return the draft saved data of the feedback plugin.
      *

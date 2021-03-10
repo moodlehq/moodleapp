@@ -13,9 +13,7 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
+import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonNotificationsActionsComponent } from './actions/actions';
 
@@ -24,9 +22,7 @@ import { AddonNotificationsActionsComponent } from './actions/actions';
         AddonNotificationsActionsComponent,
     ],
     imports: [
-        CommonModule,
-        IonicModule,
-        TranslateModule.forChild(),
+        CoreSharedModule,
     ],
     exports: [
         AddonNotificationsActionsComponent,

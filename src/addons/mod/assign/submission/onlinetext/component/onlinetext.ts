@@ -22,7 +22,6 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignSubmissionOnlineTextPluginData } from '../services/handler';
 
-
 /**
  * Component to render an onlinetext submission plugin.
  */
@@ -73,7 +72,6 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
                 // No offline data found, return online text.
                 this.text = AddonModAssign.getSubmissionPluginText(this.plugin);
             }
-
 
             // Set the text.
             if (!this.edit) {

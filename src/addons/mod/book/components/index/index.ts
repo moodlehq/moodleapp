@@ -100,7 +100,6 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             // @todo leaveAnimation: 'core-modal-lateral-transition',
         });
 
-
         await modal.present();
 
         const result = await modal.onDidDismiss();
