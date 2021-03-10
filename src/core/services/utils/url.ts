@@ -362,7 +362,7 @@ export class CoreUrlUtilsProvider {
      * @param url URL to treat.
      * @return Username. Undefined if no username found.
      */
-    getUsernameFromUrl(url: string): string | void {
+    getUsernameFromUrl(url: string): string | undefined {
         if (url.indexOf('@') > -1) {
             // Get URL without protocol.
             const withoutProtocol = url.replace(/^[^?@/]*:\/\//, '');

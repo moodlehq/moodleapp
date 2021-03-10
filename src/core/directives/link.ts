@@ -23,6 +23,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreCustomURLSchemes } from '@services/urlschemes';
 
 /**
  * Directive to open a link in external browser or in the app.
@@ -111,7 +112,15 @@ export class CoreLinkDirective implements OnInit {
             return;
         }
 
-        // @todo: Custom URL schemes.
+        if (CoreCustomURLSchemes.isCustomURL(href)) {
+            try {
+                await CoreCustomURLSchemes.handleCustomURL(href);
+            } catch (error) {
+                CoreCustomURLSchemes.treatHandleCustomURLError(error);
+            }
+
+            return;
+        }
 
         return this.openExternalLink(href, openIn);
     }

@@ -33,6 +33,8 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreNavigator } from '@services/navigator';
+import { CoreCanceledError } from '@classes/errors/cancelederror';
+import { CoreCustomURLSchemes } from '@services/urlschemes';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -53,7 +55,7 @@ export class CoreLoginHelperProvider {
     protected isSSOConfirmShown = false;
     protected isOpenEditAlertShown = false;
     protected isOpeningReconnect = false;
-    waitingForBrowser = false;
+    protected waitingForBrowser = false;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreLoginHelper');
@@ -319,7 +321,7 @@ export class CoreLoginHelperProvider {
      * @param params Params.
      * @return OAuth ID.
      */
-    getOAuthIdFromParams(params: CoreUrlParams): number | undefined {
+    getOAuthIdFromParams(params?: CoreUrlParams): number | undefined {
         return params && typeof params.oauthsso != 'undefined' ? Number(params.oauthsso) : undefined;
     }
 
@@ -1218,6 +1220,110 @@ export class CoreLoginHelperProvider {
                 + signature + ' for passport ' + passport);
 
             throw new CoreError(Translate.instant('core.unexpectederror'));
+        }
+    }
+
+    /**
+     * Return whether the app is waiting for browser.
+     *
+     * @return Whether the app is waiting for browser.
+     */
+    isWaitingForBrowser(): boolean {
+        return this.waitingForBrowser;
+    }
+
+    /**
+     * Set whether the app is waiting for browser.
+     *
+     * @param value New value.
+     */
+    setWaitingForBrowser(value: boolean): void {
+        this.waitingForBrowser = value;
+    }
+
+    /**
+     * Check whether the QR reader should be displayed in site screen.
+     *
+     * @return Whether the QR reader should be displayed in site screen.
+     */
+    displayQRInSiteScreen(): boolean {
+        return CoreUtils.canScanQR() && (typeof CoreConstants.CONFIG.displayqronsitescreen == 'undefined' ||
+            !!CoreConstants.CONFIG.displayqronsitescreen);
+    }
+
+    /**
+     * Check whether the QR reader should be displayed in credentials screen.
+     *
+     * @return Whether the QR reader should be displayed in credentials screen.
+     */
+    displayQRInCredentialsScreen(): boolean {
+        if (!CoreUtils.canScanQR()) {
+            return false;
+        }
+
+        return (CoreConstants.CONFIG.displayqroncredentialscreen === undefined && this.isFixedUrlSet()) ||
+            (CoreConstants.CONFIG.displayqroncredentialscreen !== undefined && !!CoreConstants.CONFIG.displayqroncredentialscreen);
+    }
+
+    /**
+     * Show instructions to scan QR code.
+     *
+     * @return Promise resolved if the user accepts to scan QR.
+     */
+    showScanQRInstructions(): Promise<void> {
+        const deferred = CoreUtils.promiseDefer<void>();
+
+        // Show some instructions first.
+        CoreDomUtils.showAlertWithOptions({
+            header: Translate.instant('core.login.faqwhereisqrcode'),
+            message: Translate.instant(
+                'core.login.faqwhereisqrcodeanswer',
+                { $image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML },
+            ),
+            buttons: [
+                {
+                    text: Translate.instant('core.cancel'),
+                    role: 'cancel',
+                    handler: (): void => {
+                        deferred.reject(new CoreCanceledError());
+                    },
+                },
+                {
+                    text: Translate.instant('core.next'),
+                    handler: (): void => {
+                        deferred.resolve();
+                    },
+                },
+            ],
+        });
+
+        return deferred.promise;
+    }
+
+    /**
+     * Scan a QR code and tries to authenticate the user using custom URL scheme.
+     *
+     * @return Promise resolved when done.
+     */
+    async scanQR(): Promise<void> {
+        // Scan for a QR code.
+        const text = await CoreUtils.scanQR();
+
+        if (text && CoreCustomURLSchemes.isCustomURL(text)) {
+            try {
+                await CoreCustomURLSchemes.handleCustomURL(text);
+            } catch (error) {
+                CoreCustomURLSchemes.treatHandleCustomURLError(error);
+            }
+        } else if (text) {
+            // Not a custom URL scheme, check if it's a URL scheme to another app.
+            const scheme = CoreUrlUtils.getUrlProtocol(text);
+
+            if (scheme && scheme != 'http' && scheme != 'https') {
+                CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
+            } else {
+                CoreDomUtils.showErrorModal('core.login.errorqrnoscheme', true);
+            }
         }
     }
 

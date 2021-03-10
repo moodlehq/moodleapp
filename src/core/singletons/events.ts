@@ -45,6 +45,7 @@ export interface CoreEventsData {
     [CoreEvents.COMPLETION_MODULE_VIEWED]: CoreEventCompletionModuleViewedData;
     [CoreEvents.SECTION_STATUS_CHANGED]: CoreEventSectionStatusChangedData;
     [CoreEvents.ACTIVITY_DATA_SENT]: CoreEventActivityDataSentData;
+    [CoreEvents.IAB_LOAD_START]: InAppBrowserEvent;
 };
 
 /*

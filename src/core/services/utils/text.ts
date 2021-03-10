@@ -118,21 +118,29 @@ export class CoreTextUtilsProvider {
      * @param text Text to add.
      * @return Modified error.
      */
-    addTextToError(error: string | CoreTextErrorObject, text: string): string | CoreTextErrorObject {
+    addTextToError(error: string | CoreError | CoreTextErrorObject | undefined | null, text: string): string | CoreTextErrorObject {
         if (typeof error == 'string') {
             return error + text;
         }
 
-        if (error) {
-            if (typeof error.message == 'string') {
-                error.message += text;
-            } else if (typeof error.error == 'string') {
-                error.error += text;
-            } else if (typeof error.content == 'string') {
-                error.content += text;
-            } else if (typeof error.body == 'string') {
-                error.body += text;
-            }
+        if (error instanceof CoreError) {
+            error.message += text;
+
+            return error;
+        }
+
+        if (!error) {
+            return text;
+        }
+
+        if (typeof error.message == 'string') {
+            error.message += text;
+        } else if (typeof error.error == 'string') {
+            error.error += text;
+        } else if (typeof error.content == 'string') {
+            error.content += text;
+        } else if (typeof error.body == 'string') {
+            error.body += text;
         }
 
         return error;
@@ -522,10 +530,10 @@ export class CoreTextUtilsProvider {
     /**
      * Get the error message from an error object.
      *
-     * @param error Error object.
+     * @param error Error.
      * @return Error message, undefined if not found.
      */
-    getErrorMessageFromError(error?: string | CoreError | CoreTextErrorObject): string | undefined {
+    getErrorMessageFromError(error?: string | CoreError | CoreTextErrorObject | null): string | undefined {
         if (typeof error == 'string') {
             return error;
         }
@@ -534,7 +542,11 @@ export class CoreTextUtilsProvider {
             return error.message;
         }
 
-        return error && (error.message || error.error || error.content || error.body);
+        if (!error) {
+            return undefined;
+        }
+
+        return error.message || error.error || error.content || error.body;
     }
 
     /**

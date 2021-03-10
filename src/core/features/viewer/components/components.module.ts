@@ -16,11 +16,13 @@ import { NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreViewerImageComponent } from './image/image';
+import { CoreViewerQRScannerComponent } from './qr-scanner/qr-scanner';
 import { CoreViewerTextComponent } from './text/text';
 
 @NgModule({
     declarations: [
         CoreViewerImageComponent,
+        CoreViewerQRScannerComponent,
         CoreViewerTextComponent,
     ],
     imports: [
@@ -28,6 +30,7 @@ import { CoreViewerTextComponent } from './text/text';
     ],
     exports: [
         CoreViewerImageComponent,
+        CoreViewerQRScannerComponent,
         CoreViewerTextComponent,
     ],
 })

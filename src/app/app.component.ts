@@ -29,6 +29,10 @@ import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSubscriptions } from '@singletons/subscriptions';
+import { CoreWindow } from '@singletons/window';
+import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CoreUtils } from '@services/utils/utils';
+import { CoreUrlUtils } from '@services/utils/url';
 
 @Component({
     selector: 'app-root',
@@ -38,6 +42,9 @@ import { CoreSubscriptions } from '@singletons/subscriptions';
 export class AppComponent implements OnInit, AfterViewInit {
 
     @ViewChild(IonRouterOutlet) outlet?: IonRouterOutlet;
+
+    protected lastUrls: Record<string, number> = {};
+    protected lastInAppUrl?: string;
 
     /**
      * Component being initialized.
@@ -51,6 +58,9 @@ export class AppComponent implements OnInit, AfterViewInit {
      * - Note: HideKeyboardFormAccessoryBar has been moved to config.xml.
      */
     ngOnInit(): void {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const win = <any> window;
+
         CoreEvents.on(CoreEvents.LOGOUT, () => {
             // Go to sites page when user is logged out.
             CoreNavigator.navigate('/login/sites', { reset: true });
@@ -79,6 +89,83 @@ export class AppComponent implements OnInit, AfterViewInit {
         CoreEvents.on(CoreEvents.SITE_POLICY_NOT_AGREED, (data: CoreEventSiteData) => {
             CoreLoginHelper.sitePolicyNotAgreed(data.siteId);
         });
+
+        // Check URLs loaded in any InAppBrowser.
+        CoreEvents.on(CoreEvents.IAB_LOAD_START, (event) => {
+            // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
+            const url = event.url.replace(/^https?:\/\//, '');
+
+            if (CoreCustomURLSchemes.isCustomURL(url)) {
+                // Close the browser if it's a valid SSO URL.
+                CoreCustomURLSchemes.handleCustomURL(url).catch((error) => {
+                    CoreCustomURLSchemes.treatHandleCustomURLError(error);
+                });
+                CoreUtils.closeInAppBrowser();
+
+            } else if (CoreApp.instance.isAndroid()) {
+                // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
+                const urlScheme = CoreUrlUtils.getUrlProtocol(url);
+                if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
+                    // Open in browser should launch the right app if found and do nothing if not found.
+                    CoreUtils.openInBrowser(url);
+
+                    // At this point the InAppBrowser is showing a "Webpage not available" error message.
+                    // Try to navigate to last loaded URL so this error message isn't found.
+                    if (this.lastInAppUrl) {
+                        CoreUtils.openInApp(this.lastInAppUrl);
+                    } else {
+                        // No last URL loaded, close the InAppBrowser.
+                        CoreUtils.closeInAppBrowser();
+                    }
+                } else {
+                    this.lastInAppUrl = url;
+                }
+            }
+        });
+
+        // Check InAppBrowser closed.
+        CoreEvents.on(CoreEvents.IAB_EXIT, () => {
+            CoreLoginHelper.setWaitingForBrowser(false);
+            this.lastInAppUrl = '';
+            CoreLoginHelper.checkLogout();
+        });
+
+        Platform.resume.subscribe(() => {
+            // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
+            setTimeout(() => {
+                CoreLoginHelper.setWaitingForBrowser(false);
+                CoreLoginHelper.checkLogout();
+            }, 1000);
+        });
+
+        // Handle app launched with a certain URL (custom URL scheme).
+        win.handleOpenURL = (url: string): void => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            NgZone.run(() => {
+                // First check that the URL hasn't been treated a few seconds ago. Sometimes this function is called more than once.
+                if (this.lastUrls[url] && Date.now() - this.lastUrls[url] < 3000) {
+                    // Function called more than once, stop.
+                    return;
+                }
+
+                if (!CoreCustomURLSchemes.isCustomURL(url)) {
+                    // Not a custom URL, ignore.
+                    return;
+                }
+
+                this.lastUrls[url] = Date.now();
+
+                CoreEvents.trigger(CoreEvents.APP_LAUNCHED_URL, url);
+                CoreCustomURLSchemes.handleCustomURL(url).catch((error) => {
+                    CoreCustomURLSchemes.treatHandleCustomURLError(error);
+                });
+            });
+        };
+
+        // "Expose" CoreWindow.open.
+        win.openWindowSafely = (url: string, name?: string): void => {
+            CoreWindow.open(url, name);
+        };
 
         CoreEvents.on(CoreEvents.LOGIN, async (data: CoreEventSiteData) => {
             if (data.siteId) {

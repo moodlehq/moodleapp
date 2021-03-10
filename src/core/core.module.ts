@@ -47,12 +47,13 @@ import { CoreFileHelperProvider } from '@services/file-helper';
 import { CoreGeolocationProvider } from '@services/geolocation';
 import { CoreNavigatorService } from '@services/navigator';
 import { CoreScreenService } from '@services/screen';
+import { CoreCustomURLSchemesProvider } from '@services/urlschemes';
 
 export const CORE_SERVICES: Type<unknown>[] = [
     CoreAppProvider,
     CoreConfigProvider,
     CoreCronDelegateService,
-    // @todo CoreCustomURLSchemesProvider,
+    CoreCustomURLSchemesProvider,
     CoreDbProvider,
     CoreFileHelperProvider,
     CoreFileSessionProvider,

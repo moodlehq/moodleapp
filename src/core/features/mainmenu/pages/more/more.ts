@@ -23,6 +23,10 @@ import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../services/ma
 import { CoreMainMenu, CoreMainMenuCustomItem } from '../../services/mainmenu';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
+import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreTextUtils } from '@services/utils/text';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays the main menu of the app.
@@ -154,10 +158,31 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      */
     async scanQR(): Promise<void> {
         // Scan for a QR code.
-        // @todo
-        // eslint-disable-next-line no-console
-        console.error('scanQR not implemented');
+        const text = await CoreUtils.scanQR();
 
+        if (!text) {
+            return;
+        }
+
+        if (CoreCustomURLSchemes.isCustomURL(text)) {
+            // Is a custom URL scheme, handle it.
+            CoreCustomURLSchemes.handleCustomURL(text).catch((error) => {
+                CoreCustomURLSchemes.treatHandleCustomURLError(error);
+            });
+        } else if (/^[^:]{2,}:\/\/[^ ]+$/i.test(text)) { // Check if it's a URL.
+            // Check if the app can handle the URL.
+            const treated = await CoreContentLinksHelper.handleLink(text, undefined, true, true);
+
+            if (!treated) {
+                // Can't handle it, open it in browser.
+                CoreSites.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(text);
+            }
+        } else {
+            // It's not a URL, open it in a modal so the user can see it and copy it.
+            CoreTextUtils.viewText(Translate.instant('core.qrscanner'), text, {
+                displayCopyButton: true,
+            });
+        }
     }
 
     /**

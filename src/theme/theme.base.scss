@@ -454,3 +454,14 @@ ion-button.core-button-select {
 .core-iframe-offline-disabled {
     display: none !important;
 }
+
+.core-scanning-qr {
+    .ion-page, .modal-wrapper {
+        background-color: transparent !important;
+        --background: transparent;
+    }
+
+    ion-content, ion-backdrop, ion-modal:not(.core-modal-fullscreen), ion-tabs {
+        display: none !important;
+    }
+}

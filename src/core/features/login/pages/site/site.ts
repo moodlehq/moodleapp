@@ -30,6 +30,8 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreLoginSiteHelpComponent } from '@features/login/components/site-help/site-help';
 import { CoreLoginSiteOnboardingComponent } from '@features/login/components/site-onboarding/site-onboarding';
 import { CoreNavigator } from '@services/navigator';
+import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services/urlschemes';
+import { CoreTextUtils } from '@services/utils/text';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
@@ -82,8 +84,7 @@ export class CoreLoginSitePage implements OnInit {
             this.initOnboarding();
         }
 
-        this.showScanQR = CoreUtils.canScanQR() && (typeof CoreConstants.CONFIG.displayqronsitescreen == 'undefined' ||
-            !!CoreConstants.CONFIG.displayqronsitescreen);
+        this.showScanQR = CoreLoginHelper.displayQRInSiteScreen();
 
         this.siteForm = this.formBuilder.group({
             siteUrl: [url, this.moodleUrlValidator()],
@@ -464,28 +465,17 @@ export class CoreLoginSitePage implements OnInit {
 
     /**
      * Show instructions and scan QR code.
+     *
+     * @return Promise resolved when done.
      */
-    showInstructionsAndScanQR(): void {
-        // Show some instructions first.
-        CoreDomUtils.showAlertWithOptions({
-            header: Translate.instant('core.login.faqwhereisqrcode'),
-            message: Translate.instant(
-                'core.login.faqwhereisqrcodeanswer',
-                { $image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML },
-            ),
-            buttons: [
-                {
-                    text: Translate.instant('core.cancel'),
-                    role: 'cancel',
-                },
-                {
-                    text: Translate.instant('core.next'),
-                    handler: (): void => {
-                        this.scanQR();
-                    },
-                },
-            ],
-        });
+    async showInstructionsAndScanQR(): Promise<void> {
+        try {
+            await CoreLoginHelper.showScanQRInstructions();
+
+            await this.scanQR();
+        } catch {
+            // Ignore errors.
+        }
     }
 
     /**
@@ -497,9 +487,83 @@ export class CoreLoginSitePage implements OnInit {
         // Scan for a QR code.
         const text = await CoreUtils.scanQR();
 
-        if (text) {
-            // @todo
+        if (!text) {
+            return;
         }
+
+        if (CoreCustomURLSchemes.isCustomURL(text)) {
+            try {
+                await CoreCustomURLSchemes.handleCustomURL(text);
+            } catch (error) {
+                if (error && error.data && error.data.isAuthenticationURL && error.data.siteUrl) {
+                    // An error ocurred, but it's an authentication URL and we have the site URL.
+                    this.treatErrorInAuthenticationCustomURL(text, error);
+                } else {
+                    CoreCustomURLSchemes.treatHandleCustomURLError(error);
+                }
+            }
+
+            return;
+        }
+
+        // Not a custom URL scheme, check if it's a URL scheme to another app.
+        const scheme = CoreUrlUtils.getUrlProtocol(text);
+
+        if (scheme && scheme != 'http' && scheme != 'https') {
+            CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
+        } else if (CoreLoginHelper.isSiteUrlAllowed(text)) {
+            // Put the text in the field (if present).
+            this.siteForm.controls.siteUrl.setValue(text);
+
+            this.connect(new Event('click'), text);
+        } else {
+            CoreDomUtils.showErrorModal('core.errorurlschemeinvalidsite', true);
+        }
+    }
+
+    /**
+     * Treat an error while handling a custom URL meant to perform an authentication.
+     * If the site doesn't use SSO, the user will be sent to the credentials screen.
+     *
+     * @param customURL Custom URL handled.
+     * @param error Error data.
+     * @return Promise resolved when done.
+     */
+    protected async treatErrorInAuthenticationCustomURL(customURL: string, error: CoreCustomURLSchemesHandleError): Promise<void> {
+        const siteUrl = error.data?.siteUrl || '';
+        const modal = await CoreDomUtils.showModalLoading();
+
+        // Set the site URL in the input.
+        this.siteForm.controls.siteUrl.setValue(siteUrl);
+
+        try {
+            // Check if site uses SSO.
+            const response = await CoreSites.checkSite(siteUrl);
+
+            await CoreSites.checkApplication(response);
+
+            if (!CoreLoginHelper.isSSOLoginNeeded(response.code)) {
+                // No SSO, go to credentials page.
+                await CoreNavigator.navigate('/login/credentials', {
+                    params: {
+                        siteUrl: response.siteUrl,
+                        siteConfig: response.config,
+                    },
+                });
+            }
+        } catch (error) {
+            // Ignore errors.
+        } finally {
+            modal.dismiss();
+        }
+
+        // Now display the error.
+        error.error = CoreTextUtils.addTextToError(
+            error.error,
+            '<br><br>' + Translate.instant('core.login.youcanstillconnectwithcredentials'),
+        );
+
+        CoreCustomURLSchemes.treatHandleCustomURLError(error);
     }
 
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { AppComponent } from '@/app/app.component';
 import { CoreApp } from '@services/app';
@@ -31,7 +31,7 @@ describe('AppComponent', () => {
     beforeEach(() => {
         mockSingleton(CoreApp, { setStatusBarColor: jest.fn() });
         mockSingleton(Network, { onChange: () => new Observable() });
-        mockSingleton(Platform, { ready: () => Promise.resolve() });
+        mockSingleton(Platform, { ready: () => Promise.resolve(), resume: new Subject<void>() });
         mockSingleton(NgZone, { run: jest.fn() });
 
         navigator = mockSingleton(CoreNavigator, ['navigate']);

@@ -51,6 +51,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     isOAuth = false;
     isLoggedOut: boolean;
     siteId!: string;
+    showScanQR = false;
 
     protected page?: string;
     protected pageParams?: Params;
@@ -82,6 +83,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         this.siteUrl = siteId;
         this.page = CoreNavigator.getRouteParam('pageName');
         this.pageParams = CoreNavigator.getRouteParam('pageParams');
+        this.showScanQR = CoreLoginHelper.displayQRInSiteScreen() || CoreLoginHelper.displayQRInCredentialsScreen();
 
         try {
             const site = await CoreSites.getSite(this.siteId);
@@ -243,6 +245,21 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     oauthClicked(provider: CoreSiteIdentityProvider): void {
         if (!CoreLoginHelper.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig?.launchurl)) {
             CoreDomUtils.showErrorModal('Invalid data.');
+        }
+    }
+
+    /**
+     * Show instructions and scan QR code.
+     *
+     * @return Promise resolved when done.
+     */
+    async showInstructionsAndScanQR(): Promise<void> {
+        try {
+            await CoreLoginHelper.showScanQRInstructions();
+
+            await CoreLoginHelper.scanQR();
+        } catch {
+            // Ignore errors.
         }
     }
 
