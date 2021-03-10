@@ -16,7 +16,7 @@ import { Params } from '@angular/router';
 import { Subject } from 'rxjs';
 
 import { CoreLogger } from '@singletons/logger';
-import { CoreSiteInfoResponse } from '@classes/site';
+import { CoreSite, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/site';
 
 /**
  * Observer instance to stop listening to an event.
@@ -34,6 +34,7 @@ export interface CoreEventObserver {
 export interface CoreEventsData {
     [CoreEvents.SITE_UPDATED]: CoreEventSiteUpdatedData;
     [CoreEvents.SITE_ADDED]: CoreEventSiteAddedData;
+    [CoreEvents.SITE_DELETED]: CoreSite;
     [CoreEvents.SESSION_EXPIRED]: CoreEventSessionExpiredData;
     [CoreEvents.CORE_LOADING_CHANGED]: CoreEventLoadingChangedData;
     [CoreEvents.COURSE_STATUS_CHANGED]: CoreEventCourseStatusChanged;
@@ -46,6 +47,7 @@ export interface CoreEventsData {
     [CoreEvents.SECTION_STATUS_CHANGED]: CoreEventSectionStatusChangedData;
     [CoreEvents.ACTIVITY_DATA_SENT]: CoreEventActivityDataSentData;
     [CoreEvents.IAB_LOAD_START]: InAppBrowserEvent;
+    [CoreEvents.LOGIN_SITE_CHECKED]: CoreEventLoginSiteCheckedData;
 };
 
 /*
@@ -339,4 +341,11 @@ export type CoreEventSectionStatusChangedData = CoreEventSiteData & {
  */
 export type CoreEventActivityDataSentData = CoreEventSiteData & {
     module: string;
+};
+
+/**
+ * Data passed to LOGIN_SITE_CHECKED event.
+ */
+export type CoreEventLoginSiteCheckedData = {
+    config: CoreSitePublicConfigResponse;
 };

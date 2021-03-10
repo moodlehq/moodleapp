@@ -89,7 +89,7 @@ export class CorePushNotificationsProvider {
             }
         });
 
-        CoreEvents.on(CoreEvents.SITE_DELETED, async (site: CoreSite) => {
+        CoreEvents.on(CoreEvents.SITE_DELETED, async (site) => {
             try {
                 await Promise.all([
                     this.unregisterDeviceOnMoodle(site),

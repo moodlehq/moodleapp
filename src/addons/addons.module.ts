@@ -27,6 +27,7 @@ import { AddonModModule } from './mod/mod.module';
 import { AddonQbehaviourModule } from './qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from './qtype/qtype.module';
 import { AddonBlogModule } from './blog/blog.module';
+import { AddonRemoteThemesModule } from './remotethemes/remotethemes.module';
 
 @NgModule({
     imports: [
@@ -43,6 +44,7 @@ import { AddonBlogModule } from './blog/blog.module';
         AddonModModule,
         AddonQbehaviourModule,
         AddonQtypeModule,
+        AddonRemoteThemesModule,
     ],
 })
 export class AddonsModule {}
