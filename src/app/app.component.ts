@@ -33,6 +33,10 @@ import { CoreWindow } from '@singletons/window';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreUrlUtils } from '@services/utils/url';
+import { CoreConstants } from '@/core/constants';
+
+const MOODLE_VERSION_PREFIX = 'version-';
+const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
 
 @Component({
     selector: 'app-root',
@@ -60,6 +64,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const win = <any> window;
+        document.body.classList.add('ionic5');
+        this.addVersionClass(MOODLEAPP_VERSION_PREFIX, CoreConstants.CONFIG.versionname.replace('-dev', ''));
 
         CoreEvents.on(CoreEvents.LOGOUT, () => {
             // Go to sites page when user is logged out.
@@ -69,7 +75,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             CoreLang.clearCustomStrings();
 
             // Remove version classes from body.
-            this.removeVersionClass();
+            this.removeVersionClass(MOODLE_VERSION_PREFIX);
         });
 
         // Listen for session expired events.
@@ -173,8 +179,8 @@ export class AppComponent implements OnInit, AfterViewInit {
                 const info = site.getInfo();
                 if (info) {
                     // Add version classes to body.
-                    this.removeVersionClass();
-                    this.addVersionClass(CoreSites.getReleaseNumber(info.release || ''));
+                    this.removeVersionClass(MOODLE_VERSION_PREFIX);
+                    this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(info.release || ''));
                 }
             }
 
@@ -186,8 +192,8 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.loadCustomStrings();
 
                 // Add version classes to body.
-                this.removeVersionClass();
-                this.addVersionClass(CoreSites.getReleaseNumber(data.release || ''));
+                this.removeVersionClass(MOODLE_VERSION_PREFIX);
+                this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(data.release || ''));
             }
         });
 
@@ -196,8 +202,8 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.loadCustomStrings();
 
                 // Add version classes to body.
-                this.removeVersionClass();
-                this.addVersionClass(CoreSites.getReleaseNumber(data.release || ''));
+                this.removeVersionClass(MOODLE_VERSION_PREFIX);
+                this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(data.release || ''));
             }
         });
 
@@ -262,29 +268,32 @@ export class AppComponent implements OnInit, AfterViewInit {
     /**
      * Convenience function to add version to body classes.
      *
+     * @param prefix Prefix to add to the class.
      * @param release Current release number of the site.
      */
-    protected addVersionClass(release: string): void {
+    protected addVersionClass(prefix: string, release: string): void {
         const parts = release.split('.', 3);
 
         parts[1] = parts[1] || '0';
         parts[2] = parts[2] || '0';
 
         document.body.classList.add(
-            'version-' + parts[0],
-            'version-' + parts[0] + '-' + parts[1],
-            'version-' + parts[0] + '-' + parts[1] + '-' + parts[2],
+            prefix + parts[0],
+            prefix + parts[0] + '-' + parts[1],
+            prefix + parts[0] + '-' + parts[1] + '-' + parts[2],
         );
     }
 
     /**
      * Convenience function to remove all version classes form body.
+     *
+     * @param prefix Prefix of to the class.
      */
-    protected removeVersionClass(): void {
+    protected removeVersionClass(prefix: string): void {
         const remove: string[] = [];
 
         Array.from(document.body.classList).forEach((tempClass) => {
-            if (tempClass.substring(0, 8) == 'version-') {
+            if (tempClass.substring(0, 8) == prefix) {
                 remove.push(tempClass);
             }
         });
