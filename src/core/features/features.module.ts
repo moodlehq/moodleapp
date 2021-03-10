@@ -33,6 +33,7 @@ import { CoreSearchModule } from './search/search.module';
 import { CoreCommentsModule } from './comments/comments.module';
 import { CoreSitePluginsModule } from './siteplugins/siteplugins.module';
 import { CoreRatingModule } from './rating/rating.module';
+import { CoreSharedFilesModule } from './sharedfiles/sharedfiles.module';
 
 @NgModule({
     imports: [
@@ -55,6 +56,7 @@ import { CoreRatingModule } from './rating/rating.module';
         CoreCommentsModule,
         CoreSitePluginsModule,
         CoreRatingModule,
+        CoreSharedFilesModule,
     ],
 })
 export class CoreFeaturesModule {}
