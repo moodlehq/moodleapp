@@ -45,9 +45,9 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    constructor(route: ActivatedRoute) {
-        const courseId = parseInt(route.snapshot.params.courseId ?? route.snapshot.queryParams.courseId);
-        const userId = parseInt(route.snapshot.queryParams.userId ?? CoreSites.getCurrentSiteUserId());
+    constructor(protected route: ActivatedRoute) {
+        const courseId = CoreNavigator.getRouteNumberParam('courseId', { route })!;
+        const userId = CoreNavigator.getRouteNumberParam('userId', { route }) ?? CoreSites.getCurrentSiteUserId();
         const useSplitView = route.snapshot.data.useSplitView ?? true;
         const outsideGradesTab = route.snapshot.data.outsideGradesTab ?? false;
 

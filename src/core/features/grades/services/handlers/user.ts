@@ -67,8 +67,8 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
      *
      * @return Always enabled.
      */
-    isEnabled(): Promise<boolean> {
-        return Promise.resolve(true);
+    async isEnabled(): Promise<boolean> {
+        return true;
     }
 
     /**
@@ -86,9 +86,13 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
             return cache;
         }
 
-        const enabled = await CoreUtils.ignoreErrors(CoreGrades.isPluginEnabledForCourse(courseId), false);
+        let enabled = await CoreUtils.ignoreErrors(CoreGrades.isPluginEnabledForCourse(courseId), false);
 
-        this.viewGradesEnabledCache[cacheKey] = enabled;
+        if (enabled) {
+            enabled = await CoreUtils.promiseWorks(CoreGrades.getCourseGradesTable(courseId, user.id));
+        }
+
+        this.viewGradesEnabledCache[cacheKey] = true;
 
         return enabled;
     }
@@ -100,13 +104,13 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
      */
     getDisplayData(): CoreUserProfileHandlerData {
         return {
-            icon: 'stats-chart',
+            icon: 'fas-chart-bar',
             title: 'core.grades.grades',
             class: 'core-grades-user-handler',
             action: (event, user, courseId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                CoreNavigator.navigateToSitePath(`/grades/${courseId}`, {
+                CoreNavigator.navigateToSitePath(`/user-grades/${courseId}`, {
                     params: { userId: user.id },
                 });
             },

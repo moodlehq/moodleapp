@@ -39,6 +39,10 @@ const routes: Routes = [
         path: CoreGradesMainMenuHandlerService.PAGE_NAME,
         loadChildren: () => import('@features/grades/grades-lazy.module').then(m => m.CoreGradesLazyModule),
     },
+    {
+        path: 'user-grades/:courseId',
+        loadChildren: () => import('@features/grades/grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
+    },
 ];
 
 const courseIndexRoutes: Routes = [

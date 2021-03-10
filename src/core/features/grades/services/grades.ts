@@ -19,6 +19,8 @@ import { CorePushNotifications } from '@features/pushnotifications/services/push
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreWSExternalWarning } from '@services/ws';
+import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreError } from '@classes/errors/error';
 
 /**
  * Service to provide grade functionalities.
@@ -114,8 +116,8 @@ export class CoreGradesProvider {
                 const items = await this.getCourseGradesItems(courseId, userId, groupId, siteId, ignoreCache);
 
                 return items;
-            } catch (error) {
-                // Ignore while solving MDL-57255
+            } catch {
+                // Ignore while solving MDL-57255 (fixed on 3.2.1)
             }
         }
 
@@ -151,13 +153,13 @@ export class CoreGradesProvider {
             userid: userId,
             groupid: groupId,
         };
-        const preSets = {
+        const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCourseGradesItemsCacheKey(courseId, userId, groupId),
         };
 
         if (ignoreCache) {
-            preSets['getFromCache'] = 0;
-            preSets['emergencyCache'] = 0;
+            preSets.getFromCache = false;
+            preSets.emergencyCache = false;
         }
 
         const grades = await site.read<CoreGradesGetUserGradeItemsWSResponse>(
@@ -167,7 +169,7 @@ export class CoreGradesProvider {
         );
 
         if (!grades?.usergrades?.[0]) {
-            throw new Error('Couldn\'t get course grades items');
+            throw new CoreError('Couldn\'t get course grades items');
         }
 
         return grades.usergrades[0].gradeitems;
@@ -198,19 +200,19 @@ export class CoreGradesProvider {
             courseid: courseId,
             userid: userId,
         };
-        const preSets = {
+        const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCourseGradesCacheKey(courseId, userId),
         };
 
         if (ignoreCache) {
-            preSets['getFromCache'] = 0;
-            preSets['emergencyCache'] = 0;
+            preSets.getFromCache = false;
+            preSets.emergencyCache = false;
         }
 
         const table = await site.read<CoreGradesGetUserGradesTableWSResponse>('gradereport_user_get_grades_table', params, preSets);
 
         if (!table?.tables?.[0]) {
-            throw new Error('Coudln\'t get course grades table');
+            throw new CoreError('Coudln\'t get course grades table');
         }
 
         return table.tables[0];
@@ -228,7 +230,7 @@ export class CoreGradesProvider {
         this.logger.debug('Get course grades');
 
         const params: CoreGradesGetOverviewCourseGradesWSParams = {};
-        const preSets = {
+        const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCoursesGradesCacheKey(),
         };
 
@@ -252,9 +254,10 @@ export class CoreGradesProvider {
      * @param siteId Site ID (empty for current site).
      * @return Promise resolved when the data is invalidated.
      */
-    invalidateAllCourseGradesData(courseId: number, siteId?: string): Promise<void> {
-        return CoreSites.getSite(siteId)
-            .then((site) => site.invalidateWsCacheForKeyStartingWith(this.getCourseGradesPrefixCacheKey(courseId)));
+    async invalidateAllCourseGradesData(courseId: number, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+
+        await site.invalidateWsCacheForKeyStartingWith(this.getCourseGradesPrefixCacheKey(courseId));
     }
 
     /**
@@ -265,12 +268,11 @@ export class CoreGradesProvider {
      * @param siteId Site id (empty for current site).
      * @return Promise resolved when the data is invalidated.
      */
-    invalidateCourseGradesData(courseId: number, userId?: number, siteId?: string): Promise<void> {
-        return CoreSites.getSite(siteId).then((site) => {
-            userId = userId || site.getUserId();
+    async invalidateCourseGradesData(courseId: number, userId?: number, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+        userId = userId || site.getUserId();
 
-            return site.invalidateWsCacheForKey(this.getCourseGradesCacheKey(courseId, userId));
-        });
+        await site.invalidateWsCacheForKey(this.getCourseGradesCacheKey(courseId, userId));
     }
 
     /**
@@ -279,8 +281,10 @@ export class CoreGradesProvider {
      * @param siteId Site id (empty for current site).
      * @return Promise resolved when the data is invalidated.
      */
-    invalidateCoursesGradesData(siteId?: string): Promise<void> {
-        return CoreSites.getSite(siteId).then((site) => site.invalidateWsCacheForKey(this.getCoursesGradesCacheKey()));
+    async invalidateCoursesGradesData(siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+
+        await site.invalidateWsCacheForKey(this.getCoursesGradesCacheKey());
     }
 
     /**
@@ -292,9 +296,10 @@ export class CoreGradesProvider {
      * @param siteId Site id (empty for current site).
      * @return Promise resolved when the data is invalidated.
      */
-    invalidateCourseGradesItemsData(courseId: number, userId: number, groupId?: number, siteId?: string): Promise<void> {
-        return CoreSites.getSite(siteId)
-            .then((site) => site.invalidateWsCacheForKey(this.getCourseGradesItemsCacheKey(courseId, userId, groupId)));
+    async invalidateCourseGradesItemsData(courseId: number, userId: number, groupId?: number, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+
+        await site.invalidateWsCacheForKey(this.getCourseGradesItemsCacheKey(courseId, userId, groupId));
     }
 
     /**
@@ -304,16 +309,17 @@ export class CoreGradesProvider {
      * @return Resolve with true if plugin is enabled, false otherwise.
      * @since  Moodle 3.2
      */
-    isCourseGradesEnabled(siteId?: string): Promise<boolean> {
-        return CoreSites.getSite(siteId).then((site) => {
-            if (!site.wsAvailable('gradereport_overview_get_course_grades')) {
-                return false;
-            }
-            // Now check that the configurable mygradesurl is pointing to the gradereport_overview plugin.
-            const url = site.getStoredConfig('mygradesurl') || '';
+    async isCourseGradesEnabled(siteId?: string): Promise<boolean> {
+        const site = await CoreSites.getSite(siteId);
 
-            return url.indexOf('/grade/report/overview/') !== -1;
-        });
+        if (!site.wsAvailable('gradereport_overview_get_course_grades')) {
+            return false;
+        }
+
+        // Now check that the configurable mygradesurl is pointing to the gradereport_overview plugin.
+        const url = site.getStoredConfig('mygradesurl') || '';
+
+        return url.indexOf('/grade/report/overview/') !== -1;
     }
 
     /**
@@ -323,13 +329,14 @@ export class CoreGradesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    isPluginEnabledForCourse(courseId: number, siteId?: string): Promise<boolean> {
+    async isPluginEnabledForCourse(courseId: number, siteId?: string): Promise<boolean> {
         if (!courseId) {
-            return Promise.reject(null);
+            return false;
         }
 
-        return CoreCourses.getUserCourse(courseId, true, siteId)
-            .then((course) => !(course && typeof course.showgrades != 'undefined' && !course.showgrades));
+        const course = await CoreCourses.getUserCourse(courseId, true, siteId);
+
+        return !(course && typeof course.showgrades != 'undefined' && !course.showgrades);
     }
 
     /**
@@ -373,9 +380,11 @@ export class CoreGradesProvider {
             CorePushNotifications.logViewEvent(courseId, name, 'grades', wsName, { userid: userId });
         }
 
-        const site = await CoreSites.getCurrentSite();
+        const site = CoreSites.getCurrentSite();
 
-        await site?.write(wsName, { courseid: courseId, userid: userId });
+        const params: CoreGradesGradereportViewGradeReportWSParams = { courseid: courseId, userid: userId };
+
+        await site?.write(wsName, params);
     }
 
     /**
@@ -389,13 +398,13 @@ export class CoreGradesProvider {
             courseId = CoreSites.getCurrentSiteHomeId();
         }
 
-        const params = {
+        const params: CoreGradesGradereportViewGradeReportWSParams = {
             courseid: courseId,
         };
 
         CorePushNotifications.logViewListEvent('grades', 'gradereport_overview_view_grade_report', params);
 
-        const site = await CoreSites.getCurrentSite();
+        const site = CoreSites.getCurrentSite();
 
         await site?.write('gradereport_overview_view_grade_report', params);
     }
@@ -403,6 +412,14 @@ export class CoreGradesProvider {
 }
 
 export const CoreGrades = makeSingleton(CoreGradesProvider);
+
+/**
+ * Params of gradereport_user_view_grade_report and gradereport_overview_view_grade_report WS.
+ */
+type CoreGradesGradereportViewGradeReportWSParams = {
+    courseid: number; // Id of the course.
+    userid?: number; // Id of the user, 0 means current user.
+};
 
 /**
  * Params of gradereport_user_get_grade_items WS.

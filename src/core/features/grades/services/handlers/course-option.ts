@@ -54,8 +54,8 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
      *
      * @return Whether or not the handler is enabled on a site level.
      */
-    isEnabled(): Promise<boolean> {
-        return Promise.resolve(true);
+    async isEnabled(): Promise<boolean> {
+        return true;
     }
 
     /**
