@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
-import { CoreUserProfile } from '@features/user/services/user';
 import { CoreUserDelegateService, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
@@ -42,13 +41,11 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
     /**
      * Check if handler is enabled for this user in this context.
      *
-     * @param user User to check.
      * @param courseId Course ID.
      * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
      * @return True if enabled, false otherwise.
      */
-    async isEnabledForUser(
-        user: CoreUserProfile,
+    async isEnabledForCourse(
         courseId: number,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean> {

@@ -329,7 +329,7 @@ export class CoreGradesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    async isPluginEnabledForCourse(courseId: number, siteId?: string): Promise<boolean> {
+    async isPluginEnabledForCourse(courseId?: number, siteId?: string): Promise<boolean> {
         if (!courseId) {
             return false;
         }

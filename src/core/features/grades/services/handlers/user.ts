@@ -34,73 +34,31 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
     name = 'CoreGrades:viewGrades';
     priority = 400;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
-    viewGradesEnabledCache = {};
+    cacheEnabled = true;
 
     /**
-     * Clear view grades cache.
-     * If a courseId and userId are specified, it will only delete the entry for that user and course.
-     *
-     * @param courseId Course ID.
-     * @param userId User ID.
-     */
-    clearViewGradesCache(courseId?: number, userId?: number): void {
-        if (courseId && userId) {
-            delete this.viewGradesEnabledCache[this.getCacheKey(courseId, userId)];
-        } else {
-            this.viewGradesEnabledCache = {};
-        }
-    }
-
-    /**
-     * Get a cache key to identify a course and a user.
-     *
-     * @param courseId Course ID.
-     * @param userId User ID.
-     * @return Cache key.
-     */
-    protected getCacheKey(courseId: number, userId: number): string {
-        return courseId + '#' + userId;
-    }
-
-    /**
-     * Check if handler is enabled.
-     *
-     * @return Always enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Check if handler is enabled for this user in this context.
-     *
-     * @param user User to check.
-     * @param courseId Course ID.
-     * @return Promise resolved with true if enabled, resolved with false otherwise.
+     * @inheritdoc
      */
-    async isEnabledForUser(user: CoreUserProfile, courseId: number): Promise<boolean> {
-        const cacheKey = this.getCacheKey(courseId, user.id);
-        const cache = this.viewGradesEnabledCache[cacheKey];
-
-        if (typeof cache != 'undefined') {
-            return cache;
-        }
-
-        let enabled = await CoreUtils.ignoreErrors(CoreGrades.isPluginEnabledForCourse(courseId), false);
-
-        if (enabled) {
-            enabled = await CoreUtils.promiseWorks(CoreGrades.getCourseGradesTable(courseId, user.id));
-        }
-
-        this.viewGradesEnabledCache[cacheKey] = true;
-
-        return enabled;
+    async isEnabledForCourse(courseId?: number): Promise<boolean> {
+        return CoreUtils.ignoreErrors(CoreGrades.isPluginEnabledForCourse(courseId), false);
     }
 
     /**
-     * Returns the data needed to render the handler.
-     *
-     * @return Data needed to render the handler.
+     * @inheritdoc
+     */
+    async isEnabledForUser(user: CoreUserProfile, courseId?: number): Promise<boolean> {
+        return CoreUtils.promiseWorks(CoreGrades.getCourseGradesTable(courseId!, user.id));
+    }
+
+    /**
+     * @inheritdoc
      */
     getDisplayData(): CoreUserProfileHandlerData {
         return {

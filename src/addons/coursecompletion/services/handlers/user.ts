@@ -13,11 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreUserProfile, CoreUserProvider } from '@features/user/services/user';
+import { CoreUserProfile } from '@features/user/services/user';
 import { CoreUserProfileHandler, CoreUserDelegateService, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { CoreEvents } from '@singletons/events';
 import { AddonCourseCompletion } from '../coursecompletion';
 
 /**
@@ -29,20 +28,7 @@ export class AddonCourseCompletionUserHandlerService implements CoreUserProfileH
     name = 'AddonCourseCompletion';
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
     priority = 200;
-
-    protected enabledCache = {};
-
-    constructor() {
-        CoreEvents.on(CoreEvents.LOGOUT, () => {
-            this.enabledCache = {};
-        });
-
-        CoreEvents.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
-            const cacheKey = data.userId + '-' + data.courseId;
-
-            delete this.enabledCache[cacheKey];
-        });
-    }
+    cacheEnabled = true;
 
     /**
      * @inheritdoc
@@ -54,26 +40,15 @@ export class AddonCourseCompletionUserHandlerService implements CoreUserProfileH
     /**
      * @inheritdoc
      */
+    async isEnabledForCourse(courseId?: number): Promise<boolean> {
+        return AddonCourseCompletion.isPluginViewEnabledForCourse(courseId);
+    }
+
+    /**
+     * @inheritdoc
+     */
     async isEnabledForUser(user: CoreUserProfile, courseId?: number): Promise<boolean> {
-        if (!courseId) {
-            return false;
-        }
-
-        const courseEnabled = await AddonCourseCompletion.isPluginViewEnabledForCourse(courseId);
-        // If is not enabled in the course, is not enabled for the user.
-        if (!courseEnabled) {
-            return false;
-        }
-
-        const cacheKey = user.id + '-' + courseId;
-        if (typeof this.enabledCache[cacheKey] !== 'undefined') {
-            return this.enabledCache[cacheKey];
-        }
-
-        const enabled = await AddonCourseCompletion.isPluginViewEnabledForUser(courseId, user.id);
-        this.enabledCache[cacheKey] = enabled;
-
-        return enabled;
+        return await AddonCourseCompletion.isPluginViewEnabledForUser(courseId!, user.id);
     }
 
     /**
