@@ -22,17 +22,22 @@ const routes: Routes = [
         pathMatch: 'full',
     },
     {
-        path: 'index',
+        path: ':courseId',
         loadChildren: () => import('./pages/index/index.module').then( m => m.CoreCourseIndexPageModule),
     },
     {
-        path: 'unsupported-module',
+        path: ':courseId/unsupported-module',
         loadChildren: () => import('./pages/unsupported-module/unsupported-module.module')
             .then( m => m.CoreCourseUnsupportedModulePageModule),
     },
     {
-        path: 'list-mod-type',
+        path: ':courseId/list-mod-type',
         loadChildren: () => import('./pages/list-mod-type/list-mod-type.module').then(m => m.CoreCourseListModTypePageModule),
+    },
+    {
+        path: ':courseId/preview',
+        loadChildren: () =>
+            import('./pages/preview/preview.module').then(m => m.CoreCoursePreviewPageModule),
     },
 ];
 

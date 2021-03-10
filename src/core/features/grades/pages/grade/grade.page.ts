@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
@@ -21,6 +20,7 @@ import { CoreGrades } from '@features/grades/services/grades';
 import { CoreGradesFormattedRow, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays activity grade.
@@ -37,10 +37,10 @@ export class CoreGradesGradePage implements OnInit {
     grade?: CoreGradesFormattedRow | null;
     gradeLoaded = false;
 
-    constructor(route: ActivatedRoute) {
-        this.courseId = parseInt(route.snapshot.params.courseId ?? route.snapshot.parent?.params.courseId);
-        this.gradeId = parseInt(route.snapshot.params.gradeId);
-        this.userId = parseInt(route.snapshot.queryParams.userId ?? CoreSites.getCurrentSiteUserId());
+    constructor() {
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
+        this.gradeId = CoreNavigator.getRouteNumberParam('gradeId')!;
+        this.userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
     }
 
     /**

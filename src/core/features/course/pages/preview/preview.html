@@ -13,8 +13,8 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="dataLoaded">
-        <div class="core-course-thumb-parallax">
-            <div *ngIf="courseImageUrl" (click)="openCourse()" class="core-course-thumb">
+        <div *ngIf="courseImageUrl" class="core-course-thumb-parallax">
+            <div (click)="openCourse()" class="core-course-thumb">
                 <img [src]="courseImageUrl" core-external-content alt=""/>
             </div>
         </div>

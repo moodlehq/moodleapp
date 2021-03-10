@@ -75,14 +75,11 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
             const params: Params = {
                 course: result.course,
             };
-            let page: string;
+            let page = 'course/' + courseId;
 
-            if (result.enrolled) {
-                // User is still enrolled, open the course.
-                page = 'course';
-            } else {
+            if (!result.enrolled) {
                 // User not enrolled (shouldn't happen), open the preview page.
-                page = 'courses/preview';
+                page += '/preview';
             }
 
             await CoreNavigator.navigateToSitePath(page, { params, siteId: notification.site });

@@ -123,7 +123,6 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         handlers.forEach((handler, index) => {
             handler.data.page = CoreTextUtils.concatenatePaths(this.currentPagePath, handler.data.page);
             handler.data.pageParams = handler.data.pageParams || {};
-            handler.data.pageParams.courseId = this.course!.id;
 
             // Check if this handler should be the first selected tab.
             if (this.firstTabName && handler.name == this.firstTabName) {

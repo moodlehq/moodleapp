@@ -64,9 +64,9 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
                 event.stopPropagation();
 
                 options = options || {};
-                options.params = { module, courseId };
+                options.params = { module };
 
-                CoreNavigator.navigateToSitePath('course/unsupported-module', options);
+                CoreNavigator.navigateToSitePath('course/' + courseId + '/unsupported-module', options);
             },
         };
 

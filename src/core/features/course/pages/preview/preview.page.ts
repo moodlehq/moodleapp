@@ -15,7 +15,7 @@
 import { Component, OnDestroy, NgZone, OnInit } from '@angular/core';
 import { ModalController, IonRefresher } from '@ionic/angular';
 import { CoreApp } from '@services/app';
-import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -32,18 +32,18 @@ import { CoreCourse, CoreCourseProvider } from '@features/course/services/course
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { Translate } from '@singletons';
 import { CoreConstants } from '@/core/constants';
-import { CoreCoursesSelfEnrolPasswordComponent } from '../../components/self-enrol-password/self-enrol-password';
+import { CoreCoursesSelfEnrolPasswordComponent } from '../../../courses/components/self-enrol-password/self-enrol-password';
 import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.
  */
 @Component({
-    selector: 'page-core-courses-course-preview',
-    templateUrl: 'course-preview.html',
-    styleUrls: ['course-preview.scss'],
+    selector: 'page-core-course-preview',
+    templateUrl: 'preview.html',
+    styleUrls: ['preview.scss'],
 })
-export class CoreCoursesCoursePreviewPage implements OnInit, OnDestroy {
+export class CoreCoursePreviewPage implements OnInit, OnDestroy {
 
     course?: CoreCourseSearchedData;
     isEnrolled = false;
@@ -84,7 +84,7 @@ export class CoreCoursesCoursePreviewPage implements OnInit, OnDestroy {
 
         if (this.downloadCourseEnabled) {
             // Listen for status change in course.
-            this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data: CoreEventCourseStatusChanged) => {
+            this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data) => {
                 if (data.courseId == this.course!.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
                     this.updateCourseStatus(data.status);
                 }

@@ -16,10 +16,11 @@ import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 
-import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreSplitViewComponent, CoreSplitViewMode } from '@components/split-view/split-view';
 import { CoreGrades } from '@features/grades/services/grades';
 import { CoreGradesGradeOverviewWithCourseData, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { IonRefresher } from '@ionic/angular';
+import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 
@@ -33,13 +34,27 @@ import { CoreUtils } from '@services/utils/utils';
 export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
 
     courses: CoreGradesCoursesManager = new CoreGradesCoursesManager(CoreGradesCoursesPage);
+    splitViewMode?: CoreSplitViewMode;
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+
+    constructor() {
+        const userId = CoreNavigator.getRouteNumberParam('userId');
+        const courseId = CoreNavigator.getRouteNumberParam('courseId');
+
+        // If courseId and userId is set, show only the content page.
+        this.splitViewMode = courseId && userId ? undefined : CoreSplitViewMode.ContentOnly;
+    }
 
     /**
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
+        if (this.splitViewMode) {
+            // Won't be shown, do nothing.
+            return;
+        }
+
         await this.fetchInitialCourses();
 
         this.courses.start(this.splitView);

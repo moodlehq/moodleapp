@@ -20,8 +20,9 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
-import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
+import { ActivatedRouteSnapshot, Params } from '@angular/router';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the list of calendar events.
@@ -37,9 +38,9 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    constructor(route: ActivatedRoute) {
-        const courseId = parseInt(route.snapshot.queryParams.courseId ?? 0); // Use 0 for site badges.
-        const userId = parseInt(route.snapshot.queryParams.userId ?? CoreSites.getCurrentSiteUserId());
+    constructor() {
+        const courseId = CoreNavigator.getRouteNumberParam('courseId') ?? 0; // Use 0 for site badges.
+        const userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
 
         this.badges = new AddonBadgesUserBadgesManager(AddonBadgesUserBadgesPage, courseId, userId);
     }

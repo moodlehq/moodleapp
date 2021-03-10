@@ -131,9 +131,8 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
      * @param entry Selected entry.
      */
     gotoCoureListModType(entry: AddonBlockActivityModuleEntry): void {
-        CoreNavigator.navigateToSitePath('course/list-mod-type', {
+        CoreNavigator.navigateToSitePath('course/' + this.getCourseId() + '/list-mod-type', {
             params: {
-                courseId: this.getCourseId(),
                 modName: entry.modName,
                 title: entry.name,
             },
