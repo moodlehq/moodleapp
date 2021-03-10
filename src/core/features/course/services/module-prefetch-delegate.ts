@@ -18,7 +18,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreFilepool, CoreFilepoolComponentFileEventData } from '@services/filepool';
+import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
@@ -28,7 +28,7 @@ import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreConstants } from '@/core/constants';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { makeSingleton } from '@singletons';
-import { CoreEventPackageStatusChanged, CoreEvents, CoreEventSectionStatusChangedData } from '@singletons/events';
+import { CoreEvents, CoreEventSectionStatusChangedData } from '@singletons/events';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { CHECK_UPDATES_TIMES_TABLE, CoreCourseCheckUpdatesDBRecord } from './database/module-prefetch';
@@ -62,12 +62,12 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
     initialize(): void {
         CoreEvents.on(CoreEvents.LOGOUT, this.clearStatusCache.bind(this));
 
-        CoreEvents.on<CoreEventPackageStatusChanged>(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
+        CoreEvents.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
             this.updateStatusCache(data.status, data.component, data.componentId);
         }, CoreSites.getCurrentSiteId());
 
         // If a file inside a module is downloaded/deleted, clear the corresponding cache.
-        CoreEvents.on<CoreFilepoolComponentFileEventData>(CoreEvents.COMPONENT_FILE_ACTION, (data) => {
+        CoreEvents.on(CoreEvents.COMPONENT_FILE_ACTION, (data) => {
             if (!CoreFilepool.isFileEventDownloadedOrDeleted(data)) {
                 return;
             }

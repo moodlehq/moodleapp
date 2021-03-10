@@ -17,12 +17,11 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
-import { CoreEvents, CoreEventSiteData } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonNotifications, AddonNotificationsProvider } from '../notifications';
-import { AddonMessagesReadChangedEventData } from '@addons/messages/services/messages';
 
 /**
  * Handler to inject an option into main menu.
@@ -49,11 +48,11 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
      * Initialize the handler.
      */
     initialize(): void {
-        CoreEvents.on<AddonMessagesReadChangedEventData>(AddonNotificationsProvider.READ_CHANGED_EVENT, (data) => {
+        CoreEvents.on(AddonNotificationsProvider.READ_CHANGED_EVENT, (data) => {
             this.updateBadge(data.siteId);
         });
 
-        CoreEvents.on(AddonNotificationsProvider.READ_CRON_EVENT, (data: CoreEventSiteData) => {
+        CoreEvents.on(AddonNotificationsProvider.READ_CRON_EVENT, (data) => {
             this.updateBadge(data.siteId);
         });
 

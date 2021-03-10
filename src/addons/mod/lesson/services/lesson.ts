@@ -24,11 +24,26 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents, CoreEventSiteData } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import { AddonModLessonPasswordDBRecord, PASSWORD_TABLE_NAME } from './database/lesson';
 import { AddonModLessonOffline, AddonModLessonPageAttemptRecord } from './lesson-offline';
+import { AddonModLessonAutoSyncData, AddonModLessonSyncProvider } from './lesson-sync';
 
 const ROOT_CACHE_KEY = 'mmaModLesson:';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [AddonModLessonProvider.DATA_SENT_EVENT]: AddonModLessonDataSentData;
+        [AddonModLessonSyncProvider.AUTO_SYNCED]: AddonModLessonAutoSyncData;
+    }
+
+}
 
 /**
  * Service that provides some features for lesson.
@@ -944,7 +959,7 @@ export class AddonModLessonProvider {
 
         const response = await this.finishRetakeOnline(lesson.id, options);
 
-        CoreEvents.trigger<AddonModLessonDataSentData>(AddonModLessonProvider.DATA_SENT_EVENT, {
+        CoreEvents.trigger(AddonModLessonProvider.DATA_SENT_EVENT, {
             lessonId: lesson.id,
             type: 'finish',
             courseId: courseId,
@@ -2750,7 +2765,7 @@ export class AddonModLessonProvider {
 
         const response = await site.write<AddonModLessonLaunchAttemptWSResponse>('mod_lesson_launch_attempt', params);
 
-        CoreEvents.trigger<AddonModLessonDataSentData>(AddonModLessonProvider.DATA_SENT_EVENT, {
+        CoreEvents.trigger(AddonModLessonProvider.DATA_SENT_EVENT, {
             lessonId: id,
             type: 'launch',
         }, CoreSites.getCurrentSiteId());
@@ -3002,7 +3017,7 @@ export class AddonModLessonProvider {
         if (!options.offline) {
             const response = <AddonModLessonProcessPageResponse> await this.processPageOnline(lesson.id, pageId, data, options);
 
-            CoreEvents.trigger<AddonModLessonDataSentData>(AddonModLessonProvider.DATA_SENT_EVENT, {
+            CoreEvents.trigger(AddonModLessonProvider.DATA_SENT_EVENT, {
                 lessonId: lesson.id,
                 type: 'process',
                 courseId: courseId,
@@ -4226,7 +4241,7 @@ export type AddonModLessonContentPageOrRecord = AddonModLessonWSContentPageViewe
 /**
  * Data passed to DATA_SENT_EVENT event.
  */
-export type AddonModLessonDataSentData = CoreEventSiteData & {
+export type AddonModLessonDataSentData = {
     lessonId: number;
     type: string;
     courseId?: number;

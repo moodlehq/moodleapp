@@ -17,13 +17,7 @@ import { IonRouterOutlet } from '@ionic/angular';
 
 import { CoreLang } from '@services/lang';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
-import {
-    CoreEvents,
-    CoreEventSessionExpiredData,
-    CoreEventSiteAddedData,
-    CoreEventSiteData,
-    CoreEventSiteUpdatedData,
-} from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import { Network, NgZone, Platform, SplashScreen } from '@singletons';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
@@ -79,20 +73,20 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
 
         // Listen for session expired events.
-        CoreEvents.on(CoreEvents.SESSION_EXPIRED, (data: CoreEventSessionExpiredData) => {
+        CoreEvents.on(CoreEvents.SESSION_EXPIRED, (data) => {
             CoreLoginHelper.sessionExpired(data);
         });
 
         // Listen for passwordchange and usernotfullysetup events to open InAppBrowser.
-        CoreEvents.on(CoreEvents.PASSWORD_CHANGE_FORCED, (data: CoreEventSiteData) => {
+        CoreEvents.on(CoreEvents.PASSWORD_CHANGE_FORCED, (data) => {
             CoreLoginHelper.passwordChangeForced(data.siteId!);
         });
-        CoreEvents.on(CoreEvents.USER_NOT_FULLY_SETUP, (data: CoreEventSiteData) => {
+        CoreEvents.on(CoreEvents.USER_NOT_FULLY_SETUP, (data) => {
             CoreLoginHelper.openInAppForEdit(data.siteId!, '/user/edit.php', 'core.usernotfullysetup');
         });
 
         // Listen for sitepolicynotagreed event to accept the site policy.
-        CoreEvents.on(CoreEvents.SITE_POLICY_NOT_AGREED, (data: CoreEventSiteData) => {
+        CoreEvents.on(CoreEvents.SITE_POLICY_NOT_AGREED, (data) => {
             CoreLoginHelper.sitePolicyNotAgreed(data.siteId);
         });
 
@@ -173,7 +167,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             CoreWindow.open(url, name);
         };
 
-        CoreEvents.on(CoreEvents.LOGIN, async (data: CoreEventSiteData) => {
+        CoreEvents.on(CoreEvents.LOGIN, async (data) => {
             if (data.siteId) {
                 const site = await CoreSites.getSite(data.siteId);
                 const info = site.getInfo();
@@ -187,7 +181,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.loadCustomStrings();
         });
 
-        CoreEvents.on(CoreEvents.SITE_UPDATED, (data: CoreEventSiteUpdatedData) => {
+        CoreEvents.on(CoreEvents.SITE_UPDATED, (data) => {
             if (data.siteId == CoreSites.getCurrentSiteId()) {
                 this.loadCustomStrings();
 
@@ -197,7 +191,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             }
         });
 
-        CoreEvents.on(CoreEvents.SITE_ADDED, (data: CoreEventSiteAddedData) => {
+        CoreEvents.on(CoreEvents.SITE_ADDED, (data) => {
             if (data.siteId == CoreSites.getCurrentSiteId()) {
                 this.loadCustomStrings();
 

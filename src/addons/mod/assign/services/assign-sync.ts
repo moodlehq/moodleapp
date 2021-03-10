@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreEvents, CoreEventSiteData } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSyncBlockedError } from '@classes/base-sync';
 import {
@@ -131,7 +131,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
                 : await this.syncAssignIfNeeded(assignId, siteId);
 
             if (result?.updated) {
-                CoreEvents.trigger<AddonModAssignAutoSyncData>(AddonModAssignSyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(AddonModAssignSyncProvider.AUTO_SYNCED, {
                     assignId: assignId,
                     warnings: result.warnings,
                     gradesBlocked: result.gradesBlocked,
@@ -555,7 +555,7 @@ export type AddonModAssignSyncResult = {
 /**
  * Data passed to AUTO_SYNCED event.
  */
-export type AddonModAssignAutoSyncData = CoreEventSiteData & {
+export type AddonModAssignAutoSyncData = {
     assignId: number;
     warnings: string[];
     gradesBlocked: number[]; // Whether some grade couldn't be synced because it was blocked. UserId fields of the blocked grade.

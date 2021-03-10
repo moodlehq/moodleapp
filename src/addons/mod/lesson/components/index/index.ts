@@ -34,7 +34,6 @@ import {
     AddonModLesson,
     AddonModLessonAttemptsOverviewsStudentWSData,
     AddonModLessonAttemptsOverviewWSData,
-    AddonModLessonDataSentData,
     AddonModLessonGetAccessInformationWSResponse,
     AddonModLessonLessonWSData,
     AddonModLessonPreventAccessReason,
@@ -435,7 +434,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         this.hasPlayed = true;
         this.dataSentObserver?.off();
 
-        this.dataSentObserver = CoreEvents.on<AddonModLessonDataSentData>(AddonModLessonProvider.DATA_SENT_EVENT, (data) => {
+        this.dataSentObserver = CoreEvents.on(AddonModLessonProvider.DATA_SENT_EVENT, (data) => {
             // Ignore launch sending because it only affects timers.
             if (data.lessonId === this.lesson?.id && data.type != 'launch') {
                 this.dataSent = true;

@@ -16,7 +16,7 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreCourses, CoreCoursesMyCoursesUpdatedEventData, CoreCoursesProvider } from '@features/courses/services/courses';
+import { CoreCourses, CoreCoursesProvider } from '@features/courses/services/courses';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { PopoverController, Translate } from '@singletons';
@@ -258,7 +258,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             );
 
             this.course.hidden = hide;
-            CoreEvents.trigger<CoreCoursesMyCoursesUpdatedEventData>(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
                 courseId: this.course.id,
                 course: this.course,
                 action: CoreCoursesProvider.ACTION_STATE_CHANGED,
@@ -287,7 +287,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             await CoreCourses.setFavouriteCourse(this.course.id, favourite);
 
             this.course.isfavourite = favourite;
-            CoreEvents.trigger<CoreCoursesMyCoursesUpdatedEventData>(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
                 courseId: this.course.id,
                 course: this.course,
                 action: CoreCoursesProvider.ACTION_STATE_CHANGED,

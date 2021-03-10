@@ -22,7 +22,7 @@ import {
 } from '@features/rating/services/rating';
 import { CoreSites } from '@services/sites';
 import { ModalController } from '@singletons';
-import { CoreEventObserver, CoreEvents, CoreEventSiteUpdatedData } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreRatingRatingsComponent } from '../ratings/ratings';
 
 /**
@@ -54,7 +54,7 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
         this.disabled = CoreRating.isRatingDisabledInSite();
 
         // Update visibility if current site info is updated.
-        this.updateSiteObserver = CoreEvents.on<CoreEventSiteUpdatedData>(CoreEvents.SITE_UPDATED, () => {
+        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.disabled = CoreRating.isRatingDisabledInSite();
         }, CoreSites.getCurrentSiteId());
 

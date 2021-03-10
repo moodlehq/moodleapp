@@ -27,7 +27,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents, CoreEventSiteData } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import { AddonModLessonRetakeFinishedInSyncDBRecord, RETAKES_FINISHED_SYNC_TABLE_NAME } from './database/lesson';
 import { AddonModLessonGetPasswordResult, AddonModLessonPrefetchHandler } from './handlers/prefetch';
 import { AddonModLesson, AddonModLessonLessonWSData, AddonModLessonProvider } from './lesson';
@@ -145,7 +145,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
             if (result?.updated) {
                 // Sync successful, send event.
-                CoreEvents.trigger<AddonModLessonAutoSyncData>(AddonModLessonSyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(AddonModLessonSyncProvider.AUTO_SYNCED, {
                     lessonId: lesson.id,
                     warnings: result.warnings,
                 }, siteId);
@@ -512,7 +512,7 @@ export type AddonModLessonSyncResult = {
 /**
  * Data passed to AUTO_SYNCED event.
  */
-export type AddonModLessonAutoSyncData = CoreEventSiteData & {
+export type AddonModLessonAutoSyncData = {
     lessonId: number;
     warnings: string[];
 };

@@ -25,8 +25,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     CoreUser,
     CoreUserProfile,
-    CoreUserProfilePictureUpdatedData,
-    CoreUserProfileRefreshedData,
     CoreUserProvider,
 } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
@@ -63,7 +61,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     communicationHandlers: CoreUserProfileHandlerData[] = [];
 
     constructor() {
-        this.obsProfileRefreshed = CoreEvents.on<CoreUserProfileRefreshedData>(CoreUserProvider.PROFILE_REFRESHED, (data) => {
+        this.obsProfileRefreshed = CoreEvents.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
             if (!this.user || !data.user) {
                 return;
             }
@@ -182,7 +180,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             await CoreSites.updateSiteInfo(this.site.getId());
         } catch {
             // Cannot update site info. Assume the profile image is the right one.
-            CoreEvents.trigger<CoreUserProfilePictureUpdatedData>(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
+            CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
                 picture: this.user.profileimageurl,
             }, this.site.getId());
@@ -193,7 +191,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             await this.refreshUser();
         } else {
             // Now they're the same, send event to use the right avatar in the rest of the app.
-            CoreEvents.trigger<CoreUserProfilePictureUpdatedData>(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
+            CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
                 picture: this.user.profileimageurl,
             }, this.site.getId());
@@ -216,7 +214,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 
             const profileImageURL = await CoreUser.changeProfilePicture(result.itemid, this.userId, this.site!.getId());
 
-            CoreEvents.trigger<CoreUserProfilePictureUpdatedData>(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
+            CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
                 picture: profileImageURL,
             }, this.site!.getId());
@@ -249,7 +247,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
         event?.detail.complete();
 
         if (this.user) {
-            CoreEvents.trigger<CoreUserProfileRefreshedData>(CoreUserProvider.PROFILE_REFRESHED, {
+            CoreEvents.trigger(CoreUserProvider.PROFILE_REFRESHED, {
                 courseId: this.courseId,
                 userId: this.userId,
                 user: this.user,

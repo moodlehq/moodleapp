@@ -19,9 +19,7 @@ import {
     AddonMessages,
     AddonMessagesDiscussion,
     AddonMessagesMessageAreaContact,
-    AddonMessagesNewMessagedEventData,
     AddonMessagesProvider,
-    AddonMessagesReadChangedEventData,
 } from '../../services/messages';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -74,7 +72,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
         this.siteId = CoreSites.getCurrentSiteId();
 
         // Update discussions when new message is received.
-        this.newMessagesObserver = CoreEvents.on<AddonMessagesNewMessagedEventData>(
+        this.newMessagesObserver = CoreEvents.on(
             AddonMessagesProvider.NEW_MESSAGE_EVENT,
             (data) => {
                 if (data.userId && this.discussions) {
@@ -96,7 +94,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
         );
 
         // Update discussions when a message is read.
-        this.readChangedObserver = CoreEvents.on<AddonMessagesReadChangedEventData>(
+        this.readChangedObserver = CoreEvents.on(
             AddonMessagesProvider.READ_CHANGED_EVENT,
             (data) => {
                 if (data.userId && this.discussions) {

@@ -17,6 +17,7 @@ import { Subject } from 'rxjs';
 
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreFilepoolComponentFileEventData } from '@services/filepool';
 
 /**
  * Observer instance to stop listening to an event.
@@ -48,6 +49,8 @@ export interface CoreEventsData {
     [CoreEvents.ACTIVITY_DATA_SENT]: CoreEventActivityDataSentData;
     [CoreEvents.IAB_LOAD_START]: InAppBrowserEvent;
     [CoreEvents.LOGIN_SITE_CHECKED]: CoreEventLoginSiteCheckedData;
+    [CoreEvents.SEND_ON_ENTER_CHANGED]: CoreEventSendOnEnterChangedData;
+    [CoreEvents.COMPONENT_FILE_ACTION]: CoreFilepoolComponentFileEventData;
 };
 
 /*
@@ -108,13 +111,13 @@ export class CoreEvents {
      */
     static on<Fallback = unknown, Event extends string = string>(
         eventName: Event,
-        callBack: (value: CoreEventData<Event, Fallback> & { siteId?: string }) => void,
+        callBack: (value: CoreEventData<Event, Fallback> & CoreEventSiteData) => void,
         siteId?: string,
     ): CoreEventObserver {
         // If it's a unique event and has been triggered already, call the callBack.
         // We don't need to create an observer because the event won't be triggered again.
         if (this.uniqueEvents[eventName]) {
-            callBack(this.uniqueEvents[eventName].data as CoreEventData<Event, Fallback> & { siteId?: string });
+            callBack(this.uniqueEvents[eventName].data as CoreEventData<Event, Fallback> & CoreEventSiteData);
 
             // Return a fake observer to prevent errors.
             return {
@@ -132,7 +135,7 @@ export class CoreEvents {
         }
 
         const subscription = this.observables[eventName].subscribe(
-            (value: CoreEventData<Event, Fallback> & { siteId?: string }) => {
+            (value: CoreEventData<Event, Fallback> & CoreEventSiteData) => {
                 if (!siteId || value.siteId == siteId) {
                     callBack(value);
                 }
@@ -243,17 +246,17 @@ export type CoreEventSiteData = {
 /**
  * Data passed to SITE_UPDATED event.
  */
-export type CoreEventSiteUpdatedData = CoreEventSiteData & CoreSiteInfoResponse;
+export type CoreEventSiteUpdatedData = CoreSiteInfoResponse;
 
 /**
  * Data passed to SITE_ADDED event.
  */
-export type CoreEventSiteAddedData = CoreEventSiteData & CoreSiteInfoResponse;
+export type CoreEventSiteAddedData = CoreSiteInfoResponse;
 
 /**
  * Data passed to SESSION_EXPIRED event.
  */
-export type CoreEventSessionExpiredData = CoreEventSiteData & {
+export type CoreEventSessionExpiredData = {
     pageName?: string;
     params?: Params;
 };
@@ -286,7 +289,7 @@ export type CoreEventPackageStatusChanged = {
 /**
  * Data passed to USER_DELETED event.
  */
-export type CoreEventUserDeletedData = CoreEventSiteData & {
+export type CoreEventUserDeletedData = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     params: any; // Params sent to the WS that failed.
 };
@@ -299,7 +302,7 @@ export enum CoreEventFormAction {
 /**
  * Data passed to FORM_ACTION event.
  */
-export type CoreEventFormActionData = CoreEventSiteData & {
+export type CoreEventFormActionData = {
     action: CoreEventFormAction; // Action performed.
     form: HTMLElement; // Form element.
     online?: boolean; // Whether the data was sent to server or not. Only when submitting.
@@ -308,14 +311,14 @@ export type CoreEventFormActionData = CoreEventSiteData & {
 /**
  * Data passed to NOTIFICATION_SOUND_CHANGED event.
  */
-export type CoreEventNotificationSoundChangedData = CoreEventSiteData & {
+export type CoreEventNotificationSoundChangedData = {
     enabled: boolean;
 };
 
 /**
  * Data passed to SELECT_COURSE_TAB event.
  */
-export type CoreEventSelectCourseTabData = CoreEventSiteData & {
+export type CoreEventSelectCourseTabData = {
     name?: string; // Name of the tab's handler. If not set, load course contents.
     sectionId?: number;
     sectionNumber?: number;
@@ -324,14 +327,14 @@ export type CoreEventSelectCourseTabData = CoreEventSiteData & {
 /**
  * Data passed to COMPLETION_MODULE_VIEWED event.
  */
-export type CoreEventCompletionModuleViewedData = CoreEventSiteData & {
+export type CoreEventCompletionModuleViewedData = {
     courseId?: number;
 };
 
 /**
  * Data passed to SECTION_STATUS_CHANGED event.
  */
-export type CoreEventSectionStatusChangedData = CoreEventSiteData & {
+export type CoreEventSectionStatusChangedData = {
     courseId: number;
     sectionId?: number;
 };
@@ -339,7 +342,7 @@ export type CoreEventSectionStatusChangedData = CoreEventSiteData & {
 /**
  * Data passed to ACTIVITY_DATA_SENT event.
  */
-export type CoreEventActivityDataSentData = CoreEventSiteData & {
+export type CoreEventActivityDataSentData = {
     module: string;
 };
 
@@ -348,4 +351,11 @@ export type CoreEventActivityDataSentData = CoreEventSiteData & {
  */
 export type CoreEventLoginSiteCheckedData = {
     config: CoreSitePublicConfigResponse;
+};
+
+/**
+ * Data passed to SEND_ON_ENTER_CHANGED event.
+ */
+export type CoreEventSendOnEnterChangedData = {
+    sendOnEnter: boolean;
 };

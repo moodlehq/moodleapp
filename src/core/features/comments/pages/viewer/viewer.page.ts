@@ -20,13 +20,11 @@ import { CoreSites } from '@services/sites';
 import {
     CoreComments,
     CoreCommentsCommentBasicData,
-    CoreCommentsCountChangedEventData,
     CoreCommentsData,
     CoreCommentsProvider,
 } from '@features/comments/services/comments';
 import {
     CoreCommentsSync,
-    CoreCommentsSyncAutoSyncData,
     CoreCommentsSyncProvider,
 } from '@features/comments/services/comments-sync';
 import { IonContent, IonRefresher } from '@ionic/angular';
@@ -86,7 +84,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         // Refresh data if comments are synchronized automatically.
-        this.syncObserver = CoreEvents.on<CoreCommentsSyncAutoSyncData>(CoreCommentsSyncProvider.AUTO_SYNCED, (data) => {
+        this.syncObserver = CoreEvents.on(CoreCommentsSyncProvider.AUTO_SYNCED, (data) => {
             if (data.contextLevel == this.contextLevel && data.instanceId == this.instanceId &&
                     data.componentName == this.componentName && data.itemId == this.itemId && data.area == this.area) {
                 // Show the sync warnings.
@@ -298,7 +296,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             this.comments = [addedComments].concat(this.comments);
             this.canDeleteComments = this.addDeleteCommentsAvailable;
 
-            CoreEvents.trigger<CoreCommentsCountChangedEventData>(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
+            CoreEvents.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
                 contextLevel: this.contextLevel,
                 instanceId: this.instanceId,
                 component: this.componentName,
@@ -360,7 +358,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 if (index >= 0) {
                     this.comments.splice(index, 1);
 
-                    CoreEvents.trigger<CoreCommentsCountChangedEventData>(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
+                    CoreEvents.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
                         contextLevel: this.contextLevel,
                         instanceId: this.instanceId,
                         component: this.componentName,

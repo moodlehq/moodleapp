@@ -27,7 +27,7 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourseManualCompletionDBRecord } from './database/course';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents, CoreEventSiteData } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 
 /**
  * Service to sync course offline data. This only syncs the offline data of the course itself, not the offline data of
@@ -87,7 +87,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
             }
 
             // Sync successful, send event.
-            CoreEvents.trigger<CoreCourseAutoSyncData>(CoreCourseSyncProvider.AUTO_SYNCED, {
+            CoreEvents.trigger(CoreCourseSyncProvider.AUTO_SYNCED, {
                 courseId: completion.courseid,
                 warnings: result.warnings,
             }, siteId);
@@ -253,7 +253,7 @@ export type CoreCourseSyncResult = {
 /**
  * Data passed to AUTO_SYNCED event.
  */
-export type CoreCourseAutoSyncData = CoreEventSiteData & {
+export type CoreCourseAutoSyncData = {
     courseId: number;
     warnings: CoreWSExternalWarning[];
 };

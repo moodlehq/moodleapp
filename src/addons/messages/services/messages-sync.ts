@@ -112,7 +112,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
                 }
 
                 // Sync successful, send event.
-                CoreEvents.trigger<AddonMessagesSyncEvents>(AddonMessagesSyncProvider.AUTO_SYNCED, result, siteId);
+                CoreEvents.trigger(AddonMessagesSyncProvider.AUTO_SYNCED, result, siteId);
 
                 return;
             }));
@@ -125,7 +125,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
                 }
 
                 // Sync successful, send event.
-                CoreEvents.trigger<AddonMessagesSyncEvents>(AddonMessagesSyncProvider.AUTO_SYNCED, result, siteId);
+                CoreEvents.trigger(AddonMessagesSyncProvider.AUTO_SYNCED, result, siteId);
 
                 return;
             }));

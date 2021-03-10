@@ -170,7 +170,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
     constructor() {
         super('CoreUserDelegate', true);
 
-        CoreEvents.on<CoreUserUpdateHandlerData>(CoreUserDelegateService.UPDATE_HANDLER_EVENT, (data) => {
+        CoreEvents.on(CoreUserDelegateService.UPDATE_HANDLER_EVENT, (data) => {
             if (!data || !data.handler || !this.userHandlers[data.userId]) {
                 return;
             }

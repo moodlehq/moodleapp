@@ -18,7 +18,7 @@ import { IonRefresher } from '@ionic/angular';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
-import { CoreEventObserver, CoreEvents, CoreEventSiteUpdatedData } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../services/settings-helper';
 
@@ -44,7 +44,7 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
     constructor() {
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
-        this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async (data: CoreEventSiteUpdatedData) => {
+        this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async (data) => {
             const site = await CoreSites.getSite(data.siteId);
 
             const siteEntry = this.sites.find((siteEntry) => siteEntry.id == site.id);

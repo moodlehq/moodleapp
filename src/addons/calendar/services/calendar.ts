@@ -37,6 +37,8 @@ import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { AddonCalendarMainMenuHandlerService } from './handlers/mainmenu';
 import { SafeUrl } from '@angular/platform-browser';
 import { CoreNavigator } from '@services/navigator';
+import { AddonCalendarFilter } from './calendar-helper';
+import { AddonCalendarSyncEvents, AddonCalendarSyncProvider } from './calendar-sync';
 
 const ROOT_CACHE_KEY = 'mmaCalendar:';
 
@@ -49,6 +51,25 @@ export enum AddonCalendarEventType {
     COURSE = 'course',
     GROUP = 'group',
     USER = 'user',
+}
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [AddonCalendarProvider.NEW_EVENT_EVENT]: AddonCalendarUpdatedEventEvent;
+        [AddonCalendarProvider.EDIT_EVENT_EVENT]: AddonCalendarUpdatedEventEvent;
+        [AddonCalendarProvider.DELETED_EVENT_EVENT]: AddonCalendarUpdatedEventEvent;
+        [AddonCalendarProvider.UNDELETED_EVENT_EVENT]: AddonCalendarUpdatedEventEvent;
+        [AddonCalendarProvider.FILTER_CHANGED_EVENT]: AddonCalendarFilter;
+        [AddonCalendarSyncProvider.MANUAL_SYNCED]: AddonCalendarSyncEvents;
+        [AddonCalendarSyncProvider.AUTO_SYNCED]: AddonCalendarSyncEvents;
+    }
+
 }
 
 /**

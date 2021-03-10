@@ -70,7 +70,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
 
         if (result?.updated) {
             // Sync successful, send event.
-            CoreEvents.trigger<AddonCalendarSyncEvents>(AddonCalendarSyncProvider.AUTO_SYNCED, result, siteId);
+            CoreEvents.trigger(AddonCalendarSyncProvider.AUTO_SYNCED, result, siteId);
         }
     }
 

@@ -34,7 +34,6 @@ import {
     AddonCalendarWeek,
     AddonCalendarWeekDaysTranslationKeys,
     AddonCalendarEventToDisplay,
-    AddonCalendarUpdatedEventEvent,
     AddonCalendarDayName,
 } from '../../services/calendar';
 import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calendar-helper';
@@ -105,7 +104,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         // Listen for events "undeleted" (offline).
         this.undeleteEventObserver = CoreEvents.on(
             AddonCalendarProvider.UNDELETED_EVENT_EVENT,
-            (data: AddonCalendarUpdatedEventEvent) => {
+            (data) => {
                 if (!data || !data.eventId) {
                     return;
                 }

@@ -17,7 +17,7 @@ import { ActivatedRouteSnapshot, Params } from '@angular/router';
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreSettingsDelegate, CoreSettingsHandlerToDisplay } from '../../services/settings-delegate';
-import { CoreEventObserver, CoreEvents, CoreEventSiteUpdatedData } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 // import { CoreSharedFiles } from '@features/sharedfiles/services/sharedfiles';
@@ -62,7 +62,7 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
         this.siteId = CoreSites.getCurrentSiteId();
         this.handlers = new CoreSettingsSitePreferencesManager(CoreSitePreferencesPage);
 
-        this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, (data: CoreEventSiteUpdatedData) => {
+        this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, (data) => {
             if (data.siteId == this.siteId) {
                 this.refreshData();
             }

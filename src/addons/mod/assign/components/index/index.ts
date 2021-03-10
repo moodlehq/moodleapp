@@ -31,11 +31,8 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     AddonModAssign,
     AddonModAssignAssign,
-    AddonModAssignGradedEventData,
     AddonModAssignProvider,
     AddonModAssignSubmissionGradingSummary,
-    AddonModAssignSubmissionSavedEventData,
-    AddonModAssignSubmittedForGradingEventData,
 } from '../../services/assign';
 import { AddonModAssignOffline } from '../../services/assign-offline';
 import {
@@ -107,7 +104,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         this.currentSite = CoreSites.getCurrentSite();
 
         // Listen to events.
-        this.savedObserver = CoreEvents.on<AddonModAssignSubmissionSavedEventData>(
+        this.savedObserver = CoreEvents.on(
             AddonModAssignProvider.SUBMISSION_SAVED_EVENT,
             (data) => {
                 if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
@@ -118,7 +115,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             this.siteId,
         );
 
-        this.submittedObserver = CoreEvents.on<AddonModAssignSubmittedForGradingEventData>(
+        this.submittedObserver = CoreEvents.on(
             AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT,
             (data) => {
                 if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
@@ -132,7 +129,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             this.siteId,
         );
 
-        this.gradedObserver = CoreEvents.on<AddonModAssignGradedEventData>(AddonModAssignProvider.GRADED_EVENT, (data) => {
+        this.gradedObserver = CoreEvents.on(AddonModAssignProvider.GRADED_EVENT, (data) => {
             if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
                 // Assignment graded, refresh data.
                 this.showLoadingAndRefresh(true, false);

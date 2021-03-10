@@ -17,9 +17,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
     AddonMessages,
-    AddonMessagesContactRequestCountEventData,
     AddonMessagesConversationMember,
-    AddonMessagesMemberInfoChangedEventData,
     AddonMessagesProvider,
 } from '../../services/messages';
 import { CoreNavigator } from '@services/navigator';
@@ -63,7 +61,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
         this.siteId = CoreSites.getCurrentSiteId();
 
         // Update the contact requests badge.
-        this.contactRequestsCountObserver = CoreEvents.on<AddonMessagesContactRequestCountEventData>(
+        this.contactRequestsCountObserver = CoreEvents.on(
             AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT,
             (data) => {
                 this.requestsBadge = data.count > 0 ? String(data.count) : '';
@@ -72,7 +70,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
         );
 
         // Update block status of a user.
-        this.memberInfoObserver = CoreEvents.on<AddonMessagesMemberInfoChangedEventData>(
+        this.memberInfoObserver = CoreEvents.on(
             AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT,
             (data) => {
                 if (data.userBlocked || data.userUnblocked) {

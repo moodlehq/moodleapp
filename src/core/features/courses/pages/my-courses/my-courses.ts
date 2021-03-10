@@ -19,7 +19,6 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import {
     CoreCoursesProvider,
-    CoreCoursesMyCoursesUpdatedEventData,
     CoreCourses,
 } from '../../services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
@@ -59,7 +58,7 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
         // Update list if user enrols in a course.
         this.myCoursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
-            (data: CoreCoursesMyCoursesUpdatedEventData) => {
+            (data) => {
 
                 if (data.action == CoreCoursesProvider.ACTION_ENROL) {
                     this.fetchCourses();

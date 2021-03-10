@@ -36,13 +36,11 @@ import {
     CoreCourseOptionsDelegate,
     CoreCourseOptionsMenuHandlerToDisplay,
 } from '@features/course/services/course-options-delegate';
-import { CoreCourseAutoSyncData, CoreCourseSync, CoreCourseSyncProvider } from '@features/course/services/sync';
+import { CoreCourseSync, CoreCourseSyncProvider } from '@features/course/services/sync';
 import { CoreCourseFormatComponent } from '../../components/format/format';
 import {
     CoreEvents,
     CoreEventObserver,
-    CoreEventCourseStatusChanged,
-    CoreEventCompletionModuleViewedData,
 } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
 import { CoreConstants } from '@/core/constants';
@@ -123,7 +121,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     protected async initListeners(): Promise<void> {
         if (this.downloadCourseEnabled) {
             // Listen for changes in course status.
-            this.courseStatusObserver = CoreEvents.on<CoreEventCourseStatusChanged>(CoreEvents.COURSE_STATUS_CHANGED, (data) => {
+            this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data) => {
                 if (data.courseId == this.course.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
                     this.updateCourseStatus(data.status);
                 }
@@ -136,7 +134,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.completionObserver = CoreEvents.on<CoreEventCompletionModuleViewedData>(
+        this.completionObserver = CoreEvents.on(
             CoreEvents.COMPLETION_MODULE_VIEWED,
             (data) => {
                 if (data && data.courseId == this.course.id) {
@@ -145,7 +143,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
             },
         );
 
-        this.syncObserver = CoreEvents.on<CoreCourseAutoSyncData>(CoreCourseSyncProvider.AUTO_SYNCED, (data) => {
+        this.syncObserver = CoreEvents.on(CoreCourseSyncProvider.AUTO_SYNCED, (data) => {
             if (!data || data.courseId != this.course.id) {
                 return;
             }

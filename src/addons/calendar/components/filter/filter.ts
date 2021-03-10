@@ -78,7 +78,7 @@ export class AddonCalendarFilterPopoverComponent implements OnInit {
 
         this.filter.filtered = this.filter.courseId > 0 || this.types.some((name) => !this.filter[name]);
 
-        CoreEvents.trigger<AddonCalendarFilter>(AddonCalendarProvider.FILTER_CHANGED_EVENT, this.filter);
+        CoreEvents.trigger(AddonCalendarProvider.FILTER_CHANGED_EVENT, this.filter);
     }
 
 }

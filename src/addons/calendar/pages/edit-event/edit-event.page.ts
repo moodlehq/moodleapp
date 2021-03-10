@@ -24,7 +24,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCategoryData, CoreCourses, CoreCourseSearchedData, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor.ts';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import {
     AddonCalendarProvider,
     AddonCalendarGetCalendarAccessInformationWSResponse,
@@ -32,7 +32,6 @@ import {
     AddonCalendarEventType,
     AddonCalendar,
     AddonCalendarSubmitCreateUpdateFormDataWSParams,
-    AddonCalendarUpdatedEventEvent,
 } from '../../services/calendar';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarEventTypeOption, AddonCalendarHelper } from '../../services/calendar-helper';
@@ -552,14 +551,14 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
         if (this.eventId && this.eventId > 0) {
             // Editing an event.
-            CoreEvents.trigger<AddonCalendarUpdatedEventEvent>(
+            CoreEvents.trigger(
                 AddonCalendarProvider.EDIT_EVENT_EVENT,
                 { eventId: this.eventId },
                 this.currentSite.getId(),
             );
         } else {
             if (event) {
-                CoreEvents.trigger<AddonCalendarUpdatedEventEvent>(
+                CoreEvents.trigger(
                     AddonCalendarProvider.NEW_EVENT_EVENT,
                     { eventId: event.id! },
                     this.currentSite.getId(),

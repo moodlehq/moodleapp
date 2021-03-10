@@ -44,7 +44,7 @@ import {
     CoreCourseSectionWithStatus,
 } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
-import { CoreEventObserver, CoreEvents, CoreEventSectionStatusChangedData, CoreEventSelectCourseTabData } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
@@ -123,7 +123,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     ngOnInit(): void {
         // Listen for section status changes.
-        this.sectionStatusObserver = CoreEvents.on<CoreEventSectionStatusChangedData>(
+        this.sectionStatusObserver = CoreEvents.on(
             CoreEvents.SECTION_STATUS_CHANGED,
             async (data) => {
                 if (!this.downloadEnabled || !this.sections?.length || !data.sectionId || data.courseId != this.course?.id) {
@@ -155,7 +155,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         );
 
         // Listen for select course tab events to select the right section if needed.
-        this.selectTabObserver = CoreEvents.on<CoreEventSelectCourseTabData>(CoreEvents.SELECT_COURSE_TAB, (data) => {
+        this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
             if (data.name) {
                 return;
             }

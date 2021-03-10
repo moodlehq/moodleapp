@@ -24,9 +24,7 @@ import {
     AddonModAssignPlugin,
     AddonModAssign,
     AddonModAssignGetSubmissionStatusWSResponse,
-    AddonModAssignSubmittedForGradingEventData,
     AddonModAssignSavePluginData,
-    AddonModAssignGradedEventData,
 } from '../../services/assign';
 import {
     AddonModAssignAutoSyncData,
@@ -312,7 +310,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
             if (!this.assign!.submissiondrafts) {
                 // No drafts allowed, so it was submitted. Trigger event.
-                CoreEvents.trigger<AddonModAssignSubmittedForGradingEventData>(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, {
+                CoreEvents.trigger(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, {
                     assignmentId: this.assign!.id,
                     submissionId: this.userSubmission!.id,
                     userId: this.currentUserId,
@@ -482,7 +480,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                     const result = await AddonModAssignSync.syncAssign(this.assign.id);
 
                     if (result && result.updated) {
-                        CoreEvents.trigger<AddonModAssignManualSyncData>(AddonModAssignSyncProvider.MANUAL_SYNCED, {
+                        CoreEvents.trigger(AddonModAssignSyncProvider.MANUAL_SYNCED, {
                             assignId: this.assign.id,
                             warnings: result.warnings,
                             gradesBlocked: result.gradesBlocked,
@@ -840,7 +838,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 );
 
                 // Submitted, trigger event.
-                CoreEvents.trigger<AddonModAssignSubmittedForGradingEventData>(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, {
+                CoreEvents.trigger(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, {
                     assignmentId: this.assign!.id,
                     submissionId: this.userSubmission!.id,
                     userId: this.currentUserId,
@@ -915,7 +913,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 // Invalidate and refresh data.
                 this.invalidateAndRefresh(true);
 
-                CoreEvents.trigger<AddonModAssignGradedEventData>(AddonModAssignProvider.GRADED_EVENT, {
+                CoreEvents.trigger(AddonModAssignProvider.GRADED_EVENT, {
                     assignmentId: this.assign!.id,
                     submissionId: this.submitId,
                     userId: this.currentUserId,

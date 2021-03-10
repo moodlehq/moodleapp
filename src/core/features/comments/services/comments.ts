@@ -22,8 +22,24 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreCommentsOffline } from './comments-offline';
+import { CoreCommentsSyncAutoSyncData, CoreCommentsSyncProvider } from './comments-sync';
 
 const ROOT_CACHE_KEY = 'mmComments:';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CoreCommentsProvider.REFRESH_COMMENTS_EVENT]: CoreCommentsRefreshCommentsEventData;
+        [CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT]: CoreCommentsCountChangedEventData;
+        [CoreCommentsSyncProvider.AUTO_SYNCED]: CoreCommentsSyncAutoSyncData;
+    }
+
+}
 
 /**
  * Service that provides some features regarding comments.
