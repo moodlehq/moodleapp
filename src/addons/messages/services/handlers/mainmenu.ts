@@ -16,8 +16,6 @@ import { Injectable } from '@angular/core';
 import {
     AddonMessagesProvider,
     AddonMessages,
-    AddonMessagesUnreadConversationCountsEventData,
-    AddonMessagesContactRequestCountEventData,
 } from '../messages';
 import { CoreMainMenuHandler, CoreMainMenuHandlerToDisplay } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreCronHandler } from '@services/cron';
@@ -58,16 +56,13 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
 
     constructor() {
 
-        CoreEvents.on<AddonMessagesUnreadConversationCountsEventData>(
-            AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT,
-            (data) => {
-                this.unreadCount = data.favourites + data.individual + data.group + data.self;
-                this.orMore = !!data.orMore;
-                this.updateBadge(data.siteId!);
-            },
-        );
+        CoreEvents.on(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, (data) => {
+            this.unreadCount = data.favourites + data.individual + data.group + data.self;
+            this.orMore = !!data.orMore;
+            this.updateBadge(data.siteId!);
+        });
 
-        CoreEvents.on<AddonMessagesContactRequestCountEventData>(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, (data) => {
+        CoreEvents.on(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, (data) => {
             this.contactRequestsCount = data.count;
             this.updateBadge(data.siteId!);
         });

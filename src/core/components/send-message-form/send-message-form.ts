@@ -63,8 +63,8 @@ export class CoreSendMessageFormComponent implements OnInit {
             // Nothing to do.
         });
 
-        CoreEvents.on<boolean>(CoreEvents.SEND_ON_ENTER_CHANGED, (newValue) => {
-            this.sendOnEnter = newValue;
+        CoreEvents.on(CoreEvents.SEND_ON_ENTER_CHANGED, (data) => {
+            this.sendOnEnter = data.sendOnEnter;
         }, CoreSites.getCurrentSiteId());
     }
 

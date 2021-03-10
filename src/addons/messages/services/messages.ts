@@ -31,8 +31,29 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { AddonMessagesMainMenuHandlerService } from './handlers/mainmenu';
+import { AddonMessagesSyncEvents, AddonMessagesSyncProvider } from './messages-sync';
 
 const ROOT_CACHE_KEY = 'mmaMessages:';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [AddonMessagesProvider.NEW_MESSAGE_EVENT]: AddonMessagesNewMessagedEventData;
+        [AddonMessagesProvider.READ_CHANGED_EVENT]: AddonMessagesReadChangedEventData;
+        [AddonMessagesProvider.OPEN_CONVERSATION_EVENT]: AddonMessagesOpenConversationEventData;
+        [AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT]: AddonMessagesUpdateConversationListEventData;
+        [AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT]: AddonMessagesMemberInfoChangedEventData;
+        [AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT]: AddonMessagesUnreadConversationCountsEventData;
+        [AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT]: AddonMessagesContactRequestCountEventData;
+        [AddonMessagesSyncProvider.AUTO_SYNCED]: AddonMessagesSyncEvents;
+    }
+
+}
 
 /**
  * Service to handle messages.

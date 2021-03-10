@@ -32,8 +32,26 @@ import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { CoreComments } from '@features/comments/services/comments';
 import { AddonModAssignSubmissionFormatted } from './assign-helper';
 import { CoreWSError } from '@classes/errors/wserror';
+import { AddonModAssignAutoSyncData, AddonModAssignManualSyncData, AddonModAssignSyncProvider } from './assign-sync';
 
 const ROOT_CACHE_KEY = 'mmaModAssign:';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [AddonModAssignProvider.SUBMISSION_SAVED_EVENT]: AddonModAssignSubmissionSavedEventData;
+        [AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT]: AddonModAssignSubmittedForGradingEventData;
+        [AddonModAssignProvider.GRADED_EVENT]: AddonModAssignGradedEventData;
+        [AddonModAssignSyncProvider.MANUAL_SYNCED]: AddonModAssignManualSyncData;
+        [AddonModAssignSyncProvider.AUTO_SYNCED]: AddonModAssignAutoSyncData;
+    }
+
+}
 
 /**
  * Service that provides some functions for assign.

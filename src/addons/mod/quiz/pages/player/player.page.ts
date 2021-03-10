@@ -27,7 +27,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController, Translate } from '@singletons';
-import { CoreEventActivityDataSentData, CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import { AddonModQuizAutoSave } from '../../classes/auto-save';
 import {
     AddonModQuizNavigationModalComponent,
@@ -35,7 +35,6 @@ import {
 } from '../../components/navigation-modal/navigation-modal';
 import {
     AddonModQuiz,
-    AddonModQuizAttemptFinishedData,
     AddonModQuizAttemptWSData,
     AddonModQuizGetAttemptAccessInformationWSResponse,
     AddonModQuizGetQuizAccessInformationWSResponse,
@@ -400,13 +399,13 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             await this.processAttempt(userFinish, timeUp);
 
             // Trigger an event to notify the attempt was finished.
-            CoreEvents.trigger<AddonModQuizAttemptFinishedData>(AddonModQuizProvider.ATTEMPT_FINISHED_EVENT, {
+            CoreEvents.trigger(AddonModQuizProvider.ATTEMPT_FINISHED_EVENT, {
                 quizId: this.quiz!.id,
                 attemptId: this.attempt!.id,
                 synced: !this.offline,
             }, CoreSites.getCurrentSiteId());
 
-            CoreEvents.trigger<CoreEventActivityDataSentData>(CoreEvents.ACTIVITY_DATA_SENT, { module: 'quiz' });
+            CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'quiz' });
 
             // Leave the player.
             this.forceLeave = true;

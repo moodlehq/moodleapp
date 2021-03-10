@@ -27,7 +27,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile } from '@services/ws';
 import { ModalController, Translate } from '@singletons';
-import { CoreEventActivityDataSentData, CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import { AddonModLessonMenuModalPage } from '../../components/menu-modal/menu-modal';
 import {
     AddonModLesson,
@@ -412,7 +412,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
         this.messages = this.messages.concat(data.messages);
         this.processData = undefined;
 
-        CoreEvents.trigger<CoreEventActivityDataSentData>(CoreEvents.ACTIVITY_DATA_SENT, { module: 'lesson' });
+        CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'lesson' });
 
         // Format activity link if present.
         if (this.eolData.activitylink) {

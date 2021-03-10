@@ -19,9 +19,9 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
-import { AddonCalendar, AddonCalendarProvider, AddonCalendarUpdatedEventEvent } from '../../services/calendar';
+import { AddonCalendar, AddonCalendarProvider } from '../../services/calendar';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
-import { AddonCalendarSync, AddonCalendarSyncEvents, AddonCalendarSyncProvider } from '../../services/calendar-sync';
+import { AddonCalendarSync, AddonCalendarSyncProvider } from '../../services/calendar-sync';
 import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calendar-helper';
 import { Network, NgZone, PopoverController } from '@singletons';
 import { Subscription } from 'rxjs';
@@ -88,7 +88,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
         // Listen for events added. When an event is added, reload the data.
-        this.newEventObserver = CoreEvents.on<AddonCalendarUpdatedEventEvent>(
+        this.newEventObserver = CoreEvents.on(
             AddonCalendarProvider.NEW_EVENT_EVENT,
             (data) => {
                 if (data && data.eventId) {
@@ -106,7 +106,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         }, this.currentSiteId);
 
         // Listen for events edited. When an event is edited, reload the data.
-        this.editEventObserver = CoreEvents.on<AddonCalendarUpdatedEventEvent>(
+        this.editEventObserver = CoreEvents.on(
             AddonCalendarProvider.EDIT_EVENT_EVENT,
             (data) => {
                 if (data && data.eventId) {
@@ -124,7 +124,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         }, this.currentSiteId);
 
         // Refresh data if calendar events are synchronized manually but not by this page.
-        this.manualSyncObserver = CoreEvents.on<AddonCalendarSyncEvents>(AddonCalendarSyncProvider.MANUAL_SYNCED, (data) => {
+        this.manualSyncObserver = CoreEvents.on(AddonCalendarSyncProvider.MANUAL_SYNCED, (data) => {
             if (data && data.source != 'index') {
                 this.loaded = false;
                 this.refreshData(false, false);
@@ -142,7 +142,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             this.hasOffline = await AddonCalendarOffline.hasOfflineData();
         }, this.currentSiteId);
 
-        this.filterChangedObserver = CoreEvents.on<AddonCalendarFilter>(
+        this.filterChangedObserver = CoreEvents.on(
             AddonCalendarProvider.FILTER_CHANGED_EVENT,
             async (filterData) => {
                 this.filter = filterData;
@@ -209,7 +209,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
                     // Trigger a manual sync event.
                     result.source = 'index';
 
-                    CoreEvents.trigger<AddonCalendarSyncEvents>(
+                    CoreEvents.trigger(
                         AddonCalendarSyncProvider.MANUAL_SYNCED,
                         result,
                         this.currentSiteId,

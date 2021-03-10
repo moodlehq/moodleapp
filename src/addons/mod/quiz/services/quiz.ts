@@ -36,13 +36,27 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEventSiteData } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizAttempt } from './quiz-helper';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
+import { AddonModQuizAutoSyncData, AddonModQuizSyncProvider } from './quiz-sync';
 
 const ROOT_CACHE_KEY = 'mmaModQuiz:';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [AddonModQuizProvider.ATTEMPT_FINISHED_EVENT]: AddonModQuizAttemptFinishedData;
+        [AddonModQuizSyncProvider.AUTO_SYNCED]: AddonModQuizAutoSyncData;
+    }
+
+}
 
 /**
  * Service that provides some features for quiz.
@@ -2385,7 +2399,7 @@ export type AddonModQuizViewQuizWSParams = {
 /**
  * Data passed to ATTEMPT_FINISHED_EVENT event.
  */
-export type AddonModQuizAttemptFinishedData = CoreEventSiteData & {
+export type AddonModQuizAttemptFinishedData = {
     quizId: number;
     attemptId: number;
     synced: boolean;

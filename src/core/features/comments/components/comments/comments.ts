@@ -15,9 +15,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChange, OnInit } from '@angular/core';
 import {
     CoreComments,
-    CoreCommentsCountChangedEventData,
     CoreCommentsProvider,
-    CoreCommentsRefreshCommentsEventData,
 } from '../../services/comments';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -72,10 +70,10 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
         }, CoreSites.getCurrentSiteId());
 
         // Refresh comments if event received.
-        this.refreshCommentsObserver = CoreEvents.on<CoreCommentsRefreshCommentsEventData>(
+        this.refreshCommentsObserver = CoreEvents.on(
             CoreCommentsProvider.REFRESH_COMMENTS_EVENT,
             (data) => {
-            // Verify these comments need to be updated.
+                // Verify these comments need to be updated.
                 if (this.undefinedOrEqual(data, 'contextLevel') && this.undefinedOrEqual(data, 'instanceId') &&
                     this.undefinedOrEqual(data, 'component') && this.undefinedOrEqual(data, 'itemId') &&
                     this.undefinedOrEqual(data, 'area')) {
@@ -87,7 +85,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
         );
 
         // Refresh comments count if event received.
-        this.commentsCountObserver = CoreEvents.on<CoreCommentsCountChangedEventData>(
+        this.commentsCountObserver = CoreEvents.on(
             CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT,
             (data) => {
             // Verify these comments need to be updated.

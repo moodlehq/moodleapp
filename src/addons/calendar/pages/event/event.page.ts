@@ -22,7 +22,6 @@ import {
     AddonCalendarEventToDisplay,
     AddonCalendarGetEventsEvent,
     AddonCalendarProvider,
-    AddonCalendarUpdatedEventEvent,
 } from '../../services/calendar';
 import { AddonCalendarHelper } from '../../services/calendar-helper';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
@@ -107,7 +106,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         this.asyncConstructor();
 
         // Listen for event edited. If current event is edited, reload the data.
-        this.editEventObserver = CoreEvents.on(AddonCalendarProvider.EDIT_EVENT_EVENT, (data: AddonCalendarUpdatedEventEvent) => {
+        this.editEventObserver = CoreEvents.on(AddonCalendarProvider.EDIT_EVENT_EVENT, (data) => {
             if (data && data.eventId == this.eventId) {
                 this.eventLoaded = false;
                 this.refreshEvent(true, false);
@@ -205,7 +204,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                     // Trigger a manual sync event.
                     result.source = 'event';
 
-                    CoreEvents.trigger<AddonCalendarSyncEvents>(
+                    CoreEvents.trigger(
                         AddonCalendarSyncProvider.MANUAL_SYNCED,
                         result,
                         this.currentSiteId,
@@ -505,7 +504,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             }
 
             // Trigger an event.
-            CoreEvents.trigger<AddonCalendarUpdatedEventEvent>(AddonCalendarProvider.DELETED_EVENT_EVENT, {
+            CoreEvents.trigger(AddonCalendarProvider.DELETED_EVENT_EVENT, {
                 eventId: this.eventId,
                 sent: sent,
             }, CoreSites.getCurrentSiteId());
@@ -543,7 +542,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             await AddonCalendarOffline.unmarkDeleted(this.event.id);
 
             // Trigger an event.
-            CoreEvents.trigger<AddonCalendarUpdatedEventEvent>(AddonCalendarProvider.UNDELETED_EVENT_EVENT, {
+            CoreEvents.trigger(AddonCalendarProvider.UNDELETED_EVENT_EVENT, {
                 eventId: this.eventId,
             }, CoreSites.getCurrentSiteId());
 

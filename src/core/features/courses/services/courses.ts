@@ -18,10 +18,25 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { makeSingleton } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { CoreEvents, CoreEventSiteData } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import { CoreWSError } from '@classes/errors/wserror';
 
 const ROOT_CACHE_KEY = 'mmCourses:';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CoreCoursesProvider.EVENT_MY_COURSES_CHANGED]: CoreCoursesMyCoursesChangedEventData;
+        [CoreCoursesProvider.EVENT_MY_COURSES_UPDATED]: CoreCoursesMyCoursesUpdatedEventData;
+        [CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED]: CoreCoursesDashboardDownloadEnabledChangedEventData;
+    }
+
+}
 
 /**
  * Service that provides some features regarding lists of courses and categories.
@@ -853,7 +868,7 @@ export class CoreCoursesProvider {
 
             if (added.length || removed.length) {
                 // At least 1 course was added or removed, trigger the event.
-                CoreEvents.trigger<CoreCoursesMyCoursesChangedEventData>(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, {
+                CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, {
                     added: added,
                     removed: removed,
                 }, site.getId());
@@ -1169,7 +1184,7 @@ export const CoreCourses = makeSingleton(CoreCoursesProvider);
 /**
  * Data sent to the EVENT_MY_COURSES_UPDATED.
  */
-export type CoreCoursesMyCoursesUpdatedEventData = CoreEventSiteData & {
+export type CoreCoursesMyCoursesUpdatedEventData = {
     action: string; // Action performed.
     courseId?: number; // Course ID affected (if any).
     course?: CoreCourseAnyCourseData; // Course affected (if any).
@@ -1180,9 +1195,16 @@ export type CoreCoursesMyCoursesUpdatedEventData = CoreEventSiteData & {
 /**
  * Data sent to the EVENT_MY_COURSES_CHANGED.
  */
-export type CoreCoursesMyCoursesChangedEventData = CoreEventSiteData & {
+export type CoreCoursesMyCoursesChangedEventData = {
     added: number[];
     removed: number[];
+};
+
+/**
+ * Data sent to the EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED.
+ */
+export type CoreCoursesDashboardDownloadEnabledChangedEventData = {
+    enabled: boolean;
 };
 
 /**

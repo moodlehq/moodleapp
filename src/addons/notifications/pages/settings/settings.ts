@@ -24,7 +24,7 @@ import { CoreUser } from '@features/user/services/user';
 import { AddonMessageOutputDelegate, AddonMessageOutputHandlerData } from '@addons/messageoutput/services/messageoutput-delegate';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
-import { CoreEventNotificationSoundChangedData, CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import {
     AddonNotifications,
     AddonNotificationsPreferencesProcessor,
@@ -277,7 +277,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
         await CoreUtils.ignoreErrors(CoreConfig.set(CoreConstants.SETTINGS_NOTIFICATION_SOUND, enabled ? 1 : 0));
 
         const siteId = CoreSites.getCurrentSiteId();
-        CoreEvents.trigger<CoreEventNotificationSoundChangedData>(CoreEvents.NOTIFICATION_SOUND_CHANGED, { enabled }, siteId);
+        CoreEvents.trigger(CoreEvents.NOTIFICATION_SOUND_CHANGED, { enabled }, siteId);
         CoreLocalNotifications.rescheduleAll();
     }
 

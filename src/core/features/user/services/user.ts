@@ -22,13 +22,29 @@ import { CoreUserOffline } from './user-offline';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { makeSingleton } from '@singletons';
-import { CoreEvents, CoreEventUserDeletedData } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
+import { CoreUserDelegateService, CoreUserUpdateHandlerData } from './user-delegate';
 
 const ROOT_CACHE_KEY = 'mmUser:';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CoreUserProvider.PROFILE_REFRESHED]: CoreUserProfileRefreshedData;
+        [CoreUserProvider.PROFILE_PICTURE_UPDATED]: CoreUserProfilePictureUpdatedData;
+        [CoreUserDelegateService.UPDATE_HANDLER_EVENT]: CoreUserUpdateHandlerData;
+    }
+
+}
 
 /**
  * Service to provide user functionalities.
@@ -45,7 +61,7 @@ export class CoreUserProvider {
     constructor() {
         this.logger = CoreLogger.getInstance('CoreUserProvider');
 
-        CoreEvents.on<CoreEventUserDeletedData>(CoreEvents.USER_DELETED, (data) => {
+        CoreEvents.on(CoreEvents.USER_DELETED, (data) => {
             // Search for userid in params.
             let userId = 0;
 

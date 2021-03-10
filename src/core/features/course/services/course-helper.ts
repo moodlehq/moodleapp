@@ -29,7 +29,7 @@ import {
 import { CoreConstants } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreFilepool, CoreFilepoolComponentFileEventData } from '@services/filepool';
+import { CoreFilepool } from '@services/filepool';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import {
@@ -61,7 +61,7 @@ import { CoreFile } from '@services/file';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreEventObserver, CoreEventPackageStatusChanged, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
@@ -975,7 +975,7 @@ export class CoreCourseHelperProvider {
         }
 
         if (!instance.contextMenuStatusObserver && component) {
-            instance.contextMenuStatusObserver = CoreEvents.on<CoreEventPackageStatusChanged>(
+            instance.contextMenuStatusObserver = CoreEvents.on(
                 CoreEvents.PACKAGE_STATUS_CHANGED,
                 (data) => {
                     if (data.componentId == module.id && data.component == component) {
@@ -994,7 +994,7 @@ export class CoreCourseHelperProvider {
                 instance.size = moduleSize > 0 ? CoreTextUtils.bytesToSize(moduleSize, 2) : '';
             }, 1000);
 
-            instance.contextFileStatusObserver = CoreEvents.on<CoreFilepoolComponentFileEventData>(
+            instance.contextFileStatusObserver = CoreEvents.on(
                 CoreEvents.COMPONENT_FILE_ACTION,
                 (data) => {
                     if (data.component != component || data.componentId != module.id) {

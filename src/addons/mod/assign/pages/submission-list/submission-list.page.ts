@@ -29,7 +29,6 @@ import {
     AddonModAssignSubmission,
     AddonModAssignProvider,
     AddonModAssign,
-    AddonModAssignGradedEventData,
 } from '../../services/assign';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../services/assign-helper';
 import { AddonModAssignOffline } from '../../services/assign-offline';
@@ -80,7 +79,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
         this.submissions = new AddonModAssignSubmissionListManager(AddonModAssignSubmissionListPage);
 
         // Update data if some grade changes.
-        this.gradedObserver = CoreEvents.on<AddonModAssignGradedEventData>(
+        this.gradedObserver = CoreEvents.on(
             AddonModAssignProvider.GRADED_EVENT,
             (data) => {
                 if (
@@ -162,7 +161,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
                     const result = await AddonModAssignSync.syncAssign(this.assign.id);
 
                     if (result && result.updated) {
-                        CoreEvents.trigger<AddonModAssignManualSyncData>(
+                        CoreEvents.trigger(
                             AddonModAssignSyncProvider.MANUAL_SYNCED,
                             {
                                 assignId: this.assign.id,

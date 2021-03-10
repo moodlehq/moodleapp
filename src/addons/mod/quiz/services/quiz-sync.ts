@@ -26,7 +26,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents, CoreEventSiteData } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import { AddonModQuizAttemptDBRecord } from './database/quiz';
 import { AddonModQuizPrefetchHandler } from './handlers/prefetch';
 import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizProvider, AddonModQuizQuizWSData } from './quiz';
@@ -222,7 +222,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
             if (data) {
                 // Sync successful. Send event.
-                CoreEvents.trigger<AddonModQuizAutoSyncData>(AddonModQuizSyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(AddonModQuizSyncProvider.AUTO_SYNCED, {
                     quizId: quiz.id,
                     attemptFinished: data.attemptFinished,
                     warnings: data.warnings,
@@ -506,7 +506,7 @@ type FinishSyncOptions = {
 /**
  * Data passed to AUTO_SYNCED event.
  */
-export type AddonModQuizAutoSyncData = CoreEventSiteData & {
+export type AddonModQuizAutoSyncData = {
     quizId: number;
     attemptFinished: boolean;
     warnings: string[];

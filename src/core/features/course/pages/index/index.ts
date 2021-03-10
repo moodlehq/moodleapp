@@ -19,7 +19,7 @@ import { CoreTabsOutletTab, CoreTabsOutletComponent } from '@components/tabs-out
 import { CoreCourseFormatDelegate } from '../../services/format-delegate';
 import { CoreCourseOptionsDelegate } from '../../services/course-options-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreEventObserver, CoreEvents, CoreEventSelectCourseTabData } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
@@ -52,7 +52,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     };
 
     constructor() {
-        this.selectTabObserver = CoreEvents.on<CoreEventSelectCourseTabData>(CoreEvents.SELECT_COURSE_TAB, (data) => {
+        this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
             if (!data.name) {
                 // If needed, set sectionId and sectionNumber. They'll only be used if the content tabs hasn't been loaded yet.
                 if (data.sectionId) {

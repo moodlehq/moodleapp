@@ -27,7 +27,7 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
-import { CoreCoursesMyCoursesChangedEventData, CoreCoursesProvider } from '@features/courses/services/courses';
+import { CoreCoursesProvider } from '@features/courses/services/courses';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
@@ -142,7 +142,7 @@ export class CoreSitePluginsHelperProvider {
         });
 
         // Re-load plugins restricted for courses when the list of user courses changes.
-        CoreEvents.on<CoreCoursesMyCoursesChangedEventData>(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, (data) => {
+        CoreEvents.on(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, (data) => {
             if (data && data.siteId && data.siteId == CoreSites.getCurrentSiteId() && data.added && data.added.length) {
                 this.reloadCourseRestrictHandlers();
             }

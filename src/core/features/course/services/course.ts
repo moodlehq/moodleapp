@@ -31,7 +31,6 @@ import { CoreCourseOffline } from './course-offline';
 import { CoreError } from '@classes/errors/error';
 import {
     CoreCourseAnyCourseData,
-    CoreCoursesMyCoursesUpdatedEventData,
     CoreCoursesProvider,
 } from '../../courses/services/courses';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -42,8 +41,22 @@ import { CoreCourseFormatDelegate } from './format-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreCourseLogCronHandler } from './handlers/log-cron';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
+import { CoreCourseAutoSyncData, CoreCourseSyncProvider } from './sync';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CoreCourseSyncProvider.AUTO_SYNCED]: CoreCourseAutoSyncData;
+    }
+
+}
 
 /**
  * Service that provides some features regarding a course.
@@ -902,7 +915,7 @@ export class CoreCourseProvider {
         if (!response.status) {
             throw Error('WS core_course_view_course failed.');
         } else {
-            CoreEvents.trigger<CoreCoursesMyCoursesUpdatedEventData>(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
                 courseId: courseId,
                 action: CoreCoursesProvider.ACTION_VIEW,
             }, site.getId());

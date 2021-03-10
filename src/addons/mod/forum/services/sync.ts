@@ -27,7 +27,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreArray } from '@singletons/array';
-import { CoreEvents, CoreEventSiteData } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import {
     AddonModForum,
     AddonModForumAddDiscussionPostWSOptionsObject,
@@ -669,7 +669,7 @@ export type AddonModForumSyncResult = {
 /**
  * Data passed to AUTO_SYNCED event.
  */
-export type AddonModForumAutoSyncData = CoreEventSiteData & {
+export type AddonModForumAutoSyncData = {
     forumId: number;
     userId: number;
     warnings: string[];
@@ -679,7 +679,7 @@ export type AddonModForumAutoSyncData = CoreEventSiteData & {
 /**
  * Data passed to MANUAL_SYNCED event.
  */
-export type AddonModForumManualSyncData = CoreEventSiteData & {
+export type AddonModForumManualSyncData = {
     forumId: number;
     userId: number;
     source: string;

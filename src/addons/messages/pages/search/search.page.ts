@@ -19,7 +19,6 @@ import {
     AddonMessagesProvider,
     AddonMessagesConversationMember,
     AddonMessagesMessageAreaContact,
-    AddonMessagesMemberInfoChangedEventData,
     AddonMessages,
 } from '../../services/messages';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -72,7 +71,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
 
     constructor() {
         // Update block status of a user.
-        this.memberInfoObserver = CoreEvents.on<AddonMessagesMemberInfoChangedEventData>(
+        this.memberInfoObserver = CoreEvents.on(
             AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT,
             (data) => {
                 if (!data.userBlocked && !data.userUnblocked) {

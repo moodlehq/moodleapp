@@ -76,7 +76,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
         this.coursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
-            (data: CoreCoursesMyCoursesUpdatedEventData) => {
+            (data) => {
 
                 if (this.shouldRefreshOnUpdatedEvent(data)) {
                     this.refreshCourseList();

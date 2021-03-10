@@ -15,7 +15,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreConstants } from '@/core/constants';
-import { CoreEventObserver, CoreEvents, CoreEventSiteUpdatedData } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites, CoreSiteBasicInfo } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreConfig } from '@services/config';
@@ -42,7 +42,7 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
 
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
-        this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async (data: CoreEventSiteUpdatedData) => {
+        this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async (data) => {
             const site = await CoreSites.getSite(data.siteId);
 
             const siteEntry = this.sites.find((siteEntry) => siteEntry.id == site.id);

@@ -21,7 +21,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents } from '@singletons/events';
-import { CoreUser, CoreUserProfile, CoreUserProfileRefreshedData, CoreUserProvider } from '@features/user/services/user';
+import { CoreUser, CoreUserProfile, CoreUserProvider } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
 import { CoreNavigator } from '@services/navigator';
 
@@ -102,7 +102,7 @@ export class CoreUserAboutPage implements OnInit {
         event?.detail.complete();
 
         if (this.user) {
-            CoreEvents.trigger<CoreUserProfileRefreshedData>(CoreUserProvider.PROFILE_REFRESHED, {
+            CoreEvents.trigger(CoreUserProvider.PROFILE_REFRESHED, {
                 courseId: this.courseId,
                 userId: this.userId,
                 user: this.user,

@@ -22,7 +22,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
-import { CoreSite } from '@classes/site';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
@@ -125,7 +124,7 @@ export class CoreLocalNotificationsProvider {
             this.createDefaultChannel();
         });
 
-        CoreEvents.on(CoreEvents.SITE_DELETED, (site: CoreSite) => {
+        CoreEvents.on(CoreEvents.SITE_DELETED, (site) => {
             if (site) {
                 this.cancelSiteNotifications(site.id!);
             }

@@ -109,7 +109,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         super.ngOnInit();
 
         // Listen for attempt finished events.
-        this.finishedObserver = CoreEvents.on<AddonModQuizAttemptFinishedData>(
+        this.finishedObserver = CoreEvents.on(
             AddonModQuizProvider.ATTEMPT_FINISHED_EVENT,
             (data) => {
                 // Go to review attempt if an attempt in this quiz was finished and synced.

@@ -17,7 +17,7 @@ import { IonSearchbar } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreSites } from '@services/sites';
-import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData, CoreCourses } from '@features/courses/services/courses';
+import { CoreCoursesProvider, CoreCourses } from '@features/courses/services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
@@ -160,7 +160,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         this.coursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
-            (data: CoreCoursesMyCoursesUpdatedEventData) => {
+            (data) => {
 
                 if (data.action == CoreCoursesProvider.ACTION_ENROL || data.action == CoreCoursesProvider.ACTION_STATE_CHANGED) {
                     this.refreshCourseList();

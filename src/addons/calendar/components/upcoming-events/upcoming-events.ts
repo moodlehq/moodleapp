@@ -20,7 +20,6 @@ import {
     AddonCalendarProvider,
     AddonCalendarEventToDisplay,
     AddonCalendar,
-    AddonCalendarUpdatedEventEvent,
 } from '../../services/calendar';
 import { AddonCalendarHelper, AddonCalendarFilter } from '../../services/calendar-helper';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
@@ -75,7 +74,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
         // Listen for events "undeleted" (offline).
         this.undeleteEventObserver = CoreEvents.on(
             AddonCalendarProvider.UNDELETED_EVENT_EVENT,
-            (data: AddonCalendarUpdatedEventEvent) => {
+            (data) => {
                 if (!data || !data.eventId) {
                     return;
                 }

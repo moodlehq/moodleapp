@@ -18,7 +18,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp, CoreStoreConfig } from '@services/app';
 import { CoreConfig } from '@services/config';
-import { CoreEvents, CoreEventSessionExpiredData } from '@singletons/events';
+import { CoreEvents, CoreEventSessionExpiredData, CoreEventSiteData } from '@singletons/events';
 import { CoreSites, CoreLoginSiteInfo } from '@services/sites';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -876,7 +876,7 @@ export class CoreLoginHelperProvider {
      * @param data Data received by the SESSION_EXPIRED event.
      * @return Promise resolved when done.
      */
-    async sessionExpired(data: CoreEventSessionExpiredData): Promise<void> {
+    async sessionExpired(data: CoreEventSessionExpiredData & CoreEventSiteData): Promise<void> {
         const siteId = data?.siteId;
         const currentSite = CoreSites.getCurrentSite();
         const siteUrl = currentSite?.getURL();

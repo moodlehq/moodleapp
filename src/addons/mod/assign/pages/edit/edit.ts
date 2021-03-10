@@ -22,7 +22,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
-import { CoreEventActivityDataSentData, CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import {
     AddonModAssignAssign,
     AddonModAssignSubmission,
@@ -31,8 +31,6 @@ import {
     AddonModAssignSubmissionStatusOptions,
     AddonModAssignGetSubmissionStatusWSResponse,
     AddonModAssignSavePluginData,
-    AddonModAssignSubmissionSavedEventData,
-    AddonModAssignSubmittedForGradingEventData,
 } from '../../services/assign';
 import { AddonModAssignHelper } from '../../services/assign-helper';
 import { AddonModAssignOffline } from '../../services/assign-offline';
@@ -351,13 +349,13 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             AddonModAssignHelper.clearSubmissionPluginTmpData(this.assign!, this.userSubmission, inputData);
 
             if (sent) {
-                CoreEvents.trigger<CoreEventActivityDataSentData>(CoreEvents.ACTIVITY_DATA_SENT, { module: 'assign' });
+                CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'assign' });
             }
 
             // Submission saved, trigger events.
             CoreDomUtils.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
 
-            CoreEvents.trigger<AddonModAssignSubmissionSavedEventData>(
+            CoreEvents.trigger(
                 AddonModAssignProvider.SUBMISSION_SAVED_EVENT,
                 {
                     assignmentId: this.assign!.id,
@@ -369,7 +367,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
             if (!this.assign!.submissiondrafts) {
                 // No drafts allowed, so it was submitted. Trigger event.
-                CoreEvents.trigger<AddonModAssignSubmittedForGradingEventData>(
+                CoreEvents.trigger(
                     AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT,
                     {
                         assignmentId: this.assign!.id,

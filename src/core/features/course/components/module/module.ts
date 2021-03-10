@@ -16,7 +16,7 @@ import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angu
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreEventObserver, CoreEventPackageStatusChanged, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     CoreCourseHelper,
     CoreCourseModule,
@@ -99,7 +99,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
             this.prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(this.module);
             this.canCheckUpdates = CoreCourseModulePrefetchDelegate.canCheckUpdates();
 
-            this.statusObserver = CoreEvents.on<CoreEventPackageStatusChanged>(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
+            this.statusObserver = CoreEvents.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
                 if (!this.module || data.componentId != this.module.id || !this.prefetchHandler ||
                         data.component != this.prefetchHandler.component) {
                     return;

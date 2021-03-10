@@ -20,13 +20,7 @@ import {
     AddonMessagesProvider,
     AddonMessagesConversationFormatted,
     AddonMessages,
-    AddonMessagesMemberInfoChangedEventData,
-    AddonMessagesContactRequestCountEventData,
-    AddonMessagesUnreadConversationCountsEventData,
-    AddonMessagesReadChangedEventData,
-    AddonMessagesUpdateConversationListEventData,
     AddonMessagesNewMessagedEventData,
-    AddonMessagesOpenConversationEventData,
 } from '../../services/messages';
 import {
     AddonMessagesOffline,
@@ -113,7 +107,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         // Update conversations when new message is received.
-        this.newMessagesObserver = CoreEvents.on<AddonMessagesNewMessagedEventData>(
+        this.newMessagesObserver = CoreEvents.on(
             AddonMessagesProvider.NEW_MESSAGE_EVENT,
             (data) => {
             // Check if the new message belongs to the option that is currently expanded.
@@ -157,9 +151,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         );
 
         // Update conversations when a message is read.
-        this.readChangedObserver = CoreEvents.on<AddonMessagesReadChangedEventData>(AddonMessagesProvider.READ_CHANGED_EVENT, (
-            data,
-        ) => {
+        this.readChangedObserver = CoreEvents.on(AddonMessagesProvider.READ_CHANGED_EVENT, (data) => {
             if (data.conversationId) {
                 const conversation = this.findConversation(data.conversationId);
 
@@ -175,7 +167,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         }, this.siteId);
 
         // Load a discussion if we receive an event to do so.
-        this.openConversationObserver = CoreEvents.on<AddonMessagesOpenConversationEventData>(
+        this.openConversationObserver = CoreEvents.on(
             AddonMessagesProvider.OPEN_CONVERSATION_EVENT,
             (data) => {
                 if (data.conversationId || data.userId) {
@@ -197,7 +189,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         });
 
         // Update conversations if we receive an event to do so.
-        this.updateConversationListObserver = CoreEvents.on<AddonMessagesUpdateConversationListEventData>(
+        this.updateConversationListObserver = CoreEvents.on(
             AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT,
             (data) => {
                 if (data && data.action == 'mute') {
@@ -231,7 +223,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             });
 
         // Update unread conversation counts.
-        this.cronObserver = CoreEvents.on<AddonMessagesUnreadConversationCountsEventData>(
+        this.cronObserver = CoreEvents.on(
             AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT,
             (data) => {
                 this.favourites.unread = data.favourites;
@@ -242,7 +234,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         );
 
         // Update the contact requests badge.
-        this.contactRequestsCountObserver = CoreEvents.on<AddonMessagesContactRequestCountEventData>(
+        this.contactRequestsCountObserver = CoreEvents.on(
             AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT,
             (data) => {
                 this.contactRequestsCount = data.count;
@@ -251,7 +243,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         );
 
         // Update block status of a user.
-        this.memberInfoObserver = CoreEvents.on<AddonMessagesMemberInfoChangedEventData>(
+        this.memberInfoObserver = CoreEvents.on(
             AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT,
             (data) => {
                 if (!data.userBlocked && !data.userUnblocked) {

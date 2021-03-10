@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
-import { CoreComments, CoreCommentsCountChangedEventData, CoreCommentsProvider } from './comments';
+import { CoreComments, CoreCommentsProvider } from './comments';
 import { CoreEvents } from '@singletons/events';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreCommentsOffline } from './comments-offline';
@@ -94,7 +94,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
 
             if (typeof result != 'undefined') {
                 // Sync successful, send event.
-                CoreEvents.trigger<CoreCommentsSyncAutoSyncData>(CoreCommentsSyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(CoreCommentsSyncProvider.AUTO_SYNCED, {
                     contextLevel: comment.contextlevel,
                     instanceId: comment.instanceid,
                     componentName: comment.component,
@@ -262,7 +262,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
 
             result.updated = true;
 
-            CoreEvents.trigger<CoreCommentsCountChangedEventData>(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
+            CoreEvents.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
                 contextLevel: contextLevel,
                 instanceId: instanceId,
                 component,

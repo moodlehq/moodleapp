@@ -21,7 +21,6 @@ import {
     AddonMessagesSearchContactsContact,
     AddonMessagesGetContactsContact,
     AddonMessages,
-    AddonMessagesMemberInfoChangedEventData,
 } from '../../services/messages';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreApp } from '@services/app';
@@ -71,7 +70,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
         this.loadingMessage = this.loadingMessages;
 
         // Refresh the list when a contact request is confirmed.
-        this.memberInfoObserver = CoreEvents.on<AddonMessagesMemberInfoChangedEventData>(
+        this.memberInfoObserver = CoreEvents.on(
             AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT,
             (data) => {
                 if (data.contactRequestConfirmed) {

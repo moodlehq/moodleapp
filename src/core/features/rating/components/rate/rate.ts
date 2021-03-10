@@ -25,7 +25,7 @@ import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
-import { CoreEventObserver, CoreEvents, CoreEventSiteUpdatedData } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
  * Component that displays the user rating select.
@@ -63,7 +63,7 @@ export class CoreRatingRateComponent implements OnChanges, OnDestroy {
         this.disabled = CoreRating.isRatingDisabledInSite();
 
         // Update visibility if current site info is updated.
-        this.updateSiteObserver = CoreEvents.on<CoreEventSiteUpdatedData>(CoreEvents.SITE_UPDATED, () => {
+        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.disabled = CoreRating.isRatingDisabledInSite();
         }, CoreSites.getCurrentSiteId());
     }

@@ -26,7 +26,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextErrorObject, CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
-import { CoreEventObserver, CoreEventPackageStatusChanged, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCourseContentsPage } from '../pages/contents/contents';
 import { CoreCourse } from '../services/course';
@@ -314,7 +314,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         }
 
         // Listen for changes on this module status.
-        this.statusObserver = CoreEvents.on<CoreEventPackageStatusChanged>(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
+        this.statusObserver = CoreEvents.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
             if (!this.module || data.componentId != this.module.id || data.component != this.component) {
                 return;
             }
