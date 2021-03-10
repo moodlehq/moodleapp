@@ -138,8 +138,8 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.route.queryParams.subscribe(async (params) => {
-            const discussionUserId = CoreNavigator.getRouteNumberParam('discussionUserId', params) ||
-                CoreNavigator.getRouteNumberParam('userId', params) || undefined;
+            const discussionUserId = CoreNavigator.getRouteNumberParam('discussionUserId', { params }) ||
+                CoreNavigator.getRouteNumberParam('userId', { params }) || undefined;
 
             if (this.loaded && this.discussionUserId == discussionUserId) {
                 return;

@@ -164,9 +164,9 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
         this.route.queryParams.subscribe(async (params) => {
             this.loaded = false;
-            this.conversationId = CoreNavigator.getRouteNumberParam('conversationId', params) || undefined;
-            this.userId = CoreNavigator.getRouteNumberParam('userId', params) || undefined;
-            this.showKeyboard = CoreNavigator.getRouteBooleanParam('showKeyboard', params) || false;
+            this.conversationId = CoreNavigator.getRouteNumberParam('conversationId', { params }) || undefined;
+            this.userId = CoreNavigator.getRouteNumberParam('userId', { params }) || undefined;
+            this.showKeyboard = CoreNavigator.getRouteBooleanParam('showKeyboard', { params }) || false;
 
             await this.fetchData();
 

@@ -52,10 +52,11 @@ export type CoreNavigationOptions = {
 };
 
 /**
- * Options for CoreNavigatorService#getCurrentRoute method.
+ * Route options to get route or params values.
  */
-type GetCurrentRouteOptions = Partial<{
-    parentRoute: ActivatedRoute;
+export type CoreNavigatorCurrentRouteOptions = Partial<{
+    params: Params; // Params to get the value from.
+    route: ActivatedRoute; // Current Route.
     pageComponent: unknown;
 }>;
 
@@ -246,8 +247,8 @@ export class CoreNavigatorService {
     /**
      * Iterately get the params checking parent routes.
      *
-     * @param route Current route.
      * @param name Name of the parameter.
+     * @param route Current route.
      * @return Value of the parameter, undefined if not found.
      */
     protected getRouteSnapshotParam<T = unknown>(name: string, route?: ActivatedRoute): T | undefined {
@@ -270,18 +271,21 @@ export class CoreNavigatorService {
      * unless there's a new navigation to the page.
      *
      * @param name Name of the parameter.
-     * @param params Optional params to get the value from. If missing, it will autodetect.
+     * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @return Value of the parameter, undefined if not found.
      */
-    getRouteParam<T = unknown>(name: string, params?: Params): T | undefined {
+    getRouteParam<T = unknown>(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): T | undefined {
         let value: any;
 
-        if (!params) {
-            const route = this.getCurrentRoute();
+        if (!routeOptions.params) {
+            let route = this.getCurrentRoute();
+            if (!route?.snapshot && routeOptions.route) {
+                route = routeOptions.route;
+            }
 
             value = this.getRouteSnapshotParam(name, route);
         } else {
-            value = params[name];
+            value = routeOptions.params[name];
         }
 
         if (typeof value == 'undefined') {
@@ -309,11 +313,11 @@ export class CoreNavigatorService {
      * Angular router automatically converts numbers to string, this function automatically converts it back to number.
      *
      * @param name Name of the parameter.
-     * @param params Optional params to get the value from. If missing, it will autodetect.
+     * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @return Value of the parameter, undefined if not found.
      */
-    getRouteNumberParam(name: string, params?: Params): number | undefined {
-        const value = this.getRouteParam<string>(name, params);
+    getRouteNumberParam(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): number | undefined {
+        const value = this.getRouteParam<string>(name, routeOptions);
 
         return value !== undefined ? Number(value) : value;
     }
@@ -323,13 +327,25 @@ export class CoreNavigatorService {
      * Angular router automatically converts booleans to string, this function automatically converts it back to boolean.
      *
      * @param name Name of the parameter.
-     * @param params Optional params to get the value from. If missing, it will autodetect.
+     * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
      * @return Value of the parameter, undefined if not found.
      */
-    getRouteBooleanParam(name: string, params?: Params): boolean | undefined {
-        const value = this.getRouteParam<string>(name, params);
+    getRouteBooleanParam(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): boolean | undefined {
+        const value = this.getRouteParam<string>(name, routeOptions);
 
-        return value !== undefined ? Boolean(value) : value;
+        if (typeof value == 'undefined') {
+            return value;
+        }
+
+        if (CoreUtils.isTrueOrOne(value)) {
+            return true;
+        }
+
+        if (CoreUtils.isFalseOrZero(value)) {
+            return false;
+        }
+
+        return Boolean(value);
     }
 
     /**
@@ -345,25 +361,25 @@ export class CoreNavigatorService {
      * Get current activated route.
      *
      * @param options
-     *     - parent: Parent route, if this isn't provided the current active route will be used.
+     *     - route: Parent route, if this isn't provided the current active route will be used.
      *     - pageComponent: Page component of the route to find, if this isn't provided the deepest route in the hierarchy
      *                      will be returned.
      * @return Current activated route.
      */
     getCurrentRoute(): ActivatedRoute;
-    getCurrentRoute(options: GetCurrentRouteOptions): ActivatedRoute | null;
-    getCurrentRoute({ parentRoute, pageComponent }: GetCurrentRouteOptions = {}): ActivatedRoute | null {
-        parentRoute = parentRoute ?? Router.routerState.root;
+    getCurrentRoute(options: CoreNavigatorCurrentRouteOptions): ActivatedRoute | null;
+    getCurrentRoute({ route, pageComponent }: CoreNavigatorCurrentRouteOptions = {}): ActivatedRoute | null {
+        route = route ?? Router.routerState.root;
 
-        if (pageComponent && parentRoute.component === pageComponent) {
-            return parentRoute;
+        if (pageComponent && route.component === pageComponent) {
+            return route;
         }
 
-        if (parentRoute.firstChild) {
-            return this.getCurrentRoute({ parentRoute: parentRoute.firstChild, pageComponent });
+        if (route.firstChild) {
+            return this.getCurrentRoute({ route: route.firstChild, pageComponent });
         }
 
-        return pageComponent ? null : parentRoute;
+        return pageComponent ? null : route;
     }
 
     /**
