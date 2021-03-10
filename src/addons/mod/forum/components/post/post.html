@@ -37,7 +37,7 @@
                             </ng-container>
                         </p>
                         <p *ngIf="post.timecreated">{{post.timecreated * 1000 | coreFormatDate: "strftimerecentfull"}}</p>
-                        <p *ngIf="!post.timecreated"><ion-icon name="time"></ion-icon> {{ 'core.notsent' | translate }}</p>
+                        <p *ngIf="!post.timecreated"><ion-icon name="fas-clock"></ion-icon> {{ 'core.notsent' | translate }}</p>
                     </div>
                     <ng-container *ngIf="!displaySubject">
                         <ion-note *ngIf="trackPosts && post.unread"

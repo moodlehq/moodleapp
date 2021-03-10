@@ -24,7 +24,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
 import { CoreConstants } from '@/core/constants';
 import { makeSingleton, Platform, Translate } from '@singletons';
-import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile } from '@services/ws';
+import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 
 import { CoreCourseStatusDBRecord, COURSE_STATUS_TABLE } from './database/course';
 import { CoreCourseOffline } from './course-offline';
@@ -1404,7 +1404,7 @@ type CoreCourseGetCourseModuleByInstanceWSParams = {
  */
 export type CoreCourseGetCourseModuleWSResponse = {
     cm: CoreCourseModuleBasicInfo;
-    warnings?: CoreStatusWithWarningsWSResponse[];
+    warnings?: CoreWSExternalWarning[];
 };
 
 /**

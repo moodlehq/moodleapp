@@ -141,10 +141,10 @@ import { ADDON_MOD_RESOURCE_SERVICES } from '@addons/mod/resource/resource.modul
 import { ADDON_MOD_URL_SERVICES } from '@addons/mod/url/url.module';
 // @todo import { ADDON_MOD_WIKI_SERVICES } from '@addons/mod/wiki/wiki.module';
 // @todo import { ADDON_MOD_WORKSHOP_SERVICES } from '@addons/mod/workshop/workshop.module';
-// @todo import { ADDON_NOTES_SERVICES } from '@addons/notes/notes.module';
+import { ADDON_NOTES_SERVICES } from '@addons/notes/notes.module';
 import { ADDON_NOTIFICATIONS_SERVICES } from '@addons/notifications/notifications.module';
 import { ADDON_PRIVATEFILES_SERVICES } from '@addons/privatefiles/privatefiles.module';
-// @todo import { ADDON_REMOTETHEMES_SERVICES } from '@addons/remotethemes/remotethemes.module';
+import { ADDON_REMOTETHEMES_SERVICES } from '@addons/remotethemes/remotethemes.module';
 
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
 import { AddonModAssignComponentsModule } from '@addons/mod/assign/components/components.module';
@@ -306,10 +306,10 @@ export class CoreCompileProvider {
             ...ADDON_MOD_URL_SERVICES,
             // @todo ...ADDON_MOD_WIKI_SERVICES,
             // @todo ...ADDON_MOD_WORKSHOP_SERVICES,
-            // @todo ...ADDON_NOTES_SERVICES,
+            ...ADDON_NOTES_SERVICES,
             ...ADDON_NOTIFICATIONS_SERVICES,
             ...ADDON_PRIVATEFILES_SERVICES,
-            // @todo ...ADDON_REMOTETHEMES_SERVICES,
+            ...ADDON_REMOTETHEMES_SERVICES,
         ];
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.

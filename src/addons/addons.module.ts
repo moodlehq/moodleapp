@@ -29,6 +29,7 @@ import { AddonQbehaviourModule } from './qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from './qtype/qtype.module';
 import { AddonBlogModule } from './blog/blog.module';
 import { AddonRemoteThemesModule } from './remotethemes/remotethemes.module';
+import { AddonNotesModule } from './notes/notes.module';
 
 @NgModule({
     imports: [
@@ -44,6 +45,7 @@ import { AddonRemoteThemesModule } from './remotethemes/remotethemes.module';
         AddonNotificationsModule,
         AddonMessageOutputModule,
         AddonModModule,
+        AddonNotesModule,
         AddonQbehaviourModule,
         AddonQtypeModule,
         AddonRemoteThemesModule,
