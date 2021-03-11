@@ -16,13 +16,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCoursesCoursePreviewPage } from './course-preview';
-import { CoreCoursesComponentsModule } from '../../components/components.module';
+import { CoreCoursePreviewPage } from './preview.page';
 
 const routes: Routes = [
     {
         path: '',
-        component: CoreCoursesCoursePreviewPage,
+        component: CoreCoursePreviewPage,
     },
 ];
 
@@ -30,11 +29,10 @@ const routes: Routes = [
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-        CoreCoursesComponentsModule,
     ],
     declarations: [
-        CoreCoursesCoursePreviewPage,
+        CoreCoursePreviewPage,
     ],
     exports: [RouterModule],
 })
-export class CoreCoursesCoursePreviewPageModule { }
+export class CoreCoursePreviewPageModule { }

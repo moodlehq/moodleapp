@@ -29,22 +29,17 @@ export class AddonBlockSelfCompletionHandlerService extends CoreBlockBaseHandler
     blockName = 'selfcompletion';
 
     /**
-     * Returns the data needed to render the block.
-     *
-     * @param block The block to render.
-     * @param contextLevel The context where the block will be used.
-     * @param instanceId The instance ID associated with the context level.
-     * @return Data or promise resolved with the data.
+     * @inheritdoc
      */
     getDisplayData(block: CoreCourseBlock, contextLevel: string, instanceId: number): CoreBlockHandlerData {
-        // @todo
-
         return {
             title: 'addon.block_selfcompletion.pluginname',
             class: 'addon-block-self-completion',
             component: CoreBlockOnlyTitleComponent,
-            link: 'AddonCourseCompletionReportPage',
-            linkParams: { courseId: instanceId },
+            link: 'coursecompletion',
+            linkParams: {
+                courseId: instanceId,
+            },
         };
     }
 

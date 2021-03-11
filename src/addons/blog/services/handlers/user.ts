@@ -38,13 +38,6 @@ export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
     /**
      * @inheritdoc
      */
-    async isEnabledForUser(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
     getDisplayData(): CoreUserProfileHandlerData {
         return {
             icon: 'far-newspaper',

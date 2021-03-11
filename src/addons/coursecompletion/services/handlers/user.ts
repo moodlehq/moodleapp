@@ -13,48 +13,42 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-
-import { CoreGrades } from '@features/grades/services/grades';
 import { CoreUserProfile } from '@features/user/services/user';
-import {
-    CoreUserDelegateService ,
-    CoreUserProfileHandler,
-    CoreUserProfileHandlerData,
-} from '@features/user/services/user-delegate';
+import { CoreUserProfileHandler, CoreUserDelegateService, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
+import { AddonCourseCompletion } from '../coursecompletion';
 
 /**
- * Profile grades handler.
+ * Profile course completion handler.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
+export class AddonCourseCompletionUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'CoreGrades:viewGrades';
-    priority = 400;
+    name = 'AddonCourseCompletion';
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
+    priority = 200;
     cacheEnabled = true;
 
     /**
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return true;
+        return AddonCourseCompletion.isPluginViewEnabled();
     }
 
     /**
      * @inheritdoc
      */
     async isEnabledForCourse(courseId?: number): Promise<boolean> {
-        return CoreUtils.ignoreErrors(CoreGrades.isPluginEnabledForCourse(courseId), false);
+        return AddonCourseCompletion.isPluginViewEnabledForCourse(courseId);
     }
 
     /**
      * @inheritdoc
      */
     async isEnabledForUser(user: CoreUserProfile, courseId?: number): Promise<boolean> {
-        return CoreUtils.promiseWorks(CoreGrades.getCourseGradesTable(courseId!, user.id));
+        return await AddonCourseCompletion.isPluginViewEnabledForUser(courseId!, user.id);
     }
 
     /**
@@ -62,19 +56,18 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
      */
     getDisplayData(): CoreUserProfileHandlerData {
         return {
-            icon: 'fas-chart-bar',
-            title: 'core.grades.grades',
-            class: 'core-grades-user-handler',
+            icon: 'fas-tasks',
+            title: 'addon.coursecompletion.coursecompletion',
+            class: 'addon-coursecompletion-handler',
             action: (event, user, courseId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                CoreNavigator.navigateToSitePath(`/user-grades/${courseId}`, {
-                    params: { userId: user.id },
+                CoreNavigator.navigateToSitePath('/coursecompletion', {
+                    params: { courseId, userId: user.id },
                 });
             },
         };
     }
 
 }
-
-export const CoreGradesUserHandler = makeSingleton(CoreGradesUserHandlerService);
+export const AddonCourseCompletionUserHandler = makeSingleton(AddonCourseCompletionUserHandlerService);

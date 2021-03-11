@@ -18,7 +18,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
-import { CoreUserParticipantsPage } from './pages/participants/participants';
+import { CoreUserParticipantsPage } from './pages/participants/participants.page';
 
 const routes: Routes = [
     {

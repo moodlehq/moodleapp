@@ -59,18 +59,14 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
             const params: Params = {
                 course: result.course,
             };
-            let page: string;
+            let page = 'course/' + courseId;
 
             if (notification.contexturl?.indexOf('user/index.php') != -1) {
                 // Open the participants tab.
-                page = 'course';
-                params.selectedTab = 'user_participants'; // @todo: Set this when participants is done.
-            } else if (result.enrolled) {
-                // User is still enrolled, open the course.
-                page = 'course';
-            } else {
+                params.selectedTab = 'participants'; // @todo: Set this when participants is done.
+            } else if (!result.enrolled) {
                 // User not enrolled anymore, open the preview page.
-                page = 'courses/preview';;
+                page += '/preview';
             }
 
             await CoreNavigator.navigateToSitePath(page, { params, siteId: notification.site });

@@ -309,7 +309,8 @@ img[alt] {
 // Activity modules
 .core-module-icon {
     --size: 24px;
-    width: auto;
+    width: var(--size);
+    height: var(--size);
     max-width: var(--size);
     max-height: var(--size);
 }

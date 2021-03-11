@@ -12,29 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseListModTypePage } from './list-mod-type.page';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
+import { CoreTagComponentsModule } from '@features/tag/components/components.module';
+import { AddonCourseCompletionReportPage } from './pages/report/report';
 
 const routes: Routes = [
     {
         path: '',
-        component: CoreCourseListModTypePage,
+        component: AddonCourseCompletionReportPage,
     },
 ];
 
 @NgModule({
-    declarations: [
-        CoreCourseListModTypePage,
-    ],
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        CoreCommentsComponentsModule,
+        CoreTagComponentsModule,
     ],
     exports: [RouterModule],
+    declarations: [
+        AddonCourseCompletionReportPage,
+    ],
 })
-export class CoreCourseListModTypePageModule {}
+export class AddonCourseCompletionLazyModule {}

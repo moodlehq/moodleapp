@@ -12,7 +12,7 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
         <core-loading [hideUntil]="grades.loaded" class="safe-area-page">
-            <core-empty-box *ngIf="grades.empty" icon="stats" [message]="'core.grades.nogradesreturned' | translate">
+            <core-empty-box *ngIf="grades.empty" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate">
             </core-empty-box>
             <div *ngIf="!grades.empty" class="core-grades-container">
                 <table cellspacing="0" cellpadding="0" class="core-grades-table">

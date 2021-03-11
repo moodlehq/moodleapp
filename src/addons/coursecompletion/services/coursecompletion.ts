@@ -164,9 +164,9 @@ export class AddonCourseCompletionProvider {
      * @param preferCache True if shouldn't call WS if data is cached, false otherwise.
      * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    async isPluginViewEnabledForCourse(courseId: number, preferCache: boolean = true): Promise<boolean> {
+    async isPluginViewEnabledForCourse(courseId?: number, preferCache: boolean = true): Promise<boolean> {
         if (!courseId) {
-            throw new CoreError('No courseId provided');
+            return false;
         }
 
         const course = await CoreCourses.getUserCourse(courseId, preferCache);

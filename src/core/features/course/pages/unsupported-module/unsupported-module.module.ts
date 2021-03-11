@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseUnsupportedModulePage } from './unsupported-module';
+import { CoreCourseUnsupportedModulePage } from './unsupported-module.page';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 const routes: Routes = [

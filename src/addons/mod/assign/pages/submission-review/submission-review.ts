@@ -58,7 +58,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, CanLeave {
             this.moduleId = CoreNavigator.getRouteNumberParam('cmId')!;
             this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
             this.submitId = CoreNavigator.getRouteNumberParam('submitId') || 0;
-            this.blindId = CoreNavigator.getRouteNumberParam('blindId', params);
+            this.blindId = CoreNavigator.getRouteNumberParam('blindId', { params });
 
             this.fetchSubmission().finally(() => {
                 this.loaded = true;

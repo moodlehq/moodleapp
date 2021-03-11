@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
@@ -43,8 +43,8 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    constructor(route: ActivatedRoute) {
-        const courseId = parseInt(route.snapshot.queryParams.courseId);
+    constructor() {
+        const courseId = CoreNavigator.getRouteNumberParam('courseId')!;
 
         this.participants = new CoreUserParticipantsManager(CoreUserParticipantsPage, courseId);
     }

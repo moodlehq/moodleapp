@@ -50,12 +50,6 @@ const routes: Routes = [
             import('./pages/my-courses/my-courses.module')
                 .then(m => m.CoreCoursesMyCoursesPageModule),
     },
-    {
-        path: 'preview',
-        loadChildren: () =>
-            import('./pages/course-preview/course-preview.module')
-                .then(m => m.CoreCoursesCoursePreviewPageModule),
-    },
 ];
 
 @NgModule({

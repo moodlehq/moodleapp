@@ -44,7 +44,7 @@ export class CoreGradesMainMenuHandlerService implements CoreMainMenuHandler {
      */
     getDisplayData(): CoreMainMenuHandlerData {
         return {
-            icon: 'stats-chart',
+            icon: 'fas-chart-bar',
             title: 'core.grades.grades',
             page: CoreGradesMainMenuHandlerService.PAGE_NAME,
             class: 'core-grades-coursesgrades-handler',

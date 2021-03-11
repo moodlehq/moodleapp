@@ -31,35 +31,23 @@ export class CoreUserProfileMailHandlerService implements CoreUserProfileHandler
     type = CoreUserDelegateService.TYPE_COMMUNICATION;
 
     /**
-     * Check if handler is enabled.
-     *
-     * @return Always enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Check if handler is enabled for this user in this context.
-     *
-     * @param user User to check.
-     * @param courseId Course ID.
-     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @param admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
-     * @return Promise resolved with true if enabled, resolved with false otherwise.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async isEnabledForUser(user: CoreUserProfile, courseId: number, navOptions?: unknown, admOptions?: unknown): Promise<boolean> {
+    async isEnabledForUser(user: CoreUserProfile): Promise<boolean> {
         return user.id != CoreSites.getCurrentSiteUserId() && !!user.email;
     }
 
     /**
-     * Returns the data needed to render the handler.
-     *
-     * @return Data needed to render the handler.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getDisplayData(user: CoreUserProfile, courseId: number): CoreUserProfileHandlerData {
+    getDisplayData(): CoreUserProfileHandlerData {
         return {
             icon: 'mail',
             title: 'core.user.sendemail',

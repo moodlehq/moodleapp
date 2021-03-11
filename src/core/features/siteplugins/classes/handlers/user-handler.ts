@@ -55,27 +55,28 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
     /**
      * @inheritdoc
      */
-    async isEnabledForUser(
-        user: CoreUserProfile,
+    async isEnabledForCourse(
         courseId?: number,
     ): Promise<boolean> {
-        // First check if it's enabled for the user.
-        const enabledForUser = CoreSitePlugins.isHandlerEnabledForUser(
-            user.id,
-            this.handlerSchema.restricttocurrentuser,
-            this.initResult?.restrict,
-        );
-
-        if (!enabledForUser) {
-            return false;
-        }
-
         courseId = courseId || CoreSites.getCurrentSiteHomeId();
 
-        // Enabled for user, check if it's enabled for the course.
+        // Check if it's enabled for the course.
         return CoreSitePlugins.isHandlerEnabledForCourse(
             courseId,
             this.handlerSchema.restricttoenrolledcourses,
+            this.initResult?.restrict,
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabledForUser(
+        user: CoreUserProfile,
+    ): Promise<boolean> {
+        return CoreSitePlugins.isHandlerEnabledForUser(
+            user.id,
+            this.handlerSchema.restricttocurrentuser,
             this.initResult?.restrict,
         );
     }

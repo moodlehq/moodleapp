@@ -17,7 +17,7 @@ import { RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { resolveModuleRoutes } from '@/app/app-routing.module';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseIndexPage } from './index';
+import { CoreCourseIndexPage } from './index.page';
 import { COURSE_INDEX_ROUTES } from './index-routing.module';
 
 function buildRoutes(injector: Injector): Routes {

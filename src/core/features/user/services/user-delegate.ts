@@ -18,7 +18,7 @@ import { Subject, BehaviorSubject } from 'rxjs';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents } from '@singletons/events';
-import { CoreUserProfile } from './user';
+import { CoreUserProfile, CoreUserProvider } from './user';
 import { makeSingleton } from '@singletons';
 import { CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { CoreSites } from '@services/sites';
@@ -42,19 +42,34 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
     type: string;
 
     /**
-     * Whether or not the handler is enabled for a user.
+     * If isEnabledForUser Cache should be enabled.
+     */
+    cacheEnabled?: boolean;
+
+    /**
+     * Whether or not the handler is enabled for a course.
      *
-     * @param user User object.
      * @param courseId Course ID where to show.
      * @param navOptions Navigation options for the course.
      * @param admOptions Admin options for the course.
      * @return Whether or not the handler is enabled for a user.
      */
-    isEnabledForUser(
-        user: CoreUserProfile,
+    isEnabledForCourse?(
         courseId?: number,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
         admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
+    ): Promise<boolean>;
+
+    /**
+     * Whether or not the handler is enabled for a user.
+     *
+     * @param user User object.
+     * @param courseId Course ID where to show.
+     * @return Whether or not the handler is enabled for a user.
+     */
+    isEnabledForUser?(
+        user: CoreUserProfile,
+        courseId?: number,
     ): Promise<boolean>;
 
     /**
@@ -156,6 +171,11 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      */
     static readonly UPDATE_HANDLER_EVENT = 'CoreUserDelegate_update_handler_event';
 
+    /**
+     * Cache object that checks enabled for use.
+     */
+    protected enabledForUserCache: Record<string, Record<string, boolean>> = {};
+
     protected featurePrefix = 'CoreUserDelegate_';
 
     // Hold the handlers and the observable to notify them for each user.
@@ -185,6 +205,14 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
             // Update the data and notify.
             Object.assign(handler.data, data.data);
             this.userHandlers[data.userId].observable.next(this.userHandlers[data.userId].handlers);
+        });
+
+        CoreEvents.on(CoreEvents.LOGOUT, () => {
+            this.clearHandlerCache();
+        });
+
+        CoreEvents.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
+            this.clearHandlerCache(data.courseId, data.userId);
         });
     }
 
@@ -267,7 +295,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
             const handler = this.handlers[name];
 
             try {
-                const enabled = await handler.isEnabledForUser(user, courseId, navOptions, admOptions);
+                const enabled = await this.getAndCacheEnabledForUserFromHandler(handler, user, courseId, navOptions, admOptions);
 
                 if (enabled) {
                     userData.handlers.push({
@@ -286,6 +314,91 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
         userData.handlers.sort((a, b) => (b.priority || 0) - (a.priority || 0));
         userData.loaded = true;
         userData.observable.next(userData.handlers);
+    }
+
+    /**
+     * Helper funtion to get enabled for user from the handler.
+     *
+     * @param handler Handler object.
+     * @param user User object.
+     * @param courseId Course ID where to show.
+     * @param navOptions Navigation options for the course.
+     * @param admOptions Admin options for the course.
+     * @return Whether or not the handler is enabled for a user.
+     */
+    protected async getAndCacheEnabledForUserFromHandler(
+        handler: CoreUserProfileHandler,
+        user: CoreUserProfile,
+        courseId?: number,
+        navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
+        admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
+    ): Promise<boolean> {
+        if (handler.isEnabledForCourse) {
+            const enabledOnCourse = await handler.isEnabledForCourse(courseId, navOptions, admOptions);
+
+            if (!enabledOnCourse) {
+                // If is not enabled in the course, is not enabled for the user.
+                // Do not cache if this is false.
+                return false;
+            }
+        }
+
+        if (!handler.cacheEnabled) {
+            if (!handler.isEnabledForUser) {
+                // True by default.
+                return true;
+            }
+
+            return handler.isEnabledForUser(user, courseId);
+        }
+
+        if (typeof this.enabledForUserCache[handler.name] == 'undefined') {
+            this.enabledForUserCache[handler.name] = {};
+        }
+
+        const cacheKey = this.getCacheKey(courseId, user.id);
+        const cache = this.enabledForUserCache[handler.name][cacheKey];
+
+        if (typeof cache != 'undefined') {
+            return cache;
+        }
+
+        let enabled = true; // Default value.
+        if (handler.isEnabledForUser) {
+            enabled = await handler.isEnabledForUser(user, courseId);
+        }
+
+        this.enabledForUserCache[handler.name][cacheKey] = enabled;
+
+        return enabled;
+    }
+
+    /**
+     * Clear handler enabled for user cache.
+     * If a courseId and userId are specified, it will only delete the entry for that user and course.
+     *
+     * @param courseId Course ID.
+     * @param userId User ID.
+     */
+    protected clearHandlerCache(courseId?: number, userId?: number): void {
+        if (courseId && userId) {
+            Object.keys(this.enabledHandlers).forEach((name) => {
+                delete this.enabledForUserCache[name][this.getCacheKey(courseId, userId)];
+            });
+        } else {
+            this.enabledForUserCache = {};
+        }
+    }
+
+    /**
+     * Get a cache key to identify a course and a user.
+     *
+     * @param courseId Course ID.
+     * @param userId User ID.
+     * @return Cache key.
+     */
+    protected getCacheKey(courseId = 0, userId = 0): string {
+        return courseId + '#' + userId;
     }
 
 }

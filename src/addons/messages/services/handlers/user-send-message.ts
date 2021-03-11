@@ -41,20 +41,23 @@ export class AddonMessagesSendMessageUserHandlerService implements CoreUserProfi
     }
 
     /**
+     * @inheritdoc
+     */
+    async isEnabledForCourse(): Promise<boolean> {
+        return !!CoreSites.getCurrentSite();
+    }
+
+    /**
      * Check if handler is enabled for this user in this context.
      *
      * @param user User to check.
      * @return Promise resolved with true if enabled, resolved with false otherwise.
      */
     async isEnabledForUser(user: CoreUserProfile): Promise<boolean> {
-        const currentSite = CoreSites.getCurrentSite();
-
-        if (!currentSite) {
-            return false;
-        }
+        const currentSite = CoreSites.getCurrentSite()!;
 
         // From 3.7 you can send messages to yourself.
-        return user.id != currentSite.getUserId() || currentSite.isVersionGreaterEqualThan('3.7');
+        return user.id != CoreSites.getCurrentSiteUserId() || currentSite.isVersionGreaterEqualThan('3.7');
     }
 
     /**
