@@ -465,6 +465,21 @@ export class CoreNavigatorService {
         return 'param-' + (++this.lastParamId);
     }
 
+    /**
+     * Replace the route params in a path with the params values.
+     *
+     * @param path Path.
+     * @param params Params.
+     * @returns Path with params replaced.
+     */
+    replaceRoutePathParams(path: string, params?: Params): string {
+        for (const name in params) {
+            path = path.replace(`:${name}`, params[name]);
+        }
+
+        return path;
+    }
+
 }
 
 export const CoreNavigator = makeSingleton(CoreNavigatorService);

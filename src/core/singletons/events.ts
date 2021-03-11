@@ -373,6 +373,6 @@ export type CoreEventFileSharedData = {
 /**
  * Data passed to APP_LAUNCHED_URL event.
  */
- export type CoreEventAppLaunchedData = {
+export type CoreEventAppLaunchedData = {
     url: string;
 };

@@ -137,7 +137,7 @@ export abstract class CorePageItemsListManager<Item> {
         // If this item is already selected, do nothing.
         const itemRoute = this.getItemRoute(route);
         const itemPath = this.getItemPath(item);
-        const selectedItemPath = itemRoute ? this.getSelectedItemPath(itemRoute.snapshot) : null;
+        const selectedItemPath = itemRoute?.snapshot ? this.getSelectedItemPath(itemRoute.snapshot) : null;
 
         if (selectedItemPath === itemPath) {
             return;

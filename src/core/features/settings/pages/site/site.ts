@@ -20,7 +20,6 @@ import { CoreSettingsDelegate, CoreSettingsHandlerToDisplay } from '../../servic
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-// import { CoreSharedFiles } from '@features/sharedfiles/services/sharedfiles';
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../services/settings-helper';
 import { CoreApp } from '@services/app';
 import { CoreSiteInfo } from '@classes/site';
@@ -52,7 +51,6 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
         spaceUsage: 0,
     };
 
-    iosSharedFiles = 0;
     protected sitesObserver: CoreEventObserver;
     protected isDestroyed = false;
 
@@ -101,25 +99,7 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
         this.siteName = currentSite!.getSiteName();
         this.siteUrl = currentSite!.getURL();
 
-        const promises: Promise<void>[] = [];
-
-        promises.push(CoreSettingsHelper.getSiteSpaceUsage(this.siteId)
-            .then((spaceUsage) => {
-                this.spaceUsage = spaceUsage;
-
-                return;
-            }));
-
-        /* if (this.isIOS) {
-            promises.push(CoreSharedFiles.getSiteSharedFiles(this.siteId)
-                .then((files) => {
-                this.iosSharedFiles = files.length;
-
-                return;
-            }));
-        }*/
-
-        await Promise.all(promises);
+        this.spaceUsage = await CoreSettingsHelper.getSiteSpaceUsage(this.siteId);
     }
 
     /**
@@ -224,9 +204,7 @@ class CoreSettingsSitePreferencesManager extends CorePageItemsListManager<CoreSe
      * @inheritdoc
      */
     protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        // @todo: routeConfig doesn't have a path after refreshing the app.
-        // route.component is null too, and route.parent.url is empty.
-        return route.parent?.routeConfig?.path ?? null;
+        return CoreSettingsHelper.getSelectedItemPath(route);
     }
 
 }
