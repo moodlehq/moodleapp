@@ -12,7 +12,7 @@
     </core-context-menu>
 </core-navbar-buttons>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshDashboard($event)">
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshDashboard($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 

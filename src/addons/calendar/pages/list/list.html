@@ -21,7 +21,7 @@
 </ion-header>
 <ion-content>
     <core-split-view>
-        <ion-refresher slot="fixed" [disabled]="!eventsLoaded" (ionRefresh)="doRefresh($event)">
+        <ion-refresher slot="fixed" [disabled]="!eventsLoaded" (ionRefresh)="doRefresh($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
         <core-loading [hideUntil]="eventsLoaded">

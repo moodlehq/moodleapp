@@ -7,7 +7,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!notificationsLoaded" (ionRefresh)="refreshNotifications($event)">
+    <ion-refresher slot="fixed" [disabled]="!notificationsLoaded" (ionRefresh)="refreshNotifications($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="notificationsLoaded">

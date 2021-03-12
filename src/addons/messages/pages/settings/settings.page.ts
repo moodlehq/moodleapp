@@ -251,10 +251,10 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshPreferences(refresher?: CustomEvent<IonRefresher>): void {
+    refreshPreferences(refresher?: IonRefresher): void {
         AddonMessages.invalidateMessagePreferences().finally(() => {
             this.fetchPreferences().finally(() => {
-                refresher?.detail.complete();
+                refresher?.complete();
             });
         });
     }

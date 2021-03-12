@@ -328,9 +328,9 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
      *
      * @param refresher Refresher.
      */
-    refreshList(refresher?: CustomEvent<IonRefresher>): void {
+    refreshList(refresher?: IonRefresher): void {
         this.refreshAllData(true).finally(() => {
-            refresher?.detail.complete();
+            refresher?.complete();
         });
     }
 

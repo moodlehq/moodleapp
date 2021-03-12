@@ -119,9 +119,9 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshData(event?: CustomEvent<IonRefresher>): void {
+    refreshData(event?: IonRefresher): void {
         this.refreshFiles().finally(() => {
-            event?.detail.complete();
+            event?.complete();
         });
     }
 

@@ -105,7 +105,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param showErrors If show errors to the user of hide them.
      * @return Promise resolved when done.
      */
-    async doRefresh(refresher?: CustomEvent<IonRefresher> | null, done?: () => void, showErrors: boolean = false): Promise<void> {
+    async doRefresh(refresher?: IonRefresher | null, done?: () => void, showErrors: boolean = false): Promise<void> {
         if (!this.loaded || !this.module) {
             // Module can be undefined if course format changes from single activity to weekly/topics.
             return;
@@ -119,7 +119,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
         await CoreUtils.ignoreErrors(this.refreshContent(true, showErrors));
 
-        refresher?.detail.complete();
+        refresher?.complete();
         done && done();
     }
 

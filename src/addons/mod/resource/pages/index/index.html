@@ -16,7 +16,7 @@
 <ion-content>
     <ion-refresher slot="fixed"
         [disabled]="!activityComponent?.loaded || activityComponent?.mode != 'external'"
-        (ionRefresh)="activityComponent?.doRefresh($event)">
+        (ionRefresh)="activityComponent?.doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 

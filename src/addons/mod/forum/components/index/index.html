@@ -37,7 +37,7 @@
 
 <!-- Content. -->
 <core-split-view>
-    <ion-refresher slot="fixed" [disabled]="!discussions.loaded" (ionRefresh)="doRefresh($event)">
+    <ion-refresher slot="fixed" [disabled]="!discussions.loaded" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 

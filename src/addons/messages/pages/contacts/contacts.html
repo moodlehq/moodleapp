@@ -21,7 +21,7 @@
             <!-- Contacts tab. -->
             <core-tab [title]="'addon.messages.contacts' | translate" (ionSelect)="selectTab('confirmed')">
                 <ng-template>
-                    <ion-refresher slot="fixed" [disabled]="!confirmedLoaded" (ionRefresh)="refreshData($event)">
+                    <ion-refresher slot="fixed" [disabled]="!confirmedLoaded" (ionRefresh)="refreshData($event.target)">
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
                     </ion-refresher>
                     <core-loading [hideUntil]="confirmedLoaded" class="core-loading-center">
@@ -57,7 +57,7 @@
             <!-- Requests tab. -->
             <core-tab [title]="'addon.messages.requests' | translate" (ionSelect)="selectTab('requests')" [badge]="requestsBadge">
                 <ng-template>
-                    <ion-refresher slot="fixed" [disabled]="!requestsLoaded" (ionRefresh)="refreshData($event)">
+                    <ion-refresher slot="fixed" [disabled]="!requestsLoaded" (ionRefresh)="refreshData($event.target)">
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
                     </ion-refresher>
                     <core-loading [hideUntil]="requestsLoaded" class="core-loading-center">

@@ -235,7 +235,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      * @param event Event.
      * @return Promise resolved when done.
      */
-    async refreshUser(event?: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshUser(event?: IonRefresher): Promise<void> {
         await CoreUtils.ignoreErrors(Promise.all([
             CoreUser.invalidateUserCache(this.userId),
             CoreCourses.invalidateUserNavigationOptions(),
@@ -244,7 +244,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 
         await this.fetchUser();
 
-        event?.detail.complete();
+        event?.complete();
 
         if (this.user) {
             CoreEvents.trigger(CoreUserProvider.PROFILE_REFRESHED, {

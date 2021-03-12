@@ -363,7 +363,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      *
      * @param refresher Refresher.
      */
-    refreshData(refresher?: CustomEvent<IonRefresher>): void {
+    refreshData(refresher?: IonRefresher): void {
         const promises = [
             AddonCalendar.invalidateAccessInformation(this.courseId),
             AddonCalendar.invalidateAllowedEventTypes(this.courseId),
@@ -384,7 +384,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
         Promise.all(promises).finally(() => {
             this.fetchData().finally(() => {
-                refresher?.detail.complete();
+                refresher?.complete();
             });
         });
     }

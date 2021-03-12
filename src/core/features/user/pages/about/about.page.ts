@@ -94,12 +94,12 @@ export class CoreUserAboutPage implements OnInit {
      * @param event Event.
      * @return Promise resolved when done.
      */
-    async refreshUser(event?: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshUser(event?: IonRefresher): Promise<void> {
         await CoreUtils.ignoreErrors(CoreUser.invalidateUserCache(this.userId));
 
         await this.fetchUser();
 
-        event?.detail.complete();
+        event?.complete();
 
         if (this.user) {
             CoreEvents.trigger(CoreUserProvider.PROFILE_REFRESHED, {

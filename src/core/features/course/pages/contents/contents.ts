@@ -327,7 +327,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      * @return Promise resolved when done.
      */
-    async doRefresh(refresher?: CustomEvent<IonRefresher>): Promise<void> {
+    async doRefresh(refresher?: IonRefresher): Promise<void> {
         await CoreUtils.ignoreErrors(this.invalidateData());
 
         try {
@@ -339,7 +339,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
                 await CoreUtils.ignoreErrors(this.formatComponent.doRefresh(refresher));
             }
 
-            refresher?.detail.complete();
+            refresher?.complete();
         }
     }
 

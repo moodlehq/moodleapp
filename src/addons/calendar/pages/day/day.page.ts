@@ -431,13 +431,13 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * @param done Function to call when done.
      * @return Promise resolved when done.
      */
-    async doRefresh(refresher?: CustomEvent<IonRefresher>, done?: () => void): Promise<void> {
+    async doRefresh(refresher?: IonRefresher, done?: () => void): Promise<void> {
         if (!this.loaded) {
             return;
         }
 
         await this.refreshData(true).finally(() => {
-            refresher?.detail.complete();
+            refresher?.complete();
             done && done();
         });
     }

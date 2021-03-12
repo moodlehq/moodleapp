@@ -119,13 +119,13 @@ export class CoreCourseListModTypePage implements OnInit {
      * @param refresher Refresher.
      * @return Promise resolved when done.
      */
-    async refreshData(refresher: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshData(refresher: IonRefresher): Promise<void> {
         await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId || 0));
 
         try {
             await this.fetchData();
         } finally {
-            refresher.detail.complete();
+            refresher.complete();
         }
     }
 

@@ -174,13 +174,13 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      * @return Promise<any> Promise resolved when done.
      */
-    async refreshNotifications(refresher?: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshNotifications(refresher?: IonRefresher): Promise<void> {
         await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
 
         try {
             await this.fetchNotifications(true);
         } finally {
-            refresher?.detail.complete();
+            refresher?.complete();
         }
     }
 

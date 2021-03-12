@@ -124,7 +124,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
      * @param done Function to call when done.
      * @return Promise resolved when done.
      */
-    async doRefresh(refresher?: CustomEvent<IonRefresher> | null, done?: () => void): Promise<void> {
+    async doRefresh(refresher?: IonRefresher | null, done?: () => void): Promise<void> {
         if (this.content) {
             this.refreshIcon = CoreConstants.ICON_LOADING;
         }
@@ -132,7 +132,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
         try {
             await this.content?.refreshContent(false);
         } finally {
-            refresher?.detail.complete();
+            refresher?.complete();
             done && done();
         }
     }

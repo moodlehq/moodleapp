@@ -185,7 +185,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      * @return Promise resolved when done.
      */
-    async refreshData(refresher?: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshData(refresher?: IonRefresher): Promise<void> {
         try {
             if (this.selected == 'confirmed') {
                 // No need to invalidate contacts, we always try to get the latest.
@@ -198,7 +198,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
                 await this.requestsFetchData(true);
             }
         } finally {
-            refresher?.detail.complete();
+            refresher?.complete();
         }
     }
 

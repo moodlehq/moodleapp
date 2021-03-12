@@ -205,7 +205,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      * @return Resolved when done.
      */
-    async refreshComments(showErrors: boolean, refresher?: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshComments(showErrors: boolean, refresher?: IonRefresher): Promise<void> {
         this.commentsLoaded = false;
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
@@ -219,7 +219,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             try {
                 await this.fetchComments(true, showErrors);
             } finally {
-                refresher?.detail.complete();
+                refresher?.complete();
             }
         }
     }

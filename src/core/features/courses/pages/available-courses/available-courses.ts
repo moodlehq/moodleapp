@@ -62,7 +62,7 @@ export class CoreCoursesAvailableCoursesPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    refreshCourses(refresher: CustomEvent<IonRefresher>): void {
+    refreshCourses(refresher: IonRefresher): void {
         const promises: Promise<void>[] = [];
 
         promises.push(CoreCourses.invalidateUserCourses());
@@ -70,7 +70,7 @@ export class CoreCoursesAvailableCoursesPage implements OnInit {
 
         Promise.all(promises).finally(() => {
             this.loadCourses().finally(() => {
-                refresher?.detail.complete();
+                refresher?.complete();
             });
         });
     }

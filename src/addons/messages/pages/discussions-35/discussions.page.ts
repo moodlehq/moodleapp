@@ -168,7 +168,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      * @param refreshUnreadCounts Whteher to refresh unread counts.
      * @return Promise resolved when done.
      */
-    async refreshData(refresher?: CustomEvent<IonRefresher>, refreshUnreadCounts: boolean = true): Promise<void> {
+    async refreshData(refresher?: IonRefresher, refreshUnreadCounts: boolean = true): Promise<void> {
         const promises: Promise<void>[] = [];
         promises.push(AddonMessages.invalidateDiscussionsCache(this.siteId));
 
@@ -178,7 +178,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
         await CoreUtils.allPromises(promises).finally(() => this.fetchData().finally(() => {
             if (refresher) {
-                refresher?.detail.complete();
+                refresher?.complete();
             }
         }));
     }

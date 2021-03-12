@@ -103,12 +103,12 @@ export class CoreTagSearchPage implements OnInit {
      *
      * @param refresher Refresher event.
      */
-    refreshData(refresher?: CustomEvent<IonRefresher>): void {
+    refreshData(refresher?: IonRefresher): void {
         CoreUtils.allPromises([
             CoreTag.invalidateTagCollections(),
             CoreTag.invalidateTagCloud(this.collectionId, undefined, undefined, this.query),
         ]).finally(() => this.fetchData().finally(() => {
-            refresher?.detail.complete();
+            refresher?.complete();
         }));
     }
 

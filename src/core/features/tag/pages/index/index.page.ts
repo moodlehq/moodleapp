@@ -121,7 +121,7 @@ export class CoreTagIndexPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    refreshData(refresher?: CustomEvent<IonRefresher>): void {
+    refreshData(refresher?: IonRefresher): void {
         CoreTag.invalidateTagIndexPerArea(
             this.tagId,
             this.tagName,
@@ -132,7 +132,7 @@ export class CoreTagIndexPage implements OnInit {
             this.recursive,
         ).finally(() => {
             this.fetchData().finally(() => {
-                refresher?.detail.complete();
+                refresher?.complete();
             });
         });
     }
