@@ -209,7 +209,10 @@ class CoreUserParticipantsManager extends CorePageItemsListManager<CoreUserParti
      */
     async select(participant: CoreUserParticipant | CoreUserData): Promise<void> {
         if (CoreScreen.isMobile) {
-            await CoreNavigator.navigateToSitePath('/user/profile', { params: { userId: participant.id } });
+            await CoreNavigator.navigateToSitePath(
+                '/user/profile',
+                { params: { userId: participant.id, courseId: this.courseId } },
+            );
 
             return;
         }

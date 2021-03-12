@@ -1086,7 +1086,7 @@ export class CoreLoginHelperProvider {
                 );
 
                 if (!result.status) {
-                    throw new CoreWSError(result.warnings?.[0]);
+                    throw new CoreWSError(result.warnings![0]);
                 }
 
                 const message = Translate.instant('core.login.emailconfirmsentsuccess');

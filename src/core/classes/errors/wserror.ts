@@ -27,8 +27,7 @@ export class CoreWSError extends CoreError {
     debuginfo?: string; // Debug info. Only if debug mode is enabled.
     backtrace?: string; // Backtrace. Only if debug mode is enabled.
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(error: any) {
+    constructor(error: CoreWSErrorData) {
         super(error.message);
 
         this.exception = error.exception;
@@ -41,3 +40,14 @@ export class CoreWSError extends CoreError {
     }
 
 }
+
+type CoreWSErrorData = {
+    message?: string;
+    exception?: string; // Name of the Moodle exception.
+    errorcode?: string;
+    warningcode?: string;
+    link?: string; // Link to the site.
+    moreinfourl?: string; // Link to a page with more info.
+    debuginfo?: string; // Debug info. Only if debug mode is enabled.
+    backtrace?: string; // Backtrace. Only if debug mode is enabled.
+};

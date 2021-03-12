@@ -110,7 +110,7 @@
                                 {{discussion.created * 1000 | coreFormatDate: "strftimerecentfull"}}
                             </p>
                             <p *ngIf="discussions.isOfflineDiscussion(discussion)">
-                                <ion-icon name="time"></ion-icon>
+                                <ion-icon name="fas-clock"></ion-icon>
                                 {{ 'core.notsent' | translate }}
                             </p>
                         </div>
@@ -119,7 +119,7 @@
                         class="ion-text-center addon-mod-forum-discussion-more-info">
                         <ion-col class="ion-text-start">
                             <ion-note>
-                                <ion-icon name="time"></ion-icon> {{ 'addon.mod_forum.lastpost' | translate }}
+                                <ion-icon name="fas-clock"></ion-icon> {{ 'addon.mod_forum.lastpost' | translate }}
                                 <ng-container *ngIf="discussion.timemodified > discussion.created">
                                     {{ discussion.timemodified | coreTimeAgo }}
                                 </ng-container>
@@ -151,7 +151,7 @@
 
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="forum && canAddDiscussion">
         <ion-fab-button (click)="openNewDiscussion()" [attr.aria-label]="addDiscussionText">
-            <ion-icon name="add"></ion-icon>
+            <ion-icon name="fas-plus"></ion-icon>
         </ion-fab-button>
     </ion-fab>
 </core-split-view>
