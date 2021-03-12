@@ -32,7 +32,7 @@
         <core-tab [title]="'addon.mod_lesson.preview' | translate" (ionSelect)="indexSelected()">
             <ng-template>
                 <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
-                    contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId">
+                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                 </core-course-module-description>
 
                 <!-- Prevent access messages. Only show the first one. -->

@@ -59,8 +59,8 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
         await this.loadContent();
 
         try {
-            await AddonModImscp.logView(this.module!.instance!, this.module!.name);
-            CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+            await AddonModImscp.logView(this.module.instance!, this.module.name);
+            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors.
         }
@@ -72,7 +72,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
      * @return Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
-        await AddonModImscp.invalidateContent(this.module!.id, this.courseId!);
+        await AddonModImscp.invalidateContent(this.module.id, this.courseId);
     }
 
     /**
@@ -85,7 +85,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
         let downloadResult: CoreCourseResourceDownloadResult;
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonModImscp.getImscp(this.courseId!, this.module!.id).then((imscp) => {
+        promises.push(AddonModImscp.getImscp(this.courseId, this.module.id).then((imscp) => {
             this.description = imscp.intro;
             this.dataRetrieved.emit(imscp);
 
@@ -101,7 +101,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
         try {
             await Promise.all(promises);
 
-            this.items = AddonModImscp.createItemList(this.module!.contents);
+            this.items = AddonModImscp.createItemList(this.module.contents);
 
             if (this.items.length && typeof this.currentItem == 'undefined') {
                 this.currentItem = this.items[0].href;
@@ -129,7 +129,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
      * @return Promise resolved when done.
      */
     async loadItem(itemId?: string): Promise<void> {
-        const src = await AddonModImscp.getIframeSrc(this.module!, itemId);
+        const src = await AddonModImscp.getIframeSrc(this.module, itemId);
         this.currentItem = itemId;
         this.previousItem = itemId ? AddonModImscp.getPreviousItem(this.items, itemId) : '';
         this.nextItem = itemId ? AddonModImscp.getNextItem(this.items, itemId) : '';

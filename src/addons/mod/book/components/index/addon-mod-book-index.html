@@ -24,7 +24,7 @@
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
     <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
-        contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId"></core-course-module-description>
+        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <ion-card class="core-warning-card" *ngIf="warning">
         <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
@@ -38,7 +38,7 @@
         </core-navigation-bar>
 
         <core-format-text [component]="component" [componentId]="componentId" [text]="chapterContent" contextLevel="module"
-            [contextInstanceId]="module?.id" [courseId]="courseId"></core-format-text>
+            [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
         <div class="ion-margin-top" *ngIf="tagsEnabled && tags?.length > 0">
             <strong>{{ 'core.tag.tags' | translate }}: </strong>
             <core-tag-list [tags]="tags"></core-tag-list>

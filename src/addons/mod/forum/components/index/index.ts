@@ -135,7 +135,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             this.eventReceived.bind(this, false),
         );
         this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data => {
-            if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.module!.id) {
+            if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.module.id) {
                 AddonModForum.invalidateDiscussionsList(this.forum!.id).finally(() => {
                     if (data.discussionId) {
                         // Discussion changed, search it in the list of discussions.
@@ -198,7 +198,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             AddonModForum.instance
                 .logView(this.forum.id, this.forum.name)
                 .then(async () => {
-                    CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+                    CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
 
                     return;
                 }),
@@ -324,7 +324,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         promises.push(
             AddonModForum.instance
-                .getAccessInformation(this.forum.id, { cmId: this.module!.id })
+                .getAccessInformation(this.forum.id, { cmId: this.module.id })
                 .then(async accessInfo => {
                     // Disallow adding discussions if cut-off date is reached and the user has not the
                     // capability to override it.
@@ -341,7 +341,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             // Use the canAddDiscussion WS to check if the user can pin discussions.
             promises.push(
                 AddonModForum.instance
-                    .canAddDiscussionToAll(this.forum.id, { cmId: this.module!.id })
+                    .canAddDiscussionToAll(this.forum.id, { cmId: this.module.id })
                     .then(async response => {
                         this.canPin = !!response.canpindiscussions;
 
@@ -525,7 +525,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonModForum.invalidateForumData(this.courseId!));
+        promises.push(AddonModForum.invalidateForumData(this.courseId));
 
         if (this.forum) {
             promises.push(AddonModForum.invalidateDiscussionsList(this.forum.id));
@@ -546,7 +546,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @return Promise resolved when done.
      */
     protected sync(): Promise<AddonModForumSyncResult> {
-        return AddonModForumPrefetchHandler.sync(this.module!, this.courseId!);
+        return AddonModForumPrefetchHandler.sync(this.module, this.courseId);
     }
 
     /**
@@ -582,7 +582,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         isNewDiscussion: boolean,
         data: AddonModForumNewDiscussionData | AddonModForumReplyDiscussionData,
     ): void {
-        if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.module?.id) {
+        if ((this.forum && this.forum.id === data.forumId) || data.cmId === this.module.id) {
             this.showLoadingAndRefresh(false).finally(() => {
                 // If it's a new discussion in tablet mode, try to open it.
                 if (isNewDiscussion && CoreScreen.isTablet) {
@@ -606,7 +606,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             });
 
             // Check completion since it could be configured to complete once the user adds a new discussion or replies.
-            CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         }
     }
 
@@ -668,7 +668,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             componentProps: {
                 discussion,
                 forumId: this.forum!.id,
-                cmId: this.module!.id,
+                cmId: this.module.id,
             },
             event,
         });
@@ -733,7 +733,7 @@ class AddonModForumDiscussionsManager extends CorePageItemsListManager<Discussio
     getItemQueryParams(discussion: DiscussionItem): Params {
         return {
             courseId: this.component.courseId,
-            cmId: this.component.module!.id,
+            cmId: this.component.module.id,
             forumId: this.component.forum!.id,
             ...(this.isOnlineDiscussion(discussion) ? { discussion, trackPosts: this.component.trackPosts } : {}),
         };

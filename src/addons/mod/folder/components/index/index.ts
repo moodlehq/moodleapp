@@ -55,7 +55,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
         this.canGetFolder = AddonModFolder.isGetFolderWSAvailable();
 
         if (this.subfolder) {
-            this.description = this.folderInstance ? this.folderInstance.intro : this.module!.description;
+            this.description = this.folderInstance ? this.folderInstance.intro : this.module.description;
 
             this.loaded = true;
             this.refreshIcon = CoreConstants.ICON_REFRESH;
@@ -67,8 +67,8 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
             await this.loadContent();
 
             try {
-                await AddonModFolder.logView(this.module!.instance!, this.module!.name);
-                CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+                await AddonModFolder.logView(this.module.instance!, this.module.name);
+                CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
             } catch {
                 // Ignore errors.
             }
@@ -84,7 +84,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
      * @return Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
-        await AddonModFolder.invalidateContent(this.module!.id, this.courseId!);
+        await AddonModFolder.invalidateContent(this.module.id, this.courseId);
     }
 
     /**
@@ -96,22 +96,22 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     protected async fetchContent(refresh = false): Promise<void> {
         try {
             if (this.canGetFolder) {
-                this.folderInstance = await AddonModFolder.getFolder(this.courseId!, this.module!.id);
-                await CoreCourse.loadModuleContents(this.module!, this.courseId, undefined, false, refresh);
+                this.folderInstance = await AddonModFolder.getFolder(this.courseId, this.module.id);
+                await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, refresh);
             } else {
-                const module = await CoreCourse.getModule(this.module!.id, this.courseId);
+                const module = await CoreCourse.getModule(this.module.id, this.courseId);
 
-                if (!module.contents.length && this.module!.contents.length && !CoreApp.isOnline()) {
+                if (!module.contents.length && this.module.contents.length && !CoreApp.isOnline()) {
                     // The contents might be empty due to a cached data. Use the old ones.
-                    module.contents = this.module!.contents;
+                    module.contents = this.module.contents;
                 }
                 this.module = module;
             }
 
             this.dataRetrieved.emit(this.folderInstance || this.module);
 
-            this.description = this.folderInstance ? this.folderInstance.intro : this.module!.description;
-            this.subfolder = AddonModFolderHelper.formatContents(this.module!.contents);
+            this.description = this.folderInstance ? this.folderInstance.intro : this.module.description;
+            this.subfolder = AddonModFolderHelper.formatContents(this.module.contents);
         } finally {
             this.fillContextMenu(refresh);
         }

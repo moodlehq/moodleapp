@@ -22,7 +22,7 @@
 
     <core-course-module-description *ngIf="mode != 'iframe' && (mode != 'embedded' || displayDescription)"
         [description]="description" [component]="component" [componentId]="componentId" contextLevel="module"
-        [contextInstanceId]="module!.id" [courseId]="courseId">
+        [contextInstanceId]="module.id" [courseId]="courseId">
     </core-course-module-description>
 
     <ion-card class="core-warning-card" *ngIf="warning">

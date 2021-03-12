@@ -50,8 +50,8 @@ export type CoreCourseResourceDownloadResult = {
 })
 export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
 
-    @Input() module?: CoreCourseModule; // The module of the component.
-    @Input() courseId?: number; // Course ID the component belongs to.
+    @Input() module!: CoreCourseModule; // The module of the component.
+    @Input() courseId!: number; // Course ID the component belongs to.
     @Output() dataRetrieved = new EventEmitter<unknown>(); // Called to notify changes the index page from the main component.
 
     loaded = false; // If the component has been loaded.
@@ -90,10 +90,10 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      */
     async ngOnInit(): Promise<void> {
         this.siteId = CoreSites.getCurrentSiteId();
-        this.description = this.module?.description;
-        this.componentId = this.module?.id;
-        this.externalUrl = this.module?.url;
-        this.courseId = this.courseId || this.module?.course;
+        this.description = this.module.description;
+        this.componentId = this.module.id;
+        this.externalUrl = this.module.url;
+        this.courseId = this.courseId || this.module.course!;
         this.blog = await AddonBlog.isPluginEnabled();
     }
 
@@ -107,6 +107,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      */
     async doRefresh(refresher?: CustomEvent<IonRefresher> | null, done?: () => void, showErrors: boolean = false): Promise<void> {
         if (!this.loaded || !this.module) {
+            // Module can be undefined if course format changes from single activity to weekly/topics.
             return;
         }
 
@@ -193,12 +194,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * Fill the context menu options
      */
     protected fillContextMenu(refresh: boolean = false): void {
-        if (!this.module) {
-            return;
-        }
-
         // All data obtained, now fill the context menu.
-        CoreCourseHelper.fillContextMenu(this, this.module, this.courseId!, refresh, this.component);
+        CoreCourseHelper.fillContextMenu(this, this.module, this.courseId, refresh, this.component);
     }
 
     /**
@@ -215,10 +212,10 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     expandDescription(): void {
         CoreTextUtils.viewText(Translate.instant('core.description'), this.description!, {
             component: this.component,
-            componentId: this.module?.id,
+            componentId: this.module.id,
             filter: true,
             contextLevel: 'module',
-            instanceId: this.module?.id,
+            instanceId: this.module.id,
             courseId: this.courseId,
         });
     }
@@ -227,7 +224,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * Go to blog posts.
      */
     async gotoBlog(): Promise<void> {
-        const params: Params = { cmId: this.module?.id };
+        const params: Params = { cmId: this.module.id };
 
         CoreNavigator.navigateToSitePath(AddonBlogMainMenuHandlerService.PAGE_NAME, { params });
     }
@@ -238,11 +235,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param done Function to call when done.
      */
     prefetch(done?: () => void): void {
-        if (!this.module) {
-            return;
-        }
-
-        CoreCourseHelper.contextMenuPrefetch(this, this.module, this.courseId!, done);
+        CoreCourseHelper.contextMenuPrefetch(this, this.module, this.courseId, done);
     }
 
     /**
@@ -251,17 +244,13 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param done Function to call when done.
      */
     removeFiles(done?: () => void): void {
-        if (!this.module) {
-            return;
-        }
-
         if (this.prefetchStatus == CoreConstants.DOWNLOADING) {
             CoreDomUtils.showAlertTranslated(undefined, 'core.course.cannotdeletewhiledownloading');
 
             return;
         }
 
-        CoreCourseHelper.confirmAndRemoveFiles(this.module, this.courseId!, done);
+        CoreCourseHelper.confirmAndRemoveFiles(this.module, this.courseId, done);
     }
 
     /**
@@ -309,13 +298,13 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @return Promise resolved when done.
      */
     protected async setStatusListener(): Promise<void> {
-        if (typeof this.statusObserver != 'undefined' || !this.module) {
+        if (typeof this.statusObserver != 'undefined') {
             return;
         }
 
         // Listen for changes on this module status.
         this.statusObserver = CoreEvents.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
-            if (!this.module || data.componentId != this.module.id || data.component != this.component) {
+            if (data.componentId != this.module.id || data.component != this.component) {
                 return;
             }
 
@@ -327,7 +316,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         }, this.siteId);
 
         // Also, get the current status.
-        const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(this.module, this.courseId!);
+        const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(this.module, this.courseId);
 
         this.currentStatus = status;
         this.showStatus(status);
@@ -350,17 +339,13 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             failed: false,
         };
 
-        if (!this.module) {
-            return result;
-        }
-
         // Get module status to determine if it needs to be downloaded.
         await this.setStatusListener();
 
         if (this.currentStatus != CoreConstants.DOWNLOADED) {
             // Download content. This function also loads module contents if needed.
             try {
-                await CoreCourseModulePrefetchDelegate.downloadModule(this.module, this.courseId!);
+                await CoreCourseModulePrefetchDelegate.downloadModule(this.module, this.courseId);
 
                 // If we reach here it means the download process already loaded the contents, no need to do it again.
                 contentsAlreadyLoaded = true;

@@ -59,8 +59,8 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
         await this.loadContent();
 
         try {
-            await AddonModPage.logView(this.module!.instance!, this.module!.name);
-            CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+            await AddonModPage.logView(this.module.instance!, this.module.name);
+            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors.
         }
@@ -72,7 +72,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
      * @return Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
-        await AddonModPage.invalidateContent(this.module!.id, this.courseId!);
+        await AddonModPage.invalidateContent(this.module.id, this.courseId);
     }
 
     /**
@@ -92,9 +92,9 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
 
             // Get the module to get the latest title and description. Data should've been updated in download.
             if (this.canGetPage) {
-                getPagePromise = AddonModPage.getPageData(this.courseId!, this.module!.id);
+                getPagePromise = AddonModPage.getPageData(this.courseId, this.module.id);
             } else {
-                getPagePromise = CoreCourse.getModule(this.module!.id, this.courseId!);
+                getPagePromise = CoreCourse.getModule(this.module.id, this.courseId);
             }
 
             promises.push(getPagePromise.then((page) => {
@@ -133,7 +133,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
             }));
 
             // Get the page HTML.
-            promises.push(AddonModPageHelper.getPageHtml(this.module!.contents, this.module!.id).then((content) => {
+            promises.push(AddonModPageHelper.getPageHtml(this.module.contents, this.module.id).then((content) => {
 
                 this.contents = content;
                 this.warning = downloadResult?.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';

@@ -120,7 +120,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             (data) => {
                 if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
                 // Assignment submitted, check completion.
-                    CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+                    CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
 
                     // Reload data since it can have offline data now.
                     this.showLoadingAndRefresh(true, false);
@@ -140,7 +140,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         try {
             await AddonModAssign.logView(this.assign!.id, this.assign!.name);
-            CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors. Just don't check Module completion.
         }
@@ -164,11 +164,11 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         if (this.assign && (this.description || this.assign.introattachments)) {
             CoreTextUtils.viewText(Translate.instant('core.description'), this.description || '', {
                 component: this.component,
-                componentId: this.module!.id,
+                componentId: this.module.id,
                 files: this.assign.introattachments,
                 filter: true,
                 contextLevel: 'module',
-                instanceId: this.module!.id,
+                instanceId: this.module.id,
                 courseId: this.courseId,
             });
         }
@@ -186,7 +186,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         // Get assignment data.
         try {
-            this.assign = await AddonModAssign.getAssignment(this.courseId!, this.module!.id);
+            this.assign = await AddonModAssign.getAssignment(this.courseId, this.module.id);
 
             this.dataRetrieved.emit(this.assign);
             this.description = this.assign.intro;
@@ -200,7 +200,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             this.hasOffline = await AddonModAssignOffline.hasAssignOfflineData(this.assign.id);
 
             // Get assignment submissions.
-            const submissions = await AddonModAssign.getSubmissions(this.assign.id, { cmId: this.module!.id });
+            const submissions = await AddonModAssign.getSubmissions(this.assign.id, { cmId: this.module.id });
             const time = CoreTimeUtils.timestamp();
 
             this.canViewAllSubmissions = submissions.canviewsubmissions;
@@ -244,7 +244,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
             try {
                 // Check if the user can view their own submission.
-                await AddonModAssign.getSubmissionStatus(this.assign.id, { cmId: this.module!.id });
+                await AddonModAssign.getSubmissionStatus(this.assign.id, { cmId: this.module.id });
                 this.canViewOwnSubmission = true;
             } catch (error) {
                 this.canViewOwnSubmission = false;
@@ -269,7 +269,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         const submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign!.id, {
             groupId: this.group,
-            cmId: this.module!.id,
+            cmId: this.module.id,
         });
 
         this.summary = submissionStatus.gradingsummary;
@@ -345,7 +345,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonModAssign.invalidateAssignmentData(this.courseId!));
+        promises.push(AddonModAssign.invalidateAssignmentData(this.courseId));
 
         if (this.assign) {
             promises.push(AddonModAssign.invalidateAllSubmissionData(this.assign.id));

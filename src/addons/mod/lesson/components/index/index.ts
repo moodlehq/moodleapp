@@ -146,7 +146,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             let lessonReady = true;
             this.askPassword = false;
 
-            this.lesson = await AddonModLesson.getLesson(this.courseId!, this.module!.id);
+            this.lesson = await AddonModLesson.getLesson(this.courseId, this.module.id);
 
             this.dataRetrieved.emit(this.lesson);
             this.description = this.lesson.intro; // Show description only if intro is present.
@@ -156,7 +156,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
                 await this.syncActivity(showErrors);
             }
 
-            this.accessInfo = await AddonModLesson.getAccessInformation(this.lesson.id, { cmId: this.module!.id });
+            this.accessInfo = await AddonModLesson.getAccessInformation(this.lesson.id, { cmId: this.module.id });
             this.canManage = this.accessInfo.canmanage;
             this.canViewReports = this.accessInfo.canviewreports;
             this.preventReasons = [];
@@ -227,7 +227,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         const promises: Promise<unknown>[] = [];
-        const options = { cmId: this.module!.id };
+        const options = { cmId: this.module.id };
 
         // Check if there is offline data.
         promises.push(AddonModLessonSync.hasDataToSync(this.lesson.id, this.accessInfo.attemptscount).then((hasData) => {
@@ -293,7 +293,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     protected hasSyncSucceed(result: AddonModLessonSyncResult): boolean {
         if (result.updated || this.dataSent) {
             // Check completion status if something was sent.
-            CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         }
 
         this.dataSent = false;
@@ -339,7 +339,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<unknown>[] = [];
 
-        promises.push(AddonModLesson.invalidateLessonData(this.courseId!));
+        promises.push(AddonModLesson.invalidateLessonData(this.courseId));
 
         if (this.lesson) {
             promises.push(AddonModLesson.invalidateAccessInformation(this.lesson.id));
@@ -394,7 +394,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             AddonModLesson.logViewLesson(this.lesson.id, this.password, this.lesson.name),
         );
 
-        CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+        CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
     }
 
     /**
@@ -414,7 +414,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         if (this.hasOffline) {
             if (continueLast) {
                 pageId = await AddonModLesson.getLastPageSeen(this.lesson.id, this.accessInfo.attemptscount, {
-                    cmId: this.module!.id,
+                    cmId: this.module.id,
                 });
             } else {
                 pageId = this.accessInfo.firstpageid;
@@ -589,7 +589,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         this.showSpinner = true;
 
         try {
-            await AddonModLessonPrefetchHandler.prefetch(this.module!, this.courseId, true);
+            await AddonModLessonPrefetchHandler.prefetch(this.module, this.courseId, true);
 
             // Success downloading, open lesson.
             this.playLesson(continueLast);
@@ -661,8 +661,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             // The user sent data to server, but not in the sync process. Check if we need to fetch data.
             await CoreUtils.ignoreErrors(AddonModLessonSync.prefetchAfterUpdate(
                 AddonModLessonPrefetchHandler.instance,
-                this.module!,
-                this.courseId!,
+                this.module,
+                this.courseId,
             ));
         }
 
@@ -677,7 +677,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      */
     protected async validatePassword(password: string): Promise<void> {
         try {
-            this.lesson = await AddonModLesson.getLessonWithPassword(this.lesson!.id, { password, cmId: this.module!.id });
+            this.lesson = await AddonModLesson.getLessonWithPassword(this.lesson!.id, { password, cmId: this.module.id });
 
             this.password = password;
         } catch (error) {

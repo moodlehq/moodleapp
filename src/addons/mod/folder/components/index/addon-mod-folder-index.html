@@ -26,7 +26,7 @@
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
     <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
-        contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId">
+        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
     </core-course-module-description>
 
     <ion-list *ngIf="subfolder && (subfolder!.files.length + subfolder!.folders.length > 0)">
