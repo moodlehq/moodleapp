@@ -9,7 +9,7 @@
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
     "cache_update_frequency_rarely": 43200000,
-    "default_lang": "en",
+    "default_lang": "nl",
     "languages": {
         "ar": "عربي",
         "bg": "Български",
