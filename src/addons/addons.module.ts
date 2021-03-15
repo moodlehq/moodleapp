@@ -31,6 +31,7 @@ import { AddonBlogModule } from './blog/blog.module';
 import { AddonRemoteThemesModule } from './remotethemes/remotethemes.module';
 import { AddonNotesModule } from './notes/notes.module';
 import { AddonCompetencyModule } from './competency/competency.module';
+import { AddonStorageManagerModule } from './storagemanager/storagemanager.module';
 
 @NgModule({
     imports: [
@@ -51,6 +52,7 @@ import { AddonCompetencyModule } from './competency/competency.module';
         AddonQbehaviourModule,
         AddonQtypeModule,
         AddonRemoteThemesModule,
+        AddonStorageManagerModule,
     ],
 })
 export class AddonsModule {}
