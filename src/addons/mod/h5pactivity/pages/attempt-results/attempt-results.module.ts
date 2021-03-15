@@ -16,25 +16,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CanLeaveGuard } from '@guards/can-leave';
-import { AddonModH5PActivityComponentsModule } from './components/components.module';
-import { AddonModH5PActivityIndexPage } from './pages/index/index';
+import { AddonModH5PActivityAttemptResultsPage } from './attempt-results';
 
 const routes: Routes = [
     {
-        path: ':courseId/:cmId',
-        component: AddonModH5PActivityIndexPage,
-        canDeactivate: [CanLeaveGuard],
-    },
-    {
-        path: ':courseId/:cmId/userattempts/:userId',
-        loadChildren: () => import('./pages/user-attempts/user-attempts.module')
-            .then( m => m.AddonModH5PActivityUserAttemptsPageModule),
-    },
-    {
-        path: ':courseId/:cmId/attemptresults/:attemptId',
-        loadChildren: () => import('./pages/attempt-results/attempt-results.module')
-            .then( m => m.AddonModH5PActivityAttemptResultsPageModule),
+        path: '',
+        component: AddonModH5PActivityAttemptResultsPage,
     },
 ];
 
@@ -42,10 +29,10 @@ const routes: Routes = [
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-        AddonModH5PActivityComponentsModule,
     ],
     declarations: [
-        AddonModH5PActivityIndexPage,
+        AddonModH5PActivityAttemptResultsPage,
     ],
+    exports: [RouterModule],
 })
-export class AddonModH5PActivityLazyModule {}
+export class AddonModH5PActivityAttemptResultsPageModule {}
