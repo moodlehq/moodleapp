@@ -244,7 +244,7 @@
             <true />
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="CFBundleShortVersionString">
-            <string>3.9.3</string>
+            <string>3.9.4</string>
         </edit-config>
         <config-file parent="FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED" target="*-Info.plist">
             <string>YES</string>
@@ -648,4 +648,5 @@
             </array>
         </config-file>
     </platform>
+    <variable name="URL_SCHEME" value="idemobile" />
 </widget>

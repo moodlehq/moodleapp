@@ -70,7 +70,7 @@
     ],
     "presets" : {"url" :"https://ide.unpar.ac.id/"},
     "demo_sites" :[] ,
-    "customurlscheme": "moodlemobile",
+    "customurlscheme": "idemobile",
     "siteurl": "https://ide.unpar.ac.id/",
     "sitename": "",
     "multisitesdisplay": "",
