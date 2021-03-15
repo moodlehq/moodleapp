@@ -498,7 +498,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
 }
 
-export const AddonModLessonSync = makeSingleton(AddonModLessonSyncProvider, ['component', 'syncInterval']);
+export const AddonModLessonSync = makeSingleton(AddonModLessonSyncProvider);
 
 /**
  * Data returned by a lesson sync.

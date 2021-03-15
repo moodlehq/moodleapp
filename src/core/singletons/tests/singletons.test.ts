@@ -19,12 +19,12 @@ import { MilkyWayService } from './stubs';
 
 describe('Singletons', () => {
 
-    let MilkyWay: CoreSingletonProxy<MilkyWayService, 'MEANING_OF_LIFE'>;
+    let MilkyWay: CoreSingletonProxy<MilkyWayService>;
 
     beforeEach(() => {
         setSingletonsInjector(mock({ get: serviceClass => new serviceClass() }));
 
-        MilkyWay = makeSingleton(MilkyWayService, ['MEANING_OF_LIFE']);
+        MilkyWay = makeSingleton(MilkyWayService);
     });
 
     it('works using the service instance', () => {
@@ -35,8 +35,20 @@ describe('Singletons', () => {
         expect(MilkyWay.getTheMeaningOfLife()).toBe(42);
     });
 
+    it('works using magic methods defined as getters', () => {
+        expect(MilkyWay.reduceYears(2)).toBe(-2);
+    });
+
     it('works using magic getters', () => {
         expect(MilkyWay.MEANING_OF_LIFE).toBe(42);
+    });
+
+    it('works using magic getters defined dynamically', () => {
+        expect(MilkyWay.exists).toBeUndefined();
+
+        MilkyWay.bigBang();
+
+        expect(MilkyWay.exists).toBe(true);
     });
 
     it('magic getters use the same instance', () => {

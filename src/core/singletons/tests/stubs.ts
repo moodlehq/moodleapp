@@ -22,9 +22,16 @@ export class Galaxy {
 
 export class MilkyWayService extends Galaxy {
 
+    exists?: boolean;
     readonly MEANING_OF_LIFE = 42;
 
     private years = 0;
+
+    reduceYears!: (years: number) => number;
+
+    bigBang(): void {
+        this.exists = true;
+    }
 
     getTheMeaningOfLife(): number {
         return this.MEANING_OF_LIFE;
@@ -37,3 +44,16 @@ export class MilkyWayService extends Galaxy {
     }
 
 }
+
+Object.defineProperty(MilkyWayService.prototype, 'reduceYears', {
+    get: () => function(years: number) {
+        // eslint-disable-next-line no-invalid-this
+        const self = this as { years: number };
+
+        self.years -= years;
+
+        return self.years;
+    },
+    enumerable: true,
+    configurable: true,
+});

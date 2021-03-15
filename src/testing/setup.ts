@@ -14,7 +14,18 @@
 
 import 'jest-preset-angular';
 
+import { setCreateSingletonMethodProxy } from '@singletons';
+
 // eslint-disable-next-line no-console
 console.debug = () => {
     // Silence.
 };
+
+// Override the method to create singleton method proxies in order to facilitate setting up
+// test expectations about method calls.
+setCreateSingletonMethodProxy(
+    (instance, method, property) =>
+        instance[`mock_${String(property)}`] =
+            instance[`mock_${String(property)}`] ??
+            jest.fn((...args) => method.call(instance, ...args)),
+);

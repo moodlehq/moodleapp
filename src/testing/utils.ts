@@ -40,6 +40,16 @@ export function mock<T>(
 
     const methods = Array.isArray(methodsOrInstance) ? methodsOrInstance : [];
 
+    for (const property of Object.getOwnPropertyNames(instance)) {
+        const value = instance[property];
+
+        if (typeof value !== 'function') {
+            continue;
+        }
+
+        instance[property] = jest.fn((...args) => value.call(instance, ...args));
+    }
+
     for (const method of methods) {
         instance[method] = jest.fn();
     }
@@ -65,17 +75,6 @@ export function mockSingleton<T>(
     const mockInstance = mock<T>(methods, instance);
 
     singleton.setInstance(mockInstance);
-
-    for (const [property, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(singleton))) {
-        if (typeof descriptor.value !== 'function' || property === 'setInstance') {
-            continue;
-        }
-
-        Object.defineProperty(singleton, property, {
-            value: jest.fn(descriptor.value),
-            configurable: true,
-        });
-    }
 
     return mockInstance;
 }

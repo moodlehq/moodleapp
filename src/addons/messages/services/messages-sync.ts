@@ -398,7 +398,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
 
 }
 
-export const AddonMessagesSync = makeSingleton(AddonMessagesSyncProvider, ['component', 'syncInterval']);
+export const AddonMessagesSync = makeSingleton(AddonMessagesSyncProvider);
 
 export type AddonMessagesSyncEvents = {
     warnings: string[];

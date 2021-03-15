@@ -62,4 +62,4 @@ export class CoreCourseLogCronHandlerService implements CoreCronHandler {
 
 }
 
-export const CoreCourseLogCronHandler = makeSingleton(CoreCourseLogCronHandlerService, ['name']);
+export const CoreCourseLogCronHandler = makeSingleton(CoreCourseLogCronHandlerService);

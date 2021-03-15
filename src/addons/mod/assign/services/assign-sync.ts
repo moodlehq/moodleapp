@@ -540,7 +540,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
     }
 
 }
-export const AddonModAssignSync = makeSingleton(AddonModAssignSyncProvider, ['component', 'syncInterval']);
+export const AddonModAssignSync = makeSingleton(AddonModAssignSyncProvider);
 
 /**
  * Data returned by a assign sync.

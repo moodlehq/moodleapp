@@ -656,7 +656,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
 
 }
 
-export const AddonModForumSync = makeSingleton(AddonModForumSyncProvider, ['component', 'syncInterval']);
+export const AddonModForumSync = makeSingleton(AddonModForumSyncProvider);
 
 /**
  * Result of forum sync.

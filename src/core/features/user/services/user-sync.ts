@@ -104,4 +104,4 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
 
 }
 
-export const CoreUserSync = makeSingleton(CoreUserSyncProvider, ['component', 'syncInterval']);
+export const CoreUserSync = makeSingleton(CoreUserSyncProvider);

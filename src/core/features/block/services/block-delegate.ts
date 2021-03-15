@@ -198,4 +198,4 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
 
 }
 
-export const CoreBlockDelegate = makeSingleton(CoreBlockDelegateService, ['blocksUpdateObservable']);
+export const CoreBlockDelegate = makeSingleton(CoreBlockDelegateService);

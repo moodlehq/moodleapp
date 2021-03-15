@@ -56,39 +56,26 @@ import { Zip as ZipService } from '@ionic-native/zip/ngx';
 
 import { TranslateService } from '@ngx-translate/core';
 
-const OBJECT_PROTOTYPE = Object.getPrototypeOf(Object);
-
 /**
  * Injector instance used to resolve singletons.
  */
 let singletonsInjector: Injector | null = null;
 
 /**
- * Helper to get service class properties that are methods.
+ * Helper to create a method that proxies calls to the underlying singleton instance.
  */
-type GetMethods<T> = {
-    [K in keyof T]: T[K] extends (...args: unknown[]) => unknown ? K : never
-}[keyof T];
-
-/**
- * Helper to get service class properties that are not methods.
- */
-type GetNonMethods<T> = {
-    [K in keyof T]: T[K] extends (...args: unknown[]) => unknown ? never : K
-}[keyof T];
+// eslint-disable-next-line
+let createSingletonMethodProxy = (instance: any, method: Function, property: string | number | symbol) => method.bind(instance);
 
 /**
  * Singleton proxy created using the factory method.
  *
  * @see makeSingleton
  */
-export type CoreSingletonProxy<Service, Getters extends keyof Service = never> =
-    Pick<Service, Exclude<GetMethods<Service>, GetNonMethods<Service>>> &
-    Pick<Service, Getters> &
-    {
-        instance: Service;
-        setInstance(instance: Service): void;
-    };
+export type CoreSingletonProxy<Service> = Service & {
+    instance: Service;
+    setInstance(instance: Service): void;
+};
 
 /**
  * Set the injector that will be used to resolve instances in the singletons of this module.
@@ -97,6 +84,15 @@ export type CoreSingletonProxy<Service, Getters extends keyof Service = never> =
  */
 export function setSingletonsInjector(injector: Injector): void {
     singletonsInjector = injector;
+}
+
+/**
+ * Set the method to create method proxies.
+ *
+ * @param method Method.
+ */
+export function setCreateSingletonMethodProxy(method: typeof createSingletonMethodProxy): void {
+    createSingletonMethodProxy = method;
 }
 
 /**
@@ -112,26 +108,19 @@ export function setSingletonsInjector(injector: Injector): void {
  * @param getters Getter names to proxy.
  * @return Singleton proxy.
  */
-export function makeSingleton<Service>(injectionToken: Type<Service> | Type<unknown> | string): CoreSingletonProxy<Service, never>;
-export function makeSingleton<Service, Getters extends keyof Service>(
+export function makeSingleton<Service extends object = object>( // eslint-disable-line @typescript-eslint/ban-types
     injectionToken: Type<Service> | Type<unknown> | string,
-    getters: Getters[],
-): CoreSingletonProxy<Service, Getters>;
-export function makeSingleton<Service, Getters extends keyof Service>(
-    injectionToken: Type<Service> | Type<unknown> | string,
-    getters: Getters[] = [],
-): CoreSingletonProxy<Service, Getters> {
-    // Define instance manipulation affordances.
-    const proxy = {
+): CoreSingletonProxy<Service> {
+    const singleton = {
         setInstance(instance: Service) {
-            Object.defineProperty(proxy, 'instance', {
+            Object.defineProperty(singleton, 'instance', {
                 value: instance,
                 configurable: true,
             });
         },
-    } as CoreSingletonProxy<Service, Getters>;
+    } as { instance: Service; setInstance(instance: Service) };
 
-    Object.defineProperty(proxy, 'instance', {
+    Object.defineProperty(singleton, 'instance', {
         get: () => {
             if (!singletonsInjector) {
                 throw new Error('Can\'t resolve a singleton instance without an injector');
@@ -139,70 +128,39 @@ export function makeSingleton<Service, Getters extends keyof Service>(
 
             const instance = singletonsInjector.get(injectionToken);
 
-            proxy.setInstance(instance);
+            singleton.setInstance(instance);
 
             return instance;
         },
         configurable: true,
     });
 
-    // Define method and getter proxies.
-    if (isServiceClass(injectionToken)) {
-        // Get property descriptors, going all the way up the prototype chain (for services extending other classes).
-        let parentPrototype = injectionToken;
-        let descriptors: Record<string, PropertyDescriptor> = {};
-
-        do {
-            descriptors = {
-                ...Object.getOwnPropertyDescriptors(parentPrototype.prototype),
-                ...descriptors,
-            };
-
-            parentPrototype = Object.getPrototypeOf(parentPrototype);
-        } while (parentPrototype !== OBJECT_PROTOTYPE);
-
-        // Don't proxy constructor calls.
-        delete descriptors['constructor'];
-
-        // Define method proxies.
-        for (const [property, descriptor] of Object.entries(descriptors)) {
-            // Skip getters and setters.
-            if (descriptor.get || descriptor.set) {
-                continue;
+    return new Proxy(singleton, {
+        get(target, property, receiver) {
+            if (property in target) {
+                return Reflect.get(target, property, receiver);
             }
 
-            // Define method proxy.
-            Object.defineProperty(proxy, property, {
-                value: (...args) => proxy.instance[property].call(proxy.instance, ...args),
-                configurable: true,
-            });
-        }
+            const value = target.instance[property];
 
-        // Define getter proxies.
-        for (const getter of getters) {
-            Object.defineProperty(proxy, getter, { get: () => proxy.instance[getter] });
-        }
-    }
+            return typeof value === 'function'
+                ? createSingletonMethodProxy(target.instance, value, property)
+                : value;
+        },
+        set(target, property, value, receiver) {
+            Reflect.set(target.instance, property, value, receiver);
 
-    return proxy;
-}
-
-/**
- * Type guard to check if an injection token is a service class.
- *
- * @param injectionToken Injection token.
- * @return Whether the token is a class.
- */
-function isServiceClass(injectionToken: Type<unknown> | string): injectionToken is Type<unknown> {
-    return typeof injectionToken !== 'string';
+            return true;
+        },
+    }) as CoreSingletonProxy<Service>;
 }
 
 // Convert ionic-native services to singleton.
 export const Badge = makeSingleton(BadgeService);
 export const Chooser = makeSingleton(ChooserService);
 export const Clipboard = makeSingleton(ClipboardService);
-export const Diagnostic = makeSingleton(DiagnosticService, ['permissionStatus']);
-export const File = makeSingleton(FileService, ['documentsDirectory', 'externalApplicationStorageDirectory']);
+export const Diagnostic = makeSingleton(DiagnosticService);
+export const File = makeSingleton(FileService);
 export const FileOpener = makeSingleton(FileOpenerService);
 export const FileTransfer = makeSingleton(FileTransferService);
 export const Geolocation = makeSingleton(GeolocationService);
@@ -212,40 +170,24 @@ export const LocalNotifications = makeSingleton(LocalNotificationsService);
 export const Media = makeSingleton(MediaService);
 export const MediaCapture = makeSingleton(MediaCaptureService);
 export const NativeHttp = makeSingleton(HTTP);
-export const Network = makeSingleton(NetworkService, ['Connection', 'type']);
+export const Network = makeSingleton(NetworkService);
 export const Push = makeSingleton(PushService);
 export const QRScanner = makeSingleton(QRScannerService);
 export const StatusBar = makeSingleton(StatusBarService);
 export const SplashScreen = makeSingleton(SplashScreenService);
 export const SQLite = makeSingleton(SQLiteService);
-export const WebIntent = makeSingleton(WebIntentService, ['ACTION_VIEW']);
+export const WebIntent = makeSingleton(WebIntentService);
 export const WebView = makeSingleton(WebViewService);
 export const Zip = makeSingleton(ZipService);
 
-export const Camera = makeSingleton(CameraService, [
-    'DestinationType',
-    'Direction',
-    'EncodingType',
-    'MediaType',
-    'PictureSourceType',
-    'PopoverArrowDirection',
-]);
+export const Camera = makeSingleton(CameraService);
 
-export const Device = makeSingleton(DeviceService, [
-    'cordova',
-    'isVirtual',
-    'manufacturer',
-    'model',
-    'platform',
-    'serial',
-    'uuid',
-    'version',
-]);
+export const Device = makeSingleton(DeviceService);
 
 // Convert some Angular and Ionic injectables to singletons.
 export const NgZone = makeSingleton(NgZoneService);
 export const Http = makeSingleton(HttpClient);
-export const Platform = makeSingleton(PlatformService, ['isRTL', 'resume']);
+export const Platform = makeSingleton(PlatformService);
 export const ActionSheetController = makeSingleton(ActionSheetControllerService);
 export const AlertController = makeSingleton(AlertControllerService);
 export const LoadingController = makeSingleton(LoadingControllerService);
@@ -253,10 +195,10 @@ export const ModalController = makeSingleton(ModalControllerService);
 export const PopoverController = makeSingleton(PopoverControllerService);
 export const ToastController = makeSingleton(ToastControllerService);
 export const GestureController = makeSingleton(GestureControllerService);
-export const ApplicationInit = makeSingleton(ApplicationInitStatus, ['donePromise']);
+export const ApplicationInit = makeSingleton(ApplicationInitStatus);
 export const Application = makeSingleton(ApplicationRef);
 export const NavController = makeSingleton(NavControllerService);
-export const Router = makeSingleton(RouterService, ['routerState', 'url']);
+export const Router = makeSingleton(RouterService);
 
 // Convert external libraries injectables.
-export const Translate = makeSingleton(TranslateService, ['onLangChange', 'translations']);
+export const Translate = makeSingleton(TranslateService);

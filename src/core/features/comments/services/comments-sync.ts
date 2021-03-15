@@ -315,7 +315,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
     }
 
 }
-export const CoreCommentsSync = makeSingleton(CoreCommentsSyncProvider, ['component', 'syncInterval']);
+export const CoreCommentsSync = makeSingleton(CoreCommentsSyncProvider);
 
 export type CoreCommentsSyncResult = {
     warnings: string[]; // List of warnings.
