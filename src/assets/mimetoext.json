@@ -1018,7 +1018,7 @@
 "text/x-vcard": ["vcf"],
 "text/xml": ["resx","jcb","jcw","jmt","jmx","jcl","xsl","rhb","sqt","xml","jqz"],
 "text/yaml": ["yaml","yml"],
-"video/3gpp": ["3gp"],
+"video/3gpp": ["3gp", "3gpp"],
 "video/3gpp2": ["3g2"],
 "video/animaflex": ["afl"],
 "video/avi": ["avi"],
