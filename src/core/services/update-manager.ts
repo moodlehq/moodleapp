@@ -48,7 +48,7 @@ export class CoreUpdateManagerProvider {
 
         const versionApplied = await CoreConfig.get<number>(VERSION_APPLIED, 0);
 
-        if (versionCode >= 3900 && versionApplied < 3900 && versionApplied > 0) {
+        if (versionCode >= 3950 && versionApplied < 3950 && versionApplied > 0) {
             promises.push(CoreH5P.h5pPlayer.deleteAllContentIndexes());
         }
 

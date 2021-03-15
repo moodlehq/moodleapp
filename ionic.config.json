@@ -3,5 +3,9 @@
   "integrations": {
     "cordova": {}
   },
-  "type": "angular"
+  "type": "angular",
+  "hooks": {
+    "build:before": "./scripts/copy-assets.js",
+    "serve:before": "./scripts/copy-assets.js"
+  }
 }

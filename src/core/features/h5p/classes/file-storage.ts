@@ -376,7 +376,7 @@ export class CoreH5PFileStorage {
      * @return Folder path.
      */
     getCoreH5PPath(): string {
-        return CoreTextUtils.concatenatePaths(CoreFile.getWWWPath(), '/h5p/');
+        return CoreTextUtils.concatenatePaths(CoreFile.getWWWPath(), '/assets/lib/h5p/');
     }
 
     /**
