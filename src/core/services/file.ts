@@ -1215,7 +1215,12 @@ export class CoreFileProvider {
      * @return Path.
      */
     getWWWPath(): string {
-        const position = window.location.href.indexOf('index.html');
+        // Use current URL, removing the path.
+        if (!window.location.pathname || window.location.pathname == '/') {
+            return window.location.href;
+        }
+
+        const position = window.location.href.indexOf(window.location.pathname);
 
         if (position != -1) {
             return window.location.href.substr(0, position);

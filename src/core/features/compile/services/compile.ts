@@ -129,7 +129,7 @@ import { ADDON_MOD_BOOK_SERVICES } from '@addons/mod/book/book.module';
 import { ADDON_MOD_FOLDER_SERVICES } from '@addons/mod/folder/folder.module';
 import { ADDON_MOD_FORUM_SERVICES } from '@addons/mod/forum/forum.module';
 // @todo import { ADDON_MOD_GLOSSARY_SERVICES } from '@addons/mod/glossary/glossary.module';
-// @todo import { ADDON_MOD_H5P_ACTIVITY_SERVICES } from '@addons/mod/h5pactivity/h5pactivity.module';
+import { ADDON_MOD_H5P_ACTIVITY_SERVICES } from '@addons/mod/h5pactivity/h5pactivity.module';
 import { ADDON_MOD_IMSCP_SERVICES } from '@addons/mod/imscp/imscp.module';
 import { ADDON_MOD_LESSON_SERVICES } from '@addons/mod/lesson/lesson.module';
 import { ADDON_MOD_LTI_SERVICES } from '@addons/mod/lti/lti.module';
@@ -294,7 +294,7 @@ export class CoreCompileProvider {
             ...ADDON_MOD_FOLDER_SERVICES,
             ...ADDON_MOD_FORUM_SERVICES,
             // @todo ...ADDON_MOD_GLOSSARY_SERVICES,
-            // @todo ...ADDON_MOD_H5P_ACTIVITY_SERVICES,
+            ...ADDON_MOD_H5P_ACTIVITY_SERVICES,
             ...ADDON_MOD_IMSCP_SERVICES,
             ...ADDON_MOD_LESSON_SERVICES,
             ...ADDON_MOD_LTI_SERVICES,

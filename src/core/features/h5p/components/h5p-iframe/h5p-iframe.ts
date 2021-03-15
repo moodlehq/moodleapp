@@ -68,7 +68,6 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
         this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.isOfflineDisabledInSite();
 
         // Send resize events when the page holding this component is re-entered.
-        // @todo: Check that this works as expected.
         this.currentPageRoute = router.url;
         this.subscription = router.events
             .pipe(filter(event => event instanceof NavigationEnd))

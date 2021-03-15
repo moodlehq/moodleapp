@@ -226,7 +226,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     async gotoBlog(): Promise<void> {
         const params: Params = { cmId: this.module.id };
 
-        CoreNavigator.navigateToSitePath(AddonBlogMainMenuHandlerService.PAGE_NAME, { params });
+        await CoreNavigator.navigateToSitePath(AddonBlogMainMenuHandlerService.PAGE_NAME, { params });
     }
 
     /**
