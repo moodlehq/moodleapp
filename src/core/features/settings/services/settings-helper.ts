@@ -43,7 +43,7 @@ export interface CoreSiteSpaceUsage {
  * Constants to define color schemes.
  */
 export const enum CoreColorScheme {
-    AUTO = 'auto',
+    SYSTEM = 'system',
     LIGHT = 'light',
     DARK = 'dark',
 }
@@ -65,6 +65,7 @@ export class CoreSettingsHelperProvider {
 
     protected syncPromises: { [s: string]: Promise<void> } = {};
     protected prefersDark?: MediaQueryList;
+    protected colorSchemes: CoreColorScheme[] = [];
 
     constructor() {
         if (!CoreConstants.CONFIG.forceColorScheme) {
@@ -405,12 +406,36 @@ export class CoreSettingsHelperProvider {
     }
 
     /**
+     * Get system allowed color schemes.
+     *
+     * @return Allowed color schemes.
+     */
+    getAllowedColorSchemes(): CoreColorScheme[] {
+        if (this.colorSchemes.length > 0) {
+            return this.colorSchemes;
+        }
+
+        if (!CoreConstants.CONFIG.forceColorScheme) {
+            this.colorSchemes.push(CoreColorScheme.LIGHT);
+            this.colorSchemes.push(CoreColorScheme.DARK);
+
+            if (this.canIUsePrefersColorScheme()) {
+                this.colorSchemes.push(CoreColorScheme.SYSTEM);
+            }
+        } else {
+            this.colorSchemes = [CoreConstants.CONFIG.forceColorScheme];
+        }
+
+        return this.colorSchemes;
+    }
+
+    /**
      * Set body color scheme.
      *
      * @param colorScheme Name of the color scheme.
      */
     setColorScheme(colorScheme: CoreColorScheme): void {
-        if (colorScheme == CoreColorScheme.AUTO && this.prefersDark) {
+        if (colorScheme == CoreColorScheme.SYSTEM && this.prefersDark) {
             // Listen for changes to the prefers-color-scheme media query.
             this.prefersDark.addEventListener('change', this.toggleDarkModeListener);
 
@@ -421,6 +446,18 @@ export class CoreSettingsHelperProvider {
 
             this.toggleDarkMode(colorScheme == CoreColorScheme.DARK);
         }
+    }
+
+    /**
+     * Check if device can detect color scheme system preference.
+     * https://caniuse.com/prefers-color-scheme
+     *
+     * @returns if the color scheme system preference is avalaible.
+     */
+    canIUsePrefersColorScheme(): boolean {
+        // The following check will check browser support but system may differ from that.
+        // @todo Detect SO support to watch media query.
+        return window.matchMedia('(prefers-color-scheme)').media !== 'not all';
     }
 
     /**
