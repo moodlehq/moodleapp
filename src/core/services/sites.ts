@@ -309,7 +309,7 @@ export class CoreSitesProvider {
         siteUrl = CoreUrlUtils.removeUrlParams(siteUrl);
 
         try {
-            data = await Http.post(siteUrl + '/login/token.php', {}).pipe(timeout(CoreWS.getRequestTimeout()))
+            data = await Http.post(siteUrl + '/login/token.php', { appsitecheck: 1 }).pipe(timeout(CoreWS.getRequestTimeout()))
                 .toPromise();
         } catch (error) {
             // Default error messages are kinda bad, return our own message.
