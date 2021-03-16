@@ -250,7 +250,7 @@ export class AddonBlogEntriesPage implements OnInit {
      *
      * @param refresher Refresher instance.
      */
-    refresh(refresher?: CustomEvent<IonRefresher>): void {
+    refresh(refresher?: IonRefresher): void {
         const promises = this.entries.map((entry) =>
             CoreComments.invalidateCommentsData('user', entry.userid, this.component, entry.id, 'format_blog'));
 
@@ -269,7 +269,7 @@ export class AddonBlogEntriesPage implements OnInit {
         CoreUtils.allPromises(promises).finally(() => {
             this.fetchEntries(true).finally(() => {
                 if (refresher) {
-                    refresher?.detail.complete();
+                    refresher?.complete();
                 }
             });
         });

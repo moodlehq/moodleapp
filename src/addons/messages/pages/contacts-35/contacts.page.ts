@@ -128,7 +128,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      * @param refresher Refresher.
      * @return Promise resolved when done.
      */
-    async refreshData(refresher?: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshData(refresher?: IonRefresher): Promise<void> {
         try {
             if (this.searchString) {
                 // User has searched, update the search.
@@ -139,7 +139,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
                 await this.fetchData();
             }
         } finally {
-            refresher?.detail.complete();
+            refresher?.complete();
         }
     }
 

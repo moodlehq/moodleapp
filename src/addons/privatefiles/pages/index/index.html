@@ -8,7 +8,7 @@
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!filesLoaded || (!showPrivateFiles && !showSiteFiles)"
-        (ionRefresh)="refreshData($event)">
+        (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 

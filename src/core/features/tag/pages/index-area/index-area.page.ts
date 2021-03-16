@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Type } from '@angular/core';
-import { IonInfiniteScroll, IonRefresher } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTag } from '@features/tag/services/tag';
 import { ActivatedRoute } from '@angular/router';
@@ -140,11 +140,11 @@ export class CoreTagIndexAreaPage implements OnInit {
      * @param infiniteComplete Infinite scroll complete function.
      * @return Resolved when done.
      */
-    async loadMore(infiniteComplete?: CustomEvent<IonInfiniteScroll>): Promise<void> {
+    async loadMore(infiniteComplete?: () => void): Promise<void> {
         try {
             await this.fetchData();
         } finally {
-            infiniteComplete?.detail.complete();
+            infiniteComplete?.();
         }
     }
 
@@ -153,7 +153,7 @@ export class CoreTagIndexAreaPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    async refreshData(refresher?: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshData(refresher?: IonRefresher): Promise<void> {
         try {
             await CoreTag.invalidateTagIndexPerArea(
                 this.tagId,
@@ -168,7 +168,7 @@ export class CoreTagIndexAreaPage implements OnInit {
             try {
                 await this.fetchData(true);
             } finally {
-                refresher?.detail.complete();
+                refresher?.complete();
             }
         }
     }

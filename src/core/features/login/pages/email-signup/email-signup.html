@@ -16,7 +16,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!settingsLoaded || isMinor" (ionRefresh)="refreshSettings($event)">
+    <ion-refresher slot="fixed" [disabled]="!settingsLoaded || isMinor" (ionRefresh)="refreshSettings($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 

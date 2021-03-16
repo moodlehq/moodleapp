@@ -140,7 +140,7 @@ export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
      * @return Promise resolved when done.
      */
     async doRefresh(
-        refresher?: CustomEvent<IonRefresher>,
+        refresher?: IonRefresher,
         done?: () => void,
         showErrors: boolean = false,
     ): Promise<void> {

@@ -64,8 +64,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
         await this.loadContent();
         try {
-            await AddonModResource.logView(this.module!.instance!, this.module!.name);
-            CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+            await AddonModResource.logView(this.module.instance!, this.module.name);
+            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors.
         }
@@ -77,7 +77,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      * @return Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
-        return AddonModResource.invalidateContent(this.module!.id, this.courseId!);
+        return AddonModResource.invalidateContent(this.module.id, this.courseId);
     }
 
     /**
@@ -88,9 +88,9 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      */
     protected async fetchContent(refresh?: boolean): Promise<void> {
         // Load module contents if needed. Passing refresh is needed to force reloading contents.
-        await CoreCourse.loadModuleContents(this.module!, this.courseId, undefined, false, refresh);
+        await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, refresh);
 
-        if (!this.module!.contents || !this.module!.contents.length) {
+        if (!this.module.contents || !this.module.contents.length) {
             throw new CoreError(Translate.instant('core.filenotfound'));
         }
 
@@ -99,11 +99,11 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
         // Get the resource instance to get the latest name/description and to know if it's embedded.
         if (this.canGetResource) {
-            resource = await CoreUtils.ignoreErrors(AddonModResource.getResourceData(this.courseId!, this.module!.id));
+            resource = await CoreUtils.ignoreErrors(AddonModResource.getResourceData(this.courseId, this.module.id));
             this.description = resource?.intro || '';
             options = resource?.displayoptions ? CoreTextUtils.unserialize(resource.displayoptions) : {};
         } else {
-            resource = await CoreUtils.ignoreErrors(CoreCourse.getModule(this.module!.id, this.courseId));
+            resource = await CoreUtils.ignoreErrors(CoreCourse.getModule(this.module.id, this.courseId));
             this.description = resource?.description || '';
             options = resource?.customdata ? CoreTextUtils.unserialize(CoreTextUtils.parseJSON(resource.customdata)) : {};
         }
@@ -114,9 +114,9 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                 this.dataRetrieved.emit(resource);
             }
 
-            if (AddonModResourceHelper.isDisplayedInIframe(this.module!)) {
+            if (AddonModResourceHelper.isDisplayedInIframe(this.module)) {
                 const downloadResult = await this.downloadResourceIfNeeded(refresh, true);
-                const src = await AddonModResourceHelper.getIframeSrc(this.module!);
+                const src = await AddonModResourceHelper.getIframeSrc(this.module);
                 this.mode = 'iframe';
 
                 if (this.src && src.toString() == this.src.toString()) {
@@ -137,11 +137,11 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                 return;
             }
 
-            if (resource && 'display' in resource && AddonModResourceHelper.isDisplayedEmbedded(this.module!, resource.display)) {
+            if (resource && 'display' in resource && AddonModResourceHelper.isDisplayedEmbedded(this.module, resource.display)) {
                 this.mode = 'embedded';
                 this.warning = '';
 
-                this.contentText = await AddonModResourceHelper.getEmbeddedHtml(this.module!, this.courseId!);
+                this.contentText = await AddonModResourceHelper.getEmbeddedHtml(this.module, this.courseId);
                 this.mode = this.contentText.length > 0 ? 'embedded' : 'external';
             } else {
                 this.mode = 'external';
@@ -158,20 +158,20 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      * @return Promise resolved when done.
      */
     async open(): Promise<void> {
-        let downloadable = await CoreCourseModulePrefetchDelegate.isModuleDownloadable(this.module!, this.courseId!);
+        let downloadable = await CoreCourseModulePrefetchDelegate.isModuleDownloadable(this.module, this.courseId);
 
         if (downloadable) {
             // Check if the main file is downloadle.
             // This isn't done in "isDownloadable" to prevent extra WS calls in the course page.
-            downloadable = await AddonModResourceHelper.isMainFileDownloadable(this.module!);
+            downloadable = await AddonModResourceHelper.isMainFileDownloadable(this.module);
 
             if (downloadable) {
-                return AddonModResourceHelper.openModuleFile(this.module!, this.courseId!);
+                return AddonModResourceHelper.openModuleFile(this.module, this.courseId);
             }
         }
 
         // The resource cannot be downloaded, open the activity in browser.
-        await CoreSites.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(this.module!.url!);
+        await CoreSites.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(this.module.url!);
     }
 
 }

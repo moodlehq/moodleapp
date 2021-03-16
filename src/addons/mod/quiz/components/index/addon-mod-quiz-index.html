@@ -28,7 +28,7 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
     <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
-        contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId">
+        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
     </core-course-module-description>
 
     <!-- Access rules description messages. -->
@@ -117,7 +117,7 @@
                 <ion-label>
                     <h3 class="item-heading">{{ 'addon.mod_quiz.comment' | translate }}</h3>
                     <p><core-format-text [component]="component" [componentId]="componentId" [text]="gradebookFeedback"
-                        contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId">
+                        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                     </core-format-text></p>
                 </ion-label>
             </ion-item>
@@ -125,7 +125,7 @@
                 <ion-label>
                     <h3 class="item-heading">{{ 'addon.mod_quiz.overallfeedback' | translate }}</h3>
                     <p><core-format-text [component]="component" [componentId]="componentId" [text]="overallFeedback"
-                        contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId">
+                        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                     </core-format-text></p>
                 </ion-label>
             </ion-item>

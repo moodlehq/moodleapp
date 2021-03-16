@@ -26,7 +26,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!commentsLoaded" (ionRefresh)="refreshComments(false, $event)">
+    <ion-refresher slot="fixed" [disabled]="!commentsLoaded" (ionRefresh)="refreshComments(false, $event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="commentsLoaded">

@@ -402,13 +402,13 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * @param showErrors Whether to show sync errors to the user.
      * @return Promise resolved when done.
      */
-    async doRefresh(refresher?: CustomEvent<IonRefresher>, done?: () => void, showErrors= false): Promise<void> {
+    async doRefresh(refresher?: IonRefresher, done?: () => void, showErrors= false): Promise<void> {
         if (!this.eventLoaded) {
             return;
         }
 
         await this.refreshEvent(true, showErrors).finally(() => {
-            refresher?.detail.complete();
+            refresher?.complete();
             done && done();
         });
     }

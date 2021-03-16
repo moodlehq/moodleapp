@@ -25,7 +25,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!coursesLoaded" (ionRefresh)="refreshCourses($event)">
+    <ion-refresher slot="fixed" [disabled]="!coursesLoaded" (ionRefresh)="refreshCourses($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 

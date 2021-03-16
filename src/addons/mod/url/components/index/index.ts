@@ -75,7 +75,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      * @return Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
-        await AddonModUrl.invalidateContent(this.module!.id, this.courseId!);
+        await AddonModUrl.invalidateContent(this.module.id, this.courseId);
     }
 
     /**
@@ -90,7 +90,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
                 throw null;
             }
             // Fetch the module data.
-            const url = await AddonModUrl.getUrl(this.courseId!, this.module!.id);
+            const url = await AddonModUrl.getUrl(this.courseId, this.module.id);
 
             this.name = url.name;
             this.description = url.intro;
@@ -102,17 +102,17 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             }
 
             // Try to load module contents, it's needed to get the URL with parameters.
-            await CoreCourse.loadModuleContents(this.module!, this.courseId, undefined, false, refresh, undefined, 'url');
+            await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, refresh, undefined, 'url');
 
             // Always use the URL from the module because it already includes the parameters.
-            this.url = this.module!.contents[0] && this.module!.contents[0].fileurl ? this.module!.contents[0].fileurl : undefined;
+            this.url = this.module.contents[0] && this.module.contents[0].fileurl ? this.module.contents[0].fileurl : undefined;
 
             await this.calculateDisplayOptions(url);
 
         } catch {
             // Fallback in case is not prefetched or not available.
             const mod =
-                await CoreCourse.getModule(this.module!.id, this.courseId, undefined, false, false, undefined, 'url');
+                await CoreCourse.getModule(this.module.id, this.courseId, undefined, false, false, undefined, 'url');
 
             this.name = mod.name;
             this.description = mod.description;
@@ -167,8 +167,8 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      */
     protected async logView(): Promise<void> {
         try {
-            await AddonModUrl.logView(this.module!.instance!, this.module!.name);
-            CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+            await AddonModUrl.logView(this.module.instance!, this.module.name);
+            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors.
         }

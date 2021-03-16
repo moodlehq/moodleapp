@@ -155,9 +155,9 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, CanLeave {
      *
      * @param refresher Refresher.
      */
-    refreshSubmission(refresher?: CustomEvent<IonRefresher>): void {
+    refreshSubmission(refresher?: IonRefresher): void {
         this.refreshAllData().finally(() => {
-            refresher?.detail.complete();
+            refresher?.complete();
         });
     }
 

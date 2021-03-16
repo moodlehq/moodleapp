@@ -15,7 +15,7 @@
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="subfolder || !activityComponent?.loaded"
-        (ionRefresh)="activityComponent?.doRefresh($event)">
+        (ionRefresh)="activityComponent?.doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 

@@ -6,7 +6,8 @@
 
 <ion-content>
     <core-split-view>
-        <ion-refresher slot="fixed" [disabled]="!participants.loaded || searchInProgress" (ionRefresh)="refreshParticipants($event.target)">
+        <ion-refresher slot="fixed" [disabled]="!participants.loaded || searchInProgress"
+            (ionRefresh)="refreshParticipants($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
 
@@ -17,16 +18,18 @@
         </core-search-box>
 
         <core-loading [hideUntil]="participants.loaded">
-            <core-empty-box *ngIf="participants.empty && !searchInProgress && !searchQuery" icon="person" [message]="'core.user.noparticipants' | translate">
+            <core-empty-box *ngIf="participants.empty && !searchInProgress && !searchQuery" icon="person"
+                [message]="'core.user.noparticipants' | translate">
             </core-empty-box>
 
-            <core-empty-box *ngIf="participants.empty && !searchInProgress && searchQuery" icon="search" [message]="'core.noresults' | translate">
+            <core-empty-box *ngIf="participants.empty && !searchInProgress && searchQuery" icon="search"
+                [message]="'core.noresults' | translate">
             </core-empty-box>
 
             <ion-list *ngIf="!participants.empty">
                 <ion-item *ngFor="let participant of participants.items"
-                    class="ion-text-wrap" [class.core-selected-item]="participants.isSelected(participant)" [title]="participant.fullname"
-                    (click)="participants.select(participant)">
+                    class="ion-text-wrap" [class.core-selected-item]="participants.isSelected(participant)"
+                    [title]="participant.fullname" (click)="participants.select(participant)">
 
                     <core-user-avatar [user]="participant" [linkProfile]="false" [checkOnline]="true" slot="start">
                     </core-user-avatar>
@@ -34,20 +37,28 @@
                     <ion-label>
                         <ng-container *ngIf="!searchQuery">
                             <h2>{{ participant.fullname }}</h2>
-                            <p *ngIf="participant.lastcourseaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastcourseaccess | coreTimeAgo }}</p>
-                            <p *ngIf="!participant.lastcourseaccess && participant.lastaccess"><strong>{{ 'core.lastaccess' | translate }}: </strong>{{ participant.lastaccess | coreTimeAgo }}</p>
+                            <p *ngIf="participant.lastcourseaccess">
+                                <strong>{{ 'core.lastaccess' | translate }}: </strong>
+                                {{ participant.lastcourseaccess | coreTimeAgo }}
+                            </p>
+                            <p *ngIf="!participant.lastcourseaccess && participant.lastaccess">
+                                <strong>{{ 'core.lastaccess' | translate }}: </strong>
+                                {{ participant.lastaccess | coreTimeAgo }}
+                            </p>
                         </ng-container>
 
                         <ng-container *ngIf="searchQuery">
                             <h2>
-                                <core-format-text [text]="participant.fullname" [highlight]="searchQuery" [filter]="false"></core-format-text>
+                                <core-format-text [text]="participant.fullname" [highlight]="searchQuery" [filter]="false">
+                                </core-format-text>
                             </h2>
                         </ng-container>
                     </ion-label>
 
                 </ion-item>
             </ion-list>
-            <core-infinite-loading [enabled]="participants.loaded && !participants.completed" (action)="fetchMoreParticipants($event)" [error]="fetchMoreParticipantsFailed">
+            <core-infinite-loading [enabled]="participants.loaded && !participants.completed"
+                (action)="fetchMoreParticipants($event)" [error]="fetchMoreParticipantsFailed">
             </core-infinite-loading>
         </core-loading>
     </core-split-view>

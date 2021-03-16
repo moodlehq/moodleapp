@@ -179,13 +179,13 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    async refreshPreferences(refresher?: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshPreferences(refresher?: IonRefresher): Promise<void> {
         try {
             await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationPreferences());
 
             await this.fetchPreferences();
         } finally {
-            refresher?.detail.complete();
+            refresher?.complete();
         }
     }
 

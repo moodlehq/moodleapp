@@ -21,7 +21,7 @@ import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { CoreUser } from '@features/user/services/user';
 import { CanLeave } from '@guards/can-leave';
-import { IonContent } from '@ionic/angular';
+import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
@@ -612,10 +612,10 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @param showErrors If show errors to the user of hide them.
      * @return Promise resolved when done.
      */
-    async doRefresh(refresher?: any, done?: () => void, showErrors: boolean = false): Promise<void> {
+    async doRefresh(refresher?: IonRefresher | null, done?: () => void, showErrors: boolean = false): Promise<void> {
         if (this.discussionLoaded) {
             await this.refreshPosts(true, showErrors).finally(() => {
-                refresher && refresher.complete();
+                refresher?.complete();
                 done && done();
             });
         }
@@ -651,7 +651,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @param type Sort type.
      * @return Promised resolved when done.
      */
-    changeSort(type: SortType): Promise<any> {
+    changeSort(type: SortType): Promise<void> {
         this.discussionLoaded = false;
         this.sort = type;
         CoreSites.getCurrentSite()!.setLocalSiteConfig('AddonModForumDiscussionSort', this.sort);

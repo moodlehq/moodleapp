@@ -36,7 +36,7 @@
     <div class="addon-mod-imscp-container">
         <core-navigation-bar [previous]="previousItem" [next]="nextItem" (action)="loadItem($event)" [info]="description"
             [title]="'core.description' | translate" [component]="component" [componentId]="componentId" contextLevel="module"
-            [contextInstanceId]="module?.id" [courseId]="courseId">
+            [contextInstanceId]="module.id" [courseId]="courseId">
         </core-navigation-bar>
         <core-iframe [src]="src"></core-iframe>
     </div>

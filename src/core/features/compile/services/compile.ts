@@ -132,7 +132,7 @@ import { ADDON_MOD_FORUM_SERVICES } from '@addons/mod/forum/forum.module';
 // @todo import { ADDON_MOD_H5P_ACTIVITY_SERVICES } from '@addons/mod/h5pactivity/h5pactivity.module';
 import { ADDON_MOD_IMSCP_SERVICES } from '@addons/mod/imscp/imscp.module';
 import { ADDON_MOD_LESSON_SERVICES } from '@addons/mod/lesson/lesson.module';
-// @todo import { ADDON_MOD_LTI_SERVICES } from '@addons/mod/lti/lti.module';
+import { ADDON_MOD_LTI_SERVICES } from '@addons/mod/lti/lti.module';
 import { ADDON_MOD_PAGE_SERVICES } from '@addons/mod/page/page.module';
 import { ADDON_MOD_QUIZ_SERVICES } from '@addons/mod/quiz/quiz.module';
 import { ADDON_MOD_RESOURCE_SERVICES } from '@addons/mod/resource/resource.module';
@@ -297,7 +297,7 @@ export class CoreCompileProvider {
             // @todo ...ADDON_MOD_H5P_ACTIVITY_SERVICES,
             ...ADDON_MOD_IMSCP_SERVICES,
             ...ADDON_MOD_LESSON_SERVICES,
-            // @todo ...ADDON_MOD_LTI_SERVICES,
+            ...ADDON_MOD_LTI_SERVICES,
             ...ADDON_MOD_PAGE_SERVICES,
             ...ADDON_MOD_QUIZ_SERVICES,
             ...ADDON_MOD_RESOURCE_SERVICES,

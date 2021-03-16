@@ -101,7 +101,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    async refreshBadges(refresher?: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshBadges(refresher?: IonRefresher): Promise<void> {
         await CoreUtils.ignoreErrors(Promise.all([
             AddonBadges.invalidateUserBadges(this.courseId, this.userId),
         ]));
@@ -110,7 +110,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
             this.fetchIssuedBadge(),
         ]));
 
-        refresher?.detail.complete();
+        refresher?.complete();
     }
 
 }

@@ -497,7 +497,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param afterCompletionChange Whether the refresh is due to a completion change.
      * @return Promise resolved when done.
      */
-    async doRefresh(refresher?: CustomEvent<IonRefresher>, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
+    async doRefresh(refresher?: IonRefresher, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
         const promises = this.dynamicComponents?.map(async (component) => {
             await component.callComponentFunction('doRefresh', [refresher, done, afterCompletionChange]);
         }) || [];
@@ -508,7 +508,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         await Promise.all(promises);
 
-        refresher?.detail.complete();
+        refresher?.complete();
         done?.();
     }
 

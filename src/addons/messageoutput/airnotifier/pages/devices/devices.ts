@@ -106,13 +106,13 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
      *
      * @param refresher Refresher.
      */
-    async refreshDevices(refresher: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshDevices(refresher: IonRefresher): Promise<void> {
         try {
             await CoreUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
 
             await this.fetchDevices();
         } finally {
-            refresher?.detail.complete();
+            refresher?.complete();
         }
     }
 

@@ -700,7 +700,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param refreshUnreadCounts Whether to refresh unread counts.
      * @return Promise resolved when done.
      */
-    async refreshData(refresher?: CustomEvent<IonRefresher>, refreshUnreadCounts: boolean = true): Promise<void> {
+    async refreshData(refresher?: IonRefresher, refreshUnreadCounts: boolean = true): Promise<void> {
         // Don't invalidate conversations and so, they always try to get latest data.
         try {
             await AddonMessages.invalidateContactRequestsCountCache(this.siteId);
@@ -709,7 +709,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 await this.fetchData(refreshUnreadCounts);
             } finally {
                 if (refresher) {
-                    refresher?.detail.complete();
+                    refresher?.complete();
                 }
             }
         }

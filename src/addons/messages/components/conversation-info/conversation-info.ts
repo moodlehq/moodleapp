@@ -122,7 +122,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
      * @param refresher Refresher.
      * @return Promise resolved when done.
      */
-    async refreshData(refresher?: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshData(refresher?: IonRefresher): Promise<void> {
         const promises: Promise<void>[] = [];
 
         promises.push(AddonMessages.invalidateConversation(this.conversationId));
@@ -131,7 +131,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
         await Promise.all(promises);
 
         await this.fetchData().finally(() => {
-            refresher?.detail.complete();
+            refresher?.complete();
         });
     }
 

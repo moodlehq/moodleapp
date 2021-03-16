@@ -154,7 +154,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    doRefresh(refresher?: CustomEvent<IonRefresher>): void {
+    doRefresh(refresher?: IonRefresher): void {
         const promises: Promise<unknown>[] = [];
 
         promises.push(CoreCourse.invalidateSections(this.siteHomeId!));
@@ -184,7 +184,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             }
 
             await Promise.all(p2).finally(() => {
-                refresher?.detail.complete();
+                refresher?.complete();
             });
         });
     }

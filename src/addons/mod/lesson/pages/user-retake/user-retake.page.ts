@@ -98,9 +98,9 @@ export class AddonModLessonUserRetakePage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    doRefresh(refresher: CustomEvent<IonRefresher>): void {
+    doRefresh(refresher: IonRefresher): void {
         this.refreshData().finally(() => {
-            refresher?.detail.complete();
+            refresher?.complete();
         });
     }
 

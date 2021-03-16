@@ -104,9 +104,9 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
      *
      * @param event Refresher event.
      */
-    refreshData(event?: CustomEvent<IonRefresher>): void {
+    refreshData(refresher?: IonRefresher): void {
         this.loadSiteData().finally(() => {
-            event?.detail.complete();
+            refresher?.complete();
         });
     }
 

@@ -14,7 +14,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher [disabled]="!loaded" (ionRefresh)="refreshData($event)" slot="fixed">
+    <ion-refresher [disabled]="!loaded" (ionRefresh)="refreshData($event.target)" slot="fixed">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">

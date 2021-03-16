@@ -78,7 +78,7 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
      * @param afterCompletionChange Whether the refresh is due to a completion change.
      * @return Promise resolved when done.
      */
-    async doRefresh(refresher?: CustomEvent<IonRefresher>, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
+    async doRefresh(refresher?: IonRefresher, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
         if (afterCompletionChange) {
             // Don't refresh the view after a completion change since completion isn't displayed.
             return;

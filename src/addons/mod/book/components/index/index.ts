@@ -87,7 +87,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         const modal = await ModalController.create({
             component: AddonModBookTocComponent,
             componentProps: {
-                moduleId: this.module!.id,
+                moduleId: this.module.id,
                 chapters: this.chapters,
                 selected: this.currentChapter,
                 courseId: this.courseId,
@@ -129,7 +129,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      * @return Resolved when done.
      */
     protected invalidateContent(): Promise<void> {
-        return AddonModBook.invalidateContent(this.module!.id, this.courseId!);
+        return AddonModBook.invalidateContent(this.module.id, this.courseId);
     }
 
     /**
@@ -143,7 +143,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         let downloadResult: CoreCourseResourceDownloadResult | undefined;
 
         // Try to get the book data. Ignore errors since this WS isn't available in some Moodle versions.
-        promises.push(CoreUtils.ignoreErrors(AddonModBook.getBook(this.courseId!, this.module!.id))
+        promises.push(CoreUtils.ignoreErrors(AddonModBook.getBook(this.courseId, this.module.id))
             .then((book) => {
                 if (!book) {
                     return;
@@ -169,8 +169,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         try {
             await Promise.all(promises);
 
-            this.contentsMap = AddonModBook.getContentsMap(this.module!.contents);
-            this.chapters = AddonModBook.getTocList(this.module!.contents);
+            this.contentsMap = AddonModBook.getContentsMap(this.module.contents);
+            this.chapters = AddonModBook.getTocList(this.module.contents);
 
             if (typeof this.currentChapter == 'undefined' && typeof this.initialChapterId != 'undefined' && this.chapters) {
                 // Initial chapter set. Validate that the chapter exists.
@@ -211,7 +211,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         this.content?.scrollToTop();
 
         try {
-            const content = await AddonModBook.getChapterContent(this.contentsMap, chapterId, this.module!.id);
+            const content = await AddonModBook.getChapterContent(this.contentsMap, chapterId, this.module.id);
 
             this.tags = this.tagsEnabled ? this.contentsMap[this.currentChapter].tags : [];
 
@@ -228,14 +228,14 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
             // Chapter loaded, log view. We don't return the promise because we don't want to block the user for this.
             await CoreUtils.ignoreErrors(AddonModBook.logView(
-                this.module!.instance!,
+                this.module.instance!,
                 logChapterId ? chapterId : undefined,
-                this.module!.name,
+                this.module.name,
             ));
 
             // Module is completed when last chapter is viewed, so we only check completion if the last is reached.
             if (!this.nextChapter) {
-                CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+                CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
             }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_book.errorchapter', true);

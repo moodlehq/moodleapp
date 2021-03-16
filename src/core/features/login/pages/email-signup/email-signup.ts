@@ -257,9 +257,9 @@ export class CoreLoginEmailSignupPage implements OnInit {
      *
      * @param event Event.
      */
-    refreshSettings(event?: CustomEvent<IonRefresher>): void {
+    refreshSettings(event?: IonRefresher): void {
         this.fetchData().finally(() => {
-            event?.detail.complete();
+            event?.complete();
         });
     }
 

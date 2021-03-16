@@ -152,9 +152,9 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshData(refresher?: CustomEvent<IonRefresher>): void {
+    refreshData(refresher?: IonRefresher): void {
         this.fetchData().finally(() => {
-            refresher?.detail.complete();
+            refresher?.complete();
         });
     }
 

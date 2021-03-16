@@ -184,7 +184,7 @@ export interface CoreCourseModuleMainComponent {
      * @param done Function to call when done.
      * @return Promise resolved when done.
      */
-    doRefresh(refresher?: CustomEvent<IonRefresher>, done?: () => void): Promise<void>;
+    doRefresh(refresher?: IonRefresher, done?: () => void): Promise<void>;
 }
 
 /**

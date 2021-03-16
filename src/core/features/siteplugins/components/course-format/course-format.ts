@@ -97,7 +97,7 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
      * @param afterCompletionChange Whether the refresh is due to a completion change.
      * @return Promise resolved when done.
      */
-    async doRefresh(refresher?: CustomEvent<IonRefresher>, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
+    async doRefresh(refresher?: IonRefresher, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
         await this.content?.refreshContent(afterCompletionChange);
     }
 

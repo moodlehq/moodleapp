@@ -31,7 +31,7 @@
     </core-context-menu>
 </core-navbar-buttons>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!eventLoaded" (ionRefresh)="doRefresh($event)">
+    <ion-refresher slot="fixed" [disabled]="!eventLoaded" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="eventLoaded">

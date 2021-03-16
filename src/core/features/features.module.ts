@@ -32,6 +32,7 @@ import { CoreViewerModule } from './viewer/viewer.module';
 import { CoreSearchModule } from './search/search.module';
 import { CoreCommentsModule } from './comments/comments.module';
 import { CoreSitePluginsModule } from './siteplugins/siteplugins.module';
+import { CoreRatingModule } from './rating/rating.module';
 
 @NgModule({
     imports: [
@@ -53,6 +54,7 @@ import { CoreSitePluginsModule } from './siteplugins/siteplugins.module';
         CoreViewerModule,
         CoreCommentsModule,
         CoreSitePluginsModule,
+        CoreRatingModule,
     ],
 })
 export class CoreFeaturesModule {}

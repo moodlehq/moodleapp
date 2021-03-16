@@ -119,7 +119,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshDashboard(refresher: CustomEvent<IonRefresher>): void {
+    refreshDashboard(refresher: IonRefresher): void {
         const promises: Promise<void>[] = [];
 
         promises.push(CoreCoursesDashboard.invalidateDashboardBlocks());
@@ -133,7 +133,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
         Promise.all(promises).finally(() => {
             this.loadContent().finally(() => {
-                refresher?.detail.complete();
+                refresher?.complete();
             });
         });
     }

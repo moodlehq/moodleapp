@@ -379,7 +379,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
      *
      * @param refresher The refresher if this was triggered by a Pull To Refresh.
      */
-    async refreshData(refresher?: CustomEvent<IonRefresher>): Promise<void> {
+    async refreshData(refresher?: IonRefresher): Promise<void> {
         const promises: Promise<void>[] = [];
 
         promises.push(CoreCourses.invalidateUserCourses());
@@ -394,7 +394,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
         }
 
         await Promise.all(promises).finally(() => this.getCourse()).finally(() => {
-            refresher?.detail.complete();
+            refresher?.complete();
         });
     }
 

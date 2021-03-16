@@ -26,7 +26,7 @@
 <core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
 
     <core-course-module-description *ngIf="displayDescription" [description]="description" [component]="component"
-        [componentId]="componentId" contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId">
+        [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
     </core-course-module-description>
 
     <ion-card class="core-warning-card" *ngIf="warning">
@@ -36,7 +36,7 @@
 
     <div class="ion-padding">
         <core-format-text [component]="component" [componentId]="componentId" [text]="contents" contextLevel="module"
-            [contextInstanceId]="module?.id" [courseId]="courseId">
+            [contextInstanceId]="module.id" [courseId]="courseId">
         </core-format-text>
 
         <p class="ion-padding-bottom addon-mod_page-timemodified" *ngIf="displayTimemodified && timemodified">

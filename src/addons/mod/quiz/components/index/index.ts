@@ -129,7 +129,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         try {
             await AddonModQuiz.logViewQuiz(this.quiz.id, this.quiz.name);
 
-            CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors.
         }
@@ -162,7 +162,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         this.showStatusSpinner = true;
 
         try {
-            await AddonModQuizPrefetchHandler.prefetch(this.module!, this.courseId, true);
+            await AddonModQuizPrefetchHandler.prefetch(this.module, this.courseId, true);
 
             // Success downloading, open quiz.
             this.openQuiz();
@@ -190,7 +190,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
         try {
             // First get the quiz instance.
-            const quiz = await AddonModQuiz.getQuiz(this.courseId!, this.module!.id);
+            const quiz = await AddonModQuiz.getQuiz(this.courseId, this.module.id);
 
             this.gradeMethodReadable = AddonModQuiz.getQuizGradeMethod(quiz.grademethod);
             this.now = Date.now();
@@ -231,7 +231,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             // Get quiz access info.
-            this.quizAccessInfo = await AddonModQuiz.getQuizAccessInformation(quiz.id, { cmId: this.module!.id });
+            this.quizAccessInfo = await AddonModQuiz.getQuizAccessInformation(quiz.id, { cmId: this.module.id });
 
             this.showReviewColumn = this.quizAccessInfo.canreviewmyattempts;
             this.accessRules = this.quizAccessInfo.accessrules;
@@ -242,7 +242,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             // Get question types in the quiz.
-            const types = await AddonModQuiz.getQuizRequiredQtypes(quiz.id, { cmId: this.module!.id });
+            const types = await AddonModQuiz.getQuizRequiredQtypes(quiz.id, { cmId: this.module.id });
 
             this.unsupportedQuestions = AddonModQuiz.getUnsupportedQuestions(types);
             this.hasSupportedQuestions = !!types.find((type) => type != 'random' && this.unsupportedQuestions.indexOf(type) == -1);
@@ -265,10 +265,10 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected async getAttempts(quiz: AddonModQuizQuizData): Promise<void> {
 
         // Get access information of last attempt (it also works if no attempts made).
-        this.attemptAccessInfo = await AddonModQuiz.getAttemptAccessInformation(quiz.id, 0, { cmId: this.module!.id });
+        this.attemptAccessInfo = await AddonModQuiz.getAttemptAccessInformation(quiz.id, 0, { cmId: this.module.id });
 
         // Get attempts.
-        const attempts = await AddonModQuiz.getUserAttempts(quiz.id, { cmId: this.module!.id });
+        const attempts = await AddonModQuiz.getUserAttempts(quiz.id, { cmId: this.module.id });
 
         this.attempts = await this.treatAttempts(quiz, attempts);
 
@@ -386,7 +386,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         if (quiz.showFeedbackColumn) {
             // Get the quiz overall feedback.
             const response = await AddonModQuiz.getFeedbackForGrade(quiz.id, this.gradebookData.grade, {
-                cmId: this.module!.id,
+                cmId: this.module.id,
             });
 
             this.overallFeedback = response.feedbacktext;
@@ -404,14 +404,14 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         // If we go to auto review it means an attempt was finished. Check completion status.
-        CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+        CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
 
         // Verify that user can see the review.
         const attemptId = this.autoReview.attemptId;
 
         if (this.quizAccessInfo?.canreviewmyattempts) {
             try {
-                await AddonModQuiz.getAttemptReview(attemptId, { page: -1, cmId: this.module!.id });
+                await AddonModQuiz.getAttemptReview(attemptId, { page: -1, cmId: this.module.id });
 
                 await CoreNavigator.navigate(`review/${attemptId}`);
             } catch {
@@ -429,7 +429,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected hasSyncSucceed(result: AddonModQuizSyncResult): boolean {
         if (result.attemptFinished) {
             // An attempt was finished, check completion status.
-            CoreCourse.checkModuleCompletion(this.courseId!, this.module!.completiondata);
+            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         }
 
         // If the sync call isn't rejected it means the sync was successful.
@@ -488,7 +488,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(AddonModQuiz.invalidateQuizData(this.courseId!));
+        promises.push(AddonModQuiz.invalidateQuizData(this.courseId));
 
         if (this.quiz) {
             promises.push(AddonModQuiz.invalidateUserAttemptsForUser(this.quiz.id));
@@ -497,7 +497,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             promises.push(AddonModQuiz.invalidateAttemptAccessInformation(this.quiz.id));
             promises.push(AddonModQuiz.invalidateCombinedReviewOptionsForUser(this.quiz.id));
             promises.push(AddonModQuiz.invalidateUserBestGradeForUser(this.quiz.id));
-            promises.push(AddonModQuiz.invalidateGradeFromGradebook(this.courseId!));
+            promises.push(AddonModQuiz.invalidateGradeFromGradebook(this.courseId));
         }
 
         await Promise.all(promises);
@@ -536,7 +536,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
         CoreNavigator.navigate('player', {
             params: {
-                moduleUrl: this.module?.url,
+                moduleUrl: this.module.url,
             },
         });
     }
@@ -594,7 +594,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         // Get combined review options.
-        promises.push(AddonModQuiz.getCombinedReviewOptions(quiz.id, { cmId: this.module!.id }).then((options) => {
+        promises.push(AddonModQuiz.getCombinedReviewOptions(quiz.id, { cmId: this.module.id }).then((options) => {
             this.options = options;
 
             return;
@@ -633,11 +633,11 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * @return Promise resolved when done.
      */
     protected async getQuizGrade(quiz: AddonModQuizQuizData): Promise<void> {
-        this.bestGrade = await AddonModQuiz.getUserBestGrade(quiz.id, { cmId: this.module!.id });
+        this.bestGrade = await AddonModQuiz.getUserBestGrade(quiz.id, { cmId: this.module.id });
 
         try {
             // Get gradebook grade.
-            const data = await AddonModQuiz.getGradeFromGradebook(this.courseId!, this.module!.id);
+            const data = await AddonModQuiz.getGradeFromGradebook(this.courseId, this.module.id);
 
             if (data) {
                 this.gradebookData = {
