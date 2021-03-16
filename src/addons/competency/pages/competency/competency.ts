@@ -35,7 +35,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { AddonCompetencyMainMenuHandlerService } from '@addons/competency/services/handlers/mainmenu';
 
 /**
- * Page that displays a learning plan.
+ * Page that displays the competency information.
  */
 @Component({
     selector: 'page-addon-competency-competency',

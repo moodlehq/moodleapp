@@ -18,11 +18,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonCompetencyPlanPage } from './pages/plan/plan.page';
-import { AddonCompetencyPlanListPage } from './pages/planlist/planlist.page';
-import { AddonCompetencyCompetenciesPage } from './pages/competencies/competencies.page';
-import { AddonCompetencyCompetencyPage } from './pages/competency/competency.page';
-import { AddonCompetencyCompetencySummaryPage } from './pages/competencysummary/competencysummary.page';
+import { AddonCompetencyPlanPage } from './pages/plan/plan';
+import { AddonCompetencyPlanListPage } from './pages/planlist/planlist';
+import { AddonCompetencyCompetenciesPage } from './pages/competencies/competencies';
+import { AddonCompetencyCompetencyPage } from './pages/competency/competency';
+import { AddonCompetencyCompetencySummaryPage } from './pages/competencysummary/competencysummary';
 import { AddonCompetencyCourseCompetenciesPage } from './pages/coursecompetencies/coursecompetencies.page';
 import { AddonCompetencyCourseCompetenciesPageModule } from './pages/coursecompetencies/coursecompetencies.module';
 
@@ -33,7 +33,7 @@ const mobileRoutes: Routes = [
         component: AddonCompetencyPlanListPage,
     },
     {
-        path: 'competencies/',
+        path: 'competencies',
         component: AddonCompetencyCompetenciesPage,
     },
     {

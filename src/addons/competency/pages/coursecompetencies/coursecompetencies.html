@@ -11,27 +11,27 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="competenciesLoaded">
-        <ion-card *ngIf="!user && competencies && competencies!.statistics.competencycount > 0">
-            <ng-container *ngIf="competencies!.cangradecompetencies">
-                <ion-item class="ion-text-wrap" *ngIf="competencies!.settings.pushratingstouserplans">
+        <ion-card *ngIf="!user && competencies && competencies.statistics.competencycount > 0">
+            <ng-container *ngIf="competencies.cangradecompetencies">
+                <ion-item class="ion-text-wrap" *ngIf="competencies.settings.pushratingstouserplans">
                     <ion-label>{{ 'addon.competency.coursecompetencyratingsarepushedtouserplans' | translate }}</ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="!competencies!.settings.pushratingstouserplans" color="danger">
+                <ion-item class="ion-text-wrap" *ngIf="!competencies.settings.pushratingstouserplans" color="danger">
                     <ion-label>{{ 'addon.competency.coursecompetencyratingsarenotpushedtouserplans' | translate }}</ion-label>
                 </ion-item>
             </ng-container>
-            <ion-item class="ion-text-wrap" *ngIf="competencies!.statistics.canbegradedincourse">
+            <ion-item class="ion-text-wrap" *ngIf="competencies.statistics.canbegradedincourse">
                 <ion-label>
                     {{ 'addon.competency.xcompetenciesproficientoutofyincourse' | translate: {$a:
-                        {x: competencies!.statistics.proficientcompetencycount, y: competencies!.statistics.competencycount} } }}
-                    <core-progress-bar [progress]="competencies!.statistics.proficientcompetencypercentage"></core-progress-bar>
+                        {x: competencies.statistics.proficientcompetencycount, y: competencies.statistics.competencycount} } }}
+                    <core-progress-bar [progress]="competencies.statistics.proficientcompetencypercentage"></core-progress-bar>
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap"
-                *ngIf="competencies!.statistics.canmanagecoursecompetencies && competencies!.statistics.leastproficientcount > 0">
+                *ngIf="competencies.statistics.canmanagecoursecompetencies && competencies.statistics.leastproficientcount > 0">
                 <ion-label>
                     <strong>{{ 'addon.competency.competenciesmostoftennotproficientincourse' | translate }}</strong>:
-                    <p *ngFor="let comp of competencies!.statistics.leastproficient">
+                    <p *ngFor="let comp of competencies.statistics.leastproficient">
                         <a (click)="openCompetencySummary(comp.id)">
                             {{ comp.shortname }} - {{ comp.idnumber }}
                         </a>
@@ -40,29 +40,29 @@
             </ion-item>
         </ion-card>
 
-        <h3  class="ion-margin-horizontal" *ngIf="competencies && competencies!.statistics.competencycount > 0">
+        <h3  class="ion-margin-horizontal" *ngIf="competencies && competencies.statistics.competencycount > 0">
             {{ 'addon.competency.coursecompetencies' | translate }}
         </h3>
         <ion-card *ngIf="user">
              <ion-item class="ion-text-wrap">
                 <core-user-avatar [user]="user" slot="start"></core-user-avatar>
-               <ion-label><h2>{{ user!.fullname }}</h2></ion-label>
+               <ion-label><h2>{{ user.fullname }}</h2></ion-label>
             </ion-item>
         </ion-card>
-        <core-empty-box *ngIf="competencies && competencies!.statistics.competencycount == 0"
+        <core-empty-box *ngIf="competencies && competencies.statistics.competencycount == 0"
             icon="fas-award" message="{{ 'addon.competency.nocompetenciesincourse' | translate }}">
         </core-empty-box>
 
         <div *ngIf="competencies">
-            <ion-card *ngFor="let competency of competencies!.competencies">
+            <ion-card *ngFor="let competency of competencies.competencies">
                 <ion-item class="ion-text-wrap" (click)="openCompetency(competency.competency.id)"
                     [title]="competency.competency.shortname" detail="true">
                     <ion-label>
                         <h2><strong>{{competency.competency.shortname}} <em>{{competency.competency.idnumber}}</em></strong></h2>
                     </ion-label>
-                    <ion-badge slot="end" *ngIf="competency.usercompetencycourse && competency.usercompetencycourse!.gradename"
-                        [color]="competency.usercompetencycourse!.proficiency ? 'success' : 'danger'">
-                        {{ competency.usercompetencycourse!.gradename }}
+                    <ion-badge slot="end" *ngIf="competency.usercompetencycourse && competency.usercompetencycourse.gradename"
+                        [color]="competency.usercompetencycourse.proficiency ? 'success' : 'danger'">
+                        {{ competency.usercompetencycourse.gradename }}
                     </ion-badge>
                 </ion-item>
                 <ion-item class="ion-text-wrap">
@@ -92,7 +92,7 @@
                                 <ng-container *ngIf="!ancestor.last">&nbsp;/&nbsp;</ng-container>
                             </span>
                         </div>
-                        <div *ngIf="competencies!.statistics.canmanagecoursecompetencies">
+                        <div *ngIf="competencies.statistics.canmanagecoursecompetencies">
                             <strong>{{ 'addon.competency.uponcoursecompletion' | translate }}</strong>
                              <ng-container *ngFor="let ruleoutcome of competency.ruleoutcomeoptions">
                                 <span *ngIf="ruleoutcome.selected">{{ ruleoutcome.text }}</span>

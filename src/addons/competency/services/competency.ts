@@ -57,6 +57,41 @@ export class AddonCompetencyProvider {
     }
 
     /**
+     * Returns whether current user can see another user competencies in a course.
+     *
+     * @param courseId Course ID.
+     * @param userId User ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether the user can view the competencies.
+     */
+    async canViewUserCompetenciesInCourse(courseId: number, userId?: number, siteId?: string): Promise<boolean> {
+        if (!CoreSites.isLoggedIn()) {
+            return false;
+        }
+
+        try {
+            const response = await this.getCourseCompetenciesPage(courseId, siteId);
+
+            if (!response.competencies.length) {
+                // No competencies.
+                return false;
+            }
+
+            if (!userId || userId == CoreSites.getCurrentSiteUserId()) {
+                // Current user.
+                return true;
+            }
+
+            // Check if current user can view any competency of the user.
+            await this.getCompetencyInCourse(courseId, response.competencies[0].competency.id, userId, siteId);
+
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
      * Get cache key for user learning plans data WS calls.
      *
      * @param userId User ID.
@@ -290,7 +325,7 @@ export class AddonCompetencyProvider {
     }
 
     /**
-     * Get all competencies in a course.
+     * Get all competencies in a course for a certain user.
      *
      * @param courseId ID of the course.
      * @param userId ID of the user.
@@ -301,6 +336,38 @@ export class AddonCompetencyProvider {
     async getCourseCompetencies(
         courseId: number,
         userId?: number,
+        siteId?: string,
+        ignoreCache = false,
+    ): Promise<AddonCompetencyDataForCourseCompetenciesPageWSResponse> {
+
+        const courseCompetencies = await this.getCourseCompetenciesPage(courseId, siteId, ignoreCache);
+
+        if (!userId || userId == CoreSites.getCurrentSiteUserId()) {
+            return courseCompetencies;
+        }
+
+        const userCompetenciesSumaries: AddonCompetencyDataForUserCompetencySummaryInCourseWSResponse[] =
+            await Promise.all(courseCompetencies.competencies.map((competency) =>
+                this.getCompetencyInCourse(courseId, competency.competency.id, userId, siteId)));
+
+        userCompetenciesSumaries.forEach((userCompetenciesSumary, index) => {
+            courseCompetencies.competencies[index].usercompetencycourse =
+                userCompetenciesSumary.usercompetencysummary.usercompetencycourse;
+        });
+
+        return courseCompetencies;
+    }
+
+    /**
+     * Get all competencies in a course.
+     *
+     * @param courseId ID of the course.
+     * @param siteId Site ID. If not defined, current site.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @return Promise to be resolved when the course competencies are retrieved.
+     */
+    async getCourseCompetenciesPage(
+        courseId: number,
         siteId?: string,
         ignoreCache = false,
     ): Promise<AddonCompetencyDataForCourseCompetenciesPageWSResponse> {
@@ -320,26 +387,11 @@ export class AddonCompetencyProvider {
             preSets.emergencyCache = false;
         }
 
-        const courseCompetencies = await site.read<AddonCompetencyDataForCourseCompetenciesPageWSResponse>(
+        return site.read<AddonCompetencyDataForCourseCompetenciesPageWSResponse>(
             'tool_lp_data_for_course_competencies_page',
             params,
             preSets,
         );
-
-        if (!userId || userId == CoreSites.getCurrentSiteUserId()) {
-            return courseCompetencies;
-        }
-
-        const userCompetenciesSumaries: AddonCompetencyDataForUserCompetencySummaryInCourseWSResponse[] =
-            await Promise.all(courseCompetencies.competencies.map((competency) =>
-                this.getCompetencyInCourse(courseId, competency.competency.id, userId, siteId)));
-
-        userCompetenciesSumaries.forEach((userCompetenciesSumary, index) => {
-            courseCompetencies.competencies[index].usercompetencycourse =
-                userCompetenciesSumary.usercompetencysummary.usercompetencycourse;
-        });
-
-        return courseCompetencies;
     }
 
     /**

@@ -91,8 +91,8 @@ export class AddonCompetencyCompetenciesPage implements AfterViewInit, OnDestroy
             } else {
                 throw null;
             }
-        } catch (message) {
-            CoreDomUtils.showErrorModalDefault(message, 'Error getting competencies data.');
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'Error getting competencies data.');
         }
     }
 

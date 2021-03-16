@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title *ngIf="plan">{{plan!.plan.name}}</ion-title>
+        <ion-title *ngIf="plan">{{plan.plan.name}}</ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -15,27 +15,27 @@
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <core-user-avatar [user]="user" slot="start"></core-user-avatar>
-                    <h2>{{ user!.fullname }}</h2>
+                    <h2>{{ user.fullname }}</h2>
                 </ion-label>
             </ion-item>
        </ion-card>
         <ion-card *ngIf="plan">
             <ion-list>
-                <ion-item class="ion-text-wrap" *ngIf="plan!.plan.description" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="plan.plan.description" lines="none">
                     <ion-label>
-                        <core-format-text [text]="plan!.plan.description" contextLevel="user"
-                            [contextInstanceId]="plan!.plan.userid">
+                        <core-format-text [text]="plan.plan.description" contextLevel="user"
+                            [contextInstanceId]="plan.plan.userid">
                         </core-format-text>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" lines="none">
                     <ion-label>
                         <p>
-                            <strong>{{ 'addon.competency.status' | translate }}</strong>: {{ plan!.plan.statusname }}
+                            <strong>{{ 'addon.competency.status' | translate }}</strong>: {{ plan.plan.statusname }}
                         </p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="plan!.plan.duedate > 0" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="plan.plan.duedate > 0" lines="none">
                     <ion-label>
                         <p>
                             <strong>{{ 'addon.competency.duedate' | translate }}</strong>:
@@ -43,10 +43,10 @@
                         </p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="plan!.plan.template" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="plan.plan.template" lines="none">
                     <ion-label>
                         <p>
-                            <strong>{{ 'addon.competency.template' | translate }}</strong>: {{ plan!.plan.template!.shortname }}
+                            <strong>{{ 'addon.competency.template' | translate }}</strong>: {{ plan.plan.template.shortname }}
                         </p>
                     </ion-label>
                 </ion-item>

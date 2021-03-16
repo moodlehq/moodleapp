@@ -98,39 +98,41 @@ export class AddonCompetencyCourseOptionHandlerService implements CoreCourseOpti
         // Get the competencies in the course.
         const competencies = await AddonCompetency.getCourseCompetencies(course.id, undefined, undefined, true);
 
+        if (!competencies || !competencies.competencies) {
+            return;
+        }
+
         const promises: Promise<unknown>[] = [];
 
         // Prefetch all the competencies.
-        if (competencies && competencies.competencies) {
-            competencies.competencies.forEach((competency) => {
-                promises.push(AddonCompetency.getCompetencyInCourse(
-                    course.id,
-                    competency.competency.id,
-                    undefined,
-                    undefined,
-                    true,
-                ));
+        competencies.competencies.forEach((competency) => {
+            promises.push(AddonCompetency.getCompetencyInCourse(
+                course.id,
+                competency.competency.id,
+                undefined,
+                undefined,
+                true,
+            ));
 
-                promises.push(AddonCompetency.getCompetencySummary(
-                    competency.competency.id,
-                    undefined,
-                    undefined,
-                    true,
-                ));
+            promises.push(AddonCompetency.getCompetencySummary(
+                competency.competency.id,
+                undefined,
+                undefined,
+                true,
+            ));
 
-                if (competency.coursemodules) {
-                    competency.coursemodules.forEach((module) => {
-                        promises.push(CoreFilterHelper.getFilters(ContextLevel.MODULE, module.id, { courseId: course.id }));
-                    });
-                }
+            if (competency.coursemodules) {
+                competency.coursemodules.forEach((module) => {
+                    promises.push(CoreFilterHelper.getFilters(ContextLevel.MODULE, module.id, { courseId: course.id }));
+                });
+            }
 
-                if (competency.plans) {
-                    competency.plans.forEach((plan) => {
-                        promises.push(CoreFilterHelper.getFilters(ContextLevel.USER, plan.userid));
-                    });
-                }
-            });
-        }
+            if (competency.plans) {
+                competency.plans.forEach((plan) => {
+                    promises.push(CoreFilterHelper.getFilters(ContextLevel.USER, plan.userid));
+                });
+            }
+        });
 
         await Promise.all(promises);
     }

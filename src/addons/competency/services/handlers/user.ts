@@ -44,9 +44,7 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
     async isEnabledForUser(user: CoreUserProfile, courseId?: number): Promise<boolean> {
         try {
             if (courseId) {
-                const response = await AddonCompetency.getCourseCompetencies(courseId, user.id);
-
-                return response.competencies.length > 0;
+                return AddonCompetency.canViewUserCompetenciesInCourse(courseId, user.id);
             } else {
                 const plans = await AddonCompetency.getLearningPlans(user.id);
 

@@ -54,7 +54,7 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
             // Open the learning plan.
             const planId = Number(contextUrlParams.id);
 
-            await  CoreUtils.ignoreErrors(AddonCompetency.invalidateLearningPlan(planId, notification.site));
+            await CoreUtils.ignoreErrors(AddonCompetency.invalidateLearningPlan(planId, notification.site));
 
             await CoreNavigator.navigateToSitePath('/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/' + planId, {
                 siteId: notification.site,
