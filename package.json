@@ -232,8 +232,8 @@
   },
   "main": "desktop/electron.js",
   "build": {
-    "appId": "com.moodle.moodledesktop",
-    "productName": "Moodle Desktop",
+    "appId": "id.ac.unpar.moodlemobile",
+    "productName": "IDE UNPAR Desktop",
     "files": [
       "desktop/electron.js",
       "www/**/*",

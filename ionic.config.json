@@ -1,10 +1,10 @@
 {
-  "name": "moodlemobile",
+  "name": "IDE UNPAR Mobile",
   "integrations": {
     "cordova": {},
     "gulp": {}
   },
   "type": "ionic-angular",
   "watchPatterns": [],
-  "id": "com.moodle.moodlemobile"
+  "id": "id.ac.unpar.moodlemobile"
 }
