@@ -644,7 +644,7 @@ export class CoreAppProvider {
 
 }
 
-export const CoreApp = makeSingleton(CoreAppProvider, ['isAndroid']);
+export const CoreApp = makeSingleton(CoreAppProvider);
 
 /**
  * Data stored for a redirect to another page/site.

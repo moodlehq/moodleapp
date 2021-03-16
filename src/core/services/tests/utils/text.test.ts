@@ -26,9 +26,9 @@ describe('CoreTextUtilsProvider', () => {
     let textUtils: CoreTextUtilsProvider;
 
     beforeEach(() => {
-        mockSingleton(CoreApp, [], { isAndroid: jest.fn(() => config.platform === 'android') });
+        mockSingleton(CoreApp, [], { isAndroid: () => config.platform === 'android' });
 
-        sanitizer = mock<DomSanitizer>([], { bypassSecurityTrustUrl: jest.fn(url => url) });
+        sanitizer = mock<DomSanitizer>([], { bypassSecurityTrustUrl: url => url });
         textUtils = new CoreTextUtilsProvider(sanitizer);
     });
 

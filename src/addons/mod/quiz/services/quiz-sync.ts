@@ -480,7 +480,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
 }
 
-export const AddonModQuizSync = makeSingleton(AddonModQuizSyncProvider, ['component', 'syncInterval']);
+export const AddonModQuizSync = makeSingleton(AddonModQuizSyncProvider);
 
 /**
  * Data returned by a quiz sync.

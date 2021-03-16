@@ -216,14 +216,7 @@ export class CoreH5PProvider {
 
 }
 
-export const CoreH5P = makeSingleton(CoreH5PProvider, [
-    'h5pCore',
-    'h5pFramework',
-    'h5pPlayer',
-    'h5pStorage',
-    'h5pValidator',
-    'queueRunner',
-]);
+export const CoreH5P = makeSingleton(CoreH5PProvider);
 
 /**
  * Params of core_h5p_get_trusted_h5p_file WS.

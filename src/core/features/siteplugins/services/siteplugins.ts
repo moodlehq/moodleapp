@@ -659,7 +659,7 @@ export class CoreSitePluginsProvider {
 
 }
 
-export const CoreSitePlugins = makeSingleton(CoreSitePluginsProvider, ['sitePluginsFinishedLoading', 'hasSitePluginsLoaded']);
+export const CoreSitePlugins = makeSingleton(CoreSitePluginsProvider);
 
 /**
  * Handler of a site plugin.

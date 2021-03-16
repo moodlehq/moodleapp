@@ -240,7 +240,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
 
 }
 
-export const CoreCourseSync = makeSingleton(CoreCourseSyncProvider, ['component', 'syncInterval']);
+export const CoreCourseSync = makeSingleton(CoreCourseSyncProvider);
 
 /**
  * Result of course sync.

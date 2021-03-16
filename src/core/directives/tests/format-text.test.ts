@@ -81,9 +81,9 @@ describe('CoreFormatTextDirective', () => {
         // @todo this is done because we cannot mock image being loaded, we should find an alternative...
         CoreUtils.instance.timeoutPromise = <T>() => Promise.resolve(null as unknown as T);
 
-        mockSingleton(CoreFilepool, { getSrcByUrl: jest.fn(() => Promise.resolve('file://local-path')) });
+        mockSingleton(CoreFilepool, { getSrcByUrl: () => Promise.resolve('file://local-path') });
         mockSingleton(CoreSites, {
-            getSite: jest.fn(() => Promise.resolve(site)),
+            getSite: () => Promise.resolve(site),
             getCurrentSite: () => Promise.resolve(site),
         });
         mockSingleton(CoreFilter, { formatText: (text) => Promise.resolve(text) });

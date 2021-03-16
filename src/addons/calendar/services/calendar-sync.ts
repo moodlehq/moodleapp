@@ -297,7 +297,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
 
 }
 
-export const AddonCalendarSync = makeSingleton(AddonCalendarSyncProvider, ['component', 'syncInterval']);
+export const AddonCalendarSync = makeSingleton(AddonCalendarSyncProvider);
 
 export type AddonCalendarSyncEvents = {
     warnings: string[];
