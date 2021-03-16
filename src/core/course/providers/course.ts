@@ -982,7 +982,7 @@ export class CoreCourseProvider {
         const loading = this.domUtils.showModalLoading();
 
         // Wait for site plugins to be fetched.
-        await this.sitePluginsProvider.waitFetchPlugins();
+        await this.utils.ignoreErrors(this.sitePluginsProvider.waitFetchPlugins());
 
         if (typeof course.format == 'undefined') {
             // This block can be replaced by a call to CourseHelper.getCourse(), but it is circular dependant.
@@ -1006,8 +1006,9 @@ export class CoreCourseProvider {
 
         if (!this.sitePluginsProvider.sitePluginPromiseExists('format_' + course.format)) {
             // No custom format plugin. We don't need to wait for anything.
-            await this.courseFormatDelegate.openCourse(navCtrl, course, params);
             loading.dismiss();
+
+            await this.courseFormatDelegate.openCourse(navCtrl, course, params);
 
             return;
         }
@@ -1041,6 +1042,8 @@ export class CoreCourseProvider {
             this.domUtils.showConfirm(message, '', reload, ignore).then(() => {
                 window.location.reload();
             });
+        } finally {
+            loading.dismiss();
         }
     }
 
