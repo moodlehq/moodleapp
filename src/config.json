@@ -1,9 +1,9 @@
 {
-    "app_id": "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
-    "desktopappname": "Moodle Desktop",
-    "versioncode": 3940,
-    "versionname": "3.9.4",
+    "app_id": "id.ac.unpar.moodlemobile",
+    "appname": "IDE UNPAR Mobile",
+    "desktopappname": "IDE UNPAR Desktop",
+    "versioncode": 10000,
+    "versionname": "1.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
@@ -63,25 +63,15 @@
     },
     "wsservice": "moodle_mobile_app",
     "wsextservice": "local_mobile",
-    "demo_sites": {
-        "student": {
-            "url": "https:\/\/school.moodledemo.net",
-            "username": "student",
-            "password": "moodle"
-        },
-        "teacher": {
-            "url": "https:\/\/school.moodledemo.net",
-            "username": "teacher",
-            "password": "moodle"
-        }
-    },
     "font_sizes": [
         62.5,
         75.89,
         93.75
     ],
-    "customurlscheme": "moodlemobile",
-    "siteurl": "",
+    "presets" : {"url" :"https://ide.unpar.ac.id/"},
+    "demo_sites" :[] ,
+    "customurlscheme": "idemobile",
+    "siteurl": "https://ide.unpar.ac.id/",
     "sitename": "",
     "multisitesdisplay": "",
     "sitefindersettings": {},

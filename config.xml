@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="39400" id="com.moodle.moodlemobile" ios-CFBundleVersion="3.9.4.0" version="3.9.4" versionCode="39400" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Moodle</name>
-    <description>Moodle official app</description>
-    <author email="mobile@moodle.com" href="http://moodle.com">Moodle Mobile team</author>
+<widget android-versionCode="10000" id="id.ac.unpar.moodlemobile" ios-CFBundleVersion="1.0.0.0" version="1.0.0" versionCode="10000" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>IDE UNPAR Mobile</name>
+    <description>IDE UNPAR app</description>
+    <author email="7316068@student.unpar.ac.id">Gabriel Panji Lazuardi</author>
     <content src="index.html" />
     <access origin="*" />
     <access launch-external="yes" origin="tel:*" />
@@ -648,4 +648,5 @@
             </array>
         </config-file>
     </platform>
+    <variable name="URL_SCHEME" value="idemobile" />
 </widget>
