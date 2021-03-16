@@ -311,7 +311,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
         }));
 
         // Sort them by priority.
-        userData.handlers.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+        userData.handlers.sort((a, b) => b.priority! - a.priority!);
         userData.loaded = true;
         userData.observable.next(userData.handlers);
     }
