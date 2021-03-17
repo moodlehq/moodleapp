@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { ActivatedRouteSnapshot } from '@angular/router';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -99,15 +98,6 @@ class CoreGradesCoursesManager extends CorePageItemsListManager<CoreGradesGradeO
      */
     protected getItemPath(courseGrade: CoreGradesGradeOverviewWithCourseData): string {
         return courseGrade.courseid.toString();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        const courseId = parseInt(route?.params.courseId);
-
-        return isNaN(courseId) ? null : courseId.toString();
     }
 
     /**

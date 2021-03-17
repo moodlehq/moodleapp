@@ -20,7 +20,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
-import { ActivatedRouteSnapshot, Params } from '@angular/router';
+import { Params } from '@angular/router';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
 
@@ -129,13 +129,6 @@ class AddonBadgesUserBadgesManager extends CorePageItemsListManager<AddonBadgesU
             courseId: this.courseId,
             userId: this.userId,
         };
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        return route.params.badgeHash ?? null;
     }
 
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
+import { ActivatedRouteSnapshot, Params, UrlSegment } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -63,9 +63,7 @@ export abstract class CorePageItemsListManager<Item> {
 
         // Calculate current selected item.
         const route = CoreNavigator.getCurrentRoute({ pageComponent: this.pageComponent });
-        if (route !== null && route.firstChild) {
-            this.updateSelectedItem(route.firstChild.snapshot);
-        }
+        this.updateSelectedItem(route?.snapshot ?? null);
 
         // Select default item if none is selected on a non-mobile layout.
         if (!CoreScreen.isMobile && this.selectedItem === null) {
@@ -94,9 +92,11 @@ export abstract class CorePageItemsListManager<Item> {
      */
     watchSplitViewOutlet(splitView: CoreSplitViewComponent): void {
         this.splitView = splitView;
-        this.splitViewOutletSubscription = splitView.outletRouteObservable.subscribe(route => this.updateSelectedItem(route));
+        this.splitViewOutletSubscription = splitView.outletRouteObservable.subscribe(
+            route => this.updateSelectedItem(this.getPageRouteFromSplitViewOutlet(route)),
+        );
 
-        this.updateSelectedItem(splitView.outletRoute);
+        this.updateSelectedItem(this.getPageRouteFromSplitViewOutlet(splitView.outletRoute) ?? null);
     }
 
     /**
@@ -135,9 +135,8 @@ export abstract class CorePageItemsListManager<Item> {
         }
 
         // If this item is already selected, do nothing.
-        const itemRoute = this.getItemRoute(route);
         const itemPath = this.getItemPath(item);
-        const selectedItemPath = itemRoute?.snapshot ? this.getSelectedItemPath(itemRoute.snapshot) : null;
+        const selectedItemPath = this.getSelectedItemPath(route.snapshot);
 
         if (selectedItemPath === itemPath) {
             return;
@@ -168,7 +167,7 @@ export abstract class CorePageItemsListManager<Item> {
             return map;
         }, {});
 
-        this.updateSelectedItem(this.splitView?.outletRoute);
+        this.updateSelectedItem(this.getPageRouteFromSplitViewOutlet(this.splitView?.outletRoute ?? null));
     }
 
     /**
@@ -183,8 +182,8 @@ export abstract class CorePageItemsListManager<Item> {
      *
      * @param route Current route.
      */
-    protected updateSelectedItem(route?: ActivatedRouteSnapshot | null): void {
-        const selectedItemPath = route ? this.getSelectedItemPath(route) : null;
+    protected updateSelectedItem(route: ActivatedRouteSnapshot | null): void {
+        const selectedItemPath = this.getSelectedItemPath(route);
 
         this.selectedItem = selectedItemPath
             ? this.itemsMap?.[selectedItemPath] ?? null
@@ -220,25 +219,31 @@ export abstract class CorePageItemsListManager<Item> {
     /**
      * Get the path of the selected item given the current route.
      *
-     * @param route Current route.
+     * @param route Page route.
      * @return Path of the selected item in the given route.
      */
-    protected abstract getSelectedItemPath(route: ActivatedRouteSnapshot): string | null;
+    protected getSelectedItemPath(route?: ActivatedRouteSnapshot | null): string | null {
+        const segments: UrlSegment[] = [];
 
-    /**
-     * Get the active item route, if any.
-     *
-     * @param pageRoute Page route.
-     * @return Item route.
-     */
-    private getItemRoute(pageRoute: ActivatedRoute): ActivatedRoute | null {
-        let itemRoute = pageRoute.firstChild;
-
-        while (itemRoute && !itemRoute.component) {
-            itemRoute = itemRoute.firstChild;
+        while ((route = route?.firstChild)) {
+            segments.push(...route.url);
         }
 
-        return itemRoute;
+        return segments.map(segment => segment.path).join('/').replace(/\/+/, '/').trim() || null;
+    }
+
+    /**
+     * Get the page route given a child route on the splitview outlet.
+     *
+     * @param route Child route.
+     * @return Page route.
+     */
+    private getPageRouteFromSplitViewOutlet(route: ActivatedRouteSnapshot | null): ActivatedRouteSnapshot | null {
+        while (route && route.component !== this.pageComponent) {
+            route = route.parent;
+        }
+
+        return route;
     }
 
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
@@ -174,13 +174,6 @@ class CoreGradesCourseManager extends CorePageItemsListManager<CoreGradesFormatt
      */
     protected getItemQueryParams(): Params {
         return { userId: this.userId };
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        return route.params.gradeId ?? null;
     }
 
     /**

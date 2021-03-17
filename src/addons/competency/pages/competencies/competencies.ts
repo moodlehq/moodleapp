@@ -19,7 +19,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import {
     AddonCompetencyDataForPlanPageCompetency, AddonCompetencyDataForCourseCompetenciesPageCompetency, AddonCompetency,
 } from '../../services/competency';
-import { Params, ActivatedRouteSnapshot, ActivatedRoute } from '@angular/router';
+import { Params, ActivatedRoute } from '@angular/router';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
@@ -160,13 +160,6 @@ class AddonCompetencyListManager extends CorePageItemsListManager<AddonCompetenc
         } else {
             return { courseId: this.courseId, userId: this.userId };
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        return route.params.competencyId ?? null;
     }
 
 }
