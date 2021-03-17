@@ -688,7 +688,7 @@ export class CoreSitesProvider {
         oauthId?: number,
     ): Promise<void> {
         const db = await this.appDB;
-        const entry = {
+        const entry: SiteDBEntry = {
             id,
             siteUrl,
             token,
@@ -1004,7 +1004,7 @@ export class CoreSitesProvider {
         const config = entry.config ? <CoreSiteConfig> CoreTextUtils.parseJSON(entry.config) : undefined;
 
         const site = new CoreSite(entry.id, entry.siteUrl, entry.token, info, entry.privateToken, config, entry.loggedOut == 1);
-        site.setOAuthId(entry.oauthId);
+        site.setOAuthId(entry.oauthId || undefined);
 
         return this.migrateSiteSchemas(site).then(() => {
             // Set site after migrating schemas, or a call to getSite could get the site while tables are being created.
@@ -1221,10 +1221,15 @@ export class CoreSitesProvider {
     async setSiteLoggedOut(siteId: string, loggedOut: boolean): Promise<void> {
         const db = await this.appDB;
         const site = await this.getSite(siteId);
-        const newValues = {
-            token: '', // Erase the token for security.
+        const newValues: Partial<SiteDBEntry> = {
             loggedOut: loggedOut ? 1 : 0,
         };
+
+        if (loggedOut) {
+            // Erase the token for security.
+            newValues.token = '';
+            site.token = '';
+        }
 
         site.setLoggedOut(loggedOut);
 
@@ -1266,7 +1271,7 @@ export class CoreSitesProvider {
     async updateSiteTokenBySiteId(siteId: string, token: string, privateToken: string = ''): Promise<void> {
         const db = await this.appDB;
         const site = await this.getSite(siteId);
-        const newValues = {
+        const newValues: Partial<SiteDBEntry> = {
             token,
             privateToken,
             loggedOut: 0,
@@ -1307,7 +1312,7 @@ export class CoreSitesProvider {
                 // Error getting config, keep the current one.
             }
 
-            const newValues: Record<string, string | number> = {
+            const newValues: Partial<SiteDBEntry> = {
                 info: JSON.stringify(info),
                 loggedOut: site.isLoggedOut() ? 1 : 0,
             };

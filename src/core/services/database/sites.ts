@@ -211,11 +211,11 @@ export type SiteDBEntry = {
     id: string;
     siteUrl: string;
     token: string;
-    info: string;
+    info?: string | null;
     privateToken: string;
-    config: string;
+    config?: string | null;
     loggedOut: number;
-    oauthId: number;
+    oauthId?: number | null;
 };
 
 export type CurrentSiteDBEntry = {
