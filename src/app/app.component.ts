@@ -155,7 +155,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
                 this.lastUrls[url] = Date.now();
 
-                CoreEvents.trigger(CoreEvents.APP_LAUNCHED_URL, url);
+                CoreEvents.trigger(CoreEvents.APP_LAUNCHED_URL, { url });
                 CoreCustomURLSchemes.handleCustomURL(url).catch((error) => {
                     CoreCustomURLSchemes.treatHandleCustomURLError(error);
                 });

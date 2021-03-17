@@ -51,6 +51,8 @@ export interface CoreEventsData {
     [CoreEvents.LOGIN_SITE_CHECKED]: CoreEventLoginSiteCheckedData;
     [CoreEvents.SEND_ON_ENTER_CHANGED]: CoreEventSendOnEnterChangedData;
     [CoreEvents.COMPONENT_FILE_ACTION]: CoreFilepoolComponentFileEventData;
+    [CoreEvents.FILE_SHARED]: CoreEventFileSharedData;
+    [CoreEvents.APP_LAUNCHED_URL]: CoreEventAppLaunchedData;
 };
 
 /*
@@ -358,4 +360,19 @@ export type CoreEventLoginSiteCheckedData = {
  */
 export type CoreEventSendOnEnterChangedData = {
     sendOnEnter: boolean;
+};
+
+/**
+ * Data passed to FILE_SHARED event.
+ */
+export type CoreEventFileSharedData = {
+    name: string;
+    siteId: string;
+};
+
+/**
+ * Data passed to APP_LAUNCHED_URL event.
+ */
+export type CoreEventAppLaunchedData = {
+    url: string;
 };

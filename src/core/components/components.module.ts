@@ -52,6 +52,7 @@ import { CoreAttachmentsComponent } from './attachments/attachments';
 import { CoreFilesComponent } from './files/files';
 import { CoreLocalFileComponent } from './local-file/local-file';
 import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
+import { CoreSitePickerComponent } from './site-picker/site-picker';
 
 @NgModule({
     declarations: [
@@ -86,6 +87,7 @@ import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
         CoreFilesComponent,
         CoreLocalFileComponent,
         CoreBSTooltipComponent,
+        CoreSitePickerComponent,
     ],
     imports: [
         CommonModule,
@@ -127,6 +129,7 @@ import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
         CoreFilesComponent,
         CoreLocalFileComponent,
         CoreBSTooltipComponent,
+        CoreSitePickerComponent,
     ],
 })
 export class CoreComponentsModule {}

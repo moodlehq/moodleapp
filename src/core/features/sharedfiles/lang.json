@@ -1,0 +1,11 @@
+{
+    "chooseaccountstorefile": "Choose an account to store the file in.",
+    "chooseactionrepeatedfile": "A file with this name already exists. Do you want to replace the existing file or rename it to \"{{$a}}\"?",
+    "errorreceivefilenosites": "There are no sites stored. Please add a site before sharing a file with the app.",
+    "nosharedfiles": "There are no shared files stored on this site.",
+    "nosharedfilestoupload": "You have no files to upload here. If you want to upload a file from another app, locate the file and click the 'Open in' button.",
+    "rename": "Rename",
+    "replace": "Replace",
+    "sharedfiles": "Shared files",
+    "successstorefile": "File successfully stored. Select the file to upload to your private files or use in an activity."
+}

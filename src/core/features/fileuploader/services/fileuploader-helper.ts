@@ -376,16 +376,14 @@ export class CoreFileUploaderHelperProvider {
                     try {
                         const data = await handler.action(maxSize, upload, allowOffline, handler.mimetypes);
 
+                        let result: CoreWSUploadFileResult | FileEntry | undefined;
+
                         if (data.treated) {
                             // The handler already treated the file. Return the result.
-                            this.fileUploaded(data.result!);
-
-                            return true;
+                            result = data.result;
                         } else if (data.fileEntry) {
                             // The handler provided us a fileEntry, use it.
-                            await this.uploadFileEntry(data.fileEntry, !!data.delete, maxSize, upload, allowOffline);
-
-                            return true;
+                            result = await this.uploadFileEntry(data.fileEntry, !!data.delete, maxSize, upload, allowOffline);
                         } else if (data.path) {
                             let fileEntry: FileEntry;
 
@@ -398,13 +396,17 @@ export class CoreFileUploaderHelperProvider {
                             }
 
                             // File found, treat it.
-                            await this.uploadFileEntry(fileEntry, !!data.delete, maxSize, upload, allowOffline);
-
-                            return true;
+                            result = await this.uploadFileEntry(fileEntry, !!data.delete, maxSize, upload, allowOffline);
                         }
 
-                        // Nothing received, fail.
-                        throw new CoreError('No file received');
+                        if (!result) {
+                            // Nothing received, fail.
+                            throw new CoreError('No file received');
+                        }
+
+                        this.fileUploaded(result);
+
+                        return true;
                     } catch (error) {
                         CoreDomUtils.showErrorModalDefault(
                             error,

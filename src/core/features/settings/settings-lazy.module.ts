@@ -20,6 +20,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreScreen } from '@services/screen';
 
 import { CoreSettingsIndexPage } from './pages/index';
+import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/sharedfiles.module';
 
 const sectionRoutes: Routes = [
     {
@@ -36,7 +37,10 @@ const sectionRoutes: Routes = [
             import('./pages/synchronization/synchronization.module')
                 .then(m => m.CoreSettingsSynchronizationPageModule),
     },
-    // @todo sharedfiles
+    {
+        path: SHAREDFILES_PAGE_NAME,
+        loadChildren: () => import('@features/sharedfiles/sharedfiles-lazy.module').then(m => m.CoreSharedFilesLazyModule),
+    },
     {
         path: 'about',
         loadChildren: () => import('./pages/about/about.module').then(m => m.CoreSettingsAboutPageModule),

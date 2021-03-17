@@ -13,10 +13,14 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { CoreSettingsConstants, CoreSettingsSection } from '@features/settings/constants';
+import { ActivatedRouteSnapshot, Params } from '@angular/router';
+
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
-import { ActivatedRouteSnapshot } from '@angular/router';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
+import { CoreConstants } from '@/core/constants';
+import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/sharedfiles.module';
+import { CoreApp } from '@services/app';
 
 @Component({
     selector: 'page-core-settings-index',
@@ -32,7 +36,7 @@ export class CoreSettingsIndexPage implements AfterViewInit, OnDestroy {
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        this.sections.setItems(CoreSettingsConstants.SECTIONS);
+        this.sections.setItems(this.getSections());
         this.sections.start(this.splitView);
     }
 
@@ -41,6 +45,48 @@ export class CoreSettingsIndexPage implements AfterViewInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.sections.destroy();
+    }
+
+    /**
+     * Get the sections.
+     *
+     * @returns Sections.
+     */
+    protected getSections(): CoreSettingsSection[] {
+        const sections: CoreSettingsSection[] = [
+            {
+                name: 'core.settings.general',
+                path: 'general',
+                icon: 'fas-wrench',
+            },
+            {
+                name: 'core.settings.spaceusage',
+                path: 'spaceusage',
+                icon: 'fas-tasks',
+            },
+            {
+                name: 'core.settings.synchronization',
+                path: 'sync',
+                icon: CoreConstants.ICON_SYNC,
+            },
+        ];
+
+        if (CoreApp.isIOS()) {
+            sections.push({
+                name: 'core.sharedfiles.sharedfiles',
+                path: SHAREDFILES_PAGE_NAME + '/list/root',
+                icon: 'fas-folder',
+                params: { manage: true },
+            });
+        }
+
+        sections.push({
+            name: 'core.settings.about',
+            path: 'about',
+            icon: 'fas-id-card',
+        });
+
+        return sections;
     }
 
 }
@@ -60,8 +106,25 @@ class CoreSettingsSectionsManager extends CorePageItemsListManager<CoreSettingsS
     /**
      * @inheritdoc
      */
+    protected getItemQueryParams(section: CoreSettingsSection): Params {
+        return section.params || {};
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        return route.parent?.routeConfig?.path ?? null;
+        return CoreSettingsHelper.getSelectedItemPath(route);
     }
 
 }
+
+/**
+ * Settings section.
+ */
+export type CoreSettingsSection = {
+    name: string;
+    path: string;
+    icon: string;
+    params?: Params;
+};
