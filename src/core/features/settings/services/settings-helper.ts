@@ -27,9 +27,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
-import { ActivatedRouteSnapshot } from '@angular/router';
-import { CoreNavigator } from '@services/navigator';
-import { CoreTextUtils } from '@services/utils/text';
 
 /**
  * Object with space usage and cache entries that can be erased.
@@ -476,29 +473,6 @@ export class CoreSettingsHelperProvider {
      */
     protected toggleDarkMode(enable: boolean = false): void {
         document.body.classList.toggle('dark', enable);
-    }
-
-    /**
-     * Implementation of getSelectedItemPath for settings items managers.
-     *
-     * @param route Current route.
-     * @return Path of the selected item in the given route.
-     */
-    getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        // @todo: routeConfig doesn't have a path after refreshing the app.
-        // route.component is null too, and route.parent.url is empty.
-        let routePath = route.routeConfig?.path;
-        const parentPath = route.parent?.routeConfig?.path;
-
-        if (!routePath && !parentPath) {
-            return null;
-        }
-
-        if (routePath) {
-            routePath = CoreNavigator.replaceRoutePathParams(routePath, route.params);
-        }
-
-        return CoreTextUtils.concatenatePaths(parentPath || '', routePath || '');
     }
 
 }

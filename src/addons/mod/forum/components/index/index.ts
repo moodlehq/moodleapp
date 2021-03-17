@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Optional, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { IonContent } from '@ionic/angular';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import {
@@ -818,21 +818,6 @@ class AddonModForumDiscussionsManager extends CorePageItemsListManager<Discussio
         };
 
         return this.discussionsPathPrefix + getRelativePath();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        if (route.params.discussionId) {
-            return this.discussionsPathPrefix + route.params.discussionId;
-        }
-
-        if (route.params.timeCreated) {
-            return this.discussionsPathPrefix + `new/${route.params.timeCreated}`;
-        }
-
-        return null;
     }
 
 }

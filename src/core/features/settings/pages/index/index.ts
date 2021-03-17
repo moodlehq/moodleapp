@@ -13,11 +13,10 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { ActivatedRouteSnapshot, Params } from '@angular/router';
+import { Params } from '@angular/router';
 
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreConstants } from '@/core/constants';
 import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/sharedfiles.module';
 import { CoreApp } from '@services/app';
@@ -108,13 +107,6 @@ class CoreSettingsSectionsManager extends CorePageItemsListManager<CoreSettingsS
      */
     protected getItemQueryParams(section: CoreSettingsSection): Params {
         return section.params || {};
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        return CoreSettingsHelper.getSelectedItemPath(route);
     }
 
 }

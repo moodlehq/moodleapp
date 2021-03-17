@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
-import { ActivatedRouteSnapshot, Params } from '@angular/router';
+import { Params } from '@angular/router';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { IonRefresher } from '@ionic/angular';
@@ -366,13 +366,6 @@ class AddonModAssignSubmissionListManager extends CorePageItemsListManager<Addon
         return {
             blindId: submission.blindid,
         };
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        return route.params.submitId ?? null;
     }
 
 }

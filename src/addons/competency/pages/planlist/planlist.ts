@@ -20,7 +20,6 @@ import { AddonCompetencyProvider, AddonCompetencyPlan, AddonCompetency } from '.
 import { AddonCompetencyHelper } from '../../services/competency-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
-import { ActivatedRouteSnapshot } from '@angular/router';
 
 /**
  * Page that displays the list of learning plans.
@@ -128,13 +127,6 @@ class AddonCompetencyPlanListManager extends CorePageItemsListManager<AddonCompe
      */
     protected getItemPath(plan: AddonCompetencyPlanFormatted): string {
         return String(plan.id);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        return route.params.planId ?? null;
     }
 
 }

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { ActivatedRouteSnapshot, Params } from '@angular/router';
+import { Params } from '@angular/router';
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreSettingsDelegate, CoreSettingsHandlerToDisplay } from '../../services/settings-delegate';
@@ -198,13 +198,6 @@ class CoreSettingsSitePreferencesManager extends CorePageItemsListManager<CoreSe
      */
     protected getItemQueryParams(handler: CoreSettingsHandlerToDisplay): Params {
         return handler.params || {};
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        return CoreSettingsHelper.getSelectedItemPath(route);
     }
 
 }

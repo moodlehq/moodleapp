@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRouteSnapshot } from '@angular/router';
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
@@ -225,13 +224,6 @@ class CoreUserParticipantsManager extends CorePageItemsListManager<CoreUserParti
      */
     protected getItemPath(participant: CoreUserParticipant | CoreUserData): string {
         return participant.id.toString();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getSelectedItemPath(route: ActivatedRouteSnapshot): string | null {
-        return route.params.userId ?? null;
     }
 
     /**
