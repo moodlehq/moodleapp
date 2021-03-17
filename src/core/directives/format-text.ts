@@ -482,6 +482,7 @@ export class CoreFormatTextDirective implements OnChanges {
         const stopClicksElements = Array.from(div.querySelectorAll('button,input,select,textarea'));
         const frames = Array.from(div.querySelectorAll(CoreIframeUtilsProvider.FRAME_TAGS.join(',').replace(/iframe,?/, '')));
         const svgImages = Array.from(div.querySelectorAll('image'));
+        const promises: Promise<void>[] = [];
 
         // Walk through the content to find the links and add our directive to it.
         // Important: We need to look for links first because in 'img' we add new links without core-link.
@@ -520,7 +521,7 @@ export class CoreFormatTextDirective implements OnChanges {
         });
 
         iframes.forEach((iframe) => {
-            this.treatIframe(iframe, site, canTreatVimeo);
+            promises.push(this.treatIframe(iframe, site, canTreatVimeo));
         });
 
         svgImages.forEach((image) => {
@@ -570,8 +571,10 @@ export class CoreFormatTextDirective implements OnChanges {
             }));
 
             // Automatically reject the promise after 5 seconds to prevent blocking the user forever.
-            await CoreUtils.ignoreErrors(CoreUtils.timeoutPromise(promise, 5000));
+            promises.push(CoreUtils.ignoreErrors(CoreUtils.timeoutPromise(promise, 5000)));
         }
+
+        await Promise.all(promises);
     }
 
     /**
@@ -679,12 +682,15 @@ export class CoreFormatTextDirective implements OnChanges {
         if (currentSite?.containsUrl(src)) {
             // URL points to current site, try to use auto-login.
             const finalUrl = await currentSite.getAutoLoginUrl(src, false);
+            await CoreIframeUtils.fixIframeCookies(finalUrl);
 
             iframe.src = finalUrl;
             CoreIframeUtils.treatFrame(iframe, false);
 
             return;
         }
+
+        await CoreIframeUtils.fixIframeCookies(src);
 
         if (site && src && canTreatVimeo) {
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
@@ -694,8 +700,8 @@ export class CoreFormatTextDirective implements OnChanges {
                     matches[1] + '&token=' + site.getToken();
 
                 // Width and height are mandatory, we need to calculate them.
-                let width;
-                let height;
+                let width: string | number;
+                let height: string | number;
 
                 if (iframe.width) {
                     width = iframe.width;
@@ -719,13 +725,16 @@ export class CoreFormatTextDirective implements OnChanges {
                 if (site && !site.isVersionGreaterEqualThan('3.7')) {
                     newUrl += '&width=' + width + '&height=' + height;
                 }
+
+                await CoreIframeUtils.fixIframeCookies(src);
+
                 iframe.src = newUrl;
 
                 if (!iframe.width) {
-                    iframe.width = width;
+                    iframe.width = String(width);
                 }
                 if (!iframe.height) {
-                    iframe.height = height;
+                    iframe.height = String(height);
                 }
 
                 // Do the iframe responsive.
