@@ -1,0 +1,139 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title *ngIf="competency">
+            {{ competency.competency.competency.shortname }} <small>{{ competency.competency.competency.idnumber }}</small>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!competencyLoaded" (ionRefresh)="refreshCompetency($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="competencyLoaded">
+        <ion-card *ngIf="user">
+            <ion-item class="ion-text-wrap">
+                <core-user-avatar [user]="user" slot="start"></core-user-avatar>
+                <ion-label><h2>{{ user.fullname }}</h2></ion-label>
+            </ion-item>
+        </ion-card>
+
+        <ion-card *ngIf="competency">
+            <ion-item class="ion-text-wrap" *ngIf="competency.competency.competency.description">
+                <ion-label>
+                    <core-format-text [text]="competency.competency.competency.description" [contextLevel]="contextLevel"
+                        [contextInstanceId]="contextInstanceId">
+                    </core-format-text>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <strong>{{ 'addon.competency.path' | translate }}</strong>
+                    <a *ngIf="competency.competency.comppath.showlinks"
+                        [href]="competency.competency.comppath.pluginbaseurl + '/competencies.php?competencyframeworkid=' +
+                        competency.competency.comppath.framework.id + '&pagecontextid=' +
+                        competency.competency.comppath.pagecontextid"
+                        core-link [title]="competency.competency.comppath.framework.name">
+                        {{ competency.competency.comppath.framework.name }}
+                    </a>
+                    <ng-container *ngIf="!competency.competency.comppath.showlinks">
+                        {{ competency.competency.comppath.framework.name }}
+                    </ng-container>
+                    &nbsp;/&nbsp;
+                    <span *ngFor="let ancestor of competency.competency.comppath.ancestors">
+                        <a *ngIf="competency.competency.comppath.showlinks" (click)="openCompetencySummary(ancestor.id)"
+                            class="core-clickable">
+                            {{ ancestor.name }}
+                        </a>
+                        <ng-container *ngIf="!competency.competency.comppath.showlinks">{{ ancestor.name }}</ng-container>
+                        <ng-container *ngIf="!ancestor.last">&nbsp;/&nbsp;</ng-container>
+                    </span>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <strong>{{ 'addon.competency.crossreferencedcompetencies' | translate }}</strong>:
+                    <div *ngIf="!competency.competency.hasrelatedcompetencies">
+                        {{ 'addon.competency.nocrossreferencedcompetencies' | translate }}
+                    </div>
+                    <div *ngIf="competency.competency.hasrelatedcompetencies">
+                        <p *ngFor="let relatedcomp of competency.competency.relatedcompetencies">
+                            <a (click)="openCompetencySummary(relatedcomp.id)" class="core-clickable">
+                                {{ relatedcomp.shortname }} - {{ relatedcomp.idnumber }}
+                            </a>
+                        </p>
+                    </div>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="coursemodules">
+                <ion-label>
+                    <strong>{{ 'addon.competency.activities' | translate }}</strong>
+                    <p *ngIf="coursemodules.length == 0">
+                        {{ 'addon.competency.noactivities' | translate }}
+                    </p>
+                    <ion-item class="ion-text-wrap" *ngFor="let activity of coursemodules" [href]="activity.url" [title]="activity.name"
+                        core-link capture="true">
+                        <img slot="start" core-external-content [src]="activity.iconurl" alt="" role="presentation" *ngIf="activity.iconurl"
+                            class="core-module-icon">
+                        <ion-label>
+                            <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.id"
+                                [courseId]="courseId">
+                            </core-format-text>
+                        </ion-label>
+                    </ion-item>
+                </ion-label>
+            </ion-item>
+            <ng-container *ngIf="userCompetency">
+                <ion-item class="ion-text-wrap" *ngIf="competency.usercompetency && competency.usercompetency!.status">
+                    <ion-label>
+                        <strong>{{ 'addon.competency.reviewstatus' | translate }}</strong>
+                        {{ competency.usercompetency!.statusname }}
+                    </ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <strong>{{ 'addon.competency.proficient' | translate }}</strong>
+                    </ion-label>
+                    <ion-badge slot="end" color="success" *ngIf="userCompetency.proficiency">
+                        {{ 'core.yes' | translate }}
+                    </ion-badge>
+                    <ion-badge  slot="end" color="danger" *ngIf="!userCompetency.proficiency">
+                        {{ 'core.no' | translate }}
+                    </ion-badge>
+                </ion-item>
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <strong>{{ 'addon.competency.rating' | translate }}</strong>
+                    </ion-label>
+                    <ion-badge color="dark" slot="end">{{ userCompetency.gradename }}</ion-badge>
+                </ion-item>
+            </ng-container>
+        </ion-card>
+
+        <div *ngIf="competency">
+            <h3  class="ion-margin-horizontal">{{ 'addon.competency.evidence' | translate }}</h3>
+            <p  class="ion-margin-horizontal" *ngIf="competency.evidence.length == 0">
+                {{ 'addon.competency.noevidence' | translate }}
+            </p>
+            <ion-card *ngFor="let evidence of competency.evidence">
+                <ion-item class="ion-text-wrap" *ngIf="evidence.actionuser" core-user-link [userId]="evidence.actionuser.id"
+                    [courseId]="courseId">
+                    <core-user-avatar [user]="evidence.actionuser" slot="start"></core-user-avatar>
+                    <ion-label>
+                        <h2>{{ evidence.actionuser.fullname }}</h2>
+                        <p>{{ evidence.timemodified * 1000 | coreFormatDate }}</p>
+                    </ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p><ion-badge color="dark">{{ evidence.gradename }}</ion-badge></p>
+                        <p  class="ion-margin-top" *ngIf="evidence.description">{{ evidence.description }}</p>
+                        <blockquote *ngIf="evidence.note">{{ evidence.note }}</blockquote>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        </div>
+    </core-loading>
+</ion-content>

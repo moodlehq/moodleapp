@@ -183,13 +183,13 @@ export class CoreFileUploaderDelegateService extends CoreDelegate<CoreFileUpload
             }
 
             const data: CoreFileUploaderHandlerDataToReturn = handler.getData();
-            data.priority = handler.priority;
+            data.priority = handler.priority || 0;
             data.mimetypes = supportedMimetypes;
             handlers.push(data);
         }
 
         // Sort them by priority.
-        handlers.sort((a, b) => (a.priority || 0) <= (b.priority || 0) ? 1 : -1);
+        handlers.sort((a, b) => a.priority! <= b.priority! ? 1 : -1);
 
         return handlers;
     }

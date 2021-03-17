@@ -30,6 +30,7 @@ import { AddonQtypeModule } from './qtype/qtype.module';
 import { AddonBlogModule } from './blog/blog.module';
 import { AddonRemoteThemesModule } from './remotethemes/remotethemes.module';
 import { AddonNotesModule } from './notes/notes.module';
+import { AddonCompetencyModule } from './competency/competency.module';
 
 @NgModule({
     imports: [
@@ -37,6 +38,7 @@ import { AddonNotesModule } from './notes/notes.module';
         AddonBadgesModule,
         AddonBlogModule,
         AddonCalendarModule,
+        AddonCompetencyModule,
         AddonCourseCompletionModule,
         AddonMessagesModule,
         AddonPrivateFilesModule,

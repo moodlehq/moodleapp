@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
+import { ActivatedRouteSnapshot, Params } from '@angular/router';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { IonRefresher } from '@ionic/angular';
@@ -73,9 +73,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
         canviewsubmissions: false,
     };
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
+    constructor() {
         this.submissions = new AddonModAssignSubmissionListManager(AddonModAssignSubmissionListPage);
 
         // Update data if some grade changes.

@@ -86,14 +86,14 @@ export class CoreSortedDelegate<
             const handler = this.enabledHandlers[name];
             const data = <DisplayType> handler.getDisplayData();
 
-            data.priority = handler.priority;
+            data.priority = handler.priority || 0;
             data.name = handler.name;
 
             displayData.push(data);
         }
 
         // Sort them by priority.
-        displayData.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+        displayData.sort((a, b) => b.priority! - a.priority!);
 
         this.loaded = true;
         this.sortedHandlersRxJs.next(displayData);
