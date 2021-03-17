@@ -26,6 +26,7 @@ import { AddonModQuizModule } from './quiz/quiz.module';
 import { AddonModResourceModule } from './resource/resource.module';
 import { AddonModUrlModule } from './url/url.module';
 import { AddonModLtiModule } from './lti/lti.module';
+import { AddonModH5PActivityModule } from './h5pactivity/h5pactivity.module';
 
 @NgModule({
     declarations: [],
@@ -42,6 +43,7 @@ import { AddonModLtiModule } from './lti/lti.module';
         AddonModFolderModule,
         AddonModImscpModule,
         AddonModLtiModule,
+        AddonModH5PActivityModule,
     ],
     providers: [],
     exports: [],

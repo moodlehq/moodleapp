@@ -245,7 +245,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
 
                     const equations = Array.from(container.querySelectorAll('.filter_mathjaxloader_equation'));
                     equations.forEach((node) => {
-                        that.window.MathJax.Hub.Queue(['Typeset', that.window.MathJax.Hub, node]);
+                        that.window.MathJax.Hub.Queue(['Typeset', that.window.MathJax.Hub, node], [that.fixUseUrls, node]);
                     });
 
                     // Set the delay back to normal after processing.
@@ -253,6 +253,20 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
                 }
             },
         };
+    }
+
+    /**
+     * Fix URLs in <use> elements.
+     * This is needed because MathJax stores the location.href when it's loaded, and then sets that URL to all the <use>
+     * elements href. Since the app URL changes when navigating, the SVGs can use a URL that isn't the current page.
+     * When that happens, the request returns a 404 error and the SVG isn't displayed.
+     *
+     * @param node Element that can contain equations.
+     */
+    protected fixUseUrls(node: Element): void {
+        Array.from(node.querySelectorAll('use')).forEach((useElem) => {
+            useElem.setAttribute('href', useElem.href.baseVal.substr(useElem.href.baseVal.indexOf('#')));
+        });
     }
 
     /**

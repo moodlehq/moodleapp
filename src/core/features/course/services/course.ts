@@ -1038,7 +1038,7 @@ export class CoreCourseProvider {
         const loading = await CoreDomUtils.showModalLoading();
 
         // Wait for site plugins to be fetched.
-        await CoreSitePlugins.waitFetchPlugins();
+        await CoreUtils.ignoreErrors(CoreSitePlugins.waitFetchPlugins());
 
         if (!('format' in course) || typeof course.format == 'undefined') {
             const result = await CoreCourseHelper.getCourse(course.id);
@@ -1050,8 +1050,8 @@ export class CoreCourseProvider {
 
         if (!format || !CoreSitePlugins.sitePluginPromiseExists(`format_${format}`)) {
             // No custom format plugin. We don't need to wait for anything.
-            await CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, params);
             loading.dismiss();
+            await CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, params);
 
             return;
         }
@@ -1084,6 +1084,8 @@ export class CoreCourseProvider {
 
             await CoreDomUtils.showConfirm(message, '', reload, ignore);
             window.location.reload();
+        } finally {
+            loading.dismiss();
         }
     }
 
