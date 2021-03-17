@@ -1,0 +1,14 @@
+@import "~theme/globals";
+
+:host {
+    ion-item.course {
+        h2 {
+            font-weight: bold;
+        }
+
+        h3 {
+            color: $subdued-text-color;
+        }
+    }
+
+}

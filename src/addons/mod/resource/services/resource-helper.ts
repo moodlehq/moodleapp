@@ -133,7 +133,7 @@ export class AddonModResourceHelperProvider {
             return false;
         }
 
-        return mimetype == 'text/html';
+        return mimetype == 'text/html' || mimetype == 'application/xhtml+xml';
     }
 
     /**

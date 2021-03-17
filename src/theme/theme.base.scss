@@ -52,6 +52,15 @@ ion-item.ion-text-wrap ion-label {
     }
 }
 
+@each $color-name, $value in $colors {
+    $value: map-get($colors, $color-name);
+    $base: map-get($value, base);
+
+    .text-#{$color-name},
+    p.text-#{$color-name} {
+        color: $base;
+    }
+}
 
 // Ionic toolbar.
 ion-toolbar ion-back-button,
@@ -465,4 +474,9 @@ ion-button.core-button-select {
     ion-content, ion-backdrop, ion-modal:not(.core-modal-fullscreen), ion-tabs {
         display: none !important;
     }
+}
+
+// Hide virtual utilities.
+.core-browser-copy-area {
+    display: none;
 }

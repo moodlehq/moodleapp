@@ -20,6 +20,7 @@ import { CoreLang } from '@services/lang';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../services/settings-helper';
+import { CoreApp } from '@services/app';
 
 /**
  * Page that displays the general settings.
@@ -42,6 +43,7 @@ export class CoreSettingsGeneralPage {
     colorSchemes: CoreColorScheme[] = [];
     selectedScheme: CoreColorScheme = CoreColorScheme.LIGHT;
     colorSchemeDisabled = false;
+    isAndroid = false;
 
     constructor() {
         this.asyncInit();
@@ -72,14 +74,8 @@ export class CoreSettingsGeneralPage {
                 this.colorSchemes.push(CoreColorScheme.LIGHT);
                 this.selectedScheme = this.colorSchemes[0];
             } else {
-                this.colorSchemes.push(CoreColorScheme.LIGHT);
-                this.colorSchemes.push(CoreColorScheme.DARK);
-
-                if (window.matchMedia('(prefers-color-scheme: dark)').matches ||
-                                    window.matchMedia('(prefers-color-scheme: light)').matches) {
-                    this.colorSchemes.push(CoreColorScheme.AUTO);
-                }
-
+                this.isAndroid = CoreApp.isAndroid();
+                this.colorSchemes = CoreSettingsHelper.getAllowedColorSchemes();
                 this.selectedScheme = await CoreConfig.get(CoreConstants.SETTINGS_COLOR_SCHEME, CoreColorScheme.LIGHT);
             }
         }
