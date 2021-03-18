@@ -117,7 +117,7 @@ export class CoreUtilsProvider {
      * @return The object.
      */
     arrayToObject<T>(
-        array: T[],
+        array: T[] = [],
         propertyName?: string,
         result: Record<string, T> = {},
     ): Record<string, T> {

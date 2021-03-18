@@ -28,7 +28,7 @@ export interface CoreRatingItemSet {
     contextLevel: ContextLevel;
     instanceId: number;
     itemSetId: number;
-    courseId?: number;
+    courseId: number;
 }
 
 /**

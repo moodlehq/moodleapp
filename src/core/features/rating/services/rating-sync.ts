@@ -59,12 +59,12 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider<CoreRatingSyncI
         itemSetId?: number,
         force?: boolean,
         siteId?: string,
-    ): Promise<CoreRatingSyncItem[]> {
+    ): Promise<CoreRatingSyncItemResult[]> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const itemSets = await CoreRatingOffline.getItemSets(component, ratingArea, contextLevel, instanceId, itemSetId, siteId);
 
-        const results: CoreRatingSyncItem[] = [];
+        const results: CoreRatingSyncItemResult[] = [];
         await Promise.all(itemSets.map(async (itemSet) => {
             const result = force
                 ? await this.syncItemSet(
@@ -301,9 +301,12 @@ declare module '@singletons/events' {
 }
 
 export type CoreRatingSyncItem = {
-    itemSet?: CoreRatingItemSet;
     warnings: string[];
     updated: number[];
+};
+
+export type CoreRatingSyncItemResult = CoreRatingSyncItem & {
+    itemSet: CoreRatingItemSet;
 };
 
 /**

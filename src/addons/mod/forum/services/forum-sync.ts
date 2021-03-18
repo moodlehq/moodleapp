@@ -330,12 +330,12 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
                 updated = true;
 
                 // Invalidate discussions of updated ratings.
-                promises.push(AddonModForum.invalidateDiscussionPosts(result.itemSet!.itemSetId, undefined, siteId));
+                promises.push(AddonModForum.invalidateDiscussionPosts(result.itemSet.itemSetId, undefined, siteId));
             }
 
             if (result.warnings.length) {
                 // Fetch forum to construct the warning message.
-                promises.push(AddonModForum.getForum(result.itemSet!.courseId!, result.itemSet!.instanceId, { siteId })
+                promises.push(AddonModForum.getForum(result.itemSet.courseId, result.itemSet.instanceId, { siteId })
                     .then((forum) => {
                         result.warnings.forEach((warning) => {
                             this.addOfflineDataDeletedWarning(warnings, forum.name, warning);
