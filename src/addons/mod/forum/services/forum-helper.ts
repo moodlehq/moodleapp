@@ -30,7 +30,7 @@ import {
     AddonModForumPost,
     AddonModForumProvider,
 } from './forum';
-import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './offline';
+import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './forum-offline';
 
 /**
  * Service that provides some features for forums.

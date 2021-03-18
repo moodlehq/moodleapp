@@ -16,15 +16,13 @@ import { Injectable } from '@angular/core';
 
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/activity-sync';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreXAPIOffline } from '@features/xapi/services/offline';
 import { CoreXAPI } from '@features/xapi/services/xapi';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModH5PActivity, AddonModH5PActivityProvider } from './h5pactivity';
 
@@ -36,23 +34,10 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
 
     static readonly AUTO_SYNCED = 'addon_mod_h5pactivity_autom_synced';
 
-    protected componentTranslate?: string;
+    protected componentTranslatableString = 'h5pactivity';
 
     constructor() {
         super('AddonModH5PActivitySyncProvider');
-    }
-
-    /**
-     * Get component name translated.
-     *
-     * @return Component name translated.
-     */
-    protected getComponentTranslate(): string {
-        if (!this.componentTranslate) {
-            this.componentTranslate = CoreCourse.translateModuleName('h5pactivity');
-        }
-
-        return this.componentTranslate;
     }
 
     /**
@@ -188,11 +173,8 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
                 await CoreXAPIOffline.deleteStatements(entry.id, siteId);
 
                 // Responses deleted, add a warning.
-                result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                    component: this.componentTranslate,
-                    name: entry.extra,
-                    error: CoreTextUtils.getErrorMessageFromError(error),
-                }));
+                this.addOfflineDataDeletedWarning(result.warnings, entry.extra || '', error);
+
             }
         }
 

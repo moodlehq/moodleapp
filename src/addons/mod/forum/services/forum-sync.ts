@@ -14,8 +14,7 @@
 
 import { ContextLevel } from '@/core/constants';
 import { Injectable } from '@angular/core';
-import { CoreSyncBaseProvider } from '@classes/base-sync';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/activity-sync';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingSync } from '@features/rating/services/rating-sync';
@@ -23,7 +22,6 @@ import { CoreApp } from '@services/app';
 import { CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreArray } from '@singletons/array';
@@ -34,8 +32,8 @@ import {
     AddonModForumAddDiscussionWSOptionsObject,
     AddonModForumProvider,
 } from './forum';
-import { AddonModForumHelper } from './helper';
-import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumOfflineReply } from './offline';
+import { AddonModForumHelper } from './forum-helper';
+import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumOfflineReply } from './forum-offline';
 
 declare module '@singletons/events' {
 
@@ -55,23 +53,15 @@ declare module '@singletons/events' {
  * Service to sync forums.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForumSyncResult> {
+export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModForumSyncResult> {
 
     static readonly AUTO_SYNCED = 'addon_mod_forum_autom_synced';
     static readonly MANUAL_SYNCED = 'addon_mod_forum_manual_synced';
 
-    private _componentTranslate?: string;
+    protected componentTranslatableString = 'forum';
 
     constructor() {
         super('AddonModForumSyncProvider');
-    }
-
-    protected get componentTranslate(): string {
-        if (!this._componentTranslate) {
-            this._componentTranslate = CoreCourse.translateModuleName('forum');
-        }
-
-        return this._componentTranslate;
     }
 
     /**
@@ -291,11 +281,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
 
                 if (errors.length === groupIds.length) {
                     // All requests failed with WS error.
-                    result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                        component: this.componentTranslate,
-                        name: discussion.name,
-                        error: CoreTextUtils.getErrorMessageFromError(errors[0]),
-                    }));
+                    this.addOfflineDataDeletedWarning(result.warnings, discussion.name, errors[0]);
                 }
             });
 
@@ -352,11 +338,7 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
                 promises.push(AddonModForum.getForum(result.itemSet!.courseId!, result.itemSet!.instanceId, { siteId })
                     .then((forum) => {
                         result.warnings.forEach((warning) => {
-                            warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                                component: this.componentTranslate,
-                                name: forum.name,
-                                error: warning,
-                            }));
+                            this.addOfflineDataDeletedWarning(warnings, forum.name, warning);
                         });
 
                         return;
@@ -512,11 +494,8 @@ export class AddonModForumSyncProvider extends CoreSyncBaseProvider<AddonModForu
                     await this.deleteReply(forumId, reply.postid, siteId, userId);
 
                     // Responses deleted, add a warning.
-                    result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                        component: this.componentTranslate,
-                        name: reply.name,
-                        error: CoreTextUtils.getErrorMessageFromError(error),
-                    }));
+                    this.addOfflineDataDeletedWarning(result.warnings, reply.name, error);
+
                 }
             });
 

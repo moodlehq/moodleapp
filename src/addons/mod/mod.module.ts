@@ -27,6 +27,7 @@ import { AddonModResourceModule } from './resource/resource.module';
 import { AddonModUrlModule } from './url/url.module';
 import { AddonModLtiModule } from './lti/lti.module';
 import { AddonModH5PActivityModule } from './h5pactivity/h5pactivity.module';
+import { AddonModSurveyModule } from './survey/survey.module';
 
 @NgModule({
     declarations: [],
@@ -44,6 +45,7 @@ import { AddonModH5PActivityModule } from './h5pactivity/h5pactivity.module';
         AddonModImscpModule,
         AddonModLtiModule,
         AddonModH5PActivityModule,
+        AddonModSurveyModule,
     ],
     providers: [],
     exports: [],

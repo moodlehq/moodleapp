@@ -1,0 +1,10 @@
+{
+    "cannotsubmitsurvey": "Sorry, there was a problem submitting your survey. Please try again.",
+    "errorgetsurvey": "Error getting survey data.",
+    "ifoundthat": "I found that",
+    "ipreferthat": "I prefer that",
+    "modulenameplural": "Surveys",
+    "responses": "Responses",
+    "results": "Results",
+    "surveycompletednograph": "You have completed this survey."
+}

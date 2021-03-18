@@ -28,7 +28,6 @@ import { AddonCalendarOffline } from './calendar-offline';
 import { AddonCalendarHelper } from './calendar-helper';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSync } from '@services/sync';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreNetworkError } from '@classes/errors/network-error';
 
 /**
@@ -40,6 +39,8 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
     static readonly AUTO_SYNCED = 'addon_calendar_autom_synced';
     static readonly MANUAL_SYNCED = 'addon_calendar_manual_synced';
     static readonly SYNC_ID = 'calendar';
+
+    protected componentTranslatableString = 'addon.calendar.calendarevent';
 
     constructor() {
         super('AddonCalendarSync');
@@ -229,12 +230,9 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
                 }));
 
                 await Promise.all(promises);
+
                 // Event deleted, add a warning.
-                result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                    component: Translate.instant('addon.calendar.calendarevent'),
-                    name: data.name,
-                    error: CoreTextUtils.getErrorMessageFromError(error),
-                }));
+                this.addOfflineDataDeletedWarning(result.warnings, data.name, error);
             }
 
             return;
@@ -286,12 +284,9 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             result.updated = true;
 
             await AddonCalendarOffline.deleteEvent(event.id!, siteId);
+
             // Event deleted, add a warning.
-            result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                component: Translate.instant('addon.calendar.calendarevent'),
-                name: event.name,
-                error: CoreTextUtils.getErrorMessageFromError(error),
-            }));
+            this.addOfflineDataDeletedWarning(result.warnings, event.name, error);
         }
     }
 

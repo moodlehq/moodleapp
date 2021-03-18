@@ -137,7 +137,7 @@ import { ADDON_MOD_PAGE_SERVICES } from '@addons/mod/page/page.module';
 import { ADDON_MOD_QUIZ_SERVICES } from '@addons/mod/quiz/quiz.module';
 import { ADDON_MOD_RESOURCE_SERVICES } from '@addons/mod/resource/resource.module';
 // @todo import { ADDON_MOD_SCORM_SERVICES } from '@addons/mod/scorm/scorm.module';
-// @todo import { ADDON_MOD_SURVEY_SERVICES } from '@addons/mod/survey/survey.module';
+import { ADDON_MOD_SURVEY_SERVICES } from '@addons/mod/survey/survey.module';
 import { ADDON_MOD_URL_SERVICES } from '@addons/mod/url/url.module';
 // @todo import { ADDON_MOD_WIKI_SERVICES } from '@addons/mod/wiki/wiki.module';
 // @todo import { ADDON_MOD_WORKSHOP_SERVICES } from '@addons/mod/workshop/workshop.module';
@@ -302,7 +302,7 @@ export class CoreCompileProvider {
             ...ADDON_MOD_QUIZ_SERVICES,
             ...ADDON_MOD_RESOURCE_SERVICES,
             // @todo ...ADDON_MOD_SCORM_SERVICES,
-            // @todo ...ADDON_MOD_SURVEY_SERVICES,
+            ...ADDON_MOD_SURVEY_SERVICES,
             ...ADDON_MOD_URL_SERVICES,
             // @todo ...ADDON_MOD_WIKI_SERVICES,
             // @todo ...ADDON_MOD_WORKSHOP_SERVICES,

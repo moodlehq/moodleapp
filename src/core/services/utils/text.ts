@@ -18,7 +18,7 @@ import { ModalOptions } from '@ionic/core';
 
 import { CoreApp } from '@services/app';
 import { CoreLang } from '@services/lang';
-import { CoreError } from '@classes/errors/error';
+import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { makeSingleton, ModalController, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { Locutus } from '@singletons/locutus';
@@ -533,7 +533,7 @@ export class CoreTextUtilsProvider {
      * @param error Error.
      * @return Error message, undefined if not found.
      */
-    getErrorMessageFromError(error?: string | CoreError | CoreTextErrorObject | null): string | undefined {
+    getErrorMessageFromError(error?: CoreAnyError): string | undefined {
         if (typeof error == 'string') {
             return error;
         }
