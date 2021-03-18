@@ -34,8 +34,8 @@ import {
     AddonModForumAddDiscussionWSOptionsObject,
     AddonModForumProvider,
 } from './forum';
-import { AddonModForumHelper } from './helper';
-import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumOfflineReply } from './offline';
+import { AddonModForumHelper } from './forum-helper';
+import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumOfflineReply } from './forum-offline';
 
 declare module '@singletons/events' {
 

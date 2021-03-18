@@ -19,7 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { ModalController, Translate } from '@singletons';
 import { AddonModForumData, AddonModForumPost, AddonModForumReply } from '@addons/mod/forum/services/forum';
-import { AddonModForumHelper } from '@addons/mod/forum/services/helper';
+import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 
 /**
  * Page that displays a form to edit discussion post.

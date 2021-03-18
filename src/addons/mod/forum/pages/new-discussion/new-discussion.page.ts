@@ -26,14 +26,14 @@ import {
     AddonModForumProvider,
 } from '@addons/mod/forum/services/forum';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
-import { AddonModForumSync, AddonModForumSyncProvider } from '@addons/mod/forum/services/sync';
+import { AddonModForumSync, AddonModForumSyncProvider } from '@addons/mod/forum/services/forum-sync';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreSync } from '@services/sync';
-import { AddonModForumDiscussionOptions, AddonModForumOffline } from '@addons/mod/forum/services/offline';
+import { AddonModForumDiscussionOptions, AddonModForumOffline } from '@addons/mod/forum/services/forum-offline';
 import { CoreUtils } from '@services/utils/utils';
-import { AddonModForumHelper } from '@addons/mod/forum/services/helper';
+import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { IonRefresher } from '@ionic/angular';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreTextUtils } from '@services/utils/text';

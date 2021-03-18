@@ -22,7 +22,7 @@ import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } fro
 import { CoreUser } from '@features/user/services/user';
 import { CoreGroups, CoreGroupsProvider } from '@services/groups';
 import { CoreUtils } from '@services/utils/utils';
-import { AddonModForumSync } from '../sync';
+import { AddonModForumSync } from '../forum-sync';
 import { makeSingleton } from '@singletons';
 
 /**

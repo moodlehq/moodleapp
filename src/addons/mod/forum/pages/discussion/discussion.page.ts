@@ -39,9 +39,9 @@ import {
     AddonModForumPost,
     AddonModForumProvider,
 } from '../../services/forum';
-import { AddonModForumHelper } from '../../services/helper';
-import { AddonModForumOffline } from '../../services/offline';
-import { AddonModForumSync, AddonModForumSyncProvider } from '../../services/sync';
+import { AddonModForumHelper } from '../../services/forum-helper';
+import { AddonModForumOffline } from '../../services/forum-offline';
+import { AddonModForumSync, AddonModForumSyncProvider } from '../../services/forum-sync';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 

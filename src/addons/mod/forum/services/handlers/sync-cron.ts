@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreCronHandler } from '@services/cron';
 import { makeSingleton } from '@singletons';
-import { AddonModForumSync } from '../sync';
+import { AddonModForumSync } from '../forum-sync';
 
 /**
  * Synchronization cron handler.

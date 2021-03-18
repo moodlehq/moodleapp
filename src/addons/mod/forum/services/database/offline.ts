@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSiteSchema } from '@services/sites';
-import { AddonModForumOfflineDiscussion, AddonModForumOfflineReply } from '../offline';
+import { AddonModForumOfflineDiscussion, AddonModForumOfflineReply } from '../forum-offline';
 
 /**
  * Database variables for AddonModForum service.

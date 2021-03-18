@@ -27,7 +27,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumReplyOptions } from './offline';
+import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumReplyOptions } from './forum-offline';
 
 const ROOT_CACHE_KEY = 'mmaModForum:';
 

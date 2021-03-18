@@ -39,9 +39,9 @@ import { AddonModForumTagAreaHandler } from './services/handlers/tag-area';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonModForumPushClickHandler } from './services/handlers/push-click';
 import { AddonModForumProvider } from './services/forum';
-import { AddonModForumOfflineProvider } from './services/offline';
-import { AddonModForumHelperProvider } from './services/helper';
-import { AddonModForumSyncProvider } from './services/sync';
+import { AddonModForumOfflineProvider } from './services/forum-offline';
+import { AddonModForumHelperProvider } from './services/forum-helper';
+import { AddonModForumSyncProvider } from './services/forum-sync';
 
 export const ADDON_MOD_FORUM_SERVICES: Type<unknown>[] = [
     AddonModForumProvider,
