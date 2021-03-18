@@ -19,7 +19,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { CoreError } from '@classes/errors/error';
+import { CoreAnyError, CoreError } from '@classes/errors/error';
 
 /**
  * Blocked sync error.
@@ -42,6 +42,16 @@ export class CoreSyncBaseProvider<T = void> {
     component = 'core';
 
     /**
+     * Translatable component name string.
+     */
+    protected componentTranslatableString = 'generic component';
+
+    /**
+     * Translated name of the component.
+     */
+    protected componentTranslateInternal?: string;
+
+    /**
      * Sync provider's interval.
      */
     syncInterval = 300000;
@@ -58,15 +68,14 @@ export class CoreSyncBaseProvider<T = void> {
      * Add an offline data deleted warning to a list of warnings.
      *
      * @param warnings List of warnings.
-     * @param component Component.
      * @param name Instance name.
      * @param error Specific error message.
      */
-    protected addOfflineDataDeletedWarning(warnings: string[], component: string, name: string, error: string): void {
+    protected addOfflineDataDeletedWarning(warnings: string[], name: string, error: CoreAnyError): void {
         const warning = Translate.instant('core.warningofflinedatadeleted', {
-            component: component,
+            component: this.componentTranslate,
             name: name,
-            error: error,
+            error: CoreTextUtils.getErrorMessageFromError(error),
         });
 
         if (warnings.indexOf(warning) == -1) {
@@ -302,6 +311,19 @@ export class CoreSyncBaseProvider<T = void> {
         } catch {
             return;
         }
+    }
+
+    /**
+     * Get component name translated.
+     *
+     * @return Component name translated.
+     */
+    protected get componentTranslate(): string {
+        if (!this.componentTranslateInternal) {
+            this.componentTranslateInternal = Translate.instant(this.componentTranslatableString);
+        }
+
+        return this.componentTranslateInternal!;
     }
 
 }

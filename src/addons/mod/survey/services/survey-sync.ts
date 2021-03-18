@@ -19,9 +19,8 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModSurveyPrefetchHandler } from './handlers/prefetch';
 import { AddonModSurvey, AddonModSurveyProvider } from './survey';
@@ -35,11 +34,10 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
 
     static readonly AUTO_SYNCED = 'addon_mod_survey_autom_synced';
 
-    protected componentTranslate: string;
+    protected componentTranslatableString = 'survey';
 
     constructor() {
         super('AddonModSurveySyncProvider');
-        this.componentTranslate = CoreCourse.translateModuleName('survey');
     }
 
     /**
@@ -196,11 +194,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
                 await AddonModSurveyOffline.deleteSurveyAnswers(surveyId, siteId, userId);
 
                 // Answers deleted, add a warning.
-                result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                    component: this.componentTranslate,
-                    name: data.name,
-                    error: CoreTextUtils.getErrorMessageFromError(error),
-                }));
+                this.addOfflineDataDeletedWarning(result.warnings, data.name, error);
             }
 
             if (result.courseId) {

@@ -36,7 +36,6 @@ import { CoreSync } from '@services/sync';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreApp } from '@services/app';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreGradesFormattedItem, CoreGradesFormattedRow, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
@@ -51,11 +50,10 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
     static readonly AUTO_SYNCED = 'addon_mod_assign_autom_synced';
     static readonly MANUAL_SYNCED = 'addon_mod_assign_manual_synced';
 
-    protected componentTranslate: string;
+    protected componentTranslatableString = 'assign';
 
     constructor() {
         super('AddonModLessonSyncProvider');
-        this.componentTranslate = CoreCourse.translateModuleName('assign');
     }
 
     /**
@@ -164,7 +162,6 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      */
     async syncAssign(assignId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
-        this.componentTranslate = this.componentTranslate || CoreCourse.translateModuleName('assign');
 
         if (this.isSyncing(assignId, siteId)) {
             // There's already a sync ongoing for this assign, return the promise.
@@ -328,7 +325,6 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             // The submission was modified in Moodle, discard the submission.
             this.addOfflineDataDeletedWarning(
                 warnings,
-                this.componentTranslate,
                 assign.name,
                 Translate.instant('addon.mod_assign.warningsubmissionmodified'),
             );
@@ -369,12 +365,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             }
 
             // A WebService has thrown an error, this means it cannot be submitted. Discard the submission.
-            this.addOfflineDataDeletedWarning(
-                warnings,
-                this.componentTranslate,
-                assign.name,
-                CoreTextUtils.getErrorMessageFromError(error) || '',
-            );
+            this.addOfflineDataDeletedWarning(warnings, assign.name, error);
         }
 
         // Delete the offline data.
@@ -458,7 +449,6 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             // The submission grade was modified in Moodle, discard it.
             this.addOfflineDataDeletedWarning(
                 warnings,
-                this.componentTranslate,
                 assign.name,
                 Translate.instant('addon.mod_assign.warningsubmissiongrademodified'),
             );
@@ -527,12 +517,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             }
 
             // A WebService has thrown an error, this means it cannot be submitted. Discard the submission.
-            this.addOfflineDataDeletedWarning(
-                warnings,
-                this.componentTranslate,
-                assign.name,
-                CoreTextUtils.getErrorMessageFromError(error) || '',
-            );
+            this.addOfflineDataDeletedWarning(warnings, assign.name, error);
         }
 
         // Delete the offline data.

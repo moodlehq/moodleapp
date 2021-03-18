@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreTextErrorObject } from '@services/utils/text';
+
 /**
  * Base Error class.
  *
@@ -31,3 +33,5 @@ export class CoreError extends Error {
     }
 
 }
+
+export type CoreAnyError = string | CoreError | CoreTextErrorObject | null | undefined;

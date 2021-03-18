@@ -22,7 +22,6 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreApp } from '@services/app';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
@@ -41,7 +40,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
     static readonly AUTO_SYNCED = 'addon_mod_lesson_autom_synced';
 
-    protected componentTranslate?: string;
+    protected componentTranslatableString = 'lesson';
 
     constructor() {
         super('AddonModLessonSyncProvider');
@@ -189,7 +188,6 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         siteId?: string,
     ): Promise<AddonModLessonSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
-        this.componentTranslate = this.componentTranslate || CoreCourse.translateModuleName('lesson');
 
         let syncPromise = this.getOngoingSync(lessonId, siteId);
         if (syncPromise) {
@@ -317,11 +315,12 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         if (attempts.length != attemptsLength) {
             // Some attempts won't be sent, add a warning.
-            result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                component: this.componentTranslate,
-                name: lesson.name,
-                error: Translate.instant('addon.mod_lesson.warningretakefinished'),
-            }));
+            this.addOfflineDataDeletedWarning(
+                result.warnings,
+                lesson.name,
+                Translate.instant('addon.mod_lesson.warningretakefinished'),
+            );
+
         }
 
         await Promise.all(promises);
@@ -386,11 +385,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             await AddonModLessonOffline.deleteAttempt(lesson.id, retake, pageId, timemodified, siteId);
 
             // Attempt deleted, add a warning.
-            result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                component: this.componentTranslate,
-                name: lesson.name,
-                error: CoreTextUtils.getErrorMessageFromError(error),
-            }));
+            this.addOfflineDataDeletedWarning(result.warnings, lesson.name, error);
         }
     }
 
@@ -447,11 +442,11 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         if (retake.retake != passwordData.accessInfo.attemptscount) {
             // The retake changed, add a warning if it isn't there already.
             if (!result.warnings.length) {
-                result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                    component: this.componentTranslate,
-                    name: passwordData.lesson.name,
-                    error: Translate.instant('addon.mod_lesson.warningretakefinished'),
-                }));
+                this.addOfflineDataDeletedWarning(
+                    result.warnings,
+                    passwordData.lesson.name,
+                    Translate.instant('addon.mod_lesson.warningretakefinished'),
+                );
             }
 
             await AddonModLessonOffline.deleteRetake(lessonId, siteId);
@@ -488,11 +483,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             await AddonModLessonOffline.deleteRetake(lessonId, siteId);
 
             // Retake deleted, add a warning.
-            result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                component: this.componentTranslate,
-                name: passwordData.lesson.name,
-                error: CoreTextUtils.getErrorMessageFromError(error),
-            }));
+            this.addOfflineDataDeletedWarning(result.warnings, passwordData.lesson.name, error);
         }
     }
 

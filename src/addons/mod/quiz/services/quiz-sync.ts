@@ -40,7 +40,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
     static readonly AUTO_SYNCED = 'addon_mod_quiz_autom_synced';
 
-    protected componentTranslate?: string;
+    protected componentTranslatableString = 'quiz';
 
     constructor() {
         super('AddonModQuizSyncProvider');
@@ -271,7 +271,6 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         // Verify that quiz isn't blocked.
         if (CoreSync.isBlocked(AddonModQuizProvider.COMPONENT, quiz.id, siteId)) {
             this.logger.debug('Cannot sync quiz ' + quiz.id + ' because it is blocked.');
-            this.componentTranslate = this.componentTranslate || CoreCourse.translateModuleName('quiz');
 
             throw new CoreError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
