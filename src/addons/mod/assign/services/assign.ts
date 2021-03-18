@@ -467,7 +467,7 @@ export class AddonModAssignProvider {
     ): Promise<{ canviewsubmissions: boolean; submissions?: AddonModAssignSubmission[] }> {
         const site = await CoreSites.getSite(options.siteId);
 
-        const params: ModAssignGetSubmissionsWSParams = {
+        const params: AddonModAssignGetSubmissionsWSParams = {
             assignmentids: [assignId],
         };
         const preSets: CoreSiteWSPreSets = {
@@ -1681,7 +1681,7 @@ export type AddonModAssignGetAssignmentsWSResponse = {
 /**
  * Params of mod_assign_get_submissions WS.
  */
-type ModAssignGetSubmissionsWSParams = {
+type AddonModAssignGetSubmissionsWSParams = {
     assignmentids: number[]; // 1 or more assignment ids.
     status?: string; // Status.
     since?: number; // Submitted since.
