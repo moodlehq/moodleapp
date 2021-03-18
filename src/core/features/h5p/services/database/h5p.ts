@@ -244,27 +244,13 @@ export const SITE_SCHEMA: CoreSiteSchema = {
             ],
         },
     ],
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async migrate(db: SQLiteDB, oldVersion: number, siteId: string): Promise<void> {
+    async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
         if (oldVersion >= 2) {
             return;
         }
 
-        const newTable = LIBRARIES_TABLE_NAME;
-        const oldTable = 'h5p_libraries';
-
-        try {
-            await db.tableExists(oldTable);
-
-            // Move the records from the old table.
-            const entries = await db.getAllRecords<CoreH5PLibraryDBRecord>(oldTable);
-
-            await Promise.all(entries.map((entry) => db.insertRecord(newTable, entry)));
-
-            await db.dropTable(oldTable);
-        } catch {
-            // Old table does not exist, ignore.
-        }
+        // Move the records from the old table.
+        await db.migrateTable('h5p_libraries', LIBRARIES_TABLE_NAME);
     },
 };
 
