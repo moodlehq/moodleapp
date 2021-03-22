@@ -19,7 +19,7 @@ import { CoreSiteSchema } from '@services/sites';
  */
 export const QUESTION_TABLE_NAME = 'questions';
 export const QUESTION_ANSWERS_TABLE_NAME = 'question_answers';
-export const SITE_SCHEMA: CoreSiteSchema = {
+export const QUESTION_SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreQuestionProvider',
     version: 1,
     tables: [

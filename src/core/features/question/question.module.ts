@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import { NgModule, Type } from '@angular/core';
+import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreQuestionBehaviourDelegateService } from './services/behaviour-delegate';
+import { QUESTION_SITE_SCHEMA } from './services/database/question';
 import { CoreQuestionProvider } from './services/question';
 import { CoreQuestionDelegateService } from './services/question-delegate';
 import { CoreQuestionHelperProvider } from './services/question-helper';
@@ -26,9 +28,12 @@ export const CORE_QUESTION_SERVICES: Type<unknown>[] = [
 ];
 
 @NgModule({
-    declarations: [],
-    imports: [],
-    providers: [],
-    exports: [],
+    providers: [
+        {
+            provide: CORE_SITE_SCHEMAS,
+            useValue: [QUESTION_SITE_SCHEMA],
+            multi: true,
+        },
+    ],
 })
 export class CoreQuestionModule {}
