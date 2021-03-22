@@ -34,6 +34,7 @@ import { CoreCommentsModule } from './comments/comments.module';
 import { CoreSitePluginsModule } from './siteplugins/siteplugins.module';
 import { CoreRatingModule } from './rating/rating.module';
 import { CoreSharedFilesModule } from './sharedfiles/sharedfiles.module';
+import { CoreQuestionModule } from './question/question.module';
 
 @NgModule({
     imports: [
@@ -57,6 +58,7 @@ import { CoreSharedFilesModule } from './sharedfiles/sharedfiles.module';
         CoreSitePluginsModule,
         CoreRatingModule,
         CoreSharedFilesModule,
+        CoreQuestionModule,
     ],
 })
 export class CoreFeaturesModule {}
