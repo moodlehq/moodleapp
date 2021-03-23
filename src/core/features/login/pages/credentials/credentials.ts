@@ -24,6 +24,7 @@ import { Translate } from '@singletons';
 import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreEvents } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Page to enter the user credentials.
@@ -249,7 +250,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         } finally {
             modal.dismiss();
 
-            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, true);
+            CoreForms.triggerFormSubmittedEvent(this.formElement, true);
         }
     }
 

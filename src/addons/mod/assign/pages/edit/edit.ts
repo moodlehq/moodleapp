@@ -21,6 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreFormFields, CoreForms } from '@singletons/form';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import {
@@ -105,7 +106,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
         // Nothing has changed or user confirmed to leave. Clear temporary data from plugins.
         AddonModAssignHelper.clearSubmissionPluginTmpData(this.assign!, this.userSubmission, this.getInputData());
 
-        CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
         return true;
     }
@@ -199,8 +200,8 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
      *
      * @return Input data.
      */
-    protected getInputData(): Record<string, unknown> {
-        return CoreDomUtils.getDataFromForm(document.forms['addon-mod_assign-edit-form']);
+    protected getInputData(): CoreFormFields {
+        return CoreForms.getDataFromForm(document.forms['addon-mod_assign-edit-form']);
     }
 
     /**
@@ -234,7 +235,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
      * @param inputData The input data.
      * @return Promise resolved with the data to submit.
      */
-    protected prepareSubmissionData(inputData: Record<string, unknown>): Promise<AddonModAssignSavePluginData> {
+    protected prepareSubmissionData(inputData: CoreFormFields): Promise<AddonModAssignSavePluginData> {
         // If there's offline data, always save it in offline.
         this.saveOffline = this.hasOffline;
 
@@ -353,7 +354,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             }
 
             // Submission saved, trigger events.
-            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
 
             CoreEvents.trigger(
                 AddonModAssignProvider.SUBMISSION_SAVED_EVENT,

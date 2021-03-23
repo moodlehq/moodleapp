@@ -20,6 +20,7 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate, Platform } from '@singletons';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreNavigator } from '@services/navigator';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Page to recover a forgotten password.
@@ -97,7 +98,7 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
                 CoreDomUtils.showErrorModal(response.notice);
             } else {
                 // Success.
-                CoreDomUtils.triggerFormSubmittedEvent(this.formElement, true);
+                CoreForms.triggerFormSubmittedEvent(this.formElement, true);
 
                 CoreDomUtils.showAlert(Translate.instant('core.success'), response.notice);
                 CoreNavigator.back();

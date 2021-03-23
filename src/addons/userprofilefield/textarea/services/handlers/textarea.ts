@@ -20,6 +20,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { makeSingleton } from '@singletons';
+import { CoreFormFields } from '@singletons/form';
 
 /**
  * Textarea user profile field handlers.
@@ -52,7 +53,7 @@ export class AddonUserProfileFieldTextareaHandlerService implements CoreUserProf
         field: AuthEmailSignupProfileField | CoreUserProfileField,
         signup: boolean,
         registerAuth: string,
-        formValues: Record<string, unknown>,
+        formValues: CoreFormFields,
     ): Promise<CoreUserProfileFieldHandlerData | undefined> {
         const name = 'profile_field_' + field.shortname;
 

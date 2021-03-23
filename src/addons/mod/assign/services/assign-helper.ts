@@ -35,6 +35,7 @@ import { CoreGroups } from '@services/groups';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { makeSingleton } from '@singletons';
+import { CoreFormFields } from '@singletons/form';
 
 /**
  * Service that provides some helper functions for assign.
@@ -88,7 +89,7 @@ export class AddonModAssignHelperProvider {
     clearSubmissionPluginTmpData(
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission | undefined,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
     ): void {
         if (!submission) {
             return;
@@ -362,7 +363,7 @@ export class AddonModAssignHelperProvider {
     async getSubmissionSizeForEdit(
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
     ): Promise<number> {
 
         let totalSize = 0;
@@ -537,7 +538,7 @@ export class AddonModAssignHelperProvider {
     async hasSubmissionDataChanged(
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission | undefined,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
     ): Promise<boolean> {
         if (!submission) {
             return false;
@@ -580,7 +581,7 @@ export class AddonModAssignHelperProvider {
         siteId?: string,
     ): Promise<AddonModAssignSavePluginData> {
 
-        const pluginData: Record<string, unknown> = {};
+        const pluginData: CoreFormFields = {};
         const promises = feedback.plugins
             ? feedback.plugins.map((plugin) =>
                 AddonModAssignFeedbackDelegate.preparePluginFeedbackData(assignId, userId, plugin, pluginData, siteId))
@@ -603,7 +604,7 @@ export class AddonModAssignHelperProvider {
     async prepareSubmissionPluginData(
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission | undefined,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
         offline = false,
     ): Promise<AddonModAssignSavePluginData> {
 

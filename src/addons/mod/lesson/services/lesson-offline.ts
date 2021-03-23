@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
+import { CoreFormFields } from '@singletons/form';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
@@ -484,7 +485,7 @@ export class AddonModLessonOfflineProvider {
         courseId: number,
         retake: number,
         page: AddonModLessonPageWSData,
-        data: Record<string, unknown>,
+        data: CoreFormFields,
         newPageId: number,
         answerId?: number,
         correct?: boolean,
@@ -552,7 +553,7 @@ export const AddonModLessonOffline = makeSingleton(AddonModLessonOfflineProvider
  * Attempt DB record with parsed data.
  */
 export type AddonModLessonPageAttemptRecord = Omit<AddonModLessonPageAttemptDBRecord, 'data'|'useranswer'> & {
-    data: Record<string, unknown> | null;
+    data: CoreFormFields | null;
     useranswer: unknown | null;
 };
 

@@ -131,6 +131,33 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Converts an array of objects to an indexed array, using a property of each entry as the key.
+     * Every entry will contain an array of the found objects of the property identifier.
+     * E.g. [{id: 10, name: 'A'}, {id: 10, name: 'B'}] => {10: [ {id: 10, name: 'A'}, {id: 10, name: 'B'} ] }
+     *
+     * @param array The array to convert.
+     * @param propertyName The name of the property to use as the key. If not provided, the whole item will be used.
+     * @param result Object where to put the properties. If not defined, a new object will be created.
+     * @return The object.
+     */
+    arrayToObjectMultiple<T>(
+        array: T[] = [],
+        propertyName?: string,
+        result: Record<string, T[]> = {},
+    ): Record<string, T[]> {
+        for (const entry of array) {
+            const key = propertyName ? entry[propertyName] : entry;
+            if (typeof result[key] == 'undefined') {
+                result[key] = [];
+            }
+
+            result[key].push(entry);
+        }
+
+        return result;
+    }
+
+    /**
      * Compare two objects. This function won't compare functions and proto properties, it's a basic compare.
      * Also, this will only check if itemA's properties are in itemB with same value. This function will still
      * return true if itemB has more properties than itemA.

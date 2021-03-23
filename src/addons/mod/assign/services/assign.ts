@@ -33,6 +33,7 @@ import { CoreComments } from '@features/comments/services/comments';
 import { AddonModAssignSubmissionFormatted } from './assign-helper';
 import { CoreWSError } from '@classes/errors/wserror';
 import { AddonModAssignAutoSyncData, AddonModAssignManualSyncData, AddonModAssignSyncProvider } from './assign-sync';
+import { CoreFormFields } from '@singletons/form';
 
 const ROOT_CACHE_KEY = 'mmaModAssign:';
 
@@ -1808,7 +1809,7 @@ type AddonModAssignSaveSubmissionWSParams = {
 /**
  * All subplugins will decide what to add here.
  */
-export type AddonModAssignSavePluginData = Record<string, unknown>;
+export type AddonModAssignSavePluginData = CoreFormFields;
 
 /**
  * Params of mod_assign_submit_for_grading WS.

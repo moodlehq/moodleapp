@@ -17,6 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
+import { CoreFormFields } from '@singletons/form';
 import { makeSingleton } from '@singletons';
 import { AddonUserProfileFieldMenuComponent } from '../../component/menu';
 
@@ -51,7 +52,7 @@ export class AddonUserProfileFieldMenuHandlerService implements CoreUserProfileF
         field: AuthEmailSignupProfileField | CoreUserProfileField,
         signup: boolean,
         registerAuth: string,
-        formValues: Record<string, unknown>,
+        formValues: CoreFormFields,
     ): Promise<CoreUserProfileFieldHandlerData | undefined> {
         const name = 'profile_field_' + field.shortname;
 

@@ -24,6 +24,7 @@ import { IonContent, IonInput } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreForms } from '@singletons/form';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
@@ -645,7 +646,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             this.refreshIcon = CoreConstants.ICON_REFRESH;
             this.syncIcon = CoreConstants.ICON_SYNC;
 
-            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, true, this.siteId);
+            CoreForms.triggerFormSubmittedEvent(this.formElement, true, this.siteId);
         }
     }
 

@@ -53,6 +53,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { AddonModForumPostOptionsMenuComponent } from '../post-options-menu/post-options-menu';
 import { AddonModForumEditPostComponent } from '../edit-post/edit-post';
 import { CoreRatingInfo } from '@features/rating/services/rating';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -129,7 +130,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         if (changes.leavingPage && this.leavingPage) {
             // Download all courses is enabled now, initialize it.
-            CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
         }
     }
 
@@ -498,7 +499,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
             this.onPostChange.emit();
 
-            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
 
             if (this.syncId) {
                 CoreSync.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);
@@ -520,7 +521,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             // Reset data.
             this.setReplyFormData();
 
-            CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
             if (this.syncId) {
                 CoreSync.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);

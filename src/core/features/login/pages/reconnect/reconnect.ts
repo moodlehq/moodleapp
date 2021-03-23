@@ -25,6 +25,7 @@ import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes
 import { CoreEvents } from '@singletons/events';
 import { CoreError } from '@classes/errors/error';
 import { CoreNavigator } from '@services/navigator';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -200,7 +201,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
             await CoreSites.updateSiteToken(this.siteUrl, this.username, data.token, data.privateToken);
 
-            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, true);
+            CoreForms.triggerFormSubmittedEvent(this.formElement, true);
 
             // Update site info too.
             await CoreSites.updateSiteInfoByUrl(this.siteUrl, this.username);

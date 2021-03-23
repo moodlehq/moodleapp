@@ -20,6 +20,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { ModalController, Translate } from '@singletons';
 import { AddonModForumData, AddonModForumPost, AddonModForumReply } from '@addons/mod/forum/services/forum';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Page that displays a form to edit discussion post.
@@ -93,9 +94,9 @@ export class AddonModForumEditPostComponent implements OnInit {
         }
 
         if (data) {
-            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
         } else {
-            CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
         }
 
         ModalController.dismiss(data);

@@ -20,7 +20,6 @@ import { Md5 } from 'ts-md5';
 
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
-import { CoreEventFormAction, CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreTextUtils, CoreTextErrorObject } from '@services/utils/text';
@@ -29,7 +28,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
-import { CoreError } from '@classes/errors/error';
+import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { CoreSilentError } from '@classes/errors/silenterror';
 import {
     makeSingleton,
@@ -45,6 +44,7 @@ import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
 import { CoreViewerImageComponent } from '@features/viewer/components/image/image';
+import { CoreFormFields, CoreForms } from '../../singletons/form';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -349,7 +349,7 @@ export class CoreDomUtilsProvider {
             return urls;
         }
 
-        // Extract the URL form each match.
+        // Extract the URL from each match.
         matches.forEach((match) => {
             const submatches = match.match(/url\(\s*['"]?([^'"]*)['"]?\s*\)/im);
             if (submatches?.[1]) {
@@ -445,36 +445,10 @@ export class CoreDomUtilsProvider {
      *
      * @param form The form to get the data from.
      * @return Object with the data. The keys are the names of the inputs.
+     * @deprecated since 3.9.5. Function has been moved to CoreForms.
      */
-    getDataFromForm(form: HTMLFormElement): Record<string, unknown> {
-        if (!form || !form.elements) {
-            return {};
-        }
-
-        const data = {};
-
-        for (let i = 0; i < form.elements.length; i++) {
-            const element = <HTMLInputElement> form.elements[i];
-            const name = element.name || '';
-
-            // Ignore submit inputs.
-            if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
-                continue;
-            }
-
-            // Get the value.
-            if (element.type == 'checkbox') {
-                data[name] = !!element.checked;
-            } else if (element.type == 'radio') {
-                if (element.checked) {
-                    data[name] = element.value;
-                }
-            } else {
-                data[name] = element.value;
-            }
-        }
-
-        return data;
+    getDataFromForm(form: HTMLFormElement): CoreFormFields {
+        return CoreForms.getDataFromForm(form);
     }
 
     /**
@@ -752,7 +726,7 @@ export class CoreDomUtilsProvider {
      * @param error Error to check.
      * @return Whether it's a canceled error.
      */
-    isCanceledError(error: CoreError | CoreTextErrorObject | string | null): boolean {
+    isCanceledError(error: CoreAnyError): boolean {
         return error instanceof CoreCanceledError;
     }
 
@@ -862,8 +836,10 @@ export class CoreDomUtilsProvider {
      *
      * @return Promise resolved with boolean: true if enabled, false otherwise.
      */
-    isRichTextEditorEnabled(): Promise<boolean> {
-        return CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true).then((enabled) => !!enabled);
+    async isRichTextEditorEnabled(): Promise<boolean> {
+        const enabled = await CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
+
+        return !!enabled;
     }
 
     /**
@@ -1412,7 +1388,7 @@ export class CoreDomUtilsProvider {
      * @return Promise resolved with the alert modal.
      */
     async showErrorModalDefault(
-        error: CoreError | CoreTextErrorObject | string | null,
+        error: CoreAnyError,
         defaultError: string,
         needsTranslate?: boolean,
         autocloseTime?: number,
@@ -1741,7 +1717,7 @@ export class CoreDomUtilsProvider {
      * @param element The element to search in.
      * @return Promise resolved with a boolean: whether there was any image to load.
      */
-    waitForImages(element: HTMLElement): Promise<boolean> {
+    async waitForImages(element: HTMLElement): Promise<boolean> {
         const imgs = Array.from(element.querySelectorAll('img'));
         const promises: Promise<void>[] = [];
         let hasImgToLoad = false;
@@ -1764,7 +1740,9 @@ export class CoreDomUtilsProvider {
             }
         });
 
-        return Promise.all(promises).then(() => hasImgToLoad);
+        await Promise.all(promises);
+
+        return hasImgToLoad;
     }
 
     /**
@@ -1785,16 +1763,10 @@ export class CoreDomUtilsProvider {
      *
      * @param form Form element.
      * @param siteId The site affected. If not provided, no site affected.
+     * @deprecated since 3.9.5. Function has been moved to CoreForms.
      */
     triggerFormCancelledEvent(formRef: ElementRef | HTMLFormElement | undefined, siteId?: string): void {
-        if (!formRef) {
-            return;
-        }
-
-        CoreEvents.trigger(CoreEvents.FORM_ACTION, {
-            action: CoreEventFormAction.CANCEL,
-            form: formRef.nativeElement,
-        }, siteId);
+        CoreForms.triggerFormCancelledEvent(formRef, siteId);
     }
 
     /**
@@ -1803,17 +1775,10 @@ export class CoreDomUtilsProvider {
      * @param form Form element.
      * @param online Whether the action was done in offline or not.
      * @param siteId The site affected. If not provided, no site affected.
+     * @deprecated since 3.9.5. Function has been moved to CoreForms.
      */
     triggerFormSubmittedEvent(formRef: ElementRef | HTMLFormElement | undefined, online?: boolean, siteId?: string): void {
-        if (!formRef) {
-            return;
-        }
-
-        CoreEvents.trigger(CoreEvents.FORM_ACTION, {
-            action: CoreEventFormAction.SUBMIT,
-            form: formRef.nativeElement || formRef,
-            online: !!online,
-        }, siteId);
+        CoreForms.triggerFormSubmittedEvent(formRef, online, siteId);
     }
 
 }

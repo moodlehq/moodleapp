@@ -44,6 +44,7 @@ import {
 import { AddonModQuizAttempt, AddonModQuizHelper } from '../../services/quiz-helper';
 import { AddonModQuizSync } from '../../services/quiz-sync';
 import { CanLeave } from '@guards/can-leave';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Page that allows attempting a quiz.
@@ -160,7 +161,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
             await CoreDomUtils.showConfirm(Translate.instant('addon.mod_quiz.confirmleavequizonerror'));
 
-            CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
         } finally {
             modal.dismiss();
         }
@@ -672,7 +673,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         this.autoSave.hideAutoSaveError();
 
         if (this.formElement) {
-            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, !this.offline, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement, !this.offline, CoreSites.getCurrentSiteId());
         }
 
         return CoreQuestionHelper.clearTmpData(this.questions, this.component, this.quiz!.coursemodule);

@@ -19,6 +19,7 @@ import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin, A
 import { makeSingleton } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonModAssignSubmissionFormatted } from './assign-helper';
+import { CoreFormFields } from '@singletons/form';
 
 /**
  * Interface that all feedback handlers must implement.
@@ -61,7 +62,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
         assignId: number,
         userId: number,
         siteId?: string,
-    ): Record<string, unknown> | Promise<Record<string, unknown> | undefined> | undefined;
+    ): CoreFormFields | Promise<CoreFormFields | undefined> | undefined;
 
     /**
      * Get files used by this plugin.
@@ -102,7 +103,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
         userId: number,
     ): boolean | Promise<boolean>;
 
@@ -165,7 +166,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
         assignId: number,
         userId: number,
         plugin: AddonModAssignPlugin,
-        data: Record<string, unknown>,
+        data: CoreFormFields,
         siteId?: string,
     ): void | Promise<void>;
 }
@@ -276,7 +277,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission | AddonModAssignSubmissionFormatted,
         plugin: AddonModAssignPlugin,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
         userId: number,
     ): Promise<boolean | undefined> {
         return await this.executeFunctionOnEnabled(
@@ -371,7 +372,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         assignId: number,
         userId: number,
         plugin: AddonModAssignPlugin,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
         siteId?: string,
     ): Promise<void> {
         return await this.executeFunctionOnEnabled(

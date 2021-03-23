@@ -16,10 +16,10 @@ import { Input, OnInit, OnDestroy, ElementRef, Output, EventEmitter, Directive }
 import { Subscription } from 'rxjs';
 
 import { CoreSiteWSPreSets } from '@classes/site';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePlugins } from '../services/siteplugins';
 import { CoreLogger } from '@singletons/logger';
+import { CoreFormFields, CoreForms } from '@singletons/form';
 
 /**
  * Base class for directives that need to call a WS.
@@ -90,7 +90,7 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
      *
      * @return Params.
      */
-    protected getParamsForWS(): Record<string, unknown> {
+    protected getParamsForWS(): CoreFormFields {
         let params = this.params || {};
 
         if (this.parentContent) {
@@ -98,7 +98,7 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
         }
 
         if (this.form && document.forms[this.form]) {
-            params = Object.assign(params, CoreDomUtils.getDataFromForm(document.forms[this.form]));
+            params = Object.assign(params, CoreForms.getDataFromForm(document.forms[this.form]));
         }
 
         return params;
