@@ -480,3 +480,10 @@ ion-button.core-button-select {
 .core-browser-copy-area {
     display: none;
 }
+
+// Different levels of padding.
+@for $i from 0 through 15 {
+    .core-padding-#{$i} {
+        @include padding(null, null, null, 15px * $i + 16px);
+    }
+}

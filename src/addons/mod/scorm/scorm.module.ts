@@ -13,25 +13,44 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { AddonModScormComponentsModule } from './components/components.module';
 import { OFFLINE_SITE_SCHEMA } from './services/database/scorm';
 import { AddonModScormGradeLinkHandler } from './services/handlers/grade-link';
 import { AddonModScormIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModScormListLinkHandler } from './services/handlers/list-link';
-import { AddonModScormModuleHandler } from './services/handlers/module';
+import { AddonModScormModuleHandler, AddonModScormModuleHandlerService } from './services/handlers/module';
 import { AddonModScormPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModScormSyncCronHandler } from './services/handlers/sync-cron';
+import { AddonModScormProvider } from './services/scorm';
+import { AddonModScormHelperProvider } from './services/scorm-helper';
+import { AddonModScormOfflineProvider } from './services/scorm-offline';
+import { AddonModScormSyncProvider } from './services/scorm-sync';
 
 export const ADDON_MOD_SCORM_SERVICES: Type<unknown>[] = [
+    AddonModScormProvider,
+    AddonModScormOfflineProvider,
+    AddonModScormHelperProvider,
+    AddonModScormSyncProvider,
+];
 
+const routes: Routes = [
+    {
+        path: AddonModScormModuleHandlerService.PAGE_NAME,
+        loadChildren: () => import('./scorm-lazy.module').then(m => m.AddonModScormLazyModule),
+    },
 ];
 
 @NgModule({
     imports: [
+        CoreMainMenuTabRoutingModule.forChild(routes),
+        AddonModScormComponentsModule,
     ],
     providers: [
         {
