@@ -18,11 +18,16 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModScormComponentsModule } from './components/components.module';
 import { AddonModScormIndexPage } from './pages/index/index';
+import { AddonModScormPlayerPage } from './pages/player/player';
 
 const routes: Routes = [
     {
         path: ':courseId/:cmId',
         component: AddonModScormIndexPage,
+    },
+    {
+        path: ':courseId/:cmId/player',
+        component: AddonModScormPlayerPage,
     },
 ];
 
@@ -34,6 +39,7 @@ const routes: Routes = [
     ],
     declarations: [
         AddonModScormIndexPage,
+        AddonModScormPlayerPage,
     ],
 })
 export class AddonModScormLazyModule {}

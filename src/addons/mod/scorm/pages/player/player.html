@@ -1,0 +1,27 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>
+            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+            </core-format-text>
+        </ion-title>
+        <ion-buttons slot="end">
+            <ion-button *ngIf="showToc && !loadingToc && toc.length" (click)="openToc()"
+                [attr.aria-label]="'addon.mod_scorm.toc' | translate" aria-haspopup="true">
+                <ion-icon name="fas-bookmark" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-spinner *ngIf="showToc && loadingToc"></ion-spinner>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <core-navigation-bar [previous]="previousSco" [next]="nextSco" (action)="loadSco($event)"></core-navigation-bar>
+
+        <core-iframe *ngIf="loaded && src" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"></core-iframe>
+
+        <p *ngIf="!src && errorMessage">{{ errorMessage | translate }}</p>
+    </core-loading>
+</ion-content>

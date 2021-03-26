@@ -16,10 +16,12 @@ import { NgModule } from '@angular/core';
 import { AddonModScormIndexComponent } from './index/index';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { AddonModScormTocComponent } from './toc/toc';
 
 @NgModule({
     declarations: [
         AddonModScormIndexComponent,
+        AddonModScormTocComponent,
     ],
     imports: [
         CoreSharedModule,
@@ -29,6 +31,7 @@ import { CoreCourseComponentsModule } from '@features/course/components/componen
     ],
     exports: [
         AddonModScormIndexComponent,
+        AddonModScormTocComponent,
     ],
 })
 export class AddonModScormComponentsModule {}
