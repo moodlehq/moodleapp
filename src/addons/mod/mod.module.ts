@@ -29,6 +29,7 @@ import { AddonModLtiModule } from './lti/lti.module';
 import { AddonModH5PActivityModule } from './h5pactivity/h5pactivity.module';
 import { AddonModSurveyModule } from './survey/survey.module';
 import { AddonModScormModule } from './scorm/scorm.module';
+import { AddonModChoiceModule } from './choice/choice.module';
 
 @NgModule({
     declarations: [],
@@ -48,6 +49,7 @@ import { AddonModScormModule } from './scorm/scorm.module';
         AddonModH5PActivityModule,
         AddonModSurveyModule,
         AddonModScormModule,
+        AddonModChoiceModule,
     ],
     providers: [],
     exports: [],
