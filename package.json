@@ -78,20 +78,20 @@
     "cordova-clipboard": "^1.3.0",
     "cordova-ios": "^6.2.0",
     "cordova-plugin-add-swift-support": "^2.0.2",
-    "cordova-plugin-advanced-http": "^2.4.1",
+    "cordova-plugin-advanced-http": "^3.1.0",
     "cordova-plugin-badge": "^0.8.8",
-    "cordova-plugin-camera": "^4.1.0",
+    "cordova-plugin-camera": "^5.0.1",
     "cordova-plugin-chooser": "^1.3.2",
-    "cordova-plugin-customurlscheme": "^5.0.1",
+    "cordova-plugin-customurlscheme": "^5.0.2",
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-file": "^6.0.2",
-    "cordova-plugin-file-opener2": "^3.0.4",
+    "cordova-plugin-file-opener2": "^3.0.5",
     "cordova-plugin-file-transfer": "git+https://github.com/moodlemobile/cordova-plugin-file-transfer.git",
-    "cordova-plugin-geolocation": "git+https://github.com/apache/cordova-plugin-geolocation.git#89cf51d222e8f225bdfb661965b3007d669c40ff",
+    "cordova-plugin-geolocation": "^4.1.0",
     "cordova-plugin-globalization": "^1.11.0",
-    "cordova-plugin-inappbrowser": "git+https://github.com/moodlemobile/cordova-plugin-inappbrowser.git#moodle",
-    "cordova-plugin-ionic-keyboard": "2.1.3",
-    "cordova-plugin-ionic-webview": "^4.2.1",
+    "cordova-plugin-inappbrowser": "^5.0.0",
+    "cordova-plugin-ionic-keyboard": "^2.2.0",
+    "cordova-plugin-ionic-webview": "^5.0.0",
     "cordova-plugin-local-notification": "git+https://github.com/moodlemobile/cordova-plugin-local-notification.git#moodle",
     "cordova-plugin-media": "^5.0.3",
     "cordova-plugin-media-capture": "^3.0.3",
@@ -104,7 +104,7 @@
     "cordova-plugin-wkuserscript": "git+https://github.com/moodlemobile/cordova-plugin-wkuserscript.git",
     "cordova-plugin-wkwebview-cookies": "git+https://github.com/moodlemobile/cordova-plugin-wkwebview-cookies.git",
     "cordova-plugin-zip": "^3.1.0",
-    "cordova-sqlite-storage": "^4.0.0",
+    "cordova-sqlite-storage": "^6.0.0",
     "cordova-support-google-services": "^1.2.1",
     "cordova.plugins.diagnostic": "^5.0.2",
     "core-js": "^3.9.1",
@@ -174,9 +174,7 @@
       "ios"
     ],
     "plugins": {
-      "cordova-plugin-advanced-http": {
-        "OKHTTP_VERSION": "3.10.0"
-      },
+      "cordova-plugin-advanced-http": {},
       "cordova-clipboard": {},
       "cordova-plugin-badge": {},
       "cordova-plugin-camera": {
@@ -194,7 +192,7 @@
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
       "cordova-plugin-geolocation": {
-        "GPS_REQUIRED": "true"
+        "GPS_REQUIRED": "false"
       },
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-ionic-keyboard": {},
