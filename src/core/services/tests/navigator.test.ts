@@ -146,7 +146,7 @@ describe('CoreNavigator', () => {
         const success = await navigator.navigateToSiteHome();
 
         expect(success).toBe(true);
-        expect(navControllerMock.navigateForward).toHaveBeenCalledWith(['/main/home'], {});
+        expect(navControllerMock.navigateRoot).toHaveBeenCalledWith(['/main/home'], {});
     });
 
     it.todo('navigates to a different site');
