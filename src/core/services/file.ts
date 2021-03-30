@@ -1235,7 +1235,7 @@ export class CoreFileProvider {
      * @return Path.
      */
     getWWWAbsolutePath(): string {
-        if (cordova && cordova.file && cordova.file.applicationDirectory) {
+        if (window.cordova && cordova.file && cordova.file.applicationDirectory) {
             return CoreTextUtils.concatenatePaths(cordova.file.applicationDirectory, 'www');
         }
 
