@@ -334,10 +334,14 @@ export class CoreAppProvider {
             return false;
         }
 
+        if (!this.isMobile()) {
+            return navigator.onLine;
+        }
+
         let online = Network.type !== null && Network.type != Network.Connection.NONE &&
             Network.type != Network.Connection.UNKNOWN;
 
-        // Double check we are not online because we cannot rely 100% in Cordova APIs. Also, check it in browser.
+        // Double check we are not online because we cannot rely 100% in Cordova APIs.
         if (!online && navigator.onLine) {
             online = true;
         }
@@ -351,9 +355,7 @@ export class CoreAppProvider {
      * @return Whether the device uses a limited connection.
      */
     isNetworkAccessLimited(): boolean {
-        const type = Network.type;
-        if (type === null) {
-            // Plugin not defined, probably in browser.
+        if (!this.isMobile()) {
             return false;
         }
 
@@ -364,7 +366,7 @@ export class CoreAppProvider {
             Network.Connection.CELL,
         ];
 
-        return limited.indexOf(type) > -1;
+        return limited.indexOf(Network.type) > -1;
     }
 
     /**
