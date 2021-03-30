@@ -53,6 +53,7 @@ import { CoreFilesComponent } from './files/files';
 import { CoreLocalFileComponent } from './local-file/local-file';
 import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
+import { CoreChartComponent } from './chart/chart';
 
 @NgModule({
     declarations: [
@@ -88,6 +89,7 @@ import { CoreSitePickerComponent } from './site-picker/site-picker';
         CoreLocalFileComponent,
         CoreBSTooltipComponent,
         CoreSitePickerComponent,
+        CoreChartComponent,
     ],
     imports: [
         CommonModule,
@@ -130,6 +132,7 @@ import { CoreSitePickerComponent } from './site-picker/site-picker';
         CoreLocalFileComponent,
         CoreBSTooltipComponent,
         CoreSitePickerComponent,
+        CoreChartComponent,
     ],
 })
 export class CoreComponentsModule {}
