@@ -13,19 +13,22 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { Routes } from '@angular/router';
 
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { AddonModChoiceComponentsModule } from './components/components.module';
 import { AddonModChoiceProvider } from './services/choice';
 import { AddonModChoiceOfflineProvider } from './services/choice-offline';
 import { AddonModChoiceSyncProvider } from './services/choice-sync';
 import { OFFLINE_SITE_SCHEMA } from './services/database/choice';
 import { AddonModChoiceIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModChoiceListLinkHandler } from './services/handlers/list-link';
-import { AddonModChoiceModuleHandler } from './services/handlers/module';
+import { AddonModChoiceModuleHandler, AddonModChoiceModuleHandlerService } from './services/handlers/module';
 import { AddonModChoicePrefetchHandler } from './services/handlers/prefetch';
 import { AddonModChoiceSyncCronHandler } from './services/handlers/sync-cron';
 
@@ -35,8 +38,17 @@ export const ADDON_MOD_CHOICE_SERVICES: Type<unknown>[] = [
     AddonModChoiceSyncProvider,
 ];
 
+const routes: Routes = [
+    {
+        path: AddonModChoiceModuleHandlerService.PAGE_NAME,
+        loadChildren: () => import('./choice-lazy.module').then(m => m.AddonModChoiceLazyModule),
+    },
+];
+
 @NgModule({
     imports: [
+        CoreMainMenuTabRoutingModule.forChild(routes),
+        AddonModChoiceComponentsModule,
     ],
     providers: [
         {
