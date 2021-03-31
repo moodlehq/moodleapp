@@ -55,7 +55,8 @@
     <form *ngIf="survey && !survey.surveydone && !hasOffline && questions && questions.length">
 
         <ion-grid class="ion-no-padding ion-text-wrap">
-            <ng-container *ngFor="let question of questions; let questionIndex=index; let isEven=even;" class="ion-no-padding ion-text-wrap">
+            <ng-container *ngFor="let question of questions; let questionIndex=index; let isEven=even;"
+                class="ion-no-padding ion-text-wrap">
                 <!-- Parent question (Category header) -->
                 <ng-container *ngIf="question.multiArray?.length" >
                     <h3 class="ion-padding-horizontal" [class.ion-padding-top]="questionIndex == 1">{{ question.text }}</h3>
