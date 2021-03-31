@@ -56,6 +56,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     // Based on: https://github.com/judgewest2000/Ionic3RichText/
     // @todo: Anchor button, fullscreen...
     // @todo: Textarea height is not being updated when editor is resized. Height is calculated if any css is changed.
+    // @todo: Implement ControlValueAccessor https://angular.io/api/forms/ControlValueAccessor.
 
     @Input() placeholder = ''; // Placeholder to set in textarea.
     @Input() control?: FormControl; // Form control.
@@ -724,6 +725,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * Hide the toolbar in phone mode.
      */
     hideToolbar(event: Event): void {
+        this.element.classList.remove('has-focus');
+
         this.stopBubble(event);
 
         if (this.isPhone) {
@@ -735,6 +738,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * Show the toolbar.
      */
     showToolbar(event: Event): void {
+        this.element.classList.add('ion-touched');
+        this.element.classList.remove('ion-untouched');
+        this.element.classList.add('has-focus');
+
         this.stopBubble(event);
 
         this.editorElement?.focus();
@@ -747,7 +754,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * @param event Event.
      */
     stopBubble(event: Event): void {
-        event.preventDefault();
+        if (event.type != 'mouseup') {
+            event.preventDefault();
+        }
         event.stopPropagation();
     }
 
@@ -903,6 +912,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
                 // No draft found.
                 return;
             }
+
+            this.element.classList.add('ion-touched');
+            this.element.classList.remove('ion-untouched');
 
             let draftText = entry.drafttext || '';
 

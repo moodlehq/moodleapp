@@ -579,7 +579,7 @@ export class AddonModDataHelperProvider {
                 entryFieldDataToSend.push({
                     fieldid: fieldSubdata.fieldid,
                     subfield: fieldSubdata.subfield || '',
-                    value: fieldSubdata.value ? JSON.stringify(value) : '',
+                    value: value ? JSON.stringify(value) : '',
                 });
 
                 return;
