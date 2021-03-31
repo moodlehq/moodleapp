@@ -149,10 +149,15 @@ $core-dd-question-colors: $white, $blue-light, #DCDCDC, #D8BFD8, #87CEFA, #DAA52
  * https://ionicframework.com/docs/layout/grid#default-breakpoints
  */
 
-$breakpoint-xs: 0px !default;
-$breakpoint-sm: 576px !default;
-$breakpoint-md: 768px !default;
-$breakpoint-lg: 992px !default;
-$breakpoint-xl: 1200px !default;
+// The minimum dimensions at which your layout will change,
+// adapting to different screen sizes, for use in media queries
+$screen-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  tablet: 992px,
+  xl: 1200px
+) !default;
 
-$breakpoint-tablet: $breakpoint-lg !default;
+$breakpoint-tablet: map-get($screen-breakpoints, tablet), !default;

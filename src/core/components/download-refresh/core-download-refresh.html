@@ -8,7 +8,7 @@
     <!-- Refresh button. -->
     <ion-button *ngIf="status == statusOutdated || (status == statusDownloaded && !canTrustDownload)" fill="clear"
         (click)="download($event, true)" color="dark" [@coreShowHideAnimation]
-        attr.aria-label]="(statusTranslatable || 'core.refresh') | translate">
+        [attr.aria-label]="(statusTranslatable || 'core.refresh') | translate">
         <ion-icon slot="icon-only" name="fas-redo-alt"></ion-icon>
     </ion-button>
 

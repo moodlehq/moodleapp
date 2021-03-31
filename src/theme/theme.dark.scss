@@ -34,8 +34,8 @@
     --ion-color-step-900: #e7e7e7;
     --ion-color-step-950: #f3f3f3;
 
-    --light: var(--black);
-    --dark: var(--gray-lighter);
+    --light: #{$dark};
+    --dark: #{$light};
 
     @each $color-name, $value in $colors-dark {
         @include generate-color($color-name);
