@@ -88,6 +88,7 @@ import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/class
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
 import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/resource-prefetch-handler';
 import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
+import { CORE_ERRORS_CLASSES } from '@classes/errors/errors';
 
 // Import all core modules that define components, directives and pipes.
 import { CoreSharedModule } from '@/core/shared.module';
@@ -361,6 +362,9 @@ export class CoreCompileProvider {
         instance['CoreSitePluginsAssignSubmissionComponent'] = CoreSitePluginsAssignSubmissionComponent;
         instance['CoreGeolocationError'] = CoreGeolocationError;
         instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason;
+        CORE_ERRORS_CLASSES.forEach((classDef) => {
+            instance[classDef.name] = classDef;
+        });
     }
 
     /**
