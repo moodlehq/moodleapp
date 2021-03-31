@@ -69,6 +69,8 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input() wsNotFiltered?: boolean | string; // If true it means the WS didn't filter the text for some reason.
+    @Input() captureLinks?: boolean; // Whether links should tried to be opened inside the app. Defaults to true.
+    @Input() openLinksInApp?: boolean; // Whether links should be opened in InAppBrowser.
 
     /**
      * Max height in pixels to render the content box. It should be 50 at least to make sense.
@@ -489,7 +491,8 @@ export class CoreFormatTextDirective implements OnChanges {
         anchors.forEach((anchor) => {
             // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
             const linkDir = new CoreLinkDirective(new ElementRef(anchor), this.content);
-            linkDir.capture = true;
+            linkDir.capture = this.captureLinks ?? true;
+            linkDir.inApp = this.openLinksInApp;
             linkDir.ngOnInit();
 
             this.addExternalContent(anchor);
