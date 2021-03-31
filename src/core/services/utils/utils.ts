@@ -1158,12 +1158,12 @@ export class CoreUtilsProvider {
      * @param keyPrefix Key prefix if neededs to delete it.
      * @return Object.
      */
-    objectToKeyValueMap(
+    objectToKeyValueMap<T = unknown>(
         objects: Record<string, unknown>[],
         keyName: string,
         valueName: string,
         keyPrefix?: string,
-    ): {[name: string]: unknown} | undefined {
+    ): {[name: string]: T} | undefined {
         if (!objects) {
             return;
         }
