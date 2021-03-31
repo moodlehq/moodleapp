@@ -33,6 +33,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
 
     north?: number;
     east?: number;
+    locationServicesEnabled = false;
 
     constructor(
         fb: FormBuilder,
@@ -87,7 +88,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
     /**
      * @inheritdoc
      */
-    protected init(): void {
+    protected async init(): Promise<void> {
         if (this.value) {
             this.updateValue(this.value);
         }
@@ -95,6 +96,8 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
         if (this.editMode) {
             this.addControl('f_' + this.field.id + '_0', this.north);
             this.addControl('f_' + this.field.id + '_1', this.east);
+            this.locationServicesEnabled = await CoreGeolocation.canRequest();
+
         } else if (this.searchMode) {
             this.addControl('f_' + this.field.id);
         }
@@ -136,7 +139,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
      *
      * @param error Location error.
      */
-    protected showLocationErrorModal(error: CoreAnyError): void {
+    protected showLocationErrorModal(error: CoreAnyError | CoreGeolocationError): void {
         if (error instanceof CoreGeolocationError) {
             CoreDomUtils.showErrorModal(this.getGeolocationErrorMessage(error), true);
 
