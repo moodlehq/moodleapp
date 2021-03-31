@@ -473,28 +473,39 @@ export class CoreFileProvider {
      *
      * @param path Relative path to the file.
      * @param format Format to read the file.
+     * @param folder Absolute path to the folder where the file is. Use it to read files outside of the app's data folder.
      * @return Promise to be resolved when the file is read.
      */
     readFile(
         path: string,
         format?: CoreFileFormat.FORMATTEXT | CoreFileFormat.FORMATDATAURL | CoreFileFormat.FORMATBINARYSTRING,
+        folder?: string,
     ): Promise<string>;
-    readFile(path: string, format: CoreFileFormat.FORMATARRAYBUFFER): Promise<ArrayBuffer>;
-    readFile<T = unknown>(path: string, format: CoreFileFormat.FORMATJSON): Promise<T>;
-    readFile(path: string, format: CoreFileFormat = CoreFileFormat.FORMATTEXT): Promise<string | ArrayBuffer | unknown> {
-        // Remove basePath if it's in the path.
-        path = this.removeStartingSlash(path.replace(this.basePath, ''));
-        this.logger.debug('Read file ' + path + ' with format ' + format);
+    readFile(path: string, format: CoreFileFormat.FORMATARRAYBUFFER, folder?: string): Promise<ArrayBuffer>;
+    readFile<T = unknown>(path: string, format: CoreFileFormat.FORMATJSON, folder?: string): Promise<T>;
+    readFile(
+        path: string,
+        format: CoreFileFormat = CoreFileFormat.FORMATTEXT,
+        folder?: string,
+    ): Promise<string | ArrayBuffer | unknown> {
+        if (!folder) {
+            folder = this.basePath;
+
+            // Remove basePath if it's in the path.
+            path = this.removeStartingSlash(path.replace(this.basePath, ''));
+        }
+
+        this.logger.debug(`Read file ${path} with format ${format} in folder ${folder}`);
 
         switch (format) {
             case CoreFileFormat.FORMATDATAURL:
-                return File.readAsDataURL(this.basePath, path);
+                return File.readAsDataURL(folder, path);
             case CoreFileFormat.FORMATBINARYSTRING:
-                return File.readAsBinaryString(this.basePath, path);
+                return File.readAsBinaryString(folder, path);
             case CoreFileFormat.FORMATARRAYBUFFER:
-                return File.readAsArrayBuffer(this.basePath, path);
+                return File.readAsArrayBuffer(folder, path);
             case CoreFileFormat.FORMATJSON:
-                return File.readAsText(this.basePath, path).then((text) => {
+                return File.readAsText(folder, path).then((text) => {
                     const parsed = CoreTextUtils.parseJSON(text, null);
 
                     if (parsed == null && text != null) {
@@ -504,7 +515,7 @@ export class CoreFileProvider {
                     return parsed;
                 });
             default:
-                return File.readAsText(this.basePath, path);
+                return File.readAsText(folder, path);
         }
     }
 
@@ -1235,7 +1246,7 @@ export class CoreFileProvider {
      * @return Path.
      */
     getWWWAbsolutePath(): string {
-        if (cordova && cordova.file && cordova.file.applicationDirectory) {
+        if (window.cordova && cordova.file && cordova.file.applicationDirectory) {
             return CoreTextUtils.concatenatePaths(cordova.file.applicationDirectory, 'www');
         }
 

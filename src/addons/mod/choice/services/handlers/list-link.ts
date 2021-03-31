@@ -12,21 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Injectable } from '@angular/core';
+import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
+import { makeSingleton } from '@singletons';
 
-const routes: Routes = [
-    {
-        path: 'module/:courseId/:cmId',
-        loadChildren: () => import('./pages/module-index/module-index.module').then( m => m.CoreSitePluginsModuleIndexPageModule),
-    },
-    {
-        path: ':component/:method/:hash',
-        loadChildren: () => import('./pages/plugin-page/plugin-page.module').then( m => m.CoreSitePluginsPluginPageModule),
-    },
-];
+/**
+ * Handler to treat links to choice list page.
+ */
+@Injectable({ providedIn: 'root' })
+export class AddonModChoiceListLinkHandlerService extends CoreContentLinksModuleListHandler {
 
-@NgModule({
-    imports: [RouterModule.forChild(routes)],
-})
-export class CoreSitePluginsLazyModule {}
+    name = 'AddonModChoiceListLinkHandler';
+
+    constructor() {
+        super('AddonModChoice', 'choice');
+    }
+
+}
+
+export const AddonModChoiceListLinkHandler = makeSingleton(AddonModChoiceListLinkHandlerService);
