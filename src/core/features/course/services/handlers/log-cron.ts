@@ -37,6 +37,11 @@ export class CoreCourseLogCronHandlerService implements CoreCronHandler {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async execute(siteId?: string, force?: boolean): Promise<void> {
+        if (!siteId && !CoreSites.isLoggedIn()) {
+            // No current site, stop.
+            return;
+        }
+
         const site = await CoreSites.getSite(siteId);
 
         return CoreCourse.logView(site.getSiteHomeId(), undefined, site.getId(), site.getInfo()?.sitename);

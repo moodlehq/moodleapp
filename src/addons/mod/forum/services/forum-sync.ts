@@ -208,7 +208,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
         if (CoreSync.isBlocked(AddonModForumProvider.COMPONENT, syncId, siteId)) {
             this.logger.debug('Cannot sync forum ' + forumId + ' because it is blocked.');
 
-            return Promise.reject(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
+            throw new Error(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
         this.logger.debug('Try to sync forum ' + forumId + ' for user ' + userId);
