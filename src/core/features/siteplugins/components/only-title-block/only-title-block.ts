@@ -60,7 +60,7 @@ export class CoreSitePluginsOnlyTitleBlockComponent  extends CoreBlockBaseCompon
         const hash = <string> Md5.hashAsciiStr(JSON.stringify(args));
 
         CoreNavigator.navigateToSitePath(
-            `siteplugins/${handler.plugin.component}/${handler.handlerSchema.method}/${hash}`,
+            `siteplugins/content/${handler.plugin.component}/${handler.handlerSchema.method}/${hash}`,
             {
                 params: {
                     title: this.title,

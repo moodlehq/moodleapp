@@ -100,7 +100,7 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
                 const method = this.method || this.parentContent?.method;
                 const hash = <string> Md5.hashAsciiStr(JSON.stringify(args));
 
-                CoreNavigator.navigateToSitePath(`siteplugins/${component}/${method}/${hash}`, {
+                CoreNavigator.navigateToSitePath(`siteplugins/content/${component}/${method}/${hash}`, {
                     params: {
                         title: this.title || this.parentContent?.pageTitle,
                         args,

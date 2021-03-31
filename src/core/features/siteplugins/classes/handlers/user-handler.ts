@@ -100,7 +100,7 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
                 const hash = <string> Md5.hashAsciiStr(JSON.stringify(args));
 
                 CoreNavigator.navigateToSitePath(
-                    `siteplugins/${this.plugin.component}/${this.handlerSchema.method}/${hash}`,
+                    `siteplugins/content/${this.plugin.component}/${this.handlerSchema.method}/${hash}`,
                     {
                         params: {
                             title: this.title,

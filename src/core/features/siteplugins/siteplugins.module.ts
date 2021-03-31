@@ -23,8 +23,8 @@ import { CoreSitePluginsHelper } from './services/siteplugins-helper';
 
 const routes: Routes = [
     {
-        path: 'siteplugins',
-        loadChildren: () => import('@features/siteplugins/siteplugins-lazy.module').then(m => m.CoreSitePluginsLazyModule),
+        path: 'siteplugins/content/:component/:method/:hash',
+        loadChildren: () => import('./pages/plugin-page/plugin-page.module').then( m => m.CoreSitePluginsPluginPageModule),
     },
 ];
 
@@ -36,9 +36,16 @@ const courseIndexRoutes: Routes = [
     },
 ];
 
+const moduleRoutes: Routes = [
+    {
+        path: 'siteplugins/module/:courseId/:cmId',
+        loadChildren: () => import('./pages/module-index/module-index.module').then( m => m.CoreSitePluginsModuleIndexPageModule),
+    },
+];
+
 @NgModule({
     imports: [
-        CoreMainMenuTabRoutingModule.forChild(routes),
+        CoreMainMenuTabRoutingModule.forChild(moduleRoutes.concat(routes)),
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
         CoreMainMenuHomeRoutingModule.forChild({ children: routes }),
         CoreSitePluginsComponentsModule,
