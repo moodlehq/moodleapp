@@ -17,10 +17,10 @@ import { Md5 } from 'ts-md5';
 
 import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePlugins } from '../services/siteplugins';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Directive to display a new site plugin content when clicked. This new content can be displayed in a new page or in the
@@ -84,7 +84,7 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
             }
 
             if (this.form && document.forms[this.form]) {
-                args = Object.assign(args, CoreDomUtils.getDataFromForm(document.forms[this.form]));
+                args = Object.assign(args, CoreForms.getDataFromForm(document.forms[this.form]));
             }
 
             let jsData = this.jsData || {};

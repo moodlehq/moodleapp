@@ -87,28 +87,7 @@ export const APP_SCHEMA: CoreAppSchema = {
     ],
     async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
         if (oldVersion < 2) {
-            const newTable = SITES_TABLE_NAME;
-            const oldTable = 'sites';
-
-            try {
-                // Check if V1 table exists.
-                await db.tableExists(oldTable);
-
-                // Move the records from the old table.
-                const sites = await db.getAllRecords<SiteDBEntry>(oldTable);
-                const promises: Promise<number>[] = [];
-
-                sites.forEach((site) => {
-                    promises.push(db.insertRecord(newTable, site));
-                });
-
-                await Promise.all(promises);
-
-                // Data moved, drop the old table.
-                await db.dropTable(oldTable);
-            } catch (error) {
-                // Old table does not exist, ignore.
-            }
+            await db.migrateTable('sites', SITES_TABLE_NAME);
         }
     },
 };
@@ -166,27 +145,14 @@ export const SITE_SCHEMA: CoreSiteSchema = {
     ],
     async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
         if (oldVersion && oldVersion < 2) {
-            const newTable = CoreSite.WS_CACHE_TABLE;
-            const oldTable = 'wscache';
-
-            try {
-                await db.tableExists(oldTable);
-            } catch (error) {
-                // Old table does not exist, ignore.
-                return;
-            }
-            // Cannot use insertRecordsFrom because there are extra fields, so manually code INSERT INTO.
-            await db.execute(
-                'INSERT INTO ' + newTable + ' ' +
-                'SELECT id, data, key, expirationTime, NULL as component, NULL as componentId ' +
-                'FROM ' + oldTable,
-            );
-
-            try {
-                await db.dropTable(oldTable);
-            } catch (error) {
-                // Error deleting old table, ignore.
-            }
+            await db.migrateTable('wscache', CoreSite.WS_CACHE_TABLE, (record) => ({
+                id: record.id,
+                data: record.data,
+                key: record.key,
+                expirationTime: record.expirationTime,
+                component: null,
+                componentId: null,
+            }));
         }
     },
 };

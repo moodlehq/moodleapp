@@ -47,16 +47,16 @@
     --core-online-color: #{$core-online-color};
 
     // Named Color Variables
-    --primary: var(--primary);
-    --secondary: var(--secondary);
-    --tertiary: var(--tertiary);
-    --success: var(--success);
-    --danger: var(--danger);
-    --warning: var(--warning);
-    --info: var(--info);
-    --light: var(--gray-lighter);
-    --dark: var(--black);
-    --medium: var(--gray-light);
+    --primary: #{$primary};
+    --secondary: #{$secondary};
+    --tertiary: #{$tertiary};
+    --success: #{$success};
+    --danger: #{$danger};
+    --warning: #{$warning};
+    --info: #{$info};
+    --light: #{$light};
+    --dark: #{$dark};
+    --medium: #{$medium};
 
     @each $color-name, $value in $colors {
         @include generate-color($color-name);
@@ -65,6 +65,7 @@
     --ion-text-color: #{$text-color};
     --ion-text-color-rgb: 58,58,58;
     --ion-card-color: var(--ion-text-color);
+    --ion-item-background: var(--white);
 
     --text-hightlight-background-color: var(--custom-text-hightlight-background-color, #99c1ed);
 

@@ -1,0 +1,17 @@
+<span *ngIf="editMode && form">
+    <span [core-mark-required]="field.required" class="core-mark-required"></span>
+    <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component"
+        [componentId]="componentId" [allowOffline]="true">
+    </core-attachments>
+    <core-input-errors *ngIf="error" [errorText]="error"></core-input-errors>
+</span>
+
+<span *ngIf="searchMode && form" [formGroup]="form">
+    <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name"></ion-input>
+</span>
+
+<ng-container *ngIf="displayMode">
+    <div lines="none">
+        <core-files [files]="files" [component]="component" [componentId]="componentId" [alwaysDownload]="true"></core-files>
+    </div>
+</ng-container>

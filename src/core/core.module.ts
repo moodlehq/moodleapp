@@ -48,6 +48,7 @@ import { CoreGeolocationProvider } from '@services/geolocation';
 import { CoreNavigatorService } from '@services/navigator';
 import { CoreScreenService } from '@services/screen';
 import { CoreCustomURLSchemesProvider } from '@services/urlschemes';
+import { CoreForms } from '@singletons/form';
 
 export const CORE_SERVICES: Type<unknown>[] = [
     CoreAppProvider,
@@ -70,6 +71,7 @@ export const CORE_SERVICES: Type<unknown>[] = [
     CoreSyncProvider,
     CoreUpdateManagerProvider,
     CoreDomUtilsProvider,
+    CoreForms,
     CoreIframeUtilsProvider,
     CoreMimetypeUtilsProvider,
     CoreTextUtilsProvider,

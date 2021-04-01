@@ -186,7 +186,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      * Perform the assign submission.
      *
      * @param assignId Assign ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param siteId Site ID.
      * @return Promise resolved in success.
      */
     protected async performSyncAssign(assignId: number, siteId: string): Promise<AddonModAssignSyncResult> {

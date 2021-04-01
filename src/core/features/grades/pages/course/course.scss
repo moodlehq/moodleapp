@@ -124,7 +124,7 @@ core-split-view.menu-and-content .core-grades-table .ion-hide-md-down {
     opacity: 0;
 }
 
-@media (min-width: $breakpoint-md) {
+@include media-breakpoint-down(md) {
 
     .core-grades-table td {
         font-size: 0.85em;

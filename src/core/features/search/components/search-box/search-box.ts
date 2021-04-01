@@ -15,11 +15,11 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSearchHistory } from '../../services/search-history.service';
 import { Translate } from '@singletons';
 import { CoreSearchHistoryDBRecord } from '../../services/search-history-db';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Component to display a "search box".
@@ -98,7 +98,7 @@ export class CoreSearchBoxComponent implements OnInit {
             this.saveSearchToHistory(this.searchText);
         }
 
-        CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
         this.historyShown = false;
         this.searched = this.searchText;

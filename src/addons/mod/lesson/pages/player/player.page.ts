@@ -53,6 +53,7 @@ import {
 } from '../../services/lesson-helper';
 import { AddonModLessonOffline } from '../../services/lesson-offline';
 import { AddonModLessonSync } from '../../services/lesson-sync';
+import { CoreFormFields, CoreForms } from '@singletons/form';
 
 /**
  * Page that allows attempting and reviewing a lesson.
@@ -90,7 +91,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
     processDataButtons: ProcessDataButton[] = []; // Buttons to display after processing a page.
     loaded?: boolean; // Whether data has been loaded.
     displayMenu?: boolean; // Whether the lesson menu should be displayed.
-    originalData?: Record<string, unknown>; // Original question data. It is used to check if data has changed.
+    originalData?: CoreFormFields; // Original question data. It is used to check if data has changed.
     reviewPageId?: number; // Page to open if the user wants to review the attempt.
     courseId!: number; // The course ID the lesson belongs to.
     lessonPages?: AddonModLessonPageWSData[]; // Lesson pages (for the lesson menu).
@@ -164,7 +165,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             }
         }
 
-        CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
         return true;
     }
@@ -605,7 +606,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @param formSubmitted Whether a form was submitted.
      * @return Promise resolved when done.
      */
-    protected async processPage(data: Record<string, unknown>, formSubmitted?: boolean): Promise<void> {
+    protected async processPage(data: CoreFormFields, formSubmitted?: boolean): Promise<void> {
         this.loaded = false;
 
         const options: AddonModLessonProcessPageOptions = {
@@ -630,7 +631,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             );
 
             if (formSubmitted) {
-                CoreDomUtils.triggerFormSubmittedEvent(
+                CoreForms.triggerFormSubmittedEvent(
                     this.formElement,
                     result.sent,
                     CoreSites.getCurrentSiteId(),

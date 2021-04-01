@@ -2181,7 +2181,7 @@ export class CoreFilepoolProvider {
      * @return Resolved when done.
      */
     async invalidateFilesByComponent(
-        siteId: string,
+        siteId: string | undefined,
         component: string,
         componentId?: string | number,
         onlyUnknown: boolean = true,

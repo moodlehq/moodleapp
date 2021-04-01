@@ -201,7 +201,6 @@ export const CALENDAR_SITE_SCHEMA: CoreSiteSchema = {
     ],
     async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
         if (oldVersion < 3) {
-            const newTable = EVENTS_TABLE;
             let oldTable = 'addon_calendar_events_2';
 
             try {
@@ -211,19 +210,7 @@ export const CALENDAR_SITE_SCHEMA: CoreSiteSchema = {
                 oldTable = 'addon_calendar_events';
             }
 
-            try {
-                await db.tableExists(oldTable);
-
-                // Move the records from the old table.
-                const events = await db.getAllRecords<AddonCalendarEventDBRecord>(oldTable);
-                const promises = events.map((event) => db.insertRecord(newTable, event));
-
-                await Promise.all(promises);
-
-                db.dropTable(oldTable);
-            } catch {
-                // Old table does not exist, ignore.
-            }
+            await db.migrateTable(oldTable, EVENTS_TABLE);
         }
     },
 };

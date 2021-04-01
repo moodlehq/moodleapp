@@ -33,6 +33,7 @@ import { CoreComments } from '@features/comments/services/comments';
 import { AddonModAssignSubmissionFormatted } from './assign-helper';
 import { CoreWSError } from '@classes/errors/wserror';
 import { AddonModAssignAutoSyncData, AddonModAssignManualSyncData, AddonModAssignSyncProvider } from './assign-sync';
+import { CoreFormFields } from '@singletons/form';
 
 const ROOT_CACHE_KEY = 'mmaModAssign:';
 
@@ -467,7 +468,7 @@ export class AddonModAssignProvider {
     ): Promise<{ canviewsubmissions: boolean; submissions?: AddonModAssignSubmission[] }> {
         const site = await CoreSites.getSite(options.siteId);
 
-        const params: ModAssignGetSubmissionsWSParams = {
+        const params: AddonModAssignGetSubmissionsWSParams = {
             assignmentids: [assignId],
         };
         const preSets: CoreSiteWSPreSets = {
@@ -1681,7 +1682,7 @@ export type AddonModAssignGetAssignmentsWSResponse = {
 /**
  * Params of mod_assign_get_submissions WS.
  */
-type ModAssignGetSubmissionsWSParams = {
+type AddonModAssignGetSubmissionsWSParams = {
     assignmentids: number[]; // 1 or more assignment ids.
     status?: string; // Status.
     since?: number; // Submitted since.
@@ -1808,7 +1809,7 @@ type AddonModAssignSaveSubmissionWSParams = {
 /**
  * All subplugins will decide what to add here.
  */
-export type AddonModAssignSavePluginData = Record<string, unknown>;
+export type AddonModAssignSavePluginData = CoreFormFields;
 
 /**
  * Params of mod_assign_submit_for_grading WS.

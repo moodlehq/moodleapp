@@ -16,8 +16,9 @@ import { Injectable } from '@angular/core';
 import { Coordinates } from '@ionic-native/geolocation';
 
 import { CoreApp } from '@services/app';
-import { CoreError } from '@classes/errors/error';
+import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { Geolocation, Diagnostic, makeSingleton } from '@singletons';
+import { CoreUtils } from './utils/utils';
 
 @Injectable({ providedIn: 'root' })
 export class CoreGeolocationProvider {
@@ -89,7 +90,6 @@ export class CoreGeolocationProvider {
      */
     protected async doAuthorizeLocation(failOnDeniedOnce: boolean = false): Promise<void> {
         const authorizationStatus = await Diagnostic.getLocationAuthorizationStatus();
-
         switch (authorizationStatus) {
             case Diagnostic.permissionStatus.DENIED_ONCE:
                 if (failOnDeniedOnce) {
@@ -116,9 +116,21 @@ export class CoreGeolocationProvider {
      *
      * @param error Error.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected isCordovaPermissionDeniedError(error?: any): boolean {
-        return error && 'code' in error && 'PERMISSION_DENIED' in error && error.code === error.PERMISSION_DENIED;
+    protected isCordovaPermissionDeniedError(error?: CoreAnyError | GeolocationPositionError): boolean {
+        return !!error &&
+            typeof error == 'object' &&
+            'code' in error &&
+            'PERMISSION_DENIED' in error &&
+            error.code === error.PERMISSION_DENIED;
+    }
+
+    /**
+     * Prechecks if it can request location services.
+     *
+     * @return If location can be requested.
+     */
+    async canRequest(): Promise<boolean> {
+        return CoreUtils.promiseWorks(Diagnostic.getLocationAuthorizationStatus());
     }
 
 }
@@ -141,3 +153,15 @@ export class CoreGeolocationError extends CoreError {
     }
 
 }
+
+/**
+ * Imported interface type from Web api.
+ * https://developer.mozilla.org/en-US/docs/Web/API/GeolocationPositionError
+ */
+interface GeolocationPositionError {
+    code: number;
+    message: string;
+    PERMISSION_DENIED: number; // eslint-disable-line @typescript-eslint/naming-convention
+    POSITION_UNAVAILABLE: number; // eslint-disable-line @typescript-eslint/naming-convention
+    TIMEOUT: number; // eslint-disable-line @typescript-eslint/naming-convention
+};

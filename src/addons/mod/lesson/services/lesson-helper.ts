@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreFormFields } from '@singletons/form';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton, Translate } from '@singletons';
@@ -550,7 +551,7 @@ export class AddonModLessonHelperProvider {
      * @param data Data to prepare.
      * @return Data to send.
      */
-    prepareQuestionData(question: AddonModLessonQuestion, data: Record<string, unknown>): Record<string, unknown> {
+    prepareQuestionData(question: AddonModLessonQuestion, data: CoreFormFields): CoreFormFields {
         if (question.template == 'essay') {
             const textarea = (<AddonModLessonEssayQuestion> question).textarea;
 

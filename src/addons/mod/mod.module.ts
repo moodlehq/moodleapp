@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 
 import { AddonModAssignModule } from './assign/assign.module';
 import { AddonModBookModule } from './book/book.module';
+import { AddonModDataModule } from './data/data.module';
 import { AddonModFolderModule } from './folder/folder.module';
 import { AddonModForumModule } from './forum/forum.module';
 import { AddonModLabelModule } from './label/label.module';
@@ -32,10 +33,10 @@ import { AddonModScormModule } from './scorm/scorm.module';
 import { AddonModChoiceModule } from './choice/choice.module';
 
 @NgModule({
-    declarations: [],
     imports: [
         AddonModAssignModule,
         AddonModBookModule,
+        AddonModDataModule,
         AddonModForumModule,
         AddonModLessonModule,
         AddonModPageModule,
@@ -51,7 +52,5 @@ import { AddonModChoiceModule } from './choice/choice.module';
         AddonModScormModule,
         AddonModChoiceModule,
     ],
-    providers: [],
-    exports: [],
 })
 export class AddonModModule { }

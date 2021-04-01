@@ -17,6 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
+import { CoreFormFields } from '@singletons/form';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton } from '@singletons';
 import { AddonUserProfileFieldDatetimeComponent } from '../../component/datetime';
@@ -52,7 +53,7 @@ export class AddonUserProfileFieldDatetimeHandlerService implements CoreUserProf
         field: AuthEmailSignupProfileField | CoreUserProfileField,
         signup: boolean,
         registerAuth: string,
-        formValues: Record<string, unknown>,
+        formValues: CoreFormFields,
     ): Promise<CoreUserProfileFieldHandlerData | undefined> {
         const name = 'profile_field_' + field.shortname;
 

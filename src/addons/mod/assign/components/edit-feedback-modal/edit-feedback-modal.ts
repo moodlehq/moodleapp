@@ -15,6 +15,7 @@
 import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreFormFields, CoreForms } from '@singletons/form';
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController, Translate } from '@singletons';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '../../services/assign';
@@ -47,7 +48,7 @@ export class AddonModAssignEditFeedbackModalComponent {
             await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
         }
 
-        CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
         ModalController.dismiss();
     }
@@ -61,7 +62,7 @@ export class AddonModAssignEditFeedbackModalComponent {
         e.preventDefault();
         e.stopPropagation();
 
-        CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
         // Close the modal, sending the input data.
         ModalController.dismiss(this.getInputData());
@@ -72,8 +73,8 @@ export class AddonModAssignEditFeedbackModalComponent {
      *
      * @return Object with the data.
      */
-    protected getInputData(): Record<string, unknown> {
-        return CoreDomUtils.getDataFromForm(document.forms['addon-mod_assign-edit-feedback-form']);
+    protected getInputData(): CoreFormFields {
+        return CoreForms.getDataFromForm(document.forms['addon-mod_assign-edit-feedback-form']);
     }
 
     /**

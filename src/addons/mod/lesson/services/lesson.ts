@@ -2165,7 +2165,7 @@ export class AddonModLessonProvider {
         const site = await CoreSites.getSite(options.siteId);
 
         const userId = options.userId || site.getUserId();
-        const params: ModLessonGetUserTimersWSParams = {
+        const params: AddonModLessonGetUserTimersWSParams = {
             lessonid: lessonId,
             userid: userId,
         };
@@ -2176,7 +2176,7 @@ export class AddonModLessonProvider {
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        const response = await site.read<ModLessonGetUserTimersWSResponse>('mod_lesson_get_user_timers', params, preSets);
+        const response = await site.read<AddonModLessonGetUserTimersWSResponse>('mod_lesson_get_user_timers', params, preSets);
 
         return response.timers;
     }
@@ -4027,7 +4027,7 @@ export type AddonModLessonAttemptsOverviewsAttemptWSData = {
 /**
  * Params of mod_lesson_get_user_timers WS.
  */
-export type ModLessonGetUserTimersWSParams = {
+export type AddonModLessonGetUserTimersWSParams = {
     lessonid: number; // Lesson instance id.
     userid?: number; // The user id (empty for current user).
 };
@@ -4035,7 +4035,7 @@ export type ModLessonGetUserTimersWSParams = {
 /**
  * Data returned by mod_lesson_get_user_timers WS.
  */
-export type ModLessonGetUserTimersWSResponse = {
+export type AddonModLessonGetUserTimersWSResponse = {
     timers: AddonModLessonUserTimerWSData[];
     warnings?: CoreWSExternalWarning[];
 };

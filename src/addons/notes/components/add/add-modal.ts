@@ -17,6 +17,7 @@ import { Component, ViewChild, ElementRef, Input } from '@angular/core';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
 
 /**
@@ -53,7 +54,7 @@ export class AddonNotesAddComponent {
             this.userId = this.userId || CoreSites.getCurrentSiteUserId();
             const sent = await AddonNotes.addNote(this.userId, this.courseId, this.type, this.text);
 
-            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
 
             ModalController.dismiss({ type: this.type, sent: true }).finally(() => {
                 CoreDomUtils.showToast(sent ? 'addon.notes.eventnotecreated' : 'core.datastoredoffline', true, 3000);
@@ -70,7 +71,7 @@ export class AddonNotesAddComponent {
      * Close modal.
      */
     closeModal(): void {
-        CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
         ModalController.dismiss({ type: this.type });
     }

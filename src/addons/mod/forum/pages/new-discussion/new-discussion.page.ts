@@ -39,6 +39,7 @@ import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreTextUtils } from '@services/utils/text';
 import { CanLeave } from '@guards/can-leave';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreForms } from '@singletons/form';
 
 type NewDiscussionData = {
     subject: string;
@@ -519,7 +520,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
                 CoreDomUtils.showErrorModalDefault(null, 'addon.mod_forum.errorposttoallgroups', true);
             }
 
-            CoreDomUtils.triggerFormSubmittedEvent(
+            CoreForms.triggerFormSubmittedEvent(
                 this.formElement,
                 !!discussionIds,
                 CoreSites.getCurrentSiteId(),
@@ -551,7 +552,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
 
             await Promise.all(promises);
 
-            CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
             this.returnToDiscussions();
         } catch (error) {
@@ -585,7 +586,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
         CoreFileUploader.clearTmpFiles(this.newDiscussion.files);
 
         if (this.formElement) {
-            CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
         }
 
         return true;

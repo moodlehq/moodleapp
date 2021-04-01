@@ -16,7 +16,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonInput } from '@ionic/angular';
 
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
 
 /**
@@ -40,7 +40,7 @@ export class AddonModLessonPasswordModalComponent {
         e.preventDefault();
         e.stopPropagation();
 
-        CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
         ModalController.dismiss(password.value);
     }
@@ -49,7 +49,7 @@ export class AddonModLessonPasswordModalComponent {
      * Close modal.
      */
     closeModal(): void {
-        CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
         ModalController.dismiss();
     }

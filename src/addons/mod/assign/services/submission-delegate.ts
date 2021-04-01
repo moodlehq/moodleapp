@@ -19,6 +19,7 @@ import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin, A
 import { makeSingleton } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonModAssignSubmissionsDBRecordFormatted } from './assign-offline';
+import { CoreFormFields } from '@singletons/form';
 
 /**
  * Interface that all submission handlers must implement.
@@ -70,7 +71,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
     ): void;
 
     /**
@@ -173,7 +174,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
     ): number | Promise<number>;
 
     /**
@@ -189,7 +190,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
     ): boolean | Promise<boolean>;
 
     /**
@@ -233,7 +234,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
         pluginData: AddonModAssignSavePluginData,
         offline?: boolean,
         userId?: number,
@@ -304,7 +305,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
     ): void {
         return this.executeFunctionOnEnabled(plugin.type, 'clearTmpData', [assign, submission, plugin, inputData]);
     }
@@ -424,7 +425,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
     ): Promise<number | undefined> {
         return await this.executeFunctionOnEnabled(
             plugin.type,
@@ -446,7 +447,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
     ): Promise<boolean | undefined> {
         return await this.executeFunctionOnEnabled(
             plugin.type,
@@ -521,7 +522,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-        inputData: Record<string, unknown>,
+        inputData: CoreFormFields,
         pluginData: AddonModAssignSavePluginData,
         offline?: boolean,
         userId?: number,

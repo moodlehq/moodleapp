@@ -32,6 +32,7 @@ import { CoreLoginSiteOnboardingComponent } from '@features/login/components/sit
 import { CoreNavigator } from '@services/navigator';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services/urlschemes';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
@@ -322,7 +323,7 @@ export class CoreLoginSitePage implements OnInit {
 
             await CoreSites.newSite(data.siteUrl, data.token, data.privateToken);
 
-            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, true);
+            CoreForms.triggerFormSubmittedEvent(this.formElement, true);
 
             await CoreNavigator.navigateToSiteHome();
 
@@ -349,7 +350,7 @@ export class CoreLoginSitePage implements OnInit {
     protected async login(response: CoreSiteCheckResponse, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
         await CoreUtils.ignoreErrors(CoreSites.checkApplication(response));
 
-        CoreDomUtils.triggerFormSubmittedEvent(this.formElement, true);
+        CoreForms.triggerFormSubmittedEvent(this.formElement, true);
 
         if (response.warning) {
             CoreDomUtils.showErrorModal(response.warning, true, 4000);

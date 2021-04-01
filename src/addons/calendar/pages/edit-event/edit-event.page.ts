@@ -43,6 +43,7 @@ import { AddonCalendarOfflineEventDBRecord } from '../../services/database/calen
 import { CoreError } from '@classes/errors/error';
 import { CoreNavigator } from '@services/navigator';
 import { CanLeave } from '@guards/can-leave';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -518,7 +519,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             const result = await AddonCalendar.submitEvent(this.eventId, data);
             event = result.event;
 
-            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, result.sent, this.currentSite.getId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement, result.sent, this.currentSite.getId());
 
             if (result.sent) {
                 // Event created or edited, invalidate right days & months.
@@ -588,7 +589,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             try {
                 await AddonCalendarOffline.deleteEvent(this.eventId!);
 
-                CoreDomUtils.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
+                CoreForms.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
 
                 this.returnToList();
             } catch {
@@ -611,7 +612,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
         }
 
-        CoreDomUtils.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
+        CoreForms.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
 
         return true;
     }

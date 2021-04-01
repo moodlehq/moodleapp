@@ -857,6 +857,49 @@ export class SQLiteDB {
     }
 
     /**
+     * Helper migration function for tables.
+     * It will check if old table exists and drop it when finished.
+     *
+     * @param oldTable Old table name.
+     * @param newTable New table name.
+     * @param mapCallback Mapping callback to migrate each record.
+     * @return Resolved when done.
+     */
+    async migrateTable(
+        oldTable: string,
+        newTable: string,
+        mapCallback?: (record: SQLiteDBRecordValues) => SQLiteDBRecordValues,
+    ): Promise<void> {
+        try {
+            await this.tableExists(oldTable);
+        } catch (error) {
+            // Old table does not exist, ignore.
+            return;
+        }
+
+        // Move the records from the old table.
+        if (mapCallback) {
+            const records = await this.getAllRecords<SQLiteDBRecordValues>(oldTable);
+            const promises = records.map((record) => {
+                record = mapCallback(record);
+
+                return this.insertRecord(newTable, record);
+            });
+
+            await Promise.all(promises);
+        } else {
+            // No changes needed.
+            await this.insertRecordsFrom(newTable, oldTable);
+        }
+
+        try {
+            await this.dropTable(oldTable);
+        } catch (error) {
+            // Error deleting old table, ignore.
+        }
+    }
+
+    /**
      * Ensures that limit params are numeric and positive integers, to be passed to the database.
      * We explicitly treat null, '' and -1 as 0 in order to provide compatibility with how limit
      * values have been passed historically.

@@ -17,6 +17,7 @@ import { CoreComments } from '@features/comments/services/comments';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
 
 /**
@@ -62,7 +63,7 @@ export class CoreCommentsAddComponent {
                 this.area,
             );
 
-            CoreDomUtils.triggerFormSubmittedEvent(
+            CoreForms.triggerFormSubmittedEvent(
                 this.formElement,
                 !!commentsResponse,
                 CoreSites.getCurrentSiteId(),
@@ -87,7 +88,7 @@ export class CoreCommentsAddComponent {
      * Close modal.
      */
     closeModal(): void {
-        CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
         ModalController.dismiss();
     }
 

@@ -1036,8 +1036,10 @@ export class CoreSitesProvider {
      * @param siteId The site ID. If not defined, current site (if available).
      * @return Promise resolved with the database.
      */
-    getSiteDb(siteId?: string): Promise<SQLiteDB> {
-        return this.getSite(siteId).then((site) => site.getDb());
+    async getSiteDb(siteId?: string): Promise<SQLiteDB> {
+        const site = await this.getSite(siteId);
+
+        return site.getDb();
     }
 
     /**

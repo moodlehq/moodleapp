@@ -92,7 +92,7 @@ export type CoreRatingDBPrimaryData = {
  */
 export type CoreRatingDBRecord = CoreRatingDBPrimaryData & {
     itemsetid: number;
-    courseid?: number;
+    courseid: number;
     scaleid: number;
     rating: number;
     rateduserid: number;

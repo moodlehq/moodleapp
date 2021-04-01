@@ -32,6 +32,7 @@ import {
     CoreLoginHelper,
 } from '@features/login/services/login-helper';
 import { CoreNavigator } from '@services/navigator';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Page to signup using email.
@@ -333,7 +334,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
             if (result.success) {
 
-                CoreDomUtils.triggerFormSubmittedEvent(this.signupFormElement, true);
+                CoreForms.triggerFormSubmittedEvent(this.signupFormElement, true);
 
                 // Show alert and ho back.
                 const message = Translate.instant('core.login.emailconfirmsent', { $a: params.email });
@@ -407,7 +408,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         try {
             const result = await CoreWS.callAjax<IsMinorWSResult>('core_auth_is_minor', params, { siteUrl: this.siteUrl });
 
-            CoreDomUtils.triggerFormSubmittedEvent(this.ageFormElement, true);
+            CoreForms.triggerFormSubmittedEvent(this.ageFormElement, true);
 
             if (!result.status) {
                 if (this.countryControl.value) {

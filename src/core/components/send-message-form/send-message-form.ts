@@ -19,8 +19,8 @@ import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreConstants } from '@/core/constants';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Component to display a "send message form".
@@ -90,7 +90,7 @@ export class CoreSendMessageFormComponent implements OnInit {
 
         this.message = ''; // Reset the form.
 
-        CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
         value = CoreTextUtils.replaceNewLines(value, '<br>');
         this.onSubmit.emit(value);

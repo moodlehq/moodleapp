@@ -24,6 +24,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Component to handle a local file. Only files inside the app folder can be managed.
@@ -149,7 +150,7 @@ export class CoreLocalFileComponent implements OnInit {
         if (newName == this.file!.name) {
             // Name hasn't changed, stop.
             this.editMode = false;
-            CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
             return;
         }
@@ -169,7 +170,7 @@ export class CoreLocalFileComponent implements OnInit {
                 // File doesn't exist, move it.
                 const fileEntry = await CoreFile.moveFile(this.relativePath!, newPath);
 
-                CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
+                CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
                 this.editMode = false;
                 this.file = fileEntry;

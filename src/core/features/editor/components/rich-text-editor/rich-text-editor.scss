@@ -4,6 +4,7 @@
     --toobar-background: var(--white);
     --button-color: var(--ion-text-color);
     --button-active-color: var(--gray);
+    --background: var(--ion-item-background);
 }
 
 :host-context(body.dark) {
@@ -39,7 +40,7 @@
             border-top: 1px solid var(--ion-color-secondary);
             background: var(--background);
             flex-shrink: 1;
-            font-size: 1.4rem;
+            font-size: 1.1rem;
 
             .icon {
                 color: var(--ion-color-secondary);

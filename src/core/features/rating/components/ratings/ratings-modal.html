@@ -22,6 +22,7 @@
                 </ion-note>
             </ion-item>
         </ion-list>
-        <core-empty-box *ngIf="ratings.length == 0" icon="fas-star-half-alt" [message]="'core.rating.noratings' | translate"></core-empty-box>
+        <core-empty-box *ngIf="ratings.length == 0" icon="fas-star-half-alt" [message]="'core.rating.noratings' | translate">
+        </core-empty-box>
     </core-loading>
 </ion-content>

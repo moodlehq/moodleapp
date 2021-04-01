@@ -15,7 +15,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreForms } from '@singletons/form';
 
 /**
  * Modal that displays a form to enter a password to self enrol in a course.
@@ -40,7 +40,7 @@ export class CoreCoursesSelfEnrolPasswordComponent {
      * Close help modal.
      */
     close(): void {
-        CoreDomUtils.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
         this.modalCtrl.dismiss();
     }
@@ -55,7 +55,7 @@ export class CoreCoursesSelfEnrolPasswordComponent {
         e.preventDefault();
         e.stopPropagation();
 
-        CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
         this.modalCtrl.dismiss(this.password);
     }

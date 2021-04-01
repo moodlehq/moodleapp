@@ -18,6 +18,7 @@ import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreForms } from '@singletons/form';
 import { ModalController, Translate } from '@singletons';
 import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-delegate';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '../../services/quiz';
@@ -126,7 +127,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
                 CoreDomUtils.showErrorModal('core.errorinvalidform', true);
             }
         } else {
-            CoreDomUtils.triggerFormSubmittedEvent(this.formElement, false, this.siteId);
+            CoreForms.triggerFormSubmittedEvent(this.formElement, false, this.siteId);
 
             ModalController.dismiss(this.preflightForm.value);
         }
@@ -136,7 +137,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
      * Close modal.
      */
     closeModal(): void {
-        CoreDomUtils.triggerFormCancelledEvent(this.formElement, this.siteId);
+        CoreForms.triggerFormCancelledEvent(this.formElement, this.siteId);
 
         ModalController.dismiss();
     }
