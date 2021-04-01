@@ -21,7 +21,6 @@ import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
 import { CoreApp } from '@services/app';
 import { CoreFileEntry } from '@services/file-helper';
-import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUrlUtils } from '@services/utils/url';
@@ -870,7 +869,6 @@ export class AddonModForumProvider {
 
     /**
      * Invalidate the prefetched content except files.
-     * To invalidate files, use AddonModForum#invalidateFiles.
      *
      * @param moduleId The module ID.
      * @param courseId Course ID.
@@ -961,18 +959,6 @@ export class AddonModForumProvider {
             this.getAvailableSortOrders()
                 .map(sortOrder => site.invalidateWsCacheForKey(this.getDiscussionsListCacheKey(forumId, sortOrder.value))),
         );
-    }
-
-    /**
-     * Invalidate the prefetched files.
-     *
-     * @param moduleId The module ID.
-     * @return Promise resolved when the files are invalidated.
-     */
-    async invalidateFiles(moduleId: number): Promise<void> {
-        const siteId = CoreSites.getCurrentSiteId();
-
-        await CoreFilepool.invalidateFilesByComponent(siteId, AddonModForumProvider.COMPONENT, moduleId);
     }
 
     /**

@@ -21,7 +21,6 @@ import { makeSingleton } from '@singletons';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreGrades } from '@features/grades/services/grades';
-import { CoreFilepool } from '@services/filepool';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
@@ -759,7 +758,6 @@ export class AddonModAssignProvider {
 
     /**
      * Invalidate the prefetched content except files.
-     * To invalidate files, use AddonModAssignProvider.invalidateFiles.
      *
      * @param moduleId The module ID.
      * @param courseId Course ID.
@@ -781,20 +779,6 @@ export class AddonModAssignProvider {
         promises.push(CoreGrades.invalidateAllCourseGradesData(courseId));
 
         await Promise.all(promises);
-    }
-
-    /**
-     * Invalidate the prefetched files.
-     *
-     * @param moduleId The module ID.
-     * @return Promise resolved when the files are invalidated.
-     */
-    async invalidateFiles(moduleId: number): Promise<void> {
-        await CoreFilepool.invalidateFilesByComponent(
-            CoreSites.getCurrentSiteId(),
-            AddonModAssignProvider.COMPONENT,
-            moduleId,
-        );
     }
 
     /**
