@@ -1,9 +1,9 @@
 {
     "app_id": "com.gyanmatrix.elpmobile",
-    "appname": "ELP Mobile",
-    "desktopappname": "ELP Desktop",
-    "versioncode": 3940,
-    "versionname": "3.9.4",
+    "appname": "E-Learning",
+    "desktopappname": "E-Learning",
+    "versioncode": 3942,
+    "versionname": "4.0.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
