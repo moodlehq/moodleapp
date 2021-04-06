@@ -428,14 +428,14 @@ export type CoreTagIndex = {
  * Structure of a tag item returned by WS.
  */
 export type CoreTagItem = {
-    id: number;
-    name: string;
-    rawname: string;
-    isstandard: boolean;
-    tagcollid: number;
-    taginstanceid: number;
-    taginstancecontextid: number;
-    itemid: number;
-    ordering: number;
-    flag: number;
+    id: number; // Tag id.
+    name: string; // Tag name.
+    rawname: string; // The raw, unnormalised name for the tag as entered by users.
+    isstandard: boolean; // Whether this tag is standard.
+    tagcollid: number; // Tag collection id.
+    taginstanceid: number; // Tag instance id.
+    taginstancecontextid: number; // Context the tag instance belongs to.
+    itemid: number; // Id of the record tagged.
+    ordering: number; // Tag ordering.
+    flag: number; // Whether the tag is flagged as inappropriate.
 };

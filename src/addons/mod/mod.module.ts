@@ -31,6 +31,7 @@ import { AddonModH5PActivityModule } from './h5pactivity/h5pactivity.module';
 import { AddonModSurveyModule } from './survey/survey.module';
 import { AddonModScormModule } from './scorm/scorm.module';
 import { AddonModChoiceModule } from './choice/choice.module';
+import { AddonModWikiModule } from './wiki/wiki.module';
 
 @NgModule({
     imports: [
@@ -51,6 +52,7 @@ import { AddonModChoiceModule } from './choice/choice.module';
         AddonModSurveyModule,
         AddonModScormModule,
         AddonModChoiceModule,
+        AddonModWikiModule,
     ],
 })
 export class AddonModModule { }

@@ -18,6 +18,7 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFileEntry } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingInfo } from '@features/rating/services/rating';
+import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
 import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
@@ -1513,18 +1514,7 @@ export type AddonModForumLegacyPost = {
     userpictureurl?: string; // Post author picture.
     deleted: boolean; // This post has been removed.
     isprivatereply: boolean; // The post is a private reply.
-    tags?: { // Tags.
-        id: number; // Tag id.
-        name: string; // Tag name.
-        rawname: string; // The raw, unnormalised name for the tag as entered by users.
-        isstandard: boolean; // Whether this tag is standard.
-        tagcollid: number; // Tag collection id.
-        taginstanceid: number; // Tag instance id.
-        taginstancecontextid: number; // Context the tag instance belongs to.
-        itemid: number; // Id of the record tagged.
-        ordering: number; // Tag ordering.
-        flag: number; // Whether the tag is flagged as inappropriate.
-    }[];
+    tags?: CoreTagItem[]; // Tags.
 };
 
 /**

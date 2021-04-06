@@ -1,0 +1,22 @@
+{
+    "cannoteditpage": "You can not edit this page.",
+    "createpage": "Create page",
+    "editingpage": "Editing this page '{{$a}}'",
+    "errorloadingpage": "An error occurred while loading the page.",
+    "errornowikiavailable": "This wiki does not have any content yet.",
+    "gowikihome": "Go to the wiki first page",
+    "map": "Map",
+    "modulenameplural": "Wikis",
+    "newpagehdr": "New page",
+    "newpagetitle": "New page title",
+    "nocontent": "There is no content for this page",
+    "notingroup": "Not in group",
+    "pageexists": "This page already exists.",
+    "pagename": "Page name",
+    "subwiki": "Sub-wiki",
+    "tagarea_wiki_pages": "Wiki pages",
+    "titleshouldnotbeempty": "The title should not be empty",
+    "viewpage": "View page",
+    "wikipage": "Wiki page",
+    "wrongversionlock": "Another user has edited this page while you were editing and your content is obsolete."
+}

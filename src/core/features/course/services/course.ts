@@ -42,6 +42,7 @@ import { CoreCronDelegate } from '@services/cron';
 import { CoreCourseLogCronHandler } from './handlers/log-cron';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreCourseAutoSyncData, CoreCourseSyncProvider } from './sync';
+import { CoreTagItem } from '@features/tag/services/tag';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -1473,18 +1474,7 @@ export type CoreCourseModuleContentFile = {
     userid: number; // User who added this content to moodle.
     author: string; // Content owner.
     license: string; // Content license.
-    tags?: { // Tags.
-        id: number; // Tag id.
-        name: string; // Tag name.
-        rawname: string; // The raw, unnormalised name for the tag as entered by users.
-        isstandard: boolean; // Whether this tag is standard.
-        tagcollid: number; // Tag collection id.
-        taginstanceid: number; // Tag instance id.
-        taginstancecontextid: number; // Context the tag instance belongs to.
-        itemid: number; // Id of the record tagged.
-        ordering: number; // Tag ordering.
-        flag: number; // Whether the tag is flagged as inappropriate.
-    }[];
+    tags?: CoreTagItem[]; // Tags.
 };
 
 /**
