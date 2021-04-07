@@ -101,6 +101,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     protected ignoreManualSyncEvent = false; // Whether manual sync event should be ignored.
     protected currentUserId?: number; // Current user ID.
     protected hasEdited = false; // Whether the user has opened the edit page.
+    protected currentPath!: string;
 
     constructor(
         protected content?: IonContent,
@@ -120,6 +121,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         this.currentUserId = CoreSites.getCurrentSiteUserId();
         this.isMainPage = !this.pageId && !this.pageTitle;
         this.currentPage = this.pageId;
+        this.currentPath = CoreNavigator.getCurrentPath();
         this.listenEvents();
 
         try {
@@ -212,6 +214,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             this.wiki = await AddonModWiki.getWiki(this.courseId, this.module.id);
 
             this.dataRetrieved.emit(this.wiki);
+            AddonModWiki.wikiPageOpened(this.wiki.id, this.currentPath);
 
             if (sync) {
                 // Try to synchronize the wiki.
@@ -421,40 +424,16 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Get the wiki home view. If cannot determine or it's current view, return undefined.
+     * Get path to the wiki home view. If cannot determine or it's current view, return undefined.
      *
-     * @return The view controller of the home view
+     * @return The path of the home view
      */
-    protected getWikiHomeView(): unknown {
-        if (!this.wiki?.id) {
+    protected getWikiHomeView(): string | undefined {
+        if (!this.wiki) {
             return;
         }
 
-        // @todo
-        // const views = this.navCtrl.getViews();
-
-        // // Go back in history until we find a page that doesn't belong to current wiki.
-        // for (let i = views.length - 2; i >= 0; i--) {
-        //     const view = views[i];
-
-        //     if (view.component.name != 'AddonModWikiIndexPage') {
-        //         if (i == views.length - 2) {
-        //             // Next view is current view, return undefined.
-        //             return;
-        //         }
-
-        //         // This view is no longer from wiki, return the next view.
-        //         return views[i + 1];
-        //     }
-
-        //     // Check that the view belongs to the same wiki as current view.
-        //     const wikiId = view.data.wikiId ? view.data.wikiId : view.data.module.instance;
-
-        //     if (!wikiId || wikiId != this.wiki.id) {
-        //         // Wiki has changed, return the next view.
-        //         return views[i + 1];
-        //     }
-        // }
+        return AddonModWiki.getFirstWikiPageOpened(this.wiki.id, this.currentPath);
     }
 
     /**
@@ -591,7 +570,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             componentProps: {
                 pages: this.subwikiPages,
                 selected: this.currentPageObj && 'id' in this.currentPageObj && this.currentPageObj.id,
-                // homeView: @todo this.getWikiHomeView(),
+                homeView: this.getWikiHomeView(),
                 moduleId: this.module.id,
                 courseId: this.courseId,
             },
@@ -609,7 +588,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         if (result.data) {
             if (result.data.type == 'home') {
                 // Go back to the initial page of the wiki.
-                // @todo this.navCtrl.popTo(page.goto);
+                CoreNavigator.navigateToSitePath(result.data.goto);
             } else {
                 this.goToPage(result.data.goto);
             }
@@ -840,6 +819,9 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
         this.manualSyncObserver?.off();
         this.newPageObserver?.off();
+        if (this.wiki) {
+            AddonModWiki.wikiPageClosed(this.wiki.id, this.currentPath);
+        }
     }
 
     /**

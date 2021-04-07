@@ -19,6 +19,7 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreApp } from '@services/app';
+import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
@@ -41,6 +42,7 @@ export class AddonModWikiProvider {
     static readonly RENEW_LOCK_TIME = 30000; // Milliseconds.
 
     protected subwikiListsCache: {[wikiId: number]: AddonModWikiSubwikiListData} = {};
+    protected wikiFirstViewedPage: Record<string, Record<number, string>> = {};
 
     constructor() {
         // Clear subwiki lists cache on logout.
@@ -85,6 +87,23 @@ export class AddonModWikiProvider {
         const response = await site.write<AddonModWikiEditPageWSResponse>('mod_wiki_edit_page', params);
 
         return response.pageid;
+    }
+
+    /**
+     * Get the first page opened for a wiki in the app if it isn't the current one.
+     *
+     * @param wikiId Wiki ID.
+     * @param path Path.
+     */
+    getFirstWikiPageOpened(wikiId: number, path: string): string | undefined {
+        const tab = CoreNavigator.getMainMenuTabFromPath(path);
+        if (!tab) {
+            return;
+        }
+
+        if (this.wikiFirstViewedPage[tab] && this.wikiFirstViewedPage[tab][wikiId] !== path) {
+            return this.wikiFirstViewedPage[tab][wikiId];
+        }
     }
 
     /**
@@ -804,6 +823,47 @@ export class AddonModWikiProvider {
             // Not found, return false.
             return false;
         }
+    }
+
+    /**
+     * If this page is the first opened page for a wiki, remove the stored path so it's no longer the first viewed page.
+     *
+     * @param wikiId Wiki ID.
+     * @param path Path.
+     */
+    wikiPageClosed(wikiId: number, path: string): void {
+        const tab = CoreNavigator.getMainMenuTabFromPath(path);
+        if (!tab) {
+            return;
+        }
+
+        this.wikiFirstViewedPage[tab] = this.wikiFirstViewedPage[tab] || {};
+
+        if (this.wikiFirstViewedPage[tab][wikiId] === path) {
+            delete this.wikiFirstViewedPage[tab][wikiId];
+        }
+    }
+
+    /**
+     * If this page is the first opened page for a wiki, save its path so we can go back to it.
+     *
+     * @param wikiId Wiki ID.
+     * @param path Path.
+     */
+    wikiPageOpened(wikiId: number, path: string): void {
+        const tab = CoreNavigator.getMainMenuTabFromPath(path);
+        if (!tab) {
+            return;
+        }
+
+        this.wikiFirstViewedPage[tab] = this.wikiFirstViewedPage[tab] || {};
+
+        if (this.wikiFirstViewedPage[tab][wikiId]) {
+            // There's already an opened page for this wiki.
+            return;
+        }
+
+        this.wikiFirstViewedPage[tab][wikiId] = path;
     }
 
 }

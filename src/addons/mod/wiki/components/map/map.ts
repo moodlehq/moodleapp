@@ -30,7 +30,7 @@ export class AddonModWikiMapModalComponent implements OnInit {
     @Input() selected?: number;
     @Input() moduleId?: number;
     @Input() courseId?: number;
-    @Input() homeView: unknown; // @todo
+    @Input() homeView?: string;
 
     map: AddonModWikiPagesMapLetter[] = []; // Map of pages, categorized by letter.
 
@@ -54,7 +54,7 @@ export class AddonModWikiMapModalComponent implements OnInit {
      * Go back to the initial page of the wiki.
      */
     goToWikiHome(): void {
-        // @todo ModalController.dismiss({ type: 'home', goto: this.homeView });
+        ModalController.dismiss({ type: 'home', goto: this.homeView });
     }
 
     /**
