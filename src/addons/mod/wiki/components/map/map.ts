@@ -27,7 +27,7 @@ import { AddonModWikiSubwikiPage } from '../../services/wiki';
 export class AddonModWikiMapModalComponent implements OnInit {
 
     @Input() pages: (AddonModWikiSubwikiPage | AddonModWikiPageDBRecord)[] = [];
-    @Input() selected?: number;
+    @Input() selectedTitle?: string;
     @Input() moduleId?: number;
     @Input() courseId?: number;
     @Input() homeView?: string;

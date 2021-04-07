@@ -17,11 +17,19 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModWikiComponentsModule } from './components/components.module';
 import { AddonModWikiIndexPage } from './pages/index/index';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CanLeaveGuard } from '@guards/can-leave';
+import { AddonModWikiEditPage } from './pages/edit/edit';
 
 const routes: Routes = [
     {
-        path: ':courseId/:cmId/:hash',
+        path: ':courseId/:cmId/page/:hash',
         component: AddonModWikiIndexPage,
+    },
+    {
+        path: ':courseId/:cmId/edit',
+        component: AddonModWikiEditPage,
+        canDeactivate: [CanLeaveGuard],
     },
 ];
 
@@ -30,9 +38,11 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonModWikiComponentsModule,
+        CoreEditorComponentsModule,
     ],
     declarations: [
         AddonModWikiIndexPage,
+        AddonModWikiEditPage,
     ],
 })
 export class AddonModWikiLazyModule {}

@@ -15,7 +15,12 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
+import { CoreCourse } from '@features/course/services/course';
+import { CoreNavigator } from '@services/navigator';
+import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
+import { AddonModWiki } from '../wiki';
+import { AddonModWikiModuleHandlerService } from './module';
 
 /**
  * Handler to treat links to edit a wiki page.
@@ -36,23 +41,40 @@ export class AddonModWikiEditLinkHandlerService extends CoreContentLinksHandlerB
         params: Record<string, string>,
         courseId?: number,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
-        courseId = Number(courseId || params.courseid || params.cid);
 
         return [{
-            action: (siteId: string) => {
+            action: async (siteId: string) => {
+                const modal = await CoreDomUtils.showModalLoading();
 
-                let section = '';
-                if (typeof params.section != 'undefined') {
-                    section = params.section.replace(/\+/g, ' ');
+                try {
+                    const pageId = Number(params.pageid);
+
+                    const pageContents = await AddonModWiki.getPageContents(pageId, { siteId });
+
+                    const module = await CoreCourse.getModuleBasicInfoByInstance(pageContents.wikiid, 'wiki', siteId);
+
+                    let section = '';
+                    if (typeof params.section != 'undefined') {
+                        section = params.section.replace(/\+/g, ' ');
+                    }
+
+                    courseId = module.course || courseId || Number(params.courseid || params.cid);
+
+                    CoreNavigator.navigateToSitePath(
+                        AddonModWikiModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/edit`,
+                        {
+                            params: {
+                                section: section,
+                                pageId: pageId,
+                            },
+                            siteId,
+                        },
+                    );
+                } catch (error) {
+                    CoreDomUtils.showErrorModalDefault(error, 'addon.mod_wiki.errorloadingpage', true);
+                } finally {
+                    modal.dismiss();
                 }
-
-                const pageParams = {
-                    courseId: courseId,
-                    section: section,
-                    pageId: parseInt(params.pageid, 10),
-                };
-
-                // @todo this.linkHelper.goInSite(navCtrl, 'AddonModWikiEditPage', pageParams, siteId);
             },
         }];
     }

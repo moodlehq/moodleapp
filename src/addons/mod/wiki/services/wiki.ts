@@ -43,6 +43,7 @@ export class AddonModWikiProvider {
 
     protected subwikiListsCache: {[wikiId: number]: AddonModWikiSubwikiListData} = {};
     protected wikiFirstViewedPage: Record<string, Record<number, string>> = {};
+    protected editedPage?: AddonModWikiEditedPageData;
 
     constructor() {
         // Clear subwiki lists cache on logout.
@@ -62,6 +63,18 @@ export class AddonModWikiProvider {
         } else {
             delete this.subwikiListsCache[wikiId];
         }
+    }
+
+    /**
+     * Delete and return the edited page data if any.
+     *
+     * @return Edited page data, undefined if no data.
+     */
+    consumeEditedPageData(): AddonModWikiEditedPageData | undefined {
+        const editedPage = this.editedPage;
+        delete this.editedPage;
+
+        return editedPage;
     }
 
     /**
@@ -755,6 +768,15 @@ export class AddonModWikiProvider {
     }
 
     /**
+     * Set edited page data.
+     *
+     * @param data Data.
+     */
+    setEditedPageData(data: AddonModWikiEditedPageData): void {
+        this.editedPage = data;
+    }
+
+    /**
      * Save subwiki list for a wiki to the cache.
      *
      * @param wikiId Wiki Id.
@@ -1188,4 +1210,18 @@ export type AddonModWikiPageCreatedData = {
     pageId: number;
     subwikiId: number;
     pageTitle: string;
+};
+
+/**
+ * Data about a page that was just edited.
+ */
+export type AddonModWikiEditedPageData = {
+    cmId: number;
+    courseId: number;
+    wikiId: number;
+    pageTitle: string;
+    subwikiId?: number;
+    userId?: number;
+    groupId?: number;
+    pageId?: number;
 };

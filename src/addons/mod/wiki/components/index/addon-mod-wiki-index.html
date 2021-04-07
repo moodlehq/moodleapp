@@ -1,13 +1,15 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <!-- Select subwiki. -->
-    <ion-button slot="icon-only //TODO: mode to icon" *ngIf="subwikiData.count > 1" (click)="showSubwikiPicker($event)" [attr.aria-label]="'addon.mod_wiki.subwiki' | translate">
-        <ion-icon *ngIf="!groupWiki" name="person"></ion-icon>
-        <ion-icon *ngIf="groupWiki" name="people"></ion-icon>
+    <ion-button *ngIf="subwikiData.count > 1" (click)="showSubwikiPicker($event)"
+        [attr.aria-label]="'addon.mod_wiki.subwiki' | translate">
+        <ion-icon *ngIf="!groupWiki" name="fas-user"></ion-icon>
+        <ion-icon *ngIf="groupWiki" name="fas-users"></ion-icon>
     </ion-button>
 
-    <ion-button *ngIf="loaded && currentPageObj" slot="icon-only //TODO: mode to icon" (click)="openMap($event)"[attr.aria-label]="'addon.mod_wiki.map' | translate" aria-haspopup="true">
-        <ion-icon name="map"></ion-icon>
+    <ion-button *ngIf="loaded && currentPageObj" (click)="openMap()" [attr.aria-label]="'addon.mod_wiki.map' | translate"
+        aria-haspopup="true">
+        <ion-icon name="fas-map"></ion-icon>
     </ion-button>
 
     <core-context-menu>
@@ -46,7 +48,7 @@
 <!-- Content. -->
 <ion-content>
     <core-loading [hideUntil]="loaded" class="core-loading-center">
-        <div class="ion-padding" *ngIf="description || pageIsOffline || hasOffline || pageWarning">
+        <div *ngIf="description || pageIsOffline || hasOffline || pageWarning">
             <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
                 contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
             </core-course-module-description>
@@ -80,9 +82,9 @@
                 </core-empty-box>
             </article>
 
-            <div class="ion-margin-top" *ngIf="tagsEnabled && currentPageObj && currentPageObj.tags && currentPageObj.tags.length > 0">
+            <div class="ion-margin-top" *ngIf="tagsEnabled && tags.length > 0">
                 <b>{{ 'core.tag.tags' | translate }}:</b>
-                <core-tag-list [tags]="currentPageObj.tags"></core-tag-list>
+                <core-tag-list [tags]="tags"></core-tag-list>
             </div>
         </div>
     </core-loading>

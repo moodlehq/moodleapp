@@ -67,7 +67,7 @@ export class AddonModWikiPageOrMapLinkHandlerService extends CoreContentLinksHan
                     courseId = courseId || module.course;
 
                     CoreNavigator.navigateToSitePath(
-                        AddonModWikiModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/${hash}`,
+                        AddonModWikiModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/page/${hash}`,
                         {
                             params: {
                                 pageId: page.id,

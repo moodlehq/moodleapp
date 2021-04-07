@@ -13,11 +13,12 @@
 // limitations under the License.
 
 import { Component, Optional, Input, OnInit, OnDestroy } from '@angular/core';
+import { Params } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreTag } from '@features/tag/services/tag';
+import { CoreTag, CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
 import { IonContent } from '@ionic/angular';
 import { CoreGroup, CoreGroups } from '@services/groups';
@@ -84,6 +85,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     pageContent?: string; // Page content to display.
     tagsEnabled = false;
     currentPageObj?: AddonModWikiPageContents | AddonModWikiPageDBRecord; // Object of the current loaded page.
+    tags: CoreTagItem[] = [];
     subwikiData: AddonModWikiSubwikiListData = { // Data for the subwiki selector.
         subwikiSelected: 0,
         userSelected: 0,
@@ -100,7 +102,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     protected manualSyncObserver?: CoreEventObserver; // An observer to watch for manual sync events.
     protected ignoreManualSyncEvent = false; // Whether manual sync event should be ignored.
     protected currentUserId?: number; // Current user ID.
-    protected hasEdited = false; // Whether the user has opened the edit page.
     protected currentPath!: string;
 
     constructor(
@@ -213,7 +214,10 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             // Get the wiki instance.
             this.wiki = await AddonModWiki.getWiki(this.courseId, this.module.id);
 
-            this.dataRetrieved.emit(this.wiki);
+            if (this.pageContent === undefined) {
+                // Page not loaded yet, emit the data to update the page title.
+                this.dataRetrieved.emit(this.wiki);
+            }
             AddonModWiki.wikiPageOpened(this.wiki.id, this.currentPath);
 
             if (sync) {
@@ -293,19 +297,15 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         // No page ID but we received a title. This means we're trying to load an offline page.
-        if (!this.currentSubwiki) {
-            return;
-        }
-
         try {
             const title = this.pageTitle || this.wiki!.firstpagetitle!;
 
             const offlinePage = await AddonModWikiOffline.getNewPage(
                 title,
-                this.currentSubwiki.id,
-                this.currentSubwiki.wikiid,
-                this.currentSubwiki.userid,
-                this.currentSubwiki.groupid,
+                this.currentSubwiki!.id,
+                this.currentSubwiki!.wikiid,
+                this.currentSubwiki!.userid,
+                this.currentSubwiki!.groupid,
             );
 
             this.pageIsOffline = true;
@@ -354,6 +354,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             const firstPage = subwikiPages.find((page) => page.firstpage );
             if (firstPage) {
                 this.currentPage = firstPage.id;
+                this.pageTitle = firstPage.title;
             }
         }
 
@@ -417,9 +418,11 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             this.dataRetrieved.emit(pageContents.title);
             this.setSelectedWiki(pageContents.subwikiid, pageContents.userid, pageContents.groupid);
 
+            this.pageTitle = pageContents.title;
             this.pageContent = this.replaceEditLinks(pageContents.cachedcontent);
             this.canEdit = !!pageContents.caneditpage;
             this.currentPageObj = pageContents;
+            this.tags = ('tags' in pageContents && pageContents.tags) || [];
         }
     }
 
@@ -440,15 +443,14 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * Open the view to create the first page of the wiki.
      */
     protected goToCreateFirstPage(): void {
-        // @todo
-        // CoreNavigator.push('AddonModWikiEditPage', {
-        //     module: this.module,
-        //     courseId: this.courseId,
-        //     pageTitle: this.wiki.firstpagetitle,
-        //     wikiId: this.currentSubwiki.wikiid,
-        //     userId: this.currentSubwiki.userid,
-        //     groupId: this.currentSubwiki.groupid
-        // });
+        CoreNavigator.navigate('../../edit', {
+            params: {
+                pageTitle: this.wiki!.firstpagetitle,
+                wikiId: this.currentSubwiki?.wikiid,
+                userId: this.currentSubwiki?.userid,
+                groupId: this.currentSubwiki?.groupid,
+            },
+        });
     }
 
     /**
@@ -459,28 +461,28 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             return;
         }
 
-        // @todo
-        // if (this.currentPageObj) {
-        //     // Current page exists, go to edit it.
-        //     const pageParams: any = {
-        //         module: this.module,
-        //         courseId: this.courseId,
-        //         pageId: this.currentPageObj.id,
-        //         pageTitle: this.currentPageObj.title,
-        //         subwikiId: this.currentPageObj.subwikiid
-        //     };
+        if (this.currentPageObj) {
+            // Current page exists, go to edit it.
+            const pageParams: Params = {
+                pageTitle: this.currentPageObj.title,
+                subwikiId: this.currentPageObj.subwikiid,
+            };
 
-        //     if (this.currentSubwiki) {
-        //         pageParams.wikiId = this.currentSubwiki.wikiid;
-        //         pageParams.userId = this.currentSubwiki.userid;
-        //         pageParams.groupId = this.currentSubwiki.groupid;
-        //     }
+            if ('id' in this.currentPageObj) {
+                pageParams.pageId = this.currentPageObj.id;
+            }
 
-        //     this.navCtrl.push('AddonModWikiEditPage', pageParams);
-        // } else if (this.currentSubwiki) {
-        //     // No page loaded, the wiki doesn't have first page.
-        //     this.goToCreateFirstPage();
-        // }
+            if (this.currentSubwiki) {
+                pageParams.wikiId = this.currentSubwiki.wikiid;
+                pageParams.userId = this.currentSubwiki.userid;
+                pageParams.groupId = this.currentSubwiki.groupid;
+            }
+
+            CoreNavigator.navigate('../../edit', { params: pageParams });
+        } else if (this.currentSubwiki) {
+            // No page loaded, the wiki doesn't have first page.
+            this.goToCreateFirstPage();
+        }
     }
 
     /**
@@ -491,26 +493,23 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             return;
         }
 
-        // @todo
-        // if (this.currentPageObj) {
-        //     // Current page exists, go to edit it.
-        //     const pageParams: any = {
-        //         module: this.module,
-        //         courseId: this.courseId,
-        //         subwikiId: this.currentPageObj.subwikiid
-        //     };
+        if (this.currentPageObj) {
+            // Current page exists, go to edit it.
+            const pageParams: Params = {
+                subwikiId: this.currentPageObj.subwikiid,
+            };
 
-        //     if (this.currentSubwiki) {
-        //         pageParams.wikiId = this.currentSubwiki.wikiid;
-        //         pageParams.userId = this.currentSubwiki.userid;
-        //         pageParams.groupId = this.currentSubwiki.groupid;
-        //     }
+            if (this.currentSubwiki) {
+                pageParams.wikiId = this.currentSubwiki.wikiid;
+                pageParams.userId = this.currentSubwiki.userid;
+                pageParams.groupId = this.currentSubwiki.groupid;
+            }
 
-        //     this.navCtrl.push('AddonModWikiEditPage', pageParams);
-        // } else if (this.currentSubwiki) {
-        //     // No page loaded, the wiki doesn't have first page.
-        //     this.goToCreateFirstPage();
-        // }
+            CoreNavigator.navigate('../../edit', { params: pageParams });
+        } else if (this.currentSubwiki) {
+            // No page loaded, the wiki doesn't have first page.
+            this.goToCreateFirstPage();
+        }
     }
 
     /**
@@ -522,42 +521,41 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         if (!('id' in page)) {
             // It's an offline page. Check if we are already in the same offline page.
             if (this.currentPage || !this.pageTitle || page.title != this.pageTitle) {
-                const hash = <string> Md5.hashAsciiStr(JSON.stringify({
+                this.openPageOrSubwiki({
                     pageTitle: page.title,
                     subwikiId: page.subwikiid,
-                    timestamp: Date.now(),
-                }));
-
-                CoreNavigator.navigate(`../${hash}`, {
-                    params: {
-                        module: this.module,
-                        pageTitle: page.title,
-                        wikiId: this.wiki!.id,
-                        subwikiId: page.subwikiid,
-                    },
                 });
             }
         } else if (this.currentPage != page.id) {
             // Add a new State.
             const pageContents = await this.fetchPageContents(page.id);
 
-            const hash = <string> Md5.hashAsciiStr(JSON.stringify({
+            this.openPageOrSubwiki({
                 pageTitle: pageContents.title,
                 pageId: pageContents.id,
                 subwikiId: page.subwikiid,
-                timestamp: Date.now(),
-            }));
-
-            CoreNavigator.navigate(`../${hash}`, {
-                params: {
-                    module: this.module,
-                    pageTitle: pageContents.title,
-                    pageId: pageContents.id,
-                    wikiId: pageContents.wikiid,
-                    subwikiId: pageContents.subwikiid,
-                },
             });
         }
+    }
+
+    /**
+     * Open a page or a subwiki in the current wiki.
+     *
+     * @param options Options
+     * @return Promise.
+     */
+    protected async openPageOrSubwiki(options: AddonModWikiOpenPageOptions): Promise<void> {
+        const hash = <string> Md5.hashAsciiStr(JSON.stringify({
+            ...options,
+            timestamp: Date.now(),
+        }));
+
+        await CoreNavigator.navigate(`../${hash}`, {
+            params: {
+                module: this.module,
+                ...options,
+            },
+        });
     }
 
     /**
@@ -569,10 +567,10 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             component: AddonModWikiMapModalComponent,
             componentProps: {
                 pages: this.subwikiPages,
-                selected: this.currentPageObj && 'id' in this.currentPageObj && this.currentPageObj.id,
                 homeView: this.getWikiHomeView(),
                 moduleId: this.module.id,
                 courseId: this.courseId,
+                selectedTitle: this.currentPageObj && this.currentPageObj.title,
             },
             cssClass: 'core-modal-lateral',
             showBackdrop: true,
@@ -613,21 +611,10 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         if (subwikiId != this.currentSubwiki!.id || userId != this.currentSubwiki!.userid ||
                 groupId != this.currentSubwiki!.groupid) {
 
-            const hash = <string> Md5.hashAsciiStr(JSON.stringify({
+            this.openPageOrSubwiki({
                 subwikiId: subwikiId,
                 userId: userId,
                 groupId: groupId,
-                timestamp: Date.now(),
-            }));
-
-            CoreNavigator.navigate(`../${hash}`, {
-                params: {
-                    module: this.module,
-                    wikiId: this.wiki!.id,
-                    subwikiId: subwikiId,
-                    userId: userId,
-                    groupId: groupId,
-                },
             });
         }
     }
@@ -714,22 +701,41 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     ionViewDidEnter(): void {
         super.ionViewDidEnter();
 
-        if (this.hasEdited) {
-            this.hasEdited = false;
+        const editedPageData = AddonModWiki.consumeEditedPageData();
+        if (!editedPageData) {
+            return;
+        }
+
+        // User has just edited a page. Check if it's the current page.
+        if (this.pageId && editedPageData.pageId === this.pageId) {
+            this.showLoadingAndRefresh(true, false);
+
+            return;
+        }
+
+        const sameSubwiki = this.currentSubwiki &&
+            ((this.currentSubwiki.id && this.currentSubwiki.id === editedPageData.subwikiId) ||
+            (this.currentSubwiki.userid === editedPageData.userId && this.currentSubwiki.groupid === editedPageData.groupId));
+
+        if (sameSubwiki && editedPageData.pageTitle === this.pageTitle) {
+            this.showLoadingAndRefresh(true, false);
+
+            return;
+        }
+
+        // Not same page or we cannot tell. Open the page.
+        this.openPageOrSubwiki({
+            pageId: editedPageData.pageId,
+            pageTitle: editedPageData.pageTitle,
+            subwikiId: editedPageData.subwikiId,
+            userId: editedPageData.wikiId,
+            groupId: editedPageData.groupId,
+        });
+
+        if (editedPageData.pageId && (!this.pageContent || this.pageContent.indexOf('/mod/wiki/create.php') != -1)) {
+            // Refresh current page anyway because the new page could have been created using the create link.
             this.showLoadingAndRefresh(true, false);
         }
-    }
-
-    /**
-     * User left the page that contains the component.
-     */
-    ionViewDidLeave(): void {
-        super.ionViewDidLeave();
-
-        // @todo
-        // if (this.navCtrl.getActive().component.name == 'AddonModWikiEditPage') {
-        //     this.hasEdited = true;
-        // }
     }
 
     /**
@@ -1039,3 +1045,11 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
 }
+
+type AddonModWikiOpenPageOptions = {
+    subwikiId?: number;
+    pageTitle?: string;
+    pageId?: number;
+    userId?: number;
+    groupId?: number;
+};

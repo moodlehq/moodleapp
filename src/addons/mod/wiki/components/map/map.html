@@ -3,7 +3,7 @@
         <ion-title>{{ 'addon.mod_wiki.map' | translate }}</ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon name="close" slot="icon-only"></ion-icon>
+                <ion-icon name="fas-times"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -21,17 +21,17 @@
                     <ion-label>{{ letter.label }}</ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngFor="let page of letter.pages" (click)="goToPage(page)"
-                    [class.core-selected-item]="selected == page.id" tappable>
+                    [class.core-selected-item]="selectedTitle == page.title" tappable>
                     <ion-icon name="fas-home" slot="start" *ngIf="page.firstpage"></ion-icon>
                     <ion-label>
                         <core-format-text [text]="page.title" contextLevel="module" [contextInstanceId]="moduleId"
                             [courseId]="courseId">
                         </core-format-text>
-                        <ion-note *ngIf="!page.id" slot="end">
-                            <ion-icon name="time"></ion-icon>
-                            <span class="ion-text-wrap">{{ 'core.notsent' | translate }}</span>
-                        </ion-note>
                     </ion-label>
+                    <ion-note *ngIf="!page.id" slot="end">
+                        <ion-icon name="fas-clock"></ion-icon>
+                        <span class="ion-text-wrap">{{ 'core.notsent' | translate }}</span>
+                    </ion-note>
                 </ion-item>
             </ng-container>
         </ion-list>

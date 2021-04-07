@@ -52,7 +52,7 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider<AddonModWikiS
      * @param groupId Group ID. Optional, will be used to create the subwiki if subwiki ID not provided.
      * @return Identifier.
      */
-    getSubwikiBlockId(subwikiId: number, wikiId?: number, userId?: number, groupId?: number): string {
+    getSubwikiBlockId(subwikiId?: number, wikiId?: number, userId?: number, groupId?: number): string {
         subwikiId = AddonModWikiOffline.convertToPositiveNumber(subwikiId);
 
         if (subwikiId && subwikiId > 0) {

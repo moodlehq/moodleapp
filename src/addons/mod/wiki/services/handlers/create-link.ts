@@ -14,13 +14,14 @@
 
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { CoreError } from '@classes/errors/error';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { AddonModWikiIndexPage } from '../../pages/index';
 import { AddonModWiki } from '../wiki';
 import { AddonModWikiModuleHandlerService } from './module';
@@ -105,37 +106,39 @@ export class AddonModWikiCreateLinkHandlerService extends CoreContentLinksHandle
                     const route = CoreNavigator.getCurrentRoute({ pageComponent: AddonModWikiIndexPage });
                     const subwikiId = parseInt(params.swid, 10);
                     const wikiId = parseInt(params.wid, 10);
-                    let module: CoreCourseAnyModuleData;
+                    let moduleId: number;
 
                     // Check if the link is inside the same wiki.
                     const isSameWiki = await this.currentStateIsSameWiki(route, subwikiId, siteId);
 
                     if (isSameWiki) {
                         // User is seeing the wiki, we can get the module from the wiki params.
-                        module = route!.snapshot.queryParams.module;
+                        moduleId = route!.snapshot.params.cmId;
+                        courseId = route!.snapshot.params.courseId;
                     } else if (wikiId) {
                         // The URL specifies which wiki it belongs to. Get the module.
-                        module = await CoreCourse.getModuleBasicInfoByInstance(wikiId, 'wiki', siteId);
+                        const module = await CoreCourse.getModuleBasicInfoByInstance(wikiId, 'wiki', siteId);
+
+                        moduleId = module.id;
+                        courseId = module.course;
                     } else {
                         // Not enough data.
-                        CoreDomUtils.showErrorModal(Translate.instant('addon.mod_wiki.errorloadingpage'));
-
-                        return;
+                        throw new CoreError();
                     }
 
                     // Open the page.
                     CoreNavigator.navigateToSitePath(
-                        AddonModWikiModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/edit`,
+                        AddonModWikiModuleHandlerService.PAGE_NAME + `/${courseId}/${moduleId}/edit`,
                         {
                             params: {
-                                module: module,
-                                courseId: courseId || module.course || route?.snapshot.params.courseId,
                                 pageTitle: params.title,
                                 subwikiId: subwikiId,
                             },
                             siteId,
                         },
                     );
+                } catch (error) {
+                    CoreDomUtils.showErrorModalDefault(error, 'addon.mod_wiki.errorloadingpage', true);
                 } finally {
                     modal.dismiss();
                 }

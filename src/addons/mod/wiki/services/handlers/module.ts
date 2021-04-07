@@ -65,7 +65,7 @@ export class AddonModWikiModuleHandlerService implements CoreCourseModuleHandler
                 options = options || {};
                 options.params = options.params || {};
                 Object.assign(options.params, { module });
-                const routeParams = `/${courseId}/${module.id}/root`;
+                const routeParams = `/${courseId}/${module.id}/page/root`;
 
                 CoreNavigator.navigateToSitePath(AddonModWikiModuleHandlerService.PAGE_NAME + routeParams, options);
             },
