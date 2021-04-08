@@ -79,7 +79,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.refreshIcon = 'spinner';
+        this.refreshIcon = CoreConstants.ICON_LOADING;
 
         if (!this.module) {
             return;
