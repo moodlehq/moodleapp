@@ -13,12 +13,15 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { AddonModGlossaryComponentsModule } from './components/components.module';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/glossary';
 import { AddonModGlossaryProvider } from './services/glossary';
 import { AddonModGlossaryHelperProvider } from './services/glossary-helper';
@@ -28,7 +31,7 @@ import { AddonModGlossaryEditLinkHandler } from './services/handlers/edit-link';
 import { AddonModGlossaryEntryLinkHandler } from './services/handlers/entry-link';
 import { AddonModGlossaryIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModGlossaryListLinkHandler } from './services/handlers/list-link';
-import { AddonModGlossaryModuleHandler } from './services/handlers/module';
+import { AddonModGlossaryModuleHandler, AddonModGlossaryModuleHandlerService } from './services/handlers/module';
 import { AddonModGlossaryPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModGlossarySyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModGlossaryTagAreaHandler } from './services/handlers/tag-area';
@@ -40,8 +43,17 @@ export const ADDON_MOD_GLOSSARY_SERVICES: Type<unknown>[] = [
     AddonModGlossaryHelperProvider,
 ];
 
+const routes: Routes = [
+    {
+        path: AddonModGlossaryModuleHandlerService.PAGE_NAME,
+        loadChildren: () => import('./glossary-lazy.module').then(m => m.AddonModGlossaryLazyModule),
+    },
+];
+
 @NgModule({
     imports: [
+        CoreMainMenuTabRoutingModule.forChild(routes),
+        AddonModGlossaryComponentsModule,
     ],
     providers: [
         {
