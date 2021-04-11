@@ -1600,6 +1600,7 @@
   "core.fileuploader.uploading": "local_moodlemobileapp",
   "core.fileuploader.uploadingperc": "local_moodlemobileapp",
   "core.fileuploader.video": "local_moodlemobileapp",
+  "core.fileuploader.scanner" : "local_moodlemobileapp",
   "core.filter": "moodle",
   "core.folder": "moodle",
   "core.forcepasswordchangenotice": "moodle",

@@ -62,6 +62,7 @@
     "@ionic-native/core": "4.20.0",
     "@ionic-native/device": "4.20.0",
     "@ionic-native/diagnostic": "4.2.0",
+    "@ionic-native/document-scanner": "^5.31.1",
     "@ionic-native/file": "4.20.0",
     "@ionic-native/file-opener": "4.20.0",
     "@ionic-native/file-transfer": "4.20.0",
@@ -126,9 +127,11 @@
     "inquirer": "^7.3.2",
     "ionic-angular": "3.9.9",
     "ionicons": "3.0.0",
+    "jspdf": "^2.3.1",
     "jszip": "3.1.5",
     "mathjax": "2.7.7",
     "moment": "2.24.0",
+    "ngx-document-scanner": "^2.0.1",
     "nl.kingsquare.cordova.background-audio": "1.0.1",
     "phonegap-plugin-multidex": "1.0.0",
     "phonegap-plugin-push": "git+https://github.com/moodlemobile/phonegap-plugin-push.git#moodle-v3",
@@ -149,6 +152,8 @@
     "@types/node": "^8.10.59",
     "@types/promise.prototype.finally": "^2.0.4",
     "acorn": "^5.7.4",
+    "cordova-pdf-generator": "^2.1.1",
+    "cordova-plugin-document-scanner": "^4.2.6",
     "cordova.plugins.diagnostic": "^5.0.2",
     "electron-builder-lib": "^20.23.1",
     "electron-rebuild": "^1.10.0",
@@ -228,7 +233,12 @@
       "cordova-plugin-media": {
         "KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE": "NO"
       },
-      "cordova.plugins.diagnostic": {}
+      "cordova.plugins.diagnostic": {},
+      "cordova-plugin-document-scanner": {
+        "CAMERA_USAGE_DESCRIPTION": "This app needs camera access",
+        "PHOTOLIBRARY_USAGE_DESCRIPTION": "This app needs read/write-access photo library access"
+      },
+      "cordova-pdf-generator": {}
     }
   },
   "main": "desktop/electron.js",

@@ -68,10 +68,10 @@
         75.89,
         93.75
     ],
-    "presets" : {"url" :"https://ide.unpar.ac.id/"},
+    "presets" : {"url" :"https://moodledemo.pascal.id/"},
     "demo_sites" :[] ,
     "customurlscheme": "idemobile",
-    "siteurl": "https://ide.unpar.ac.id/",
+    "siteurl": "https://moodledemo.pascal.id/",
     "sitename": "",
     "multisitesdisplay": "",
     "sitefindersettings": {},

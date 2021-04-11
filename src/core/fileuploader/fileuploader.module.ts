@@ -21,6 +21,7 @@ import { CoreFileUploaderAudioHandler } from './providers/audio-handler';
 import { CoreFileUploaderCameraHandler } from './providers/camera-handler';
 import { CoreFileUploaderFileHandler } from './providers/file-handler';
 import { CoreFileUploaderVideoHandler } from './providers/video-handler';
+import { CoreFileUploaderScannerHandler } from './providers/scanner-handler';
 
 // List of providers (without handlers).
 export const CORE_FILEUPLOADER_PROVIDERS: any[] = [
@@ -42,17 +43,20 @@ export const CORE_FILEUPLOADER_PROVIDERS: any[] = [
         CoreFileUploaderAudioHandler,
         CoreFileUploaderCameraHandler,
         CoreFileUploaderFileHandler,
-        CoreFileUploaderVideoHandler
+        CoreFileUploaderVideoHandler,
+        CoreFileUploaderScannerHandler
     ]
 })
 export class CoreFileUploaderModule {
     constructor(delegate: CoreFileUploaderDelegate, albumHandler: CoreFileUploaderAlbumHandler,
             audioHandler: CoreFileUploaderAudioHandler, cameraHandler: CoreFileUploaderCameraHandler,
-            videoHandler: CoreFileUploaderVideoHandler, fileHandler: CoreFileUploaderFileHandler) {
+            videoHandler: CoreFileUploaderVideoHandler, scannerHandler: CoreFileUploaderScannerHandler, fileHandler: CoreFileUploaderFileHandler) {
         delegate.registerHandler(albumHandler);
         delegate.registerHandler(audioHandler);
         delegate.registerHandler(cameraHandler);
         delegate.registerHandler(fileHandler);
         delegate.registerHandler(videoHandler);
+        delegate.registerHandler(scannerHandler);
+
     }
 }
