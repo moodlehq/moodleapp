@@ -25,5 +25,6 @@
     "uploadafile": "Upload a file",
     "uploading": "Uploading",
     "uploadingperc": "Uploading: {{$a}}%",
-    "video": "Video"
+    "video": "Video",
+    "scanner" : "Scan PDF"
 }

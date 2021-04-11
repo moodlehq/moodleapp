@@ -1590,6 +1590,7 @@
     "core.fileuploader.uploading": "Sedang mengunggah",
     "core.fileuploader.uploadingperc": "Sedang mengunggah: {{$a}}%",
     "core.fileuploader.video": "Video",
+    "core.fileuploader.scanner": "Scan PDF",
     "core.filter": "Filter",
     "core.folder": "Folder",
     "core.forcepasswordchangenotice": "Anda harus mengubah kata sandi Anda untuk memproses lebih lanjut.",
