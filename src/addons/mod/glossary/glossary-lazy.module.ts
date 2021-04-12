@@ -18,12 +18,44 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModGlossaryComponentsModule } from './components/components.module';
 import { AddonModGlossaryIndexPage } from './pages/index/index';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreScreen } from '@services/screen';
 
-const routes: Routes = [
+const mobileRoutes: Routes = [
     {
         path: ':courseId/:cmId',
         component: AddonModGlossaryIndexPage,
     },
+    {
+        path: ':courseId/:cmId/entry/:entryId',
+        loadChildren: () => import('./pages/entry/entry.module').then(m => m.AddonModGlossaryEntryPageModule),
+    },
+    {
+        path: ':courseId/:cmId/edit/:timecreated',
+        loadChildren: () => import('./pages/edit/edit.module').then(m => m.AddonModGlossaryEditPageModule),
+    },
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        component: AddonModGlossaryIndexPage,
+        children: [
+            {
+                path: 'entry/:entryId',
+                loadChildren: () => import('./pages/entry/entry.module').then(m => m.AddonModGlossaryEntryPageModule),
+            },
+            {
+                path: 'edit/:timecreated',
+                loadChildren: () => import('./pages/edit/edit.module').then(m => m.AddonModGlossaryEditPageModule),
+            },
+        ],
+    },
+];
+
+const routes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
 ];
 
 @NgModule({

@@ -43,7 +43,15 @@ export const ADDON_MOD_GLOSSARY_SERVICES: Type<unknown>[] = [
     AddonModGlossaryHelperProvider,
 ];
 
-const routes: Routes = [
+const mainMenuRoutes: Routes = [
+    {
+        path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/:entryId`,
+        loadChildren: () => import('./pages/entry/entry.module').then(m => m.AddonModGlossaryEntryPageModule),
+    },
+    {
+        path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/edit/:timecreated`,
+        loadChildren: () => import('./pages/edit/edit.module').then(m => m.AddonModGlossaryEditPageModule),
+    },
     {
         path: AddonModGlossaryModuleHandlerService.PAGE_NAME,
         loadChildren: () => import('./glossary-lazy.module').then(m => m.AddonModGlossaryLazyModule),
@@ -52,7 +60,7 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CoreMainMenuTabRoutingModule.forChild(routes),
+        CoreMainMenuTabRoutingModule.forChild(mainMenuRoutes),
         AddonModGlossaryComponentsModule,
     ],
     providers: [

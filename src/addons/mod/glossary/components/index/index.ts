@@ -464,15 +464,6 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      */
     openNewEntry(): void {
         this.entries.select({ newEntry: true });
-        // @todo
-        // const params = {
-        //     courseId: this.courseId,
-        //     module: this.module,
-        //     glossary: this.glossary,
-        //     entry: entry,
-        // };
-        // this.splitviewCtrl.getMasterNav().push('AddonModGlossaryEditPage', params);
-        // this.selectedEntry = 0;
     }
 
     /**
@@ -535,19 +526,6 @@ class AddonModGlossaryEntriesManager extends CorePageItemsListManager<EntryItem>
 
     constructor(pageComponent: unknown) {
         super(pageComponent);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getItemQueryParams(entry: EntryItem): Params {
-        // @todo
-        return {
-            // courseId: this.component.courseId,
-            // cmId: this.component.module.id,
-            // forumId: this.component.forum!.id,
-            // ...(this.isOnlineDiscussion(discussion) ? { discussion, trackPosts: this.component.trackPosts } : {}),
-        };
     }
 
     /**
@@ -639,6 +617,26 @@ class AddonModGlossaryEntriesManager extends CorePageItemsListManager<EntryItem>
         }
 
         return 'edit/0';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getItemQueryParams(entry: EntryItem): Params {
+        if (this.isOfflineEntry(entry)) {
+            return {
+                concept: entry.concept,
+            };
+        }
+
+        return {};
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getDefaultItem(): EntryItem | null {
+        return this.onlineEntries[0] || null;
     }
 
 }

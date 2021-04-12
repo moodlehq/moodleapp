@@ -59,10 +59,15 @@ export class CoreAutoRowsDirective implements AfterViewInit {
      * Resize the textarea.
      */
     protected resize(): void {
-        let nativeElement = this.element.nativeElement;
+        let nativeElement: HTMLElement = this.element.nativeElement;
         if (nativeElement.tagName == 'ION-TEXTAREA') {
-            // The first child of ion-textarea is the actual textarea element.
-            nativeElement = nativeElement.firstElementChild;
+            // Search the actual textarea.
+            const textarea = nativeElement.querySelector('textarea');
+            if (!textarea) {
+                return;
+            }
+
+            nativeElement = textarea;
         }
 
         // Set height to 1px to force scroll height to calculate correctly.
