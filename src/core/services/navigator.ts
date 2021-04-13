@@ -167,7 +167,10 @@ export class CoreNavigatorService {
      * @return Whether navigation suceeded.
      */
     async navigateToSiteHome(options: Omit<CoreNavigationOptions, 'reset'> & { siteId?: string } = {}): Promise<boolean> {
-        return this.navigateToSitePath(DEFAULT_MAIN_MENU_TAB, options);
+        return this.navigateToSitePath(DEFAULT_MAIN_MENU_TAB, {
+            ...options,
+            reset: true,
+        });
     }
 
     /**
@@ -179,7 +182,7 @@ export class CoreNavigatorService {
      */
     async navigateToSitePath(
         path: string,
-        options: Omit<CoreNavigationOptions, 'reset'> & { siteId?: string } = {},
+        options: CoreNavigationOptions & { siteId?: string } = {},
     ): Promise<boolean> {
         const siteId = options.siteId ?? CoreSites.getCurrentSiteId();
         const navigationOptions: CoreNavigationOptions = CoreObject.without(options, ['siteId']);
@@ -391,7 +394,7 @@ export class CoreNavigatorService {
      * @param options Navigation options.
      * @return Whether navigation suceeded.
      */
-    protected async navigateToMainMenuPath(path: string, options: Omit<CoreNavigationOptions, 'reset'> = {}): Promise<boolean> {
+    protected async navigateToMainMenuPath(path: string, options: CoreNavigationOptions = {}): Promise<boolean> {
         // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
         // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
         // @todo this.location.replaceState('');

@@ -504,9 +504,9 @@ export class CoreFileUploaderHelperProvider {
      * @param defaultMessage Key of the default message to show.
      * @return Rejected promise. If it doesn't have an error message it means it was cancelled.
      */
-    protected treatImageError(error: string | CoreError | CoreCaptureError, defaultMessage: string): CoreError {
+    protected treatImageError(error: number | string | CoreError | CoreCaptureError, defaultMessage: string): CoreError {
         // Cancelled or error.
-        if (!error) {
+        if (!error || typeof error == 'number') {
             return new CoreError(defaultMessage);
         }
 
@@ -675,7 +675,7 @@ export class CoreFileUploaderHelperProvider {
         } catch (error) {
             const defaultError = fromAlbum ? 'core.fileuploader.errorgettingimagealbum' : 'core.fileuploader.errorcapturingimage';
 
-            throw this.treatImageError(error, defaultError);
+            throw this.treatImageError(error, Translate.instant(defaultError));
         }
 
         const error = CoreFileUploader.isInvalidMimetype(mimetypes, path); // Verify that the mimetype is supported.
