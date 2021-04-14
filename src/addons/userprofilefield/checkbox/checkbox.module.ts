@@ -38,8 +38,5 @@ import { CoreSharedModule } from '@/core/shared.module';
     exports: [
         AddonUserProfileFieldCheckboxComponent,
     ],
-    entryComponents: [
-        AddonUserProfileFieldCheckboxComponent,
-    ],
 })
 export class AddonUserProfileFieldCheckboxModule {}

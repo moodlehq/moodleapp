@@ -40,8 +40,5 @@ import { CoreEditorComponentsModule } from '@features/editor/components/componen
     exports: [
         AddonUserProfileFieldTextareaComponent,
     ],
-    entryComponents: [
-        AddonUserProfileFieldTextareaComponent,
-    ],
 })
 export class AddonUserProfileFieldTextareaModule {}

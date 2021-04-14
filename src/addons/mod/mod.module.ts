@@ -32,6 +32,7 @@ import { AddonModSurveyModule } from './survey/survey.module';
 import { AddonModScormModule } from './scorm/scorm.module';
 import { AddonModChoiceModule } from './choice/choice.module';
 import { AddonModWikiModule } from './wiki/wiki.module';
+import { AddonModGlossaryModule } from './glossary/glossary.module';
 
 @NgModule({
     imports: [
@@ -53,6 +54,7 @@ import { AddonModWikiModule } from './wiki/wiki.module';
         AddonModScormModule,
         AddonModChoiceModule,
         AddonModWikiModule,
+        AddonModGlossaryModule,
     ],
 })
 export class AddonModModule { }

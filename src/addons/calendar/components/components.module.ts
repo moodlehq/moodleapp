@@ -36,8 +36,5 @@ import { AddonCalendarFilterPopoverComponent } from './filter/filter';
         AddonCalendarUpcomingEventsComponent,
         AddonCalendarFilterPopoverComponent,
     ],
-    entryComponents: [
-        AddonCalendarFilterPopoverComponent,
-    ],
 })
 export class AddonCalendarComponentsModule {}

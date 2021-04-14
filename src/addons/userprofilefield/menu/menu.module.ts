@@ -38,8 +38,5 @@ import { CoreSharedModule } from '@/core/shared.module';
     exports: [
         AddonUserProfileFieldMenuComponent,
     ],
-    entryComponents: [
-        AddonUserProfileFieldMenuComponent,
-    ],
 })
 export class AddonUserProfileFieldMenuModule {}

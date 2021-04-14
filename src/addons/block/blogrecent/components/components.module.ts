@@ -27,8 +27,5 @@ import { AddonBlockBlogRecentComponent } from './blogrecent/blogrecent';
     exports: [
         AddonBlockBlogRecentComponent,
     ],
-    entryComponents: [
-        AddonBlockBlogRecentComponent,
-    ],
 })
 export class AddonBlockBlogRecentComponentsModule {}

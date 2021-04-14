@@ -40,8 +40,5 @@ import { CoreCommentsComponentsModule } from '@features/comments/components/comp
     exports: [
         AddonModAssignSubmissionCommentsComponent,
     ],
-    entryComponents: [
-        AddonModAssignSubmissionCommentsComponent,
-    ],
 })
 export class AddonModAssignSubmissionCommentsModule {}

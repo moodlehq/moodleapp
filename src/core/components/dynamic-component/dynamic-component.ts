@@ -51,8 +51,6 @@ import { CoreLogger } from '@singletons/logger';
  *         <p>Cannot render the data.</p>
  *     </core-dynamic-component>
  *
- * Please notice that the component that you pass needs to be declared in entryComponents of the module to be created dynamically.
- *
  * Alternatively, you can also supply a ComponentRef instead of the class of the component. In this case, the component won't
  * be instantiated because it already is, it will be attached to the view and the right data will be passed to it.
  * Passing ComponentRef is meant for site plugins.
@@ -119,8 +117,8 @@ export class CoreDynamicComponent implements OnChanges, DoCheck {
             const changes = this.differ.diff(this.data || {});
             if (changes) {
                 this.setInputData();
-                if (this.ngOnChanges) {
-                    this.ngOnChanges(CoreDomUtils.createChangesFromKeyValueDiff(changes));
+                if (this.instance.ngOnChanges) {
+                    this.instance.ngOnChanges(CoreDomUtils.createChangesFromKeyValueDiff(changes));
                 }
             }
         }

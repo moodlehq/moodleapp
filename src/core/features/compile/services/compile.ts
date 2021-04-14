@@ -130,7 +130,7 @@ import { ADDON_MOD_DATA_SERVICES } from '@addons/mod/data/data.module';
 // @todo import { ADDON_MOD_FEEDBACK_SERVICES } from '@addons/mod/feedback/feedback.module';
 import { ADDON_MOD_FOLDER_SERVICES } from '@addons/mod/folder/folder.module';
 import { ADDON_MOD_FORUM_SERVICES } from '@addons/mod/forum/forum.module';
-// @todo import { ADDON_MOD_GLOSSARY_SERVICES } from '@addons/mod/glossary/glossary.module';
+import { ADDON_MOD_GLOSSARY_SERVICES } from '@addons/mod/glossary/glossary.module';
 import { ADDON_MOD_H5P_ACTIVITY_SERVICES } from '@addons/mod/h5pactivity/h5pactivity.module';
 import { ADDON_MOD_IMSCP_SERVICES } from '@addons/mod/imscp/imscp.module';
 import { ADDON_MOD_LESSON_SERVICES } from '@addons/mod/lesson/lesson.module';
@@ -296,7 +296,7 @@ export class CoreCompileProvider {
             // @todo ...ADDON_MOD_FEEDBACK_SERVICES,
             ...ADDON_MOD_FOLDER_SERVICES,
             ...ADDON_MOD_FORUM_SERVICES,
-            // @todo ...ADDON_MOD_GLOSSARY_SERVICES,
+            ...ADDON_MOD_GLOSSARY_SERVICES,
             ...ADDON_MOD_H5P_ACTIVITY_SERVICES,
             ...ADDON_MOD_IMSCP_SERVICES,
             ...ADDON_MOD_LESSON_SERVICES,

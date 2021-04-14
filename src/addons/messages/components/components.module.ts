@@ -25,8 +25,5 @@ import { AddonMessagesConversationInfoComponent } from './conversation-info/conv
     imports: [
         CoreSharedModule,
     ],
-    entryComponents: [
-        AddonMessagesConversationInfoComponent,
-    ],
 })
 export class AddonMessagesComponentsModule {}

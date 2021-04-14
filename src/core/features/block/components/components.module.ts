@@ -35,10 +35,5 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreBlockPreRenderedComponent,
         CoreBlockCourseBlocksComponent,
     ],
-    entryComponents: [
-        CoreBlockOnlyTitleComponent,
-        CoreBlockPreRenderedComponent,
-        CoreBlockCourseBlocksComponent,
-    ],
 })
 export class CoreBlockComponentsModule {}

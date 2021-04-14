@@ -27,8 +27,5 @@ import { AddonBlockActivityResultsComponent } from './activityresults/activityre
     exports: [
         AddonBlockActivityResultsComponent,
     ],
-    entryComponents: [
-        AddonBlockActivityResultsComponent,
-    ],
 })
 export class AddonBlockActivityResultsComponentsModule {}

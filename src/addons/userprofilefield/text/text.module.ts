@@ -38,8 +38,5 @@ import { CoreSharedModule } from '@/core/shared.module';
     exports: [
         AddonUserProfileFieldTextComponent,
     ],
-    entryComponents: [
-        AddonUserProfileFieldTextComponent,
-    ],
 })
 export class AddonUserProfileFieldTextModule {}

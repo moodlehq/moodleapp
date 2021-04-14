@@ -40,8 +40,5 @@ import { AddonModAssignSubmissionDelegate } from '../../services/submission-dele
     exports: [
         AddonModAssignSubmissionOnlineTextComponent,
     ],
-    entryComponents: [
-        AddonModAssignSubmissionOnlineTextComponent,
-    ],
 })
 export class AddonModAssignSubmissionOnlineTextModule {}

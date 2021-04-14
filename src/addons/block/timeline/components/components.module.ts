@@ -35,9 +35,5 @@ import { AddonBlockTimelineEventsComponent } from './events/events';
         AddonBlockTimelineComponent,
         AddonBlockTimelineEventsComponent,
     ],
-    entryComponents: [
-        AddonBlockTimelineComponent,
-        AddonBlockTimelineEventsComponent,
-    ],
 })
 export class AddonBlockTimelineComponentsModule {}

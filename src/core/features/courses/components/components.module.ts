@@ -36,8 +36,5 @@ import { CoreCoursesSelfEnrolPasswordComponent } from './self-enrol-password/sel
         CoreCoursesCourseOptionsMenuComponent,
         CoreCoursesSelfEnrolPasswordComponent,
     ],
-    entryComponents: [
-        CoreCoursesCourseOptionsMenuComponent,
-    ],
 })
 export class CoreCoursesComponentsModule {}

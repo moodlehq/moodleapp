@@ -30,8 +30,5 @@ import { AddonBlockStarredCoursesComponent } from './starredcourses/starredcours
     exports: [
         AddonBlockStarredCoursesComponent,
     ],
-    entryComponents: [
-        AddonBlockStarredCoursesComponent,
-    ],
 })
 export class AddonBlockStarredCoursesComponentsModule {}

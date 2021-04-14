@@ -32,8 +32,5 @@ import { CoreRatingRatingsComponent } from './ratings/ratings';
         CoreRatingRateComponent,
         CoreRatingRatingsComponent,
     ],
-    entryComponents: [
-        CoreRatingRatingsComponent,
-    ],
 })
 export class CoreRatingComponentsModule {}
