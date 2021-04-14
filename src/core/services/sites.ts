@@ -1581,7 +1581,7 @@ export class CoreSitesProvider {
         if (schema.tables) {
             await db.createTablesFromSchema(schema.tables);
         }
-        if (schema.migrate) {
+        if (schema.migrate && oldVersion > 0) {
             await schema.migrate(db, oldVersion, site.id);
         }
 

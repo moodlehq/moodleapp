@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ContextLevel } from '@/core/constants';
+import { ContextLevel, CoreConstants } from '@/core/constants';
 import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef, Optional } from '@angular/core';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
@@ -88,8 +88,8 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         isprivatereply: false,
     };
 
-    refreshIcon = 'spinner';
-    syncIcon = 'spinner';
+    refreshIcon = CoreConstants.ICON_LOADING;
+    syncIcon = CoreConstants.ICON_LOADING;
     discussionStr = '';
     component = AddonModForumProvider.COMPONENT;
     cmId!: number;
@@ -509,8 +509,8 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             CoreDomUtils.showErrorModal(error);
         } finally {
             this.discussionLoaded = true;
-            this.refreshIcon = 'refresh';
-            this.syncIcon = 'sync';
+            this.refreshIcon = CoreConstants.ICON_REFRESH;
+            this.syncIcon = CoreConstants.ICON_SYNC;
 
             if (forceMarkAsRead || (hasUnreadPosts && this.trackPosts)) {
                 // // Add log in Moodle and mark unread posts as readed.
@@ -630,8 +630,8 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      */
     refreshPosts(sync?: boolean, showErrors?: boolean): Promise<void> {
         this.content.scrollToTop();
-        this.refreshIcon = 'spinner';
-        this.syncIcon = 'spinner';
+        this.refreshIcon = CoreConstants.ICON_LOADING;
+        this.syncIcon = CoreConstants.ICON_LOADING;
 
         const promises = [
             AddonModForum.invalidateForumData(this.courseId),

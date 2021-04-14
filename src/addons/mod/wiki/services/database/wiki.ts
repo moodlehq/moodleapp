@@ -13,25 +13,28 @@
 // limitations under the License.
 
 import { CoreSiteSchema } from '@services/sites';
-import { AddonModDataAction } from '../data';
 
 /**
- * Database variables for AddonModDataOfflineProvider.
+ * Database variables for AddonModWikiOfflineProvider.
  */
-export const DATA_ENTRY_TABLE = 'addon_mod_data_entry_1';
-export const ADDON_MOD_DATA_OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
-    name: 'AddonModDataOfflineProvider',
+export const NEW_PAGES_TABLE_NAME = 'addon_mod_wiki_new_pages_store';
+export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
+    name: 'AddonModWikiOfflineProvider',
     version: 1,
     tables: [
         {
-            name: DATA_ENTRY_TABLE,
+            name: NEW_PAGES_TABLE_NAME,
             columns: [
                 {
-                    name: 'dataid',
+                    name: 'wikiid',
                     type: 'INTEGER',
                 },
                 {
-                    name: 'courseid',
+                    name: 'subwikiid',
+                    type: 'INTEGER',
+                },
+                {
+                    name: 'userid',
                     type: 'INTEGER',
                 },
                 {
@@ -39,36 +42,52 @@ export const ADDON_MOD_DATA_OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
                     type: 'INTEGER',
                 },
                 {
-                    name: 'action',
+                    name: 'title',
                     type: 'TEXT',
                 },
                 {
-                    name: 'entryid',
+                    name: 'cachedcontent',
+                    type: 'TEXT',
+                },
+                {
+                    name: 'contentformat',
+                    type: 'TEXT',
+                },
+                {
+                    name: 'courseid',
                     type: 'INTEGER',
                 },
                 {
-                    name: 'fields',
-                    type: 'TEXT',
+                    name: 'timecreated',
+                    type: 'INTEGER',
                 },
                 {
                     name: 'timemodified',
                     type: 'INTEGER',
                 },
+                {
+                    name: 'caneditpage',
+                    type: 'INTEGER',
+                },
             ],
-            primaryKeys: ['dataid', 'entryid', 'action'],
+            primaryKeys: ['wikiid', 'subwikiid', 'userid', 'groupid', 'title'],
         },
     ],
 };
 
 /**
- * Data about data entries to sync.
+ * Wiki new page data.
  */
-export type AddonModDataEntryDBRecord = {
-    dataid: number; // Primary key.
-    entryid: number; // Primary key. Negative for offline entries.
-    action: AddonModDataAction; // Primary key.
-    courseid: number;
+export type AddonModWikiPageDBRecord = {
+    wikiid: number;
+    subwikiid: number;
+    userid: number;
     groupid: number;
-    fields: string;
+    title: string;
+    cachedcontent: string;
+    contentformat: string;
+    courseid?: null; // Currently not used.
+    timecreated: number;
     timemodified: number;
+    caneditpage: number;
 };

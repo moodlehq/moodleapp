@@ -151,7 +151,7 @@ export class CoreAppProvider {
         if (schema.tables) {
             await this.db.createTablesFromSchema(schema.tables);
         }
-        if (schema.migrate) {
+        if (schema.migrate && oldVersion > 0) {
             await schema.migrate(this.db, oldVersion);
         }
 

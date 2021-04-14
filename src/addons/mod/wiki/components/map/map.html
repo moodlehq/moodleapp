@@ -1,0 +1,39 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>{{ 'addon.mod_wiki.map' | translate }}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="fas-times"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <nav>
+        <ion-list>
+            <!-- Go to "home". -->
+            <ion-item class="ion-text-wrap" *ngIf="homeView" (click)="goToWikiHome()" tappable>
+                <ion-icon name="fas-home" slot="start"></ion-icon>
+                <ion-label>{{ 'addon.mod_wiki.gowikihome' | translate }}</ion-label>
+            </ion-item>
+            <ng-container *ngFor="let letter of map">
+                <ion-item-divider *ngIf="letter.label">
+                    <ion-label>{{ letter.label }}</ion-label>
+                </ion-item-divider>
+                <ion-item class="ion-text-wrap" *ngFor="let page of letter.pages" (click)="goToPage(page)"
+                    [class.core-selected-item]="selectedTitle == page.title" tappable>
+                    <ion-icon name="fas-home" slot="start" *ngIf="page.firstpage"></ion-icon>
+                    <ion-label>
+                        <core-format-text [text]="page.title" contextLevel="module" [contextInstanceId]="moduleId"
+                            [courseId]="courseId">
+                        </core-format-text>
+                    </ion-label>
+                    <ion-note *ngIf="!page.id" slot="end">
+                        <ion-icon name="fas-clock"></ion-icon>
+                        <span class="ion-text-wrap">{{ 'core.notsent' | translate }}</span>
+                    </ion-note>
+                </ion-item>
+            </ng-container>
+        </ion-list>
+    </nav>
+</ion-content>

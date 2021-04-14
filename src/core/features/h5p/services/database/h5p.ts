@@ -20,7 +20,7 @@ import { CoreSiteSchema } from '@services/sites';
  */
 // DB table names.
 export const CONTENT_TABLE_NAME = 'h5p_content'; // H5P content.
-export const LIBRARIES_TABLE_NAME = 'h5p_libraries_2'; // Installed libraries.
+export const LIBRARIES_TABLE_NAME = 'h5p_libraries'; // Installed libraries.
 export const LIBRARY_DEPENDENCIES_TABLE_NAME = 'h5p_library_dependencies'; // Library dependencies.
 export const CONTENTS_LIBRARIES_TABLE_NAME = 'h5p_contents_libraries'; // Which library is used in which content.
 export const LIBRARIES_CACHEDASSETS_TABLE_NAME = 'h5p_libraries_cachedassets'; // H5P cached library assets.
@@ -249,8 +249,8 @@ export const SITE_SCHEMA: CoreSiteSchema = {
             return;
         }
 
-        // Move the records from the old table.
-        await db.migrateTable('h5p_libraries', LIBRARIES_TABLE_NAME);
+        // Add the metadata column to the table.
+        await db.addColumn(LIBRARIES_TABLE_NAME, 'metadatasettings', 'TEXT');
     },
 };
 

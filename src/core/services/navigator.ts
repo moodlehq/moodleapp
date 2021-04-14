@@ -96,8 +96,17 @@ export class CoreNavigatorService {
      * @return Current main menu tab or null if the current route is not using the main menu.
      */
     getCurrentMainMenuTab(): string | null {
-        const currentPath = this.getCurrentPath();
-        const matches = /^\/main\/([^/]+).*$/.exec(currentPath);
+        return this.getMainMenuTabFromPath(this.getCurrentPath());
+    }
+
+    /**
+     * Get main menu tab from a path.
+     *
+     * @param path The path to check.
+     * @return Path's main menu tab or null if the path is not using the main menu.
+     */
+    getMainMenuTabFromPath(path: string): string | null {
+        const matches = /^\/main\/([^/]+).*$/.exec(path);
 
         return matches?.[1] ?? null;
     }
