@@ -3,7 +3,7 @@
     "appname": "E-Learning",
     "desktopappname": "E-Learning",
     "versioncode": 3945,
-    "versionname": "4.0.2",
+    "versionname": "4.1.3",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
@@ -65,12 +65,12 @@
     "wsextservice": "local_mobile",
     "demo_sites": {
         "student": {
-            "url": "http:\/\/35.166.19.189/iomad/",
+            "url": "http://test-elp.gyanmatrix.com/",
             "username": "student",
             "password": "moodle"
         },
         "teacher": {
-            "url": "http:\/\/35.166.19.189/iomad/",
+            "url": "http://test-elp.gyanmatrix.com/",
             "username": "admin",
             "password": "Admin99@"
         }
@@ -81,7 +81,7 @@
         93.75
     ],
     "customurlscheme": "elpmobiile",
-    "siteurl": "http://35.166.19.189/iomad/",
+    "siteurl": "http://test-elp.gyanmatrix.com/",
     "sitename": "ELP",
     "multisitesdisplay": "",
     "sitefindersettings": {},
