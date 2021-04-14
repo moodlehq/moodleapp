@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreSiteSchema } from '@services/sites';
 import { AddonModDataAction } from '../data';
 
@@ -59,14 +58,6 @@ export const ADDON_MOD_DATA_OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
             primaryKeys: ['dataid', 'entryid', 'action'],
         },
     ],
-    async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
-        if (oldVersion > 0) {
-            return;
-        }
-
-        // Move the records from the old table.
-        await db.migrateTable('addon_mod_data_entry', DATA_ENTRY_TABLE);
-    },
 };
 
 /**

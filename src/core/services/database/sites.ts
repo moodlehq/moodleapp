@@ -144,7 +144,7 @@ export const SITE_SCHEMA: CoreSiteSchema = {
         },
     ],
     async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
-        if (oldVersion && oldVersion < 2) {
+        if (oldVersion < 2) {
             await db.migrateTable('wscache', CoreSite.WS_CACHE_TABLE, (record) => ({
                 id: record.id,
                 data: record.data,

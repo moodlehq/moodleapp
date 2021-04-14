@@ -17,6 +17,8 @@ import { SQLiteObject } from '@ionic-native/sqlite/ngx';
 import { SQLite, Platform } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 
+type SQLiteDBColumnType = 'INTEGER' | 'REAL' | 'TEXT' | 'BLOB';
+
 /**
  * Schema of a table.
  */
@@ -64,7 +66,7 @@ export interface SQLiteDBColumnSchema {
     /**
      * Column's type.
      */
-    type?: 'INTEGER' | 'REAL' | 'TEXT' | 'BLOB';
+    type?: SQLiteDBColumnType;
 
     /**
      * Whether the column is a primary key. Use it only if primary key is a single column.
@@ -143,6 +145,30 @@ export class SQLiteDB {
      */
     constructor(public name: string) {
         this.init();
+    }
+
+    /**
+     * Add a column to an existing table.
+     *
+     * @param table Table name.
+     * @param column Name of the column to add.
+     * @param type Type of the column to add.
+     * @param constraints Other constraints (e.g. NOT NULL).
+     * @return Promise resolved when done.
+     */
+    async addColumn(table: string, column: string, type: SQLiteDBColumnType, constraints?: string): Promise<void> {
+        constraints = constraints || '';
+
+        try {
+            await this.execute(`ALTER TABLE ${table} ADD COLUMN ${column} ${type} ${constraints}`);
+        } catch (error) {
+            if (error && error.code == 5 && error?.message.indexOf('duplicate column name') != -1) {
+                // Column already exists.
+                return;
+            }
+
+            throw error;
+        }
     }
 
     /**
@@ -839,25 +865,19 @@ export class SQLiteDB {
      *
      * @param table The database table to be inserted into.
      * @param source The database table to get the records from.
-     * @param conditions The conditions to build the where clause. Must not contain numeric indexes.
-     * @param fields A comma separated list of fields to return.
      * @return Promise resolved when done.
      */
     async insertRecordsFrom(
         table: string,
         source: string,
-        conditions?: SQLiteDBRecordValues,
-        fields: string = '*',
     ): Promise<void> {
-        const selectAndParams = this.whereClause(conditions);
-        const select = selectAndParams.sql ? 'WHERE ' + selectAndParams.sql : '';
-        const params = selectAndParams.params;
+        const records = await this.getAllRecords<SQLiteDBRecordValues>(source);
 
-        await this.execute(`INSERT INTO ${table} SELECT ${fields} FROM ${source} ${select}`, params);
+        await Promise.all(records.map((record) => this.insertRecord(table, record)));
     }
 
     /**
-     * Helper migration function for tables.
+     * Migrate all the data from a table to another table.
      * It will check if old table exists and drop it when finished.
      *
      * @param oldTable Old table name.
