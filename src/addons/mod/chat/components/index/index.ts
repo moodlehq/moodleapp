@@ -107,6 +107,7 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
             {
                 params: {
                     title,
+                    chatId: this.chat!.id,
                 },
             },
         );

@@ -23,6 +23,10 @@ const routes: Routes = [
         path: ':courseId/:cmId',
         component: AddonModChatIndexPage,
     },
+    {
+        path: ':courseId/:cmId/chat',
+        loadChildren: () => import('./pages/chat/chat.module').then(m => m.AddonModChatChatPageModule),
+    },
 ];
 
 @NgModule({

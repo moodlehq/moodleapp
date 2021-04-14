@@ -1,6 +1,6 @@
 :host {
     ion-content {
-        background-color: var(--background-lighter);
+        --background: var(--background-lighter);
 
         &::part(scroll) {
             padding-bottom: 0 !important;
