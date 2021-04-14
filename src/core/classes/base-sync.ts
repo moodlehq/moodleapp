@@ -72,11 +72,7 @@ export class CoreSyncBaseProvider<T = void> {
      * @param error Specific error message.
      */
     protected addOfflineDataDeletedWarning(warnings: string[], name: string, error: CoreAnyError): void {
-        const warning = Translate.instant('core.warningofflinedatadeleted', {
-            component: this.componentTranslate,
-            name: name,
-            error: CoreTextUtils.getErrorMessageFromError(error),
-        });
+        const warning = this.getOfflineDataDeletedWarning(name, error);
 
         if (warnings.indexOf(warning) == -1) {
             warnings.push(warning);
@@ -111,6 +107,21 @@ export class CoreSyncBaseProvider<T = void> {
         } finally {
             delete this.syncPromises[siteId!][uniqueId];
         }
+    }
+
+    /**
+     * Add an offline data deleted warning to a list of warnings.
+     *
+     * @param name Instance name.
+     * @param error Specific error message.
+     * @return Warning message.
+     */
+    protected getOfflineDataDeletedWarning(name: string, error: CoreAnyError): string {
+        return Translate.instant('core.warningofflinedatadeleted', {
+            component: this.componentTranslate,
+            name: name,
+            error: CoreTextUtils.getErrorMessageFromError(error),
+        });
     }
 
     /**

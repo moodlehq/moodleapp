@@ -19,9 +19,8 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModChoice, AddonModChoiceProvider } from './choice';
 import { AddonModChoiceOffline } from './choice-offline';
@@ -192,11 +191,7 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
             await AddonModChoiceOffline.deleteResponse(choiceId, siteId, userId);
 
             // Responses deleted, add a warning.
-            result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                component: this.componentTranslate,
-                name: data.name,
-                error: CoreTextUtils.getErrorMessageFromError(error),
-            }));
+            this.addOfflineDataDeletedWarning(result.warnings, data.name, error);
         }
 
         // Data has been sent to server, prefetch choice if needed.

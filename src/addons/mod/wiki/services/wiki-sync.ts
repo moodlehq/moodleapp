@@ -20,7 +20,6 @@ import { CoreApp } from '@services/app';
 import { CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -260,11 +259,7 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider<AddonModWikiS
                 result.updated = true;
 
                 // Page deleted, add the page to discarded pages and add a warning.
-                const warning = Translate.instant('core.warningofflinedatadeleted', {
-                    component: Translate.instant('addon.mod_wiki.wikipage'),
-                    name: page.title,
-                    error: CoreTextUtils.getErrorMessageFromError(error),
-                });
+                const warning = this.getOfflineDataDeletedWarning(page.title, error);
 
                 result.discarded.push({
                     title: page.title,

@@ -23,7 +23,6 @@ import { CoreRatingSync } from '@features/rating/services/rating-sync';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -222,11 +221,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
                 await this.deleteAddEntry(glossaryId, data.concept, data.timecreated, siteId);
 
                 // Responses deleted, add a warning.
-                result.warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                    component: this.componentTranslate,
-                    name: data.concept,
-                    error: CoreTextUtils.getErrorMessageFromError(error),
-                }));
+                this.addOfflineDataDeletedWarning(result.warnings, data.concept, error);
             }
         }));
 
@@ -275,11 +270,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
                 const glossary = await AddonModGlossary.getGlossary(result.itemSet.courseId, result.itemSet.instanceId, { siteId });
 
                 result.warnings.forEach((warning) => {
-                    warnings.push(Translate.instant('core.warningofflinedatadeleted', {
-                        component: this.componentTranslate,
-                        name: glossary.name,
-                        error: warning,
-                    }));
+                    this.addOfflineDataDeletedWarning(warnings, glossary.name, warning);
                 });
             }
         }));

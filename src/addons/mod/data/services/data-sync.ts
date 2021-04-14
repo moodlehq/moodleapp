@@ -235,28 +235,20 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
         result: AddonModDataSyncResult,
         siteId: string,
     ): Promise<void> {
-        const synEntryResult = await this.performSyncEntry(database, entryActions, result, siteId);
+        const syncEntryResult = await this.performSyncEntry(database, entryActions, result, siteId);
 
-        if (synEntryResult.discardError) {
+        if (syncEntryResult.discardError) {
             // Submission was discarded, add a warning.
-            const message = Translate.instant('core.warningofflinedatadeleted', {
-                component: this.componentTranslate,
-                name: database.name,
-                error: synEntryResult.discardError,
-            });
-
-            if (result.warnings.indexOf(message) == -1) {
-                result.warnings.push(message);
-            }
+            this.addOfflineDataDeletedWarning(result.warnings, database.name, syncEntryResult.discardError);
         }
 
         // Sync done. Send event.
         CoreEvents.trigger(AddonModDataSyncProvider.AUTO_SYNCED, {
             dataId: database.id,
-            entryId: synEntryResult.entryId,
-            offlineEntryId: synEntryResult.offlineId,
+            entryId: syncEntryResult.entryId,
+            offlineEntryId: syncEntryResult.offlineId,
             warnings: result.warnings,
-            deleted: synEntryResult.deleted,
+            deleted: syncEntryResult.deleted,
         }, siteId);
     }
 
