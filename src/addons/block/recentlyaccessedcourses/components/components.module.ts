@@ -30,8 +30,5 @@ import { AddonBlockRecentlyAccessedCoursesComponent } from './recentlyaccessedco
     exports: [
         AddonBlockRecentlyAccessedCoursesComponent,
     ],
-    entryComponents: [
-        AddonBlockRecentlyAccessedCoursesComponent,
-    ],
 })
 export class AddonBlockRecentlyAccessedCoursesComponentsModule {}

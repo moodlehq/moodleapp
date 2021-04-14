@@ -27,8 +27,5 @@ import { AddonBlockBadgesComponent } from './badges/badges';
     exports: [
         AddonBlockBadgesComponent,
     ],
-    entryComponents: [
-        AddonBlockBadgesComponent,
-    ],
 })
 export class AddonBlockBadgesComponentsModule {}

@@ -27,8 +27,5 @@ import { AddonBlockBlogMenuComponent } from './blogmenu/blogmenu';
     exports: [
         AddonBlockBlogMenuComponent,
     ],
-    entryComponents: [
-        AddonBlockBlogMenuComponent,
-    ],
 })
 export class AddonBlockBlogMenuComponentsModule {}

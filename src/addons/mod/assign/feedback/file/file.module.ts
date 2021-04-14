@@ -38,8 +38,5 @@ import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate
     exports: [
         AddonModAssignFeedbackFileComponent,
     ],
-    entryComponents: [
-        AddonModAssignFeedbackFileComponent,
-    ],
 })
 export class AddonModAssignFeedbackFileModule {}

@@ -27,8 +27,5 @@ import { AddonBlockRssClientComponent } from './rssclient/rssclient';
     exports: [
         AddonBlockRssClientComponent,
     ],
-    entryComponents: [
-        AddonBlockRssClientComponent,
-    ],
 })
 export class AddonBlockRssClientComponentsModule {}

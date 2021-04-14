@@ -30,8 +30,5 @@ import { AddonBlockRecentlyAccessedItemsComponent } from './recentlyaccesseditem
     exports: [
         AddonBlockRecentlyAccessedItemsComponent,
     ],
-    entryComponents: [
-        AddonBlockRecentlyAccessedItemsComponent,
-    ],
 })
 export class AddonBlockRecentlyAccessedItemsComponentsModule {}

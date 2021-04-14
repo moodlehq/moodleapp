@@ -29,8 +29,5 @@ import { CoreSharedModule } from '@/core/shared.module';
     exports: [
         CoreEditorRichTextEditorComponent,
     ],
-    entryComponents: [
-        CoreEditorRichTextEditorComponent,
-    ],
 })
 export class CoreEditorComponentsModule {}

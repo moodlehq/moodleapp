@@ -27,8 +27,5 @@ import { AddonBlockOnlineUsersComponent } from './onlineusers/onlineusers';
     exports: [
         AddonBlockOnlineUsersComponent,
     ],
-    entryComponents: [
-        AddonBlockOnlineUsersComponent,
-    ],
 })
 export class AddonBlockOnlineUsersComponentsModule {}

@@ -29,8 +29,5 @@ import { CoreCommentsCommentsComponent } from './comments/comments';
         CoreCommentsCommentsComponent,
         CoreCommentsAddComponent,
     ],
-    entryComponents: [
-        CoreCommentsCommentsComponent,
-    ],
 })
 export class CoreCommentsComponentsModule {}

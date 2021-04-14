@@ -30,8 +30,5 @@ import { AddonBlockSiteMainMenuComponent } from './sitemainmenu/sitemainmenu';
     exports: [
         AddonBlockSiteMainMenuComponent,
     ],
-    entryComponents: [
-        AddonBlockSiteMainMenuComponent,
-    ],
 })
 export class AddonBlockSiteMainMenuComponentsModule {}

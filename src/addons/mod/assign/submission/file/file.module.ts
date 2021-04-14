@@ -38,8 +38,5 @@ import { AddonModAssignSubmissionDelegate } from '../../services/submission-dele
     exports: [
         AddonModAssignSubmissionFileComponent,
     ],
-    entryComponents: [
-        AddonModAssignSubmissionFileComponent,
-    ],
 })
 export class AddonModAssignSubmissionFileModule {}

@@ -38,8 +38,5 @@ import { CoreSharedModule } from '@/core/shared.module';
     exports: [
         AddonUserProfileFieldDatetimeComponent,
     ],
-    entryComponents: [
-        AddonUserProfileFieldDatetimeComponent,
-    ],
 })
 export class AddonUserProfileFieldDatetimeModule {}

@@ -35,9 +35,5 @@ import { CoreSearchComponentsModule } from '@features/search/components/componen
         AddonModGlossaryIndexComponent,
         AddonModGlossaryModePickerPopoverComponent,
     ],
-    entryComponents: [
-        AddonModGlossaryIndexComponent,
-        AddonModGlossaryModePickerPopoverComponent,
-    ],
 })
 export class AddonModGlossaryComponentsModule {}

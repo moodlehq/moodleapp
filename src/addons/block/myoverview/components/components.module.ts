@@ -29,8 +29,5 @@ import { AddonBlockMyOverviewComponent } from './myoverview/myoverview';
     exports: [
         AddonBlockMyOverviewComponent,
     ],
-    entryComponents: [
-        AddonBlockMyOverviewComponent,
-    ],
 })
 export class AddonBlockMyOverviewComponentsModule {}
