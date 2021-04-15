@@ -17,16 +17,52 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModChatComponentsModule } from './components/components.module';
 import { AddonModChatIndexPage } from './pages/index/index';
+import { AddonModChatChatPage } from './pages/chat/chat';
+import { AddonModChatSessionMessagesPage } from './pages/session-messages/session-messages';
+import { CoreScreen } from '@services/screen';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { AddonModChatSessionsPage } from './pages/sessions/sessions';
 
-const routes: Routes = [
+const commonRoutes: Routes = [
     {
         path: ':courseId/:cmId',
         component: AddonModChatIndexPage,
     },
     {
         path: ':courseId/:cmId/chat',
-        loadChildren: () => import('./pages/chat/chat.module').then(m => m.AddonModChatChatPageModule),
+        component: AddonModChatChatPage,
     },
+];
+
+const mobileRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/sessions',
+        component: AddonModChatSessionsPage,
+    },
+    {
+        path: ':courseId/:cmId/sessions/:sessionStart/:sessionEnd',
+        component: AddonModChatSessionMessagesPage,
+    },
+];
+
+const tabletRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/sessions',
+        component: AddonModChatSessionsPage,
+        children: [
+            {
+                path: ':sessionStart/:sessionEnd',
+                component: AddonModChatSessionMessagesPage,
+            },
+        ],
+    },
+];
+
+const routes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
 ];
 
 @NgModule({
@@ -37,6 +73,9 @@ const routes: Routes = [
     ],
     declarations: [
         AddonModChatIndexPage,
+        AddonModChatChatPage,
+        AddonModChatSessionsPage,
+        AddonModChatSessionMessagesPage,
     ],
 })
 export class AddonModChatLazyModule {}

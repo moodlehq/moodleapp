@@ -1,0 +1,8 @@
+ion-app.app-root page-addon-mod-chat-sessions {
+    .addon-mod-chat-session-show-more .card-content{
+        padding-bottom: 0;
+    }
+    .addon-mod-chat-session-selected {
+        border-top: 5px solid $core-splitview-selected;
+    }
+}
