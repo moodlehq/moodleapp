@@ -22,6 +22,6 @@ RUN npm install && rm -rf /root/.npm
 RUN npx gulp
 
 # Provide a Healthcheck command for easier use in CI.
-HEALTHCHECK --interval=10s --timeout=3s --start-period=30s CMD curl -f http://localhost:8100 || exit 1
+HEALTHCHECK --interval=10s --timeout=5s --start-period=60s CMD curl -f http://localhost:8100 || exit 1
 
 CMD ["npm", "run", "ionic:serve"]

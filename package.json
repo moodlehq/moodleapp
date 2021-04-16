@@ -28,7 +28,7 @@
     "test:coverage": "NODE_ENV=testing gulp && jest --coverage",
     "lint": "NODE_OPTIONS=--max-old-space-size=4096 ng lint",
     "ionic:serve:before": "gulp",
-    "ionic:serve": "gulp watch & ng serve",
+    "ionic:serve": "gulp watch & NODE_OPTIONS=--max-old-space-size=4096 ng serve",
     "ionic:build:before": "gulp"
   },
   "dependencies": {
