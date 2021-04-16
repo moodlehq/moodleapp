@@ -417,6 +417,22 @@ export class CoreFileHelperProvider {
         return !!fileTypeExcludeList.match(regEx);
     }
 
+    /**
+     * Extract filename from the path.
+     *
+     * @param file The file.
+     * @return The file name.
+     */
+    getFilenameFromPath(file: CoreFileEntry): string | undefined {
+        const path = CoreUtils.isFileEntry(file) ? file.fullPath : file.filepath;
+
+        if (typeof path == 'undefined' || path.length == 0) {
+            return;
+        }
+
+        return path.split('\\').pop()?.split('/').pop();
+    }
+
 }
 
 export const CoreFileHelper = makeSingleton(CoreFileHelperProvider);

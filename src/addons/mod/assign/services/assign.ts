@@ -33,6 +33,7 @@ import { AddonModAssignSubmissionFormatted } from './assign-helper';
 import { CoreWSError } from '@classes/errors/wserror';
 import { AddonModAssignAutoSyncData, AddonModAssignManualSyncData, AddonModAssignSyncProvider } from './assign-sync';
 import { CoreFormFields } from '@singletons/form';
+import { CoreFileHelper } from '@services/file-helper';
 
 const ROOT_CACHE_KEY = 'mmaModAssign:';
 
@@ -420,7 +421,7 @@ export class AddonModAssignProvider {
             filearea.files.forEach((file) => {
                 if (!file.filename) {
                     // We don't have filename, extract it from the path.
-                    file.filename = file.filepath?.charAt(0) == '/' ? file.filepath.substr(1) : file.filepath;
+                    file.filename = CoreFileHelper.getFilenameFromPath(file);
                 }
 
                 files.push(file);

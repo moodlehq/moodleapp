@@ -1390,7 +1390,7 @@ export class CoreDomUtilsProvider {
     async showErrorModalDefault(
         error: CoreAnyError,
         defaultError: string,
-        needsTranslate?: boolean,
+        needsTranslate = false,
         autocloseTime?: number,
     ): Promise<HTMLIonAlertElement | null> {
         if (this.isCanceledError(error)) {
