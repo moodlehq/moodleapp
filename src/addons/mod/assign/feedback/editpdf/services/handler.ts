@@ -20,7 +20,7 @@ import {
 } from '@addons/mod/assign/services/assign';
 import { AddonModAssignFeedbackHandler } from '@addons/mod/assign/services/feedback-delegate';
 import { Injectable, Type } from '@angular/core';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModAssignFeedbackEditPdfComponent } from '../component/editpdf';
 
@@ -56,7 +56,7 @@ export class AddonModAssignFeedbackEditPdfHandlerService implements AddonModAssi
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-    ): CoreWSExternalFile[] {
+    ): CoreWSFile[] {
         return AddonModAssign.getSubmissionPluginAttachments(plugin);
     }
 

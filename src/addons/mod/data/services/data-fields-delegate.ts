@@ -22,8 +22,8 @@ import { AddonModDataEntryField,
     AddonModDataSubfieldData,
 } from './data';
 import { CoreFormFields } from '@singletons/form';
-import { CoreWSExternalFile } from '@services/ws';
-import { FileEntry } from '@ionic-native/file';
+import { FileEntry } from '@ionic-native/file/ngx';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Interface that all fields handlers must implement.
@@ -94,7 +94,7 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
         field: AddonModDataField,
         inputData: CoreFormFields,
         originalFieldData: AddonModDataEntryField,
-    ): (CoreWSExternalFile | FileEntry)[];
+    ): CoreFileEntry[];
 
     /**
      * Check and get field requeriments.
@@ -183,7 +183,7 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
         field: AddonModDataField,
         inputData: CoreFormFields,
         originalFieldData: CoreFormFields,
-    ): (CoreWSExternalFile | FileEntry)[] {
+    ): CoreFileEntry[] {
         return this.executeFunctionOnEnabled(field.type, 'getFieldEditFiles', [field, inputData, originalFieldData]) || [];
     }
 

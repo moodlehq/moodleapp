@@ -19,8 +19,8 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTagItem } from '@features/tag/services/tag';
-import { FileEntry } from '@ionic-native/file';
 import { CoreApp } from '@services/app';
+import { CoreFileEntry } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -1151,7 +1151,7 @@ export type AddonModDataEntryField = {
     content2: string; // Contents.
     content3: string; // Contents.
     content4: string; // Contents.
-    files: (CoreWSExternalFile | FileEntry)[];
+    files: CoreFileEntry[];
 };
 
 /**
@@ -1180,7 +1180,7 @@ export type AddonModDataSubfieldData = {
     fieldid: number;
     subfield?: string;
     value?: unknown; // Value encoded in JSON.
-    files?: (CoreWSExternalFile | FileEntry)[];
+    files?: CoreFileEntry[];
 };
 
 /**

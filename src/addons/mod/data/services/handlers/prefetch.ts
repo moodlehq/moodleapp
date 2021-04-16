@@ -21,7 +21,7 @@ import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModDataProvider, AddonModDataEntry, AddonModData, AddonModDataData } from '../data';
 import { AddonModDataSync, AddonModDataSyncResult } from '../data-sync';
@@ -82,10 +82,10 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
         courseId: number,
         omitFail: boolean,
         options: CoreCourseCommonModWSOptions = {},
-    ): Promise<{ database: AddonModDataData; groups: CoreGroup[]; entries: AddonModDataEntry[]; files: CoreWSExternalFile[]}> {
+    ): Promise<{ database: AddonModDataData; groups: CoreGroup[]; entries: AddonModDataEntry[]; files: CoreWSFile[]}> {
         let groups: CoreGroup[] = [];
         let entries: AddonModDataEntry[] = [];
-        let files: CoreWSExternalFile[] = [];
+        let files: CoreWSFile[] = [];
 
         options.cmId = options.cmId || module.id;
         options.siteId = options.siteId || CoreSites.getCurrentSiteId();
@@ -131,12 +131,12 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param entries List of entries to get files from.
      * @return List of files.
      */
-    protected getEntriesFiles(entries: AddonModDataEntry[]): CoreWSExternalFile[] {
-        let files: CoreWSExternalFile[] = [];
+    protected getEntriesFiles(entries: AddonModDataEntry[]): CoreWSFile[] {
+        let files: CoreWSFile[] = [];
 
         entries.forEach((entry) => {
             CoreUtils.objectToArray(entry.contents).forEach((content) => {
-                files = files.concat(<CoreWSExternalFile[]>content.files);
+                files = files.concat(<CoreWSFile[]>content.files);
             });
         });
 
@@ -146,14 +146,14 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
     /**
      * @inheritdoc
      */
-    async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
+    async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         return this.getDatabaseInfoHelper(module, courseId, true).then((info) => info.files);
     }
 
     /**
      * @inheritdoc
      */
-    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
+    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         const data = await CoreUtils.ignoreErrors(AddonModData.getDatabase(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, data);

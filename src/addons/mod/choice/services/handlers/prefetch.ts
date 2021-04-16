@@ -19,7 +19,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModChoice, AddonModChoiceProvider } from '../choice';
 import { AddonModChoiceSync, AddonModChoiceSyncResult } from '../choice-sync';
@@ -116,7 +116,7 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
     /**
      * @inheritdoc
      */
-    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
+    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         const choice = await CoreUtils.ignoreErrors(AddonModChoice.getChoice(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, choice);

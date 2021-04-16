@@ -24,10 +24,10 @@ import { AddonModAssignOffline, AddonModAssignSubmissionsDBRecordFormatted } fro
 import { AddonModAssignSubmissionHandler } from '@addons/mod/assign/services/submission-delegate';
 import { Injectable, Type } from '@angular/core';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
-import { CoreFileHelper } from '@services/file-helper';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModAssignSubmissionFileComponent } from '../component/file';
 import { FileEntry } from '@ionic-native/file/ngx';
@@ -156,7 +156,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-    ): CoreWSExternalFile[] {
+    ): CoreWSFile[] {
         return AddonModAssign.getSubmissionPluginAttachments(plugin);
     }
 
@@ -350,14 +350,14 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         submission: AddonModAssignSubmission,
         offlineData?: AddonModAssignSubmissionsDBRecordFormatted,
         siteId?: string,
-    ): Promise<(FileEntry | CoreWSExternalFile)[]> {
+    ): Promise<CoreFileEntry[]> {
         const filesData = <CoreFileUploaderStoreFilesResult>offlineData?.plugindata.files_filemanager;
         if (!filesData) {
             return [];
         }
 
         // Has some data to sync.
-        let files: (FileEntry | CoreWSExternalFile)[] = filesData.online || [];
+        let files: CoreFileEntry[] = filesData.online || [];
 
         if (filesData.offline) {
             // Has offline files, get them and add them to the list.

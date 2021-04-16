@@ -13,11 +13,10 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, DoCheck, KeyValueDiffers } from '@angular/core';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { CoreFileEntry } from '@services/file-helper';
 
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
 
 /**
  * Component to render a file list.
@@ -31,7 +30,7 @@ import { CoreWSExternalFile } from '@services/ws';
 })
 export class CoreFilesComponent implements OnInit, DoCheck {
 
-    @Input() files?: (CoreWSExternalFile | FileEntry)[]; // List of files.
+    @Input() files?: CoreFileEntry[]; // List of files.
     @Input() component?: string; // Component the downloaded files will be linked to.
     @Input() componentId?: string | number; // Component ID.
     @Input() alwaysDownload?: boolean | string; // Whether it should always display the refresh button when the file is downloaded.

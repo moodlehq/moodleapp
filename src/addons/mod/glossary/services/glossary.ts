@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
@@ -30,6 +29,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { AddonModGlossaryEntryDBRecord, ENTRIES_TABLE_NAME } from './database/glossary';
 import { AddonModGlossaryOffline } from './glossary-offline';
 import { AddonModGlossaryAutoSyncData, AddonModGlossarySyncProvider } from './glossary-sync';
+import { CoreFileEntry } from '@services/file-helper';
 
 const ROOT_CACHE_KEY = 'mmaModGlossary:';
 
@@ -1431,7 +1431,7 @@ export type AddonModGlossaryNewEntry = {
  * Entry to be added, including attachments.
  */
 export type AddonModGlossaryNewEntryWithFiles = AddonModGlossaryNewEntry & {
-    files: (CoreWSExternalFile | FileEntry)[];
+    files: CoreFileEntry[];
 };
 
 /**

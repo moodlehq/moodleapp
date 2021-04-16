@@ -18,11 +18,11 @@ import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreFileUploader, CoreFileUploaderTypeList } from '@features/fileuploader/services/fileuploader';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreWSExternalFile } from '@services/ws';
 import { Translate } from '@singletons';
 import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Component to render attachments, allow adding more and delete the current ones.
@@ -43,7 +43,7 @@ import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuplo
 })
 export class CoreAttachmentsComponent implements OnInit {
 
-    @Input() files?: (CoreWSExternalFile | FileEntry)[]; // List of attachments. New attachments will be added to this array.
+    @Input() files?: CoreFileEntry[]; // List of attachments. New attachments will be added to this array.
     @Input() maxSize?: number; // Max size for attachments. -1 means unlimited, 0 means user max size, not defined means unknown.
     @Input() maxSubmissions?: number; // Max number of attachments. -1 means unlimited, not defined means unknown limit.
     @Input() component?: string; // Component the downloaded files will be linked to.

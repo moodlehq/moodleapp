@@ -15,7 +15,7 @@
 import { Injectable, Type } from '@angular/core';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreQuestionDefaultHandler } from './handlers/default-question';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from './question';
@@ -143,7 +143,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param usageId Usage ID.
      * @return List of files or URLs.
      */
-    getAdditionalDownloadableFiles?(question: CoreQuestionQuestionParsed, usageId?: number): CoreWSExternalFile[];
+    getAdditionalDownloadableFiles?(question: CoreQuestionQuestionParsed, usageId?: number): CoreWSFile[];
 
     /**
      * Clear temporary data after the data has been saved.
@@ -393,7 +393,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * @param usageId Usage ID.
      * @return List of files or URLs.
      */
-    getAdditionalDownloadableFiles(question: CoreQuestionQuestionParsed, usageId?: number): CoreWSExternalFile[] {
+    getAdditionalDownloadableFiles(question: CoreQuestionQuestionParsed, usageId?: number): CoreWSFile[] {
         const type = this.getTypeName(question);
 
         return this.executeFunctionOnEnabled(type, 'getAdditionalDownloadableFiles', [question, usageId]) || [];

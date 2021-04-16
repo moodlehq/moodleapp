@@ -30,7 +30,7 @@ import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSectionStatusChangedData } from '@singletons/events';
 import { CoreError } from '@classes/errors/error';
-import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
+import { CoreWSFile, CoreWSExternalWarning } from '@services/ws';
 import { CHECK_UPDATES_TIMES_TABLE, CoreCourseCheckUpdatesDBRecord } from './database/module-prefetch';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 
@@ -458,7 +458,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
 
                 // Retrieve file size if it's downloaded.
                 await Promise.all(files.map(async (file) => {
-                    const path = await CoreFilepool.getFilePathByUrl(siteId, file.fileurl || '');
+                    const path = await CoreFilepool.getFilePathByUrl(siteId, CoreFileHelper.getFileUrl(file));
 
                     try {
                         const fileSize = await CoreFile.getFileSize(path);
@@ -467,7 +467,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
                     } catch {
                         // Error getting size. Check if the file is being downloaded.
                         try {
-                            await CoreFilepool.isFileDownloadingByUrl(siteId, file.fileurl || '');
+                            await CoreFilepool.isFileDownloadingByUrl(siteId, CoreFileHelper.getFileUrl(file));
 
                             // If downloading, count as downloaded.
                             size += file.filesize || 0;
@@ -523,7 +523,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
     async getModuleFiles(
         module: CoreCourseAnyModuleData,
         courseId: number,
-    ): Promise<(CoreWSExternalFile | CoreCourseModuleContentFile)[]> {
+    ): Promise<(CoreWSFile | CoreCourseModuleContentFile)[]> {
         const handler = this.getPrefetchHandlerFor(module);
 
         if (handler?.getFiles) {
@@ -1192,7 +1192,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             const files = await this.getModuleFiles(module, courseId);
 
             await Promise.all(files.map(async (file) => {
-                await CoreUtils.ignoreErrors(CoreFilepool.removeFileByUrl(siteId, file.fileurl || ''));
+                await CoreUtils.ignoreErrors(CoreFilepool.removeFileByUrl(siteId, CoreFileHelper.getFileUrl(file)));
             }));
         }
 
@@ -1462,7 +1462,7 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      * @param courseId Course ID the module belongs to.
      * @return List of files, or promise resolved with the files.
      */
-    getFiles?(module: CoreCourseAnyModuleData, courseId: number): Promise<(CoreWSExternalFile | CoreCourseModuleContentFile)[]>;
+    getFiles?(module: CoreCourseAnyModuleData, courseId: number): Promise<(CoreWSFile | CoreCourseModuleContentFile)[]>;
 
     /**
      * Check if a certain module has updates based on the result of check updates.

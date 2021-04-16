@@ -17,13 +17,12 @@ import { Injectable } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
-import { FileEntry } from '@ionic-native/file';
+import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFormFields } from '@singletons/form';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import {
@@ -44,6 +43,7 @@ import {
 } from './data';
 import { AddonModDataFieldsDelegate } from './data-fields-delegate';
 import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Service that provides helper functions for datas.
@@ -605,7 +605,7 @@ export class AddonModDataHelperProvider {
         inputData: CoreFormFields,
         fields: AddonModDataField[],
         entryContents: AddonModDataEntryFields,
-    ): Promise<(CoreWSExternalFile | FileEntry)[]> {
+    ): Promise<CoreFileEntry[]> {
         if (!inputData) {
             return [];
         }
@@ -745,7 +745,7 @@ export class AddonModDataHelperProvider {
         dataId: number,
         entryId: number,
         fieldId: number,
-        files: (CoreWSExternalFile | FileEntry)[],
+        files: CoreFileEntry[],
         siteId?: string,
     ): Promise<CoreFileUploaderStoreFilesResult> {
         // Get the folder where to store the files.
@@ -771,7 +771,7 @@ export class AddonModDataHelperProvider {
         itemId: number = 0,
         entryId: number,
         fieldId: number,
-        files: (CoreWSExternalFile | FileEntry)[],
+        files: CoreFileEntry[],
         offline: boolean,
         siteId?: string,
     ): Promise<number | CoreFileUploaderStoreFilesResult> {

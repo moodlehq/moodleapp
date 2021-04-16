@@ -15,13 +15,14 @@
 import { Injectable, EventEmitter } from '@angular/core';
 
 import { CoreFile } from '@services/file';
+import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreQuestion, CoreQuestionProvider, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from './question';
 import { CoreQuestionDelegate } from './question-delegate';
@@ -394,7 +395,7 @@ export class CoreQuestionHelperProvider {
      * @param html HTML code to search in.
      * @return Attachments.
      */
-    getQuestionAttachmentsFromHtml(html: string): CoreWSExternalFile[] {
+    getQuestionAttachmentsFromHtml(html: string): CoreWSFile[] {
         const element = CoreDomUtils.convertToElement(html);
 
         // Remove the filemanager (area to attach files to a question).
@@ -402,7 +403,7 @@ export class CoreQuestionHelperProvider {
 
         // Search the anchors.
         const anchors = Array.from(element.querySelectorAll('a'));
-        const attachments: CoreWSExternalFile[] = [];
+        const attachments: CoreWSFile[] = [];
 
         anchors.forEach((anchor) => {
             let content = anchor.innerHTML;
@@ -464,7 +465,7 @@ export class CoreQuestionHelperProvider {
      * @param areaName Name of the area, e.g. 'attachments'.
      * @return List of files.
      */
-    getResponseFileAreaFiles(question: CoreQuestionQuestion, areaName: string): CoreWSExternalFile[] {
+    getResponseFileAreaFiles(question: CoreQuestionQuestion, areaName: string): CoreWSFile[] {
         if (!question.responsefileareas) {
             return [];
         }
@@ -642,22 +643,23 @@ export class CoreQuestionHelperProvider {
 
         await Promise.all(files.map(async (file) => {
             const timemodified = file.timemodified || 0;
+            const fileUrl = CoreFileHelper.getFileUrl(file);
 
-            if (treated[file.fileurl]) {
+            if (treated[fileUrl]) {
                 return;
             }
-            treated[file.fileurl] = true;
+            treated[fileUrl] = true;
 
-            if (!site.canDownloadFiles() && CoreUrlUtils.isPluginFileUrl(file.fileurl)) {
+            if (!site.canDownloadFiles() && CoreUrlUtils.isPluginFileUrl(fileUrl)) {
                 return;
             }
 
-            if (file.fileurl.indexOf('theme/image.php') > -1 && file.fileurl.indexOf('flagged') > -1) {
+            if (fileUrl.indexOf('theme/image.php') > -1 && fileUrl.indexOf('flagged') > -1) {
                 // Ignore flag images.
                 return;
             }
 
-            await CoreFilepool.addToQueueByUrl(site.getId(), file.fileurl, component, componentId, timemodified);
+            await CoreFilepool.addToQueueByUrl(site.getId(), fileUrl, component, componentId, timemodified);
         }));
     }
 

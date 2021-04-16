@@ -21,7 +21,7 @@ import { CoreGroups } from '@services/groups';
 import { CoreFileSizeSum, CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModWiki, AddonModWikiProvider, AddonModWikiSubwikiPage } from '../wiki';
 import { AddonModWikiSync, AddonModWikiSyncWikiResult } from '../wiki-sync';
@@ -103,7 +103,7 @@ export class AddonModWikiPrefetchHandlerService extends CoreCourseActivityPrefet
         courseId: number,
         single?: boolean,
         siteId?: string,
-    ): Promise<CoreWSExternalFile[]> {
+    ): Promise<CoreWSFile[]> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         try {

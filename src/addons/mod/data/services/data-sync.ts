@@ -21,13 +21,12 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingSync } from '@features/rating/services/rating-sync';
-import { FileEntry } from '@ionic-native/file';
 import { CoreApp } from '@services/app';
+import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModDataProvider, AddonModData, AddonModDataData, AddonModDataAction } from './data';
@@ -348,7 +347,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
                     // Upload Files if asked.
                     const value = CoreTextUtils.parseJSON<CoreFileUploaderStoreFilesResult>(field.value || '');
                     if (value.online || value.offline) {
-                        let files: (CoreWSExternalFile | FileEntry)[] = value.online || [];
+                        let files: CoreFileEntry[] = value.online || [];
 
                         const offlineFiles = value.offline
                             ? await AddonModDataHelper.getStoredFiles(editAction.dataid, entryId, field.fieldid)

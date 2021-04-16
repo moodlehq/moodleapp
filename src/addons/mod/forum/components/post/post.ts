@@ -38,11 +38,10 @@ import {
     AddonModForumProvider,
     AddonModForumReply,
     AddonModForumUpdateDiscussionPostWSOptionsObject,
-    AddonModForumWSPostAttachment,
 } from '../../services/forum';
 import { CoreTag } from '@features/tag/services/tag';
 import { ModalController, PopoverController, Translate } from '@singletons';
-import { CoreFileEntry, CoreFileUploader } from '@features/fileuploader/services/fileuploader';
+import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { IonContent } from '@ionic/angular';
 import { AddonModForumSync } from '../../services/forum-sync';
 import { CoreSync } from '@services/sync';
@@ -54,6 +53,7 @@ import { AddonModForumPostOptionsMenuComponent } from '../post-options-menu/post
 import { AddonModForumEditPostComponent } from '../edit-post/edit-post';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreForms } from '@singletons/form';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -186,7 +186,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         isEditing?: boolean,
         subject?: string,
         message?: string,
-        files?: (CoreFileEntry | AddonModForumWSPostAttachment)[],
+        files?: CoreFileEntry[],
         isPrivate?: boolean,
     ): void {
         // Delete the local files from the tmp folder if any.

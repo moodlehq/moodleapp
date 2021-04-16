@@ -15,8 +15,7 @@ import { Component } from '@angular/core';
 import { AddonModDataEntryField, AddonModDataProvider } from '@addons/mod/data/services/data';
 import { AddonModDataFieldPluginComponent } from '@addons/mod/data/classes/field-plugin-component';
 import { CoreFileSession } from '@services/file-session';
-import { CoreWSExternalFile } from '@services/ws';
-import { FileEntry } from '@ionic-native/file';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Component to render data file field.
@@ -27,7 +26,7 @@ import { FileEntry } from '@ionic-native/file';
 })
 export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginComponent {
 
-    files: (CoreWSExternalFile | FileEntry)[] = [];
+    files: CoreFileEntry[] = [];
     component?: string;
     componentId?: number;
     maxSizeBytes?: number;
@@ -38,7 +37,7 @@ export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginCompo
      * @param value Input value.
      * @return List of files.
      */
-    protected getFiles(value?: Partial<AddonModDataEntryField>): (CoreWSExternalFile | FileEntry)[] {
+    protected getFiles(value?: Partial<AddonModDataEntryField>): CoreFileEntry[] {
         let files = value?.files || [];
 
         // Reduce to first element.

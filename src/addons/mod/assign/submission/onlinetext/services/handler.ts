@@ -27,7 +27,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModAssignSubmissionOnlineTextComponent } from '../component/onlinetext';
 
@@ -124,7 +124,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-    ): CoreWSExternalFile[] {
+    ): CoreWSFile[] {
         return AddonModAssign.getSubmissionPluginAttachments(plugin);
     }
 

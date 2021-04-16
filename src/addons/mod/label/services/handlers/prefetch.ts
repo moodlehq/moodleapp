@@ -17,7 +17,7 @@ import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModLabel, AddonModLabelLabel, AddonModLabelProvider } from '../label';
 
@@ -36,7 +36,7 @@ export class AddonModLabelPrefetchHandlerService extends CoreCourseResourcePrefe
     /**
      * @inheritdoc
      */
-    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number, ignoreCache?: boolean): Promise<CoreWSExternalFile[]> {
+    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number, ignoreCache?: boolean): Promise<CoreWSFile[]> {
         let label: AddonModLabelLabel | undefined;
 
         if (AddonModLabel.isGetLabelAvailableForSite()) {

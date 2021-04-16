@@ -14,13 +14,14 @@
 
 import { Component, ViewChild, ElementRef, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { CoreFileEntry, CoreFileUploader } from '@features/fileuploader/services/fileuploader';
+import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { ModalController, Translate } from '@singletons';
 import { AddonModForumData, AddonModForumPost, AddonModForumReply } from '@addons/mod/forum/services/forum';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreForms } from '@singletons/form';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Page that displays a form to edit discussion post.

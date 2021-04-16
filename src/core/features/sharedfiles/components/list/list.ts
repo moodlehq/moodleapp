@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
-import { FileEntry, DirectoryEntry } from '@ionic-native/file';
+import { FileEntry, DirectoryEntry } from '@ionic-native/file/ngx';
 import { IonRefresher } from '@ionic/angular';
 import { Md5 } from 'ts-md5';
 

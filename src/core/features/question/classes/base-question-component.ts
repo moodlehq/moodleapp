@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { CoreLogger } from '@singletons/logger';
 import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion } from '../services/question-helper';
 
@@ -715,7 +715,7 @@ export type AddonModQuizEssayQuestion = AddonModQuizQuestionBasicData & {
     isPlainText?: boolean; // Whether the answer is plain text.
     hasInlineText?: boolean; // // Whether the answer has inline text
     answer?: string; // Question answer text.
-    attachments?: CoreWSExternalFile[]; // Question answer attachments.
+    attachments?: CoreWSFile[]; // Question answer attachments.
     hasDraftFiles?: boolean; // Whether the question has draft files.
     textarea?: AddonModQuizQuestionTextarea; // Textarea data.
     formatInput?: { name: string; value: string }; // Format input data.

@@ -20,9 +20,10 @@ import { CoreApp } from '@services/app';
 import { CoreLang } from '@services/lang';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { makeSingleton, ModalController, Translate } from '@singletons';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { Locutus } from '@singletons/locutus';
 import { CoreViewerTextComponent } from '@features/viewer/components/text/text';
+import { CoreFileHelper } from '@services/file-helper';
 
 /**
  * Different type of errors the app can treat.
@@ -462,7 +463,7 @@ export class CoreTextUtilsProvider {
         text: string,
         component?: string,
         componentId?: string | number,
-        files?: CoreWSExternalFile[],
+        files?: CoreWSFile[],
         filter?: boolean,
         contextLevel?: string,
         instanceId?: number,
@@ -555,9 +556,9 @@ export class CoreTextUtilsProvider {
      * @param files Files to extract the URL from. They need to have the URL in a 'url' or 'fileurl' attribute.
      * @return Pluginfile URL, undefined if no files found.
      */
-    getTextPluginfileUrl(files: CoreWSExternalFile[]): string | undefined {
+    getTextPluginfileUrl(files: CoreWSFile[]): string | undefined {
         if (files?.length) {
-            const url = files[0].fileurl;
+            const url = CoreFileHelper.getFileUrl(files[0]);
 
             // Remove text after last slash (encoded or not).
             return url?.substr(0, Math.max(url.lastIndexOf('/'), url.lastIndexOf('%2F')));
@@ -759,7 +760,7 @@ export class CoreTextUtilsProvider {
     replaceDraftfileUrls(
         siteUrl: string,
         text: string,
-        files: CoreWSExternalFile[],
+        files: CoreWSFile[],
     ): { text: string; replaceMap?: {[url: string]: string} } {
 
         if (!text || !files || !files.length) {
@@ -776,7 +777,7 @@ export class CoreTextUtilsProvider {
         // Index the pluginfile URLs by file name.
         const pluginfileMap: {[name: string]: string} = {};
         files.forEach((file) => {
-            pluginfileMap[file.filename!] = file.fileurl;
+            pluginfileMap[file.filename!] = CoreFileHelper.getFileUrl(file);
         });
 
         // Replace each draftfile with the corresponding pluginfile URL.
@@ -812,7 +813,7 @@ export class CoreTextUtilsProvider {
      * @param files Files to extract the pluginfile URL from. They need to have the URL in a url or fileurl attribute.
      * @return Treated text.
      */
-    replacePluginfileUrls(text: string, files: CoreWSExternalFile[]): string {
+    replacePluginfileUrls(text: string, files: CoreWSFile[]): string {
         if (text && typeof text == 'string') {
             const fileURL = this.getTextPluginfileUrl(files);
             if (fileURL) {
@@ -830,7 +831,7 @@ export class CoreTextUtilsProvider {
      * @param replaceMap Map of the replacements that were done.
      * @return Treated text.
      */
-    restoreDraftfileUrls(siteUrl: string, treatedText: string, originalText: string, files: CoreWSExternalFile[]): string {
+    restoreDraftfileUrls(siteUrl: string, treatedText: string, originalText: string, files: CoreWSFile[]): string {
         if (!treatedText || !files || !files.length) {
             return treatedText;
         }
@@ -848,7 +849,7 @@ export class CoreTextUtilsProvider {
                 return; // Original URL not found, skip.
             }
 
-            treatedText = treatedText.replace(new RegExp(this.escapeForRegex(file.fileurl), 'g'), matches[0]);
+            treatedText = treatedText.replace(new RegExp(this.escapeForRegex(CoreFileHelper.getFileUrl(file)), 'g'), matches[0]);
         });
 
         return treatedText;
@@ -861,7 +862,7 @@ export class CoreTextUtilsProvider {
      * @param files Files to extract the pluginfile URL from. They need to have the URL in a url or fileurl attribute.
      * @return Treated text.
      */
-    restorePluginfileUrls(text: string, files: CoreWSExternalFile[]): string {
+    restorePluginfileUrls(text: string, files: CoreWSFile[]): string {
         if (text && typeof text == 'string') {
             const fileURL = this.getTextPluginfileUrl(files);
             if (fileURL) {
@@ -1103,7 +1104,7 @@ export class CoreTextUtilsProvider {
 export type CoreTextUtilsViewTextOptions = {
     component?: string; // Component to link the embedded files to.
     componentId?: string | number; // An ID to use in conjunction with the component.
-    files?: CoreWSExternalFile[]; // List of files to display along with the text.
+    files?: CoreWSFile[]; // List of files to display along with the text.
     filter?: boolean; // Whether the text should be filtered.
     contextLevel?: string; // The context level.
     instanceId?: number; // The instance ID related to the context.

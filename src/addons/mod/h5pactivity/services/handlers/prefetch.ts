@@ -21,7 +21,7 @@ import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreUser } from '@features/user/services/user';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity, AddonModH5PActivityData, AddonModH5PActivityProvider } from '../h5pactivity';
 
@@ -39,7 +39,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
     /**
      * @inheritdoc
      */
-    async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
+    async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
 
         const h5pActivity = await AddonModH5PActivity.getH5PActivity(courseId, module.id);
 

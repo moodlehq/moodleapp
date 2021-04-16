@@ -19,7 +19,7 @@ import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/c
 import { CoreUser } from '@features/user/services/user';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModGlossary, AddonModGlossaryEntry, AddonModGlossaryGlossary, AddonModGlossaryProvider } from '../glossary';
 import { AddonModGlossarySync, AddonModGlossarySyncResult } from '../glossary-sync';
@@ -38,7 +38,7 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
     /**
      * @inheritdoc
      */
-    async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
+    async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         try {
             const glossary = await AddonModGlossary.getGlossary(courseId, module.id);
 
@@ -68,7 +68,7 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
         module: CoreCourseAnyModuleData,
         glossary: AddonModGlossaryGlossary,
         entries: AddonModGlossaryEntry[],
-    ): CoreWSExternalFile[] {
+    ): CoreWSFile[] {
         let files = this.getIntroFilesFromInstance(module, glossary);
 
         const getInlineFiles = CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.2');

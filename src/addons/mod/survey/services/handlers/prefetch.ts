@@ -18,7 +18,7 @@ import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModSurvey, AddonModSurveyProvider } from '../survey';
 import { AddonModSurveySync, AddonModSurveySyncResult } from '../survey-sync';
@@ -37,7 +37,7 @@ export class AddonModSurveyPrefetchHandlerService extends CoreCourseActivityPref
     /**
      * @inheritdoc
      */
-    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
+    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         const survey = await CoreUtils.ignoreErrors(AddonModSurvey.getSurvey(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, survey);

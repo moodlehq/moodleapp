@@ -26,7 +26,7 @@ import { AddonModAssignSubmissionDelegate } from '../submission-delegate';
 import { AddonModAssignFeedbackDelegate } from '../feedback-delegate';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../assign-helper';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
@@ -82,13 +82,13 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @param courseId Course ID the module belongs to.
      * @return Promise resolved with the list of files.
      */
-    async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
+    async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         const siteId = CoreSites.getCurrentSiteId();
 
         try {
             const assign = await AddonModAssign.getAssignment(courseId, module.id, { siteId });
             // Get intro files and attachments.
-            let files = assign.introattachments || [];
+            let files: CoreWSFile[] = assign.introattachments || [];
             files = files.concat(this.getIntroFilesFromInstance(module, assign));
 
             // Now get the files in the submissions.
@@ -145,7 +145,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         submitId: number,
         blindMarking: boolean,
         siteId?: string,
-    ): Promise<CoreWSExternalFile[]> {
+    ): Promise<CoreWSFile[]> {
 
         const submissionStatus = await AddonModAssign.getSubmissionStatusWithRetry(assign, {
             userId: submitId,
@@ -158,7 +158,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
             return [];
         }
 
-        const promises: Promise<CoreWSExternalFile[]>[] = [];
+        const promises: Promise<CoreWSFile[]>[] = [];
 
         if (userSubmission.plugins) {
             // Add submission plugin files.
@@ -245,7 +245,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         // Get assignment to retrieve all its submissions.
         const assign = await AddonModAssign.getAssignment(courseId, module.id, options);
-        const promises: Promise<any>[] = [];
+        const promises: Promise<unknown>[] = [];
         const blindMarking = assign.blindmarking && !assign.revealidentities;
 
         if (blindMarking) {
@@ -259,7 +259,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         promises.push(CoreCourseHelper.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
 
         // Download intro files and attachments. Do not call getFiles because it'd call some WS twice.
-        let files = assign.introattachments || [];
+        let files: CoreWSFile[] = assign.introattachments || [];
         files = files.concat(this.getIntroFilesFromInstance(module, assign));
 
         promises.push(CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id));
@@ -293,7 +293,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         // Get submissions.
         const submissions = await AddonModAssign.getSubmissions(assign.id, modOptions);
-        const promises: Promise<any>[] = [];
+        const promises: Promise<unknown>[] = [];
 
         promises.push(this.prefetchParticipantSubmissions(
             assign,
@@ -359,7 +359,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
             AddonModAssignHelper.getSubmissionsUserData(assign, submissions, group.id, options)
                 .then((submissions: AddonModAssignSubmissionFormatted[]) => {
 
-                    const subPromises: Promise<any>[] = submissions.map((submission) => {
+                    const subPromises: Promise<unknown>[] = submissions.map((submission) => {
                         const submissionOptions = {
                             userId: submission.submitid,
                             groupId: group.id,
@@ -426,7 +426,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         const userId = options.userId;
 
         try {
-            const promises: Promise<any>[] = [];
+            const promises: Promise<unknown>[] = [];
             const blindMarking = !!assign.blindmarking && !assign.revealidentities;
             let userIds: number[] = [];
             const userSubmission = AddonModAssign.getSubmissionObjectFromAttempt(assign, submission.lastattempt);

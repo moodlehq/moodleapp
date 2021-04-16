@@ -24,7 +24,7 @@ import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/service
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonBlog } from '../blog';
 import { AddonBlogMainMenuHandlerService } from './mainmenu';
@@ -89,7 +89,7 @@ export class AddonBlogCourseOptionHandlerService implements CoreCourseOptionsHan
         const result = await AddonBlog.getEntries({ courseid: course.id });
 
         await Promise.all(result.entries.map(async (entry) => {
-            let files: CoreWSExternalFile[] = [];
+            let files: CoreWSFile[] = [];
 
             if (entry.attachmentfiles && entry.attachmentfiles.length) {
                 files = entry.attachmentfiles;

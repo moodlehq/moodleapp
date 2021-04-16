@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreWSExternalFile } from '@services/ws';
 import { FileEntry } from '@ionic-native/file/ngx';
 import {
     AddonModAssignProvider,
@@ -36,6 +35,7 @@ import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Service that provides some helper functions for assign.
@@ -642,7 +642,7 @@ export class AddonModAssignHelperProvider {
     async storeSubmissionFiles(
         assignId: number,
         folderName: string,
-        files: (CoreWSExternalFile | FileEntry)[],
+        files: CoreFileEntry[],
         userId?: number,
         siteId?: string,
     ): Promise<CoreFileUploaderStoreFilesResult> {
@@ -661,7 +661,7 @@ export class AddonModAssignHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the itemId.
      */
-    uploadFile(assignId: number, file: CoreWSExternalFile | FileEntry, itemId?: number, siteId?: string): Promise<number> {
+    uploadFile(assignId: number, file: CoreFileEntry, itemId?: number, siteId?: string): Promise<number> {
         return CoreFileUploader.uploadOrReuploadFile(file, itemId, AddonModAssignProvider.COMPONENT, assignId, siteId);
     }
 
@@ -675,7 +675,7 @@ export class AddonModAssignHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the itemId.
      */
-    uploadFiles(assignId: number, files: (CoreWSExternalFile | FileEntry)[], siteId?: string): Promise<number> {
+    uploadFiles(assignId: number, files: CoreFileEntry[], siteId?: string): Promise<number> {
         return CoreFileUploader.uploadOrReuploadFiles(files, AddonModAssignProvider.COMPONENT, assignId, siteId);
     }
 
@@ -693,7 +693,7 @@ export class AddonModAssignHelperProvider {
     async uploadOrStoreFiles(
         assignId: number,
         folderName: string,
-        files: (CoreWSExternalFile | FileEntry)[],
+        files: CoreFileEntry[],
         offline = false,
         userId?: number,
         siteId?: string,

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/resource-prefetch-handler';
 import { CoreCourseAnyModuleData, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModBook, AddonModBookProvider } from '../book';
 
@@ -55,7 +55,7 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
      * @param courseId Course ID.
      * @return Promise resolved with list of intro files.
      */
-    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
+    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         const book = await CoreUtils.ignoreErrors(AddonModBook.getBook(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, book);

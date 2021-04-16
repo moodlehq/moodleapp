@@ -15,7 +15,7 @@
 import { AddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/components/feedback-plugin/feedback-plugin';
 import { AddonModAssign, AddonModAssignProvider } from '@addons/mod/assign/services/assign';
 import { Component, OnInit } from '@angular/core';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 
 /**
  * Component to render a file feedback plugin.
@@ -27,7 +27,7 @@ import { CoreWSExternalFile } from '@services/ws';
 export class AddonModAssignFeedbackFileComponent extends AddonModAssignFeedbackPluginComponent implements OnInit {
 
     component = AddonModAssignProvider.COMPONENT;
-    files: CoreWSExternalFile[] = [];
+    files: CoreWSFile[] = [];
 
     /**
      * Component being initialized.

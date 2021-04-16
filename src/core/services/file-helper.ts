@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileEntry } from '@ionic-native/file';
+import { FileEntry } from '@ionic-native/file/ngx';
 
 import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreWS, CoreWSExternalFile } from '@services/ws';
+import { CoreWS, CoreWSFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
@@ -46,7 +46,7 @@ export class CoreFileHelperProvider {
      * @return Resolved on success.
      */
     async downloadAndOpenFile(
-        file: CoreWSExternalFile,
+        file: CoreWSFile,
         component?: string,
         componentId?: string | number,
         state?: string,
@@ -55,7 +55,7 @@ export class CoreFileHelperProvider {
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const fileUrl = file.fileurl;
+        const fileUrl = CoreFileHelper.getFileUrl(file);
         const timemodified = this.getFileTimemodified(file);
 
         if (!this.isOpenableInApp(file)) {
@@ -119,7 +119,7 @@ export class CoreFileHelperProvider {
      * @return Resolved with the URL to use on success.
      */
     protected async downloadFileIfNeeded(
-        file: CoreWSExternalFile,
+        file: CoreWSFile,
         fileUrl: string,
         component?: string,
         componentId?: string | number,
@@ -215,7 +215,7 @@ export class CoreFileHelperProvider {
         componentId?: string | number,
         timemodified?: number,
         onProgress?: (event: ProgressEvent) => void,
-        file?: CoreWSExternalFile,
+        file?: CoreWSFile,
         siteId?: string,
     ): Promise<string> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -255,10 +255,10 @@ export class CoreFileHelperProvider {
      * Get the file's URL.
      *
      * @param file The file.
-     * @deprecated since 3.9.5. Get directly the fileurl instead.
+     * @return File URL.
      */
-    getFileUrl(file: CoreWSExternalFile): string | undefined {
-        return file.fileurl;
+    getFileUrl(file: CoreWSFile): string {
+        return 'fileurl' in file ? file.fileurl : file.url;
     }
 
     /**
@@ -266,7 +266,7 @@ export class CoreFileHelperProvider {
      *
      * @param file The file.
      */
-    getFileTimemodified(file: CoreWSExternalFile): number {
+    getFileTimemodified(file: CoreWSFile): number {
         return file.timemodified || 0;
     }
 
@@ -286,8 +286,8 @@ export class CoreFileHelperProvider {
      * @param file The file to check.
      * @return Whether the file should be opened in browser.
      */
-    shouldOpenInBrowser(file: CoreWSExternalFile): boolean {
-        if (!file || !file.isexternalfile || !file.mimetype) {
+    shouldOpenInBrowser(file: CoreWSFile): boolean {
+        if (!file || !('isexternalfile' in file) || !file.isexternalfile || !file.mimetype) {
             return false;
         }
 
@@ -312,7 +312,7 @@ export class CoreFileHelperProvider {
      * @param files The files to check.
      * @return Total files size.
      */
-    async getTotalFilesSize(files: (CoreWSExternalFile | FileEntry)[]): Promise<number> {
+    async getTotalFilesSize(files: CoreFileEntry[]): Promise<number> {
         let totalSize = 0;
 
         for (const file of files) {
@@ -328,14 +328,14 @@ export class CoreFileHelperProvider {
      * @param file The file to check.
      * @return File size.
      */
-    async getFileSize(file: CoreWSExternalFile | FileEntry): Promise<number> {
+    async getFileSize(file: CoreFileEntry): Promise<number> {
         if ('filesize' in file && (file.filesize || file.filesize === 0)) {
             return file.filesize;
         }
 
         // If it's a remote file. First check if we have the file downloaded since it's more reliable.
         if ('filename' in file) {
-            const fileUrl = file.fileurl;
+            const fileUrl = CoreFileHelper.getFileUrl(file);
 
             try {
                 const siteId = CoreSites.getCurrentSiteId();
@@ -422,3 +422,5 @@ export class CoreFileHelperProvider {
 export const CoreFileHelper = makeSingleton(CoreFileHelperProvider);
 
 export type CoreFileHelperOnProgress = (event?: ProgressEvent | { calculating: true }) => void;
+
+export type CoreFileEntry = CoreWSFile | FileEntry;

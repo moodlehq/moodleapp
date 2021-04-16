@@ -26,12 +26,13 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile, CoreWSFileUploadOptions, CoreWSUploadFileResult } from '@services/ws';
+import { CoreWSFile, CoreWSFileUploadOptions, CoreWSUploadFileResult } from '@services/ws';
 import { makeSingleton, Translate, MediaCapture, ModalController, Camera } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreEmulatorCaptureMediaComponent } from '@features/emulator/components/capture-media/capture-media';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/site';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 
 /**
  * File upload options.
@@ -80,7 +81,7 @@ export class CoreFileUploaderProvider {
      * @param b Second file list.
      * @return Whether both lists are different.
      */
-    areFileListDifferent(a: (CoreWSExternalFile | FileEntry)[], b: (CoreWSExternalFile | FileEntry)[]): boolean {
+    areFileListDifferent(a: CoreFileEntry[], b: CoreFileEntry[]): boolean {
         a = a || [];
         b = b || [];
         if (a.length != b.length) {
@@ -194,7 +195,7 @@ export class CoreFileUploaderProvider {
      *
      * @param files List of files.
      */
-    clearTmpFiles(files: (CoreWSExternalFile | FileEntry)[]): void {
+    clearTmpFiles(files: (CoreWSFile | FileEntry)[]): void {
         // Delete the local files.
         files.forEach((file) => {
             if ('remove' in file) {
@@ -275,15 +276,16 @@ export class CoreFileUploaderProvider {
      * @return List of files to delete.
      */
     getFilesToDelete(
-        originalFiles: CoreWSExternalFile[],
-        currentFiles: (CoreWSExternalFile | FileEntry)[],
+        originalFiles: CoreWSFile[],
+        currentFiles: CoreFileEntry[],
     ): { filepath: string; filename: string }[] {
 
         const filesToDelete: { filepath: string; filename: string }[] = [];
         currentFiles = currentFiles || [];
 
         originalFiles.forEach((file) => {
-            const stillInList = currentFiles.some((currentFile) => (<CoreWSExternalFile> currentFile).fileurl == file.fileurl);
+            const stillInList = currentFiles.some((currentFile) =>
+                CoreFileHelper.getFileUrl(<CoreWSFile> currentFile) == CoreFileHelper.getFileUrl(file));
 
             if (!stillInList) {
                 filesToDelete.push({
@@ -391,8 +393,8 @@ export class CoreFileUploaderProvider {
     async getStoredFilesFromOfflineFilesObject(
         filesObject: CoreFileUploaderStoreFilesResult,
         folderPath: string,
-    ): Promise<(CoreWSExternalFile | FileEntry)[]> {
-        let files: (CoreWSExternalFile | FileEntry)[] = [];
+    ): Promise<CoreFileEntry[]> {
+        let files: CoreFileEntry[] = [];
 
         if (filesObject.online.length > 0) {
             files = CoreUtils.clone(filesObject.online);
@@ -550,7 +552,7 @@ export class CoreFileUploaderProvider {
      */
     async storeFilesToUpload(
         folderPath: string,
-        files: (CoreWSExternalFile | FileEntry)[],
+        files: CoreFileEntry[],
     ): Promise<CoreFileUploaderStoreFilesResult> {
         const result: CoreFileUploaderStoreFilesResult = {
             online: [],
@@ -569,7 +571,7 @@ export class CoreFileUploaderProvider {
                 // It's an online file, add it to the result and ignore it.
                 result.online.push({
                     filename: file.filename,
-                    fileurl: file.fileurl,
+                    fileurl: CoreFileHelper.getFileUrl(file),
                 });
             } else if (file.fullPath?.indexOf(folderPath) != -1) {
                 // File already in the submission folder.
@@ -629,7 +631,7 @@ export class CoreFileUploaderProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the itemId.
      */
-    async uploadFiles(itemId: number, files: (CoreWSExternalFile | FileEntry)[], siteId?: string): Promise<void> {
+    async uploadFiles(itemId: number, files: CoreFileEntry[], siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (!files || !files.length) {
@@ -637,7 +639,7 @@ export class CoreFileUploaderProvider {
         }
 
         // Index the online files by name.
-        const usedNames: {[name: string]: (CoreWSExternalFile | FileEntry)} = {};
+        const usedNames: {[name: string]: CoreFileEntry} = {};
         const filesToUpload: FileEntry[] = [];
         files.forEach((file) => {
             if (CoreUtils.isFileEntry(file)) {
@@ -674,7 +676,7 @@ export class CoreFileUploaderProvider {
      * @return Promise resolved with the itemId.
      */
     async uploadOrReuploadFile(
-        file: CoreWSExternalFile | FileEntry,
+        file: CoreFileEntry,
         itemId?: number,
         component?: string,
         componentId?: string | number,
@@ -697,7 +699,7 @@ export class CoreFileUploaderProvider {
 
             const path = await CoreFilepool.downloadUrl(
                 siteId,
-                file.fileurl,
+                CoreFileHelper.getFileUrl(file),
                 false,
                 component,
                 componentId,
@@ -734,7 +736,7 @@ export class CoreFileUploaderProvider {
      * @return Promise resolved with the itemId.
      */
     async uploadOrReuploadFiles(
-        files: (CoreWSExternalFile | FileEntry)[],
+        files: CoreFileEntry[],
         component?: string,
         componentId?: string | number,
         siteId?: string,
@@ -766,7 +768,7 @@ export class CoreFileUploaderProvider {
 export const CoreFileUploader = makeSingleton(CoreFileUploaderProvider);
 
 export type CoreFileUploaderStoreFilesResult = {
-    online: CoreWSExternalFile[]; // List of online files.
+    online: CoreWSFile[]; // List of online files.
     offline: number; // Number of offline files.
 };
 
@@ -779,5 +781,3 @@ export type CoreFileUploaderTypeListInfoEntry = {
     name?: string;
     extlist: string;
 };
-
-export type CoreFileEntry = CoreWSExternalFile | FileEntry;

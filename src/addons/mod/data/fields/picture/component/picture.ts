@@ -13,10 +13,9 @@
 // limitations under the License.
 import { AddonModDataEntryField, AddonModDataProvider } from '@addons/mod/data/services/data';
 import { Component } from '@angular/core';
-import { FileEntry } from '@ionic-native/file';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreWSExternalFile } from '@services/ws';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 
 /**
@@ -28,12 +27,12 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
 })
 export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginComponent {
 
-    files: (CoreWSExternalFile | FileEntry)[] = [];
+    files: CoreFileEntry[] = [];
     component?: string;
     componentId?: number;
     maxSizeBytes?: number;
 
-    image?: CoreWSExternalFile | FileEntry;
+    image?: CoreFileEntry;
     entryId?: number;
     imageUrl?: string;
     title?: string;
@@ -46,7 +45,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
      * @param value Input value.
      * @return List of files.
      */
-    protected getFiles(value?: Partial<AddonModDataEntryField>): (CoreWSExternalFile | FileEntry)[] {
+    protected getFiles(value?: Partial<AddonModDataEntryField>): CoreFileEntry[] {
         let files = value?.files || [];
 
         // Reduce to first element.
@@ -65,9 +64,9 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
      * @return File found or false.
      */
     protected findFile(
-        files: (CoreWSExternalFile | FileEntry)[],
+        files: CoreFileEntry[],
         filenameSeek: string,
-    ): CoreWSExternalFile | FileEntry | undefined {
+    ): CoreFileEntry | undefined {
         return files.find((file) => ('name' in file ? file.name : file.filename) == filenameSeek) || undefined;
     }
 
@@ -130,7 +129,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
                 if (this.image) {
                     this.imageUrl = 'name' in this.image
                         ? this.image.toURL() // Is Offline.
-                        : this.image.fileurl;
+                        : CoreFileHelper.getFileUrl(this.image);
                 }
             }, 1);
 

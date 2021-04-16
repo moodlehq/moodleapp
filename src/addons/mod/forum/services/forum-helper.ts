@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { FileEntry } from '@ionic-native/file/ngx';
-import { CoreFileEntry, CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
+import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreUser } from '@features/user/services/user';
 import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
@@ -31,6 +31,7 @@ import {
     AddonModForumProvider,
 } from './forum';
 import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './forum-offline';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Service that provides some features for forums.

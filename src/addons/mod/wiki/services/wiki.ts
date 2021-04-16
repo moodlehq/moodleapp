@@ -22,7 +22,7 @@ import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
+import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModWikiPageDBRecord } from './database/wiki';
@@ -196,7 +196,7 @@ export class AddonModWikiProvider {
      * @param options Other options.
      * @return Promise resolved with subwiki files.
      */
-    async getSubwikiFiles(wikiId: number, options: AddonModWikiGetSubwikiFilesOptions = {}): Promise<CoreWSExternalFile[]> {
+    async getSubwikiFiles(wikiId: number, options: AddonModWikiGetSubwikiFilesOptions = {}): Promise<CoreWSFile[]> {
         const site = await CoreSites.getSite(options.siteId);
 
         const groupId = options.groupId || -1;
@@ -426,10 +426,10 @@ export class AddonModWikiProvider {
      * @param options Other options.
      * @return Promise resolved with the list of files.
      */
-    async getWikiFileList(wiki: AddonModWikiWiki, options: CoreSitesCommonWSOptions = {}): Promise<CoreWSExternalFile[]> {
+    async getWikiFileList(wiki: AddonModWikiWiki, options: CoreSitesCommonWSOptions = {}): Promise<CoreWSFile[]> {
         options.siteId = options.siteId || CoreSites.getCurrentSiteId();
 
-        let files: CoreWSExternalFile[] = [];
+        let files: CoreWSFile[] = [];
         const modOptions = {
             cmId: wiki.coursemodule,
             ...options, // Include all options.

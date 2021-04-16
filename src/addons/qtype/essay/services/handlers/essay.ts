@@ -25,7 +25,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonQtypeEssayComponent } from '../../component/essay';
 
@@ -81,12 +81,12 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
      * @param usageId Usage ID.
      * @return List of files or URLs.
      */
-    getAdditionalDownloadableFiles(question: CoreQuestionQuestionParsed): CoreWSExternalFile[] {
+    getAdditionalDownloadableFiles(question: CoreQuestionQuestionParsed): CoreWSFile[] {
         if (!question.responsefileareas) {
             return [];
         }
 
-        return question.responsefileareas.reduce((urlsList, area) => urlsList.concat(area.files || []), <CoreWSExternalFile[]> []);
+        return question.responsefileareas.reduce((urlsList, area) => urlsList.concat(area.files || []), <CoreWSFile[]> []);
     }
 
     /**

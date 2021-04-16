@@ -25,7 +25,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 
 /**
  * Component to handle a remote file. Shows the file name, icon (depending on mimetype) and a button
@@ -38,7 +38,7 @@ import { CoreWSExternalFile } from '@services/ws';
 })
 export class CoreFileComponent implements OnInit, OnDestroy {
 
-    @Input() file?: CoreWSExternalFile; // The file.
+    @Input() file?: CoreWSFile; // The file.
     @Input() component?: string; // Component the file belongs to.
     @Input() componentId?: string | number; // Component ID.
     @Input() canDelete?: boolean | string; // Whether file can be deleted.
@@ -76,7 +76,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
         this.alwaysDownload = CoreUtils.isTrueOrOne(this.alwaysDownload);
         this.canDownload = CoreUtils.isTrueOrOne(this.canDownload);
 
-        this.fileUrl = this.file.fileurl;
+        this.fileUrl = CoreFileHelper.getFileUrl(this.file);
         this.timemodified = this.file.timemodified || 0;
         this.siteId = CoreSites.getCurrentSiteId();
         this.fileSize = this.file.filesize;
@@ -88,12 +88,12 @@ export class CoreFileComponent implements OnInit, OnDestroy {
 
         this.showTime = CoreUtils.isTrueOrOne(this.showTime) && this.timemodified > 0;
 
-        if (this.file.isexternalfile) {
+        if ('isexternalfile' in this.file && this.file.isexternalfile) {
             this.alwaysDownload = true; // Always show the download button in external files.
         }
 
-        this.fileIcon = this.file.mimetype ? CoreMimetypeUtils.getMimetypeIcon(this.file.mimetype) :
-            CoreMimetypeUtils.getFileIcon(this.fileName);
+        this.fileIcon = 'mimetype' in this.file && this.file.mimetype ?
+            CoreMimetypeUtils.getMimetypeIcon(this.file.mimetype) : CoreMimetypeUtils.getFileIcon(this.fileName);
 
         if (this.canDownload) {
             this.calculateState();

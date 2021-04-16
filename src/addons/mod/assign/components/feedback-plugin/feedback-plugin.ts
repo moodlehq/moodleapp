@@ -15,7 +15,7 @@
 import { Component, Input, OnInit, ViewChild, Type } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { ModalController } from '@singletons';
 import { AddonModAssignFeedbackCommentsTextData } from '../../feedback/comments/services/handler';
 import {
@@ -53,7 +53,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
     // Data to render the plugin if it isn't supported.
     component = AddonModAssignProvider.COMPONENT;
     text = '';
-    files: CoreWSExternalFile[] = [];
+    files: CoreWSFile[] = [];
     notSupported = false;
     pluginLoaded = false;
 

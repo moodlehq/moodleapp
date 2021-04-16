@@ -17,7 +17,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/
 import { AddonModForum, AddonModForumData, AddonModForumPost, AddonModForumProvider } from '../forum';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreFilepool } from '@services/filepool';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGroups, CoreGroupsProvider } from '@services/groups';
@@ -44,7 +44,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @return Promise resolved with the list of files.
      */
-    async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
+    async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         try {
             const forum = await AddonModForum.getForum(courseId, module.id);
 
@@ -69,13 +69,13 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      * @param posts Forum posts.
      * @return Files.
      */
-    protected getPostsFiles(posts: AddonModForumPost[]): CoreWSExternalFile[] {
-        let files: CoreWSExternalFile[] = [];
+    protected getPostsFiles(posts: AddonModForumPost[]): CoreWSFile[] {
+        let files: CoreWSFile[] = [];
         const getInlineFiles = CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.2');
 
         posts.forEach((post) => {
             if (post.attachments && post.attachments.length) {
-                files = files.concat(post.attachments as CoreWSExternalFile[]);
+                files = files.concat(post.attachments as CoreWSFile[]);
             }
             if (getInlineFiles && post.messageinlinefiles && post.messageinlinefiles.length) {
                 files = files.concat(post.messageinlinefiles);
