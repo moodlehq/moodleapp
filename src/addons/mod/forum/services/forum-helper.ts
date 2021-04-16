@@ -445,11 +445,17 @@ export class AddonModForumHelperProvider {
      * @param userId User the reply belongs to. If not defined, current user in site.
      * @return Promise resolved if success, rejected otherwise.
      */
-    async storeReplyFiles(forumId: number, postId: number, files: any[], siteId?: string, userId?: number): Promise<void> {
+    async storeReplyFiles(
+        forumId: number,
+        postId: number,
+        files: CoreFileEntry[],
+        siteId?: string,
+        userId?: number,
+    ): Promise<CoreFileUploaderStoreFilesResult> {
         // Get the folder where to store the files.
         const folderPath = await AddonModForumOffline.getReplyFolder(forumId, postId, siteId, userId);
 
-        await CoreFileUploader.storeFilesToUpload(folderPath, files);
+        return CoreFileUploader.storeFilesToUpload(folderPath, files);
     }
 
     /**
@@ -485,9 +491,9 @@ export class AddonModForumHelperProvider {
     ): Promise<CoreFileUploaderStoreFilesResult | number> {
         if (offline) {
             return this.storeNewDiscussionFiles(forumId, timecreated, files, siteId);
-        } else {
-            return CoreFileUploader.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
         }
+
+        return CoreFileUploader.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
     }
 
     /**
@@ -501,19 +507,35 @@ export class AddonModForumHelperProvider {
      * @param userId User the reply belongs to. If not defined, current user in site.
      * @return Promise resolved if success.
      */
-    uploadOrStoreReplyFiles(
+    async uploadOrStoreReplyFiles(
         forumId: number,
         postId: number,
-        files: any[],
+        files: CoreFileEntry[],
+        offline: true,
+        siteId?: string,
+        userId?: number,
+    ): Promise<CoreFileUploaderStoreFilesResult>;
+    async uploadOrStoreReplyFiles(
+        forumId: number,
+        postId: number,
+        files: CoreFileEntry[],
+        offline: false,
+        siteId?: string,
+        userId?: number,
+    ): Promise<number>;
+    async uploadOrStoreReplyFiles(
+        forumId: number,
+        postId: number,
+        files: CoreFileEntry[],
         offline: boolean,
         siteId?: string,
         userId?: number,
-    ): Promise<any> {
+    ): Promise<CoreFileUploaderStoreFilesResult | number> {
         if (offline) {
             return this.storeReplyFiles(forumId, postId, files, siteId, userId);
-        } else {
-            return CoreFileUploader.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
         }
+
+        return CoreFileUploader.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
     }
 
 }

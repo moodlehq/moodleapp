@@ -542,7 +542,7 @@ export class AddonModDataHelperProvider {
         dataId: number,
         entryId: number,
         entryContents: AddonModDataEntryFields,
-        offline: boolean = false,
+        offline = false,
         siteId?: string,
     ): Promise<AddonModDataEntryWSField[]> {
         if (!inputData) {
@@ -766,6 +766,33 @@ export class AddonModDataHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the itemId for the uploaded file/s.
      */
+    async uploadOrStoreFiles(
+        dataId: number,
+        itemId: number,
+        entryId: number,
+        fieldId: number,
+        files: CoreFileEntry[],
+        offline: true,
+        siteId?: string,
+    ): Promise<CoreFileUploaderStoreFilesResult>;
+    async uploadOrStoreFiles(
+        dataId: number,
+        itemId: number,
+        entryId: number,
+        fieldId: number,
+        files: CoreFileEntry[],
+        offline: false,
+        siteId?: string,
+    ): Promise<number>;
+    async uploadOrStoreFiles(
+        dataId: number,
+        itemId: number,
+        entryId: number,
+        fieldId: number,
+        files: CoreFileEntry[],
+        offline: boolean,
+        siteId?: string,
+    ): Promise<number | CoreFileUploaderStoreFilesResult>;
     async uploadOrStoreFiles(
         dataId: number,
         itemId: number = 0,

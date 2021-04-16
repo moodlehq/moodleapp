@@ -694,16 +694,40 @@ export class AddonModAssignHelperProvider {
         assignId: number,
         folderName: string,
         files: CoreFileEntry[],
-        offline = false,
+        offline: true,
+        userId?: number,
+        siteId?: string,
+    ): Promise<CoreFileUploaderStoreFilesResult>;
+    async uploadOrStoreFiles(
+        assignId: number,
+        folderName: string,
+        files: CoreFileEntry[],
+        offline: false,
+        userId?: number,
+        siteId?: string,
+    ): Promise<number>;
+    async uploadOrStoreFiles(
+        assignId: number,
+        folderName: string,
+        files: CoreFileEntry[],
+        offline: boolean,
+        userId?: number,
+        siteId?: string,
+    ): Promise<number | CoreFileUploaderStoreFilesResult>;
+    async uploadOrStoreFiles(
+        assignId: number,
+        folderName: string,
+        files: CoreFileEntry[],
+        offline: boolean,
         userId?: number,
         siteId?: string,
     ): Promise<number | CoreFileUploaderStoreFilesResult> {
 
         if (offline) {
-            return await this.storeSubmissionFiles(assignId, folderName, files, userId, siteId);
+            return this.storeSubmissionFiles(assignId, folderName, files, userId, siteId);
         }
 
-        return await this.uploadFiles(assignId, files, siteId);
+        return this.uploadFiles(assignId, files, siteId);
     }
 
 }

@@ -287,7 +287,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                 const attachment = await AddonModForumHelper.uploadOrStoreReplyFiles(
                     this.forum.id,
                     this.post.id,
-                    files,
+                    files as CoreFileEntry[],
                     false,
                 );
 
