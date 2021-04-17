@@ -56,7 +56,7 @@ export class CoreFileUploaderScannerHandler implements CoreFileUploaderHandler {
             class: 'core-fileuploader-scanner-handler',
             icon: 'qr-scanner',
             action: (maxSize?: number, upload?: boolean, allowOffline?: boolean, mimetypes?: string[]): Promise<any> => {
-                return this.uploaderHelper.scanImage(false, maxSize, upload, mimetypes).then((result) => {
+                return this.uploaderHelper.scanImage(maxSize, upload, mimetypes).then((result) => {
                     return {
                         treated: true,
                         result: result

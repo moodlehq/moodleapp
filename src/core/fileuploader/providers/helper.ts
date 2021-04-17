@@ -671,37 +671,13 @@ export class CoreFileUploaderHelperProvider {
      * @param mimetypes List of supported mimetypes.  
      * @return Promise solved when done.
      */
-    scanImage(fromAlbum : boolean, maxSize : number, upload?:boolean, mimetypes?: string[]): Promise<any>{
+    scanImage(maxSize : number, upload?:boolean, mimetypes?: string[]): Promise<any>{
 
         const camOpts: CameraOptions = {
             quality: 50,
             destinationType: this.camera.DestinationType.FILE_URI,
             correctOrientation: true
         };
-
-        if(fromAlbum){
-            const imageSupported = !mimetypes || this.utils.indexOfRegexp(mimetypes, /^image\//) > -1,
-                videoSupported = !mimetypes || this.utils.indexOfRegexp(mimetypes, /^video\//) > -1;
-
-            camOpts.sourceType = this.camera.PictureSourceType.PHOTOLIBRARY;
-            camOpts.popoverOptions = {
-                x: 10,
-                y: 10,
-                width: this.platform.width() - 200,
-                height: this.platform.height() - 200,
-                arrowDir: this.camera.PopoverArrowDirection.ARROW_ANY
-            };
-
-            // Determine the mediaType based on the mimetypes.
-            if (imageSupported && !videoSupported) {
-                camOpts.mediaType = this.camera.MediaType.PICTURE;
-            } else if (!imageSupported && videoSupported) {
-                camOpts.mediaType = this.camera.MediaType.VIDEO;
-            } else if (CoreApp.instance.isIOS()) {
-                // Only get all media in iOS because in Android using this option allows uploading any kind of file.
-                camOpts.mediaType = this.camera.MediaType.ALLMEDIA;
-            }
-        }
 
         return this.fileUploaderProvider.getPicture(camOpts).then((path) => {
             const error = this.fileUploaderProvider.isInvalidMimetype(mimetypes, path); // Verify that the mimetype is supported.
@@ -729,7 +705,7 @@ export class CoreFileUploaderHelperProvider {
                         } else {
                             // Copy or move the file to our temporary folder.
                             this.logger.debug("Copy to temp");
-                            return this.copyToTmpFolder('Download/', !fromAlbum, maxSize, 'pdf', options);
+                            return this.copyToTmpFolder('Download/', false, maxSize, 'pdf', options);
                         }
                     
                     },
@@ -737,7 +713,7 @@ export class CoreFileUploaderHelperProvider {
                         this.logger.error(error);
                     });
                 },(error) => {
-                    const defaultError = fromAlbum ? 'core.fileuploader.errorgettingimagealbum' : 'core.fileuploader.errorcapturingimage';
+                    const defaultError = 'core.fileuploader.errorcapturingimage';
                     console.error(error);
                     return this.treatImageError(error, defaultError);
                 });
