@@ -28,7 +28,6 @@ import { CoreUtilsProvider, PromiseDefer } from '@providers/utils/utils';
 import { CoreFileUploaderProvider, CoreFileUploaderOptions } from './fileuploader';
 import { CoreFileUploaderDelegate } from './delegate';
 import { CoreSites } from '@providers/sites';
-import { DocumentScanner, DocumentScannerOptions } from '@ionic-native/document-scanner';
  
 declare var cordova:any;
 /**
@@ -604,7 +603,7 @@ export class CoreFileUploaderHelperProvider {
      * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
      * @return Promise resolved when done.
      */
-    uploadImage(maxSize: number, upload?: boolean, mimetypes?: string[]): Promise<any> {
+    uploadImage(fromAlbum: boolean, maxSize: number, upload?: boolean, mimetypes?: string[]): Promise<any> {
         this.logger.debug('Trying to capture an image with camera');
 
         const options: CameraOptions = {
@@ -613,7 +612,29 @@ export class CoreFileUploaderHelperProvider {
             correctOrientation: true
         };
 
-       if (mimetypes) {
+        if (fromAlbum) {
+            const imageSupported = !mimetypes || this.utils.indexOfRegexp(mimetypes, /^image\//) > -1,
+                videoSupported = !mimetypes || this.utils.indexOfRegexp(mimetypes, /^video\//) > -1;
+
+            options.sourceType = this.camera.PictureSourceType.PHOTOLIBRARY;
+            options.popoverOptions = {
+                x: 10,
+                y: 10,
+                width: this.platform.width() - 200,
+                height: this.platform.height() - 200,
+                arrowDir: this.camera.PopoverArrowDirection.ARROW_ANY
+            };
+
+            // Determine the mediaType based on the mimetypes.
+            if (imageSupported && !videoSupported) {
+                options.mediaType = this.camera.MediaType.PICTURE;
+            } else if (!imageSupported && videoSupported) {
+                options.mediaType = this.camera.MediaType.VIDEO;
+            } else if (CoreApp.instance.isIOS()) {
+                // Only get all media in iOS because in Android using this option allows uploading any kind of file.
+                options.mediaType = this.camera.MediaType.ALLMEDIA;
+            }
+        } else if (mimetypes) {
             if (mimetypes.indexOf('image/jpeg') > -1) {
                 options.encodingType = this.camera.EncodingType.JPEG;
             } else if (mimetypes.indexOf('image/png') > -1) {
@@ -627,16 +648,16 @@ export class CoreFileUploaderHelperProvider {
                 return Promise.reject(error);
             }
 
-            const options = this.fileUploaderProvider.getCameraUploadOptions(path, false);
+            const options = this.fileUploaderProvider.getCameraUploadOptions(path, fromAlbum);
 
             if (upload) {
                 return this.uploadFile(path, maxSize, true, options);
             } else {
                 // Copy or move the file to our temporary folder.
-                return this.copyToTmpFolder(path, false, maxSize, 'jpg', options);
+                return this.copyToTmpFolder(path, !fromAlbum, maxSize, 'jpg', options);
             }
         }, (error) => {
-            const defaultError = 'core.fileuploader.errorcapturingimage';
+            const defaultError = fromAlbum ? 'core.fileuploader.errorgettingimagealbum' : 'core.fileuploader.errorcapturingimage';
 
             return this.treatImageError(error, defaultError);
         });
