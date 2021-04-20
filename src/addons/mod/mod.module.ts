@@ -33,6 +33,7 @@ import { AddonModScormModule } from './scorm/scorm.module';
 import { AddonModChoiceModule } from './choice/choice.module';
 import { AddonModWikiModule } from './wiki/wiki.module';
 import { AddonModGlossaryModule } from './glossary/glossary.module';
+import { AddonModChatModule } from './chat/chat.module';
 
 @NgModule({
     imports: [
@@ -55,6 +56,7 @@ import { AddonModGlossaryModule } from './glossary/glossary.module';
         AddonModChoiceModule,
         AddonModWikiModule,
         AddonModGlossaryModule,
+        AddonModChatModule,
     ],
 })
 export class AddonModModule { }

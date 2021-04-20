@@ -1,0 +1,35 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{ 'addon.mod_chat.currentusers' | translate }}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="usersLoaded">
+        <ion-item class="ion-text-wrap" *ngFor="let user of users"
+            [class.addon-mod-chat-user]="currentUserId != user.id && isOnline">
+
+            <core-user-avatar [user]="user" slot="start" [linkProfile]="false"></core-user-avatar>
+            <ion-label>
+                <h2>{{ user.fullname }}</h2>
+                <ng-container *ngIf="currentUserId != user.id && isOnline">
+                    <ion-button fill="clear" (click)="talkTo(user)">
+                        <ion-icon name="fas-comments" slot="start"></ion-icon>
+                        {{ 'addon.mod_chat.talk' | translate }}
+                    </ion-button>
+                    <ion-button fill="clear" (click)="beepTo(user)">
+                        <ion-icon name="fas-bell" slot="start"></ion-icon>
+                        {{ 'addon.mod_chat.beep' | translate }}
+                    </ion-button>
+                </ng-container>
+            </ion-label>
+        </ion-item>
+    </core-loading>
+</ion-content>
