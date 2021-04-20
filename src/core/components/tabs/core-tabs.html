@@ -8,7 +8,7 @@
             <ion-slides (ionSlideDidChange)="slideChanged()" [options]="slidesOpts" [dir]="direction" role="tablist"
                 [attr.aria-label]="description" aria-hidden="false">
                 <ng-container *ngFor="let tab of tabs">
-                    <ion-slide [hidden]="!hideUntil" [attr.aria-selected]="selected == tab.id" class="tab-slide {{tab.class}}"
+                    <ion-slide *ngIf="tab.enabled" [hidden]="!hideUntil" [attr.aria-selected]="selected == tab.id" class="tab-slide {{tab.class}}"
                         role="tab" [attr.aria-label]="tab.title | translate" [attr.aria-controls]="tab.id" [id]="tab.id! + '-tab'"
                         [tabindex]="selected == tab.id ? null : -1" (click)="selectTab(tab.id, $event)">
                         <ion-icon *ngIf="tab.icon" [name]="tab.icon"></ion-icon>
