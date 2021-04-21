@@ -12,31 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModFeedbackComponentsModule } from './components/components.module';
-import { AddonModFeedbackIndexPage } from './pages/index/index';
+import { CanLeaveGuard } from '@guards/can-leave';
+import { AddonModFeedbackFormPage } from './form';
 
 const routes: Routes = [
     {
-        path: ':courseId/:cmId',
-        component: AddonModFeedbackIndexPage,
-    },
-    {
-        path: ':courseId/:cmId/form',
-        loadChildren: () => import('./pages/form/form.module').then(m => m.AddonModFeedbackFormPageModule),
+        path: '',
+        component: AddonModFeedbackFormPage,
+        canDeactivate: [CanLeaveGuard],
     },
 ];
 
 @NgModule({
+    declarations: [
+        AddonModFeedbackFormPage,
+    ],
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-        AddonModFeedbackComponentsModule,
     ],
-    declarations: [
-        AddonModFeedbackIndexPage,
-    ],
+    exports: [RouterModule],
 })
-export class AddonModFeedbackLazyModule {}
+export class AddonModFeedbackFormPageModule {}

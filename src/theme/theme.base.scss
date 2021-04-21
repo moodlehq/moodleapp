@@ -487,3 +487,7 @@ ion-button.core-button-select {
         @include padding(null, null, null, 15px * $i + 16px);
     }
 }
+
+textarea:not([core-auto-rows]) {
+    height: 200px;
+}
