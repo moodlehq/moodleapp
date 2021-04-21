@@ -1,6 +1,6 @@
-# This image is based on the fat node 14 image.
+# This image is based on the fat node 11 image.
 # We require fat images as neither alpine, or slim, include git binaries.
-FROM node:14
+FROM node:11
 
 # Port 8100 for ionic dev server.
 EXPOSE 8100
@@ -13,10 +13,13 @@ EXPOSE 53703
 
 WORKDIR /app
 
-COPY . /app
-
 # Install npm libraries.
-RUN npm install && rm -rf /root/.npm
+COPY package*.json ./
+RUN npm ci
+# Delete caches.
+RUN rm -rf /root/.npm
+
+COPY . /app
 
 # Run gulp before starting.
 RUN npx gulp
