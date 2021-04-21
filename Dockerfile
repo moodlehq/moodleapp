@@ -1,30 +1,20 @@
-# This image is based on the fat node 11 image.
-# We require fat images as neither alpine, or slim, include git binaries.
-FROM node:11
-
-# Port 8100 for ionic dev server.
-EXPOSE 8100
-
-# Port 35729 is the live-reload server.
-EXPOSE 35729
-
-# Port 53703 is the Chrome dev logger port.
-EXPOSE 53703
+## BUILD STAGE
+FROM node:14 as build-stage
 
 WORKDIR /app
 
-# Install npm libraries.
+# Prepare node dependencies
+RUN apt-get update && apt-get install libsecret-1-0 -y
 COPY package*.json ./
 RUN npm ci
-# Delete caches.
-RUN rm -rf /root/.npm
 
+# Build source
+ARG build_command="npm run build:prod"
 COPY . /app
+RUN ${build_command}
 
-# Run gulp before starting.
-RUN npx gulp
+## SERVE STAGE
+FROM nginx:alpine as serve-stage
 
-# Provide a Healthcheck command for easier use in CI.
-HEALTHCHECK --interval=10s --timeout=5s --start-period=60s CMD curl -f http://localhost:8100 || exit 1
-
-CMD ["npm", "run", "ionic:serve"]
+# Copy assets
+COPY --from=build-stage /app/www /usr/share/nginx/html

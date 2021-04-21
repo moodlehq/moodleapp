@@ -1,0 +1,13 @@
+#!/bin/bash
+# Override DockerHub build hook in order to create images of different flavors (production & testing).
+# See: https://docs.docker.com/docker-hub/builds/advanced/
+
+if [[ "$IMAGE_NAME" == *-test ]]
+then
+    docker build --build-arg build_command="npm run build:test" -f $DOCKERFILE_PATH -t $IMAGE_NAME .
+elif [[ "$IMAGE_NAME" == *-dev ]]
+then
+    docker build --build-arg build_command="npm run build" -f $DOCKERFILE_PATH -t $IMAGE_NAME .
+else
+    docker build -f $DOCKERFILE_PATH -t $IMAGE_NAME .
+fi
