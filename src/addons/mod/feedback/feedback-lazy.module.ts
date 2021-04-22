@@ -17,8 +17,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModFeedbackComponentsModule } from './components/components.module';
 import { AddonModFeedbackIndexPage } from './pages/index/index';
+import { AddonModFeedbackRespondentsPage } from './pages/respondents/respondents';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreScreen } from '@services/screen';
 
-const routes: Routes = [
+const commonRoutes: Routes = [
     {
         path: ':courseId/:cmId',
         component: AddonModFeedbackIndexPage,
@@ -27,6 +30,42 @@ const routes: Routes = [
         path: ':courseId/:cmId/form',
         loadChildren: () => import('./pages/form/form.module').then(m => m.AddonModFeedbackFormPageModule),
     },
+    {
+        path: ':courseId/:cmId/nonrespondents',
+        loadChildren: () => import('./pages/nonrespondents/nonrespondents.module')
+            .then(m => m.AddonModFeedbackNonRespondentsPageModule),
+    },
+];
+
+const mobileRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/respondents',
+        component: AddonModFeedbackRespondentsPage,
+    },
+    {
+        path: ':courseId/:cmId/attempt/:attemptId',
+        loadChildren: () => import('./pages/attempt/attempt.module').then(m => m.AddonModFeedbackAttemptPageModule),
+    },
+];
+
+const tabletRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/respondents',
+        component: AddonModFeedbackRespondentsPage,
+        children: [
+            {
+                path: 'attempt/:attemptId',
+                loadChildren: () => import('./pages/attempt/attempt.module').then(m => m.AddonModFeedbackAttemptPageModule),
+            },
+        ],
+    },
+];
+
+const routes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
 ];
 
 @NgModule({
@@ -37,6 +76,7 @@ const routes: Routes = [
     ],
     declarations: [
         AddonModFeedbackIndexPage,
+        AddonModFeedbackRespondentsPage,
     ],
 })
 export class AddonModFeedbackLazyModule {}
