@@ -12,9 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const { getConfig, getBuild } = require('../scripts/env-utils');
+const { execSync } = require('child_process');
+const { existsSync, readFileSync, writeFile } = require('fs');
+const { parse: parseJsonc } = require('jsonc-parser');
 const { resolve } = require('path');
-const { writeFile } = require('fs');
+
+function getConfig(environment) {
+    const envSuffixesMap = {
+        testing: ['test', 'testing'],
+        development: ['dev', 'development'],
+        production: ['prod', 'production'],
+    };
+    const config = parseJsonc(readFileSync(resolve(__dirname, '../moodle.config.json')).toString());
+    const envSuffixes =  (envSuffixesMap[environment] || []);
+    const envConfigPath = envSuffixes.map(suffix => resolve(__dirname, `../moodle.${suffix}.config.json`)).find(existsSync);
+
+    if (envConfigPath) {
+        const envConfig = parseJsonc(readFileSync(envConfigPath).toString());
+
+        for (const [key, value] of Object.entries(envConfig)) {
+            config[key] = value;
+        }
+    }
+
+    return config;
+}
+
+function getBuild(environment) {
+    const { version } = JSON.parse(readFileSync(resolve(__dirname, '../package.json')));
+
+    return {
+        version,
+        isProduction: environment === 'production',
+        isTesting: environment === 'testing',
+        isDevelopment: environment === 'development',
+        lastCommitHash: execSync('git log -1 --pretty=format:"%H"').toString(),
+        compilationTime: Date.now(),
+    };
+}
 
 /**
  * Task to build an env file depending on the current environment.
@@ -29,8 +64,8 @@ class BuildEnvTask {
     run(done) {
         const envFile = resolve(__dirname, '../src/assets/env.json');
         const env = {
-            CONFIG: getConfig(process.env.NODE_ENV || 'development'),
-            BUILD: getBuild(process.env.NODE_ENV || 'development'),
+            config: getConfig(process.env.NODE_ENV || 'development'),
+            build: getBuild(process.env.NODE_ENV || 'development'),
         };
 
         writeFile(envFile, JSON.stringify(env), done);
