@@ -21,34 +21,34 @@ import { CoreInterceptor } from './classes/interceptor';
 import { getDatabaseProviders } from './services/database';
 import { getInitializerProviders } from './initializers';
 
-import { CoreDbProvider } from '@services/db';
 import { CoreAppProvider } from '@services/app';
 import { CoreConfigProvider } from '@services/config';
-import { CoreLangProvider } from '@services/lang';
-import { CoreTextUtilsProvider } from '@services/utils/text';
+import { CoreCronDelegateService } from '@services/cron';
+import { CoreCustomURLSchemesProvider } from '@services/urlschemes';
+import { CoreDbProvider } from '@services/db';
 import { CoreDomUtilsProvider } from '@services/utils/dom';
+import { CoreFileHelperProvider } from '@services/file-helper';
+import { CoreFilepoolProvider } from '@services/filepool';
+import { CoreFileProvider } from '@services/file';
+import { CoreFileSessionProvider } from '@services/file-session';
+import { CoreForms } from '@singletons/form';
+import { CoreGeolocationProvider } from '@services/geolocation';
+import { CoreGroupsProvider } from '@services/groups';
 import { CoreIframeUtilsProvider } from '@services/utils/iframe';
+import { CoreLangProvider } from '@services/lang';
+import { CoreLocalNotificationsProvider } from '@services/local-notifications';
+import { CoreMimetypeUtilsProvider } from '@services/utils/mimetype';
+import { CoreNavigatorService } from '@services/navigator';
+import { CorePluginFileDelegateService } from '@services/plugin-file-delegate';
+import { CoreScreenService } from '@services/screen';
+import { CoreSitesProvider } from '@services/sites';
+import { CoreSyncProvider } from '@services/sync';
+import { CoreTextUtilsProvider } from '@services/utils/text';
 import { CoreTimeUtilsProvider } from '@services/utils/time';
+import { CoreUpdateManagerProvider } from '@services/update-manager';
 import { CoreUrlUtilsProvider } from '@services/utils/url';
 import { CoreUtilsProvider } from '@services/utils/utils';
-import { CoreMimetypeUtilsProvider } from '@services/utils/mimetype';
-import { CoreFileProvider } from '@services/file';
 import { CoreWSProvider } from '@services/ws';
-import { CoreSitesProvider } from '@services/sites';
-import { CoreLocalNotificationsProvider } from '@services/local-notifications';
-import { CoreGroupsProvider } from '@services/groups';
-import { CoreCronDelegateService } from '@services/cron';
-import { CoreFileSessionProvider } from '@services/file-session';
-import { CoreFilepoolProvider } from '@services/filepool';
-import { CoreUpdateManagerProvider } from '@services/update-manager';
-import { CorePluginFileDelegateService } from '@services/plugin-file-delegate';
-import { CoreSyncProvider } from '@services/sync';
-import { CoreFileHelperProvider } from '@services/file-helper';
-import { CoreGeolocationProvider } from '@services/geolocation';
-import { CoreNavigatorService } from '@services/navigator';
-import { CoreScreenService } from '@services/screen';
-import { CoreCustomURLSchemesProvider } from '@services/urlschemes';
-import { CoreForms } from '@singletons/form';
 
 export const CORE_SERVICES: Type<unknown>[] = [
     CoreAppProvider,
@@ -56,26 +56,26 @@ export const CORE_SERVICES: Type<unknown>[] = [
     CoreCronDelegateService,
     CoreCustomURLSchemesProvider,
     CoreDbProvider,
+    CoreDomUtilsProvider,
     CoreFileHelperProvider,
-    CoreFileSessionProvider,
-    CoreFileProvider,
     CoreFilepoolProvider,
+    CoreFileProvider,
+    CoreFileSessionProvider,
+    CoreForms,
     CoreGeolocationProvider,
     CoreGroupsProvider,
+    CoreIframeUtilsProvider,
     CoreLangProvider,
     CoreLocalNotificationsProvider,
+    CoreMimetypeUtilsProvider,
     CoreNavigatorService,
     CorePluginFileDelegateService,
     CoreScreenService,
     CoreSitesProvider,
     CoreSyncProvider,
-    CoreUpdateManagerProvider,
-    CoreDomUtilsProvider,
-    CoreForms,
-    CoreIframeUtilsProvider,
-    CoreMimetypeUtilsProvider,
     CoreTextUtilsProvider,
     CoreTimeUtilsProvider,
+    CoreUpdateManagerProvider,
     CoreUrlUtilsProvider,
     CoreUtilsProvider,
     CoreWSProvider,

@@ -49,7 +49,6 @@ import { CoreSitePluginsOnlyTitleBlockComponent } from './only-title-block/only-
         CoreSharedModule,
         CoreCompileHtmlComponentModule,
     ],
-    providers: [],
     exports: [
         CoreSitePluginsPluginContentComponent,
         CoreSitePluginsModuleIndexComponent,

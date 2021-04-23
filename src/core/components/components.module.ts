@@ -18,80 +18,80 @@ import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 
+import { CoreDirectivesModule } from '@directives/directives.module';
+import { CorePipesModule } from '@pipes/pipes.module';
+
+import { CoreAttachmentsComponent } from './attachments/attachments';
+import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
+import { CoreChartComponent } from './chart/chart';
 import { CoreChronoComponent } from './chrono/chrono';
-import { CoreDownloadRefreshComponent } from './download-refresh/download-refresh';
-import { CoreFileComponent } from './file/file';
-import { CoreIconComponent } from './icon/icon';
-import { CoreIframeComponent } from './iframe/iframe';
-import { CoreInputErrorsComponent } from './input-errors/input-errors';
-import { CoreLoadingComponent } from './loading/loading';
-import { CoreMarkRequiredComponent } from './mark-required/mark-required';
-import { CoreRecaptchaComponent } from './recaptcha/recaptcha';
-import { CoreRecaptchaModalComponent } from './recaptcha/recaptcha-modal';
-import { CoreShowPasswordComponent } from './show-password/show-password';
-import { CoreSplitViewComponent } from './split-view/split-view';
-import { CoreEmptyBoxComponent } from './empty-box/empty-box';
-import { CoreTabsComponent } from './tabs/tabs';
-import { CoreTabComponent } from './tabs/tab';
-import { CoreTabsOutletComponent } from './tabs-outlet/tabs-outlet';
-import { CoreInfiniteLoadingComponent } from './infinite-loading/infinite-loading';
-import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 import { CoreContextMenuComponent } from './context-menu/context-menu';
 import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
-import { CoreUserAvatarComponent } from './user-avatar/user-avatar';
+import { CoreDownloadRefreshComponent } from './download-refresh/download-refresh';
 import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
-import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
-import { CoreSendMessageFormComponent } from './send-message-form/send-message-form';
-import { CoreTimerComponent } from './timer/timer';
-import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
-
-import { CoreDirectivesModule } from '@directives/directives.module';
-import { CorePipesModule } from '@pipes/pipes.module';
-import { CoreAttachmentsComponent } from './attachments/attachments';
+import { CoreEmptyBoxComponent } from './empty-box/empty-box';
+import { CoreFileComponent } from './file/file';
 import { CoreFilesComponent } from './files/files';
+import { CoreIconComponent } from './icon/icon';
+import { CoreIframeComponent } from './iframe/iframe';
+import { CoreInfiniteLoadingComponent } from './infinite-loading/infinite-loading';
+import { CoreInputErrorsComponent } from './input-errors/input-errors';
+import { CoreLoadingComponent } from './loading/loading';
 import { CoreLocalFileComponent } from './local-file/local-file';
-import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
+import { CoreMarkRequiredComponent } from './mark-required/mark-required';
+import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
+import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
+import { CoreProgressBarComponent } from './progress-bar/progress-bar';
+import { CoreRecaptchaComponent } from './recaptcha/recaptcha';
+import { CoreRecaptchaModalComponent } from './recaptcha/recaptcha-modal';
+import { CoreSendMessageFormComponent } from './send-message-form/send-message-form';
+import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
-import { CoreChartComponent } from './chart/chart';
+import { CoreSplitViewComponent } from './split-view/split-view';
 import { CoreStyleComponent } from './style/style';
+import { CoreTabComponent } from './tabs/tab';
+import { CoreTabsComponent } from './tabs/tabs';
+import { CoreTabsOutletComponent } from './tabs-outlet/tabs-outlet';
+import { CoreTimerComponent } from './timer/timer';
+import { CoreUserAvatarComponent } from './user-avatar/user-avatar';
 
 @NgModule({
     declarations: [
+        CoreAttachmentsComponent,
+        CoreBSTooltipComponent,
+        CoreChartComponent,
         CoreChronoComponent,
-        CoreDownloadRefreshComponent,
-        CoreFileComponent,
-        CoreIconComponent,
-        CoreIframeComponent,
-        CoreInputErrorsComponent,
-        CoreLoadingComponent,
-        CoreMarkRequiredComponent,
-        CoreRecaptchaComponent,
-        CoreRecaptchaModalComponent,
-        CoreShowPasswordComponent,
-        CoreSplitViewComponent,
-        CoreStyleComponent,
-        CoreEmptyBoxComponent,
-        CoreTabsComponent,
-        CoreTabComponent,
-        CoreTabsOutletComponent,
-        CoreInfiniteLoadingComponent,
-        CoreProgressBarComponent,
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
         CoreContextMenuPopoverComponent,
-        CoreNavBarButtonsComponent,
-        CoreUserAvatarComponent,
+        CoreDownloadRefreshComponent,
         CoreDynamicComponent,
-        CoreSendMessageFormComponent,
-        CoreTimerComponent,
-        CoreNavigationBarComponent,
-        CoreAttachmentsComponent,
+        CoreEmptyBoxComponent,
+        CoreFileComponent,
         CoreFilesComponent,
+        CoreIconComponent,
+        CoreIframeComponent,
+        CoreInfiniteLoadingComponent,
+        CoreInputErrorsComponent,
+        CoreLoadingComponent,
         CoreLocalFileComponent,
-        CoreBSTooltipComponent,
+        CoreMarkRequiredComponent,
+        CoreNavBarButtonsComponent,
+        CoreNavigationBarComponent,
+        CoreProgressBarComponent,
+        CoreRecaptchaComponent,
+        CoreRecaptchaModalComponent,
+        CoreSendMessageFormComponent,
+        CoreShowPasswordComponent,
         CoreSitePickerComponent,
-        CoreChartComponent,
+        CoreSplitViewComponent,
+        CoreStyleComponent,
+        CoreTabComponent,
+        CoreTabsComponent,
+        CoreTabsOutletComponent,
+        CoreTimerComponent,
+        CoreUserAvatarComponent,
     ],
     imports: [
         CommonModule,
@@ -102,40 +102,40 @@ import { CoreStyleComponent } from './style/style';
         CorePipesModule,
     ],
     exports: [
+        CoreAttachmentsComponent,
+        CoreBSTooltipComponent,
+        CoreChartComponent,
         CoreChronoComponent,
-        CoreDownloadRefreshComponent,
-        CoreFileComponent,
-        CoreIconComponent,
-        CoreIframeComponent,
-        CoreInputErrorsComponent,
-        CoreLoadingComponent,
-        CoreMarkRequiredComponent,
-        CoreRecaptchaComponent,
-        CoreRecaptchaModalComponent,
-        CoreShowPasswordComponent,
-        CoreSplitViewComponent,
-        CoreStyleComponent,
-        CoreEmptyBoxComponent,
-        CoreTabsComponent,
-        CoreTabComponent,
-        CoreTabsOutletComponent,
-        CoreInfiniteLoadingComponent,
-        CoreProgressBarComponent,
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
         CoreContextMenuPopoverComponent,
-        CoreNavBarButtonsComponent,
-        CoreUserAvatarComponent,
+        CoreDownloadRefreshComponent,
         CoreDynamicComponent,
-        CoreSendMessageFormComponent,
-        CoreTimerComponent,
-        CoreNavigationBarComponent,
-        CoreAttachmentsComponent,
+        CoreEmptyBoxComponent,
+        CoreFileComponent,
         CoreFilesComponent,
+        CoreIconComponent,
+        CoreIframeComponent,
+        CoreInfiniteLoadingComponent,
+        CoreInputErrorsComponent,
+        CoreLoadingComponent,
         CoreLocalFileComponent,
-        CoreBSTooltipComponent,
+        CoreMarkRequiredComponent,
+        CoreNavBarButtonsComponent,
+        CoreNavigationBarComponent,
+        CoreProgressBarComponent,
+        CoreRecaptchaComponent,
+        CoreRecaptchaModalComponent,
+        CoreSendMessageFormComponent,
+        CoreShowPasswordComponent,
         CoreSitePickerComponent,
-        CoreChartComponent,
+        CoreSplitViewComponent,
+        CoreStyleComponent,
+        CoreTabComponent,
+        CoreTabsComponent,
+        CoreTabsOutletComponent,
+        CoreTimerComponent,
+        CoreUserAvatarComponent,
     ],
 })
 export class CoreComponentsModule {}

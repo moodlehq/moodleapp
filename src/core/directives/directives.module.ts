@@ -15,41 +15,40 @@
 import { NgModule } from '@angular/core';
 
 import { CoreAutoFocusDirective } from './auto-focus';
+import { CoreAutoRowsDirective } from './auto-rows';
 import { CoreExternalContentDirective } from './external-content';
 import { CoreFabDirective } from './fab';
+import { CoreFaIconDirective } from './fa-icon';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreLinkDirective } from './link';
 import { CoreLongPressDirective } from './long-press';
 import { CoreSupressEventsDirective } from './supress-events';
-import { CoreFaIconDirective } from './fa-icon';
 import { CoreUserLinkDirective } from './user-link';
-import { CoreAutoRowsDirective } from './auto-rows';
 
 @NgModule({
     declarations: [
         CoreAutoFocusDirective,
+        CoreAutoRowsDirective,
         CoreExternalContentDirective,
+        CoreFabDirective,
+        CoreFaIconDirective,
         CoreFormatTextDirective,
         CoreLinkDirective,
         CoreLongPressDirective,
         CoreSupressEventsDirective,
-        CoreFabDirective,
-        CoreFaIconDirective,
         CoreUserLinkDirective,
-        CoreAutoRowsDirective,
     ],
-    imports: [],
     exports: [
         CoreAutoFocusDirective,
+        CoreAutoRowsDirective,
         CoreExternalContentDirective,
+        CoreFabDirective,
+        CoreFaIconDirective,
         CoreFormatTextDirective,
         CoreLinkDirective,
         CoreLongPressDirective,
         CoreSupressEventsDirective,
-        CoreFabDirective,
-        CoreFaIconDirective,
         CoreUserLinkDirective,
-        CoreAutoRowsDirective,
     ],
 })
 export class CoreDirectivesModule {}

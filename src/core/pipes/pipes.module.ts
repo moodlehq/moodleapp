@@ -13,38 +13,38 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+
+import { CoreBytesToSizePipe } from './bytes-to-size';
 import { CoreCreateLinksPipe } from './create-links';
+import { CoreDateDayOrTimePipe } from './date-day-or-time';
+import { CoreDurationPipe } from './duration';
 import { CoreFormatDatePipe } from './format-date';
 import { CoreNoTagsPipe } from './no-tags';
 import { CoreSecondsToHMSPipe } from './seconds-to-hms';
 import { CoreTimeAgoPipe } from './time-ago';
-import { CoreBytesToSizePipe } from './bytes-to-size';
-import { CoreDurationPipe } from './duration';
-import { CoreDateDayOrTimePipe } from './date-day-or-time';
 import { CoreToLocaleStringPipe } from './to-locale-string';
 
 @NgModule({
     declarations: [
-        CoreCreateLinksPipe,
-        CoreNoTagsPipe,
-        CoreTimeAgoPipe,
-        CoreFormatDatePipe,
         CoreBytesToSizePipe,
-        CoreSecondsToHMSPipe,
-        CoreDurationPipe,
+        CoreCreateLinksPipe,
         CoreDateDayOrTimePipe,
+        CoreDurationPipe,
+        CoreFormatDatePipe,
+        CoreNoTagsPipe,
+        CoreSecondsToHMSPipe,
+        CoreTimeAgoPipe,
         CoreToLocaleStringPipe,
     ],
-    imports: [],
     exports: [
-        CoreCreateLinksPipe,
-        CoreNoTagsPipe,
-        CoreTimeAgoPipe,
-        CoreFormatDatePipe,
         CoreBytesToSizePipe,
-        CoreSecondsToHMSPipe,
-        CoreDurationPipe,
+        CoreCreateLinksPipe,
         CoreDateDayOrTimePipe,
+        CoreDurationPipe,
+        CoreFormatDatePipe,
+        CoreNoTagsPipe,
+        CoreSecondsToHMSPipe,
+        CoreTimeAgoPipe,
         CoreToLocaleStringPipe,
     ],
 })

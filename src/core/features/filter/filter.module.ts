@@ -23,9 +23,5 @@ export const CORE_FILTER_SERVICES: Type<unknown>[] = [
     CoreFilterHelperProvider,
 ];
 
-@NgModule({
-    declarations: [],
-    imports: [],
-    providers: [],
-})
+@NgModule({})
 export class CoreFilterModule { }

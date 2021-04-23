@@ -18,8 +18,6 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
 import { CoreCourseFormatWeeksHandler } from './services/handlers/weeks-format';
 
 @NgModule({
-    declarations: [],
-    imports: [],
     providers: [
         {
             provide: APP_INITIALIZER,

@@ -14,45 +14,45 @@
 
 import { NgModule } from '@angular/core';
 
-import { AddonBlockModule } from './block/block.module';
-import { AddonPrivateFilesModule } from './privatefiles/privatefiles.module';
-import { AddonFilterModule } from './filter/filter.module';
-import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield.module';
 import { AddonBadgesModule } from './badges/badges.module';
+import { AddonBlockModule } from './block/block.module';
+import { AddonBlogModule } from './blog/blog.module';
 import { AddonCalendarModule } from './calendar/calendar.module';
+import { AddonCompetencyModule } from './competency/competency.module';
 import { AddonCourseCompletionModule } from './coursecompletion/coursecompletion.module';
-import { AddonNotificationsModule } from './notifications/notifications.module';
+import { AddonFilterModule } from './filter/filter.module';
 import { AddonMessageOutputModule } from './messageoutput/messageoutput.module';
 import { AddonMessagesModule } from './messages/messages.module';
 import { AddonModModule } from './mod/mod.module';
+import { AddonNotesModule } from './notes/notes.module';
+import { AddonNotificationsModule } from './notifications/notifications.module';
+import { AddonPrivateFilesModule } from './privatefiles/privatefiles.module';
 import { AddonQbehaviourModule } from './qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from './qtype/qtype.module';
-import { AddonBlogModule } from './blog/blog.module';
 import { AddonRemoteThemesModule } from './remotethemes/remotethemes.module';
-import { AddonNotesModule } from './notes/notes.module';
-import { AddonCompetencyModule } from './competency/competency.module';
 import { AddonStorageManagerModule } from './storagemanager/storagemanager.module';
+import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield.module';
 
 @NgModule({
     imports: [
-        AddonBlockModule,
         AddonBadgesModule,
+        AddonBlockModule,
         AddonBlogModule,
         AddonCalendarModule,
         AddonCompetencyModule,
         AddonCourseCompletionModule,
-        AddonMessagesModule,
-        AddonPrivateFilesModule,
         AddonFilterModule,
-        AddonUserProfileFieldModule,
-        AddonNotificationsModule,
         AddonMessageOutputModule,
+        AddonMessagesModule,
         AddonModModule,
         AddonNotesModule,
+        AddonNotificationsModule,
+        AddonPrivateFilesModule,
         AddonQbehaviourModule,
         AddonQtypeModule,
         AddonRemoteThemesModule,
         AddonStorageManagerModule,
+        AddonUserProfileFieldModule,
     ],
 })
 export class AddonsModule {}

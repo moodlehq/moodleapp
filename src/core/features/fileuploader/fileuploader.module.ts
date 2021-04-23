@@ -30,8 +30,6 @@ export const CORE_FILEUPLOADER_SERVICES: Type<unknown>[] = [
 ];
 
 @NgModule({
-    imports: [],
-    declarations: [],
     providers: [
         {
             provide: APP_INITIALIZER,

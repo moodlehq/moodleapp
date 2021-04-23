@@ -22,7 +22,5 @@ export const CORE_BLOCK_SERVICES: Type<unknown>[] = [
     CoreBlockHelperProvider,
 ];
 
-@NgModule({
-    providers: [],
-})
+@NgModule({})
 export class CoreBlockModule {}

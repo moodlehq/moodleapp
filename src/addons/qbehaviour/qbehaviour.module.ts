@@ -20,12 +20,11 @@ import { AddonQbehaviourDeferredFeedbackModule } from './deferredfeedback/deferr
 import { AddonQbehaviourImmediateCBMModule } from './immediatecbm/immediatecbm.module';
 import { AddonQbehaviourImmediateFeedbackModule } from './immediatefeedback/immediatefeedback.module';
 import { AddonQbehaviourInformationItemModule } from './informationitem/informationitem.module';
-import { AddonQbehaviourInteractiveModule } from './interactive/interactive.module';
 import { AddonQbehaviourInteractiveCountbackModule } from './interactivecountback/interactivecountback.module';
+import { AddonQbehaviourInteractiveModule } from './interactive/interactive.module';
 import { AddonQbehaviourManualGradedModule } from './manualgraded/manualgraded.module';
 
 @NgModule({
-    declarations: [],
     imports: [
         AddonQbehaviourAdaptiveModule,
         AddonQbehaviourAdaptiveNoPenaltyModule,
@@ -34,12 +33,9 @@ import { AddonQbehaviourManualGradedModule } from './manualgraded/manualgraded.m
         AddonQbehaviourImmediateCBMModule,
         AddonQbehaviourImmediateFeedbackModule,
         AddonQbehaviourInformationItemModule,
-        AddonQbehaviourInteractiveModule,
         AddonQbehaviourInteractiveCountbackModule,
+        AddonQbehaviourInteractiveModule,
         AddonQbehaviourManualGradedModule,
     ],
-    providers: [
-    ],
-    exports: [],
 })
 export class AddonQbehaviourModule { }
