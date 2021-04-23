@@ -33,8 +33,8 @@ import { CoreLang } from '@services/lang';
 export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileFieldBaseComponent {
 
     format?: string;
-    min?: number;
-    max?: number;
+    min?: string;
+    max?: string;
     valueNumber = 0;
     monthNames?: string[];
 
@@ -66,20 +66,17 @@ export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileField
         ));
 
         // Check min value.
-        if (field.param1) {
-            const year = parseInt(field.param1, 10);
-            if (year) {
-                this.min = year;
-            }
+        if (field.param1 && Number(field.param1)) {
+            this.min = field.param1;
         }
 
         // Check max value.
-        if (field.param2) {
-            const year = parseInt(field.param2, 10);
-            if (year) {
-                this.max = year;
-            }
+        if (field.param2 && Number(field.param2)) {
+            this.max = field.param2;
         }
+
+        this.max = this.max || CoreTimeUtils.getDatetimeDefaultMin();
+        this.max = this.max || CoreTimeUtils.getDatetimeDefaultMax();
     }
 
     /**
