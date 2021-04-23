@@ -16,7 +16,7 @@ import { Component } from '@angular/core';
 import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
 import { AddonModDataEntryField, AddonModDataProvider } from '@addons/mod/data/services/data';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 
 /**
  * Component to render data number field.
@@ -37,7 +37,7 @@ export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginC
      * @return Replaced string to be rendered.
      */
     format(value?: Partial<AddonModDataEntryField>): string {
-        const files: CoreWSExternalFile[] = (value && <CoreWSExternalFile[]>value.files) || [];
+        const files: CoreWSFile[] = (value && <CoreWSFile[]>value.files) || [];
 
         return value ? CoreTextUtils.replacePluginfileUrls(value.content || '', files) : '';
     }

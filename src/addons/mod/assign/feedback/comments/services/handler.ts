@@ -25,7 +25,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModAssignFeedbackCommentsComponent } from '../component/comments';
 
@@ -126,7 +126,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
-    ): CoreWSExternalFile[] {
+    ): CoreWSFile[] {
         return AddonModAssign.getSubmissionPluginAttachments(plugin);
     }
 

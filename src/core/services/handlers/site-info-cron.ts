@@ -15,12 +15,13 @@
 import { Injectable } from '@angular/core';
 import { CoreCronHandler } from '@services/cron';
 import { CoreSites } from '@services/sites';
+import { makeSingleton } from '@singletons';
 
 /**
  * Cron handler to update site info every certain time.
  */
-@Injectable()
-export class CoreSiteInfoCronHandler implements CoreCronHandler {
+@Injectable({ providedIn: 'root' })
+export class CoreSiteInfoCronHandlerService implements CoreCronHandler {
 
     name = 'CoreSiteInfoCronHandler';
 
@@ -60,3 +61,5 @@ export class CoreSiteInfoCronHandler implements CoreCronHandler {
     }
 
 }
+
+export const CoreSiteInfoCronHandler = makeSingleton(CoreSiteInfoCronHandlerService);

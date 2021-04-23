@@ -15,7 +15,7 @@
 import { CoreFilepool } from '@services/filepool';
 import { CoreFileSizeSum, CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseModuleContentFile } from '../services/course';
 import { CoreCourseModulePrefetchHandler } from '../services/module-prefetch-delegate';
 
@@ -154,7 +154,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Promise resolved with the list of files.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getFiles(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreWSExternalFile[]> {
+    async getFiles(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreWSFile[]> {
         // To be overridden.
         return [];
     }
@@ -168,7 +168,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @return Promise resolved with list of intro files.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number, ignoreCache?: boolean): Promise<CoreWSExternalFile[]> {
+    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number, ignoreCache?: boolean): Promise<CoreWSFile[]> {
         return this.getIntroFilesFromInstance(module);
     }
 
@@ -179,7 +179,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param instance The instance to get the intro files (book, assign, ...). If not defined, module will be used.
      * @return List of intro files.
      */
-    getIntroFilesFromInstance(module: CoreCourseAnyModuleData, instance?: ModuleInstance): CoreWSExternalFile[] {
+    getIntroFilesFromInstance(module: CoreCourseAnyModuleData, instance?: ModuleInstance): CoreWSFile[] {
         if (instance) {
             if (typeof instance.introfiles != 'undefined') {
                 return instance.introfiles;
@@ -339,6 +339,6 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
  * Properties a module instance should have to be able to retrieve its intro files.
  */
 type ModuleInstance = {
-    introfiles?: CoreWSExternalFile[];
+    introfiles?: CoreWSFile[];
     intro?: string;
 };

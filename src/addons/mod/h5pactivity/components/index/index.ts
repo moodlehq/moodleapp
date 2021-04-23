@@ -30,7 +30,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     AddonModH5PActivity,
@@ -43,6 +43,7 @@ import {
     AddonModH5PActivitySyncProvider,
     AddonModH5PActivitySyncResult,
 } from '../../services/h5pactivity-sync';
+import { CoreFileHelper } from '@services/file-helper';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -58,7 +59,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
     h5pActivity?: AddonModH5PActivityData; // The H5P activity object.
     accessInfo?: AddonModH5PActivityAccessInfo; // Info about the user capabilities.
-    deployedFile?: CoreWSExternalFile; // The H5P deployed file.
+    deployedFile?: CoreWSFile; // The H5P deployed file.
 
     stateMessage?: string; // Message about the file state.
     downloading = false; // Whether the H5P file is being downloaded.
@@ -191,10 +192,10 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             siteId: this.siteId,
         });
 
-        this.fileUrl = this.deployedFile.fileurl;
+        this.fileUrl = CoreFileHelper.getFileUrl(this.deployedFile);
 
         // Listen for changes in the state.
-        const eventName = await CoreFilepool.getFileEventNameByUrl(this.site.getId(), this.deployedFile.fileurl);
+        const eventName = await CoreFilepool.getFileEventNameByUrl(this.site.getId(), this.fileUrl);
 
         if (!this.observer) {
             this.observer = CoreEvents.on(eventName, () => {
@@ -213,7 +214,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     protected async calculateFileState(): Promise<void> {
         this.state = await CoreFilepool.getFileStateByUrl(
             this.site.getId(),
-            this.deployedFile!.fileurl,
+            this.fileUrl!,
             this.deployedFile!.timemodified,
         );
 
@@ -317,7 +318,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         try {
             await CoreFilepool.downloadUrl(
                 this.site.getId(),
-                this.deployedFile!.fileurl,
+                this.fileUrl!,
                 false,
                 this.component,
                 this.componentId,

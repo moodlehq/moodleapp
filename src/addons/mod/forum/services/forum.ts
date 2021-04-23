@@ -16,17 +16,17 @@ import { Injectable } from '@angular/core';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreFileEntry } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
 import { CoreApp } from '@services/app';
+import { CoreFileEntry } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
+import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumReplyOptions } from './forum-offline';
 
@@ -1469,7 +1469,7 @@ export type AddonModForumPost = {
         canreplyprivately?: boolean; // Whether the user can post a private reply.
     };
     attachment?: 0 | 1;
-    attachments?: (CoreFileEntry | AddonModForumWSPostAttachment)[];
+    attachments?: CoreFileEntry[];
     messageinlinefiles?: CoreWSExternalFile[];
     haswordcount?: boolean; // Haswordcount.
     wordcount?: number; // Wordcount.
@@ -1580,7 +1580,7 @@ export type AddonModForumReply = {
     id: number;
     subject: string;
     message: string;
-    files: (CoreFileEntry | AddonModForumWSPostAttachment)[];
+    files: CoreFileEntry[];
 };
 
 /**
@@ -1598,37 +1598,6 @@ export type AddonModForumCanAddDiscussion = {
 export type AddonModForumSortOrder = {
     label: string;
     value: number;
-};
-
-/**
- * Forum post attachement data returned by web services.
- */
-export type AddonModForumWSPostAttachment = {
-    contextid: number; // Contextid.
-    component: string; // Component.
-    filearea: string; // Filearea.
-    itemid: number; // Itemid.
-    filepath: string; // Filepath.
-    filename: string; // Filename.
-    isdir: boolean; // Isdir.
-    isimage: boolean; // Isimage.
-    timemodified: number; // Timemodified.
-    timecreated: number; // Timecreated.
-    filesize: number; // Filesize.
-    author: string; // Author.
-    license: string; // License.
-    filenameshort: string; // Filenameshort.
-    filesizeformatted: string; // Filesizeformatted.
-    icon: string; // Icon.
-    timecreatedformatted: string; // Timecreatedformatted.
-    timemodifiedformatted: string; // Timemodifiedformatted.
-    url: string; // Url.
-    urls: {
-        export?: string; // The URL used to export the attachment.
-    };
-    html: {
-        plagiarism?: string; // The HTML source for the Plagiarism Response.
-    };
 };
 
 /**
@@ -1693,7 +1662,7 @@ export type AddonModForumWSPost = {
         markasunread?: string; // The URL used to mark the post as unread.
         discuss?: string; // Discuss.
     };
-    attachments: AddonModForumWSPostAttachment[]; // Attachments.
+    attachments: CoreWSStoredFile[]; // Attachments.
     tags?: { // Tags.
         id: number; // The ID of the Tag.
         tagid: number; // The tagid.

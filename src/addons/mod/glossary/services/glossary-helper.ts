@@ -20,7 +20,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { AddonModGlossaryOffline } from './glossary-offline';
 import { AddonModGlossaryNewEntry, AddonModGlossaryNewEntryWithFiles } from './glossary';
 import { makeSingleton } from '@singletons';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Helper to gather some common functions for glossary.
@@ -68,7 +68,7 @@ export class AddonModGlossaryHelperProvider {
      */
     hasEntryDataChanged(
         entry: AddonModGlossaryNewEntry,
-        files: (CoreWSExternalFile | FileEntry)[],
+        files: CoreFileEntry[],
         original?: AddonModGlossaryNewEntryWithFiles,
     ): boolean {
         if (!original || typeof original.concept == 'undefined') {
@@ -98,7 +98,7 @@ export class AddonModGlossaryHelperProvider {
         glossaryId: number,
         entryName: string,
         timeCreated: number,
-        files: (CoreWSExternalFile | FileEntry)[],
+        files: CoreFileEntry[],
         siteId?: string,
     ): Promise<CoreFileUploaderStoreFilesResult> {
         // Get the folder where to store the files.

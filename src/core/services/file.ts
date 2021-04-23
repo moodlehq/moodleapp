@@ -14,10 +14,9 @@
 
 import { Injectable } from '@angular/core';
 
-import { FileEntry, DirectoryEntry, Entry, Metadata, IFile } from '@ionic-native/file';
+import { FileEntry, DirectoryEntry, Entry, Metadata, IFile } from '@ionic-native/file/ngx';
 
 import { CoreApp } from '@services/app';
-import { CoreWSExternalFile } from '@services/ws';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
@@ -26,6 +25,7 @@ import { CoreError } from '@classes/errors/error';
 
 import { CoreLogger } from '@singletons/logger';
 import { makeSingleton, File, Zip, Platform, WebView } from '@singletons';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -1177,7 +1177,7 @@ export class CoreFileProvider {
      * @param files List of used files.
      * @return Promise resolved when done, rejected if failure.
      */
-    async removeUnusedFiles(dirPath: string, files: (CoreWSExternalFile | FileEntry)[]): Promise<void> {
+    async removeUnusedFiles(dirPath: string, files: CoreFileEntry[]): Promise<void> {
         // Get the directory contents.
         try {
             const contents = await this.getDirectoryContents(dirPath);
@@ -1297,7 +1297,7 @@ export class CoreFileProvider {
      * @param file The file.
      * @return The file name.
      */
-    getFileName(file: CoreWSExternalFile | FileEntry): string | undefined {
+    getFileName(file: CoreFileEntry): string | undefined {
         return CoreUtils.isFileEntry(file) ? file.name : file.filename;
     }
 

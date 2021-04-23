@@ -23,7 +23,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModQuizAccessRuleDelegate } from '../access-rules-delegate';
 import {
@@ -77,7 +77,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @return Promise resolved with the list of files.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getFiles(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreWSExternalFile[]> {
+    async getFiles(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreWSFile[]> {
         try {
             const quiz = await AddonModQuiz.getQuiz(courseId, module.id);
 
@@ -109,9 +109,9 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         quiz: AddonModQuizQuizWSData,
         attempts: AddonModQuizAttemptWSData[],
         siteId?: string,
-    ): Promise<CoreWSExternalFile[]> {
+    ): Promise<CoreWSFile[]> {
         const getInlineFiles = CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.2');
-        let files: CoreWSExternalFile[] = [];
+        let files: CoreWSFile[] = [];
 
         await Promise.all(attempts.map(async (attempt) => {
             if (!AddonModQuiz.isAttemptFinished(attempt.state)) {

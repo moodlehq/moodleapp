@@ -13,17 +13,18 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileEntry } from '@ionic-native/file';
+import { FileEntry } from '@ionic-native/file/ngx';
 
 import { CoreFile } from '@services/file';
 import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { CoreUtils } from '@services/utils/utils';
 
 import extToMime from '@/assets/exttomime.json';
 import mimeToExt from '@/assets/mimetoext.json';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 
 interface MimeTypeInfo {
     type: string;
@@ -163,7 +164,7 @@ export class CoreMimetypeUtilsProvider {
      * @param file File object.
      * @param path Alternative path that will override fileurl from file object.
      */
-    getEmbeddedHtml(file: CoreWSExternalFile | FileEntry, path?: string): string {
+    getEmbeddedHtml(file: CoreFileEntry, path?: string): string {
         const filename = CoreUtils.isFileEntry(file) ? (file as FileEntry).name : file.filename;
         const extension = !CoreUtils.isFileEntry(file) && file.mimetype
             ? this.getExtension(file.mimetype)
@@ -173,7 +174,7 @@ export class CoreMimetypeUtilsProvider {
             : (extension && this.getMimeType(extension));
 
         // @todo linting: See if this can be removed
-        (file as CoreWSExternalFile).mimetype = mimeType;
+        (file as CoreWSFile).mimetype = mimeType;
 
         if (extension && this.canBeEmbedded(extension)) {
             const embedType = this.getExtensionType(extension);
@@ -181,7 +182,7 @@ export class CoreMimetypeUtilsProvider {
             // @todo linting: See if this can be removed
             (file as { embedType?: string }).embedType = embedType;
 
-            path = path ?? (CoreUtils.isFileEntry(file) ? file.toURL() : file.fileurl);
+            path = path ?? (CoreUtils.isFileEntry(file) ? file.toURL() : CoreFileHelper.getFileUrl(file));
             path = path && CoreFile.convertFileSrc(path);
 
             switch (embedType) {
@@ -401,7 +402,7 @@ export class CoreMimetypeUtilsProvider {
      * @param capitalise If true, capitalises first character of result.
      * @return Type description.
      */
-    getMimetypeDescription(obj: FileEntry | CoreWSExternalFile | string, capitalise?: boolean): string {
+    getMimetypeDescription(obj: CoreFileEntry | string, capitalise?: boolean): string {
         const langPrefix = 'assets.mimetypes.';
         let filename: string | undefined = '';
         let mimetype: string | undefined = '';

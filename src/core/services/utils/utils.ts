@@ -14,14 +14,14 @@
 
 import { Injectable, NgZone } from '@angular/core';
 import { InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-browser';
-import { FileEntry } from '@ionic-native/file';
+import { FileEntry } from '@ionic-native/file/ngx';
 import { Subscription } from 'rxjs';
 
 import { CoreApp } from '@services/app';
 import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreLang } from '@services/lang';
-import { CoreWS, CoreWSExternalFile } from '@services/ws';
+import { CoreWS, CoreWSFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
@@ -31,6 +31,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreViewerQRScannerComponent } from '@features/viewer/components/qr-scanner/qr-scanner';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
+import { CoreFileEntry } from '@services/file-helper';
 
 type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -379,11 +380,7 @@ export class CoreUtilsProvider {
     /**
      * Execute promises one depending on the previous.
      *
-     * @param orderedPromisesData Data to be executed including the following values:
-     *                            - func: Function to be executed.
-     *                            - context: Context to pass to the function. This allows using "this" inside the function.
-     *                            - params: Array of data to be sent to the function.
-     *                            - blocking: Boolean. If promise should block the following.
+     * @param orderedPromisesData Data to be executed.
      * @return Promise resolved when all promises are resolved.
      */
     executeOrderedPromises(orderedPromisesData: OrderedPromiseData[]): Promise<void> {
@@ -748,7 +745,7 @@ export class CoreUtilsProvider {
      * @param file File.
      * @return Type guard indicating if the file is a FileEntry.
      */
-    isFileEntry(file: FileEntry | CoreWSExternalFile): file is FileEntry {
+    isFileEntry(file: CoreFileEntry): file is FileEntry {
         return 'isFile' in file;
     }
 
@@ -768,7 +765,7 @@ export class CoreUtilsProvider {
      * @param files List of files.
      * @return String with error message if repeated, false if no repeated.
      */
-    hasRepeatedFilenames(files: (FileEntry | CoreWSExternalFile)[]): string | false {
+    hasRepeatedFilenames(files: CoreFileEntry[]): string | false {
         if (!files || !files.length) {
             return false;
         }
@@ -1368,7 +1365,7 @@ export class CoreUtilsProvider {
      * @return File size and a boolean to indicate if it is the total size or only partial.
      * @deprecated since 3.8.0. Use CorePluginFileDelegate.getFilesSize instead.
      */
-    sumFileSizes(files: CoreWSExternalFile[]): CoreFileSizeSum {
+    sumFileSizes(files: CoreWSFile[]): CoreFileSizeSum {
         const result = {
             size: 0,
             total: true,

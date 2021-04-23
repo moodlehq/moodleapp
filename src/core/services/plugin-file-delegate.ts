@@ -13,14 +13,15 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileEntry } from '@ionic-native/file';
+import { FileEntry } from '@ionic-native/file/ngx';
 
 import { CoreFilepool, CoreFilepoolOnProgressCallback } from '@services/filepool';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { CoreConstants } from '@/core/constants';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { makeSingleton } from '@singletons';
 import { CoreSites } from './sites';
+import { CoreFileHelper } from './file-helper';
 
 /**
  * Delegate to register pluginfile information handlers.
@@ -57,7 +58,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the file to use. Rejected if cannot download.
      */
-    getDownloadableFile(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile> {
+    getDownloadableFile(file: CoreWSFile, siteId?: string): Promise<CoreWSFile> {
         const handler = this.getHandlerForFile(file);
 
         return this.getHandlerDownloadableFile(file, handler, siteId);
@@ -72,10 +73,10 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @return Promise resolved with the file to use. Rejected if cannot download.
      */
     protected async getHandlerDownloadableFile(
-        file: CoreWSExternalFile,
+        file: CoreWSFile,
         handler?: CorePluginFileHandler,
         siteId?: string,
-    ): Promise<CoreWSExternalFile> {
+    ): Promise<CoreWSFile> {
         const isDownloadable = await this.isFileDownloadable(file, siteId);
 
         if (!isDownloadable.downloadable) {
@@ -134,13 +135,13 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
-    async getFilesDownloadSize(files: CoreWSExternalFile[], siteId?: string): Promise<CoreFileSizeSum> {
+    async getFilesDownloadSize(files: CoreWSFile[], siteId?: string): Promise<CoreFileSizeSum> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const filteredFiles = <CoreWSExternalFile[]>[];
+        const filteredFiles = <CoreWSFile[]>[];
 
         await Promise.all(files.map(async (file) => {
-            const state = await CoreFilepool.getFileStateByUrl(siteId!, file.fileurl, file.timemodified);
+            const state = await CoreFilepool.getFileStateByUrl(siteId!, CoreFileHelper.getFileUrl(file), file.timemodified);
 
             if (state != CoreConstants.DOWNLOADED && state != CoreConstants.NOT_DOWNLOADABLE) {
                 filteredFiles.push(file);
@@ -157,7 +158,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
-    async getFilesSize(files: CoreWSExternalFile[], siteId?: string): Promise<CoreFileSizeSum> {
+    async getFilesSize(files: CoreWSFile[], siteId?: string): Promise<CoreFileSizeSum> {
         const result = {
             size: 0,
             total: true,
@@ -184,7 +185,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the size.
      */
-    async getFileSize(file: CoreWSExternalFile, siteId?: string): Promise<number> {
+    async getFileSize(file: CoreWSFile, siteId?: string): Promise<number> {
         const isDownloadable = await this.isFileDownloadable(file, siteId);
 
         if (!isDownloadable.downloadable) {
@@ -218,7 +219,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @param file File data.
      * @return Handler.
      */
-    protected getHandlerForFile(file: CoreWSExternalFile): CorePluginFileHandler | undefined {
+    protected getHandlerForFile(file: CoreWSFile): CorePluginFileHandler | undefined {
         for (const component in this.enabledHandlers) {
             const handler = this.enabledHandlers[component];
 
@@ -235,7 +236,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @param siteId Site ID. If not defined, current site.
      * @return Promise with the data.
      */
-    async isFileDownloadable(file: CoreWSExternalFile, siteId?: string): Promise<CorePluginFileDownloadableResult> {
+    async isFileDownloadable(file: CoreWSFile, siteId?: string): Promise<CorePluginFileDownloadableResult> {
         const handler = this.getHandlerForFile(file);
 
         if (handler && handler.isFileDownloadable) {
@@ -337,7 +338,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the file to use. Rejected if cannot download.
      */
-    getDownloadableFile?(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile>;
+    getDownloadableFile?(file: CoreWSFile, siteId?: string): Promise<CoreWSFile>;
 
     /**
      * Given an HTML element, get the URLs of the files that should be downloaded and weren't treated by
@@ -355,7 +356,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the size.
      */
-    getFileSize?(file: CoreWSExternalFile, siteId?: string): Promise<number>;
+    getFileSize?(file: CoreWSFile, siteId?: string): Promise<number>;
 
     /**
      * Check if a file is downloadable.
@@ -364,7 +365,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with a boolean and a reason why it isn't downloadable if needed.
      */
-    isFileDownloadable?(file: CoreWSExternalFile, siteId?: string): Promise<CorePluginFileDownloadableResult>;
+    isFileDownloadable?(file: CoreWSFile, siteId?: string): Promise<CorePluginFileDownloadableResult>;
 
     /**
      * Check whether the file should be treated by this handler. It is used in functions where the component isn't used.
@@ -372,7 +373,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * @param file The file data.
      * @return Whether the file should be treated by this handler.
      */
-    shouldHandleFile?(file: CoreWSExternalFile): boolean;
+    shouldHandleFile?(file: CoreWSFile): boolean;
 
     /**
      * Treat a downloaded file.

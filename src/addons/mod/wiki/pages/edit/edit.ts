@@ -23,7 +23,7 @@ import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
@@ -62,7 +62,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
     protected blockId?: string; // ID to block the subwiki.
     protected editing = false; // Whether the user is editing a page (true) or creating a new one (false).
     protected editOffline = false; // Whether the user is editing an offline page.
-    protected subwikiFiles: CoreWSExternalFile[] = []; // List of files of the subwiki.
+    protected subwikiFiles: CoreWSFile[] = []; // List of files of the subwiki.
     protected originalContent?: string; // The original page content.
     protected version?: number; // Page version.
     protected renewLockInterval?: number; // An interval to renew the lock every certain time.

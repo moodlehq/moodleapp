@@ -22,12 +22,12 @@ import {
 import { AddonModDataFieldHandler } from '@addons/mod/data/services/data-fields-delegate';
 import { Injectable, Type } from '@angular/core';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
-import { FileEntry } from '@ionic-native/file';
+import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreFileSession } from '@services/file-session';
 import { CoreFormFields } from '@singletons/form';
-import { CoreWSExternalFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModDataFieldFileComponent } from '../component/file';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Handler for file data field plugin.
@@ -77,7 +77,7 @@ export class AddonModDataFieldFileHandlerService implements AddonModDataFieldHan
     /**
      * @inheritdoc
      */
-    getFieldEditFiles(field: AddonModDataField): (CoreWSExternalFile | FileEntry)[] {
+    getFieldEditFiles(field: AddonModDataField): CoreFileEntry[] {
         return CoreFileSession.getFiles(AddonModDataProvider.COMPONENT,  field.dataid + '_' + field.id);
     }
 

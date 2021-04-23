@@ -49,17 +49,19 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     @Input() icon?: string; // The tab icon.
     @Input() badge?: string; // A badge to add in the tab.
     @Input() badgeStyle?: string; // The badge color.
-    @Input() enabled = true; // Whether the tab is enabled.
     @Input() class?: string; // Class, if needed.
-    @Input() set show(val: boolean) { // Whether the tab should be shown. Use a setter to detect changes on the value.
-        if (typeof val != 'undefined') {
-            const hasChanged = this.isShown != val;
-            this.isShown = val;
+    @Input() set enabled(value: boolean) { // Whether the tab should be shown.
+        value = value === undefined ? true : value;
+        const hasChanged = this.isEnabled != value;
+        this.isEnabled = value;
 
-            if (this.initialized && hasChanged) {
-                this.tabs.tabVisibilityChanged();
-            }
+        if (this.initialized && hasChanged) {
+            this.tabs.tabVisibilityChanged();
         }
+    }
+
+    get enabled(): boolean {
+        return this.isEnabled;
     }
 
     @Input() id?: string; // An ID to identify the tab.
@@ -70,8 +72,9 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     element: HTMLElement; // The core-tab element.
     loaded = false;
     initialized = false;
-    isShown = true;
     tabElement?: HTMLElement | null;
+
+    protected isEnabled = true;
 
     constructor(
         protected tabs: CoreTabsComponent,

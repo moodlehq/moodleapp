@@ -17,7 +17,7 @@ import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { AddonModAssignDefaultFeedbackHandler } from './handlers/default-feedback';
 import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin, AddonModAssignSavePluginData } from './assign';
 import { makeSingleton } from '@singletons';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { AddonModAssignSubmissionFormatted } from './assign-helper';
 import { CoreFormFields } from '@singletons/form';
 
@@ -79,7 +79,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
         siteId?: string,
-    ): CoreWSExternalFile[] | Promise<CoreWSExternalFile[]>;
+    ): CoreWSFile[] | Promise<CoreWSFile[]>;
 
     /**
      * Get a readable name to use for the plugin.
@@ -246,8 +246,8 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
         siteId?: string,
-    ): Promise<CoreWSExternalFile[]> {
-        const files: CoreWSExternalFile[] | undefined =
+    ): Promise<CoreWSFile[]> {
+        const files: CoreWSFile[] | undefined =
             await this.executeFunctionOnEnabled(plugin.type, 'getPluginFiles', [assign, submission, plugin, siteId]);
 
         return files || [];

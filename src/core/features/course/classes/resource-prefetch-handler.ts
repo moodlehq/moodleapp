@@ -18,7 +18,7 @@ import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from '../services/course';
 import { CoreCourseModulePrefetchHandlerBase } from './module-prefetch-handler';
 
@@ -144,7 +144,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @return Promise resolved with the list of files.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getFiles(module: CoreCourseWSModule, courseId: number, single?: boolean): Promise<CoreWSExternalFile[]> {
+    async getFiles(module: CoreCourseWSModule, courseId: number, single?: boolean): Promise<CoreWSFile[]> {
         // Load module contents if needed.
         await this.loadContents(module, courseId);
 

@@ -14,7 +14,6 @@
 
 import { ContextLevel } from '@/core/constants';
 import { Injectable } from '@angular/core';
-import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreSyncBlockedError } from '@classes/base-sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/activity-sync';
@@ -24,13 +23,13 @@ import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModGlossary, AddonModGlossaryProvider } from './glossary';
 import { AddonModGlossaryHelper } from './glossary-helper';
 import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from './glossary-offline';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Service to sync glossaries.
@@ -309,7 +308,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
         }
 
         // Has some attachments to sync.
-        let files: (CoreWSExternalFile | FileEntry)[] = entry.attachments.online || [];
+        let files: CoreFileEntry[] = entry.attachments.online || [];
 
         if (entry.attachments.offline) {
             // Has offline files.

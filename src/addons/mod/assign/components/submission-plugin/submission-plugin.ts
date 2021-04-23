@@ -14,7 +14,6 @@
 
 import { Component, Input, OnInit, Type, ViewChild } from '@angular/core';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
-import { CoreWSExternalFile } from '@services/ws';
 import {
     AddonModAssignAssign,
     AddonModAssignSubmission,
@@ -24,7 +23,7 @@ import {
 } from '../../services/assign';
 import { AddonModAssignHelper, AddonModAssignPluginConfig } from '../../services/assign-helper';
 import { AddonModAssignSubmissionDelegate } from '../../services/submission-delegate';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Component that displays an assignment submission plugin.
@@ -49,7 +48,7 @@ export class AddonModAssignSubmissionPluginComponent implements OnInit {
     // Data to render the plugin if it isn't supported.
     component = AddonModAssignProvider.COMPONENT;
     text = '';
-    files: (FileEntry | CoreWSExternalFile)[] = [];
+    files: CoreFileEntry[] = [];
     notSupported = false;
     pluginLoaded = false;
 

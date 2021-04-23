@@ -53,7 +53,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
     protected componentTranslatableString = 'assign';
 
     constructor() {
-        super('AddonModLessonSyncProvider');
+        super('AddonModAssignSyncProvider');
     }
 
     /**

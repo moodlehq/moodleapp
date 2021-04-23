@@ -20,7 +20,7 @@ import { CoreEventPackageStatusChanged, CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreWS, CoreWSExternalFile } from '@services/ws';
+import { CoreWS, CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
@@ -46,6 +46,7 @@ import {
     CoreFilepoolQueueEntry,
     CoreFilepoolQueueDBEntry,
 } from '@services/database/filepool';
+import { CoreFileHelper } from './file-helper';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -171,7 +172,7 @@ export class CoreFilepoolProvider {
      */
     async addFileLinkByUrl(siteId: string, fileUrl: string, component: string, componentId?: string | number): Promise<void> {
         const file = await this.fixPluginfileURL(siteId, fileUrl);
-        const fileId = this.getFileIdByUrl(file.fileurl);
+        const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
 
         await this.addFileLink(siteId, fileId, component, componentId);
     }
@@ -199,7 +200,7 @@ export class CoreFilepoolProvider {
      * @param componentId An ID to use in conjunction with the component (optional).
      * @return Resolved on success.
      */
-    addFilesToQueue(siteId: string, files: CoreWSExternalFile[], component?: string, componentId?: string | number): Promise<void> {
+    addFilesToQueue(siteId: string, files: CoreWSFile[], component?: string, componentId?: string | number): Promise<void> {
         return this.downloadOrPrefetchFiles(siteId, files, true, false, component, componentId);
     }
 
@@ -342,7 +343,7 @@ export class CoreFilepoolProvider {
             // Fix the URL and use the fixed data.
             const file = await this.fixPluginfileURL(siteId, fileUrl);
 
-            fileUrl = file.fileurl;
+            fileUrl = CoreFileHelper.getFileUrl(file);
             timemodified = file.timemodified || timemodified;
         }
 
@@ -735,7 +736,7 @@ export class CoreFilepoolProvider {
      */
     downloadOrPrefetchFiles(
         siteId: string,
-        files: CoreWSExternalFile[],
+        files: CoreWSFile[],
         prefetch: boolean,
         ignoreStale?: boolean,
         component?: string,
@@ -746,11 +747,11 @@ export class CoreFilepoolProvider {
 
         // Download files.
         files.forEach((file) => {
-            const url = file.fileurl;
+            const url = CoreFileHelper.getFileUrl(file);
             const timemodified = file.timemodified;
             const options = {
-                isexternalfile: file.isexternalfile,
-                repositorytype: file.repositorytype,
+                isexternalfile: 'isexternalfile' in file ? file.isexternalfile : undefined,
+                repositorytype: 'repositorytype' in file ? file.repositorytype : undefined,
             };
             let path: string | undefined;
 
@@ -799,7 +800,7 @@ export class CoreFilepoolProvider {
      */
     downloadOrPrefetchPackage(
         siteId: string,
-        fileList: CoreWSExternalFile[],
+        fileList: CoreWSFile[],
         prefetch: boolean,
         component: string,
         componentId?: string | number,
@@ -822,10 +823,10 @@ export class CoreFilepoolProvider {
             let packageLoaded = 0;
 
             fileList.forEach((file) => {
-                const fileUrl = file.fileurl;
+                const fileUrl = CoreFileHelper.getFileUrl(file);
                 const options = {
-                    isexternalfile: file.isexternalfile,
-                    repositorytype: file.repositorytype,
+                    isexternalfile: 'isexternalfile' in file ? file.isexternalfile : undefined,
+                    repositorytype: 'repositorytype' in file ? file.repositorytype : undefined,
                 };
                 let path: string | undefined;
                 let promise: Promise<string | void>;
@@ -924,7 +925,7 @@ export class CoreFilepoolProvider {
      */
     downloadPackage(
         siteId: string,
-        fileList: CoreWSExternalFile[],
+        fileList: CoreWSFile[],
         component: string,
         componentId?: string | number,
         extra?: string,
@@ -973,7 +974,7 @@ export class CoreFilepoolProvider {
         }
 
         const file = await this.fixPluginfileURL(siteId, fileUrl);
-        fileUrl = file.fileurl;
+        fileUrl = CoreFileHelper.getFileUrl(file);
         timemodified = file.timemodified || timemodified;
 
         options = Object.assign({}, options); // Create a copy to prevent modifying the original object.
@@ -1158,11 +1159,15 @@ export class CoreFilepoolProvider {
      * @param timemodified The timemodified of the file.
      * @return Promise resolved with the file data to use.
      */
-    protected async fixPluginfileURL(siteId: string, fileUrl: string, timemodified: number = 0): Promise<CoreWSExternalFile> {
+    protected async fixPluginfileURL(siteId: string, fileUrl: string, timemodified: number = 0): Promise<CoreWSFile> {
         const file = await CorePluginFileDelegate.getDownloadableFile({ fileurl: fileUrl, timemodified });
         const site = await CoreSites.getSite(siteId);
 
-        file.fileurl = await site.checkAndFixPluginfileURL(file.fileurl);
+        if ('fileurl' in file) {
+            file.fileurl = await site.checkAndFixPluginfileURL(file.fileurl);
+        } else {
+            file.url = await site.checkAndFixPluginfileURL(file.url);
+        }
 
         return file;
     }
@@ -1206,7 +1211,7 @@ export class CoreFilepoolProvider {
         }
 
         const file = await  this.fixPluginfileURL(siteId, fileUrl);
-        const fileId = this.getFileIdByUrl(file.fileurl);
+        const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
         const filePath = await this.getFilePath(siteId, fileId, '');
         const dirEntry = await CoreFile.getDir(filePath);
 
@@ -1244,7 +1249,7 @@ export class CoreFilepoolProvider {
      */
     getFileEventNameByUrl(siteId: string, fileUrl: string): Promise<string> {
         return this.fixPluginfileURL(siteId, fileUrl).then((file) => {
-            const fileId = this.getFileIdByUrl(file.fileurl);
+            const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
 
             return this.getFileEventName(siteId, fileId);
         });
@@ -1342,7 +1347,7 @@ export class CoreFilepoolProvider {
      */
     async getFilePathByUrl(siteId: string, fileUrl: string): Promise<string> {
         const file = await this.fixPluginfileURL(siteId, fileUrl);
-        const fileId = this.getFileIdByUrl(file.fileurl);
+        const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
 
         return this.getFilePath(siteId, fileId);
     }
@@ -1433,7 +1438,7 @@ export class CoreFilepoolProvider {
         filePath?: string,
         revision?: number,
     ): Promise<string> {
-        let file: CoreWSExternalFile;
+        let file: CoreWSFile;
 
         try {
             file = await this.fixPluginfileURL(siteId, fileUrl, timemodified);
@@ -1441,7 +1446,7 @@ export class CoreFilepoolProvider {
             return CoreConstants.NOT_DOWNLOADABLE;
         }
 
-        fileUrl = file.fileurl;
+        fileUrl = CoreFileHelper.getFileUrl(file);
         timemodified = file.timemodified || timemodified;
         revision = revision || this.getRevisionFromUrl(fileUrl);
         const fileId = this.getFileIdByUrl(fileUrl);
@@ -1527,7 +1532,7 @@ export class CoreFilepoolProvider {
 
         const file = await this.fixPluginfileURL(siteId, fileUrl, timemodified);
 
-        fileUrl = file.fileurl;
+        fileUrl = CoreFileHelper.getFileUrl(file);
         timemodified = file.timemodified || timemodified;
         revision = revision || this.getRevisionFromUrl(fileUrl);
         const fileId = this.getFileIdByUrl(fileUrl);
@@ -1635,7 +1640,7 @@ export class CoreFilepoolProvider {
         }
 
         const file = await this.fixPluginfileURL(siteId, fileUrl);
-        const fileId = this.getFileIdByUrl(file.fileurl);
+        const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
 
         return this.getInternalUrlById(siteId, fileId);
     }
@@ -1693,7 +1698,7 @@ export class CoreFilepoolProvider {
      */
     getPackageDirPathByUrl(siteId: string, url: string): Promise<string> {
         return this.fixPluginfileURL(siteId, url).then((file) => {
-            const dirName = this.getPackageDirNameByUrl(file.fileurl);
+            const dirName = this.getPackageDirNameByUrl(CoreFileHelper.getFileUrl(file));
 
             return this.getFilePath(siteId, dirName, '');
         });
@@ -1712,7 +1717,7 @@ export class CoreFilepoolProvider {
         }
 
         const file = await this.fixPluginfileURL(siteId, url);
-        const dirName = this.getPackageDirNameByUrl(file.fileurl);
+        const dirName = this.getPackageDirNameByUrl(CoreFileHelper.getFileUrl(file));
         const dirPath = await this.getFilePath(siteId, dirName, '');
         const dirEntry = await CoreFile.getDir(dirPath);
 
@@ -1890,12 +1895,14 @@ export class CoreFilepoolProvider {
      * @param files Package files.
      * @return Highest revision.
      */
-    getRevisionFromFileList(files: CoreWSExternalFile[]): number {
+    getRevisionFromFileList(files: CoreWSFile[]): number {
         let revision = 0;
 
         files.forEach((file) => {
-            if (file.fileurl) {
-                const r = this.getRevisionFromUrl(file.fileurl);
+            const fileUrl = CoreFileHelper.getFileUrl(file);
+
+            if (fileUrl) {
+                const r = this.getRevisionFromUrl(fileUrl);
                 if (r > revision) {
                     revision = r;
                 }
@@ -1981,7 +1988,7 @@ export class CoreFilepoolProvider {
      * @param files List of files.
      * @return Time modified.
      */
-    getTimemodifiedFromFileList(files: CoreWSExternalFile[]): number {
+    getTimemodifiedFromFileList(files: CoreWSFile[]): number {
         let timemodified = 0;
 
         files.forEach((file) => {
@@ -2163,7 +2170,7 @@ export class CoreFilepoolProvider {
      */
     async invalidateFileByUrl(siteId: string, fileUrl: string): Promise<void> {
         const file = await this.fixPluginfileURL(siteId, fileUrl);
-        const fileId = this.getFileIdByUrl(file.fileurl);
+        const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
 
         const db = await CoreSites.getSiteDb(siteId);
 
@@ -2250,7 +2257,7 @@ export class CoreFilepoolProvider {
      */
     async isFileDownloadingByUrl(siteId: string, fileUrl: string): Promise<void> {
         const file = await this.fixPluginfileURL(siteId, fileUrl);
-        const fileId = this.getFileIdByUrl(file.fileurl);
+        const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
 
         await this.hasFileInQueue(siteId, fileId);
     }
@@ -2403,7 +2410,7 @@ export class CoreFilepoolProvider {
      */
     prefetchPackage(
         siteId: string,
-        fileList: CoreWSExternalFile[],
+        fileList: CoreWSFile[],
         component: string,
         componentId?: string | number,
         extra?: string,
@@ -2691,7 +2698,7 @@ export class CoreFilepoolProvider {
      */
     async removeFileByUrl(siteId: string, fileUrl: string): Promise<void> {
         const file = await this.fixPluginfileURL(siteId, fileUrl);
-        const fileId = this.getFileIdByUrl(file.fileurl);
+        const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
 
         await this.removeFileById(siteId, fileId);
     }

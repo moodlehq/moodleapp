@@ -14,7 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreSharedFilesHelper } from '@features/sharedfiles/services/sharedfiles-helper';
-import { FileEntry } from '@ionic-native/file';
+import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';

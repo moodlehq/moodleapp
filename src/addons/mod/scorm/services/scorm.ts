@@ -25,7 +25,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWS, CoreWSExternalFile, CoreWSExternalWarning, CoreWSPreSets } from '@services/ws';
+import { CoreWS, CoreWSExternalFile, CoreWSExternalWarning, CoreWSFile, CoreWSPreSets } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModScormOffline } from './scorm-offline';
@@ -983,8 +983,8 @@ export class AddonModScormProvider {
      * @param scorm SCORM.
      * @return File list.
      */
-    getScormFileList(scorm: AddonModScormScorm): CoreWSExternalFile[] {
-        const files: CoreWSExternalFile[] = [];
+    getScormFileList(scorm: AddonModScormScorm): CoreWSFile[] {
+        const files: CoreWSFile[] = [];
 
         if (!this.isScormUnsupported(scorm) && !scorm.warningMessage) {
             files.push({

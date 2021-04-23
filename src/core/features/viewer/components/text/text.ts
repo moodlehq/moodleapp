@@ -13,10 +13,9 @@
 // limitations under the License.
 
 import { Component, Input } from '@angular/core';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { CoreFileEntry } from '@services/file-helper';
 
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
 import { ModalController } from '@singletons';
 
 /**
@@ -32,7 +31,7 @@ export class CoreViewerTextComponent {
     @Input() content?: string; // Modal content.
     @Input() component?: string; // Component to use in format-text.
     @Input() componentId?: string | number; // Component ID to use in format-text.
-    @Input() files?: (CoreWSExternalFile | FileEntry)[]; // List of files.
+    @Input() files?: CoreFileEntry[]; // List of files.
     @Input() filter?: boolean; // Whether to filter the text.
     @Input() contextLevel?: string; // The context level.
     @Input() instanceId?: number; // The instance ID related to the context.

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
+import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
@@ -305,7 +305,7 @@ export class AddonModH5PActivityProvider {
     async getDeployedFile(
         h5pActivity: AddonModH5PActivityData,
         options?: AddonModH5PActivityGetDeployedFileOptions,
-    ): Promise<CoreWSExternalFile> {
+    ): Promise<CoreWSFile> {
 
         if (h5pActivity.deployedfile) {
             // File already deployed and still valid, use this one.

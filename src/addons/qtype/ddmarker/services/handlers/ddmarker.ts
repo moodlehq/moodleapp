@@ -17,7 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreQuestionHelper, CoreQuestionQuestion } from '@features/question/services/question-helper';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonQtypeDdMarkerComponent } from '../../component/ddmarker';
 
@@ -135,7 +135,7 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
      * @param usageId Usage ID.
      * @return List of files or URLs.
      */
-    getAdditionalDownloadableFiles(question: CoreQuestionQuestionParsed, usageId?: number): CoreWSExternalFile[] {
+    getAdditionalDownloadableFiles(question: CoreQuestionQuestionParsed, usageId?: number): CoreWSFile[] {
         const treatedQuestion: CoreQuestionQuestion = question;
 
         CoreQuestionHelper.extractQuestionScripts(treatedQuestion, usageId);

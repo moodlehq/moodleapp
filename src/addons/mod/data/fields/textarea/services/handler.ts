@@ -14,13 +14,13 @@
 
 import { AddonModDataEntryField, AddonModDataField, AddonModDataSubfieldData } from '@addons/mod/data/services/data';
 import { Injectable, Type } from '@angular/core';
-import { FileEntry } from '@ionic-native/file';
 import { CoreFormFields } from '@singletons/form';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModDataFieldTextHandlerService } from '../../text/services/handler';
 import { AddonModDataFieldTextareaComponent } from '../component/textarea';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Handler for textarea data field plugin.
@@ -49,7 +49,7 @@ export class AddonModDataFieldTextareaHandlerService extends AddonModDataFieldTe
         const fieldName = 'f_' + field.id;
         const files = this.getFieldEditFiles(field, inputData, originalFieldData);
 
-        let text = CoreTextUtils.restorePluginfileUrls(inputData[fieldName] || '', <CoreWSExternalFile[]>files);
+        let text = CoreTextUtils.restorePluginfileUrls(inputData[fieldName] || '', <CoreWSFile[]> files);
         // Add some HTML to the text if needed.
         text = CoreTextUtils.formatHtmlLines(text);
 
@@ -83,7 +83,7 @@ export class AddonModDataFieldTextareaHandlerService extends AddonModDataFieldTe
         field: AddonModDataField,
         inputData: CoreFormFields,
         originalFieldData: AddonModDataEntryField,
-    ): (CoreWSExternalFile | FileEntry)[] {
+    ): CoreFileEntry[] {
         return (originalFieldData && originalFieldData.files) || [];
     }
 
@@ -116,7 +116,7 @@ export class AddonModDataFieldTextareaHandlerService extends AddonModDataFieldTe
             // Take the original files since we cannot edit them on the app.
             originalContent.content = CoreTextUtils.replacePluginfileUrls(
                 originalContent.content,
-                <CoreWSExternalFile[]>originalContent.files,
+                <CoreWSFile[]> originalContent.files,
             );
         }
 

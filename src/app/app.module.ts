@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { COMPILER_OPTIONS, NgModule } from '@angular/core';
+import { APP_INITIALIZER, COMPILER_OPTIONS, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouteReuseStrategy } from '@angular/router';
@@ -29,6 +29,8 @@ import { AddonsModule } from '@/addons/addons.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
+import { CoreCronDelegate } from '@services/cron';
+import { CoreSiteInfoCronHandler } from '@services/handlers/site-info-cron';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -57,6 +59,14 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
         { provide: COMPILER_OPTIONS, useValue: {}, multi: true },
         { provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS] },
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            deps: [],
+            useFactory: () => () => {
+                CoreCronDelegate.register(CoreSiteInfoCronHandler.instance);
+            },
+        },
     ],
     bootstrap: [AppComponent],
 })

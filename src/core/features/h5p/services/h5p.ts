@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
+import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreQueueRunner } from '@classes/queue-runner';
@@ -95,7 +95,7 @@ export class CoreH5PProvider {
         options?: CoreH5PGetTrustedFileOptions,
         ignoreCache?: boolean,
         siteId?: string,
-    ): Promise<CoreWSExternalFile> {
+    ): Promise<CoreWSFile> {
 
         options = options || {};
 

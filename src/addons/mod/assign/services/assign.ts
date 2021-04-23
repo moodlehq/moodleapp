@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreInterceptor } from '@classes/interceptor';
-import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
+import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreTextUtils } from '@services/utils/text';
@@ -405,12 +405,12 @@ export class AddonModAssignProvider {
      * @param submissionPlugin Submission plugin.
      * @return Submission plugin attachments.
      */
-    getSubmissionPluginAttachments(submissionPlugin: AddonModAssignPlugin): CoreWSExternalFile[] {
+    getSubmissionPluginAttachments(submissionPlugin: AddonModAssignPlugin): CoreWSFile[] {
         if (!submissionPlugin.fileareas) {
             return [];
         }
 
-        const files: CoreWSExternalFile[] = [];
+        const files: CoreWSFile[] = [];
 
         submissionPlugin.fileareas.forEach((filearea) => {
             if (!filearea || !filearea.files) {

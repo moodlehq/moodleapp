@@ -22,7 +22,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModScorm, AddonModScormProvider, AddonModScormScorm } from '../scorm';
 import { AddonModScormSync } from '../scorm-sync';
@@ -297,7 +297,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @return Promise resolved with the list of files.
      */
-    async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSExternalFile[]> {
+    async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         try {
             const scorm = await this.getScorm(module, courseId);
 

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileEntry } from '@ionic-native/file';
+import { FileEntry } from '@ionic-native/file/ngx';
 
 import { CoreFilepoolOnProgressCallback } from '@services/filepool';
 import { CorePluginFileDownloadableResult, CorePluginFileHandler } from '@services/plugin-file-delegate';
@@ -21,10 +21,11 @@ import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { CoreH5P } from '../h5p';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreH5PHelper } from '../../classes/helper';
+import { CoreFileHelper } from '@services/file-helper';
 
 /**
  * Handler to treat H5P files.
@@ -54,15 +55,17 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the file to use. Rejected if cannot download.
      */
-    async getDownloadableFile(file: CoreWSExternalFile, siteId?: string): Promise<CoreWSExternalFile> {
+    async getDownloadableFile(file: CoreWSFile, siteId?: string): Promise<CoreWSFile> {
         const site = await CoreSites.getSite(siteId);
 
-        if (site.containsUrl(file.fileurl) && file.fileurl.match(/pluginfile\.php\/[^/]+\/core_h5p\/export\//i)) {
+        const fileUrl = CoreFileHelper.getFileUrl(file);
+
+        if (site.containsUrl(fileUrl) && fileUrl.match(/pluginfile\.php\/[^/]+\/core_h5p\/export\//i)) {
             // It's already a deployed file, use it.
             return file;
         }
 
-        return CoreH5P.getTrustedH5PFile(file.fileurl, {}, false, siteId);
+        return CoreH5P.getTrustedH5PFile(fileUrl, {}, false, siteId);
     }
 
     /**
@@ -94,7 +97,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the size.
      */
-    async getFileSize(file: CoreWSExternalFile, siteId?: string): Promise<number> {
+    async getFileSize(file: CoreWSFile, siteId?: string): Promise<number> {
         try {
             const trustedFile = await this.getDownloadableFile(file, siteId);
 
@@ -125,7 +128,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with a boolean and a reason why it isn't downloadable if needed.
      */
-    async isFileDownloadable(file: CoreWSExternalFile, siteId?: string): Promise<CorePluginFileDownloadableResult> {
+    async isFileDownloadable(file: CoreWSFile, siteId?: string): Promise<CorePluginFileDownloadableResult> {
         const offlineDisabled = await CoreH5P.isOfflineDisabled(siteId);
 
         if (offlineDisabled) {
@@ -146,8 +149,8 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * @param file The file data.
      * @return Whether the file should be treated by this handler.
      */
-    shouldHandleFile(file: CoreWSExternalFile): boolean {
-        return CoreMimetypeUtils.guessExtensionFromUrl(file.fileurl) == 'h5p';
+    shouldHandleFile(file: CoreWSFile): boolean {
+        return CoreMimetypeUtils.guessExtensionFromUrl(CoreFileHelper.getFileUrl(file)) == 'h5p';
     }
 
     /**

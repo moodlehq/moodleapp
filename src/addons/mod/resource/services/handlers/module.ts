@@ -22,7 +22,7 @@ import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModResourceIndexComponent } from '../../components/index';
 import { AddonModResource, AddonModResourceCustomData } from '../resource';
@@ -142,7 +142,7 @@ export class AddonModResourceModuleHandlerService implements CoreCourseModuleHan
         handlerData: CoreCourseModuleHandlerData,
     ): Promise<AddonResourceHandlerData> {
         const promises: Promise<void>[] = [];
-        let infoFiles: CoreWSExternalFile[] = [];
+        let infoFiles: CoreWSFile[] = [];
         let options: AddonModResourceCustomData = {};
 
         // Check if the button needs to be shown or not.
@@ -166,7 +166,7 @@ export class AddonModResourceModuleHandlerService implements CoreCourseModuleHan
 
         await Promise.all(promises);
 
-        const files: (CoreCourseModuleContentFile | CoreWSExternalFile)[] = module.contents && module.contents.length
+        const files: (CoreCourseModuleContentFile | CoreWSFile)[] = module.contents && module.contents.length
             ? module.contents
             : infoFiles;
 

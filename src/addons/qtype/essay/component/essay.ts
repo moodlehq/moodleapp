@@ -20,9 +20,9 @@ import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/service
 import { AddonModQuizEssayQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreWSExternalFile } from '@services/ws';
 import { CoreFileSession } from '@services/file-session';
 import { CoreQuestion } from '@features/question/services/question';
+import { CoreFileEntry } from '@services/file-helper';
 /**
  * Component to render an essay question.
  */
@@ -33,7 +33,7 @@ import { CoreQuestion } from '@features/question/services/question';
 export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implements OnInit {
 
     formControl?: FormControl;
-    attachments?: (CoreWSExternalFile | FileEntry)[];
+    attachments?: CoreFileEntry[];
     uploadFilesSupported = false;
     essayQuestion?: AddonModQuizEssayQuestion;
 

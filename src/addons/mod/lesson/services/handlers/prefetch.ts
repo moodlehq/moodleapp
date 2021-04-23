@@ -23,7 +23,7 @@ import { CoreGroups } from '@services/groups';
 import { CoreFileSizeSum, CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { makeSingleton, ModalController, Translate } from '@singletons';
 import { AddonModLessonPasswordModalComponent } from '../../components/password-modal/password-modal';
 import {
@@ -92,7 +92,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         lesson = passwordData.lesson || lesson;
 
         // Get intro files and media files.
-        let files = lesson.mediafiles || [];
+        let files: CoreWSFile[] = lesson.mediafiles || [];
         files = files.concat(this.getIntroFilesFromInstance(module, lesson));
 
         const result = await CorePluginFileDelegate.getFilesDownloadSize(files);
@@ -289,7 +289,8 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         const promises: Promise<void>[] = [];
 
         // Download intro files and media files.
-        const files = (lesson.mediafiles || []).concat(this.getIntroFilesFromInstance(module, lesson));
+        let files: CoreWSFile[] = (lesson.mediafiles || []);
+        files = files.concat(this.getIntroFilesFromInstance(module, lesson));
         promises.push(CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id));
 
         if (AddonModLesson.isLessonOffline(lesson)) {
@@ -495,7 +496,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
             }
 
             // Download embedded files in essays.
-            const files: CoreWSExternalFile[] = [];
+            const files: CoreWSFile[] = [];
             attempt.answerpages.forEach((answerPage) => {
                 if (!answerPage.page || answerPage.page.qtype != AddonModLessonProvider.LESSON_PAGE_ESSAY) {
                     return;

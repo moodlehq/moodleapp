@@ -34,6 +34,7 @@ import { AddonModChoiceModule } from './choice/choice.module';
 import { AddonModWikiModule } from './wiki/wiki.module';
 import { AddonModGlossaryModule } from './glossary/glossary.module';
 import { AddonModChatModule } from './chat/chat.module';
+import { AddonModFeedbackModule } from './feedback/feedback.module';
 
 @NgModule({
     imports: [
@@ -57,6 +58,7 @@ import { AddonModChatModule } from './chat/chat.module';
         AddonModWikiModule,
         AddonModGlossaryModule,
         AddonModChatModule,
+        AddonModFeedbackModule,
     ],
 })
 export class AddonModModule { }

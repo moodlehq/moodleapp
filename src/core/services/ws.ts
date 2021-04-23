@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { HttpResponse, HttpParams } from '@angular/common/http';
 
-import { FileEntry } from '@ionic-native/file';
+import { FileEntry } from '@ionic-native/file/ngx';
 import { FileUploadOptions } from '@ionic-native/file-transfer/ngx';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Observable } from 'rxjs';
@@ -1086,6 +1086,43 @@ export type CoreWSExternalFile = {
     isexternalfile?: number; // Whether is an external file.
     repositorytype?: string; // The repository type for external files.
 };
+
+/**
+ * Structure of files returned by stored_file_exporter.
+ */
+export type CoreWSStoredFile = {
+    contextid: number; // Contextid.
+    component: string; // Component.
+    filearea: string; // Filearea.
+    itemid: number; // Itemid.
+    filepath: string; // Filepath.
+    filename: string; // Filename.
+    isdir: boolean; // Isdir.
+    isimage: boolean; // Isimage.
+    timemodified: number; // Timemodified.
+    timecreated: number; // Timecreated.
+    filesize: number; // Filesize.
+    author: string; // Author.
+    license: string; // License.
+    filenameshort: string; // Filenameshort.
+    filesizeformatted: string; // Filesizeformatted.
+    icon: string; // Icon.
+    timecreatedformatted: string; // Timecreatedformatted.
+    timemodifiedformatted: string; // Timemodifiedformatted.
+    url: string; // Url.
+    urls: {
+        export?: string; // The URL used to export the attachment.
+    };
+    html: {
+        plagiarism?: string; // The HTML source for the Plagiarism Response.
+    };
+    mimetype: undefined; // File mimetype. @todo Not implemented yet in Moodle, see MDL-71354.
+};
+
+/**
+ * Common file structures returned by WS.
+ */
+export type CoreWSFile = CoreWSExternalFile | CoreWSStoredFile;
 
 /**
  * Data returned by date_exporter.

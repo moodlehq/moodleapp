@@ -127,7 +127,7 @@ import { ADDON_MOD_BOOK_SERVICES } from '@addons/mod/book/book.module';
 import { ADDON_MOD_CHAT_SERVICES } from '@addons/mod/chat/chat.module';
 import { ADDON_MOD_CHOICE_SERVICES } from '@addons/mod/choice/choice.module';
 import { ADDON_MOD_DATA_SERVICES } from '@addons/mod/data/data.module';
-// @todo import { ADDON_MOD_FEEDBACK_SERVICES } from '@addons/mod/feedback/feedback.module';
+import { ADDON_MOD_FEEDBACK_SERVICES } from '@addons/mod/feedback/feedback.module';
 import { ADDON_MOD_FOLDER_SERVICES } from '@addons/mod/folder/folder.module';
 import { ADDON_MOD_FORUM_SERVICES } from '@addons/mod/forum/forum.module';
 import { ADDON_MOD_GLOSSARY_SERVICES } from '@addons/mod/glossary/glossary.module';
@@ -293,7 +293,7 @@ export class CoreCompileProvider {
             ...ADDON_MOD_CHAT_SERVICES,
             ...ADDON_MOD_CHOICE_SERVICES,
             ...ADDON_MOD_DATA_SERVICES,
-            // @todo ...ADDON_MOD_FEEDBACK_SERVICES,
+            ...ADDON_MOD_FEEDBACK_SERVICES,
             ...ADDON_MOD_FOLDER_SERVICES,
             ...ADDON_MOD_FORUM_SERVICES,
             ...ADDON_MOD_GLOSSARY_SERVICES,

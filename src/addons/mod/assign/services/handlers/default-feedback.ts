@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreWSExternalFile } from '@services/ws';
+import { CoreWSFile } from '@services/ws';
 import { Translate } from '@singletons';
 import { AddonModAssignPlugin } from '../assign';
 import { AddonModAssignFeedbackHandler } from '../feedback-delegate';
@@ -52,7 +52,7 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
      *
      * @return The files (or promise resolved with the files).
      */
-    getPluginFiles(): CoreWSExternalFile[] {
+    getPluginFiles(): CoreWSFile[] {
         return [];
     }
 
