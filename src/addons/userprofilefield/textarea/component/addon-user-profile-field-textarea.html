@@ -14,7 +14,7 @@
         <span [core-mark-required]="required">{{ field.name }}</span>
         <core-input-errors [control]="control"></core-input-errors>
     </ion-label>
-    <core-rich-text-editor item-content [control]="control" [placeholder]="field.name" [autoSave]="true"
+    <core-rich-text-editor [control]="control" [placeholder]="field.name" [autoSave]="true"
         [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [elementId]="modelName">
     </core-rich-text-editor>
 </ion-item>

@@ -44,7 +44,7 @@ import { CoreEditorOffline } from '../../services/editor-offline';
  * If enabled, this component will show a rich text editor. Otherwise it'll show a regular textarea.
  *
  * Example:
- * <core-rich-text-editor item-content [control]="control" [placeholder]="field.name"></core-rich-text-editor>
+ * <core-rich-text-editor [control]="control" [placeholder]="field.name"></core-rich-text-editor>
  */
 @Component({
     selector: 'core-rich-text-editor',

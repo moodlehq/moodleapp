@@ -25,7 +25,7 @@
             </ion-item>
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_forum.message' | translate }}</ion-label>
-                <core-rich-text-editor item-content name="addon_mod_forum_new_discussion" contextLevel="module" elementId="message"
+                <core-rich-text-editor name="addon_mod_forum_new_discussion" contextLevel="module" elementId="message"
                     [control]="messageControl" [placeholder]="'addon.mod_forum.message' | translate" [component]="component"
                     [componentId]="forum.cmid" [autoSave]="true" [contextInstanceId]="forum.cmid"
                     (contentChanged)="onMessageChange($event)">

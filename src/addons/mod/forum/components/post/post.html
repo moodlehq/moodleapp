@@ -108,7 +108,7 @@
         </ion-item>
         <ion-item>
             <ion-label position="stacked">{{ 'addon.mod_forum.message' | translate }}</ion-label>
-            <core-rich-text-editor item-content elementId="message" contextLevel="module"
+            <core-rich-text-editor elementId="message" contextLevel="module"
                 [control]="messageControl" [placeholder]="'addon.mod_forum.replyplaceholder' | translate"
                 [name]="'mod_forum_reply_' + post.id" [component]="component" [componentId]="componentId" [autoSave]="true"
                 [contextInstanceId]="forum && forum.cmid" [draftExtraParams]="{reply: post.id}"

@@ -27,15 +27,12 @@ import { Translate } from '@singletons';
  *
  * Please notice that the inputs need to have a FormControl to make it work. That FormControl needs to be passed to this component.
  *
- * If this component is placed in the same ion-item as a ion-label or ion-input, then it should have the attribute "item-content",
- * otherwise Ionic will remove it.
- *
  * Example usage:
  *
  * <ion-item class="ion-text-wrap">
  *     <ion-label stacked core-mark-required="true">{{ 'core.login.username' | translate }}</ion-label>
  *     <ion-input type="text" name="username" formControlName="username"></ion-input>
- *     <core-input-errors item-content [control]="myForm.controls.username" [errorMessages]="usernameErrors"></core-input-errors>
+ *     <core-input-errors [control]="myForm.controls.username" [errorMessages]="usernameErrors"></core-input-errors>
  * </ion-item>
  */
 @Component({

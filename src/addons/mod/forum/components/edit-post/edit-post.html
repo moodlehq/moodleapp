@@ -17,7 +17,7 @@
         </ion-item>
         <ion-item>
             <ion-label position="stacked">{{ 'addon.mod_forum.message' | translate }}</ion-label>
-            <core-rich-text-editor item-content elementId="message"
+            <core-rich-text-editor elementId="message"
                 [name]="'mod_forum_reply_' + replyData.id" [control]="messageControl"
                 [placeholder]="'addon.mod_forum.replyplaceholder' | translate" [autoSave]="true"
                 [component]="component" [componentId]="componentId" [draftExtraParams]="{edit: replyData.id}"
