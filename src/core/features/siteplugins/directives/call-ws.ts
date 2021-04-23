@@ -65,16 +65,16 @@ export class CoreSitePluginsCallWSDirective extends CoreSitePluginsCallWSOnClick
     /**
      * @inheritdoc
      */
-    protected wsCallSuccess(): void {
+    protected async wsCallSuccess(): Promise<void> {
+        if (CoreUtils.isTrueOrOne(this.goBackOnSuccess)) {
+            await CoreNavigator.back();
+        } else if (CoreUtils.isTrueOrOne(this.refreshOnSuccess) && this.parentContent) {
+            this.parentContent.refreshContent(true);
+        }
+
         if (typeof this.successMessage != 'undefined') {
             // Display the success message.
             CoreDomUtils.showToast(this.successMessage || Translate.instant('core.success'));
-        }
-
-        if (CoreUtils.isTrueOrOne(this.goBackOnSuccess)) {
-            CoreNavigator.back();
-        } else if (CoreUtils.isTrueOrOne(this.refreshOnSuccess) && this.parentContent) {
-            this.parentContent.refreshContent(true);
         }
     }
 
