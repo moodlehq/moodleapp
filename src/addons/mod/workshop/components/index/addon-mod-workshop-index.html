@@ -127,7 +127,12 @@
 
             <ng-container *ngIf="submission">
                 <ion-item-divider class="ion-text-wrap">
-                    <ion-label><h2>{{ 'addon.mod_workshop.yoursubmission' | translate }}</h2></ion-label>
+                    <ion-label>
+                        <h2 *ngIf="workshop!.phase != PHASE_CLOSED">{{ 'addon.mod_workshop.yoursubmission' | translate }}</h2>
+                        <h2 *ngIf="workshop!.phase == PHASE_CLOSED">
+                            {{ 'addon.mod_workshop.yoursubmissionwithassessments' | translate }}
+                        </h2>
+                    </ion-label>
                 </ion-item-divider>
                 <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop!.course" [module]="module"
                     [workshop]="workshop" [access]="access">

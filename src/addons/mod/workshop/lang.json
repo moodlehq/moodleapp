@@ -59,5 +59,6 @@
     "yourassessment": "Your assessment",
     "yourassessmentfor": "Your assessment for {{$a}}",
     "yourgrades": "Your grades",
-    "yoursubmission": "Your submission"
+    "yoursubmission": "Your submission",
+    "yoursubmissionwithassessments": "Your submission with assessments"
 }
