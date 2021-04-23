@@ -275,6 +275,11 @@ ion-toolbar {
             color: $base;
         }
     }
+
+    ion-icon.ion-color-#{$color-name} {
+        color: $base;
+        --ion-color-base: #{$base};
+    }
 }
 
 // Avatar

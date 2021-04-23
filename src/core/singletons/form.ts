@@ -63,7 +63,7 @@ export class CoreForms {
      * @param form Form element.
      * @param siteId The site affected. If not provided, no site affected.
      */
-    static triggerFormCancelledEvent(formRef: ElementRef | HTMLFormElement | undefined, siteId?: string): void {
+    static triggerFormCancelledEvent(formRef?: ElementRef | HTMLFormElement | undefined, siteId?: string): void {
         if (!formRef) {
             return;
         }
@@ -81,7 +81,7 @@ export class CoreForms {
      * @param online Whether the action was done in offline or not.
      * @param siteId The site affected. If not provided, no site affected.
      */
-    static triggerFormSubmittedEvent(formRef: ElementRef | HTMLFormElement | undefined, online?: boolean, siteId?: string): void {
+    static triggerFormSubmittedEvent(formRef?: ElementRef | HTMLFormElement | undefined, online?: boolean, siteId?: string): void {
         if (!formRef) {
             return;
         }

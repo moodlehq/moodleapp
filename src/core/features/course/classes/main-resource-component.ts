@@ -67,12 +67,12 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     prefetchStatus?: string; // Used when calling fillContextMenu.
     prefetchText?: string; // Used when calling fillContextMenu.
     size?: string; // Used when calling fillContextMenu.
-    isDestroyed?: boolean; // Whether the component is destroyed, used when calling fillContextMenu.
+    isDestroyed = false; // Whether the component is destroyed, used when calling fillContextMenu.
     contextMenuStatusObserver?: CoreEventObserver; // Observer of package status, used when calling fillContextMenu.
     contextFileStatusObserver?: CoreEventObserver; // Observer of file status, used when calling fillContextMenu.
 
     protected fetchContentDefaultError = 'core.course.errorgetmodule'; // Default error to show when loading contents.
-    protected isCurrentView?: boolean; // Whether the component is in the current view.
+    protected isCurrentView = false; // Whether the component is in the current view.
     protected siteId?: string; // Current Site ID.
     protected statusObserver?: CoreEventObserver; // Observer of package status. Only if setStatusListener is called.
     protected currentStatus?: string; // The current status of the module. Only if setStatusListener is called.

@@ -306,20 +306,16 @@ export class CoreGradesHelperProvider {
      * @param selectedGrade Selected grade value.
      * @return Selected grade label.
      */
-    getGradeLabelFromValue(grades: CoreGradesMenuItem[], selectedGrade: number): string {
+    getGradeLabelFromValue(grades: CoreGradesMenuItem[], selectedGrade?: number): string {
         selectedGrade = Number(selectedGrade);
 
         if (!grades || !selectedGrade || selectedGrade <= 0) {
             return '';
         }
 
-        for (const x in grades) {
-            if (grades[x].value == selectedGrade) {
-                return grades[x].label;
-            }
-        }
+        const grade = grades.find((grade) => grade.value == selectedGrade);
 
-        return '';
+        return grade ? grade.label : '';
     }
 
     /**
@@ -633,31 +629,35 @@ export class CoreGradesHelperProvider {
      * @param scale Scale csv list String. If not provided, it will take it from the module grade info.
      * @return Array with objects with value and label to create a propper HTML select.
      */
-    makeGradesMenu(
-        gradingType: number,
+    async makeGradesMenu(
+        gradingType?: number,
         moduleId?: number,
         defaultLabel: string = '',
         defaultValue: string | number = '',
         scale?: string,
     ): Promise<CoreGradesMenuItem[]> {
+        if (typeof gradingType == 'undefined') {
+            return [];
+        }
+
         if (gradingType < 0) {
             if (scale) {
-                return Promise.resolve(CoreUtils.makeMenuFromList(scale, defaultLabel, undefined, defaultValue));
-            } else if (moduleId) {
-                return CoreCourse.getModuleBasicGradeInfo(moduleId).then((gradeInfo) => {
-                    if (gradeInfo && gradeInfo.scale) {
-                        return CoreUtils.makeMenuFromList(gradeInfo.scale, defaultLabel, undefined,  defaultValue);
-                    }
-
-                    return [];
-                });
-            } else {
-                return Promise.resolve([]);
+                return CoreUtils.makeMenuFromList(scale, defaultLabel, undefined, defaultValue);
             }
+
+            if (moduleId) {
+                const gradeInfo = await CoreCourse.getModuleBasicGradeInfo(moduleId);
+                if (gradeInfo && gradeInfo.scale) {
+                    return CoreUtils.makeMenuFromList(gradeInfo.scale, defaultLabel, undefined, defaultValue);
+                }
+            }
+
+            return [];
         }
 
         if (gradingType > 0) {
             const grades: CoreGradesMenuItem[] = [];
+
             if (defaultLabel) {
                 // Key as string to avoid resorting of the object.
                 grades.push({
@@ -665,6 +665,7 @@ export class CoreGradesHelperProvider {
                     value: defaultValue,
                 });
             }
+
             for (let i = gradingType; i >= 0; i--) {
                 grades.push({
                     label: i + ' / ' + gradingType,
@@ -672,10 +673,10 @@ export class CoreGradesHelperProvider {
                 });
             }
 
-            return Promise.resolve(grades);
+            return grades;
         }
 
-        return Promise.resolve([]);
+        return [];
     }
 
     /**
