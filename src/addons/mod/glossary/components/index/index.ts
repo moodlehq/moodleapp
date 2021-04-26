@@ -44,6 +44,7 @@ import {
     AddonModGlossarySyncProvider,
     AddonModGlossarySyncResult,
 } from '../../services/glossary-sync';
+import { AddonModGlossaryModuleHandlerService } from '../../services/handlers/module';
 import { AddonModGlossaryPrefetchHandler } from '../../services/handlers/prefetch';
 import { AddonModGlossaryModePickerPopoverComponent } from '../mode-picker/mode-picker';
 
@@ -93,6 +94,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
         this.entries = new AddonModGlossaryEntriesManager(
             route.component,
+            this,
+            courseContentsPage ? `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` : '',
         );
     }
 
@@ -524,8 +527,18 @@ class AddonModGlossaryEntriesManager extends CorePageItemsListManager<EntryItem>
     onlineEntries: AddonModGlossaryEntry[] = [];
     offlineEntries: AddonModGlossaryOfflineEntry[] = [];
 
-    constructor(pageComponent: unknown) {
+    protected glossaryPathPrefix: string;
+    protected component: AddonModGlossaryIndexComponent;
+
+    constructor(
+        pageComponent: unknown,
+        component: AddonModGlossaryIndexComponent,
+        glossaryPathPrefix: string,
+    ) {
         super(pageComponent);
+
+        this.component = component;
+        this.glossaryPathPrefix = glossaryPathPrefix;
     }
 
     /**
@@ -609,27 +622,30 @@ class AddonModGlossaryEntriesManager extends CorePageItemsListManager<EntryItem>
      */
     protected getItemPath(entry: EntryItem): string {
         if (this.isOnlineEntry(entry)) {
-            return `entry/${entry.id}`;
+            return `${this.glossaryPathPrefix}entry/${entry.id}`;
         }
 
         if (this.isOfflineEntry(entry)) {
-            return `edit/${entry.timecreated}`;
+            return `${this.glossaryPathPrefix}edit/${entry.timecreated}`;
         }
 
-        return 'edit/0';
+        return `${this.glossaryPathPrefix}edit/0`;
     }
 
     /**
      * @inheritdoc
      */
     getItemQueryParams(entry: EntryItem): Params {
+        const params: Params = {
+            cmId: this.component.module.id,
+            courseId: this.component.courseId,
+        };
+
         if (this.isOfflineEntry(entry)) {
-            return {
-                concept: entry.concept,
-            };
+            params.concept = entry.concept;
         }
 
-        return {};
+        return params;
     }
 
     /**

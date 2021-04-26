@@ -23,6 +23,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { AddonModScormModuleHandlerService } from '../../services/handlers/module';
 import { AddonModScormPrefetchHandler } from '../../services/handlers/prefetch';
 import {
     AddonModScorm,
@@ -544,15 +545,18 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
             }
         }, this.siteId);
 
-        CoreNavigator.navigate('player', {
-            params: {
-                mode: preview ? AddonModScormProvider.MODEBROWSE : AddonModScormProvider.MODENORMAL,
-                moduleUrl: this.module.url,
-                newAttempt: !!this.startNewAttempt,
-                organizationId: this.currentOrganization.identifier,
-                scoId: scoId,
+        CoreNavigator.navigateToSitePath(
+            `${AddonModScormModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/player`,
+            {
+                params: {
+                    mode: preview ? AddonModScormProvider.MODEBROWSE : AddonModScormProvider.MODENORMAL,
+                    moduleUrl: this.module.url,
+                    newAttempt: !!this.startNewAttempt,
+                    organizationId: this.currentOrganization.identifier,
+                    scoId: scoId,
+                },
             },
-        });
+        );
     }
 
     /**

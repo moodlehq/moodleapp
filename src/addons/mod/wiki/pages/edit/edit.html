@@ -33,7 +33,7 @@
                 </core-rich-text-editor>
             </ion-item>
 
-            <ion-item *ngIf="!wrongVersionLock" class="ion-text-center addon-mod_wiki-wrongversionlock" >
+            <ion-item *ngIf="wrongVersionLock" class="ion-text-center addon-mod_wiki-wrongversionlock" >
                 <ion-label>
                     <ion-badge color="danger" class="ion-padding">{{ 'addon.mod_wiki.wrongversionlock' | translate }}</ion-badge>
                 </ion-label>

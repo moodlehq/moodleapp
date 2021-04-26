@@ -41,6 +41,7 @@ import {
     AddonModAssignSyncProvider,
     AddonModAssignSyncResult,
 } from '../../services/assign-sync';
+import { AddonModAssignModuleHandlerService } from '../../services/handlers/module';
 import { AddonModAssignSubmissionComponent } from '../submission/submission';
 
 /**
@@ -318,9 +319,13 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         if (typeof status != 'undefined') {
             params.status = status;
         }
-        CoreNavigator.navigate('submission', {
-            params,
-        });
+
+        CoreNavigator.navigateToSitePath(
+            AddonModAssignModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/submission`,
+            {
+                params,
+            },
+        );
     }
 
     /**

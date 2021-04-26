@@ -102,14 +102,17 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
             // Get the module object.
             const module = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
 
+            courseId = courseId || module.course;
             const params = {
                 module: module,
-                courseId: courseId || module.course,
                 action: 'report',
                 group: groupId === undefined || isNaN(groupId) ? null : groupId,
             };
 
-            CoreNavigator.navigateToSitePath(AddonModLessonModuleHandlerService.PAGE_NAME, { params, siteId });
+            CoreNavigator.navigateToSitePath(
+                `${AddonModLessonModuleHandlerService.PAGE_NAME}/${courseId}/${module.id}`,
+                { params, siteId },
+            );
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error processing link.');
         } finally {
@@ -143,12 +146,11 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
 
             courseId = courseId || module.course;
             const params = {
-                userId: userId,
                 retake: retake || 0,
             };
 
             CoreNavigator.navigateToSitePath(
-                AddonModLessonModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/user-retake`,
+                AddonModLessonModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/user-retake/${userId}`,
                 { params, siteId },
             );
         } catch (error) {

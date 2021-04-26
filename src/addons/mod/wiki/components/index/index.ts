@@ -31,6 +31,7 @@ import { ModalController, PopoverController, Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Md5 } from 'ts-md5';
 import { AddonModWikiPageDBRecord } from '../../services/database/wiki';
+import { AddonModWikiModuleHandlerService } from '../../services/handlers/module';
 import {
     AddonModWiki,
     AddonModWikiPageContents,
@@ -443,14 +444,17 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * Open the view to create the first page of the wiki.
      */
     protected goToCreateFirstPage(): void {
-        CoreNavigator.navigate('../../edit', {
-            params: {
-                pageTitle: this.wiki!.firstpagetitle,
-                wikiId: this.currentSubwiki?.wikiid,
-                userId: this.currentSubwiki?.userid,
-                groupId: this.currentSubwiki?.groupid,
+        CoreNavigator.navigateToSitePath(
+            `${AddonModWikiModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/edit`,
+            {
+                params: {
+                    pageTitle: this.wiki!.firstpagetitle,
+                    wikiId: this.currentSubwiki?.wikiid,
+                    userId: this.currentSubwiki?.userid,
+                    groupId: this.currentSubwiki?.groupid,
+                },
             },
-        });
+        );
     }
 
     /**
@@ -478,7 +482,10 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 pageParams.groupId = this.currentSubwiki.groupid;
             }
 
-            CoreNavigator.navigate('../../edit', { params: pageParams });
+            CoreNavigator.navigateToSitePath(
+                `${AddonModWikiModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/edit`,
+                { params: pageParams },
+            );
         } else if (this.currentSubwiki) {
             // No page loaded, the wiki doesn't have first page.
             this.goToCreateFirstPage();
@@ -505,7 +512,10 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 pageParams.groupId = this.currentSubwiki.groupid;
             }
 
-            CoreNavigator.navigate('../../edit', { params: pageParams });
+            CoreNavigator.navigateToSitePath(
+                `${AddonModWikiModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/edit`,
+                { params: pageParams },
+            );
         } else if (this.currentSubwiki) {
             // No page loaded, the wiki doesn't have first page.
             this.goToCreateFirstPage();
@@ -550,12 +560,15 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             timestamp: Date.now(),
         }));
 
-        await CoreNavigator.navigate(`../${hash}`, {
-            params: {
-                module: this.module,
-                ...options,
+        CoreNavigator.navigateToSitePath(
+            `${AddonModWikiModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/page/${hash}`,
+            {
+                params: {
+                    module: this.module,
+                    ...options,
+                },
             },
-        });
+        );
     }
 
     /**

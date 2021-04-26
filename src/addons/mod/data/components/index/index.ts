@@ -44,6 +44,7 @@ import {
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
 import { AddonModDataAutoSyncData, AddonModDataSyncProvider, AddonModDataSyncResult } from '../../services/data-sync';
+import { AddonModDataModuleHandlerService } from '../../services/handlers/module';
 import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch';
 import { AddonModDataComponentsCompileModule } from '../components-compile.module';
 import { AddonModDataSearchComponent } from '../search/search';
@@ -469,7 +470,10 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             group: this.selectedGroup,
         };
 
-        CoreNavigator.navigate('edit', { params });
+        CoreNavigator.navigateToSitePath(
+            `${AddonModDataModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/edit`,
+            { params },
+        );
     }
 
     /**
@@ -490,7 +494,10 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             params.offset = this.search.page * AddonModDataProvider.PER_PAGE + pageXOffset;
         }
 
-        CoreNavigator.navigate(String(entryId), { params });
+        CoreNavigator.navigateToSitePath(
+            `${AddonModDataModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/${entryId}`,
+            { params },
+        );
     }
 
     /**

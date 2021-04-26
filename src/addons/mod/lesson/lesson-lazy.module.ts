@@ -30,7 +30,7 @@ const routes: Routes = [
         loadChildren: () => import('./pages/player/player.module').then( m => m.AddonModLessonPlayerPageModule),
     },
     {
-        path: ':courseId/:cmId/user-retake',
+        path: ':courseId/:cmId/user-retake/:userId',
         loadChildren: () => import('./pages/user-retake/user-retake.module').then( m => m.AddonModLessonUserRetakePageModule),
     },
 ];

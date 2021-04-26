@@ -38,6 +38,7 @@ import { AddonModDataShowLinkHandler } from './services/handlers/show-link';
 import { AddonModDataSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModDataTagAreaHandler } from './services/handlers/tag-area';
 import { AddonModDataFieldModule } from './fields/field.module';
+import { AddonModDataComponentsModule } from './components/components.module';
 
 // List of providers (without handlers).
 export const ADDON_MOD_DATA_SERVICES: Type<unknown>[] = [
@@ -59,6 +60,7 @@ const routes: Routes = [
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
         AddonModDataFieldModule,
+        AddonModDataComponentsModule,
     ],
     providers: [
         {

@@ -39,6 +39,7 @@ import { CoreCourseModuleDelegateService } from './services/module-delegate';
 import { CoreCourseOptionsDelegateService } from './services/course-options-delegate';
 import { CoreCourseOfflineProvider } from './services/course-offline';
 import { CoreCourseSyncProvider } from './services/sync';
+import { COURSE_INDEX_PATH } from '@features/course/course-lazy.module';
 
 export const CORE_COURSE_SERVICES: Type<unknown>[] = [
     CoreCourseProvider,
@@ -52,16 +53,20 @@ export const CORE_COURSE_SERVICES: Type<unknown>[] = [
     CoreCourseSyncProvider,
 ];
 
+export const COURSE_PAGE_NAME = 'course';
+export const CONTENTS_PAGE_NAME = 'contents';
+export const COURSE_CONTENTS_PATH = `${COURSE_PAGE_NAME}/${COURSE_INDEX_PATH}/${CONTENTS_PAGE_NAME}`;
+
 const routes: Routes = [
     {
-        path: 'course',
+        path: COURSE_PAGE_NAME,
         loadChildren: () => import('@features/course/course-lazy.module').then(m => m.CoreCourseLazyModule),
     },
 ];
 
 const courseIndexRoutes: Routes = [
     {
-        path: 'contents',
+        path: CONTENTS_PAGE_NAME,
         loadChildren: () => import('./pages/contents/contents.module').then(m => m.CoreCourseContentsPageModule),
     },
 ];

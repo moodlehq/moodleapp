@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { conditionalRoutes } from '@/app/app-routing.module';
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { COURSE_CONTENTS_PATH } from '@features/course/course.module';
+import { CoreCourseContentsRoutingModule } from '@features/course/pages/contents/contents-routing.module';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreCronDelegate } from '@services/cron';
+import { CoreScreen } from '@services/screen';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModGlossaryComponentsModule } from './components/components.module';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/glossary';
@@ -45,22 +49,42 @@ export const ADDON_MOD_GLOSSARY_SERVICES: Type<unknown>[] = [
 
 const mainMenuRoutes: Routes = [
     {
-        path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/:entryId`,
-        loadChildren: () => import('./pages/entry/entry.module').then(m => m.AddonModGlossaryEntryPageModule),
-    },
-    {
-        path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/edit/:timecreated`,
-        loadChildren: () => import('./pages/edit/edit.module').then(m => m.AddonModGlossaryEditPageModule),
-    },
-    {
         path: AddonModGlossaryModuleHandlerService.PAGE_NAME,
         loadChildren: () => import('./glossary-lazy.module').then(m => m.AddonModGlossaryLazyModule),
     },
+    ...conditionalRoutes(
+        [
+            {
+                path: `${COURSE_CONTENTS_PATH}/${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/:entryId`,
+                loadChildren: () => import('./pages/entry/entry.module').then(m => m.AddonModGlossaryEntryPageModule),
+            },
+            {
+                path: `${COURSE_CONTENTS_PATH}/${AddonModGlossaryModuleHandlerService.PAGE_NAME}/edit/:timecreated`,
+                loadChildren: () => import('./pages/edit/edit.module').then(m => m.AddonModGlossaryEditPageModule),
+            },
+        ],
+        () => CoreScreen.isMobile,
+    ),
 ];
+
+const courseContentsRoutes: Routes = conditionalRoutes(
+    [
+        {
+            path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/:entryId`,
+            loadChildren: () => import('./pages/entry/entry.module').then(m => m.AddonModGlossaryEntryPageModule),
+        },
+        {
+            path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/edit/:timecreated`,
+            loadChildren: () => import('./pages/edit/edit.module').then(m => m.AddonModGlossaryEditPageModule),
+        },
+    ],
+    () => CoreScreen.isTablet,
+);
 
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(mainMenuRoutes),
+        CoreCourseContentsRoutingModule.forChild({ children: courseContentsRoutes }),
         AddonModGlossaryComponentsModule,
     ],
     providers: [

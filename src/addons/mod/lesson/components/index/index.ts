@@ -47,6 +47,7 @@ import {
     AddonModLessonSyncProvider,
     AddonModLessonSyncResult,
 } from '../../services/lesson-sync';
+import { AddonModLessonModuleHandlerService } from '../../services/handlers/module';
 
 /**
  * Component that displays a lesson entry page.
@@ -424,12 +425,15 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             pageId = continueLast ? this.accessInfo.lastpageseen : this.accessInfo.firstpageid;
         }
 
-        await CoreNavigator.navigate('player', {
-            params: {
-                pageId: pageId,
-                password: this.password,
+        await CoreNavigator.navigateToSitePath(
+            `${AddonModLessonModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/player`,
+            {
+                params: {
+                    pageId: pageId,
+                    password: this.password,
+                },
             },
-        });
+        );
 
         // Detect if anything was sent to server.
         this.hasPlayed = true;
@@ -472,14 +476,17 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        CoreNavigator.navigate('player', {
-            params: {
-                pageId: this.retakeToReview.pageid,
-                password: this.password,
-                review: true,
-                retake: this.retakeToReview.retake,
+        CoreNavigator.navigateToSitePath(
+            `${AddonModLessonModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/player`,
+            {
+                params: {
+                    pageId: this.retakeToReview.pageid,
+                    password: this.password,
+                    review: true,
+                    retake: this.retakeToReview.retake,
+                },
             },
-        });
+        );
     }
 
     /**
@@ -695,11 +702,9 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * @return Promise resolved when done.
      */
     async openRetake(userId: number): Promise<void> {
-        await CoreNavigator.navigate('user-retake', {
-            params: {
-                userId,
-            },
-        });
+        CoreNavigator.navigateToSitePath(
+            `${AddonModLessonModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/user-retake/${userId}`,
+        );
     }
 
     /**

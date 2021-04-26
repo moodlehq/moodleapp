@@ -23,6 +23,7 @@ import { CoreNavigator } from '@services/navigator';
 import { Md5 } from 'ts-md5';
 import { AddonModFolder, AddonModFolderFolder, AddonModFolderProvider } from '../../services/folder';
 import { AddonModFolderFolderFormattedData, AddonModFolderHelper } from '../../services/folder-helper';
+import { AddonModFolderModuleHandlerService } from '../../services/handlers/module';
 
 /**
  * Component that displays a folder.
@@ -131,7 +132,10 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
 
         const hash = <string> Md5.hashAsciiStr(folder.filepath);
 
-        CoreNavigator.navigate('../' + hash, { params });
+        CoreNavigator.navigateToSitePath(
+            `${AddonModFolderModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/${hash}`,
+            { params },
+        );
     }
 
 }
