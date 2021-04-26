@@ -1,0 +1,26 @@
+<ng-container *ngFor="let field of assessment.form?.fields; let n = index">
+    <ion-card *ngIf="n < assessment.form?.dimenssionscount">
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <h2 [core-mark-required]="edit">{{ field.dimtitle }}</h2>
+                <core-format-text [text]="field.description" contextLevel="module" [contextInstanceId]="moduleId"
+                    [courseId]="courseId">
+                </core-format-text>
+            </ion-label>
+            <core-input-errors *ngIf="edit && fieldErrors['chosenlevelid_' + n]" [errorText]="fieldErrors['chosenlevelid_' + n]">
+                </core-input-errors>
+        </ion-item>
+        <ion-list>
+            <ion-radio-group [(ngModel)]="selectedValues[n].chosenlevelid" [name]="'chosenlevelid_' + n">
+                <ion-item *ngFor="let subfield of field.fields">
+                    <ion-label>
+                        <p><core-format-text [text]="subfield.definition" contextLevel="module"
+                            [contextInstanceId]="moduleId" [courseId]="courseId">
+                        </core-format-text></p>
+                    </ion-label>
+                    <ion-radio slot="start" [value]="subfield.levelid" [disabled]="!edit"></ion-radio>
+                </ion-item>
+            </ion-radio-group>
+        </ion-list>
+    </ion-card>
+</ng-container>

@@ -25,7 +25,7 @@
 <!-- Edit -->
 <ion-item class="ion-text-wrap" *ngIf="edit && loaded">
     <ion-label></ion-label>
-    <core-rich-text-editor item-content [control]="control" [placeholder]="plugin.name"
+    <core-rich-text-editor [control]="control" [placeholder]="plugin.name"
         name="assignfeedbackcomments_editor" [component]="component" [componentId]="assign.cmid" [autoSave]="true"
         contextLevel="module" [contextInstanceId]="assign.cmid" elementId="assignfeedbackcomments_editor"
         [draftExtraParams]="{userid: userId, action: 'grade'}">

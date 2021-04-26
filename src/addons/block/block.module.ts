@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 
+import { AddonBlockActivityModulesModule } from './activitymodules/activitymodules.module';
 import { AddonBlockActivityResultsModule } from './activityresults/activityresults.module';
 import { AddonBlockBadgesModule } from './badges/badges.module';
 import { AddonBlockBlogMenuModule } from './blogmenu/blogmenu.module';
@@ -30,19 +31,19 @@ import { AddonBlockMyOverviewModule } from './myoverview/myoverview.module';
 import { AddonBlockNewsItemsModule } from './newsitems/newsitems.module';
 import { AddonBlockOnlineUsersModule } from './onlineusers/onlineusers.module';
 import { AddonBlockPrivateFilesModule } from './privatefiles/privatefiles.module';
+import { AddonBlockRecentActivityModule } from './recentactivity/recentactivity.module';
 import { AddonBlockRecentlyAccessedCoursesModule } from './recentlyaccessedcourses/recentlyaccessedcourses.module';
+import { AddonBlockRecentlyAccessedItemsModule } from './recentlyaccesseditems/recentlyaccesseditems.module';
 import { AddonBlockRssClientModule } from './rssclient/rssclient.module';
 import { AddonBlockSelfCompletionModule } from './selfcompletion/selfcompletion.module';
 import { AddonBlockSiteMainMenuModule } from './sitemainmenu/sitemainmenu.module';
 import { AddonBlockStarredCoursesModule } from './starredcourses/starredcourses.module';
 import { AddonBlockTagsModule } from './tags/tags.module';
-import { AddonBlockActivityModulesModule } from './activitymodules/activitymodules.module';
-import { AddonBlockRecentlyAccessedItemsModule } from './recentlyaccesseditems/recentlyaccesseditems.module';
 import { AddonBlockTimelineModule } from './timeline/timeline.module';
 
 @NgModule({
-    declarations: [],
     imports: [
+        AddonBlockActivityModulesModule,
         AddonBlockActivityResultsModule,
         AddonBlockBadgesModule,
         AddonBlockBlogMenuModule,
@@ -54,22 +55,20 @@ import { AddonBlockTimelineModule } from './timeline/timeline.module';
         AddonBlockCompletionStatusModule,
         AddonBlockGlossaryRandomModule,
         AddonBlockHtmlModule,
-        AddonBlockMyOverviewModule,
         AddonBlockLearningPlansModule,
+        AddonBlockMyOverviewModule,
         AddonBlockNewsItemsModule,
         AddonBlockOnlineUsersModule,
         AddonBlockPrivateFilesModule,
+        AddonBlockRecentActivityModule,
         AddonBlockRecentlyAccessedCoursesModule,
+        AddonBlockRecentlyAccessedItemsModule,
         AddonBlockRssClientModule,
         AddonBlockSelfCompletionModule,
         AddonBlockSiteMainMenuModule,
         AddonBlockStarredCoursesModule,
         AddonBlockTagsModule,
-        AddonBlockActivityModulesModule,
-        AddonBlockRecentlyAccessedItemsModule,
         AddonBlockTimelineModule,
     ],
-    providers: [],
-    exports: [],
 })
 export class AddonBlockModule { }

@@ -22,12 +22,8 @@ export const ADDON_MESSAGEOUTPUT_SERVICES: Type<unknown>[] = [
 ];
 
 @NgModule({
-    declarations: [
-    ],
     imports: [
         AddonMessageOutputAirnotifierModule,
-    ],
-    providers: [
     ],
 })
 export class AddonMessageOutputModule {}

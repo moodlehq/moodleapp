@@ -233,6 +233,22 @@ export class CoreWSProvider {
     }
 
     /**
+     * It will check if response has failed and throw the propper error.
+     *
+     * @param response WS response.
+     * @param defaultMessage Message to be used in case warnings is empty.
+     */
+    throwOnFailedStatus(response: CoreStatusWithWarningsWSResponse, defaultMessage: string): void {
+        if (!response.status) {
+            if (response.warnings && response.warnings.length) {
+                throw new CoreWSError(response.warnings[0]);
+            }
+
+            throw new CoreError(defaultMessage);
+        }
+    }
+
+    /**
      * Downloads a file from Moodle using Cordova File API.
      *
      * @param url Download url.

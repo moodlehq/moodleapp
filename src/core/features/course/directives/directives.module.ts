@@ -20,7 +20,6 @@ import { CoreCourseDownloadModuleMainFileDirective } from './download-module-mai
     declarations: [
         CoreCourseDownloadModuleMainFileDirective,
     ],
-    imports: [],
     exports: [
         CoreCourseDownloadModuleMainFileDirective,
     ],

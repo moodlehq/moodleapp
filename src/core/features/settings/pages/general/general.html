@@ -21,7 +21,7 @@
         <ion-label>
             <h2>{{ 'core.settings.fontsize' | translate }}</h2>
         </ion-label>
-        <ion-segment [(ngModel)]="selectedZoomLevel" (ionChange)="zoomLevelChanged()" color="primary" item-content>
+        <ion-segment [(ngModel)]="selectedZoomLevel" (ionChange)="zoomLevelChanged()" color="primary">
             <ion-segment-button *ngFor="let zoomLevel of zoomLevels" [value]="zoomLevel.value"
                 [ngStyle]="{'font-size.px': zoomLevel.style}">
                 <ion-label>

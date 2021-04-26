@@ -1097,6 +1097,7 @@ export class CoreTextUtilsProvider {
     }
 
 }
+export const CoreTextUtils = makeSingleton(CoreTextUtilsProvider);
 
 /**
  * Options for viewText.
@@ -1113,4 +1114,15 @@ export type CoreTextUtilsViewTextOptions = {
     modalOptions?: Partial<ModalOptions>; // Modal options.
 };
 
-export const CoreTextUtils = makeSingleton(CoreTextUtilsProvider);
+/**
+ * Define text formatting types.
+ */
+export enum CoreTextFormat {
+    FORMAT_MOODLE = 0, // Does all sorts of transformations and filtering.
+    FORMAT_HTML = 1, // Plain HTML (with some tags stripped). Use it by default.
+    FORMAT_PLAIN = 2, // Plain text (even tags are printed in full).
+    // FORMAT_WIKI is deprecated since 2005...
+    FORMAT_MARKDOWN = 4, // Markdown-formatted text http://daringfireball.net/projects/markdown/
+}
+
+export const defaultTextFormat = CoreTextFormat.FORMAT_HTML;

@@ -30,7 +30,6 @@ import { AddonFilterTidyModule } from './tidy/tidy.module';
 import { AddonFilterUrlToLinkModule } from './urltolink/urltolink.module';
 
 @NgModule({
-    declarations: [],
     imports: [
         AddonFilterActivityNamesModule,
         AddonFilterAlgebraModule,
@@ -47,7 +46,5 @@ import { AddonFilterUrlToLinkModule } from './urltolink/urltolink.module';
         AddonFilterTidyModule,
         AddonFilterUrlToLinkModule,
     ],
-    providers: [],
-    exports: [],
 })
 export class AddonFilterModule { }

@@ -16,18 +16,16 @@ import { NgModule } from '@angular/core';
 import { AddonUserProfileFieldCheckboxModule } from './checkbox/checkbox.module';
 import { AddonUserProfileFieldDatetimeModule } from './datetime/datetime.module';
 import { AddonUserProfileFieldMenuModule } from './menu/menu.module';
-import { AddonUserProfileFieldTextModule } from './text/text.module';
 import { AddonUserProfileFieldTextareaModule } from './textarea/textarea.module';
+import { AddonUserProfileFieldTextModule } from './text/text.module';
 
 @NgModule({
-    declarations: [],
     imports: [
         AddonUserProfileFieldCheckboxModule,
         AddonUserProfileFieldDatetimeModule,
         AddonUserProfileFieldMenuModule,
-        AddonUserProfileFieldTextModule,
         AddonUserProfileFieldTextareaModule,
+        AddonUserProfileFieldTextModule,
     ],
-    exports: [],
 })
 export class AddonUserProfileFieldModule { }

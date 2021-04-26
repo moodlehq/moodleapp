@@ -21,8 +21,6 @@ export const ADDON_REMOTETHEMES_SERVICES: Type<unknown>[] = [
 ];
 
 @NgModule({
-    declarations: [],
-    imports: [],
     providers: [
         {
             provide: APP_INITIALIZER,

@@ -25,7 +25,6 @@ import { AddonModQuizAccessSecureWindowModule } from './securewindow/securewindo
 import { AddonModQuizAccessTimeLimitModule } from './timelimit/timelimit.module';
 
 @NgModule({
-    declarations: [],
     imports: [
         AddonModQuizAccessDelayBetweenAttemptsModule,
         AddonModQuizAccessIpAddressModule,
@@ -37,7 +36,5 @@ import { AddonModQuizAccessTimeLimitModule } from './timelimit/timelimit.module'
         AddonModQuizAccessSecureWindowModule,
         AddonModQuizAccessTimeLimitModule,
     ],
-    providers: [],
-    exports: [],
 })
 export class AddonModQuizAccessRulesModule { }

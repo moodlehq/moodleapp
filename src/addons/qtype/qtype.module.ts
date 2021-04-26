@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
+
 import { AddonQtypeCalculatedModule } from './calculated/calculated.module';
 import { AddonQtypeCalculatedMultiModule } from './calculatedmulti/calculatedmulti.module';
 import { AddonQtypeCalculatedSimpleModule } from './calculatedsimple/calculatedsimple.module';
@@ -31,7 +32,6 @@ import { AddonQtypeShortAnswerModule } from './shortanswer/shortanswer.module';
 import { AddonQtypeTrueFalseModule } from './truefalse/truefalse.module';
 
 @NgModule({
-    declarations: [],
     imports: [
         AddonQtypeCalculatedModule,
         AddonQtypeCalculatedMultiModule,
@@ -50,8 +50,5 @@ import { AddonQtypeTrueFalseModule } from './truefalse/truefalse.module';
         AddonQtypeShortAnswerModule,
         AddonQtypeTrueFalseModule,
     ],
-    providers: [
-    ],
-    exports: [],
 })
 export class AddonQtypeModule { }

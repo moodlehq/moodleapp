@@ -25,8 +25,7 @@ import { CoreSitePluginsQuestionBehaviourComponent } from './question-behaviour/
 import { CoreSitePluginsQuizAccessRuleComponent } from './quiz-access-rule/quiz-access-rule';
 import { CoreSitePluginsAssignFeedbackComponent } from './assign-feedback/assign-feedback';
 import { CoreSitePluginsAssignSubmissionComponent } from './assign-submission/assign-submission';
-// @todo
-// import { CoreSitePluginsWorkshopAssessmentStrategyComponent } from './workshop-assessment-strategy/workshop-assessment-strategy';
+import { CoreSitePluginsWorkshopAssessmentStrategyComponent } from './workshop-assessment-strategy/workshop-assessment-strategy';
 import { CoreSitePluginsBlockComponent } from './block/block';
 import { CoreSitePluginsOnlyTitleBlockComponent } from './only-title-block/only-title-block';
 
@@ -43,13 +42,12 @@ import { CoreSitePluginsOnlyTitleBlockComponent } from './only-title-block/only-
         CoreSitePluginsQuizAccessRuleComponent,
         CoreSitePluginsAssignFeedbackComponent,
         CoreSitePluginsAssignSubmissionComponent,
-        // @todo CoreSitePluginsWorkshopAssessmentStrategyComponent,
+        CoreSitePluginsWorkshopAssessmentStrategyComponent,
     ],
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponentModule,
     ],
-    providers: [],
     exports: [
         CoreSitePluginsPluginContentComponent,
         CoreSitePluginsModuleIndexComponent,
@@ -62,7 +60,7 @@ import { CoreSitePluginsOnlyTitleBlockComponent } from './only-title-block/only-
         CoreSitePluginsQuizAccessRuleComponent,
         CoreSitePluginsAssignFeedbackComponent,
         CoreSitePluginsAssignSubmissionComponent,
-        // @todo CoreSitePluginsWorkshopAssessmentStrategyComponent,
+        CoreSitePluginsWorkshopAssessmentStrategyComponent,
     ],
 })
 export class CoreSitePluginsComponentsModule {}

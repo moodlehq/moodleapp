@@ -21,7 +21,6 @@ import { makeSingleton } from '@singletons';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreGrades } from '@features/grades/services/grades';
-import { CoreFilepool } from '@services/filepool';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
@@ -34,6 +33,7 @@ import { AddonModAssignSubmissionFormatted } from './assign-helper';
 import { CoreWSError } from '@classes/errors/wserror';
 import { AddonModAssignAutoSyncData, AddonModAssignManualSyncData, AddonModAssignSyncProvider } from './assign-sync';
 import { CoreFormFields } from '@singletons/form';
+import { CoreFileHelper } from '@services/file-helper';
 
 const ROOT_CACHE_KEY = 'mmaModAssign:';
 
@@ -421,7 +421,7 @@ export class AddonModAssignProvider {
             filearea.files.forEach((file) => {
                 if (!file.filename) {
                     // We don't have filename, extract it from the path.
-                    file.filename = file.filepath?.charAt(0) == '/' ? file.filepath.substr(1) : file.filepath;
+                    file.filename = CoreFileHelper.getFilenameFromPath(file);
                 }
 
                 files.push(file);
@@ -759,7 +759,6 @@ export class AddonModAssignProvider {
 
     /**
      * Invalidate the prefetched content except files.
-     * To invalidate files, use AddonModAssignProvider.invalidateFiles.
      *
      * @param moduleId The module ID.
      * @param courseId Course ID.
@@ -781,20 +780,6 @@ export class AddonModAssignProvider {
         promises.push(CoreGrades.invalidateAllCourseGradesData(courseId));
 
         await Promise.all(promises);
-    }
-
-    /**
-     * Invalidate the prefetched files.
-     *
-     * @param moduleId The module ID.
-     * @return Promise resolved when the files are invalidated.
-     */
-    async invalidateFiles(moduleId: number): Promise<void> {
-        await CoreFilepool.invalidateFilesByComponent(
-            CoreSites.getCurrentSiteId(),
-            AddonModAssignProvider.COMPONENT,
-            moduleId,
-        );
     }
 
     /**

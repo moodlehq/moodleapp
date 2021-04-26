@@ -28,7 +28,6 @@ import {
     CoreQuestionsAnswers,
 } from '@features/question/services/question';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -1255,7 +1254,6 @@ export class AddonModQuizProvider {
 
     /**
      * Invalidate the prefetched content except files.
-     * To invalidate files, use AddonModQuizProvider.invalidateFiles.
      *
      * @param moduleId The module ID.
      * @param courseId Course ID.
@@ -1304,20 +1302,6 @@ export class AddonModQuizProvider {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getFeedbackForGradeCacheKey(quizId, grade));
-    }
-
-    /**
-     * Invalidate the prefetched files.
-     *
-     * @param moduleId The module ID.
-     * @return Promise resolved when the files are invalidated.
-     */
-    async invalidateFiles(moduleId: number): Promise<void> {
-        await CoreFilepool.invalidateFilesByComponent(
-            CoreSites.getCurrentSiteId(),
-            AddonModQuizProvider.COMPONENT,
-            moduleId,
-        );
     }
 
     /**

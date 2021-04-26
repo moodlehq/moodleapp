@@ -18,8 +18,6 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
 import { CoreCourseFormatTopicsHandler } from './services/handlers/topics-format';
 
 @NgModule({
-    declarations: [],
-    imports: [],
     providers: [
         {
             provide: APP_INITIALIZER,

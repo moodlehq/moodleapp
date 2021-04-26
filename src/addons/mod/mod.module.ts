@@ -16,49 +16,51 @@ import { NgModule } from '@angular/core';
 
 import { AddonModAssignModule } from './assign/assign.module';
 import { AddonModBookModule } from './book/book.module';
+import { AddonModChatModule } from './chat/chat.module';
+import { AddonModChoiceModule } from './choice/choice.module';
 import { AddonModDataModule } from './data/data.module';
+import { AddonModFeedbackModule } from './feedback/feedback.module';
 import { AddonModFolderModule } from './folder/folder.module';
 import { AddonModForumModule } from './forum/forum.module';
-import { AddonModLabelModule } from './label/label.module';
+import { AddonModGlossaryModule } from './glossary/glossary.module';
+import { AddonModH5PActivityModule } from './h5pactivity/h5pactivity.module';
 import { AddonModImscpModule } from './imscp/imscp.module';
+import { AddonModLabelModule } from './label/label.module';
 import { AddonModLessonModule } from './lesson/lesson.module';
+import { AddonModLtiModule } from './lti/lti.module';
 import { AddonModPageModule } from './page/page.module';
 import { AddonModQuizModule } from './quiz/quiz.module';
 import { AddonModResourceModule } from './resource/resource.module';
-import { AddonModUrlModule } from './url/url.module';
-import { AddonModLtiModule } from './lti/lti.module';
-import { AddonModH5PActivityModule } from './h5pactivity/h5pactivity.module';
-import { AddonModSurveyModule } from './survey/survey.module';
 import { AddonModScormModule } from './scorm/scorm.module';
-import { AddonModChoiceModule } from './choice/choice.module';
+import { AddonModSurveyModule } from './survey/survey.module';
+import { AddonModUrlModule } from './url/url.module';
 import { AddonModWikiModule } from './wiki/wiki.module';
-import { AddonModGlossaryModule } from './glossary/glossary.module';
-import { AddonModChatModule } from './chat/chat.module';
-import { AddonModFeedbackModule } from './feedback/feedback.module';
+import { AddonModWorkshopModule } from './workshop/workshop.module';
 
 @NgModule({
     imports: [
         AddonModAssignModule,
         AddonModBookModule,
+        AddonModChatModule,
+        AddonModChoiceModule,
         AddonModDataModule,
+        AddonModFeedbackModule,
+        AddonModFolderModule,
         AddonModForumModule,
+        AddonModGlossaryModule,
+        AddonModH5PActivityModule,
+        AddonModImscpModule,
+        AddonModLabelModule,
         AddonModLessonModule,
+        AddonModLtiModule,
         AddonModPageModule,
         AddonModQuizModule,
-        AddonModUrlModule,
-        AddonModLabelModule,
         AddonModResourceModule,
-        AddonModFolderModule,
-        AddonModImscpModule,
-        AddonModLtiModule,
-        AddonModH5PActivityModule,
-        AddonModSurveyModule,
         AddonModScormModule,
-        AddonModChoiceModule,
+        AddonModSurveyModule,
+        AddonModUrlModule,
         AddonModWikiModule,
-        AddonModGlossaryModule,
-        AddonModChatModule,
-        AddonModFeedbackModule,
+        AddonModWorkshopModule,
     ],
 })
 export class AddonModModule { }

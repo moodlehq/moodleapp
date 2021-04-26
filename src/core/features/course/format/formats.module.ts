@@ -20,14 +20,11 @@ import { CoreCourseFormatTopicsModule } from './topics/topics.module';
 import { CoreCourseFormatWeeksModule } from './weeks/weeks.module';
 
 @NgModule({
-    declarations: [],
     imports: [
         CoreCourseFormatSingleActivityModule,
         CoreCourseFormatSocialModule,
         CoreCourseFormatTopicsModule,
         CoreCourseFormatWeeksModule,
     ],
-    providers: [],
-    exports: [],
 })
 export class CoreCourseFormatModule { }

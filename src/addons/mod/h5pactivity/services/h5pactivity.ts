@@ -792,7 +792,7 @@ export type AddonModH5PActivityWSResultAnswer = {
 /**
  * User attempts data with some calculated data.
  */
-export type AddonModH5PActivityUserAttempts = Omit<AddonModH5PActivityWSUserAttempts, 'attempts|scored'> & {
+export type AddonModH5PActivityUserAttempts = Omit<AddonModH5PActivityWSUserAttempts, 'attempts'|'scored'> & {
     attempts: AddonModH5PActivityAttempt[]; // The complete attempts list.
     scored?: { // Attempts used to grade the activity.
         title: string; // Scored attempts title.

@@ -22,10 +22,5 @@ export const CORE_CONTENTLINKS_SERVICES: Type<unknown>[] = [
     CoreContentLinksHelperProvider,
 ];
 
-@NgModule({
-    declarations: [],
-    imports: [],
-    providers: [],
-    exports: [],
-})
+@NgModule({})
 export class CoreContentLinksModule {}

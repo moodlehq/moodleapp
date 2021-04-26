@@ -14,51 +14,59 @@
 
 import { NgModule } from '@angular/core';
 
+import { CoreBlockModule } from './block/block.module';
+import { CoreCommentsModule } from './comments/comments.module';
+import { CoreContentLinksModule } from './contentlinks/contentlinks.module';
 import { CoreCourseModule } from './course/course.module';
 import { CoreCoursesModule } from './courses/courses.module';
+import { CoreEditorModule } from './editor/editor.module';
 import { CoreEmulatorModule } from './emulator/emulator.module';
 import { CoreFileUploaderModule } from './fileuploader/fileuploader.module';
+import { CoreFilterModule } from './filter/filter.module';
 import { CoreGradesModule } from './grades/grades.module';
 import { CoreH5PModule } from './h5p/h5p.module';
 import { CoreLoginModule } from './login/login.module';
 import { CoreMainMenuModule } from './mainmenu/mainmenu.module';
+import { CorePushNotificationsModule } from './pushnotifications/pushnotifications.module';
+import { CoreQuestionModule } from './question/question.module';
+import { CoreRatingModule } from './rating/rating.module';
+import { CoreSearchModule } from './search/search.module';
 import { CoreSettingsModule } from './settings/settings.module';
+import { CoreSharedFilesModule } from './sharedfiles/sharedfiles.module';
 import { CoreSiteHomeModule } from './sitehome/sitehome.module';
+import { CoreSitePluginsModule } from './siteplugins/siteplugins.module';
 import { CoreTagModule } from './tag/tag.module';
 import { CoreUserModule } from './user/user.module';
-import { CorePushNotificationsModule } from './pushnotifications/pushnotifications.module';
-import { CoreXAPIModule } from './xapi/xapi.module';
 import { CoreViewerModule } from './viewer/viewer.module';
-import { CoreSearchModule } from './search/search.module';
-import { CoreCommentsModule } from './comments/comments.module';
-import { CoreSitePluginsModule } from './siteplugins/siteplugins.module';
-import { CoreRatingModule } from './rating/rating.module';
-import { CoreSharedFilesModule } from './sharedfiles/sharedfiles.module';
-import { CoreQuestionModule } from './question/question.module';
+import { CoreXAPIModule } from './xapi/xapi.module';
 
 @NgModule({
     imports: [
+        CoreBlockModule,
+        CoreCommentsModule,
+        CoreContentLinksModule,
         CoreCourseModule,
         CoreCoursesModule,
+        CoreEditorModule,
         CoreEmulatorModule,
         CoreFileUploaderModule,
+        CoreFilterModule,
         CoreGradesModule,
+        CoreH5PModule,
         CoreLoginModule,
         CoreMainMenuModule,
+        CorePushNotificationsModule,
+        CoreQuestionModule,
+        CoreRatingModule,
+        CoreSearchModule,
         CoreSettingsModule,
+        CoreSharedFilesModule,
         CoreSiteHomeModule,
+        CoreSitePluginsModule,
         CoreTagModule,
         CoreUserModule,
-        CorePushNotificationsModule,
-        CoreSearchModule,
-        CoreXAPIModule,
-        CoreH5PModule,
         CoreViewerModule,
-        CoreCommentsModule,
-        CoreSitePluginsModule,
-        CoreRatingModule,
-        CoreSharedFilesModule,
-        CoreQuestionModule,
+        CoreXAPIModule,
     ],
 })
 export class CoreFeaturesModule {}

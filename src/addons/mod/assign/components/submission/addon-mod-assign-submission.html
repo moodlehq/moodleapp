@@ -240,7 +240,7 @@
                         <ion-input *ngIf="!grade.disabled" type="text" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo!.grade"
                             [lang]="grade.lang">
                         </ion-input>
-                        <p item-content *ngIf="grade.disabled">{{ 'addon.mod_assign.gradelocked' | translate }}</p>
+                        <p *ngIf="grade.disabled">{{ 'addon.mod_assign.gradelocked' | translate }}</p>
                     </ion-item>
 
                     <!-- Grade using a scale. -->
@@ -262,7 +262,7 @@
                                 {{grade.label}}
                             </ion-select-option>
                         </ion-select>
-                        <p item-content *ngIf="!canSaveGrades || !outcome.itemNumber">{{ outcome.selected }}</p>
+                        <p *ngIf="!canSaveGrades || !outcome.itemNumber">{{ outcome.selected }}</p>
                     </ion-item>
 
                     <!-- Gradebook grade for simple grading. -->

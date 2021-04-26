@@ -26,7 +26,6 @@ import { CoreSitePluginsNewContentDirective } from './new-content';
         CoreSitePluginsCallWSOnLoadDirective,
         CoreSitePluginsNewContentDirective,
     ],
-    imports: [],
     exports: [
         CoreSitePluginsCallWSDirective,
         CoreSitePluginsCallWSNewContentDirective,

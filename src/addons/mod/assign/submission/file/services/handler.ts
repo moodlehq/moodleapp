@@ -278,7 +278,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         plugin: AddonModAssignPlugin,
         inputData: AddonModAssignSubmissionFileData,
         pluginData: AddonModAssignSubmissionFilePluginData,
-        offline?: boolean,
+        offline = false,
         userId?: number,
         siteId?: string,
     ): Promise<void> {

@@ -25,7 +25,6 @@ export const CORE_XAPI_SERVICES: Type<unknown>[] = [
 ];
 
 @NgModule({
-    imports: [],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
