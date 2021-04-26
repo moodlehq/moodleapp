@@ -496,3 +496,11 @@ ion-button.core-button-select {
 textarea:not([core-auto-rows]) {
     height: 200px;
 }
+
+ion-fab[core-fab] {
+    position: fixed;
+}
+
+ion-content > ion-fab[core-fab] {
+    position: absolute;
+}

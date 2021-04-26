@@ -29,7 +29,7 @@ export class CoreFabDirective implements OnDestroy {
 
     protected static readonly PADDINGBOTTOM = 56;
 
-    protected element?: HTMLElement;
+    protected scrollElement?: HTMLElement;
     protected done = false;
 
     constructor(protected content: IonContent) {
@@ -41,10 +41,10 @@ export class CoreFabDirective implements OnDestroy {
      */
     async asyncInit(): Promise<void> {
         if (this.content) {
-            this.element = await this.content.getScrollElement();
+            this.scrollElement = await this.content.getScrollElement();
             if (!this.done) {
-                const bottom = parseInt(this.element.style.paddingBottom, 10) ||  0;
-                this.element.style.paddingBottom = (bottom + CoreFabDirective.PADDINGBOTTOM) + 'px';
+                const bottom = parseInt(this.scrollElement.style.paddingBottom, 10) ||  0;
+                this.scrollElement.style.paddingBottom = (bottom + CoreFabDirective.PADDINGBOTTOM) + 'px';
                 this.done = true;
             }
         }
@@ -54,9 +54,9 @@ export class CoreFabDirective implements OnDestroy {
      * Destroy component.
      */
     ngOnDestroy(): void {
-        if (this.done && this.element) {
-            const bottom = parseInt(this.element.style.paddingBottom, 10) ||  0;
-            this.element.style.paddingBottom = (bottom + CoreFabDirective.PADDINGBOTTOM) + 'px';
+        if (this.done && this.scrollElement) {
+            const bottom = parseInt(this.scrollElement.style.paddingBottom, 10) ||  0;
+            this.scrollElement.style.paddingBottom = (bottom - CoreFabDirective.PADDINGBOTTOM) + 'px';
         }
     }
 
