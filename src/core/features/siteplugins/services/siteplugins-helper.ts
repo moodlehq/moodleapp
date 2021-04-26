@@ -79,6 +79,8 @@ import {
 import { makeSingleton } from '@singletons';
 import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
 import { CoreSitePluginsMainMenuHomeHandler } from '../classes/handlers/main-menu-home-handler';
+import { AddonWorkshopAssessmentStrategyDelegate } from '@addons/mod/workshop/services/assessment-strategy-delegate';
+import { CoreSitePluginsWorkshopAssessmentStrategyHandler } from '../classes/handlers/workshop-assessment-strategy-handler';
 
 const HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
 
@@ -1094,27 +1096,23 @@ export class CoreSitePluginsHelperProvider {
      * @param handlerName Name of the handler in the plugin.
      * @param handlerSchema Data about the handler.
      * @return Promise resolved with a string to identify the handler.
-     * @todo
      */
     protected registerWorkshopAssessmentStrategyHandler(
-        plugin: CoreSitePluginsPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
-        handlerName: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-        handlerSchema: CoreSitePluginsHandlerCommonData, // eslint-disable-line @typescript-eslint/no-unused-vars
+        plugin: CoreSitePluginsPlugin,
+        handlerName: string,
+        handlerSchema: CoreSitePluginsHandlerCommonData,
     ): Promise<string | undefined> {
-        // @todo
-        return Promise.resolve('');
+        return this.registerComponentInitHandler(
+            plugin,
+            handlerName,
+            handlerSchema,
+            AddonWorkshopAssessmentStrategyDelegate.instance,
+            (uniqueName) => {
+                const strategyName = (handlerSchema.moodlecomponent || plugin.component).replace('workshopform_', '');
 
-        // return this.registerComponentInitHandler(
-        //     plugin,
-        //     handlerName,
-        //     handlerSchema,
-        //     this.workshopAssessmentStrategyDelegate,
-        //     (uniqueName, result) => {
-        //         const strategyName = (handlerSchema.moodlecomponent || plugin.component).replace('workshopform_', '');
-
-        //         return new CoreSitePluginsWorkshopAssessmentStrategyHandler(uniqueName, strategyName);
-        //     },
-        // );
+                return new CoreSitePluginsWorkshopAssessmentStrategyHandler(uniqueName, strategyName);
+            },
+        );
     }
 
     /**
