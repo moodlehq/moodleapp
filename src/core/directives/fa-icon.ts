@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, OnChanges, SimpleChange } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Input, OnChanges, SimpleChange } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { Http } from '@singletons';
 import { CoreConstants } from '@/core/constants';
@@ -28,7 +28,7 @@ import { CoreConstants } from '@/core/constants';
 @Directive({
     selector: 'ion-icon[name]',
 })
-export class CoreFaIconDirective implements OnChanges {
+export class CoreFaIconDirective implements AfterViewInit, OnChanges {
 
     @Input() name = '';
 
@@ -82,9 +82,23 @@ export class CoreFaIconDirective implements OnChanges {
             }
         } else {
             this.element.removeAttribute('src');
+            this.logger.warn(`Ionic icon ${this.name} detected`);
         }
 
         return;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngAfterViewInit(): void {
+        if (!this.element.getAttribute('aria-label') &&
+            !this.element.getAttribute('aria-labelledby') &&
+            this.element.getAttribute('aria-hidden') != 'true') {
+            this.logger.warn('Aria label not set on icon ' + this.name, this.element);
+
+            this.element.setAttribute('aria-hidden', 'true');
+        }
     }
 
     /**
