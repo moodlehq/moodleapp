@@ -4,7 +4,7 @@
 
         <ion-buttons slot="end">
             <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-times"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -34,7 +34,7 @@
                     <span *ngIf="!question.number">{{ 'core.question.information' | translate }}</span>
                 </ion-label>
 
-                <ion-icon *ngIf="!question.number" name="fas-info-circle" slot="end"></ion-icon>
+                <ion-icon *ngIf="!question.number" name="fas-info-circle" slot="end" aria-hidden="true"></ion-icon>
                 <ion-icon *ngIf="question.stateClass == 'core-question-requiresgrading'" name="fas-question-circle"
                     [attr.aria-label]="question.status" slot="end">
                 </ion-icon>

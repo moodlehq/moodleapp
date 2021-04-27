@@ -37,15 +37,19 @@
             phases[workshop!.phase].tasks.length">
             <ion-item class="ion-text-wrap" *ngFor="let task of phases[workshop!.phase].tasks"
                 [class.item-dimmed]="task.code == 'submit' && !showSubmit" (click)="runTask(task)" detail="false">
-                <ion-icon slot="start" name="far-circle" *ngIf="task.completed == null"></ion-icon>
-                <ion-icon slot="start" name="fas-times-circle" color="danger" *ngIf="task.completed == ''"></ion-icon>
-                <ion-icon slot="start" name="fas-info-circle" color="info" *ngIf="task.completed == 'info'"></ion-icon>
-                <ion-icon slot="start" name="fas-check-circle" color="success" *ngIf="task.completed == '1'"></ion-icon>
+                <ion-icon slot="start" name="far-circle" *ngIf="task.completed == null" aria-hidden="true"></ion-icon>
+                <ion-icon slot="start" name="fas-times-circle" color="danger" *ngIf="task.completed == ''" aria-hidden="true">
+                </ion-icon>
+                <ion-icon slot="start" name="fas-info-circle" color="info" *ngIf="task.completed == 'info'" aria-hidden="true">
+                </ion-icon>
+                <ion-icon slot="start" name="fas-check-circle" color="success" *ngIf="task.completed == '1'" aria-hidden="true">
+                </ion-icon>
                 <ion-label>
                     <h2>{{task.title}}</h2>
                     <p *ngIf="task.details" [innerHTML]="task.details"></p>
                 </ion-label>
-                <ion-icon slot="end" *ngIf="task.link && task.code != 'submit'" name="fas-external-link-alt"></ion-icon>
+                <ion-icon slot="end" *ngIf="task.link && task.code != 'submit'" name="fas-external-link-alt" aria-hidden="true">
+                </ion-icon>
             </ion-item>
         </ng-container>
     </ion-card>
@@ -53,7 +57,7 @@
     <!-- Has something offline. -->
     <ion-card class="core-warning-card" *ngIf="hasOffline">
         <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
         </ion-item>
     </ion-card>
@@ -145,11 +149,11 @@
             <ion-item class="ion-text-wrap" *ngIf="showSubmit">
                 <ion-label>
                     <ion-button expand="block" *ngIf="access.creatingsubmissionallowed && !submission" (click)="gotoSubmit()">
-                        <ion-icon slot="start" name="fas-plus"></ion-icon>
+                        <ion-icon slot="start" name="fas-plus" aria-hidden="true"></ion-icon>
                         {{ 'addon.mod_workshop.createsubmission' | translate }}
                     </ion-button>
                     <ion-button expand="block" *ngIf="access.modifyingsubmissionallowed && submission" (click)="gotoSubmit()">
-                        <ion-icon slot="start" name="fas-edit"></ion-icon>
+                        <ion-icon slot="start" name="fas-edit" aria-hidden="true"></ion-icon>
                         {{ 'addon.mod_workshop.editsubmission' | translate }}
                     </ion-button>
                 </ion-label>
@@ -233,14 +237,14 @@
                 <ion-row class="ion-align-items-center">
                     <ion-col *ngIf="page > 0">
                         <ion-button expand="block" fill="outline" (click)="gotoSubmissionsPage(page! -1)">
-                            <ion-icon name="fas-chevron-left" slot="start"></ion-icon>
+                            <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
                             {{ 'core.previous' | translate }}
                         </ion-button>
                     </ion-col>
                     <ion-col *ngIf="hasNextPage">
                         <ion-button expand="block" (click)="gotoSubmissionsPage(page! + 1)">
                             {{ 'core.next' | translate }}
-                            <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
+                            <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
                         </ion-button>
                     </ion-col>
                 </ion-row>

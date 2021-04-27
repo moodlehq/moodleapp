@@ -6,7 +6,7 @@
         <ion-title>{{ 'addon.mod_chat.currentusers' | translate }}</ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-times"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -21,11 +21,11 @@
                 <h2>{{ user.fullname }}</h2>
                 <ng-container *ngIf="currentUserId != user.id && isOnline">
                     <ion-button fill="clear" (click)="talkTo(user)">
-                        <ion-icon name="fas-comments" slot="start"></ion-icon>
+                        <ion-icon name="fas-comments" slot="start" aria-hidden="true"></ion-icon>
                         {{ 'addon.mod_chat.talk' | translate }}
                     </ion-button>
                     <ion-button fill="clear" (click)="beepTo(user)">
-                        <ion-icon name="fas-bell" slot="start"></ion-icon>
+                        <ion-icon name="fas-bell" slot="start" aria-hidden="true"></ion-icon>
                         {{ 'addon.mod_chat.beep' | translate }}
                     </ion-button>
                 </ng-container>

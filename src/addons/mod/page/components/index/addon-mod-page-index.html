@@ -30,8 +30,10 @@
     </core-course-module-description>
 
     <ion-card class="core-warning-card" *ngIf="warning">
-        <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
-        <span [innerHTML]="warning"></span>
+        <ion-item>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label><span [innerHTML]="warning"></span></ion-label>
+        </ion-item>
     </ion-card>
 
     <div class="ion-padding">

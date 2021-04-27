@@ -7,6 +7,8 @@
             [title]="event.name">
             <img slot="start" [src]="event.iconUrl" alt="" role="presentation" *ngIf="event.iconUrl" class="core-module-icon">
             <ion-label>
+                <!-- Add the icon title so accessibility tools read it. -->
+                <span class="sr-only" *ngIf="event.iconTitle">{{ event.iconTitle }}</span>
                 <h2>
                     <core-format-text [text]="event.name" contextLevel="module" [contextInstanceId]="event.id"
                         [courseId]="event.course && event.course.id">

@@ -21,7 +21,7 @@
             </ion-button>
         </ion-label>
         <ion-note slot="end" *ngIf="offline">
-            <ion-icon name="fas-clock"></ion-icon>{{ 'core.notsent' | translate }}
+            <ion-icon name="fas-clock" aria-hidden="true"></ion-icon>{{ 'core.notsent' | translate }}
         </ion-note>
     </ion-item>
 </core-loading>

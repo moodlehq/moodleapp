@@ -75,7 +75,7 @@
                     </p>
                     <ion-item class="ion-text-wrap" *ngFor="let activity of coursemodules" [href]="activity.url" [title]="activity.name"
                         core-link capture="true">
-                        <img slot="start" core-external-content [src]="activity.iconurl" alt="" role="presentation" *ngIf="activity.iconurl"
+                        <img slot="start" core-external-content [src]="activity.iconurl" alt="" *ngIf="activity.iconurl"
                             class="core-module-icon">
                         <ion-label>
                             <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.id"

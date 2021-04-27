@@ -49,7 +49,7 @@
     <!-- Upload a private file. -->
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="showUpload && root != 'site' && !path">
         <ion-fab-button (click)="uploadFile()" [attr.aria-label]="'core.fileuploader.uploadafile' | translate">
-            <ion-icon name="fas-plus"></ion-icon>
+            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
         </ion-fab-button>
     </ion-fab>
 </ion-content>

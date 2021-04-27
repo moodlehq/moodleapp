@@ -4,5 +4,6 @@
     "notificationpreferences": "Notification preferences",
     "notifications": "Notifications",
     "playsound": "Play sound",
-    "therearentnotificationsyet": "There are no notifications."
+    "therearentnotificationsyet": "There are no notifications.",
+    "unreadnotification": "Unread notification: {{$a}}"
 }

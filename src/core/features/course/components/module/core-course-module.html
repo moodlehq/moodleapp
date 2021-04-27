@@ -5,7 +5,7 @@
     'core-not-clickable': !module.handlerData.action || module.uservisible === false}">
 
     <img slot="start" *ngIf="module.handlerData.icon" [src]="module.handlerData.icon" [alt]="modNameTranslated"
-        [attr.aria-hidden]="true" class="core-module-icon">
+        class="core-module-icon">
 
     <ion-label>
         <div class="core-module-title">
@@ -32,7 +32,7 @@
                         [hidden]="button.hidden || spinner || module.handlerData.spinner" class="core-animate-show-hide"
                         (click)="buttonClicked($event, button)"
                         [attr.aria-label]="button.label | translate:{$a: module.handlerData.title}">
-                        <ion-icon [name]="button.icon" slot="icon-only"></ion-icon>
+                        <ion-icon [name]="button.icon" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </div>
             </div>

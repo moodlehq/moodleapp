@@ -3,7 +3,7 @@
         <ion-title>{{ 'addon.messages.groupinfo' | translate }}</ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon name="fas-times" slot="icon-only"></ion-icon>
+                <ion-icon name="fas-times" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -39,7 +39,8 @@
             <ion-label>
                 <h2>
                     {{ member.fullname }}
-                    <ion-icon name="fas-user-slash" *ngIf="member.isblocked" [title]="'addon.messages.contactblocked' | translate">
+                    <ion-icon name="fas-user-slash" *ngIf="member.isblocked"
+                        [attr.aria-label]="'addon.messages.contactblocked' | translate">
                     </ion-icon>
                 </h2>
             </ion-label>

@@ -5,8 +5,8 @@
         </ion-buttons>
         <ion-title>{{ 'addon.messages.contacts' | translate }}</ion-title>
         <ion-buttons slot="end">
-            <ion-button (click)="gotoSearch()" [attr.aria-label]="'addon.messages.search' | translate">
-                <ion-icon name="fas-search" slot="icon-only"></ion-icon>
+            <ion-button (click)="gotoSearch()" [attr.aria-label]="'addon.messages.searchcombined' | translate">
+                <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <!-- Add an empty context menu so discussion page can add items in split view, otherwise the menu
                 disappears in some cases. -->
@@ -36,7 +36,8 @@
                                     <h2>
                                         <core-format-text [text]="contact.fullname" contextLevel="system" [contextInstanceId]="0">
                                         </core-format-text>
-                                        <ion-icon *ngIf="contact.isblocked" name="fas-user-slash" slot="end">
+                                        <ion-icon *ngIf="contact.isblocked" name="fas-user-slash" slot="end"
+                                            [attr.aria-label]="'addon.messages.contactblocked' | translate">
                                         </ion-icon>
                                     </h2>
                                 </ion-label>

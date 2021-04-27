@@ -6,7 +6,7 @@
         <ion-title>{{ 'addon.calendar.calendarevents' | translate }}</ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="openFilter($event)" [attr.aria-label]="'core.filter' | translate">
-                <ion-icon slot="icon-only" name="fas-filter"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-filter" aria-hidden="true"></ion-icon>
             </ion-button>
             <core-context-menu>
                 <core-context-menu-item [hidden]="!notificationsEnabled" [priority]="600"
@@ -28,7 +28,7 @@
             <!-- There is data to be synchronized -->
             <ion-card class="core-warning-card" *ngIf="hasOffline">
                 <ion-item>
-                    <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                    <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}</ion-label>
                 </ion-item>
             </ion-card>
@@ -44,11 +44,18 @@
                     </ion-item-divider>
                     <ion-item class="addon-calendar-event ion-text-wrap" [title]="event.name" (click)="gotoEvent(event.id)"
                     [class.core-selected-item]="event.id == eventId" [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
-                        <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" slot="start" class="core-module-icon">
-                        <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" slot="start">
+                        <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" slot="start" class="core-module-icon" alt=""
+                            role="presentation">
+                        <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" slot="start"
+                            aria-hidden="true">
                         </ion-icon>
                         <ion-label>
                             <h2>
+                                <!-- Add the icon title so accessibility tools read it. -->
+                                <span class="sr-only">
+                                    {{ 'addon.calendar.type' + event.formattedType | translate }}
+                                    <span class="sr-only" *ngIf="event.moduleIcon && event.iconTitle">{{ event.iconTitle }}</span>
+                                </span>
                                 <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
                                     [contextInstanceId]="event.contextInstanceId">
                                 </core-format-text>
@@ -64,11 +71,11 @@
                             </p>
                         </ion-label>
                         <ion-note *ngIf="event.offline && !event.deleted" slot="end">
-                            <ion-icon name="far-clock"></ion-icon>
+                            <ion-icon name="fas-clock" aria-hidden="true"></ion-icon>
                             <span class="ion-text-wrap">{{ 'core.notsent' | translate }}</span>
                         </ion-note>
                         <ion-note *ngIf="event.deleted" slot="end">
-                            <ion-icon name="fas-trash"></ion-icon>
+                            <ion-icon name="fas-trash" aria-hidden="true"></ion-icon>
                             <span class="ion-text-wrap">{{ 'core.deletedoffline' | translate }}</span>
                         </ion-note>
                     </ion-item>
@@ -82,7 +89,7 @@
         <!-- Create a calendar event. -->
         <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canCreate">
             <ion-fab-button (click)="openEdit()" [attr.aria-label]="'addon.calendar.newevent' | translate">
-                <ion-icon name="fas-plus"></ion-icon>
+                <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
             </ion-fab-button>
         </ion-fab>
     </core-split-view>

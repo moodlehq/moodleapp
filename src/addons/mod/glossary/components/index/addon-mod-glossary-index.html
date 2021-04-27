@@ -2,11 +2,11 @@
 <core-navbar-buttons slot="end">
     <ion-button *ngIf="glossary && glossary.browsemodes && glossary.browsemodes.length > 1" (click)="openModePicker($event)"
         [attr.aria-label]="'addon.mod_glossary.browsemode' | translate">
-        <ion-icon name="fas-sort"></ion-icon>
+        <ion-icon name="fas-sort" aria-hidden="true"></ion-icon>
     </ion-button>
 
     <ion-button *ngIf="glossary" (click)="toggleSearch()" [attr.aria-label]="'addon.mod_glossary.bysearch' | translate">
-        <ion-icon name="fas-search"></ion-icon>
+        <ion-icon name="fas-search" aria-hidden="true"></ion-icon>
     </ion-button>
 
     <core-context-menu>
@@ -57,7 +57,7 @@
         <!-- Has offline data to be synchronized -->
         <ion-card class="core-warning-card" *ngIf="hasOffline || hasOfflineRatings">
             <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</ion-label>
             </ion-item>
         </ion-card>
@@ -101,7 +101,7 @@
 
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canAdd">
         <ion-fab-button (click)="openNewEntry()" [attr.aria-label]="'addon.mod_glossary.addentry' | translate">
-            <ion-icon name="fas-plus"></ion-icon>
+            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
         </ion-fab-button>
     </ion-fab>
 </core-split-view>

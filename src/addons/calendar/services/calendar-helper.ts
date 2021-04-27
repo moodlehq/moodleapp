@@ -189,6 +189,7 @@ export class AddonCalendarHelperProvider {
         if (event.modulename) {
             eventFormatted.eventIcon = CoreCourse.getModuleIconSrc(event.modulename);
             eventFormatted.moduleIcon = eventFormatted.eventIcon;
+            eventFormatted.iconTitle = CoreCourse.translateModuleName(event.modulename);
         }
 
         eventFormatted.formattedType = AddonCalendar.getEventType(event);

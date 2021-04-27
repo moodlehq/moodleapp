@@ -71,7 +71,8 @@
                 <ion-row class="ion-text-center">
                     <ion-col *ngIf="entry.lastmodified > entry.created">
                         <ion-note>
-                            <ion-icon name="fas-clock"></ion-icon> {{entry.lastmodified | coreTimeAgo}}
+                            <ion-icon name="fas-clock"
+                                [attr.aria-label]="'core.lastmodified' | translate"></ion-icon> {{entry.lastmodified | coreTimeAgo}}
                         </ion-note>
                     </ion-col>
                 </ion-row>

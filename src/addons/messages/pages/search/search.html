@@ -47,8 +47,10 @@
             <core-user-avatar slot="start" [user]="result" [checkOnline]="true" [linkProfile]="false"></core-user-avatar>
             <ion-label>
                 <h2>
-                    <core-format-text [text]="result.fullname" [highlight]="result.highlightName" [filter]="false"></core-format-text>
-                    <ion-icon name="fa-ban" *ngIf="result.isblocked" [title]="'addon.messages.contactblocked' | translate">
+                    <core-format-text [text]="result.fullname" [highlight]="result.highlightName" [filter]="false">
+                    </core-format-text>
+                    <ion-icon name="fa-ban" *ngIf="result.isblocked"
+                        [attr.aria-label]="'addon.messages.contactblocked' | translate">
                     </ion-icon>
                 </h2>
                 <ion-note *ngIf="result.lastmessagedate > 0">

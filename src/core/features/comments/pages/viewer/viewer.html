@@ -9,8 +9,8 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button *ngIf="canDeleteComments" slot="end" fill="clear" (click)="toggleDelete()"
-                [attr.aria-label]="'core.delete' | translate">
-                <ion-icon name="fas-pen" slot="icon-only"></ion-icon>
+                [attr.aria-label]="'core.toggledelete' | translate">
+                <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <core-context-menu>
                 <core-context-menu-item [hidden]="!(commentsLoaded && !hasOffline)" [priority]="100"
@@ -36,7 +36,7 @@
 
         <ion-card class="core-warning-card" *ngIf="hasOffline">
             <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     {{ 'core.thereisdatatosync' | translate:{$a: 'core.comments.comments' | translate | lowercase } }}
                 </ion-label>
@@ -49,12 +49,12 @@
                 <ion-label>
                     <h2>{{ offlineComment.fullname }}</h2>
                     <p>
-                        <ion-icon name="far-clock"></ion-icon> {{ 'core.notsent' | translate }}
+                        <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}
                     </p>
                 </ion-label>
                 <ion-button *ngIf="showDelete" slot="end" fill="clear" [@coreSlideInOut]="'fromRight'" color="danger"
                     (click)="deleteComment($event, offlineComment)" [attr.aria-label]="'core.delete' | translate">
-                    <ion-icon name="fas-trash" slot="icon-only"></ion-icon>
+                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
             </ion-item>
             <ion-item class="ion-text-wrap">
@@ -73,7 +73,7 @@
                     <h2>{{ comment.fullname }}</h2>
                     <p *ngIf="!comment.deleted">{{ comment.timecreated * 1000 | coreFormatDate: 'strftimerecentfull' }}</p>
                     <p *ngIf="comment.deleted">
-                        <ion-icon name="fas-trash"></ion-icon> <span class="ion-text-wrap">
+                        <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> <span class="ion-text-wrap">
                             {{ 'core.deletedoffline' | translate }}
                         </span>
                     </p>
@@ -81,11 +81,11 @@
                 <ion-button *ngIf="showDelete && !comment.deleted && comment.delete" slot="end" fill="clear"
                     [@coreSlideInOut]="'fromRight'" color="danger" (click)="deleteComment($event, comment)"
                     [attr.aria-label]="'core.delete' | translate">
-                    <ion-icon name="fas-trash" slot="icon-only"></ion-icon>
+                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
                 <ion-button *ngIf="showDelete && comment.deleted" slot="end" fill="clear" color="danger"
                     (click)="undoDeleteComment($event, comment)" [attr.aria-label]="'core.restore' | translate">
-                    <ion-icon name="fas-undo-alt" slot="icon-only"></ion-icon>
+                    <ion-icon name="fas-undo-alt" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
             </ion-item>
             <ion-item class="ion-text-wrap">
@@ -102,7 +102,7 @@
 
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canAddComments">
         <ion-fab-button (click)="addComment($event)" [attr.aria-label]="'core.comments.addcomment' | translate">
-            <ion-icon name="fas-plus"></ion-icon>
+            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
         </ion-fab-button>
     </ion-fab>
 </ion-content>

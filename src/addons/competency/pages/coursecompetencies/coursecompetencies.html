@@ -105,7 +105,7 @@
                             </p>
                             <ion-item class="ion-text-wrap core-course-module-handler item-media" [title]="activity.name" core-link
                                 *ngFor="let activity of competency.coursemodules" [href]="activity.url" capture="true">
-                                <img slot="start" [src]="activity.iconurl" core-external-content alt="" role="presentation"
+                                <img slot="start" [src]="activity.iconurl" core-external-content alt=""
                                     *ngIf="activity.iconurl" class="core-module-icon">
                                 <ion-label>
                                     <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.id"

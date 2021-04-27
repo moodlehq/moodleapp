@@ -2,14 +2,14 @@
 <core-navbar-buttons slot="end">
     <!-- Select subwiki. -->
     <ion-button *ngIf="subwikiData.count > 1" (click)="showSubwikiPicker($event)"
-        [attr.aria-label]="'addon.mod_wiki.subwiki' | translate">
-        <ion-icon *ngIf="!groupWiki" name="fas-user"></ion-icon>
-        <ion-icon *ngIf="groupWiki" name="fas-users"></ion-icon>
+        [attr.aria-label]="'addon.mod_wiki.subwiki' | translate" aria-haspopup="true">
+        <ion-icon *ngIf="!groupWiki" name="fas-user" aria-hidden="true"></ion-icon>
+        <ion-icon *ngIf="groupWiki" name="fas-users" aria-hidden="true"></ion-icon>
     </ion-button>
 
     <ion-button *ngIf="loaded && currentPageObj" (click)="openMap()" [attr.aria-label]="'addon.mod_wiki.map' | translate"
         aria-haspopup="true">
-        <ion-icon name="fas-map"></ion-icon>
+        <ion-icon name="fas-map" aria-hidden="true"></ion-icon>
     </ion-button>
 
     <core-context-menu>
@@ -55,7 +55,7 @@
         <!-- Wiki has something offline. -->
         <ion-card class="core-warning-card" *ngIf="pageIsOffline || hasOffline">
             <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <span *ngIf="pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>
                     <span *ngIf="!pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</span>
@@ -66,7 +66,7 @@
         <!-- Page warning. -->
         <ion-card class="core-warning-card" *ngIf="pageWarning">
             <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ pageWarning }}</ion-label>
             </ion-item>
         </ion-card>
@@ -90,6 +90,6 @@
 
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canEdit">
     <ion-fab-button (click)="goToNewPage()" [attr.aria-label]="'addon.mod_wiki.createpage' | translate">
-        <ion-icon name="fas-plus"></ion-icon>
+        <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
     </ion-fab-button>
 </ion-fab>

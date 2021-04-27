@@ -11,7 +11,7 @@
         <ion-buttons slot="end">
             <ion-button *ngIf="displayMenu || mediaFile" [attr.aria-label]="'addon.mod_lesson.lessonmenu' | translate"
                 (click)="showMenu()">
-                <ion-icon name="bookmark" slot="icon-only"></ion-icon>
+                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -21,7 +21,7 @@
         <!-- Info messages. Only show the first one. -->
         <ion-card class="core-info-card" *ngIf="lesson && messages?.length">
             <ion-item>
-                <ion-icon name="fas-info-circle" slot="start"></ion-icon>
+                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ messages[0].message }}</ion-label>
             </ion-item>
         </ion-card>
@@ -172,7 +172,7 @@
                 </ion-item>
                 <div class="core-info-card" *ngIf="lesson?.progressbar && canManage">
                     <ion-item>
-                        <ion-icon name="fas-info-circle" slot="start"></ion-icon>
+                        <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
                         <ion-label>{{ 'addon.mod_lesson.progressbarteacherwarning2' | translate }}</ion-label>
                     </ion-item>
                 </div>
@@ -182,7 +182,7 @@
             <ion-card *ngIf="eolData && !processData">
                 <div class="core-warning-card" *ngIf="eolData.offline?.value">
                     <ion-item>
-                        <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                        <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                         <ion-label>{{ 'addon.mod_lesson.finishretakeoffline' | translate }}</ion-label>
                     </ion-item>
                 </div>

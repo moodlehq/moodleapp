@@ -7,7 +7,7 @@
             [attr.disabled]="!subwiki.canedit && subwiki.id <= 0 ? true : null" tappable
             [class.core-selected-item]="isSubwikiSelected(subwiki)" detail="false">
             <ion-label>{{ subwiki.name }}</ion-label>
-            <ion-icon *ngIf="isSubwikiSelected(subwiki)" name="fas-check" slot="end"></ion-icon>
+            <ion-icon *ngIf="isSubwikiSelected(subwiki)" name="fas-check" slot="end" aria-hidden="true"></ion-icon>
         </ion-item>
     </ng-container>
 </ion-list>

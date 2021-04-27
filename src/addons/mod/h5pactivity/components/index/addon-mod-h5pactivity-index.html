@@ -39,7 +39,7 @@
     <!-- Offline data stored. -->
     <ion-card class="core-warning-card" *ngIf="hasOffline">
         <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
         </ion-item>
     </ion-card>
@@ -47,7 +47,7 @@
     <!-- Offline disabled. -->
     <ion-card class="core-warning-card" *ngIf="!siteCanDownload && playing">
         <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 {{ 'core.h5p.offlinedisabled' | translate }} {{ 'addon.mod_h5pactivity.offlinedisabledwarning' | translate }}
             </ion-label>
@@ -57,7 +57,7 @@
     <!-- Preview mode. -->
     <ion-card class="core-warning-card" *ngIf="accessInfo && !trackComponent">
         <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 {{ 'addon.mod_h5pactivity.previewmode' | translate }}
             </ion-label>

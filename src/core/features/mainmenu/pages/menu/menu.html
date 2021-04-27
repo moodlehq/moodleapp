@@ -4,15 +4,16 @@
         <ion-spinner *ngIf="!loaded"></ion-spinner>
 
         <ion-tab-button (ionTabButtonClick)="tabClicked($event, tab.page)" [hidden]="!loaded && tab.hide" *ngFor="let tab of tabs"
-            [tab]="tab.page" [disabled]="tab.hide" layout="label-hide"  class="{{tab.class}}">
-            <ion-icon [name]="tab.icon"></ion-icon>
-            <ion-label>{{ tab.title | translate }}</ion-label>
+            [tab]="tab.page" [disabled]="tab.hide" layout="label-hide"  class="{{tab.class}}"
+            [attr.aria-label]="tab.title | translate">
+            <ion-icon [name]="tab.icon" aria-hidden="true"></ion-icon>
+            <ion-label aria-hidden="true">{{ tab.title | translate }}</ion-label>
             <ion-badge *ngIf="tab.badge">{{ tab.badge }}</ion-badge>
         </ion-tab-button>
 
         <ion-tab-button (ionTabButtonClick)="tabClicked($event, morePageName)" [hidden]="!loaded" [tab]="morePageName" layout="label-hide">
-            <ion-icon name="fas-bars"></ion-icon>
-            <ion-label>{{ 'core.more' | translate }}</ion-label>
+            <ion-icon name="fas-bars" [attr.aria-labelledby]="'mainmenu-tab-more'"></ion-icon>
+            <ion-label id="mainmenu-tab-more">{{ 'core.more' | translate }}</ion-label>
         </ion-tab-button>
     </ion-tab-bar>
 </ion-tabs>

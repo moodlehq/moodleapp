@@ -1,35 +1,35 @@
 <ion-item class="ion-text-wrap" (click)="setLockState(true)" *ngIf="discussion.canlock && !discussion.locked">
-    <ion-icon name="fa-lock" slot="start"></ion-icon>
+    <ion-icon name="fa-lock" slot="start" aria-hidden="true"></ion-icon>
     <ion-label>
         <h2>{{ 'addon.mod_forum.lockdiscussion' | translate }}</h2>
     </ion-label>
 </ion-item>
 <ion-item class="ion-text-wrap" (click)="setLockState(false)" *ngIf="discussion.canlock && discussion.locked">
-    <ion-icon name="fa-unlock" slot="start"></ion-icon>
+    <ion-icon name="fa-unlock" slot="start" aria-hidden="true"></ion-icon>
     <ion-label>
         <h2>{{ 'addon.mod_forum.unlockdiscussion' | translate }}</h2>
     </ion-label>
 </ion-item>
 <ion-item class="ion-text-wrap" (click)="setPinState(true)" *ngIf="canPin && !discussion.pinned">
-    <ion-icon name="fa-map-pin" slot="start"></ion-icon>
+    <ion-icon name="fa-map-pin" slot="start" aria-hidden="true"></ion-icon>
     <ion-label>
         <h2>{{ 'addon.mod_forum.pindiscussion' | translate }}</h2>
     </ion-label>
 </ion-item>
 <ion-item class="ion-text-wrap" (click)="setPinState(false)" *ngIf="canPin && discussion.pinned">
-    <ion-icon name="fa-map-pin" slot="start" class="icon-slash"></ion-icon>
+    <ion-icon name="fa-map-pin" slot="start" class="icon-slash" aria-hidden="true"></ion-icon>
     <ion-label>
         <h2>{{ 'addon.mod_forum.unpindiscussion' | translate }}</h2>
     </ion-label>
 </ion-item>
 <ion-item class="ion-text-wrap" (click)="toggleFavouriteState(true)" *ngIf="discussion.canfavourite && !discussion.starred">
-    <ion-icon name="fa-star" slot="start"></ion-icon>
+    <ion-icon name="fa-star" slot="start" aria-hidden="true"></ion-icon>
     <ion-label>
         <h2>{{ 'addon.mod_forum.addtofavourites' | translate }}</h2>
     </ion-label>
 </ion-item>
 <ion-item class="ion-text-wrap" (click)="toggleFavouriteState(false)" *ngIf="discussion.canfavourite && discussion.starred">
-    <ion-icon name="fa-star" slot="start" class="icon-slash"></ion-icon>
+    <ion-icon name="fa-star" slot="start" class="icon-slash" aria-hidden="true"></ion-icon>
     <ion-label>
         <h2>{{ 'addon.mod_forum.removefromfavourites' | translate }}</h2>
     </ion-label>

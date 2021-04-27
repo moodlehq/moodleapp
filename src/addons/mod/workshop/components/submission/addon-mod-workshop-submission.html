@@ -22,15 +22,15 @@
                 </p>
             </ion-label>
             <ion-note slot="end" *ngIf="!submission.timemodified">
-                <ion-icon name="fas-clock"></ion-icon> {{ 'core.notsent' | translate }}
+                <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}
             </ion-note>
             <ion-note slot="end" *ngIf="submission.timemodified">
                 {{submission.timemodified | coreDateDayOrTime}}
                 <ng-container *ngIf="submission.offline">
-                    <ion-icon name="fas-clock"></ion-icon> {{ 'core.notsent' | translate }}
+                    <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}
                 </ng-container>
                 <ng-container *ngIf="submission.deleted">
-                    <ion-icon name="fas-trash"></ion-icon> {{ 'core.deletedoffline' | translate }}
+                    <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> {{ 'core.deletedoffline' | translate }}
                 </ng-container>
             </ion-note>
         </ion-item>
@@ -59,7 +59,7 @@
             <ion-label>
                 <ion-button expand="block" (click)="gotoSubmission()">
                     {{ 'core.showmore' | translate }}
-                    <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
+                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
                 </ion-button>
             </ion-label>
         </ion-item>
@@ -101,8 +101,10 @@
         </ion-label>
         <ion-note slot="end" *ngIf="submission.timemodified">
             {{submission.timemodified | coreDateDayOrTime}}
-            <div *ngIf="offline"><ion-icon name="fas-clock"></ion-icon> {{ 'core.notsent' | translate }}</div>
-            <div *ngIf="submission.deleted"><ion-icon name="fas-trash"></ion-icon> {{ 'core.deletedoffline' | translate }}</div>
+            <div *ngIf="offline"><ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}</div>
+            <div *ngIf="submission.deleted">
+                <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> {{ 'core.deletedoffline' | translate }}
+            </div>
         </ion-note>
     </ion-item>
 </core-loading>

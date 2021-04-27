@@ -4,9 +4,11 @@
             <ion-label>
                 <div class="addon-mod-forum-post-title" *ngIf="displaySubject">
                     <h2 class="ion-text-wrap">
-                        <ion-icon name="fa-map-pin" *ngIf="discussion && !post.parentid && discussion.pinned">
+                        <ion-icon name="fa-map-pin" *ngIf="discussion && !post.parentid && discussion.pinned"
+                            [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate">
                         </ion-icon>
                         <ion-icon name="fa-star" class="addon-forum-star"
+                            [attr.aria-label]="'addon.mod_forum.favourites' | translate"
                             *ngIf="discussion && !post.parentid && !discussion.pinned && discussion.starred">
                         </ion-icon>
                         <core-format-text
@@ -16,13 +18,12 @@
                     </h2>
                     <ion-note *ngIf="trackPosts && post.unread"
                         class="ion-float-end ion-padding-left ion-text-end" [attr.aria-label]="'addon.mod_forum.unread' | translate">
-                        <ion-icon name="fa-circle" color="primary">
-                        </ion-icon>
+                        <ion-icon name="fa-circle" color="primary" aria-hidden="true"></ion-icon>
                     </ion-note>
                     <ion-button *ngIf="optionsMenuEnabled"
                         fill="clear" color="dark" [attr.aria-label]="('core.displayoptions' | translate)"
                         (click)="showOptionsMenu($event)">
-                        <ion-icon name="ellipsis-vertical" slot="icon-only">
+                        <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true">
                         </ion-icon>
                     </ion-button>
                 </div>
@@ -33,23 +34,24 @@
                         <h3 *ngIf="post.author && post.author.fullname">{{post.author.fullname}}</h3>
                         <p *ngIf="post.author && post.author.groups">
                             <ng-container *ngFor="let group of post.author.groups">
-                                <ion-icon name="people"></ion-icon> {{ group.name }}
+                                <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate">
+                                </ion-icon> {{ group.name }}
                             </ng-container>
                         </p>
                         <p *ngIf="post.timecreated">{{post.timecreated * 1000 | coreFormatDate: "strftimerecentfull"}}</p>
-                        <p *ngIf="!post.timecreated"><ion-icon name="fas-clock"></ion-icon> {{ 'core.notsent' | translate }}</p>
+                        <p *ngIf="!post.timecreated">
+                            <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}
+                        </p>
                     </div>
                     <ng-container *ngIf="!displaySubject">
                         <ion-note *ngIf="trackPosts && post.unread"
                             class="ion-float-end ion-padding-left ion-text-end" [attr.aria-label]="'addon.mod_forum.unread' | translate">
-                            <ion-icon name="fa-circle" color="primary">
-                            </ion-icon>
+                            <ion-icon name="fa-circle" color="primary" aria-hidden="true"></ion-icon>
                         </ion-note>
                         <ion-button *ngIf="optionsMenuEnabled"
                             fill="clear" color="dark" [attr.aria-label]="('core.displayoptions' | translate)"
                             (click)="showOptionsMenu($event)">
-                            <ion-icon name="ellipsis-vertical" slot="icon-only">
-                            </ion-icon>
+                            <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true"></ion-icon>
                         </ion-button>
                     </ng-container>
                 </div>
@@ -92,7 +94,7 @@
                     [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId"
                     [attr.aria-expanded]="replyData.replyingTo === post.id"
                     (click)="showReplyForm()">
-                    <ion-icon name="fa-reply" slot="start">
+                    <ion-icon name="fa-reply" slot="start" aria-hidden="true">
                     </ion-icon> {{ 'addon.mod_forum.reply' | translate }}
                 </ion-button>
             </ion-label>
@@ -120,12 +122,11 @@
             <ion-checkbox slot="end" [(ngModel)]="replyData.isprivatereply" name="isprivatereply"></ion-checkbox>
         </ion-item>
         <ng-container *ngIf="forum.id && forum.maxattachments > 0">
-            <ion-item-divider class="core-expandable ion-text-wrap" (click)="toggleAdvanced()">
+            <ion-item-divider class="core-expandable ion-text-wrap" (click)="toggleAdvanced()" [attr.aria-expanded]="advanced"
+                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') |translate">
                 <ion-label>
-                    <ion-icon *ngIf="!advanced" name="fa-caret-right" slot="start">
-                    </ion-icon>
-                    <ion-icon *ngIf="advanced" name="fa-caret-down" slot="start">
-                    </ion-icon>
+                    <ion-icon *ngIf="!advanced" name="fa-caret-right" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon *ngIf="advanced" name="fa-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     {{ 'addon.mod_forum.advanced' | translate }}
                 </ion-label>
             </ion-item-divider>

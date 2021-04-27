@@ -25,8 +25,8 @@
             <ion-label><ion-spinner></ion-spinner></ion-label>
         </ion-item>
         <ion-item button *ngFor="let handler of handlers" [ngClass]="['core-moremenu-handler', handler.class || '']"
-            (click)="openHandler(handler)" title="{{ handler.title | translate }}" detail="true" detail>
-            <ion-icon [name]="handler.icon" slot="start"></ion-icon>
+            (click)="openHandler(handler)" [attr.aria-label]="handler.title | translate" detail="true" detail>
+            <ion-icon [name]="handler.icon" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <h2>{{ handler.title | translate}}</h2>
             </ion-label>
@@ -35,16 +35,16 @@
             <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading"></ion-spinner>
         </ion-item>
         <ng-container *ngFor="let item of customItems">
-            <ion-item button *ngIf="item.type != 'embedded'" [href]="item.url" title="{{item.label}}" core-link
+            <ion-item button *ngIf="item.type != 'embedded'" [href]="item.url" [attr.aria-label]="item.label" core-link
                 [capture]="item.type == 'app'" [inApp]="item.type == 'inappbrowser'" class="core-moremenu-customitem" detail>
-                <ion-icon [name]="item.icon" slot="start"></ion-icon>
+                <ion-icon [name]="item.icon" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <h2>{{item.label}}</h2>
                 </ion-label>
             </ion-item>
-            <ion-item button *ngIf="item.type == 'embedded'" (click)="openItem(item)" title="{{item.label}}"
+            <ion-item button *ngIf="item.type == 'embedded'" (click)="openItem(item)" [attr.aria-label]="item.label"
                 class="core-moremenu-customitem" detail>
-                <ion-icon [name]="item.icon" slot="start"></ion-icon>
+                <ion-icon [name]="item.icon" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <h2>{{item.label}}</h2>
                 </ion-label>
@@ -57,27 +57,27 @@
             </ion-label>
         </ion-item>
         <ion-item button *ngIf="showWeb && siteInfo" [href]="siteInfo.siteurl" core-link autoLogin="yes"
-            title="{{ 'core.mainmenu.website' | translate }}" detail>
+            [attr.aria-label]="'core.mainmenu.website' | translate" detail>
             <ion-icon name="fas-globe" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <h2>{{ 'core.mainmenu.website' | translate }}</h2>
             </ion-label>
         </ion-item>
         <ion-item button *ngIf="showHelp" [href]="docsUrl" core-link autoLogin="no"
-            title="{{ 'core.mainmenu.help' | translate }}" detail>
+            [attr.aria-label]="'core.mainmenu.help' | translate" detail>
             <ion-icon name="far-life-ring" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <h2>{{ 'core.mainmenu.help' | translate }}</h2>
             </ion-label>
         </ion-item>
         <ion-item button router-direction="forward" routerLink="preferences"
-            title="{{ 'core.settings.preferences' | translate }}" detail>
-            <ion-icon name="fas-wrench" slot="start"></ion-icon>
+            [attr.aria-label]="'core.settings.preferences' | translate" detail>
+            <ion-icon name="fas-wrench" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <h2>{{ 'core.settings.preferences' | translate }}</h2>
             </ion-label>
         </ion-item>
-        <ion-item button (click)="logout()" title="{{ logoutLabel | translate }}" detail>
+        <ion-item button (click)="logout()" [attr.aria-label]="logoutLabel | translate" detail>
             <ion-icon name="fas-sign-out-alt" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <h2>{{ logoutLabel | translate }}</h2>
@@ -85,8 +85,8 @@
         </ion-item>
         <ion-item-divider><ion-label></ion-label></ion-item-divider>
         <ion-item button router-direction="forward" routerLink="settings"
-            title="{{ 'core.settings.appsettings' | translate }}" detail>
-            <ion-icon name="fas-cogs" slot="start"></ion-icon>
+            [attr.aria-label]="'core.settings.appsettings' | translate" detail>
+            <ion-icon name="fas-cogs" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <h2>{{ 'core.settings.appsettings' | translate }}</h2>
             </ion-label>

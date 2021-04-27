@@ -38,7 +38,7 @@
                 <!-- Prevent access messages. Only show the first one. -->
                 <ion-card class="core-info-card" *ngIf="lesson && preventReasons.length">
                     <ion-item>
-                        <ion-icon name="fas-info-circle" slot="start"></ion-icon>
+                        <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
                         <ion-label [innerHTML]="preventReasons[0].message"></ion-label>
                     </ion-item>
                 </ion-card>
@@ -46,7 +46,7 @@
                 <!-- Lesson has data to be synchronized -->
                 <ion-card class="core-warning-card" *ngIf="hasOffline">
                     <ion-item>
-                        <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                        <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                         <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
                     </ion-item>
                 </ion-card>
@@ -64,7 +64,7 @@
                         </ion-item>
                         <ion-button expand="block" type="submit">
                             {{ 'addon.mod_lesson.continue' | translate }}
-                            <ion-icon slot="end" name="fas-chevron-right"></ion-icon>
+                            <ion-icon slot="end" name="fas-chevron-right" aria-hidden="true"></ion-icon>
                         </ion-button>
                         <!-- Remove this once Ionic fixes this bug: https://github.com/ionic-team/ionic-framework/issues/19368 -->
                         <input type="submit" class="core-submit-hidden-enter" />
@@ -114,7 +114,7 @@
                                 </ion-item>
                                 <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="start(false)">
                                     {{ 'addon.mod_lesson.continue' | translate }}
-                                    <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
+                                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
                                 </ion-button>
                             </ng-container>
 
@@ -129,19 +129,19 @@
                                 <ion-button class="ion-text-wrap ion-margin" expand="block" *ngIf="!canManage"
                                     (click)="start(false)">
                                     {{ 'core.start' | translate }}
-                                    <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
+                                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
                                 </ion-button>
                                 <ion-button class="ion-text-wrap ion-margin" expand="block" *ngIf="canManage"
                                     (click)="start(false)">
                                     {{ 'addon.mod_lesson.preview' | translate }}
-                                    <ion-icon name="fas-search" slot="end"></ion-icon>
+                                    <ion-icon name="fas-search" slot="end" aria-hidden="true"></ion-icon>
                                 </ion-button>
                             </ng-container>
 
                             <ion-button class="ion-text-wrap" *ngIf="finishedOffline" expand="block" (click)="start(true)">
                                 <!-- There's an attempt finished in offline. Let the user continue, showing the end of lesson. -->
                                 {{ 'addon.mod_lesson.continue' | translate }}
-                                <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
+                                <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
                             </ion-button>
                         </ng-container>
                     </ion-list>

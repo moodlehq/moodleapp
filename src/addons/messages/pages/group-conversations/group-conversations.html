@@ -5,11 +5,11 @@
         </ion-buttons>
         <ion-title>{{ 'addon.messages.messages' | translate }}</ion-title>
         <ion-buttons slot="end">
-            <ion-button (click)="gotoSearch()" [attr.aria-label]="'addon.messages.search' | translate">
-                <ion-icon name="fas-search" slot="icon-only"></ion-icon>
+            <ion-button (click)="gotoSearch()" [attr.aria-label]="'addon.messages.searchcombined' | translate">
+                <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <ion-button (click)="gotoSettings()" [attr.aria-label]="'addon.messages.messagepreferences' | translate">
-                <ion-icon name="fas-cog" slot="icon-only"></ion-icon>
+                <ion-icon name="fas-cog" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <!-- Add an empty context menu so discussion page can add items in split view,
                 otherwise the menu disappears in some cases. -->
@@ -27,14 +27,16 @@
             <ion-list>
                 <ion-item class="ion-text-wrap addon-message-discussion" (click)="gotoContacts()"
                     [attr.aria-label]="'addon.messages.contacts' | translate" detail>
-                    <ion-icon name="fas-address-book" slot="start"></ion-icon>
+                    <ion-icon name="fas-address-book" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label><h2>{{ 'addon.messages.contacts' | translate }}</h2></ion-label>
                     <ion-badge *ngIf="contactRequestsCount > 0" slot="end">{{contactRequestsCount}}</ion-badge>
                 </ion-item>
                 <!-- Favourite conversations. -->
-                <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggle(favourites)" sticky="true">
-                    <ion-icon *ngIf="!favourites.expanded" name="fas-caret-right" slot="start"></ion-icon>
-                    <ion-icon *ngIf="favourites.expanded" name="fas-caret-down" slot="start"></ion-icon>
+                <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggle(favourites)" sticky="true"
+                    [attr.aria-label]="(favourites.expanded ? 'core.collapse' : 'core.expand') | translate"
+                    [attr.aria-expanded]="favourites.expanded">
+                    <ion-icon *ngIf="!favourites.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon *ngIf="favourites.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>{{ 'core.favourites' | translate }} ({{ favourites.count }})</ion-label>
                     <ion-badge slot="end" *ngIf="favourites.unread">{{ favourites.unread }}</ion-badge>
                 </ion-item-divider>
@@ -53,9 +55,11 @@
                 </ion-item>
 
                 <!-- Group conversations. -->
-                <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggle(group)" sticky="true">
-                    <ion-icon *ngIf="!group.expanded" name="fas-caret-right" slot="start"></ion-icon>
-                    <ion-icon *ngIf="group.expanded" name="fas-caret-down" slot="start"></ion-icon>
+                <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggle(group)" sticky="true"
+                    [attr.aria-label]="(group.expanded ? 'core.collapse' : 'core.expand') | translate"
+                    [attr.aria-expanded]="group.expanded">
+                    <ion-icon *ngIf="!group.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon *ngIf="group.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>{{ 'addon.messages.groupconversations' | translate }} ({{ group.count }})</ion-label>
                     <ion-badge slot="end" *ngIf="group.unread">{{ group.unread }}</ion-badge>
                 </ion-item-divider>
@@ -73,9 +77,11 @@
                     <ion-label><ion-spinner></ion-spinner></ion-label>
                 </ion-item>
 
-                <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggle(individual)" sticky="true">
-                    <ion-icon *ngIf="!individual.expanded" name="fas-caret-right" slot="start"></ion-icon>
-                    <ion-icon *ngIf="individual.expanded" name="fas-caret-down" slot="start"></ion-icon>
+                <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggle(individual)" sticky="true"
+                    [attr.aria-label]="(individual.expanded ? 'core.collapse' : 'core.expand') | translate"
+                    [attr.aria-expanded]="individual.expanded">
+                    <ion-icon *ngIf="!individual.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon *ngIf="individual.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>{{ 'addon.messages.individualconversations' | translate }} ({{ individual.count }})</ion-label>
                     <ion-badge slot="end" *ngIf="individual.unread">{{ individual.unread }}</ion-badge>
                 </ion-item-divider>

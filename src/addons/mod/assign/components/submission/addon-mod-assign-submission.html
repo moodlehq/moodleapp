@@ -225,8 +225,9 @@
                         <h2>{{ 'addon.mod_assign.currentgrade' | translate }}</h2>
                         <p><core-format-text [text]="feedback!.gradefordisplay" [filter]="false"></core-format-text></p>
                     </ion-label>
-                    <ion-button slot="end" *ngIf="feedback!.advancedgrade" (click)="showAdvancedGrade()">
-                        <ion-icon name="fas-search" slot="icon-only"></ion-icon>
+                    <ion-button slot="end" *ngIf="feedback!.advancedgrade" (click)="showAdvancedGrade()"
+                        [attr.aria-label]="'core.showadvanced' |translate">
+                        <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </ion-item>
 
@@ -348,12 +349,12 @@
                 <!-- Warning message if cannot save grades. -->
                 <ion-card *ngIf="isGrading && !canSaveGrades" class="core-warning-card">
                     <ion-item>
-                        <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                        <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                         <ion-label>
                             <p>{{ 'addon.mod_assign.cannotgradefromapp' | translate }}</p>
                             <ion-button expand="block" *ngIf="gradeUrl" [href]="gradeUrl" core-link >
                                 {{ 'core.openinbrowser' | translate }}
-                                <ion-icon name="fas-external-link-alt" slot="end"></ion-icon>
+                                <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
                             </ion-button>
                         </ion-label>
                     </ion-item>

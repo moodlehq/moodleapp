@@ -14,7 +14,7 @@
 
         <ion-button fill="clear" *ngIf="!isDownloading && canDelete" (click)="delete($event)"
             [attr.aria-label]="'core.delete' | translate" color="danger">
-            <ion-icon slot="icon-only" name="fas-trash"></ion-icon>
+            <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true"></ion-icon>
         </ion-button>
     </div>
 </ion-item>

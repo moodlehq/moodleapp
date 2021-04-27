@@ -1,6 +1,6 @@
 <core-navbar-buttons slot="end">
     <ion-button *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
-        <ion-icon name="fas-search" slot="icon-only"></ion-icon>
+        <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
     <core-context-menu>
         <core-context-menu-item *ngIf="(downloadCourseEnabled || downloadCoursesEnabled)" [priority]="1000"
@@ -62,7 +62,7 @@
 
 <ng-template #allCourseList>
     <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="/main/home/courses/all" detail>
-        <ion-icon name="fas-graduation-cap" fixed-width slot="start"></ion-icon>
+        <ion-icon name="fas-graduation-cap" fixed-width slot="start" aria-hidden="true"></ion-icon>
         <ion-label>
             <h2>{{ 'core.courses.availablecourses' | translate}}</h2>
         </ion-label>
@@ -76,7 +76,7 @@
 
 <ng-template #categories>
     <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="/main/home/courses/categories" detail>
-        <ion-icon name="folder" slot="start"></ion-icon>
+        <ion-icon name="fas-folder" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>
             <h2>{{ 'core.courses.categories' | translate}}</h2>
         </ion-label>
@@ -85,7 +85,7 @@
 
 <ng-template #enrolledCourseList>
     <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="/main/home/courses/my" detail>
-        <ion-icon name="fas-graduation-cap" fixed-width slot="start">
+        <ion-icon name="fas-graduation-cap" fixed-width slot="start" aria-hidden="true">
         </ion-icon>
         <ion-label><h2>{{ 'core.courses.mycourses' | translate}}</h2></ion-label>
     </ion-item>
@@ -93,7 +93,7 @@
 
 <ng-template #courseSearch>
     <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="/main/home/courses/search" detail>
-        <ion-icon name="fas-search" slot="start"></ion-icon>
+        <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
         <ion-label><h2>{{ 'core.courses.searchcourses' | translate}}</h2></ion-label>
     </ion-item>
 </ng-template>

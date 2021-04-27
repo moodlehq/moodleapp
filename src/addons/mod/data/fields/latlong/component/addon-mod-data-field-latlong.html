@@ -13,7 +13,7 @@
         </div>
         <div class="addon-data-latlong" *ngIf="locationServicesEnabled">
             <ion-button (click)="getLocation($event)">
-                <ion-icon name="fas-crosshairs" slot="start"></ion-icon>
+                <ion-icon name="fas-crosshairs" slot="start" aria-hidden="true"></ion-icon>
                 {{ 'addon.mod_data.mylocation' | translate }}
             </ion-button>
         </div>

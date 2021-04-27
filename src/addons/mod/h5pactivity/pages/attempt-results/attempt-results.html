@@ -63,11 +63,11 @@
                         <ion-label>
                             <h2>{{ 'addon.mod_h5pactivity.outcome' | translate }}</h2>
                             <p *ngIf="attempt.success !== null && attempt.success" >
-                                <ion-icon name="fa-check-circle"></ion-icon>
+                                <ion-icon name="fa-check-circle" aria-hidden="true"></ion-icon>
                                 {{ 'addon.mod_h5pactivity.attempt_success_pass' | translate }}
                             </p>
                             <p *ngIf="attempt.success !== null && !attempt.success" >
-                                <ion-icon name="far-circle"></ion-icon>
+                                <ion-icon name="far-circle" aria-hidden="true"></ion-icon>
                                 {{ 'addon.mod_h5pactivity.attempt_success_fail' | translate }}
                             </p>
                             <p *ngIf="attempt.success === null" >
@@ -152,7 +152,7 @@
 
                     <!-- Result doesn't support tracking. -->
                     <ion-item class="ion-text-wrap core-warning-item" *ngIf="!result.track" lines="none">
-                        <ion-icon slot="start" name="fas-exclamation-triangle" color="warning"></ion-icon>
+                        <ion-icon slot="start" name="fas-exclamation-triangle" color="warning" aria-hidden="true"></ion-icon>
                         <ion-label>
                             {{ 'addon.mod_h5pactivity.no_compatible_track' | translate:{$a: result.interactiontype} }}
                         </ion-label>

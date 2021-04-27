@@ -70,6 +70,7 @@
             margin-bottom: 0.6em;
             overflow: hidden;
             white-space: nowrap;
+            color: var(--text-color);
 
             &.addon-calendar-event-past {
                 opacity: 0.5;

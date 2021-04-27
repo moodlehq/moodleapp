@@ -32,7 +32,7 @@
     <ion-list *ngIf="subfolder && (subfolder!.files.length + subfolder!.folders.length > 0)">
         <ng-container *ngFor="let folder of subfolder!.folders">
             <ion-item class="item-file" (click)="openFolder(folder)" detail="true" button>
-                <ion-icon name="fas-folder" slot="start"></ion-icon>
+                <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate"></ion-icon>
                 <ion-label>
                     <h2>{{folder.filename}}</h2>
                 </ion-label>

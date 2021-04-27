@@ -164,7 +164,7 @@
             <!-- Quiz has data to be synchronized -->
             <ion-card class="core-warning-card" *ngIf="buttonText && hasOffline && !showStatusSpinner">
                 <ion-item class="ion-text-wrap">
-                    <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                    <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
                 </ion-item>
             </ion-card>
@@ -187,7 +187,7 @@
             <ion-button class="ion-margin" *ngIf="!buttonText && ((!hasSupportedQuestions && unsupportedQuestions.length) ||
                 unsupportedRules.length || behaviourSupported === false)" expand="block" [href]="externalUrl" core-link>
                 {{ 'core.openinbrowser' | translate }}
-                <ion-icon name="fas-external-link-alt" slot="end"></ion-icon>
+                <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
             </ion-button>
 
             <!-- Spinner shown while downloading or calculating. -->

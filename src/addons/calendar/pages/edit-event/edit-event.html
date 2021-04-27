@@ -120,9 +120,10 @@
             </ng-container>
 
             <!-- Advanced options. -->
-            <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggleAdvanced()">
-                <ion-icon *ngIf="!advanced" name="fas-caret-right" slot="start"></ion-icon>
-                <ion-icon *ngIf="advanced" name="fas-caret-down" slot="start"></ion-icon>
+            <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggleAdvanced()"
+                [attr.aria-label]="(advanced ? 'core.showless' : 'core.showmore') | translate">
+                <ion-icon *ngIf="!advanced" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="advanced" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <span *ngIf="!advanced">{{ 'core.showmore' | translate }}</span>
                     <span *ngIf="advanced">{{ 'core.showless' | translate }}</span>

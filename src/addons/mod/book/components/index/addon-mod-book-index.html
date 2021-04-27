@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button (click)="showToc()" [attr.aria-label]="'addon.mod_book.toc' | translate" aria-haspopup="true" *ngIf="loaded">
-        <ion-icon name="fas-bookmark" slot="icon-only"></ion-icon>
+        <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
     <core-context-menu>
         <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
@@ -27,8 +27,10 @@
         contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"></core-course-module-description>
 
     <ion-card class="core-warning-card" *ngIf="warning">
-        <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
-        <span [innerHTML]="warning"></span>
+        <ion-item>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label><span [innerHTML]="warning"></span></ion-label>
+        </ion-item>
     </ion-card>
 
     <div class="ion-padding safe-padding-horizontal">

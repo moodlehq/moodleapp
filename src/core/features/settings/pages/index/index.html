@@ -12,7 +12,7 @@
         <ion-list>
             <ion-item *ngFor="let section of sections.items" [class.core-selected-item]="sections.isSelected(section)" button
                 detail="true" (click)="sections.select(section)">
-                <ion-icon [name]="section.icon" slot="start"></ion-icon>
+                <ion-icon [name]="section.icon" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ section.name | translate }}</ion-label>
             </ion-item>
         </ion-list>

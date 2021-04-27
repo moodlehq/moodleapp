@@ -508,3 +508,12 @@ ion-content > ion-fab[core-fab] {
 ion-back-button.md::part(text) {
     display: none;
 }
+
+[role="button"] {
+    cursor: pointer;
+
+    [disabled],
+    [aria-disabled="true"] {
+        cursor: auto;
+    }
+}

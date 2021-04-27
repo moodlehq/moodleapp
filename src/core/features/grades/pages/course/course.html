@@ -48,8 +48,10 @@
                                     [class.core-selected-item]="grades.isSelected(row)"
                                     [attr.colspan]="row.colspan"
                                 >
-                                    <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start"></ion-icon>
-                                    <img *ngIf="row.image" [src]="row.image" slot="start" />
+                                    <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start" [attr.aria-label]="row.iconAlt">
+                                    </ion-icon>
+                                    <img *ngIf="row.image" [src]="row.image" slot="start" class="core-module-icon"
+                                        [alt]="row.iconAlt"/>
                                     <span [innerHTML]="row.gradeitem"></span>
                                 </th>
                                 <ng-container *ngFor="let column of grades.columns">

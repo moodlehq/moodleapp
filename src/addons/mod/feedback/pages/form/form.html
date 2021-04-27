@@ -106,7 +106,7 @@
                             </core-recaptcha>
                             <div *ngIf="!preview && (!item.captcha || offline)" class="core-warning-card">
                                 <ion-item>
-                                    <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                                    <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                                     <ion-label>{{ 'addon.mod_feedback.captchaofflinewarning' | translate }}</ion-label>
                                 </ion-item>
                             </div>
@@ -117,14 +117,14 @@
                     <ion-row class="ion-align-items-center">
                         <ion-col *ngIf="hasPrevPage">
                             <ion-button expand="block" fill="outline" (click)="gotoPage(true)" class="ion-text-wrap">
-                                <ion-icon name="fas-chevron-left" slot="start"></ion-icon>
+                                <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
                                 {{ 'addon.mod_feedback.previous_page' | translate }}
                             </ion-button>
                         </ion-col>
                         <ion-col *ngIf="hasNextPage">
                             <ion-button expand="block" (click)="gotoPage(false)" class="ion-text-wrap">
                                 {{ 'addon.mod_feedback.next_page' | translate }}
-                                <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
+                                <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
                             </ion-button>
                         </ion-col>
                         <ion-col *ngIf="!hasNextPage">
@@ -139,7 +139,7 @@
 
         <ion-card class="core-success-card" *ngIf="completed">
             <ion-item>
-                <ion-icon name="fas-check" slot="start"></ion-icon>
+                <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p *ngIf="!completionPageContents && !completedOffline">
                         {{ 'addon.mod_feedback.this_feedback_is_already_submitted' | translate }}
@@ -161,14 +161,14 @@
                 <ion-row class="ion-align-items-center">
                     <ion-col *ngIf="access!.canviewanalysis">
                         <ion-button expand="block" fill="outline" (click)="showAnalysis()" class="ion-text-wrap">
-                            <ion-icon name="fas-chart-bar" slot="start"></ion-icon>
+                            <ion-icon name="fas-chart-bar" slot="start" aria-hidden="true"></ion-icon>
                             {{ 'addon.mod_feedback.completed_feedbacks' | translate }}
                         </ion-button>
                     </ion-col>
                     <ion-col *ngIf="hasNextPage">
                         <ion-button expand="block" (click)="continue()" class="ion-text-wrap">
                             {{ 'core.continue' | translate }}
-                            <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
+                            <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
                         </ion-button>
                     </ion-col>
                 </ion-row>

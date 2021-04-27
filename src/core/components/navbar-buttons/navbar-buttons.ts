@@ -36,7 +36,7 @@ const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
  *
  * <core-navbar-buttons slot="end">
  *     <ion-button [hidden]="!buttonShown" [attr.aria-label]="Do something" (click)="action()">
- *         <ion-icon name="funnel" slot="icon-only"></ion-icon>
+ *         <ion-icon name="funnel" slot="icon-only" aria-hidden="true"></ion-icon>
  *     </ion-button>
  * </core-navbar-buttons>
  */
