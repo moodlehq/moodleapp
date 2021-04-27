@@ -1,4 +1,4 @@
-@mod @mod_login @app @javascript
+@mod @mod_login @app @app_upto3.9.4 @javascript
 Feature: Test basic usage of login in app
   I need basic login functionality to work
 

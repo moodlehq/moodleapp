@@ -25,7 +25,7 @@
 
 // NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
 
-require_once(__DIR__ . '/../../behat/behat_base.php');
+require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ExpectationException;
@@ -63,7 +63,7 @@ class behat_app extends behat_base {
         $this->check_behat_setup();
         $this->fix_moodle_setup();
         $this->ionicurl = $this->start_or_reuse_ionic();
-}
+    }
 
     /**
      * Opens the Moodle app in the browser.
@@ -91,6 +91,33 @@ class behat_app extends behat_base {
 
         // Go to page and prepare browser for app.
         $this->prepare_browser($this->ionicurl);
+    }
+
+    /**
+     * Finds elements in the app.
+     *
+     * @Then /^I should(?P<not_boolean> not)? find "(?P<text_string>(?:[^"]|\\")*)"(?: near "(?P<near_string>(?:[^"]|\\")*)")? in the app$/
+     * @param string $text
+     */
+    public function i_find_in_the_app($not, $text='', $near='') {
+        $not = !empty($not);
+        $text = addslashes_js($text);
+        $near = addslashes_js($near);
+
+        $this->spin(function() use ($not, $text, $near) {
+            $result = $this->evaluate_script("return window.behat.find(\"$text\", \"$near\");");
+
+            if ($not && $result === 'OK') {
+                throw new DriverException('Error, found an item that should not be found');
+            }
+
+            if (!$not && $result !== 'OK') {
+                throw new DriverException('Error finding item - ' . $result);
+            }
+
+            return true;
+        });
+        $this->wait_for_pending_js();
     }
 
     /**
@@ -282,14 +309,23 @@ class behat_app extends behat_base {
     protected function prepare_browser(string $url) {
         global $CFG;
 
+        // Check whether the app is running a legacy version.
+        $json = @file_get_contents("$url/assets/env.json") ?: @file_get_contents("$url/config.json");
+        $data = json_decode($json);
+        $appversion = $data->build->version ?? str_replace('-dev', '', $data->versionname);
+        $islegacy = version_compare($appversion, '3.9.5', '<');
+
         // Visit the Ionic URL and wait for it to load.
         $this->getSession()->visit($url);
         $this->spin(
-                function($context, $args) {
+                function($context) use ($islegacy) {
                     $title = $context->getSession()->getPage()->find('xpath', '//title');
                     if ($title) {
                         $text = $title->getHtml();
-                        if ($text === 'Moodle Desktop') {
+                        if (
+                            ($islegacy && $text === 'Moodle Desktop') ||
+                            (!$islegacy && $text === 'Moodle App')
+                        ) {
                             return true;
                         }
                     }
@@ -297,20 +333,25 @@ class behat_app extends behat_base {
                 }, false, 60);
 
         // Run the scripts to install Moodle 'pending' checks.
+        $islegacyboolean = $islegacy ? 'true' : 'false';
+        $this->execute_script("window.BehatMoodleAppLegacy = $islegacyboolean;");
         $this->execute_script(file_get_contents(__DIR__ . '/app_behat_runtime.js'));
 
         // Wait until the site login field appears OR the main page.
         $situation = $this->spin(
-                function($context, $args) {
+                function($context) use ($islegacy) {
                     $page = $context->getSession()->getPage();
 
                     $element = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
                     if ($element) {
                         // Wait for the onboarding modal to open, if any.
                         $this->wait_for_pending_js();
-                        $element = $page->find('xpath', '//page-core-login-site-onboarding');
+                        $element = $islegacy
+                            ? $page->find('xpath', '//page-core-login-site-onboarding')
+                            : $page->find('xpath', '//core-login-site-onboarding');
                         if ($element) {
                             $this->i_press_in_the_app('Skip');
+                            $this->wait_for_pending_js();
                         }
 
                         return 'login';
@@ -327,7 +368,7 @@ class behat_app extends behat_base {
         // page. If it's the main page, we just leave it there.
         if ($situation === 'login') {
             $this->i_set_the_field_in_the_app('campus.example.edu', $CFG->wwwroot);
-            $this->i_press_in_the_app('Connect!');
+            $this->i_press_in_the_app($islegacy ? 'Connect!' : 'Connect to your site');
         }
 
         // Continue only after JS finishes.
@@ -491,18 +532,23 @@ class behat_app extends behat_base {
      * @throws ExpectationException If the header text is different to the expected value
      */
     public function the_header_should_be_in_the_app(string $text) {
-        $result = $this->spin(function($context, $args) {
+        $this->spin(function() use ($text) {
             $result = $this->evaluate_script('return window.behat.getHeader();');
+
             if (substr($result, 0, 3) !== 'OK:') {
                 throw new DriverException('Error getting header - ' . $result);
             }
-            return $result;
+
+            $header = substr($result, 3);
+            if (trim($header) !== trim($text)) {
+                throw new ExpectationException(
+                    "The header text was not as expected: '$header'",
+                    $this->getSession()->getDriver()
+                );
+            }
+
+            return true;
         });
-        $header = substr($result, 3);
-        if (trim($header) !== trim($text)) {
-            throw new ExpectationException('The header text was not as expected: \'' . $header . '\'',
-                    $this->getSession()->getDriver());
-        }
     }
 
     /**

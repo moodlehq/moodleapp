@@ -175,6 +175,26 @@
     observer.observe(document, {attributes: true, childList: true, subtree: true});
 
     /**
+     * Check if an element is visible.
+     *
+     * @param {HTMLElement} element Element
+     * @param {HTMLElement} container Container
+     * @returns {boolean} Whether the element is visible or not
+     */
+    var isElementVisible = (element, container) => {
+        if (element.getAttribute('aria-hidden') === 'true' || getComputedStyle(element).display === 'none')
+            return false;
+
+        if (element.parentElement === container)
+            return true;
+
+        if (!element.parentElement)
+            return false;
+
+        return isElementVisible(element.parentElement, container);
+    };
+
+    /**
      * Generic shared function to find possible xpath matches within the document, that are visible,
      * and then process them using a callback function.
      *
@@ -200,193 +220,106 @@
     };
 
     /**
+     * Finds an element within a given container.
+     *
+     * @param {HTMLElement} container Parent element to search the element within
+     * @param {string} text Text to look for
+     * @return {HTMLElement} Found element
+     */
+    var findElementBasedOnTextWithin = (container, text) => {
+        const attributesSelector = `[aria-label*="${text}"], a[title*="${text}"], img[alt*="${text}"]`;
+
+        for (const foundByAttributes of container.querySelectorAll(attributesSelector)) {
+            if (isElementVisible(foundByAttributes, container))
+                return foundByAttributes;
+        }
+
+        const treeWalker = document.createTreeWalker(
+            container,
+            NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_DOCUMENT_FRAGMENT | NodeFilter.SHOW_TEXT,
+            {
+                acceptNode: node => {
+                    if (
+                        node instanceof HTMLStyleElement ||
+                        node instanceof HTMLLinkElement ||
+                        node instanceof HTMLScriptElement
+                    )
+                        return NodeFilter.FILTER_REJECT;
+
+                    if (
+                        node instanceof HTMLElement && (
+                            node.getAttribute('aria-hidden') === 'true' || getComputedStyle(node).display === 'none'
+                        )
+                    )
+                        return NodeFilter.FILTER_REJECT;
+
+                    return NodeFilter.FILTER_ACCEPT;
+                }
+            },
+        );
+
+        let currentNode;
+        while (currentNode = treeWalker.nextNode()) {
+            if (currentNode instanceof Text) {
+                if (currentNode.textContent.includes(text)) {
+                    return currentNode.parentElement;
+                }
+
+                continue;
+            }
+
+            const labelledBy = currentNode.getAttribute('aria-labelledby');
+            if (labelledBy && container.querySelector(`#${labelledBy}`)?.innerText?.includes(text))
+                return currentNode;
+
+            if (currentNode.shadowRoot) {
+                for (const childNode of currentNode.shadowRoot.childNodes) {
+                    if (!childNode) {
+                        continue;
+                    }
+
+                    if (childNode.matches(attributesSelector)) {
+                        return childNode;
+                    }
+
+                    const foundByText = findElementBasedOnTextWithin(childNode, text);
+
+                    if (foundByText) {
+                        return foundByText;
+                    }
+                }
+            }
+        }
+    };
+
+    /**
      * Function to find an element based on its text or Aria label.
      *
      * @param {string} text Text (full or partial)
      * @param {string} [near] Optional 'near' text - if specified, must have a single match on page
      * @return {HTMLElement} Found element
-     * @throws {string} Error message beginning 'ERROR:' if something went wrong
      */
     var findElementBasedOnText = function(text, near) {
-        // Find all the elements that contain this text (and don't have a child element that
-        // contains it - i.e. the most specific elements).
-        var escapedText = text.replace('"', '""');
-        var exactMatches = [];
-        var anyMatches = [];
-        findPossibleMatches('//*[contains(normalize-space(.), "' + escapedText +
-                '") and not(child::*[contains(normalize-space(.), "' + escapedText + '")])]',
-                function(match) {
-                    // Get the text. Note that innerText returns capitalised values for Android buttons
-                    // for some reason, so we'll have to do a case-insensitive match.
-                    var matchText = match.innerText.trim().toLowerCase();
+        const topContainer = document.querySelector('ion-alert, ion-popover, ion-action-sheet, core-ion-tab.show-tab ion-page.show-page, ion-page.show-page, html');
+        let container = topContainer;
 
-                    // Let's just check - is this actually a label for something else? If so we will click
-                    // that other thing instead.
-                    var labelId = document.evaluate('string(ancestor-or-self::ion-label[@id][1]/@id)', match).stringValue;
-                    if (labelId) {
-                        var target = document.querySelector('*[aria-labelledby=' + labelId + ']');
-                        if (target) {
-                            match = target;
-                        }
-                    }
+        if (topContainer && near) {
+            const nearElement = findElementBasedOnText(near);
 
-                    // Add to array depending on if it's an exact or partial match.
-                    if (matchText === text.toLowerCase()) {
-                        exactMatches.push(match);
-                    } else {
-                        anyMatches.push(match);
-                    }
-                });
-
-        // Find all the Aria labels that contain this text.
-        var exactLabelMatches = [];
-        var anyLabelMatches = [];
-        findPossibleMatches('//*[@aria-label and contains(@aria-label, "' + escapedText + '")]' +
-                '| //a[@title and contains(@title, "' + escapedText + '")]' +
-                '| //img[@alt and contains(@alt, "' + escapedText + '")]', function(match) {
-                    // Add to array depending on if it's an exact or partial match.
-                    var attributeData = match.getAttribute('aria-label') ||
-                        match.getAttribute('title') ||
-                        match.getAttribute('alt');
-                    if (attributeData.trim() === text) {
-                        exactLabelMatches.push(match);
-                    } else {
-                        anyLabelMatches.push(match);
-                    }
-                });
-
-        // If the 'near' text is set, use it to filter results.
-        var nearAncestors = [];
-        if (near !== undefined) {
-            escapedText = near.replace('"', '""');
-            var exactNearMatches = [];
-            var anyNearMatches = [];
-            findPossibleMatches('//*[contains(normalize-space(.), "' + escapedText +
-                    '") and not(child::*[contains(normalize-space(.), "' + escapedText +
-                    '")])]', function(match) {
-                        // Get the text.
-                        var matchText = match.innerText.trim();
-
-                        // Add to array depending on if it's an exact or partial match.
-                        if (matchText === text) {
-                            exactNearMatches.push(match);
-                        } else {
-                            anyNearMatches.push(match);
-                        }
-                    });
-
-            var nearFound = null;
-
-            // If there is an exact text match, use that (regardless of other matches).
-            if (exactNearMatches.length > 1) {
-                throw new Error('Too many exact matches for near text');
-            } else if (exactNearMatches.length) {
-                nearFound = exactNearMatches[0];
+            if (!nearElement) {
+                return;
             }
 
-            if (nearFound === null) {
-                // If there is one partial text match, use that.
-                if (anyNearMatches.length > 1) {
-                    throw new Error('Too many partial matches for near text');
-                } else if (anyNearMatches.length) {
-                    nearFound = anyNearMatches[0];
-                }
-            }
-
-            if (!nearFound) {
-                throw new Error('No matches for near text');
-            }
-
-            while (nearFound) {
-                nearAncestors.push(nearFound);
-                nearFound = nearFound.parentNode;
-            }
-
-            /**
-             * Checks the number of steps up the tree from a specified node before getting to an
-             * ancestor of the 'near' item
-             *
-             * @param {HTMLElement} node HTML node
-             * @returns {number} Number of steps up, or Number.MAX_SAFE_INTEGER if it never matched
-             */
-            var calculateNearDepth = function(node) {
-                var depth = 0;
-                while (node) {
-                    var ancestorDepth = nearAncestors.indexOf(node);
-                    if (ancestorDepth !== -1) {
-                        return depth + ancestorDepth;
-                    }
-                    node = node.parentNode;
-                    depth++;
-                }
-                return Number.MAX_SAFE_INTEGER;
-            };
-
-            /**
-             * Reduces an array to include only the nearest in each category.
-             *
-             * @param {Array} arr Array to
-             * @return {Array} Array including only the items with minimum 'near' depth
-             */
-            var filterNonNearest = function(arr) {
-                var nearDepth = arr.map(function(node) {
-                    return calculateNearDepth(node);
-                });
-                var minDepth = Math.min.apply(null, nearDepth);
-                return arr.filter(function(element, index) {
-                    return nearDepth[index] == minDepth;
-                });
-            };
-
-            // Filter all the category arrays.
-            exactMatches = filterNonNearest(exactMatches);
-            exactLabelMatches = filterNonNearest(exactLabelMatches);
-            anyMatches = filterNonNearest(anyMatches);
-            anyLabelMatches = filterNonNearest(anyLabelMatches);
+            container = nearElement.parentElement;
         }
 
-        // Select the resulting match. Note this 'do' loop is not really a loop, it is just so we
-        // can easily break out of it as soon as we find a match.
-        var found = null;
         do {
-            // If there is an exact text match, use that (regardless of other matches).
-            if (exactMatches.length > 1) {
-                throw new Error('Too many exact matches for text');
-            } else if (exactMatches.length) {
-                found = exactMatches[0];
-                break;
+            const node = findElementBasedOnTextWithin(container, text);
+
+            if (node) {
+                return node;
             }
-
-            // If there is an exact label match, use that.
-            if (exactLabelMatches.length > 1) {
-                throw new Error('Too many exact label matches for text');
-            } else if (exactLabelMatches.length) {
-                found = exactLabelMatches[0];
-                break;
-            }
-
-            // If there is one partial text match, use that.
-            if (anyMatches.length > 1) {
-                throw new Error('Too many partial matches for text');
-            } else if (anyMatches.length) {
-                found = anyMatches[0];
-                break;
-            }
-
-            // Finally if there is one partial label match, use that.
-            if (anyLabelMatches.length > 1) {
-                throw new Error('Too many partial label matches for text');
-            } else if (anyLabelMatches.length) {
-                found = anyLabelMatches[0];
-                break;
-            }
-        } while (false);
-
-        if (!found) {
-            throw new Error('No matches for text');
-        }
-
-        return found;
+        } while ((container = container.parentElement) && container !== topContainer);
     };
 
     /**
@@ -477,6 +410,29 @@
     };
 
     /**
+     * Function to find an arbitrary item based on its text or aria label.
+     *
+     * @param {string} text Text (full or partial)
+     * @param {string} [near] Optional 'near' text
+     * @return {string} OK if successful, or ERROR: followed by message
+     */
+    var behatFind = function(text, near) {
+        log(`Action - Find ${text}`);
+
+        try {
+            const element = findElementBasedOnText(text, near);
+
+            if (!element) {
+                return 'ERROR: No matches for text';
+            }
+
+            return 'OK';
+        } catch (error) {
+            return 'ERROR: ' + error.message;
+        }
+    };
+
+    /**
      * Get main navigation controller.
      *
      * @return {Object} main navigation controller.
@@ -497,7 +453,7 @@
      * Function to press arbitrary item based on its text or Aria label.
      *
      * @param {string} text Text (full or partial)
-     * @param {string} near Optional 'near' text - if specified, must have a single match on page
+     * @param {string} near Optional 'near' text
      * @return {string} OK if successful, or ERROR: followed by message
      */
     var behatPress = function(text, near) {
@@ -506,28 +462,37 @@
         var found;
         try {
             found = findElementBasedOnText(text, near);
+
+            if (!found) {
+                return 'ERROR: No matches for text';
+            }
         } catch (error) {
             return 'ERROR: ' + error.message;
         }
 
-        var mainContent = getNavCtrl().getActive().contentRef().nativeElement;
-        var rect = found.getBoundingClientRect();
+        if (window.BehatMoodleAppLegacy) {
+            var mainContent = getNavCtrl().getActive().contentRef().nativeElement;
+            var rect = found.getBoundingClientRect();
 
-        // Scroll the item into view.
-        mainContent.scrollTo(rect.x, rect.y);
+            // Scroll the item into view.
+            mainContent.scrollTo(rect.x, rect.y);
 
-        // Simulate a mouse click on the button.
-        var eventOptions = {clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2,
-                bubbles: true, view: window, cancelable: true};
-        setTimeout(function() {
-            found.dispatchEvent(new MouseEvent('mousedown', eventOptions));
-        }, 0);
-        setTimeout(function() {
-            found.dispatchEvent(new MouseEvent('mouseup', eventOptions));
-        }, 0);
-        setTimeout(function() {
-            found.dispatchEvent(new MouseEvent('click', eventOptions));
-        }, 0);
+            // Simulate a mouse click on the button.
+            var eventOptions = {clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2,
+                    bubbles: true, view: window, cancelable: true};
+            setTimeout(function() {
+                found.dispatchEvent(new MouseEvent('mousedown', eventOptions));
+            }, 0);
+            setTimeout(function() {
+                found.dispatchEvent(new MouseEvent('mouseup', eventOptions));
+            }, 0);
+            setTimeout(function() {
+                found.dispatchEvent(new MouseEvent('click', eventOptions));
+            }, 0);
+        } else {
+            found.scrollIntoView();
+            setTimeout(() => found.click(), 300);
+        }
 
         // Mark busy until the button click finishes processing.
         addPendingDelay();
@@ -547,7 +512,10 @@
         var resultCount = 0;
         var titles = Array.from(document.querySelectorAll('ion-header ion-title'));
         titles.forEach(function(title) {
-            if (title.offsetParent) {
+            if (
+                (window.BehatMoodleAppLegacy && title.offsetParent) ||
+                (!window.BehatMoodleAppLegacy && isElementVisible(title, document.body))
+            ) {
                 result = title.innerText.trim();
                 resultCount++;
             }
@@ -670,6 +638,7 @@
     window.behat = {
         pressStandard : behatPressStandard,
         closePopup : behatClosePopup,
+        find : behatFind,
         press : behatPress,
         setField : behatSetField,
         getHeader : behatGetHeader,

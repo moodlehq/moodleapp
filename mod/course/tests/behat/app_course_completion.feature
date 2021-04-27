@@ -1,4 +1,4 @@
-@core @core_course @app @javascript
+@core @core_course @app @app_upto3.9.4 @javascript
 Feature: Check course completion feature.
   In order to track the progress of the course on mobile device
   As a student

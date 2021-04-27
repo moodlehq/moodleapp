@@ -1,4 +1,4 @@
-@mod @mod_courses @app @javascript
+@mod @mod_courses @app @app_upto3.9.4 @javascript
 Feature: Test basic usage of courses in app
   In order to participate in the courses while using the mobile app
   As a student
