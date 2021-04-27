@@ -126,8 +126,8 @@ export class CoreConstants {
     static readonly MOD_ARCHETYPE_SYSTEM = 3; // System (not user-addable) module archetype.
 
     // Config & environment constants.
-    static readonly CONFIG = envJson.CONFIG as unknown as EnvironmentConfig; // Data parsed from config.json files.
-    static readonly BUILD = envJson.BUILD as unknown as EnvironmentBuild; // Build info.
+    static readonly CONFIG = envJson.config as unknown as EnvironmentConfig; // Data parsed from config.json files.
+    static readonly BUILD = envJson.build as unknown as EnvironmentBuild; // Build info.
 
 }
 
@@ -168,6 +168,7 @@ type EnvironmentConfig = {
 };
 
 type EnvironmentBuild = {
+    version: string;
     isProduction: boolean;
     isTesting: boolean;
     isDevelopment: boolean;
