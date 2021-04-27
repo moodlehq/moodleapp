@@ -311,11 +311,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.sectionChanged(sections[0]);
         } else if (this.initialSectionId || this.initialSectionNumber) {
             // We have an input indicating the section ID to load. Search the section.
-            const section = sections.find((section) => {
-                if (section.id != this.initialSectionId && (!section.section || section.section != this.initialSectionNumber)) {
-                    return false;
-                }
-            });
+            const section = sections.find((section) =>
+                section.id == this.initialSectionId || (section.section && section.section == this.initialSectionNumber));
 
             // Don't load the section if it cannot be viewed by the user.
             if (section && this.canViewSection(section)) {

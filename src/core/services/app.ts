@@ -550,6 +550,19 @@ export class CoreAppProvider {
     }
 
     /**
+     * Retrieve and forget redirect data.
+     *
+     * @return Redirect data if any.
+     */
+    consumeRedirect(): CoreRedirectData | null {
+        const redirect = this.getRedirect();
+
+        this.forgetRedirect();
+
+        return redirect;
+    }
+
+    /**
      * Forget redirect data.
      */
     forgetRedirect(): void {
@@ -559,7 +572,7 @@ export class CoreAppProvider {
     /**
      * Retrieve redirect data.
      *
-     * @return Object with siteid, state, params and timemodified.
+     * @return Redirect data if any.
      */
     getRedirect(): CoreRedirectData | null {
         return this.redirect || null;

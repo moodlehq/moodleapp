@@ -17,6 +17,7 @@ import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
 import { CoreLoginHelperProvider } from './services/login-helper';
+import { CoreRedirectGuard } from '@guards/redirect';
 
 export const CORE_LOGIN_SERVICES = [
     CoreLoginHelperProvider,
@@ -26,6 +27,8 @@ const appRoutes: Routes = [
     {
         path: 'login',
         loadChildren: () => import('./login-lazy.module').then(m => m.CoreLoginLazyModule),
+        canActivate: [CoreRedirectGuard],
+        canLoad: [CoreRedirectGuard],
     },
 ];
 

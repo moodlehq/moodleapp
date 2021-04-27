@@ -30,6 +30,7 @@ import { makeSingleton, NavController, Router } from '@singletons';
 import { CoreScreen } from './screen';
 import { filter } from 'rxjs/operators';
 import { CoreApp } from './app';
+import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 
 const DEFAULT_MAIN_MENU_TAB = CoreMainMenuHomeHandlerService.PAGE_NAME;
 
@@ -208,7 +209,14 @@ export class CoreNavigatorService {
 
         // If we are logged into a different site, log out first.
         if (CoreSites.isLoggedIn() && CoreSites.getCurrentSiteId() !== siteId) {
-            // @todo: Check site plugins and store redirect.
+            if (CoreSitePlugins.hasSitePluginsLoaded) {
+                // The site has site plugins so the app will be restarted. Store the data and logout.
+                CoreApp.instance.storeRedirect(siteId, path, options.params || {});
+
+                await CoreSites.logout();
+
+                return true;
+            }
 
             await CoreSites.logout();
         }

@@ -56,7 +56,7 @@ export class CoreContentLinksHelperProvider {
     }
 
     /**
-     * Get the first valid action in the list of possible actions to do for a URL.
+     * Get the first valid action for a URL.
      *
      * @param url URL to handle.
      * @param courseId Course ID related to the URL. Optional but recommended.
@@ -75,6 +75,16 @@ export class CoreContentLinksHelperProvider {
             return;
         }
 
+        return this.getFirstValidAction(actions);
+    }
+
+    /**
+     * Get the first valid action in a list of possible actions.
+     *
+     * @param actions Actions.
+     * @return First valid action if any.
+     */
+    getFirstValidAction(actions: CoreContentLinksAction[]): CoreContentLinksAction | undefined {
         return actions.find((action) => action && action.sites && action.sites.length);
     }
 
