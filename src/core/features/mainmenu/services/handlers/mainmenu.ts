@@ -39,7 +39,7 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
      */
     getDisplayData(): CoreMainMenuHandlerData {
         return {
-            icon: 'fas-home',
+            icon: 'fas-tachometer-alt',
             title: 'core.mainmenu.home',
             page: CoreMainMenuHomeHandlerService.PAGE_NAME,
             // @todo: subPage? The page can change due to core-tabs.
