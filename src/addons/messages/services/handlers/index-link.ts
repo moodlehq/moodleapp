@@ -39,7 +39,10 @@ export class AddonMessagesIndexLinkHandlerService extends CoreContentLinksHandle
             action: async (siteId): Promise<void> => {
                 const pageName = await AddonMessages.getMainMessagesPagePathInSite(siteId);
 
-                CoreNavigator.navigateToSitePath(pageName, { siteId });
+                CoreNavigator.navigateToSitePath(pageName, {
+                    siteId,
+                    preferCurrentTab: false,
+                });
             },
         }];
     }

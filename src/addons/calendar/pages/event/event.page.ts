@@ -155,22 +155,10 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * View loaded.
      */
     ngOnInit(): void {
-        this.route.queryParams.subscribe(() => {
-            this.eventLoaded = false;
+        this.eventId = CoreNavigator.getRouteNumberParam('id')!;
+        this.syncIcon = CoreConstants.ICON_LOADING;
 
-            const eventId = CoreNavigator.getRouteNumberParam('id');
-            if (!eventId) {
-                CoreDomUtils.showErrorModal('Event ID not supplied.');
-                CoreNavigator.back();
-
-                return;
-            }
-
-            this.eventId = eventId;
-            this.syncIcon = CoreConstants.ICON_LOADING;
-
-            this.fetchEvent();
-        });
+        this.fetchEvent();
     }
 
     /**

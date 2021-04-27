@@ -58,8 +58,11 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     stateParams.year = date.getFullYear();
                     stateParams.month = date.getMonth() + 1;
 
-                    // @todo: Add checkMenu param.
-                    CoreNavigator.navigateToSitePath('/calendar/index', { params: stateParams, siteId });
+                    CoreNavigator.navigateToSitePath('/calendar/index', {
+                        params: stateParams,
+                        siteId,
+                        preferCurrentTab: false,
+                    });
 
                 } else if (params.view == 'day') {
                     // Daily view, open the page.
@@ -82,8 +85,11 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                         upcoming: true,
                     };
 
-                    // @todo: Add checkMenu param.
-                    CoreNavigator.navigateToSitePath('/calendar/index', { params: stateParams, siteId });
+                    CoreNavigator.navigateToSitePath('/calendar/index', {
+                        params: stateParams,
+                        siteId,
+                        preferCurrentTab: false,
+                    });
 
                 }
             },

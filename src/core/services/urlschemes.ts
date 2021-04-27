@@ -153,9 +153,7 @@ export class CoreCustomURLSchemesProvider {
                 // Site created and authenticated, open the page to go.
                 if (data.pageName) {
                     // Page defined, go to that page instead of site initial page.
-                    CoreNavigator.navigateToSitePath(data.pageName, {
-                        params: data.pageParams,
-                    });
+                    CoreNavigator.navigateToSitePath(data.pageName, data.pageOptions);
                 } else {
                     CoreNavigator.navigateToSiteHome();
                 }
@@ -408,7 +406,7 @@ export class CoreCustomURLSchemesProvider {
                 hasSitePluginsLoaded = CoreSitePlugins.hasSitePluginsLoaded;
                 if (hasSitePluginsLoaded) {
                     // Store the redirect since logout will restart the app.
-                    CoreApp.storeRedirect(CoreConstants.NO_SITE_ID, '/login/credentials', pageParams);
+                    CoreApp.storeRedirect(CoreConstants.NO_SITE_ID, '/login/credentials', { params: pageParams });
                 }
 
                 await CoreSites.logout();

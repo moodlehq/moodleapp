@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { Params } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CoreApp } from '@services/app';
@@ -24,7 +23,7 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreEvents } from '@singletons/events';
 import { CoreError } from '@classes/errors/error';
-import { CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
 
 /**
@@ -55,7 +54,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     showScanQR = false;
 
     protected page?: string;
-    protected pageParams?: Params;
+    protected pageOptions?: CoreNavigationOptions;
     protected siteConfig?: CoreSitePublicConfigResponse;
     protected viewLeft = false;
     protected eventThrown = false;
@@ -83,7 +82,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
         this.siteUrl = siteId;
         this.page = CoreNavigator.getRouteParam('pageName');
-        this.pageParams = CoreNavigator.getRouteParam('pageParams');
+        this.pageOptions = CoreNavigator.getRouteParam('pageOptions');
         this.showScanQR = CoreLoginHelper.displayQRInSiteScreen() || CoreLoginHelper.displayQRInCredentialsScreen();
 
         try {
@@ -214,8 +213,8 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             await CoreNavigator.navigateToSiteHome({
                 params: {
                     redirectPath: this.page,
-                    redirectParams: this.pageParams,
-                },
+                    redirectOptions: this.pageOptions,
+                } as CoreRedirectPayload,
             });
         } catch (error) {
             CoreLoginHelper.treatUserTokenError(this.siteUrl, error, this.username, password);
@@ -244,7 +243,15 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      * @param provider The provider that was clicked.
      */
     oauthClicked(provider: CoreSiteIdentityProvider): void {
-        if (!CoreLoginHelper.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig?.launchurl)) {
+        const result = CoreLoginHelper.openBrowserForOAuthLogin(
+            this.siteUrl,
+            provider,
+            this.siteConfig?.launchurl,
+            this.page,
+            this.pageOptions,
+        );
+
+        if (!result) {
             CoreDomUtils.showErrorModal('Invalid data.');
         }
     }

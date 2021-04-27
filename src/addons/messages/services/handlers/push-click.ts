@@ -63,16 +63,29 @@ export class AddonMessagesPushClickHandlerService implements CorePushNotificatio
         const enabled = await AddonMessages.isGroupMessagingEnabledInSite(notification.site);
         const pageName = await AddonMessages.getMainMessagesPagePathInSite(notification.site);
 
-        const pageParams: Params = {};
+        let nextPageParams: Params | undefined;
 
         // Check if we have enough information to open the conversation.
         if (notification.convid && enabled) {
-            pageParams.conversationId = Number(notification.convid);
+            nextPageParams = {
+                conversationId: Number(notification.convid),
+            };
         } else if (notification.userfromid) {
-            pageParams.discussionUserId = Number(notification.userfromid);
+            nextPageParams = {
+                userId: Number(notification.userfromid),
+            };
         }
 
-        await CoreNavigator.navigateToSitePath(pageName, { params: pageParams, siteId: notification.site });
+        await CoreNavigator.navigateToSitePath(pageName, {
+            siteId: notification.site,
+            preferCurrentTab: false,
+            nextNavigation: nextPageParams ?
+                {
+                    path: 'discussion',
+                    options: { params: nextPageParams },
+                } :
+                undefined,
+        });
     }
 
 }

@@ -36,7 +36,10 @@ export class CoreGradesOverviewLinkHandlerService extends CoreContentLinksHandle
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: siteId => {
-                CoreNavigator.navigateToSitePath('/grades', { siteId });
+                CoreNavigator.navigateToSitePath('/grades', {
+                    siteId,
+                    preferCurrentTab: false,
+                });
             },
         }];
     }

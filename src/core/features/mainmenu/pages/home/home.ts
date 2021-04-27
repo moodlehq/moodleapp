@@ -64,7 +64,7 @@ export class CoreMainMenuHomePage implements OnInit {
             if (params.redirectPath) {
                 this.pendingRedirect = {
                     redirectPath: params.redirectPath,
-                    redirectParams: params.redirectParams,
+                    redirectOptions: params.redirectOptions,
                 };
             }
         });
@@ -141,7 +141,7 @@ export class CoreMainMenuHomePage implements OnInit {
      * @param data Data received.
      */
     protected handleRedirect(data: CoreRedirectPayload): void {
-        const params = data.redirectParams;
+        const params = data.redirectOptions?.params;
         const coursePathMatches = data.redirectPath.match(/^course\/(\d+)\/?$/);
 
         if (coursePathMatches) {
@@ -152,7 +152,7 @@ export class CoreMainMenuHomePage implements OnInit {
             }
         } else {
             CoreNavigator.navigateToSitePath(data.redirectPath, {
-                params: data.redirectParams,
+                ...data.redirectOptions,
                 preferCurrentTab: false,
             });
         }

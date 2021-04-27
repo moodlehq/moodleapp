@@ -39,7 +39,7 @@ const DEFAULT_MAIN_MENU_TAB = CoreMainMenuHomeHandlerService.PAGE_NAME;
  */
 export type CoreRedirectPayload = {
     redirectPath: string;
-    redirectParams?: Params;
+    redirectOptions?: CoreNavigationOptions;
 };
 
 /**
@@ -50,6 +50,11 @@ export type CoreNavigationOptions = {
     params?: Params;
     reset?: boolean;
     preferCurrentTab?: boolean; // Default true.
+    nextNavigation?: {
+        path: string;
+        isSitePath?: boolean;
+        options?: CoreNavigationOptions;
+    };
 };
 
 /**
@@ -149,6 +154,14 @@ export class CoreNavigatorService {
             ? await NavController.navigateRoot(url, navigationOptions)
             : await NavController.navigateForward(url, navigationOptions);
 
+        if (options.nextNavigation?.path && navigationResult !== false) {
+            if (options.nextNavigation.isSitePath) {
+                return this.navigateToSitePath(options.nextNavigation.path, options.nextNavigation.options);
+            }
+
+            return this.navigate(options.nextNavigation.path, options.nextNavigation.options);
+        }
+
         return navigationResult !== false;
     }
 
@@ -211,7 +224,7 @@ export class CoreNavigatorService {
         if (CoreSites.isLoggedIn() && CoreSites.getCurrentSiteId() !== siteId) {
             if (CoreSitePlugins.hasSitePluginsLoaded) {
                 // The site has site plugins so the app will be restarted. Store the data and logout.
-                CoreApp.instance.storeRedirect(siteId, path, options.params || {});
+                CoreApp.storeRedirect(siteId, path, options || {});
 
                 await CoreSites.logout();
 
@@ -450,7 +463,7 @@ export class CoreNavigatorService {
             ...options,
             params: {
                 redirectPath: `/main/${DEFAULT_MAIN_MENU_TAB}/${path}`,
-                redirectParams: options.params,
+                redirectOptions: options.params || options.nextNavigation ? options : undefined,
             } as CoreRedirectPayload,
         });
     }

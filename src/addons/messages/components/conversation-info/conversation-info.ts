@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import {
     AddonMessagesConversationFormatted,
@@ -22,7 +22,6 @@ import {
 import { CoreDomUtils } from '@services/utils/dom';
 import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@singletons';
-import { CoreNavigator } from '@services/navigator';
 
 /**
  * Component that displays the list of conversations, including group conversations.
@@ -33,13 +32,13 @@ import { CoreNavigator } from '@services/navigator';
 })
 export class AddonMessagesConversationInfoComponent implements OnInit {
 
+    @Input() conversationId = 0;
+
     loaded = false;
     conversation?: AddonMessagesConversationFormatted;
     members: AddonMessagesConversationMember[] = [];
     canLoadMore = false;
     loadMoreError = false;
-
-    protected conversationId!: number;
 
     constructor(
         protected route: ActivatedRoute,
@@ -50,13 +49,8 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
      * Component loaded.
      */
     ngOnInit(): void {
-        this.route.queryParams.subscribe(async () => {
-            this.conversationId = CoreNavigator.getRouteNumberParam('conversationId') || 0;
-
-            this.loaded = false;
-            this.fetchData().finally(() => {
-                this.loaded = true;
-            });
+        this.fetchData().finally(() => {
+            this.loaded = true;
         });
     }
 

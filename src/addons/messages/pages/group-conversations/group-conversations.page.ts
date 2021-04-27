@@ -87,8 +87,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
     protected siteId: string;
     protected currentUserId: number;
-    protected conversationId?: number;
-    protected discussionUserId?: number;
     protected newMessagesObserver: CoreEventObserver;
     protected pushObserver: Subscription;
     protected appResumeSubscription: Subscription;
@@ -270,34 +268,30 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     /**
      * Component loaded.
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.route.queryParams.subscribe(async (params) => {
-            // Conversation to load.
-            this.conversationId = CoreNavigator.getRouteNumberParam('conversationId', { params }) || undefined;
-            if (!this.conversationId) {
-                this.discussionUserId = CoreNavigator.getRouteNumberParam('discussionUserId', { params }) || undefined;
-            }
+            // When a child page loads this callback is triggered too.
+            this.selectedConversationId =
+                CoreNavigator.getRouteNumberParam('conversationId', { params }) ?? this.selectedConversationId;
+            this.selectedUserId =
+                CoreNavigator.getRouteNumberParam('userId', { params }) ?? this.selectedUserId;
+        });
 
-            if (this.conversationId || this.discussionUserId) {
-                // There is a discussion to load, open the discussion in a new state.
-                this.gotoConversation(this.conversationId, this.discussionUserId);
-            }
+        await this.fetchData();
 
-            await this.fetchData();
-            if (!this.conversationId && !this.discussionUserId && CoreScreen.isTablet) {
-                // Load the first conversation.
-                let conversation: AddonMessagesConversationForList;
-                const expandedOption = this.getExpandedOption();
+        if (!this.selectedConversationId && !this.selectedUserId && CoreScreen.isTablet) {
+            // Load the first conversation.
+            let conversation: AddonMessagesConversationForList;
+            const expandedOption = this.getExpandedOption();
 
-                if (expandedOption && expandedOption.conversations.length) {
-                    conversation = expandedOption.conversations[0];
+            if (expandedOption && expandedOption.conversations.length) {
+                conversation = expandedOption.conversations[0];
 
-                    if (conversation) {
-                        this.gotoConversation(conversation.id);
-                    }
+                if (conversation) {
+                    this.gotoConversation(conversation.id);
                 }
             }
-        });
+        }
     }
 
     /**
@@ -322,7 +316,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             await Promise.all(promises);
 
             // The expanded status hasn't been initialized. Do it now.
-            if (typeof this.favourites.expanded == 'undefined' && this.conversationId || this.discussionUserId) {
+            if (typeof this.favourites.expanded == 'undefined' && (this.selectedConversationId || this.selectedUserId)) {
                 // A certain conversation should be opened.
                 // We don't know which option it belongs to, so we need to fetch the data for all of them.
                 const promises: Promise<void>[] = [];
@@ -333,7 +327,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
                 await Promise.all(promises);
                 // All conversations have been loaded, find the one we need to load and expand its option.
-                const conversation = this.findConversation(this.conversationId, this.discussionUserId);
+                const conversation = this.findConversation(this.selectedConversationId, this.selectedUserId);
                 if (conversation) {
                     const option = this.getConversationOption(conversation);
 

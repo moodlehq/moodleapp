@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, CanLoad, UrlTree } from '@angular/router';
 import { CoreApp } from '@services/app';
+import { CoreRedirectPayload } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { Router } from '@singletons';
 import { CoreConstants } from '../constants';
@@ -40,7 +41,7 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
      * Check if there is a pending redirect and trigger it.
      */
     private async guard(): Promise<true | UrlTree> {
-        const redirect = CoreApp.consumeRedirect();
+        const redirect = CoreApp.consumeMemoryRedirect();
 
         if (!redirect) {
             return true;
@@ -56,14 +57,14 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
             const loggedIn = await CoreSites.loadSite(
                 redirect.siteId,
                 redirect.page,
-                redirect.params,
+                redirect.options,
             );
             const route = Router.parseUrl('/main/home');
 
             route.queryParams = {
                 redirectPath: redirect.page,
-                redirectParams: redirect.params,
-            };
+                redirectOptions: redirect.options,
+            } as CoreRedirectPayload;
 
             return loggedIn ? route : true;
         }
@@ -78,8 +79,8 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
 
         route.queryParams = {
             redirectPath: redirect.page,
-            redirectParams: redirect.params,
-        };
+            redirectOptions: redirect.options,
+        } as CoreRedirectPayload;
 
         return route;
     }
