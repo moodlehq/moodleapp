@@ -686,9 +686,9 @@ export class CoreFileUploaderHelperProvider {
             }
                 const html = '<html> <img src="'+ path +'" style="width: 100%; height 100%"> </html>';
                 this.logger.debug(html);
-                var currentDate = new Date();
+                var currentDate = new Date().getTime();
                 return cordova.plugins.pdf.fromData(html,{
-                    fileName : 'my-pdf'+currentDate.getTime()+'.pdf',
+                    fileName : 'my-pdf'+currentDate,
                     landscape : "portrait",
                     type : "base64" //Using this type because the document will be uploaded right away.
                 }).then((base64)=>{   
@@ -696,16 +696,16 @@ export class CoreFileUploaderHelperProvider {
                     const blob = this.base64ToBlob(base64);
                     
                     const contentType = 'application/pdf'
-                    const folderPath = "Download/my-pdf"+currentDate.getTime()+".pdf";
+                    const folderPath = "Download/my-pdf"+currentDate+".pdf";
                     return this.fileProvider.writeFile(folderPath, blob).then((fileEntry)=>{
-                        const options = this.fileUploaderProvider.getFileUploadOptions(fileEntry.nativeURL, 'my-pdf'+currentDate.getTime()+'.pdf',  contentType, true);
+                        const options = this.fileUploaderProvider.getFileUploadOptions(fileEntry.nativeURL, 'my-pdf'+currentDate,  contentType, false);
                         if(upload){;
                             this.logger.debug("uploaded");
-                            return this.uploadFile(fileEntry.nativeURL, -1, false, options);
+                            return this.uploadFileEntry(fileEntry, true, -1, upload, false, fileEntry.name);
                         } else {
                             // Copy or move the file to our temporary folder.
                             this.logger.debug("Copy to temp");
-                            return this.copyToTmpFolder('Download/', false, maxSize, 'pdf', options);
+                            return this.copyToTmpFolder(fileEntry.nativeURL, false, maxSize, 'pdf', options);
                         }
                     
                     },
