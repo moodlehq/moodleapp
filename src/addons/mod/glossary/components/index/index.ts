@@ -414,7 +414,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             event,
         });
 
-        popover.present();
+        await popover.present();
 
         const result = await popover.onDidDismiss<AddonModGlossaryFetchMode>();
 

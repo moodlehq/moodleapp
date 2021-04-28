@@ -228,7 +228,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             event,
         });
 
-        popover.present();
+        await popover.present();
 
         const result = await popover.onDidDismiss<{ action?: string }>();
 
@@ -265,7 +265,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             backdropDismiss: false,
         });
 
-        modal.present();
+        await modal.present();
 
         const result = await modal.onDidDismiss<AddonModForumReply>();
         const data = result.data;

@@ -634,7 +634,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             },
         });
 
-        modal.present();
+        await modal.present();
 
         const result = await modal.onDidDismiss<AddonModForumSortOrder>();
 
@@ -668,7 +668,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             event,
         });
 
-        popover.present();
+        await popover.present();
 
         const result = await popover.onDidDismiss<{ action?: string; value: boolean }>();
 
