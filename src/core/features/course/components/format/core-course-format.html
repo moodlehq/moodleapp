@@ -20,8 +20,7 @@
                     class="ion-text-wrap clearfix ion-justify-content-between core-button-selector-row"
                     [class.core-section-download]="downloadEnabled">
                     <ion-button class="core-button-select button-no-uppercase" (click)="showSectionSelector()"
-                        aria-haspopup="true" [attr.aria-expanded]="sectionSelectorExpanded"
-                        id="core-course-section-button" expand="block">
+                        aria-haspopup="listbox" id="core-course-section-button" expand="block">
                         <ion-icon name="fas-folder" slot="start" aria-hidden="true"></ion-icon>
                         <span class="sr-only" *ngIf="selectedSection">{{ 'core.course.sections' | translate }}:</span>
                         <span class="core-button-select-text">

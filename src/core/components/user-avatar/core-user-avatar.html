@@ -1,7 +1,7 @@
 <img *ngIf="avatarUrl" [src]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
-    onError="this.src='assets/img/user-avatar.png'" role="presentation" (click)="gotoProfile($event)">
+    onError="this.src='assets/img/user-avatar.png'" (click)="gotoProfile($event)">
 
-<img *ngIf="!avatarUrl" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}" role="presentation"
+<img *ngIf="!avatarUrl" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}"
     (click)="gotoProfile($event)">
 
 <span *ngIf="checkOnline && isOnline()" class="contact-status online"></span>

@@ -59,7 +59,7 @@
                             </ng-container>
 
                             <ion-textarea *ngIf="item.templateName == 'textarea'" [required]="item.required"
-                                name="{{item.typ}}_{{item.id}}" [attr.aria-multiline]="true" [(ngModel)]="item.value">
+                                name="{{item.typ}}_{{item.id}}" [(ngModel)]="item.value">
                             </ion-textarea>
 
                             <ion-select *ngIf="item.templateName == 'multichoice-d'" [required]="item.required"

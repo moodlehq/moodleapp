@@ -34,7 +34,7 @@
                 <!-- Favourite conversations. -->
                 <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggle(favourites)" sticky="true"
                     [attr.aria-label]="(favourites.expanded ? 'core.collapse' : 'core.expand') | translate"
-                    [attr.aria-expanded]="favourites.expanded">
+                    [attr.aria-expanded]="favourites.expanded" role="heading">
                     <ion-icon *ngIf="!favourites.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
                     <ion-icon *ngIf="favourites.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>{{ 'core.favourites' | translate }} ({{ favourites.count }})</ion-label>
@@ -57,7 +57,7 @@
                 <!-- Group conversations. -->
                 <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggle(group)" sticky="true"
                     [attr.aria-label]="(group.expanded ? 'core.collapse' : 'core.expand') | translate"
-                    [attr.aria-expanded]="group.expanded">
+                    [attr.aria-expanded]="group.expanded" role="heading">
                     <ion-icon *ngIf="!group.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
                     <ion-icon *ngIf="group.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>{{ 'addon.messages.groupconversations' | translate }} ({{ group.count }})</ion-label>
@@ -79,7 +79,7 @@
 
                 <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggle(individual)" sticky="true"
                     [attr.aria-label]="(individual.expanded ? 'core.collapse' : 'core.expand') | translate"
-                    [attr.aria-expanded]="individual.expanded">
+                    [attr.aria-expanded]="individual.expanded" role="heading">
                     <ion-icon *ngIf="!individual.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
                     <ion-icon *ngIf="individual.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>{{ 'addon.messages.individualconversations' | translate }} ({{ individual.count }})</ion-label>

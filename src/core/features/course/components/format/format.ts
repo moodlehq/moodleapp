@@ -91,7 +91,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     canLoadMore = false;
     showSectionId = 0;
-    sectionSelectorExpanded = false;
     data: Record<string, unknown> = {}; // Data to pass to the components.
 
     displaySectionSelector?: boolean;
@@ -109,6 +108,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     protected sectionStatusObserver?: CoreEventObserver;
     protected selectTabObserver?: CoreEventObserver;
     protected lastCourseFormat?: string;
+    protected sectionSelectorExpanded = false;
 
     constructor(
         protected content: IonContent,

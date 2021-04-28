@@ -79,7 +79,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     sortingAvailable!: boolean;
     sortOrders: AddonModForumSortOrder[] = [];
     selectedSortOrder: AddonModForumSortOrder | null = null;
-    sortOrderSelectorExpanded = false;
     canPin = false;
 
     protected syncEventName = AddonModForumSyncProvider.AUTO_SYNCED;
@@ -637,11 +636,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         modal.present();
 
-        this.sortOrderSelectorExpanded = true;
-
         const result = await modal.onDidDismiss<AddonModForumSortOrder>();
-
-        this.sortOrderSelectorExpanded = false;
 
         if (result.data && result.data.value != this.selectedSortOrder?.value) {
             this.selectedSortOrder = result.data;

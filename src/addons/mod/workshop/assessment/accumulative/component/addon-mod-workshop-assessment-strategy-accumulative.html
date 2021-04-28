@@ -32,7 +32,7 @@
             <ion-label position="stacked">
                 {{ 'addon.mod_workshop_assessment_accumulative.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}
             </ion-label>
-            <ion-textarea aria-multiline="true" [(ngModel)]="selectedValues[n].peercomment" core-auto-rows></ion-textarea>
+            <ion-textarea [(ngModel)]="selectedValues[n].peercomment" core-auto-rows></ion-textarea>
         </ion-item>
         <ion-item *ngIf="!edit" class="ion-text-wrap">
             <ion-label>

@@ -35,7 +35,6 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     @Input('aria-label') ariaLabel?: string; // Aria label to be shown on the top of the popover.
 
     hideMenu = true; // It will be unhidden when items are added.
-    expanded = false;
     uniqueId: string;
 
     protected items: CoreContextMenuItemComponent[] = [];
@@ -43,6 +42,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     protected itemsChangedStream: Subject<void>; // Stream to update the hideMenu boolean when items change.
     protected instanceId: string;
     protected parentContextMenu?: CoreContextMenuComponent;
+    protected expanded = false;
 
     constructor(
         elementRef: ElementRef,
