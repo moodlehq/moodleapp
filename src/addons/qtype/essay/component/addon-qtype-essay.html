@@ -79,9 +79,18 @@
             </ion-label>
         </ion-item>
 
+        <!-- Answer plagiarism. -->
+        <ion-item class="ion-text-wrap" *ngIf="essayQuestion.answerPlagiarism">
+            <ion-label>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="essayQuestion.answerPlagiarism"
+                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+                </core-format-text>
+            </ion-label>
+        </ion-item>
+
         <!-- List of attachments when reviewing. -->
         <core-files *ngIf="essayQuestion.attachments" [files]="essayQuestion.attachments" [component]="component"
-            [componentId]="componentId">
+            [componentId]="componentId" [extraHtml]="essayQuestion.attachmentsPlagiarisms">
         </core-files>
     </ng-container>
 </ion-list>

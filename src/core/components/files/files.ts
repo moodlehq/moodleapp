@@ -38,6 +38,7 @@ export class CoreFilesComponent implements OnInit, DoCheck {
     @Input() showSize?: boolean | string = true; // Whether show filesize.
     @Input() showTime?: boolean | string = true; // Whether show file time modified.
     @Input() showInline = false; // If true, it will reorder and try to show inline files first.
+    @Input() extraHtml?: string[]; // Extra HTML for each attachment. Each HTML should be at the same position as the attachment.
 
     contentText?: string;
 

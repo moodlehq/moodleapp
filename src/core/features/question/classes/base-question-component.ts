@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Input, Output, EventEmitter, Component, Optional, Inject, ElementRef } from '@angular/core';
+import { CoreFileHelper } from '@services/file-helper';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -274,6 +275,9 @@ export class CoreQuestionBaseComponent {
                 );
             }
 
+            // Treat plagiarism.
+            this.handleEssayPlagiarism(questionEl);
+
             return questionEl;
         }
 
@@ -351,6 +355,40 @@ export class CoreQuestionBaseComponent {
         }
 
         return questionEl;
+    }
+
+    /**
+     * Handle plagiarism in an essay question.
+     *
+     * @param questionEl Element with the question html.
+     */
+    protected handleEssayPlagiarism(questionEl: HTMLElement): void {
+        const question = <AddonModQuizEssayQuestion> this.question!;
+        const answerPlagiarism = questionEl.querySelector<HTMLSpanElement>('.answer .core_plagiarism_links');
+        if (answerPlagiarism) {
+            question.answerPlagiarism = answerPlagiarism.innerHTML;
+        }
+
+        if (!question.attachments?.length) {
+            return;
+        }
+
+        const attachmentsPlagiarisms = questionEl.querySelectorAll<HTMLSpanElement>('.attachments .core_plagiarism_links');
+        question.attachmentsPlagiarisms = [];
+
+        Array.from(attachmentsPlagiarisms).forEach((plagiarism) => {
+            // Search the URL of the attachment it affects.
+            const attachmentUrl = plagiarism.parentElement?.querySelector('a')?.href;
+            if (!attachmentUrl) {
+                return;
+            }
+
+            const position = question.attachments!.findIndex((file) => CoreFileHelper.getFileUrl(file) == attachmentUrl);
+
+            if (position >= 0) {
+                question.attachmentsPlagiarisms![position] = plagiarism.innerHTML;
+            }
+        });
     }
 
     /**
@@ -724,6 +762,8 @@ export type AddonModQuizEssayQuestion = AddonModQuizQuestionBasicData & {
     attachmentsMaxFiles?: number; // Max number of attachments.
     attachmentsAcceptedTypes?: string; // Attachments accepted file types.
     attachmentsMaxBytes?: number; // Max bytes for attachments.
+    answerPlagiarism?: string; // Plagiarism HTML for the answer.
+    attachmentsPlagiarisms?: string[]; // Plagiarism HTML for each attachment.
 };
 
 /**
