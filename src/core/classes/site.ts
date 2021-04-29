@@ -79,6 +79,7 @@ export class CoreSite {
         '3.8': 2019111800,
         '3.9': 2020061500,
         '3.10': 2020110900,
+        '3.11': 2021051000, // @todo: Replace with the right version once it's released.
     };
 
     // Possible cache update frequencies.

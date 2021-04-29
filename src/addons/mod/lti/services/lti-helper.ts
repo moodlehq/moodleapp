@@ -61,7 +61,7 @@ export class AddonModLtiHelperProvider {
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const openInBrowser = await AddonModLti.isOpenInAppBrowserDisabled(siteId);
+            const openInBrowser = await AddonModLti.shouldLaunchInBrowser(siteId);
 
             if (openInBrowser) {
                 const site = await CoreSites.getSite(siteId);

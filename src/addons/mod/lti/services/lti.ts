@@ -185,7 +185,34 @@ export class AddonModLtiProvider {
     }
 
     /**
+     * Check if open LTI in browser via site with auto-login is disabled.
+     * This setting was added in 3.11.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether it's disabled.
+     */
+    async isLaunchViaSiteDisabled(siteId?: string): Promise<boolean> {
+        const site = await CoreSites.getSite(siteId);
+
+        return this.isLaunchViaSiteDisabledInSite(site);
+    }
+
+    /**
+     * Check if open LTI in browser via site with auto-login is disabled.
+     * This setting was added in 3.11.
+     *
+     * @param site Site. If not defined, current site.
+     * @return Whether it's disabled.
+     */
+    isLaunchViaSiteDisabledInSite(site?: CoreSite): boolean {
+        site = site || CoreSites.getCurrentSite();
+
+        return !!site?.isFeatureDisabled('CoreCourseModuleDelegate_AddonModLti:launchViaSite');
+    }
+
+    /**
      * Check if open in InAppBrowser is disabled.
+     * This setting was removed in Moodle 3.11 because the default behaviour of the app changed.
      *
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with boolean: whether it's disabled.
@@ -198,6 +225,7 @@ export class AddonModLtiProvider {
 
     /**
      * Check if open in InAppBrowser is disabled.
+     * This setting was removed in Moodle 3.11 because the default behaviour of the app changed.
      *
      * @param site Site. If not defined, current site.
      * @return Whether it's disabled.
@@ -239,7 +267,7 @@ export class AddonModLtiProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when the WS call is successful.
      */
-    logView(id: number, name?: string, siteId?: string): Promise<any> {
+    logView(id: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModLtiViewLtiWSParams = {
             ltiid: id,
         };
@@ -254,6 +282,24 @@ export class AddonModLtiProvider {
             {},
             siteId,
         );
+    }
+
+    /**
+     * Check whether the LTI should be launched in browser via the site with auto-login.
+     *
+     * @param siteId Site ID.
+     * @return Promise resolved with boolean.
+     */
+    async shouldLaunchInBrowser(siteId?: string): Promise<boolean> {
+        const site = await CoreSites.getSite(siteId);
+
+        if (site.isVersionGreaterEqualThan('3.11')) {
+            // In 3.11+, launch in browser by default unless it's disabled.
+            return !this.isLaunchViaSiteDisabledInSite(site);
+        } else {
+            // In old sites the default behaviour is to launch in InAppBrowser.
+            return this.isOpenInAppBrowserDisabledInSite(site);
+        }
     }
 
 }
