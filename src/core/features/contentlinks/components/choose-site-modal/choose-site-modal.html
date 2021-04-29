@@ -4,6 +4,11 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ 'core.contentlinks.chooseaccount' | translate }}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -25,11 +30,6 @@
                     <h2>{{site.fullName}}</h2>
                     <p><core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text></p>
                     <p>{{site.siteUrl}}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item>
-                <ion-label>
-                    <ion-button expand="block" (click)="cancel()">{{ 'core.login.cancel' | translate }}</ion-button>
                 </ion-label>
             </ion-item>
         </ion-list>
