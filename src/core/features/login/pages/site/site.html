@@ -121,8 +121,8 @@
 <ng-template #site let-site="site">
     <ion-item button (click)="connect($event, site.url, site)" [attr.aria-label]="site.name" detail="true">
         <ion-thumbnail *ngIf="siteFinderSettings.displayimage" slot="start">
-            <img [src]="site.imageurl" *ngIf="site.imageurl" onError="this.src='assets/icon/icon.png'">
-            <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon">
+            <img [src]="site.imageurl" *ngIf="site.imageurl" onError="this.src='assets/icon/icon.png'" alt="" role="presentation">
+            <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon" alt="" role="presentation">
         </ion-thumbnail>
         <ion-label>
             <h2 *ngIf="site.title" class="ion-text-wrap">{{site.title}}</h2>

@@ -18,7 +18,7 @@
             capture="true">
                 <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" slot="start" [attr.aria-label]="grade.iconAlt"></ion-icon>
                 <img *ngIf="grade.image" [src]="grade.image" slot="start" class="core-module-icon"
-                    [attr.aria-label]="grade.iconAlt"/>
+                    [alt]="grade.iconAlt">
                 <ion-label>
                     <h2><core-format-text [text]="grade.itemname" contextLevel="course" [contextInstanceId]="courseId">
                     </core-format-text></h2>

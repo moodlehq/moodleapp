@@ -659,7 +659,9 @@ export class CoreSite {
                 preSets.omitExpires = true;
                 preSets.getFromCache = true;
 
-                return this.getFromCache<T>(method, data, preSets, true).catch(() => Promise.reject(new CoreWSError(error)));
+                return this.getFromCache<T>(method, data, preSets, true).catch(() => {
+                    throw new CoreWSError(error);
+                });
             });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         }).then((response: any) => {
