@@ -25,7 +25,7 @@
                 (contentChanged)="onMessageChange($event)">
             </core-rich-text-editor>
         </ion-item>
-        <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggleAdvanced()" role="heading"
+        <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggleAdvanced()" role="heading button"
             [attr.aria-expanded]="advanced" [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate">
             <ion-icon *ngIf="!advanced" name="fa-caret-right" slot="start" aria-hidden="true"></ion-icon>
             <ion-icon *ngIf="advanced" name="fa-caret-down" slot="start" aria-hidden="true"></ion-icon>

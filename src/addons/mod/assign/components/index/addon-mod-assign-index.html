@@ -84,7 +84,8 @@
             </ion-item>
 
             <!-- Summary of all submissions. -->
-            <ion-item class="ion-text-wrap" *ngIf="summary && summary.participantcount" (click)="goToSubmissionList()" detail>
+            <ion-item class="ion-text-wrap" *ngIf="summary && summary.participantcount" (click)="goToSubmissionList()" detail="true"
+                button>
                 <ion-label>
                     <h2 *ngIf="assign.teamsubmission">{{ 'addon.mod_assign.numberofteams' | translate }}</h2>
                     <h2 *ngIf="!assign.teamsubmission">{{ 'addon.mod_assign.numberofparticipants' | translate }}</h2>
@@ -97,6 +98,7 @@
             <!-- Summary of submissions with draft status. -->
             <ion-item class="ion-text-wrap" *ngIf="assign.submissiondrafts && summary && summary.submissionsenabled"
                 [detail]="!showNumbers || summary.submissiondraftscount"
+                [button]="!showNumbers || summary.submissiondraftscount"
                 (click)="goToSubmissionList(submissionStatusDraft, !!summary.submissiondraftscount)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</h2></ion-label>
                 <ion-badge slot="end" *ngIf="showNumbers" color="primary">
@@ -107,6 +109,7 @@
             <!-- Summary of submissions with submitted status. -->
             <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled"
                 [detail]="!showNumbers || summary.submissionssubmittedcount"
+                [button]="!showNumbers || summary.submissionssubmittedcount"
                 (click)="goToSubmissionList(submissionStatusSubmitted, !!summary.submissionssubmittedcount)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</h2></ion-label>
                 <ion-badge slot="end" *ngIf="showNumbers" color="primary">
@@ -116,7 +119,7 @@
 
             <!-- Summary of submissions that need grading. -->
             <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled && !assign.teamsubmission && showNumbers"
-                [detail]="needsGradingAvalaible"
+                [detail]="needsGradingAvalaible" [button]="needsGradingAvalaible"
                 (click)="goToSubmissionList(needGrading, needsGradingAvalaible)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofsubmissionsneedgrading' | translate }}</h2></ion-label>
                 <ion-badge slot="end" color="primary">

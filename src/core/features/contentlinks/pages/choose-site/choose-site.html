@@ -15,7 +15,7 @@
                     <p>{{ url }}</p>
                 </ion-label>
             </ion-item>
-            <ion-item *ngFor="let site of sites" (click)="siteClicked(site.id)" detail="false">
+            <ion-item *ngFor="let site of sites" (click)="siteClicked(site.id)" detail="false" button>
                 <ion-avatar slot="start">
                     <img [src]="site.avatar" core-external-content [siteId]="site.id"
                         alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}"

@@ -56,7 +56,7 @@
         <div *ngIf="competencies">
             <ion-card *ngFor="let competency of competencies.competencies">
                 <ion-item class="ion-text-wrap" (click)="openCompetency(competency.competency.id)"
-                    [title]="competency.competency.shortname" detail="true">
+                    [attr.aria-label]="competency.competency.shortname" detail="true" button>
                     <ion-label>
                         <h2><strong>{{competency.competency.shortname}} <em>{{competency.competency.idnumber}}</em></strong></h2>
                     </ion-label>
@@ -103,8 +103,8 @@
                             <p *ngIf="competency.coursemodules.length == 0">
                                 {{ 'addon.competency.noactivities' | translate }}
                             </p>
-                            <ion-item class="ion-text-wrap core-course-module-handler item-media" [title]="activity.name" core-link
-                                *ngFor="let activity of competency.coursemodules" [href]="activity.url" capture="true">
+                            <ion-item class="ion-text-wrap core-course-module-handler item-media" [attr.aria-label]="activity.name"
+                                core-link *ngFor="let activity of competency.coursemodules" [href]="activity.url" capture="true">
                                 <img slot="start" [src]="activity.iconurl" core-external-content alt=""
                                     *ngIf="activity.iconurl" class="core-module-icon">
                                 <ion-label>
@@ -120,7 +120,7 @@
                                 {{ 'addon.competency.nouserplanswithcompetency' | translate }}
                             </p>
                             <ion-item class="ion-text-wrap" *ngFor="let plan of competency.plans" [href]="plan.url"
-                                [title]="plan.name" core-link capture="true">
+                                [attr.aria-label]="plan.name" core-link capture="true">
                                 <ion-label>
                                    <core-format-text [text]="plan.name" contextLevel="user" [contextInstanceId]="plan.userid">
                                    </core-format-text>

@@ -33,7 +33,7 @@
         </ion-item>
 
         <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngFor="let member of members"
-            (click)="closeModal(member.id)" detail>
+            (click)="closeModal(member.id)" detail="true" button>
             <core-user-avatar [user]="member" [linkProfile]="false" [checkOnline]="member.showonlinestatus" slot="start">
             </core-user-avatar>
             <ion-label>

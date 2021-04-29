@@ -26,7 +26,7 @@
             <ion-list   class="ion-no-margin">
 
                 <ion-item class="ion-text-wrap addon-message-discussion" (click)="gotoContacts()"
-                    [attr.aria-label]="'addon.messages.contacts' | translate" detail>
+                    [attr.aria-label]="'addon.messages.contacts' | translate" detail="true" button>
                     <ion-icon name="fas-address-book" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label><h2>{{ 'addon.messages.contacts' | translate }}</h2></ion-label>
                 </ion-item>
@@ -38,8 +38,8 @@
                         </ion-label>
                         <ion-note slot="end" class="ion-padding-end"><ion-badge>{{ search.results.length }}</ion-badge></ion-note>
                     </ion-item-divider>
-                    <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let result of search.results" [title]="result.fullname"
-                        (click)="gotoDiscussion(result.userid, result.messageid)"
+                    <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let result of search.results" button
+                        [attr.aria-label]="result.fullname" (click)="gotoDiscussion(result.userid, result.messageid)"
                         [attr.aria-current]="result.userid == discussionUserId ? 'page' :  'false'">
                         <core-user-avatar [user]="result" slot="start" [checkOnline]="result.showonlinestatus"></core-user-avatar>
                         <ion-label>
@@ -50,8 +50,8 @@
                     </ion-item>
                 </ng-container>
                 <ng-container *ngIf="!search.showResults">
-                    <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let discussion of discussions"
-                        [title]="discussion.fullname" (click)="gotoDiscussion(discussion.message!.user)"
+                    <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let discussion of discussions" button
+                        [attr.aria-label]="discussion.fullname" (click)="gotoDiscussion(discussion.message!.user)"
                         [attr.aria-current]="discussion.message!.user == discussionUserId ? 'page' :  'false'">
                         <core-user-avatar [user]="discussion" slot="start" checkOnline="false"></core-user-avatar>
                         <ion-label>

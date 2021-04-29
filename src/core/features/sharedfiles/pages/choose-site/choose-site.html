@@ -15,7 +15,7 @@
                     <p>{{fileName}}</p>
                 </ion-label>
             </ion-item>
-            <ion-item *ngFor="let site of sites" (click)="storeInSite(site.id)" detail="false">
+            <ion-item *ngFor="let site of sites" (click)="storeInSite(site.id)" detail="false" button>
                 <ion-avatar slot="start" aria-hidden="true">
                     <img [src]="site.avatar" core-external-content [siteId]="site.id"
                         alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}"

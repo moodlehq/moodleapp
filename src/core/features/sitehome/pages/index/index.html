@@ -61,7 +61,7 @@
 </ion-content>
 
 <ng-template #allCourseList>
-    <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="/main/home/courses/all" detail>
+    <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="/main/home/courses/all" detail="true">
         <ion-icon name="fas-graduation-cap" fixed-width slot="start" aria-hidden="true"></ion-icon>
         <ion-label>
             <h2>{{ 'core.courses.availablecourses' | translate}}</h2>
@@ -75,7 +75,7 @@
 </ng-template>
 
 <ng-template #categories>
-    <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="/main/home/courses/categories" detail>
+    <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="/main/home/courses/categories" detail="true">
         <ion-icon name="fas-folder" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>
             <h2>{{ 'core.courses.categories' | translate}}</h2>
@@ -84,7 +84,7 @@
 </ng-template>
 
 <ng-template #enrolledCourseList>
-    <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="/main/home/courses/my" detail>
+    <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="/main/home/courses/my" detail="true">
         <ion-icon name="fas-graduation-cap" fixed-width slot="start" aria-hidden="true">
         </ion-icon>
         <ion-label><h2>{{ 'core.courses.mycourses' | translate}}</h2></ion-label>
@@ -92,7 +92,7 @@
 </ng-template>
 
 <ng-template #courseSearch>
-    <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="/main/home/courses/search" detail>
+    <ion-item button class="ion-text-wrap" router-direction="forward" routerLink="/main/home/courses/search" detail="true">
         <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
         <ion-label><h2>{{ 'core.courses.searchcourses' | translate}}</h2></ion-label>
     </ion-item>

@@ -68,14 +68,15 @@
                 </ion-select-option>
             </ion-select>
         </ion-item>
-        <ion-item class="ion-text-wrap" (click)="openRespondents()" [detail]="access.canviewreports && completedCount > 0">
+        <ion-item class="ion-text-wrap" (click)="openRespondents()" [detail]="access.canviewreports && completedCount > 0"
+            button>
             <ion-label>
                 <h2>{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</h2>
             </ion-label>
             <ion-badge slot="end">{{completedCount}}</ion-badge>
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="!access.isanonymous && access.canviewreports" (click)="openNonRespondents()"
-            detail="true" tappable="true">
+            detail="true" button>
             <ion-label>
                 <h2>{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</h2>
             </ion-label>

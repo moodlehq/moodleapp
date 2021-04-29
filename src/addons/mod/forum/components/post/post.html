@@ -123,7 +123,7 @@
         </ion-item>
         <ng-container *ngIf="forum.id && forum.maxattachments > 0">
             <ion-item-divider class="core-expandable ion-text-wrap" (click)="toggleAdvanced()" [attr.aria-expanded]="advanced"
-                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') |translate">
+                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') |translate" role="button">
                 <ion-label>
                     <ion-icon *ngIf="!advanced" name="fa-caret-right" slot="start" aria-hidden="true"></ion-icon>
                     <ion-icon *ngIf="advanced" name="fa-caret-down" slot="start" aria-hidden="true"></ion-icon>

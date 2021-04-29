@@ -18,7 +18,7 @@
         <ng-container *ngIf="attempt">
             <!-- Attempt number and user that did the attempt. -->
             <ion-item class="ion-text-wrap" *ngIf="user" core-user-link [userId]="user.id" [courseId]="courseId"
-                [title]="user.fullname">
+                [attr.aria-label]="user.fullname">
                 <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
                 <ion-label>
                     <h2>{{ 'addon.mod_h5pactivity.attempt' | translate }} #{{attempt.attempt}}: {{user.fullname}}</h2>

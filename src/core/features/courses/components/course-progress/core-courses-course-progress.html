@@ -3,7 +3,7 @@
         [style.background-color]="course.color">
         <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt=""/>
     </div>
-    <ion-item button lines="none" (click)="openCourse()" [title]="course.displayname || course.fullname"
+    <ion-item button lines="none" (click)="openCourse()" [attr.aria-label]="course.displayname || course.fullname"
         class="core-course-header" [class.item-disabled]="course.visible == 0"
         [class.core-course-more-than-title]="course.progress! >= 0">
         <ion-label

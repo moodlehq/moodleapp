@@ -75,7 +75,7 @@
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngFor="let competency of plan.competencies"
                     (click)="openCompetency(competency.competency.id)"
-                    [title]="competency.competency.shortname" detail="true">
+                    [attr.aria-label]="competency.competency.shortname" detail="true" button>
                     <ion-label><h2>{{competency.competency.shortname}} <em>{{competency.competency.idnumber}}</em></h2></ion-label>
                     <ion-badge *ngIf="competency.usercompetencyplan" slot="end"
                         [color]="competency.usercompetencyplan.proficiency ? 'success' : 'danger'">

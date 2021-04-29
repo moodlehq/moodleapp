@@ -73,8 +73,8 @@
                     <p *ngIf="coursemodules.length == 0">
                         {{ 'addon.competency.noactivities' | translate }}
                     </p>
-                    <ion-item class="ion-text-wrap" *ngFor="let activity of coursemodules" [href]="activity.url" [title]="activity.name"
-                        core-link capture="true">
+                    <ion-item class="ion-text-wrap" *ngFor="let activity of coursemodules" [href]="activity.url"
+                        [attr.aria-label]="activity.name" core-link capture="true">
                         <img slot="start" core-external-content [src]="activity.iconurl" alt="" *ngIf="activity.iconurl"
                             class="core-module-icon">
                         <ion-label>

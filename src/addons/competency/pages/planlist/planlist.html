@@ -16,8 +16,8 @@
 
             </core-empty-box>
             <ion-list *ngIf="!plans.empty"  class="ion-no-margin">
-                <ion-item class="ion-text-wrap" *ngFor="let plan of plans.items" [title]="plan.name" (click)="plans.select(plan)"
-                    [attr.aria-current]="plans.getItemAriaCurrent(plan)">
+                <ion-item class="ion-text-wrap" *ngFor="let plan of plans.items" [attr.aria-label]="plan.name"
+                    (click)="plans.select(plan)" [attr.aria-current]="plans.getItemAriaCurrent(plan)" button>
                     <ion-label>
                         <h2>{{ plan.name }}</h2>
                         <p *ngIf="plan.duedate > 0">

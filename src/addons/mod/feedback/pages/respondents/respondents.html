@@ -32,7 +32,7 @@
                             {{ 'addon.mod_feedback.non_anonymous_entries' | translate : {$a: responses.responses.total } }}
                         </ion-label>
                     </ion-item-divider>
-                    <ion-item *ngFor="let attempt of responses.responses.attempts" class="ion-text-wrap" tappable detail="true"
+                    <ion-item *ngFor="let attempt of responses.responses.attempts" class="ion-text-wrap" button detail="true"
                         (click)="responses.select(attempt)" [attr.aria-current]="responses.getItemAriaCurrent(attempt)">
                         <core-user-avatar [user]="attempt" slot="start"></core-user-avatar>
                         <ion-label>
@@ -57,7 +57,7 @@
                             {{ 'addon.mod_feedback.anonymous_entries' |translate : {$a: responses.anonResponses.total } }}
                         </ion-label>
                     </ion-item-divider>
-                    <ion-item *ngFor="let attempt of responses.anonResponses.attempts" class="ion-text-wrap" tappable detail="true"
+                    <ion-item *ngFor="let attempt of responses.anonResponses.attempts" class="ion-text-wrap" button detail="true"
                         (click)="responses.select(attempt)" [attr.aria-current]="responses.getItemAriaCurrent(attempt)">
                         <ion-label>
                             <h2>{{ 'addon.mod_feedback.response_nr' |translate }}: {{attempt.number}}</h2>

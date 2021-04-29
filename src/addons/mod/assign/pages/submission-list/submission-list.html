@@ -39,7 +39,7 @@
                 </ion-item>
                 <!-- List of submissions. -->
                 <ng-container *ngFor="let submission of submissions.items">
-                    <ion-item class="ion-text-wrap" (click)="submissions.select(submission)"
+                    <ion-item class="ion-text-wrap" (click)="submissions.select(submission)" button
                         [attr.aria-current]="submissions.getItemAriaCurrent(submission)">
                         <core-user-avatar [user]="submission" [linkProfile]="false" slot="start"></core-user-avatar>
                         <ion-label>

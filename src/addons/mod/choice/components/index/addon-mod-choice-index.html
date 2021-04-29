@@ -141,7 +141,7 @@
                             </ion-label>
                         </ion-item-divider>
                         <ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseId"
-                            [userId]="user.userid" [title]="user.fullname" class="ion-text-wrap">
+                            [userId]="user.userid" [attr.aria-label]="user.fullname" class="ion-text-wrap">
                             <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
                             <ion-label><p>{{user.fullname}}</p></ion-label>
                         </ion-item>

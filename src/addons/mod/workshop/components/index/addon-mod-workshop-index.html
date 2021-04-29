@@ -28,14 +28,14 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
     <ion-card class="with-borders" *ngIf="phases">
-        <ion-item (click)="viewPhaseInfo()" detail="true">
+        <ion-item button (click)="viewPhaseInfo()" detail="true">
             <ion-label>
                 <h2 class="ion-text-wrap">{{ phases[workshop!.phase].title }}</h2>
             </ion-label>
         </ion-item>
         <ng-container *ngIf="phases && phases[workshop!.phase] && phases[workshop!.phase].tasks &&
             phases[workshop!.phase].tasks.length">
-            <ion-item class="ion-text-wrap" *ngFor="let task of phases[workshop!.phase].tasks"
+            <ion-item button class="ion-text-wrap" *ngFor="let task of phases[workshop!.phase].tasks"
                 [class.item-dimmed]="task.code == 'submit' && !showSubmit" (click)="runTask(task)" detail="false">
                 <ion-icon slot="start" name="far-circle" *ngIf="task.completed == null" aria-hidden="true"></ion-icon>
                 <ion-icon slot="start" name="fas-times-circle" color="danger" *ngIf="task.completed == ''" aria-hidden="true">

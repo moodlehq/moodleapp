@@ -119,7 +119,7 @@
 
 <!-- Template site selector. -->
 <ng-template #site let-site="site">
-    <ion-item button (click)="connect($event, site.url, site)" [title]="site.name" detail>
+    <ion-item button (click)="connect($event, site.url, site)" [attr.aria-label]="site.name" detail="true">
         <ion-thumbnail *ngIf="siteFinderSettings.displayimage" slot="start">
             <img [src]="site.imageurl" *ngIf="site.imageurl" onError="this.src='assets/icon/icon.png'">
             <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon">

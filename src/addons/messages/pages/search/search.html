@@ -42,8 +42,9 @@
         </ion-item-divider>
 
         <!-- List of results -->
-        <ion-item class="addon-message-discussion ion-text-wrap" *ngFor="let result of item.results" [title]="result.fullname"
-            (click)="openConversation(result)" [attr.aria-current]="result == selectedResult ? 'page' :  'false'" detail>
+        <ion-item class="addon-message-discussion ion-text-wrap" *ngFor="let result of item.results" [attr.aria-label]="result.fullname"
+            (click)="openConversation(result)" [attr.aria-current]="result == selectedResult ? 'page' :  'false'" detail="true"
+            button>
             <core-user-avatar slot="start" [user]="result" [checkOnline]="true" [linkProfile]="false"></core-user-avatar>
             <ion-label>
                 <h2>

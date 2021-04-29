@@ -65,7 +65,8 @@
         </ion-item>
     </div>
 
-    <ion-item class="ion-text-wrap" *ngIf="summary" [detail]="submission.timemodified" (click)="gotoSubmission()">
+    <ion-item class="ion-text-wrap" *ngIf="summary" [detail]="submission.timemodified" (click)="gotoSubmission()"
+        [button]="submission.timemodified">
         <core-user-avatar [user]="profile" slot="start" [courseId]="courseId" [userId]="profile?.id">
         </core-user-avatar>
         <ion-label>

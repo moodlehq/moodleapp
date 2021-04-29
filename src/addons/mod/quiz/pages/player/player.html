@@ -131,7 +131,7 @@
             <ng-container *ngFor="let question of summaryQuestions">
                 <ion-item *ngIf="question.number" (click)="changePage(question.page, false, question.slot)"
                     [attr.aria-label]="'core.question.questionno' | translate:{$a: question.number}"
-                    [detail]="!isSequential && canReturn" [attr.button]="!isSequential && canReturn ? true : null">
+                    [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn">
                     <ion-label>
                         <ion-row class="ion-align-items-center">
                             <ion-col size="3" class="ion-text-center">{{ question.number }}</ion-col>

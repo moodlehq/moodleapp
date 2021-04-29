@@ -54,7 +54,7 @@
                             <core-tag-list [tags]="entry.tags"></core-tag-list>
                         </ion-label>
                     </ion-item>
-                    <ion-item *ngIf="commentsEnabled" detail>
+                    <ion-item *ngIf="commentsEnabled" detail="true">
                         <ion-label>
                             <core-comments [component]="this.component" [itemId]="entry.id" area="format_blog"
                                 [instanceId]="entry.userid" contextLevel="user">

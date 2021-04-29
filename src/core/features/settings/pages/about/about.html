@@ -13,15 +13,15 @@
     <ion-item class="ion-text-wrap">
         <ion-label><h2>{{ appName }} {{ versionName }}</h2></ion-label>
     </ion-item>
-    <ion-item button class="ion-text-wrap" (click)="openPage('licenses')" detail>
+    <ion-item button class="ion-text-wrap" (click)="openPage('licenses')" detail="true">
         <ion-icon name="far-copyright" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>{{ 'core.settings.opensourcelicenses' | translate }}</ion-label>
     </ion-item>
-    <ion-item button class="ion-text-wrap" *ngIf="privacyPolicy" [href]="privacyPolicy" core-link auto-login="no" detail>
+    <ion-item button class="ion-text-wrap" *ngIf="privacyPolicy" [href]="privacyPolicy" core-link auto-login="no" detail="true">
         <ion-icon name="fas-user-shield" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>{{ 'core.settings.privacypolicy' | translate }}</ion-label>
     </ion-item>
-    <ion-item button class="ion-text-wrap" (click)="openPage('deviceinfo')" detail>
+    <ion-item button class="ion-text-wrap" (click)="openPage('deviceinfo')" detail="true">
         <ion-icon name="fas-mobile" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>{{ 'core.settings.deviceinfo' | translate }}</ion-label>
     </ion-item>
