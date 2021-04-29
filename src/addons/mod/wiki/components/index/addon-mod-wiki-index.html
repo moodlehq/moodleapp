@@ -46,52 +46,50 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<ion-content>
-    <core-loading [hideUntil]="loaded" class="core-loading-center">
-        <div *ngIf="description || pageIsOffline || hasOffline || pageWarning">
-            <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+    <div *ngIf="description || pageIsOffline || hasOffline || pageWarning">
+        <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
+            contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+        </core-course-module-description>
+
+        <!-- Wiki has something offline. -->
+        <ion-card class="core-warning-card" *ngIf="pageIsOffline || hasOffline">
+            <ion-item>
+                <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                <ion-label>
+                    <span *ngIf="pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>
+                    <span *ngIf="!pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</span>
+                </ion-label>
+            </ion-item>
+        </ion-card>
+
+        <!-- Page warning. -->
+        <ion-card class="core-warning-card" *ngIf="pageWarning">
+            <ion-item>
+                <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                <ion-label>{{ pageWarning }}</ion-label>
+            </ion-item>
+        </ion-card>
+    </div>
+    <div class="ion-padding addon-mod_wiki-page-content">
+        <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
+            <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"
                 contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-            </core-course-module-description>
+            </core-format-text>
+            <core-empty-box *ngIf="!pageContent" icon="fas-file-alt" [message]="'addon.mod_wiki.nocontent' | translate"
+                [inline]="true">
+            </core-empty-box>
+        </article>
 
-            <!-- Wiki has something offline. -->
-            <ion-card class="core-warning-card" *ngIf="pageIsOffline || hasOffline">
-                <ion-item>
-                    <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
-                    <ion-label>
-                        <span *ngIf="pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>
-                        <span *ngIf="!pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</span>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
-
-            <!-- Page warning. -->
-            <ion-card class="core-warning-card" *ngIf="pageWarning">
-                <ion-item>
-                    <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
-                    <ion-label>{{ pageWarning }}</ion-label>
-                </ion-item>
-            </ion-card>
+        <div class="ion-margin-top" *ngIf="tagsEnabled && tags.length > 0">
+            <b>{{ 'core.tag.tags' | translate }}:</b>
+            <core-tag-list [tags]="tags"></core-tag-list>
         </div>
-        <div class="ion-padding addon-mod_wiki-page-content">
-            <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
-                <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"
-                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-                </core-format-text>
-                <core-empty-box *ngIf="!pageContent" icon="fas-file-alt" [message]="'addon.mod_wiki.nocontent' | translate"
-                    [inline]="true">
-                </core-empty-box>
-            </article>
+    </div>
+</core-loading>
 
-            <div class="ion-margin-top" *ngIf="tagsEnabled && tags.length > 0">
-                <b>{{ 'core.tag.tags' | translate }}:</b>
-                <core-tag-list [tags]="tags"></core-tag-list>
-            </div>
-        </div>
-    </core-loading>
-
-    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canEdit">
-        <ion-fab-button (click)="goToNewPage()" [attr.aria-label]="'addon.mod_wiki.createpage' | translate">
-            <ion-icon name="fas-plus"></ion-icon>
-        </ion-fab-button>
-    </ion-fab>
-</ion-content>
+<ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canEdit">
+    <ion-fab-button (click)="goToNewPage()" [attr.aria-label]="'addon.mod_wiki.createpage' | translate">
+        <ion-icon name="fas-plus"></ion-icon>
+    </ion-fab-button>
+</ion-fab>

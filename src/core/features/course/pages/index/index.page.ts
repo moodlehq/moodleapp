@@ -25,6 +25,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreNavigator } from '@services/navigator';
+import { CONTENTS_PAGE_NAME } from '@features/course/course.module';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -46,7 +47,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     protected selectTabObserver: CoreEventObserver;
     protected firstTabName?: string;
     protected contentsTab: CoreTabsOutletTab = {
-        page: 'contents',
+        page: CONTENTS_PAGE_NAME,
         title: 'core.course.contents',
         pageParams: {},
     };

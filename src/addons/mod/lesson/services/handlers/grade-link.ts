@@ -52,6 +52,7 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
         siteId: string,
     ): Promise<void> {
         const moduleId = Number(params.id);
+        const userId = Number(params.userid) || 0;
 
         const modal = await CoreDomUtils.showModalLoading();
 
@@ -65,9 +66,8 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
             if (accessInfo.canviewreports) {
                 // User can view reports, go to view the report.
                 CoreNavigator.navigateToSitePath(
-                    AddonModLessonModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/user-retake`,
+                    AddonModLessonModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/user-retake/${userId}`,
                     {
-                        params: { userId: Number(params.userid) },
                         siteId,
                     },
                 );

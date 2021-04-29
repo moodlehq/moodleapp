@@ -27,6 +27,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { AddonModQuizModuleHandlerService } from '../../services/handlers/module';
 import { AddonModQuizPrefetchHandler } from '../../services/handlers/prefetch';
 import {
     AddonModQuiz,
@@ -413,7 +414,9 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             try {
                 await AddonModQuiz.getAttemptReview(attemptId, { page: -1, cmId: this.module.id });
 
-                await CoreNavigator.navigate(`review/${attemptId}`);
+                await CoreNavigator.navigateToSitePath(
+                    `${AddonModQuizModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/review/${attemptId}`,
+                );
             } catch {
                 // Ignore errors.
             }
@@ -534,11 +537,14 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected openQuiz(): void {
         this.hasPlayed = true;
 
-        CoreNavigator.navigate('player', {
-            params: {
-                moduleUrl: this.module.url,
+        CoreNavigator.navigateToSitePath(
+            `${AddonModQuizModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/player`,
+            {
+                params: {
+                    moduleUrl: this.module.url,
+                },
             },
-        });
+        );
     }
 
     /**
@@ -659,7 +665,9 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * @return Promise resolved when done.
      */
     async viewAttempt(attemptId: number): Promise<void> {
-        CoreNavigator.navigate(`attempt/${attemptId}`);
+        await CoreNavigator.navigateToSitePath(
+            `${AddonModQuizModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/attempt/${attemptId}`,
+        );
     }
 
     /**

@@ -24,6 +24,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, ModalController, Translate } from '@singletons';
 import { AddonModQuizPreflightModalComponent } from '../components/preflight-modal/preflight-modal';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
+import { AddonModQuizModuleHandlerService } from './handlers/module';
 import {
     AddonModQuiz,
     AddonModQuizAttemptWSData,
@@ -238,12 +239,15 @@ export class AddonModQuizHelperProvider {
             courseId = courseId || module.course;
 
             // Go to the review page.
-            await CoreNavigator.navigateToSitePath(`mod_quiz/${courseId}/${module.id}/review/${attemptId}`, {
-                params: {
-                    page: page == undefined || isNaN(page) ? -1 : page,
+            await CoreNavigator.navigateToSitePath(
+                `${AddonModQuizModuleHandlerService.PAGE_NAME}/${courseId}/${module.id}/review/${attemptId}`,
+                {
+                    params: {
+                        page: page == undefined || isNaN(page) ? -1 : page,
+                    },
+                    siteId,
                 },
-                siteId,
-            });
+            );
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'An error occurred while loading the required data.');
         } finally {

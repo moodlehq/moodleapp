@@ -15,14 +15,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+export const COURSE_INDEX_PATH = ':courseId';
+
 const routes: Routes = [
     {
-        path: '',
-        redirectTo: 'index',
-        pathMatch: 'full',
-    },
-    {
-        path: ':courseId',
+        path: COURSE_INDEX_PATH,
         loadChildren: () => import('./pages/index/index.module').then( m => m.CoreCourseIndexPageModule),
     },
     {

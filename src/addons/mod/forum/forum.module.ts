@@ -42,6 +42,7 @@ import { AddonModForumProvider } from './services/forum';
 import { AddonModForumOfflineProvider } from './services/forum-offline';
 import { AddonModForumHelperProvider } from './services/forum-helper';
 import { AddonModForumSyncProvider } from './services/forum-sync';
+import { COURSE_CONTENTS_PATH } from '@features/course/course.module';
 
 export const ADDON_MOD_FORUM_SERVICES: Type<unknown>[] = [
     AddonModForumProvider,
@@ -62,12 +63,12 @@ const mainMenuRoutes: Routes = [
     ...conditionalRoutes(
         [
             {
-                path: `course/index/contents/${AddonModForumModuleHandlerService.PAGE_NAME}/new/:timeCreated`,
+                path: `${COURSE_CONTENTS_PATH}/${AddonModForumModuleHandlerService.PAGE_NAME}/new/:timeCreated`,
                 loadChildren: () => import('./pages/new-discussion/new-discussion.module')
                     .then(m => m.AddonForumNewDiscussionPageModule),
             },
             {
-                path: `course/index/contents/${AddonModForumModuleHandlerService.PAGE_NAME}/:discussionId`,
+                path: `${COURSE_CONTENTS_PATH}/${AddonModForumModuleHandlerService.PAGE_NAME}/:discussionId`,
                 loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
             },
         ],

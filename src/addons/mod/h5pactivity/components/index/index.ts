@@ -44,6 +44,7 @@ import {
     AddonModH5PActivitySyncResult,
 } from '../../services/h5pactivity-sync';
 import { CoreFileHelper } from '@services/file-helper';
+import { AddonModH5PActivityModuleHandlerService } from '../../services/handlers/module';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -375,7 +376,9 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         const userId = CoreSites.getCurrentSiteUserId();
 
         try {
-            await CoreNavigator.navigate(`userattempts/${userId}`);
+            await CoreNavigator.navigateToSitePath(
+                `${AddonModH5PActivityModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/userattempts/${userId}`,
+            );
         } finally {
             this.isOpeningPage = false;
         }

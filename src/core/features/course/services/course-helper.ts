@@ -1848,7 +1848,7 @@ export class CoreCourseHelperProvider {
             params = params || {};
             Object.assign(params, { course: course });
 
-            await CoreNavigator.navigateToSitePath('course/' + course.id, { siteId, params });
+            await CoreNavigator.navigateToSitePath(`course/${course.id}`, { siteId, params });
         }
     }
 
