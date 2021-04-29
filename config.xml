@@ -269,6 +269,9 @@
         <config-file parent="UIRequiresFullScreen" target="*-Info.plist">
             <false />
         </config-file>
+        <config-file parent="NSCrossWebsiteTrackingUsageDescription" target="*-Info.plist">
+            <string>This app needs third party cookies to correctly render embedded content from the Moodle site.</string>
+        </config-file>
         <config-file parent="CFBundleDocumentTypes" target="*-Info.plist">
             <array>
                 <dict>
