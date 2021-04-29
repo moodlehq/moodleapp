@@ -195,6 +195,24 @@
     };
 
     /**
+     * Check if an element is selected.
+     *
+     * @param {HTMLElement} element Element
+     * @param {HTMLElement} container Container
+     * @returns {boolean} Whether the element is selected or not
+     */
+    var isElementSelected = (element, container) => {
+        const ariaCurrent = element.getAttribute('aria-current');
+        if (ariaCurrent && ariaCurrent !== 'false')
+            return true;
+
+        if (!element.parentElement || element.parentElement === container)
+            return false;
+
+        return isElementSelected(element.parentElement, container);
+    };
+
+    /**
      * Generic shared function to find possible xpath matches within the document, that are visible,
      * and then process them using a callback function.
      *
@@ -330,43 +348,61 @@
      */
     var behatPressStandard = function(button) {
         log('Action - Click standard button: ' + button);
-        var selector;
-        switch (button) {
-            case 'back' :
-                selector = 'ion-navbar > button.back-button-md';
-                break;
-            case 'main menu' :
-                // Change in app version 3.8.
-                selector = 'page-core-mainmenu .tab-button > ion-icon[aria-label=more], ' +
-                        'page-core-mainmenu .tab-button > ion-icon[aria-label=menu]';
-                break;
-            case 'page menu' :
-                // This lang string was changed in app version 3.6.
-                selector = 'core-context-menu > button[aria-label=Info], ' +
-                        'core-context-menu > button[aria-label=Information], ' +
-                        'core-context-menu > button[aria-label="Display options"]';
-                break;
-            default:
-                return 'ERROR: Unsupported standard button type';
-        }
-        var buttons = Array.from(document.querySelectorAll(selector));
+
+        // Find button
         var foundButton = null;
-        var tooMany = false;
-        buttons.forEach(function(button) {
-            if (button.offsetParent) {
-                if (foundButton === null) {
-                    foundButton = button;
-                } else {
-                    tooMany = true;
-                }
+
+        if (window.BehatMoodleAppLegacy) {
+            var selector;
+            switch (button) {
+                case 'back' :
+                    selector = 'ion-navbar > button.back-button-md';
+                    break;
+                case 'main menu' :
+                    // Change in app version 3.8.
+                    selector = 'page-core-mainmenu .tab-button > ion-icon[aria-label=more], ' +
+                            'page-core-mainmenu .tab-button > ion-icon[aria-label=menu]';
+                    break;
+                case 'page menu' :
+                    // This lang string was changed in app version 3.6.
+                    selector = 'core-context-menu > button[aria-label=Info], ' +
+                            'core-context-menu > button[aria-label=Information], ' +
+                            'core-context-menu > button[aria-label="Display options"]';
+                    break;
+                default:
+                    return 'ERROR: Unsupported standard button type';
             }
-        });
-        if (!foundButton) {
-            return 'ERROR: Could not find button';
+            var buttons = Array.from(document.querySelectorAll(selector));
+            var tooMany = false;
+            buttons.forEach(function(button) {
+                if (button.offsetParent) {
+                    if (foundButton === null) {
+                        foundButton = button;
+                    } else {
+                        tooMany = true;
+                    }
+                }
+            });
+            if (!foundButton) {
+                return 'ERROR: Could not find button';
+            }
+            if (tooMany) {
+                return 'ERROR: Found too many buttons';
+            }
+        } else {
+            switch (button) {
+                case 'back':
+                    foundButton = findElementBasedOnText('Back');
+                    break;
+                case 'main menu':
+                    foundButton = findElementBasedOnText('more', 'Notifications');
+                    break;
+                default:
+                    return 'ERROR: Unsupported standard button type';
+            }
         }
-        if (tooMany) {
-            return 'ERROR: Found too many buttons';
-        }
+
+        // Click button
         foundButton.click();
 
         // Mark busy until the button click finishes processing.
@@ -448,6 +484,25 @@
         // Fallback to return main nav - this will work but will overlay current tab.
         return window.appProvider.appCtrl.getRootNavs()[0];
     };
+
+    /**
+     * Check whether an item is selected or not.
+     *
+     * @param {string} text Text (full or partial)
+     * @param {string} near Optional 'near' text
+     * @return {string} YES or NO if successful, or ERROR: followed by message
+     */
+    var behatIsSelected = function(text, near) {
+        log(`Action - Is Selected: "${text}"${near ? ` near "${near}"`: ''}`);
+
+        try {
+            const element = findElementBasedOnText(text, near);
+
+            return isElementSelected(element, document.body) ? 'YES' : 'NO';
+        } catch (error) {
+            return 'ERROR: ' + error.message;
+        }
+    }
 
     /**
      * Function to press arbitrary item based on its text or Aria label.
@@ -639,6 +694,7 @@
         pressStandard : behatPressStandard,
         closePopup : behatClosePopup,
         find : behatFind,
+        isSelected : behatIsSelected,
         press : behatPress,
         setField : behatSetField,
         getHeader : behatGetHeader,

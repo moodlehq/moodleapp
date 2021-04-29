@@ -121,6 +121,40 @@ class behat_app extends behat_base {
     }
 
     /**
+     * Check if elements are selected in the app.
+     *
+     * @Then /^"(?P<text_string>(?:[^"]|\\")*)"(?: near "(?P<near_string>(?:[^"]|\\")*)")? should(?P<not_boolean> not)? be selected in the app$/
+     * @param string $text
+     */
+    public function be_selected_in_the_app($text, $near='', $not='') {
+        $not = !empty($not);
+        $text = addslashes_js($text);
+        $near = addslashes_js($near);
+
+        $this->spin(function() use ($not, $text, $near) {
+            $result = $this->evaluate_script("return window.behat.isSelected(\"$text\", \"$near\");");
+
+            switch ($result) {
+                case 'YES':
+                    if ($not) {
+                        throw new ExpectationException("Item was selected and shouldn't have", $this->getSession()->getDriver());
+                    }
+                    break;
+                case 'NO':
+                    if (!$not) {
+                        throw new ExpectationException("Item wasn't selected and should have", $this->getSession()->getDriver());
+                    }
+                    break;
+                default:
+                    throw new DriverException('Error finding item - ' . $result);
+            }
+
+            return true;
+        });
+        $this->wait_for_pending_js();
+    }
+
+    /**
      * Checks the Behat setup - tags and configuration.
      *
      * @throws DriverException
