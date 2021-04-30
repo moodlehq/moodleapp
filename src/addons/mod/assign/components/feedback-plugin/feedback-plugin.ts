@@ -13,11 +13,8 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, ViewChild, Type } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreWSFile } from '@services/ws';
-import { ModalController } from '@singletons';
-import { AddonModAssignFeedbackCommentsTextData } from '../../feedback/comments/services/handler';
 import {
     AddonModAssignAssign,
     AddonModAssignSubmission,
@@ -27,7 +24,6 @@ import {
 } from '../../services/assign';
 import { AddonModAssignHelper, AddonModAssignPluginConfig } from '../../services/assign-helper';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
-import { AddonModAssignEditFeedbackModalComponent } from '../edit-feedback-modal/edit-feedback-modal';
 
 /**
  * Component that displays an assignment feedback plugin.
@@ -96,38 +92,6 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
             this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);
             this.notSupported = AddonModAssignFeedbackDelegate.isPluginSupported(this.plugin.type);
             this.pluginLoaded = true;
-        }
-    }
-
-    /**
-     * Open a modal to edit the feedback plugin.
-     *
-     * @return Promise resolved with the input data, rejected if cancelled.
-     */
-    async editFeedback(): Promise<AddonModAssignFeedbackCommentsTextData> {
-        if (!this.canEdit) {
-            throw new CoreError('Cannot edit feedback');
-        }
-
-        // Create the navigation modal.
-        const modal = await ModalController.create({
-            component: AddonModAssignEditFeedbackModalComponent,
-            componentProps: {
-                assign: this.assign,
-                submission: this.submission,
-                plugin: this.plugin,
-                userId: this.userId,
-            },
-        });
-
-        await modal.present();
-
-        const result = await modal.onDidDismiss();
-
-        if (typeof result.data == 'undefined') {
-            throw null; // User cancelled.
-        } else {
-            return result.data;
         }
     }
 

@@ -31,6 +31,7 @@ export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompi
     @Input() submission!: AddonModAssignSubmission; // The submission.
     @Input() plugin!: AddonModAssignPlugin; // The plugin object.
     @Input() userId!: number; // The user ID of the submission.
+    @Input() configs?: Record<string,string>; // The configs for the plugin.
     @Input() canEdit = false; // Whether the user can edit.
     @Input() edit = false; // Whether the user is editing.
 
@@ -43,6 +44,7 @@ export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompi
         this.jsData.submission = this.submission;
         this.jsData.plugin = this.plugin;
         this.jsData.userId = this.userId;
+        this.jsData.configs = this.configs;
         this.jsData.edit = this.edit;
         this.jsData.canEdit = this.canEdit;
 

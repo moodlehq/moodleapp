@@ -30,6 +30,7 @@ export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCom
     @Input() assign!: AddonModAssignAssign; // The assignment.
     @Input() submission!: AddonModAssignSubmission; // The submission.
     @Input() plugin!: AddonModAssignPlugin; // The plugin object.
+    @Input() configs?: Record<string, string>; // The configs for the plugin.
     @Input() edit = false; // Whether the user is editing.
     @Input() allowOffline = false; // Whether to allow offline.
 
@@ -41,6 +42,7 @@ export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCom
         this.jsData.assign = this.assign;
         this.jsData.submission = this.submission;
         this.jsData.plugin = this.plugin;
+        this.jsData.configs = this.configs;
         this.jsData.edit = this.edit;
         this.jsData.allowOffline = this.allowOffline;
 

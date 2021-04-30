@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonModAssignSubmissionPluginComponent } from '@addons/mod/assign/components/submission-plugin/submission-plugin';
+import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { AddonModAssignProvider, AddonModAssign } from '@addons/mod/assign/services/assign';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
 import { Component, OnInit, ElementRef } from '@angular/core';
@@ -29,7 +29,7 @@ import { AddonModAssignSubmissionOnlineTextPluginData } from '../services/handle
     selector: 'addon-mod-assign-submission-online-text',
     templateUrl: 'addon-mod-assign-submission-onlinetext.html',
 })
-export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignSubmissionPluginComponent implements OnInit {
+export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignSubmissionPluginBaseComponent implements OnInit {
 
     control?: FormControl;
     words = 0;
@@ -62,8 +62,8 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
             undefined,
         );
 
-        this.wordLimitEnabled = !!parseInt(this.data?.configs.wordlimitenabled || '0', 10);
-        this.wordLimit = parseInt(this.data?.configs.wordlimit || '0');
+        this.wordLimitEnabled = !!parseInt(this.configs?.wordlimitenabled || '0', 10);
+        this.wordLimit = parseInt(this.configs?.wordlimit || '0');
 
         try {
             if (offlineData && offlineData.plugindata && offlineData.plugindata.onlinetext_editor) {

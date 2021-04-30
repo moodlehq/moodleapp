@@ -14,7 +14,6 @@
 
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
-import { AddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/components/feedback-plugin/feedback-plugin';
 import { AddonModAssign, AddonModAssignProvider } from '@addons/mod/assign/services/assign';
 import { CoreTextUtils } from '@services/utils/text';
 import {
@@ -25,6 +24,7 @@ import {
 import { AddonModAssignFeedbackDelegate } from '@addons/mod/assign/services/feedback-delegate';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
 import { CoreUtils } from '@services/utils/utils';
+import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 /**
  * Component to render a comments feedback plugin.
  */
@@ -32,7 +32,7 @@ import { CoreUtils } from '@services/utils/utils';
     selector: 'addon-mod-assign-feedback-comments',
     templateUrl: 'addon-mod-assign-feedback-comments.html',
 })
-export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedbackPluginComponent implements OnInit {
+export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 
     control?: FormControl;
     component = AddonModAssignProvider.COMPONENT;
