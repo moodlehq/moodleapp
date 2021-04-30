@@ -58,6 +58,24 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
     getPreventSubmitMessage?(question: CoreQuestionQuestionParsed): string | undefined;
 
     /**
+     * Check if there's a validation error with the offline data.
+     *
+     * @param question The question.
+     * @param answers Object with the question offline answers (without prefix).
+     * @param onlineError Online validation error.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @return Error message if there's a validation error, undefined otherwise.
+     */
+    getValidationError?(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+        onlineError: string | undefined,
+        component: string,
+        componentId: string | number,
+    ): string | undefined;
+
+    /**
      * Check if a response is complete.
      *
      * @param question The question.
@@ -453,6 +471,28 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
         const type = this.getTypeName(question);
 
         await this.executeFunctionOnEnabled(type, 'prepareSyncData', [question, answers, component, componentId, siteId]);
+    }
+
+    /**
+     * Check if there's a validation error with the offline data.
+     *
+     * @param question The question.
+     * @param answers Object with the question offline answers (without prefix).
+     * @param onlineError Online validation error.
+     * @param component The component the question is related to.
+     * @param componentId Component ID.
+     * @return Error message if there's a validation error, undefined otherwise.
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+        onlineError: string | undefined,
+        component: string,
+        componentId: string | number,
+    ): string | undefined {
+        const type = this.getTypeName(question);
+
+        return this.executeFunctionOnEnabled(type, 'getValidationError', [question, answers, onlineError, component, componentId]);
     }
 
 }

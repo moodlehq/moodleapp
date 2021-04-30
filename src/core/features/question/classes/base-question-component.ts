@@ -264,6 +264,7 @@ export class CoreQuestionBaseComponent {
         if (review) {
             // Search the answer and the attachments.
             question.answer = CoreDomUtils.getContentsOfElement(questionEl, '.qtype_essay_response');
+            question.wordCountInfo = questionEl.querySelector('.answer > p')?.innerHTML;
 
             if (question.parsedSettings) {
                 question.attachments = Array.from(
@@ -764,6 +765,7 @@ export type AddonModQuizEssayQuestion = AddonModQuizQuestionBasicData & {
     attachmentsMaxBytes?: number; // Max bytes for attachments.
     answerPlagiarism?: string; // Plagiarism HTML for the answer.
     attachmentsPlagiarisms?: string[]; // Plagiarism HTML for each attachment.
+    wordCountInfo?: string; // Info about word count.
 };
 
 /**

@@ -26,7 +26,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonQtypeEssayComponent } from '../../component/essay';
 
 /**
@@ -156,6 +156,63 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     }
 
     /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+        onlineError: string | undefined,
+    ): string | undefined {
+        if (answers.answer === undefined) {
+            // Not answered in offline.
+            return onlineError;
+        }
+
+        if (!answers.answer) {
+            // Not answered yet, no error.
+            return;
+        }
+
+        return this.checkInputWordCount(question, <string> answers.answer, onlineError);
+    }
+
+    /**
+     * Check the input word count and return a message to user when the number of words are outside the boundary settings.
+     *
+     * @param question The question.
+     * @param answers Object with the question answers (without prefix).
+     * @param onlineError Online validation error.
+     * @return Error message if there's a validation error, undefined otherwise.
+     */
+    protected checkInputWordCount(
+        question: CoreQuestionQuestionParsed,
+        answer: string,
+        onlineError: string | undefined,
+    ): string | undefined {
+        if (!question.parsedSettings || question.parsedSettings.maxwordlimit === undefined ||
+                question.parsedSettings.minwordlimit === undefined) {
+            // Min/max not supported, use online error.
+            return onlineError;
+        }
+
+        const minWords = Number(question.parsedSettings.minwordlimit);
+        const maxWords = Number(question.parsedSettings.maxwordlimit);
+
+        if (!maxWords && !minWords) {
+            // No min and max, no error.
+            return;
+        }
+
+        // Count the number of words in the response string.
+        const count = CoreTextUtils.countWords(answer);
+        if (maxWords && count > maxWords) {
+            return Translate.instant('addon.qtype_essay.maxwordlimitboundary', { $a: { limit: maxWords, count: count } });
+        } else if (count < minWords) {
+            return Translate.instant('addon.qtype_essay.minwordlimitboundary', { $a: { limit: minWords, count: count } });
+        }
+    }
+
+    /**
      * Check if a response is complete.
      *
      * @param question The question.
@@ -174,6 +231,10 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         const hasTextAnswer = !!answers.answer;
         const uploadFilesSupported = typeof question.responsefileareas != 'undefined';
         const allowedOptions = this.getAllowedOptions(question);
+
+        if (hasTextAnswer && this.checkInputWordCount(question, <string> answers.answer, undefined)) {
+            return 0;
+        }
 
         if (!allowedOptions.attachments) {
             return hasTextAnswer ? 1 : 0;
