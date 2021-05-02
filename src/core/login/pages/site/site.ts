@@ -379,14 +379,14 @@ export class CoreLoginSitePage {
      *
      * @param name Name of the site to check.
      * @return Site data if it's a demo site, undefined otherwise.
-     */
-    getDemoSiteData(name: string): any {
+     
+		getDemoSiteData(name: string): any {
         const demoSites = CoreConfigConstants.demo_sites;
         if (typeof demoSites != 'undefined' && typeof demoSites[name] != 'undefined') {
             return demoSites[name];
         }
     }
-
+	*/
     /**
      * Process login to a site.
      *
@@ -433,16 +433,18 @@ export class CoreLoginSitePage {
             let valid = value.length >= 3 && CoreUrl.isValidMoodleUrl(value);
 
             if (!valid) {
-                const demo = !!this.getDemoSiteData(value);
+               /* Check demo site validity
+			   const demo = !!this.getDemoSiteData(value);
 
                 if (demo) {
                     valid = true;
                 }
             }
-
+				*/
             return valid ? null : {siteUrl: {value: control.value}};
-        };
+        }
     }
+};
 
     /**
      * Show instructions and scan QR code.
@@ -466,7 +468,7 @@ export class CoreLoginSitePage {
                 },
             ],
         });
-    }
+    };
 
     /**
      * Scan a QR code and put its text in the URL input.
@@ -505,7 +507,7 @@ export class CoreLoginSitePage {
                 }
             }
         }
-    }
+    };
 
     /**
      * Treat an error while handling a custom URL meant to perform an authentication.
