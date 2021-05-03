@@ -128,17 +128,25 @@ export class CoreQuestionComponent implements OnInit {
             return;
         }
 
-        // Load local answers if offline is enabled.
-        if (this.offlineEnabled && this.component && this.attemptId) {
-            await CoreQuestionHelper.loadLocalAnswers(this.question, this.component, this.attemptId);
-        } else {
-            this.question.localAnswers = {};
-        }
-
         CoreQuestionHelper.extractQbehaviourRedoButton(this.question);
 
         // Extract the validation error of the question.
         this.validationError = CoreQuestionHelper.getValidationErrorFromHtml(this.question.html);
+
+        // Load local answers if offline is enabled.
+        if (this.offlineEnabled && this.component && this.attemptId) {
+            await CoreQuestionHelper.loadLocalAnswers(this.question, this.component, this.attemptId);
+
+            this.validationError = CoreQuestionDelegate.getValidationError(
+                this.question,
+                this.question.localAnswers || {},
+                this.validationError,
+                this.component,
+                this.attemptId,
+            );
+        } else {
+            this.question.localAnswers = {};
+        }
 
         // Load the local answers in the HTML.
         CoreQuestionHelper.loadLocalAnswersInHtml(this.question);

@@ -76,6 +76,17 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
     }
 
     /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+        onlineError: string,
+    ): string | undefined {
+        return onlineError;
+    }
+
+    /**
      * Check if a response is complete.
      *
      * @param question The question.

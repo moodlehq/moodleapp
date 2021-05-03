@@ -1,0 +1,4 @@
+{
+    "maxwordlimitboundary": "The word limit for this question is {{$a.limit}} words and you are attempting to submit {{$a.count}} words. Please shorten your response and try again.",
+    "minwordlimitboundary": "This question requires a response of at least {{$a.limit}} words and you are attempting to submit {{$a.count}} words. Please expand your response and try again."
+}
