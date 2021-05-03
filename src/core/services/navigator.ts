@@ -30,6 +30,7 @@ import { makeSingleton, NavController, Router } from '@singletons';
 import { CoreScreen } from './screen';
 import { filter } from 'rxjs/operators';
 import { CoreApp } from './app';
+import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 
 const DEFAULT_MAIN_MENU_TAB = CoreMainMenuHomeHandlerService.PAGE_NAME;
 
@@ -38,7 +39,7 @@ const DEFAULT_MAIN_MENU_TAB = CoreMainMenuHomeHandlerService.PAGE_NAME;
  */
 export type CoreRedirectPayload = {
     redirectPath: string;
-    redirectParams?: Params;
+    redirectOptions?: CoreNavigationOptions;
 };
 
 /**
@@ -49,6 +50,11 @@ export type CoreNavigationOptions = {
     params?: Params;
     reset?: boolean;
     preferCurrentTab?: boolean; // Default true.
+    nextNavigation?: {
+        path: string;
+        isSitePath?: boolean;
+        options?: CoreNavigationOptions;
+    };
 };
 
 /**
@@ -148,6 +154,14 @@ export class CoreNavigatorService {
             ? await NavController.navigateRoot(url, navigationOptions)
             : await NavController.navigateForward(url, navigationOptions);
 
+        if (options.nextNavigation?.path && navigationResult !== false) {
+            if (options.nextNavigation.isSitePath) {
+                return this.navigateToSitePath(options.nextNavigation.path, options.nextNavigation.options);
+            }
+
+            return this.navigate(options.nextNavigation.path, options.nextNavigation.options);
+        }
+
         return navigationResult !== false;
     }
 
@@ -208,7 +222,14 @@ export class CoreNavigatorService {
 
         // If we are logged into a different site, log out first.
         if (CoreSites.isLoggedIn() && CoreSites.getCurrentSiteId() !== siteId) {
-            // @todo: Check site plugins and store redirect.
+            if (CoreSitePlugins.hasSitePluginsLoaded) {
+                // The site has site plugins so the app will be restarted. Store the data and logout.
+                CoreApp.storeRedirect(siteId, path, options || {});
+
+                await CoreSites.logout();
+
+                return true;
+            }
 
             await CoreSites.logout();
         }
@@ -442,7 +463,7 @@ export class CoreNavigatorService {
             ...options,
             params: {
                 redirectPath: `/main/${DEFAULT_MAIN_MENU_TAB}/${path}`,
-                redirectParams: options.params,
+                redirectOptions: options.params || options.nextNavigation ? options : undefined,
             } as CoreRedirectPayload,
         });
     }

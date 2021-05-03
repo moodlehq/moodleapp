@@ -373,7 +373,14 @@ export class AddonCalendarProvider {
 
                     CoreNavigator.navigateToSitePath(
                         pageName,
-                        { params: { eventId: notification.eventId }, siteId: notification.siteId },
+                        {
+                            siteId: notification.siteId,
+                            preferCurrentTab: false,
+                            nextNavigation: {
+                                path: `calendar/event/${notification.eventId}`,
+                                isSitePath: true,
+                            },
+                        },
                     );
                 }
             },

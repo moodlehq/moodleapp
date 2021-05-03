@@ -136,29 +136,18 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
     /**
      * Component loaded.
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.route.queryParams.subscribe(async (params) => {
-            const discussionUserId = CoreNavigator.getRouteNumberParam('discussionUserId', { params }) ||
-                CoreNavigator.getRouteNumberParam('userId', { params }) || undefined;
-
-            if (this.loaded && this.discussionUserId == discussionUserId) {
-                return;
-            }
-
-            this.discussionUserId = discussionUserId;
-
-            if (this.discussionUserId) {
-                // There is a discussion to load, open the discussion in a new state.
-                this.gotoDiscussion(this.discussionUserId);
-            }
-
-            await this.fetchData();
-
-            if (!this.discussionUserId && this.discussions.length > 0 && CoreScreen.isTablet) {
-                // Take first and load it.
-                this.gotoDiscussion(this.discussions[0].message!.user);
-            }
+            // When a child page loads this callback is triggered too.
+            this.discussionUserId = CoreNavigator.getRouteNumberParam('userId', { params }) ?? this.discussionUserId;
         });
+
+        await this.fetchData();
+
+        if (!this.discussionUserId && this.discussions.length > 0 && CoreScreen.isTablet) {
+            // Take first and load it.
+            this.gotoDiscussion(this.discussions[0].message!.user);
+        }
     }
 
     /**

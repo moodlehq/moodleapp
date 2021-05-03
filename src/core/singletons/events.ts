@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Params } from '@angular/router';
 import { Subject } from 'rxjs';
 
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreFilepoolComponentFileEventData } from '@services/filepool';
+import { CoreNavigationOptions } from '@services/navigator';
 
 /**
  * Observer instance to stop listening to an event.
@@ -260,7 +260,7 @@ export type CoreEventSiteAddedData = CoreSiteInfoResponse;
  */
 export type CoreEventSessionExpiredData = {
     pageName?: string;
-    params?: Params;
+    options?: CoreNavigationOptions;
 };
 
 /**

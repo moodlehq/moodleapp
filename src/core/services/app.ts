@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Params } from '@angular/router';
 
 import { CoreDB } from '@services/db';
 import { CoreEvents } from '@singletons/events';
@@ -25,6 +24,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreColors } from '@singletons/colors';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
 import { CoreObject } from '@singletons/object';
+import { CoreNavigationOptions } from './navigator';
 
 /**
  * Object responsible of managing schema versions.
@@ -550,6 +550,19 @@ export class CoreAppProvider {
     }
 
     /**
+     * Retrieve and forget redirect data.
+     *
+     * @return Redirect data if any.
+     */
+    consumeMemoryRedirect(): CoreRedirectData | null {
+        const redirect = this.getRedirect();
+
+        this.forgetRedirect();
+
+        return redirect;
+    }
+
+    /**
      * Forget redirect data.
      */
     forgetRedirect(): void {
@@ -559,7 +572,7 @@ export class CoreAppProvider {
     /**
      * Retrieve redirect data.
      *
-     * @return Object with siteid, state, params and timemodified.
+     * @return Redirect data if any.
      */
     getRedirect(): CoreRedirectData | null {
         return this.redirect || null;
@@ -570,14 +583,14 @@ export class CoreAppProvider {
      *
      * @param siteId Site ID.
      * @param page Page to go.
-     * @param params Page params.
+     * @param options Navigation options.
      */
-    storeRedirect(siteId: string, page: string, params: Params): void {
+    storeRedirect(siteId: string, page: string, options: CoreNavigationOptions): void {
         try {
             const redirect: CoreRedirectData = {
                 siteId,
                 page,
-                params,
+                options,
                 timemodified: Date.now(),
             };
 
@@ -658,14 +671,14 @@ export type CoreRedirectData = {
     siteId?: string;
 
     /**
-     * Name of the page to redirect to.
+     * Path of the page to redirect to.
      */
     page?: string;
 
     /**
-     * Params to pass to the page.
+     * Options of the navigation.
      */
-    params?: Params;
+    options?: CoreNavigationOptions;
 
     /**
      * Timestamp when this redirect was last modified.

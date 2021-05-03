@@ -12,26 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreContentLinksChooseSitePage } from './choose-site';
-
-const routes: Routes = [
-    {
-        path: '',
-        component: CoreContentLinksChooseSitePage,
-    },
-];
+import { NgModule } from '@angular/core';
+import { CoreContentLinksChooseSiteModalComponent } from './choose-site-modal/choose-site-modal';
 
 @NgModule({
     declarations: [
-        CoreContentLinksChooseSitePage,
+        CoreContentLinksChooseSiteModalComponent,
     ],
     imports: [
-        RouterModule.forChild(routes),
         CoreSharedModule,
     ],
+    exports: [
+        CoreContentLinksChooseSiteModalComponent,
+    ],
 })
-export class CoreContentLinksChooseSitePageModule {}
+export class CoreContentLinksComponentsModule {}

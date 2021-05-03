@@ -84,42 +84,40 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
     /**
      * Component loaded.
      */
-    ngOnInit(): void {
-        this.route.queryParams.subscribe(async () => {
-            const discussionUserId = CoreNavigator.getRouteNumberParam('discussionUserId') ||
-                CoreNavigator.getRouteNumberParam('userId') || undefined;
+    async ngOnInit(): Promise<void> {
+        const discussionUserId = CoreNavigator.getRouteNumberParam('discussionUserId') ||
+            CoreNavigator.getRouteNumberParam('userId') || undefined;
 
-            if (this.loaded && this.discussionUserId == discussionUserId) {
-                return;
-            }
+        if (this.loaded && this.discussionUserId == discussionUserId) {
+            return;
+        }
 
-            this.discussionUserId = discussionUserId;
+        this.discussionUserId = discussionUserId;
 
-            if (this.discussionUserId) {
-                // There is a discussion to load, open the discussion in a new state.
-                this.gotoDiscussion(this.discussionUserId);
-            }
+        if (this.discussionUserId) {
+            // There is a discussion to load, open the discussion in a new state.
+            this.gotoDiscussion(this.discussionUserId);
+        }
 
-            try {
-                await this.fetchData();
-                if (!this.discussionUserId && this.hasContacts && CoreScreen.isTablet) {
-                    let contact: AddonMessagesGetContactsContact | undefined;
-                    for (const x in this.contacts) {
-                        if (this.contacts[x].length > 0) {
-                            contact = this.contacts[x][0];
-                            break;
-                        }
-                    }
-
-                    if (contact) {
-                        // Take first and load it.
-                        this.gotoDiscussion(contact.id);
+        try {
+            await this.fetchData();
+            if (!this.discussionUserId && this.hasContacts && CoreScreen.isTablet) {
+                let contact: AddonMessagesGetContactsContact | undefined;
+                for (const x in this.contacts) {
+                    if (this.contacts[x].length > 0) {
+                        contact = this.contacts[x][0];
+                        break;
                     }
                 }
-            } finally {
-                this.loaded = true;
+
+                if (contact) {
+                    // Take first and load it.
+                    this.gotoDiscussion(contact.id);
+                }
             }
-        });
+        } finally {
+            this.loaded = true;
+        }
     }
 
     /**

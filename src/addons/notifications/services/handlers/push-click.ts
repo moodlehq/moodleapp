@@ -125,7 +125,10 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
 
         await CoreNavigator.navigateToSitePath(
             AddonNotificationsMainMenuHandlerService.PAGE_NAME,
-            { siteId: notification.site },
+            {
+                siteId: notification.site,
+                preferCurrentTab: false,
+            },
         );
     }
 

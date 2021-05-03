@@ -42,10 +42,10 @@ export class CoreMainMenuProvider {
      *
      * @return Promise resolved with the current main menu handlers.
      */
-    getCurrentMainMenuHandlers(): CoreMainMenuHandlerToDisplay[] {
-        return CoreMainMenuDelegate.getHandlers()
-            .filter(handler => !handler.onlyInMore)
-            .slice(0, this.getNumItems());
+    async getCurrentMainMenuHandlers(): Promise<CoreMainMenuHandlerToDisplay[]> {
+        const handlers = await CoreMainMenuDelegate.getHandlersWhenLoaded();
+
+        return handlers.filter(handler => !handler.onlyInMore).slice(0, this.getNumItems());
     }
 
     /**
@@ -215,7 +215,11 @@ export class CoreMainMenuProvider {
     async isCurrentMainMenuHandler(pageName: string): Promise<boolean> {
         const handlers = await this.getCurrentMainMenuHandlers();
 
-        const handler = handlers.find((handler) => handler.page == pageName);
+        const handler = handlers.find((handler) => {
+            const tabRoot = /^[^/]+/.exec(handler.page)?.[0] ?? handler.page;
+
+            return tabRoot == pageName;
+        });
 
         return !!handler;
     }

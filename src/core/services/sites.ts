@@ -50,6 +50,7 @@ import {
 } from '@services/database/sites';
 import { CoreArray } from '../singletons/array';
 import { CoreNetworkError } from '@classes/errors/network-error';
+import { CoreNavigationOptions } from './navigator';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 
@@ -795,10 +796,10 @@ export class CoreSitesProvider {
      *
      * @param siteId ID of the site to load.
      * @param pageName Name of the page to go once authenticated if logged out. If not defined, site initial page.
-     * @param params Params of the page to go once authenticated if logged out.
+     * @param pageOptions Options of the navigation to pageName.
      * @return Promise resolved with true if site is loaded, resolved with false if cannot login.
      */
-    async loadSite(siteId: string, pageName?: string, params?: Record<string, unknown>): Promise<boolean> {
+    async loadSite(siteId: string, pageName?: string, pageOptions?: CoreNavigationOptions): Promise<boolean> {
         this.logger.debug(`Load site ${siteId}`);
 
         const site = await this.getSite(siteId);
@@ -809,7 +810,7 @@ export class CoreSitesProvider {
             // Logged out, trigger session expired event and stop.
             CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {
                 pageName,
-                params,
+                options: pageOptions,
             }, site.getId());
 
             return false;
@@ -822,7 +823,7 @@ export class CoreSitesProvider {
             // Local mobile was added. Throw invalid session to force reconnect and create a new token.
             CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {
                 pageName,
-                params,
+                options: pageOptions,
             }, siteId);
 
             return false;

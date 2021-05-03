@@ -46,7 +46,6 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     @ViewChild(AddonCalendarCalendarComponent) calendarComponent?: AddonCalendarCalendarComponent;
     @ViewChild(AddonCalendarUpcomingEventsComponent) upcomingEventsComponent?: AddonCalendarUpcomingEventsComponent;
 
-    protected eventId?: number;
     protected currentSiteId: string;
 
     // Observers.
@@ -167,19 +166,13 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.notificationsEnabled = CoreLocalNotifications.isAvailable();
 
-        this.route.queryParams.subscribe(() => {
-            this.eventId = CoreNavigator.getRouteNumberParam('eventId');
+        this.route.queryParams.subscribe(async () => {
             this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId');
             this.year = CoreNavigator.getRouteNumberParam('year');
             this.month = CoreNavigator.getRouteNumberParam('month');
             this.loadUpcoming = !!CoreNavigator.getRouteBooleanParam('upcoming');
             this.showCalendar = !this.loadUpcoming;
             this.filter.filtered = !!this.filter.courseId;
-
-            if (this.eventId) {
-                // There is an event to load, open the event in a new state.
-                this.gotoEvent(this.eventId);
-            }
 
             this.fetchData(true, false);
         });
@@ -311,7 +304,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             // It's an offline event, go to the edit page.
             this.openEdit(eventId);
         } else {
-            CoreNavigator.navigateToSitePath('/calendar/event', { params: { id: eventId } });
+            CoreNavigator.navigateToSitePath(`/calendar/event/${eventId}`);
         }
     }
 

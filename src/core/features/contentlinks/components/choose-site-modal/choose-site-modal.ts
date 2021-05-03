@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { Translate } from '@singletons';
+import { ModalController, Translate } from '@singletons';
 import { CoreContentLinksAction } from '../../services/contentlinks-delegate';
 import { CoreContentLinksHelper } from '../../services/contentlinks-helper';
 import { CoreError } from '@classes/errors/error';
@@ -27,12 +27,13 @@ import { CoreNavigator } from '@services/navigator';
  * @todo Include routing and testing.
  */
 @Component({
-    selector: 'page-core-content-links-choose-site',
-    templateUrl: 'choose-site.html',
+    selector: 'core-content-links-choose-site-modal',
+    templateUrl: 'choose-site-modal.html',
 })
-export class CoreContentLinksChooseSitePage implements OnInit {
+export class CoreContentLinksChooseSiteModalComponent implements OnInit {
 
-    url!: string;
+    @Input() url!: string;
+
     sites: CoreSiteBasicInfo[] = [];
     loaded = false;
     protected action?: CoreContentLinksAction;
@@ -42,12 +43,10 @@ export class CoreContentLinksChooseSitePage implements OnInit {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        const url = CoreNavigator.getRouteParam<string>('url');
-        if (!url) {
-            return this.leaveView();
+        if (!this.url) {
+            return this.closeModal();
         }
 
-        this.url = url;
         let siteIds: string[] | undefined = [];
 
         try {
@@ -75,17 +74,10 @@ export class CoreContentLinksChooseSitePage implements OnInit {
             this.sites = await CoreSites.getSites(siteIds);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.contentlinks.errornosites', true);
-            this.leaveView();
+            this.closeModal();
         }
 
         this.loaded = true;
-    }
-
-    /**
-     * Cancel.
-     */
-    cancel(): void {
-        this.leaveView();
     }
 
     /**
@@ -93,7 +85,9 @@ export class CoreContentLinksChooseSitePage implements OnInit {
      *
      * @param siteId Site ID.
      */
-    siteClicked(siteId: string): void {
+    async siteClicked(siteId: string): Promise<void> {
+        await ModalController.dismiss();
+
         if (this.isRootURL) {
             CoreNavigator.navigateToSiteHome({ siteId });
         } else if (this.action) {
@@ -102,14 +96,10 @@ export class CoreContentLinksChooseSitePage implements OnInit {
     }
 
     /**
-     * Cancel and leave the view.
+     * Close the modal.
      */
-    protected async leaveView(): Promise<void> {
-        try {
-            await CoreSites.logout();
-        } finally {
-            await CoreNavigator.navigate('/login/sites', { reset: true });
-        }
+    closeModal(): void {
+        ModalController.dismiss();
     }
 
 }

@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, CanLoad, UrlTree } from '@angular/router';
 import { CoreApp } from '@services/app';
+import { CoreRedirectPayload } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { Router } from '@singletons';
 import { CoreConstants } from '../constants';
@@ -40,52 +41,48 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
      * Check if there is a pending redirect and trigger it.
      */
     private async guard(): Promise<true | UrlTree> {
-        const redirect = CoreApp.getRedirect();
+        const redirect = CoreApp.consumeMemoryRedirect();
 
         if (!redirect) {
             return true;
         }
 
-        try {
-            // Only accept the redirect if it was stored less than 20 seconds ago.
-            if (!redirect.timemodified || Date.now() - redirect.timemodified < 20000) {
-                return true;
-            }
+        // Only accept the redirect if it was stored less than 20 seconds ago.
+        if (!redirect.timemodified || Date.now() - redirect.timemodified > 20000) {
+            return true;
+        }
 
-            // Redirect to site path.
-            if (redirect.siteId && redirect.siteId !== CoreConstants.NO_SITE_ID) {
-                const loggedIn = await CoreSites.loadSite(
-                    redirect.siteId,
-                    redirect.page,
-                    redirect.params,
-                );
-                const route = Router.parseUrl('/main');
-
-                route.queryParams = {
-                    redirectPath: redirect.page,
-                    redirectParams: redirect.params,
-                };
-
-                return loggedIn ? route : true;
-            }
-
-            // Abort redirect.
-            if (!redirect.page) {
-                return true;
-            }
-
-            // Redirect to non-site path.
-            const route = Router.parseUrl(redirect.page);
+        // Redirect to site path.
+        if (redirect.siteId && redirect.siteId !== CoreConstants.NO_SITE_ID) {
+            const loggedIn = await CoreSites.loadSite(
+                redirect.siteId,
+                redirect.page,
+                redirect.options,
+            );
+            const route = Router.parseUrl('/main/home');
 
             route.queryParams = {
                 redirectPath: redirect.page,
-                redirectParams: redirect.params,
-            };
+                redirectOptions: redirect.options,
+            } as CoreRedirectPayload;
 
-            return route;
-        } finally {
-            CoreApp.forgetRedirect();
+            return loggedIn ? route : true;
         }
+
+        // Abort redirect.
+        if (!redirect.page) {
+            return true;
+        }
+
+        // Redirect to non-site path.
+        const route = Router.parseUrl(redirect.page);
+
+        route.queryParams = {
+            redirectPath: redirect.page,
+            redirectOptions: redirect.options,
+        } as CoreRedirectPayload;
+
+        return route;
     }
 
 }

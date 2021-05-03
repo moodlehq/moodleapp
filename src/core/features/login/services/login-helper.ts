@@ -32,7 +32,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
-import { CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 
@@ -461,7 +461,7 @@ export class CoreLoginHelperProvider {
             ...options,
             params: {
                 redirectPath: page,
-                redirectParams: params,
+                redirectOptions: { params },
                 urlToOpen: url,
             },
         });
@@ -549,10 +549,10 @@ export class CoreLoginHelperProvider {
      * Check if current site is logged out, triggering mmCoreEventSessionExpired if it is.
      *
      * @param pageName Name of the page to go once authenticated if logged out. If not defined, site initial page.
-     * @param params Params of the page to go once authenticated if logged out.
+     * @param options Options of the page to go once authenticated if logged out.
      * @return True if user is logged out, false otherwise.
      */
-    isSiteLoggedOut(pageName?: string, params?: Params): boolean {
+    isSiteLoggedOut(pageName?: string, options?: CoreNavigationOptions): boolean {
         const site = CoreSites.getCurrentSite();
         if (!site) {
             return false;
@@ -561,7 +561,7 @@ export class CoreLoginHelperProvider {
         if (site.isLoggedOut()) {
             CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {
                 pageName,
-                params,
+                options,
             }, site.getId());
 
             return true;
@@ -633,7 +633,7 @@ export class CoreLoginHelperProvider {
      * @param provider The identity provider.
      * @param launchUrl The URL to open for SSO. If not defined, tool/mobile launch URL will be used.
      * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
-     * @param pageParams Params of the state to go once authenticated.
+     * @param pageOptions Options of the page to go once authenticated.
      * @return True if success, false if error.
      */
     openBrowserForOAuthLogin(
@@ -641,7 +641,7 @@ export class CoreLoginHelperProvider {
         provider: CoreSiteIdentityProvider,
         launchUrl?: string,
         pageName?: string,
-        pageParams?: Params,
+        pageOptions?: CoreNavigationOptions,
     ): boolean {
         launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
         if (!provider || !provider.url) {
@@ -655,7 +655,7 @@ export class CoreLoginHelperProvider {
         }
 
         const service = CoreSites.determineService(siteUrl);
-        const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, pageName, pageParams, {
+        const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, pageName, pageOptions, {
             oauthsso: params.id,
         });
 
@@ -676,7 +676,7 @@ export class CoreLoginHelperProvider {
      * @param service The service to use. If not defined, external service will be used.
      * @param launchUrl The URL to open for SSO. If not defined, local_mobile launch URL will be used.
      * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
-     * @param pageParams Params of the state to go once authenticated.
+     * @param pageOptions Options of the state to go once authenticated.
      */
     openBrowserForSSOLogin(
         siteUrl: string,
@@ -684,9 +684,9 @@ export class CoreLoginHelperProvider {
         service?: string,
         launchUrl?: string,
         pageName?: string,
-        pageParams?: Params,
+        pageOptions?: CoreNavigationOptions,
     ): void {
-        const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, pageName, pageParams);
+        const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, pageName, pageOptions);
 
         if (this.isSSOEmbeddedBrowser(typeOfLogin)) {
             CoreUtils.openInApp(loginUrl, {
@@ -797,7 +797,7 @@ export class CoreLoginHelperProvider {
      * @param service The service to use. If not defined, external service will be used.
      * @param launchUrl The URL to open for SSO. If not defined, local_mobile launch URL will be used.
      * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
-     * @param pageParams Params of the state to go once authenticated.
+     * @param pageOptions Options of the page to go once authenticated.
      * @param urlParams Other params to add to the URL.
      * @return Login Url.
      */
@@ -806,7 +806,7 @@ export class CoreLoginHelperProvider {
         service?: string,
         launchUrl?: string,
         pageName?: string,
-        pageParams?: Params,
+        pageOptions?: CoreNavigationOptions,
         urlParams?: CoreUrlParams,
     ): string {
 
@@ -829,7 +829,7 @@ export class CoreLoginHelperProvider {
             siteUrl: siteUrl,
             passport: passport,
             pageName: pageName || '',
-            pageParams: pageParams || {},
+            pageOptions: pageOptions || {},
             ssoUrlParams: urlParams || {},
         }));
 
@@ -917,7 +917,7 @@ export class CoreLoginHelperProvider {
                             result.service,
                             result.config?.launchurl,
                             data.pageName,
-                            data.params,
+                            data.options,
                         );
                     } catch (error) {
                         // User cancelled, logout him.
@@ -955,7 +955,7 @@ export class CoreLoginHelperProvider {
                                     providerToUse,
                                     result.config?.launchurl,
                                     data.pageName,
-                                    data.params,
+                                    data.options,
                                 );
                             } catch (error) {
                                 // User cancelled, logout him.
@@ -982,7 +982,7 @@ export class CoreLoginHelperProvider {
                         params: {
                             siteId,
                             pageName: data.pageName,
-                            pageParams: data.params,
+                            pageOptions: data.options,
                         },
                         reset: true,
                     }));
@@ -1213,7 +1213,7 @@ export class CoreLoginHelperProvider {
                 token: params[1],
                 privateToken: params[2],
                 pageName: data.pageName,
-                pageParams: data.pageParams,
+                pageOptions: data.pageOptions,
                 ssoUrlParams: data.ssoUrlParams,
             };
         } else {
@@ -1357,9 +1357,9 @@ export interface CoreLoginSSOData {
     pageName?: string;
 
     /**
-     * Params to page to the page.
+     * Options of the navigation to the page.
      */
-    pageParams?: Params;
+    pageOptions?: CoreNavigationOptions;
 
     /**
      * Other params added to the login url.
@@ -1450,6 +1450,6 @@ type StoredLoginLaunchData = {
     siteUrl: string;
     passport: number;
     pageName: string;
-    pageParams: Params;
+    pageOptions: CoreNavigationOptions;
     ssoUrlParams: CoreUrlParams;
 };

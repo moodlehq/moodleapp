@@ -24,7 +24,7 @@ export const AddonCalendarEditRoute: Route = {
 };
 
 export const AddonCalendarEventRoute: Route ={
-    path: 'event',
+    path: 'event/:id',
     loadChildren: () => import('@/addons/calendar/pages/event/event.module').then(m => m.AddonCalendarEventPageModule),
 };
 

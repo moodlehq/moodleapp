@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { NgModule, Type } from '@angular/core';
-
+import { CoreContentLinksComponentsModule } from './components/components.module';
 import { CoreContentLinksDelegateService } from './services/contentlinks-delegate';
 import { CoreContentLinksHelperProvider } from './services/contentlinks-helper';
 
@@ -22,5 +22,9 @@ export const CORE_CONTENTLINKS_SERVICES: Type<unknown>[] = [
     CoreContentLinksHelperProvider,
 ];
 
-@NgModule({})
+@NgModule({
+    imports: [
+        CoreContentLinksComponentsModule,
+    ],
+})
 export class CoreContentLinksModule {}

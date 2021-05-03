@@ -17,9 +17,10 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from './contentlinks-delegate';
 import { CoreSite } from '@classes/site';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton, ModalController, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
+import { CoreContentLinksChooseSiteModalComponent } from '../components/choose-site-modal/choose-site-modal';
 
 /**
  * Service that provides some features regarding content links.
@@ -56,7 +57,7 @@ export class CoreContentLinksHelperProvider {
     }
 
     /**
-     * Get the first valid action in the list of possible actions to do for a URL.
+     * Get the first valid action for a URL.
      *
      * @param url URL to handle.
      * @param courseId Course ID related to the URL. Optional but recommended.
@@ -75,6 +76,16 @@ export class CoreContentLinksHelperProvider {
             return;
         }
 
+        return this.getFirstValidAction(actions);
+    }
+
+    /**
+     * Get the first valid action in a list of possible actions.
+     *
+     * @param actions Actions.
+     * @return First valid action if any.
+     */
+    getFirstValidAction(actions: CoreContentLinksAction[]): CoreContentLinksAction | undefined {
         return actions.find((action) => action && action.sites && action.sites.length);
     }
 
@@ -101,7 +112,15 @@ export class CoreContentLinksHelperProvider {
      * @todo set correct root.
      */
     async goToChooseSite(url: string): Promise<void> {
-        await CoreNavigator.navigate('CoreContentLinksChooseSitePage @todo', { params: { url }, reset: true });
+        const modal = await ModalController.create({
+            component: CoreContentLinksChooseSiteModalComponent,
+            componentProps: {
+                url: url,
+            },
+            cssClass: 'core-modal-fullscreen',
+        });
+
+        await modal.present();
     }
 
     /**

@@ -46,6 +46,8 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     protected currentPagePath = '';
     protected selectTabObserver: CoreEventObserver;
     protected firstTabName?: string;
+    protected module?: CoreCourseWSModule;
+    protected modParams?: Params;
     protected contentsTab: CoreTabsOutletTab = {
         page: CONTENTS_PAGE_NAME,
         title: 'core.course.contents',
@@ -82,8 +84,8 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         // Get params.
         this.course = CoreNavigator.getRouteParam('course');
         this.firstTabName = CoreNavigator.getRouteParam('selectedTab');
-        const module = CoreNavigator.getRouteParam<CoreCourseWSModule>('module');
-        const modParams = CoreNavigator.getRouteParam<Params>('modParams');
+        this.module = CoreNavigator.getRouteParam<CoreCourseWSModule>('module');
+        this.modParams = CoreNavigator.getRouteParam<Params>('modParams');
 
         this.currentPagePath = CoreNavigator.getCurrentPath();
         this.contentsTab.page = CoreTextUtils.concatenatePaths(this.currentPagePath, this.contentsTab.page);
@@ -93,9 +95,8 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
             sectionNumber: CoreNavigator.getRouteNumberParam('sectionNumber'),
         };
 
-        if (module) {
-            this.contentsTab.pageParams!.moduleId = module.id;
-            CoreCourseHelper.openModule(module, this.course!.id, this.contentsTab.pageParams!.sectionId, modParams);
+        if (this.module) {
+            this.contentsTab.pageParams!.moduleId = this.module.id;
         }
 
         this.tabs.push(this.contentsTab);
@@ -105,6 +106,18 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
             this.loadCourseHandlers(),
             this.loadTitle(),
         ]);
+    }
+
+    /**
+     * A tab was selected.
+     */
+    tabSelected(): void {
+        if (this.module) {
+            // Now that the first tab has been selected we can load the module.
+            CoreCourseHelper.openModule(this.module, this.course!.id, this.contentsTab.pageParams!.sectionId, this.modParams);
+
+            delete this.module;
+        }
     }
 
     /**
