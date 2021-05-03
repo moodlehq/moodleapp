@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
             <core-format-text *ngIf="title" [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
@@ -31,16 +31,16 @@
             <ion-item class="ion-text-wrap" *ngIf="canEdit || canDelete">
                 <ion-label>
                     <ion-button expand="block" *ngIf="canEdit" (click)="editSubmission()">
-                        <ion-icon name="fas-edit" slot="start"></ion-icon>
+                        <ion-icon name="fas-edit" slot="start" aria-hidden="true"></ion-icon>
                         {{ 'addon.mod_workshop.editsubmission' | translate }}
                     </ion-button>
                     <ion-button expand="block" *ngIf="!submission.deleted && canDelete" color="danger" (click)="deleteSubmission()">
-                        <ion-icon name="fas-trash" slot="start"></ion-icon>
+                        <ion-icon name="fas-trash" slot="start" aria-hidden="true"></ion-icon>
                         {{ 'addon.mod_workshop.deletesubmission' | translate }}
                     </ion-button>
                     <ion-button expand="block" fill="outline" *ngIf="submission.deleted && canDelete" color="danger"
                         (click)="undoDeleteSubmission()">
-                        <ion-icon name="fas-undo-alt" slot="start"></ion-icon>
+                        <ion-icon name="fas-undo-alt" slot="start" aria-hidden="true"></ion-icon>
                         {{ 'core.restore' | translate }}
                     </ion-button>
                 </ion-label>

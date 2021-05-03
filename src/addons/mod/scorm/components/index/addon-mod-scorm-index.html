@@ -35,7 +35,7 @@
     <!-- Warning message. -->
     <ion-card class="core-info-card" *ngIf="scorm && scorm.warningMessage">
         <ion-item>
-            <ion-icon name="fas-info-circle" slot="start"></ion-icon>
+            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ scorm.warningMessage }}</ion-label>
         </ion-item>
     </ion-card>
@@ -115,7 +115,7 @@
         <!-- Synchronization warning. -->
         <ion-card class="core-warning-card" *ngIf="!errorMessage && hasOffline">
             <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
             </ion-item>
         </ion-card>
@@ -182,7 +182,7 @@
             </ion-item>
             <ion-button class="ion-margin ion-text-wrap" expand="block" [href]="externalUrl" core-link>
                 {{ 'core.openinbrowser' | translate }}
-                <ion-icon name="fas-external-link-alt" slot="end"></ion-icon>
+                <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-card>
 
@@ -219,13 +219,13 @@
                             <ion-col *ngIf="!scorm.hidebrowse">
                                 <ion-button expand="block" fill="outline" (click)="open($event, true)" class="ion-text-wrap">
                                     {{ 'addon.mod_scorm.browse' | translate }}
-                                    <ion-icon name="fas-search" slot="end"></ion-icon>
+                                    <ion-icon name="fas-search" slot="end" aria-hidden="true"></ion-icon>
                                 </ion-button>
                             </ion-col>
                             <ion-col>
                                 <ion-button expand="block" (click)="open($event)" class="ion-text-wrap">
                                     {{ 'addon.mod_scorm.enter' | translate }}
-                                    <ion-icon name="fas-arrow-right" slot="end"></ion-icon>
+                                    <ion-icon name="fas-arrow-right" slot="end" aria-hidden="true"></ion-icon>
                                 </ion-button>
                             </ion-col>
                         </ion-row>

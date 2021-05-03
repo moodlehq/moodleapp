@@ -22,7 +22,7 @@
             <ion-textarea *ngIf="essayQuestion.isPlainText" class="core-question-textarea"
                 [ngClass]='{"core-monospaced": essayQuestion.isMonospaced}'
                 placeholder="{{ 'core.question.answer' | translate }}"
-                [attr.name]="essayQuestion.textarea.name" aria-multiline="true" [ngModel]="essayQuestion.textarea.text">
+                [attr.name]="essayQuestion.textarea.name" [ngModel]="essayQuestion.textarea.text">
             </ion-textarea>
             <!-- Rich text editor. -->
             <core-rich-text-editor *ngIf="!essayQuestion.isPlainText" placeholder="{{ 'core.question.answer' | translate }}"

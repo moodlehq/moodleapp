@@ -2,14 +2,14 @@
     <!-- Download button. -->
     <ion-button *ngIf="status == statusNotDownloaded" fill="clear" (click)="download($event, false)" color="dark"
         [@coreShowHideAnimation] [attr.aria-label]="(statusTranslatable || 'core.download') | translate">
-        <ion-icon slot="icon-only" name="cloud-download"></ion-icon>
+        <ion-icon slot="icon-only" name="cloud-download" aria-hidden="true"></ion-icon>
     </ion-button>
 
     <!-- Refresh button. -->
     <ion-button *ngIf="status == statusOutdated || (status == statusDownloaded && !canTrustDownload)" fill="clear"
         (click)="download($event, true)" color="dark" [@coreShowHideAnimation]
         [attr.aria-label]="(statusTranslatable || 'core.refresh') | translate">
-        <ion-icon slot="icon-only" name="fas-redo-alt"></ion-icon>
+        <ion-icon slot="icon-only" name="fas-redo-alt" aria-hidden="true"></ion-icon>
     </ion-button>
 
     <!-- Downloaded status icon. -->

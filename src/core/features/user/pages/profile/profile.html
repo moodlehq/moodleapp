@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title *ngIf="title">{{ title }}</ion-title>
     </ion-toolbar>
@@ -15,7 +15,8 @@
             <ion-item class="ion-text-center core-user-profile-maininfo">
                 <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true">
                     <div class="core-icon-foreground" *ngIf="canChangeProfilePicture">
-                        <ion-icon name="fa-pen" (click)="changeProfilePicture()">
+                        <ion-icon name="fa-pen" (click)="changeProfilePicture()"
+                            [attr.aria-label]="'core.user.newpicture' | translate">
                         </ion-icon>
                     </div>
                 </core-user-avatar>
@@ -35,8 +36,8 @@
                     <ion-label>
                         <ion-button *ngFor="let handler of communicationHandlers" expand="block" size="default"
                             [ngClass]="['core-user-profile-handler', handler.class || '']" (click)="handlerClicked($event, handler)"
-                            [hidden]="handler.hidden" title="{{ handler.title | translate }}" [disabled]="handler.spinner">
-                            <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start"></ion-icon>
+                            [hidden]="handler.hidden" [attr.aria-label]="handler.title | translate" [disabled]="handler.spinner">
+                            <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true"></ion-icon>
                             {{ handler.title | translate }}
                         </ion-button>
                     </ion-label>
@@ -48,8 +49,8 @@
 
 
             <ion-item button class="ion-text-wrap core-user-profile-handler" (click)="openUserDetails()"
-                title="{{ 'core.user.details' | translate }}" detail>
-                <ion-icon name="fa-user" slot="start"></ion-icon>
+                [attr.aria-label]="'core.user.details' | translate" detail="true">
+                <ion-icon name="fa-user" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <h2>{{ 'core.user.details' | translate }}</h2>
                 </ion-label>
@@ -60,8 +61,8 @@
 
             <ion-item button *ngFor="let handler of newPageHandlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
                 [ngClass]="['core-user-profile-handler', handler.class || '']" [hidden]="handler.hidden"
-                title="{{ handler.title | translate }}" detail>
-                <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start"></ion-icon>
+                [attr.aria-label]="handler.title | translate" detail="true">
+                <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <h2>{{ handler.title | translate }}</h2>
                 </ion-label>
@@ -71,8 +72,8 @@
                 <ion-label>
                     <ion-button *ngFor="let handler of actionHandlers" expand="block" fill="outline" size="default"
                         [ngClass]="['core-user-profile-handler', handler.class || '']" (click)="handlerClicked($event, handler)"
-                        [hidden]="handler.hidden" title="{{ handler.title | translate }}" [disabled]="handler.spinner">
-                        <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start"></ion-icon>
+                        [hidden]="handler.hidden" [attr.aria-label]="handler.title | translate" [disabled]="handler.spinner">
+                        <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true"></ion-icon>
                         {{ handler.title | translate }}
                         <ion-spinner *ngIf="handler.spinner" slot="end"></ion-spinner>
                     </ion-button>

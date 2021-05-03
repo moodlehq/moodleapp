@@ -103,6 +103,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
             return start <= event.timesort;
         }).map((event) => {
             event.iconUrl = CoreCourse.getModuleIconSrc(event.icon.component);
+            event.iconTitle = event.modulename && CoreCourse.translateModuleName(event.modulename);
 
             return event;
         });
@@ -145,6 +146,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
 
 type AddonBlockTimelineEvent = AddonCalendarEvent & {
     iconUrl?: string;
+    iconTitle?: string;
 };
 
 type AddonBlockTimelineEventFilteredEvent = {

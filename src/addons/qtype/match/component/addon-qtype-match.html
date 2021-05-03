@@ -23,7 +23,9 @@
                 {{option.label}}
             </ion-select-option>
         </ion-select>
-        <ion-icon *ngIf="row.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success" slot="end"></ion-icon>
-        <ion-icon *ngIf="row.isCorrect === 0" class="core-correct-icon" name="fas-times" color="danger" slot="end"></ion-icon>
+        <ion-icon *ngIf="row.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success" slot="end"
+            [attr.aria-label]="'core.question.correct' | translate"></ion-icon>
+        <ion-icon *ngIf="row.isCorrect === 0" class="core-correct-icon" name="fas-times" color="danger" slot="end"
+            [attr.aria-label]="'core.question.incorrect' | translate"></ion-icon>
     </ion-item>
 </section>

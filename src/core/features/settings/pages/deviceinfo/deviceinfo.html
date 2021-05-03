@@ -1,14 +1,14 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
             {{ 'core.settings.deviceinfo' | translate }}
         </ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="copyInfo()" [attr.aria-label]="'core.settings.copyinfo' | translate">
-                <ion-icon slot="icon-only" name="fas-clipboard" color="light"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-clipboard" color="light" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>

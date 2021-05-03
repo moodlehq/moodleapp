@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title *ngIf="startingPost">
             <core-format-text contextLevel="module" [text]="startingPost.subject" [contextInstanceId]="cmId" [courseId]="courseId">
@@ -69,7 +69,7 @@
         <!-- Discussion replies found to be synchronized -->
         <ion-card class="core-warning-card" *ngIf="postHasOffline || hasOfflineRatings">
             <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'core.hasdatatosync' | translate:{$a: discussionStr} }}</ion-label>
             </ion-item>
         </ion-card>
@@ -77,14 +77,14 @@
         <!-- Cut-off date or due date message -->
         <ion-card class="core-info-card" *ngIf="availabilityMessage">
             <ion-item>
-                <ion-icon name="information-circle" slot="start"></ion-icon>
+                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ availabilityMessage }}</ion-label>
             </ion-item>
         </ion-card>
 
         <ion-card class="core-info-card" *ngIf="discussion && discussion.locked">
             <ion-item>
-                <ion-icon name="fa-lock" slot="start"></ion-icon>
+                <ion-icon name="fa-lock" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'addon.mod_forum.discussionlocked' | translate }}</ion-label>
             </ion-item>
         </ion-card>

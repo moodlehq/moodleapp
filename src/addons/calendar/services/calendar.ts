@@ -2250,6 +2250,7 @@ export type AddonCalendarEventToDisplay = Partial<AddonCalendarCalendarEvent> & 
     deleted?: boolean; // Calculated in the app. Whether it has been deleted in offline.
     encodedLocation?: SafeUrl; // Calculated in the app. Sanitized location link.
     eventIcon?: string; // Calculated in the app. Event icon.
+    iconTitle?: string;
     moduleIcon?: string; // Calculated in the app. Module icon.
     formattedType: string; // Calculated in the app. Formatted type.
     duration?: number; // Calculated in the app. Duration of offline event.

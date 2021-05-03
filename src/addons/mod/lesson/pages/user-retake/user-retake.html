@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ 'addon.mod_lesson.detailedstats' | translate }}</ion-title>
     </ion-toolbar>
@@ -14,7 +14,7 @@
     <core-loading [hideUntil]="loaded">
         <div *ngIf="student">
             <!-- Student data. -->
-            <ion-item class="ion-text-wrap" core-user-link [userId]="student.id" [courseId]="courseId" [title]="student.fullname">
+            <ion-item class="ion-text-wrap" core-user-link [userId]="student.id" [courseId]="courseId" [attr.aria-label]="student.fullname">
                 <core-user-avatar [user]="student" slot="start" [userId]="student.id" [courseId]="courseId">
                 </core-user-avatar>
                 <ion-label>

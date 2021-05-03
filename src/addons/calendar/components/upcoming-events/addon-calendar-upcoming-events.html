@@ -4,22 +4,28 @@
 
     <ion-list *ngIf="filteredEvents && filteredEvents.length"  class="ion-no-margin">
         <ng-container *ngFor="let event of filteredEvents">
-            <ion-item class="ion-text-wrap addon-calendar-event" [title]="event.name" (click)="eventClicked(event)"
+            <ion-item class="ion-text-wrap addon-calendar-event" [attr.aria-label]="event.name" (click)="eventClicked(event)" button
                 [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
-                <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" slot="start" class="core-module-icon">
-                <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" slot="start">
+                <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" slot="start" class="core-module-icon" alt=""
+                    role="presentation">
+                <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" slot="start" aria-hidden="true">
                 </ion-icon>
                 <ion-label>
+                    <!-- Add the icon title so accessibility tools read it. -->
+                    <span class="sr-only">
+                        {{ 'addon.calendar.type' + event.formattedType | translate }}
+                        <span class="sr-only" *ngIf="event.moduleIcon && event.iconTitle">{{ event.iconTitle }}</span>
+                    </span>
                     <h2><core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
                         [contextInstanceId]="event.contextInstanceId"></core-format-text></h2>
                     <p [innerHTML]="event.formattedtime"></p>
                 </ion-label>
                 <ion-note *ngIf="event.offline && !event.deleted" slot="end">
-                    <ion-icon name="far-clock"></ion-icon>
+                    <ion-icon name="fas-clock" aria-hidden="true"></ion-icon>
                     <span class="ion-text-wrap">{{ 'core.notsent' | translate }}</span>
                 </ion-note>
                 <ion-note *ngIf="event.deleted" slot="end">
-                    <ion-icon name="fas-trash"></ion-icon>
+                    <ion-icon name="fas-trash" aria-hidden="true"></ion-icon>
                     <span class="ion-text-wrap">{{ 'core.deletedoffline' | translate }}</span>
                 </ion-note>
             </ion-item>

@@ -26,11 +26,11 @@
     <ion-list *ngIf="!shouldIframe && (!shouldEmbed || !isOther)">
         <ion-item *ngIf="shouldEmbed">
             <ion-label>
-                <img *ngIf="isImage" title="{{name}}" [src]="url">
-                <video *ngIf="isVideo" title="{{name}}" controls>
+                <img *ngIf="isImage" [alt]="name" [src]="url">
+                <video *ngIf="isVideo" [title]="name" controls>
                     <source [src]="url" [type]="mimetype">
                 </video>
-                <audio *ngIf="isAudio" title="{{name}}" controls>
+                <audio *ngIf="isAudio" [title]="name" controls>
                     <source [src]="url" [type]="mimetype">
                 </audio>
             </ion-label>
@@ -44,7 +44,7 @@
         <ion-item class="ion-text-wrap">
             <ion-label>
                 <ion-button expand="block" (click)="go()">
-                    <ion-icon name="link" slot="start"></ion-icon>
+                    <ion-icon name="fas-link" slot="start" aria-hidden="true"></ion-icon>
                     {{ 'addon.mod_url.accessurl' | translate }}
                 </ion-button>
             </ion-label>

@@ -90,7 +90,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     entriesRendered = '';
     extraImports: Type<unknown>[]  = [AddonModDataComponentsCompileModule];
 
-    jsData? : {
+    jsData?: {
         fields: Record<number, AddonModDataField>;
         entries: Record<number, AddonModDataEntry>;
         database: AddonModDataData;
@@ -100,7 +100,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     };
 
     // Data for found records translation.
-    foundRecordsTranslationData? : {
+    foundRecordsTranslationData?: {
         num: number;
         max: number;
         reseturl: string;

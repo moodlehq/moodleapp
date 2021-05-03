@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ 'core.contentlinks.chooseaccount' | translate }}</ion-title>
     </ion-toolbar>
@@ -15,10 +15,10 @@
                     <p>{{ url }}</p>
                 </ion-label>
             </ion-item>
-            <ion-item *ngFor="let site of sites" (click)="siteClicked(site.id)" detail="false">
+            <ion-item *ngFor="let site of sites" (click)="siteClicked(site.id)" detail="false" button>
                 <ion-avatar slot="start">
                     <img [src]="site.avatar" core-external-content [siteId]="site.id"
-                        alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}" role="presentation"
+                        alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}"
                         onError="this.src='assets/img/user-avatar.png'">
                 </ion-avatar>
                 <ion-label>

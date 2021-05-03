@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnChanges, ElementRef, SimpleChange } from '@angular/core';
+import { CoreLogger } from '@singletons/logger';
 
 /**
  * Core Icon is a component that enables the posibility to add fontawesome icon to the html. It
@@ -47,6 +48,8 @@ export class CoreIconComponent implements OnChanges {
         el: ElementRef,
     ) {
         this.element = el.nativeElement;
+
+        CoreLogger.getInstance('CoreIconComponent').error('CoreIconComponent is deprecated. Please use ion-icon instead.');
     }
 
     /**

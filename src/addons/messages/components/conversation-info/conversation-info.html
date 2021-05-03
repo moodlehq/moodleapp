@@ -3,7 +3,7 @@
         <ion-title>{{ 'addon.messages.groupinfo' | translate }}</ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon name="fas-times" slot="icon-only"></ion-icon>
+                <ion-icon name="fas-times" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -18,7 +18,7 @@
             <ion-label>
                 <div class="large-avatar">
                     <img class="avatar" [src]="conversation!.imageurl" core-external-content [alt]="conversation!.name"
-                    role="presentation" onError="this.src='assets/img/group-avatar.png'">
+                    onError="this.src='assets/img/group-avatar.png'">
                 </div>
                 <h2>
                     <core-format-text [text]="conversation!.name" contextLevel="system" [contextInstanceId]="0"></core-format-text>
@@ -33,13 +33,14 @@
         </ion-item>
 
         <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngFor="let member of members"
-            (click)="closeModal(member.id)" detail>
+            (click)="closeModal(member.id)" detail="true" button>
             <core-user-avatar [user]="member" [linkProfile]="false" [checkOnline]="member.showonlinestatus" slot="start">
             </core-user-avatar>
             <ion-label>
                 <h2>
                     {{ member.fullname }}
-                    <ion-icon name="fas-user-slash" *ngIf="member.isblocked" [title]="'addon.messages.contactblocked' | translate">
+                    <ion-icon name="fas-user-slash" *ngIf="member.isblocked"
+                        [attr.aria-label]="'addon.messages.contactblocked' | translate">
                     </ion-icon>
                 </h2>
             </ion-label>

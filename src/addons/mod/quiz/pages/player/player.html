@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
             <core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
@@ -11,12 +11,12 @@
 
         <ion-buttons slot="end">
             <ion-button id="addon-mod_quiz-connection-error-button" [hidden]="!autoSaveError" (click)="showConnectionError($event)"
-                [attr.aria-label]="'core.error' | translate">
-                <ion-icon name="fas-exclamation-circle" slot="icon-only"></ion-icon>
+                [attr.aria-label]="'addon.mod_quiz.connectionerror' | translate" aria-haspopup="dialog">
+                <ion-icon name="fas-exclamation-circle" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <ion-button *ngIf="navigation.length" [attr.aria-label]="'addon.mod_quiz.opentoc' | translate"
                 (click)="openNavigation()">
-                <ion-icon name="fas-bookmark" slot="icon-only"></ion-icon>
+                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -30,11 +30,11 @@
             </core-timer>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button *ngIf="previousPage >= 0" (click)="changePage(previousPage)" [title]="'core.previous' | translate">
-                <ion-icon name="fas-chevron-left" slot="icon-only"></ion-icon>
+            <ion-button *ngIf="previousPage >= 0" (click)="changePage(previousPage)" [attr.aria-label]="'core.previous' | translate">
+                <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
-            <ion-button *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [title]="'core.next' | translate">
-                <ion-icon name="fas-chevron-right" slot="icon-only"></ion-icon>
+            <ion-button *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [attr.aria-label]="'core.next' | translate">
+                <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -43,11 +43,12 @@
         <!-- Navigation arrows if there's no timer. -->
         <ion-toolbar *ngIf="!endTime && questions.length && !quizAborted && !showSummary" color="light">
             <ion-buttons slot="end">
-                <ion-button *ngIf="previousPage >= 0" (click)="changePage(previousPage)" [title]="'core.previous' | translate">
-                    <ion-icon name="fas-chevron-left" slot="icon-only"></ion-icon>
+                <ion-button *ngIf="previousPage >= 0" (click)="changePage(previousPage)"
+                    [attr.aria-label]="'core.previous' | translate">
+                    <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
-                <ion-button *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [title]="'core.next' | translate">
-                    <ion-icon name="fas-chevron-right" slot="icon-only"></ion-icon>
+                <ion-button *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [attr.aria-label]="'core.next' | translate">
+                    <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
             </ion-buttons>
         </ion-toolbar>
@@ -92,14 +93,14 @@
             <ion-row>
                 <ion-col *ngIf="previousPage >= 0" >
                     <ion-button expand="block" color="light" (click)="changePage(previousPage)">
-                        <ion-icon name="fas-chevron-left" slot="start"></ion-icon>
+                        <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
                         {{ 'core.previous' | translate }}
                     </ion-button>
                 </ion-col>
                 <ion-col *ngIf="nextPage >= -1">
                     <ion-button expand="block" (click)="changePage(nextPage)">
                         {{ 'core.next' | translate }}
-                        <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
+                        <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </ion-col>
             </ion-row>
@@ -130,7 +131,7 @@
             <ng-container *ngFor="let question of summaryQuestions">
                 <ion-item *ngIf="question.number" (click)="changePage(question.page, false, question.slot)"
                     [attr.aria-label]="'core.question.questionno' | translate:{$a: question.number}"
-                    [detail]="!isSequential && canReturn" [attr.button]="!isSequential && canReturn ? true : null">
+                    [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn">
                     <ion-label>
                         <ion-row class="ion-align-items-center">
                             <ion-col size="3" class="ion-text-center">{{ question.number }}</ion-col>
@@ -165,7 +166,7 @@
 
             <ion-button *ngIf="preventSubmitMessages.length" expand="block" [href]="moduleUrl" core-link>
                 {{ 'core.openinbrowser' | translate }}
-                <ion-icon name="fas-external-link-alt" slot="end"></ion-icon>
+                <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
             </ion-button>
 
             <!-- Button to submit the quiz. -->
@@ -182,7 +183,7 @@
             </ion-item>
             <ion-button expand="block" class="ion-margin" [href]="moduleUrl" core-link>
                 {{ 'core.openinbrowser' | translate }}
-                <ion-icon name="fas-external-link-alt" slot="end"></ion-icon>
+                <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-card>
     </core-loading>

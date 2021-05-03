@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
             <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="moduleId"  [courseId]="courseId">
@@ -39,8 +39,8 @@
                 </ion-item>
                 <!-- List of submissions. -->
                 <ng-container *ngFor="let submission of submissions.items">
-                    <ion-item class="ion-text-wrap" (click)="submissions.select(submission)"
-                        [class.core-selected-item]="submissions.isSelected(submission)">
+                    <ion-item class="ion-text-wrap" (click)="submissions.select(submission)" button
+                        [attr.aria-current]="submissions.getItemAriaCurrent(submission)">
                         <core-user-avatar [user]="submission" [linkProfile]="false" slot="start"></core-user-avatar>
                         <ion-label>
                             <h2 *ngIf="submission.userfullname">{{submission.userfullname}}</h2>
@@ -75,7 +75,7 @@
 
                 <ion-card class="ion-text-wrap core-warning-card" *ngIf="!haveAllParticipants">
                     <ion-item>
-                        <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                        <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                         <ion-label>{{ 'addon.mod_assign.notallparticipantsareshown' | translate }}</ion-label>
                     </ion-item>
                 </ion-card>

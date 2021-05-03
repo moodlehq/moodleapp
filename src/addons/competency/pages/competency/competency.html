@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title *ngIf="competency">
             {{ competency.competency.competency.shortname }} <small>{{ competency.competency.competency.idnumber }}</small>
@@ -73,9 +73,9 @@
                     <p *ngIf="coursemodules.length == 0">
                         {{ 'addon.competency.noactivities' | translate }}
                     </p>
-                    <ion-item class="ion-text-wrap" *ngFor="let activity of coursemodules" [href]="activity.url" [title]="activity.name"
-                        core-link capture="true">
-                        <img slot="start" core-external-content [src]="activity.iconurl" alt="" role="presentation" *ngIf="activity.iconurl"
+                    <ion-item class="ion-text-wrap" *ngFor="let activity of coursemodules" [href]="activity.url"
+                        [attr.aria-label]="activity.name" core-link capture="true">
+                        <img slot="start" core-external-content [src]="activity.iconurl" alt="" *ngIf="activity.iconurl"
                             class="core-module-icon">
                         <ion-label>
                             <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.id"

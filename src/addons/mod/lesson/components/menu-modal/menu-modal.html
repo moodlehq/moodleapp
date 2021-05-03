@@ -4,7 +4,7 @@
 
         <ion-buttons slot="end">
             <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-times"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -33,7 +33,7 @@
                 <div *ngIf="!pageInstance.loadingMenu">
                     <ng-container *ngFor="let page of pageInstance.lessonPages">
                         <ion-item class="ion-text-wrap" *ngIf="page.display && page.displayinmenublock" (click)="loadPage(page.id)"
-                            [ngClass]='{"core-selected-item": !pageInstance.eolData && pageInstance.currentPage == page.id}'
+                            [attr.aria-current]="!pageInstance.eolData && pageInstance.currentPage == page.id ? 'page' : 'false'"
                             button detail="true">
                             <ion-label>
                                 <core-format-text [text]="page.title" contextLevel="module" [courseId]="pageInstance.courseId"

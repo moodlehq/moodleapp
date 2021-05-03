@@ -3,7 +3,7 @@
         [style.background-color]="course.color">
         <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt=""/>
     </div>
-    <ion-item button lines="none" (click)="openCourse()" [title]="course.displayname || course.fullname"
+    <ion-item button lines="none" (click)="openCourse()" [attr.aria-label]="course.displayname || course.fullname"
         class="core-course-header" [class.item-disabled]="course.visible == 0"
         [class.core-course-more-than-title]="course.progress! >= 0">
         <ion-label
@@ -49,7 +49,7 @@
             <!-- Options menu. -->
             <ion-button fill="clear" color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner"
                 [attr.aria-label]="('core.displayoptions' | translate)">
-                <ion-icon name="ellipsis-vertical" slot="icon-only"></ion-icon>
+                <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </div>
     </ion-item>

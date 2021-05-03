@@ -11,13 +11,12 @@
     <div class="ion-text-wrap ion-text-center ion-margin-bottom" [ngClass]="{'item-avatar-center': showSiteAvatar}">
         <!-- Show user avatar. -->
         <img *ngIf="showSiteAvatar" [src]="userAvatar" class="large-avatar" core-external-content [siteId]="siteId"
-            role="presentation"
             alt="{{ 'core.pictureof' | translate:{$a: userFullName} }}" onError="this.src='assets/img/user-avatar.png'">
 
         <div class="core-login-site-logo" *ngIf="!showSiteAvatar">
             <!-- Show site logo or a default image. -->
-            <img *ngIf="logoUrl" [src]="logoUrl" role="presentation" onError="this.src='assets/img/login_logo.png'">
-            <img *ngIf="!logoUrl" src="assets/img/login_logo.png" role="presentation">
+            <img *ngIf="logoUrl" [src]="logoUrl" role="presentation" onError="this.src='assets/img/login_logo.png'" alt="">
+            <img *ngIf="!logoUrl" src="assets/img/login_logo.png" role="presentation" alt="">
         </div>
 
         <h6 *ngIf="siteName" class="ion-padding core-sitename">
@@ -27,7 +26,7 @@
 
         <ion-item *ngIf="!isLoggedOut" class="ion-text-center core-login-reconnect-warning" lines="none">
             <ion-label color="danger" class="ion-text-wrap">
-                <ion-icon name="fas-exclamation-circle" slot="start"></ion-icon>
+                <ion-icon name="fas-exclamation-circle" slot="start" aria-hidden="true"></ion-icon>
                 {{ 'core.login.reconnectdescription' | translate }}
             </ion-label>
         </ion-item>
@@ -86,7 +85,7 @@
             <ion-label><h3 class="item-heading">{{ 'core.login.potentialidps' | translate }}</h3></ion-label>
         </ion-item>
         <ion-item button *ngFor="let provider of identityProviders" class="ion-text-wrap core-oauth-icon"
-            (click)="oauthClicked(provider)" title="{{provider.name}}">
+            (click)="oauthClicked(provider)" [attr.aria-label]="provider.name">
             <img [src]="provider.iconurl" alt="" width="32" height="32" slot="start">
             <ion-label>{{provider.name}}</ion-label>
         </ion-item>

@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
             <core-format-text [text]="title" contextLevel="coursecat" [contextInstanceId]="currentCategory && currentCategory!.id">
@@ -15,7 +15,7 @@
     </ion-refresher>
     <core-loading [hideUntil]="categoriesLoaded">
         <ion-item *ngIf="currentCategory" class="ion-text-wrap">
-            <ion-icon name="fas-folder" slot="start"></ion-icon>
+            <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.category' | translate"></ion-icon>
             <ion-label>
                 <h2>
                     <core-format-text [text]="currentCategory!.name" contextLevel="coursecat"
@@ -40,9 +40,9 @@
             </ion-item-divider>
             <section *ngFor="let category of categories">
                 <ion-item class="ion-text-wrap" router-direction="forward"
-                [routerLink]="['/main/home/courses/categories', category.id]"
-                [title]="category.name" detail>
-                    <ion-icon name="fas-folder" slot="start"></ion-icon>
+                    [routerLink]="['/main/home/courses/categories', category.id]"
+                    [attr.aria-label]="category.name" detail="true">
+                    <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.category' | translate"></ion-icon>
                     <ion-label>
                         <h2>
                             <core-format-text [text]="category.name" contextLevel="coursecat" [contextInstanceId]="category.id">

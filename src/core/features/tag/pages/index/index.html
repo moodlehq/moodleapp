@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ 'core.tag.tag' | translate }}: {{ tagName }}</ion-title>
     </ion-toolbar>
@@ -15,11 +15,11 @@
         <core-loading [hideUntil]="loaded">
             <ion-list *ngIf="hasUnsupportedAreas || areas.length">
                 <ion-item *ngIf="hasUnsupportedAreas" class="core-warning-item">
-                    <ion-icon slot="start" name="fas-exclamation-triangle" color="warning"></ion-icon>
+                    <ion-icon slot="start" name="fas-exclamation-triangle" color="warning" aria-hidden="true"></ion-icon>
                     <ion-label class="ion-text-wrap">{{ 'core.tag.warningareasnotsupported' | translate }}</ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngFor="let area of areas" [title]="area.nameKey | translate"
-                    (click)="openArea(area)" [class.core-selected-item]="area!.id == selectedAreaId">
+                <ion-item class="ion-text-wrap" *ngFor="let area of areas" [attr.aria-label]="area.nameKey | translate"
+                    (click)="openArea(area)" [attr.aria-current]="area!.id == selectedAreaId ? 'page' :  'false'" button>
                     <ion-label>
                         <h2>{{ area!.nameKey | translate }}</h2>
                     </ion-label>

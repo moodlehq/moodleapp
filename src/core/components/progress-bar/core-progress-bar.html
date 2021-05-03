@@ -1,5 +1,5 @@
 <ng-container *ngIf="progress >= 0">
-    <progress max="100" [value]="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="progress">
+    <progress max="100" [value]="progress" role="progressbar" [attr.aria-valuenow]="progress">
     </progress>
     <div class="core-progress-text">{{ 'core.percentagenumber' | translate: {$a: text} }}</div>
 </ng-container>

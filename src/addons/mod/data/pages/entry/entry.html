@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
             <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
@@ -19,7 +19,7 @@
         <!-- Database entries found to be synchronized -->
         <ion-card class="core-warning-card" *ngIf="entry && entry.hasOffline">
             <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
             </ion-item>
         </ion-card>
@@ -66,14 +66,14 @@
             <ion-row class="ion-align-items-center">
                 <ion-col *ngIf="hasPrevious">
                     <ion-button expand="block" fill="outline" (click)="gotoEntry(offset! -1)">
-                        <ion-icon name="fas-chevron-left" slot="start"></ion-icon>
+                        <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
                         {{ 'core.previous' | translate }}
                     </ion-button>
                 </ion-col>
                 <ion-col *ngIf="hasNext">
                     <ion-button expand="block" (click)="gotoEntry(offset! + 1)">
                         {{ 'core.next' | translate }}
-                        <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
+                        <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </ion-col>
             </ion-row>

@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ 'core.grades.grades' | translate }}</ion-title>
     </ion-toolbar>
@@ -45,11 +45,13 @@
                                 <th
                                     class="core-grades-table-gradeitem ion-text-start"
                                     [class.column-itemname]="row.itemtype == 'category'"
-                                    [class.core-selected-item]="grades.isSelected(row)"
+                                    [attr.aria-current]="grades.getItemAriaCurrent(row)"
                                     [attr.colspan]="row.colspan"
                                 >
-                                    <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start"></ion-icon>
-                                    <img *ngIf="row.image" [src]="row.image" slot="start" />
+                                    <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start" [attr.aria-label]="row.iconAlt">
+                                    </ion-icon>
+                                    <img *ngIf="row.image" [src]="row.image" slot="start" class="core-module-icon"
+                                        [alt]="row.iconAlt"/>
                                     <span [innerHTML]="row.gradeitem"></span>
                                 </th>
                                 <ng-container *ngFor="let column of grades.columns">

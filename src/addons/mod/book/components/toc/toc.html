@@ -3,7 +3,7 @@
         <ion-title>{{ 'addon.mod_book.toc' | translate }}</ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon name="fas-times" slot="icon-only"></ion-icon>
+                <ion-icon name="fas-times" slot="icon-only" aria-hidden=true></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -12,7 +12,7 @@
     <nav>
         <ion-list>
             <ion-item class="ion-text-wrap" *ngFor="let chapter of chapters" (click)="loadChapter(chapter.id)"
-                [class.core-selected-item]="selected == chapter.id"
+                [attr.aria-current]="selected == chapter.id ? 'page' :  'false'" button
                 [class.item-dimmed]="chapter.hidden">
                 <ion-label>
                     <p [class.ion-padding-left]="addPadding && chapter.level == 1 ? true : null">

@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
             <core-format-text *ngIf="h5pActivity" [text]="h5pActivity.name" contextLevel="module"
@@ -17,7 +17,7 @@
     <core-loading [hideUntil]="loaded">
         <!-- User viewed. -->
         <ion-item class="ion-text-wrap" *ngIf="user && !isCurrentUser" core-user-link [userId]="user.id" [courseId]="courseId"
-            [title]="user.fullname">
+            [attr.aria-label]="user.fullname">
             <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
             <ion-label>
                 <h2>{{ user.fullname }}</h2>

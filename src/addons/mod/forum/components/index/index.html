@@ -50,7 +50,7 @@
         <!-- Forum discussions found to be synchronized -->
         <ion-card class="core-warning-card" *ngIf="hasOffline || hasOfflineRatings">
             <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</ion-label>
             </ion-item>
         </ion-card>
@@ -58,7 +58,7 @@
         <!-- Cut-off date or due date message -->
         <ion-card class="core-info-card" *ngIf="availabilityMessage">
             <ion-item>
-                <ion-icon name="fas-info-circle" slot="start"></ion-icon>
+                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ availabilityMessage }}</ion-label>
             </ion-item>
         </ion-card>
@@ -71,7 +71,7 @@
                 <ion-button *ngIf="sortingAvailable" id="addon-mod-forum-sort-order-button"
                     class="core-button-select button-no-uppercase"
                     aria-haspopup="true" aria-controls="addon-mod-forum-sort-order-selector"
-                    [attr.aria-label]="('core.sort' | translate)" [attr.aria-expanded]="sortOrderSelectorExpanded"
+                    [attr.aria-label]="('core.sort' | translate)"
                     (click)="showSortOrderSelector()">
                     <span class="core-button-select-text">{{ selectedSortOrder.label | translate }}</span>
                     <div class="select-icon" slot="end"><div class="select-icon-inner"></div></div>
@@ -80,13 +80,15 @@
 
             <ion-item *ngFor="let discussion of discussions.items"
                 class="addon-mod-forum-discussion" detail="true"
-                [lines]="discussion.groupname && 'none'" [class.core-selected-item]="discussions.isSelected(discussion)"
+                [lines]="discussion.groupname && 'none'" [attr.aria-current]="discussions.getItemAriaCurrent(discussion)"
                 (click)="discussions.select(discussion)">
                 <ion-label>
                     <div class="addon-mod-forum-discussion-title">
                         <h2 class="ion-text-wrap">
-                            <ion-icon name="fa-map-pin" *ngIf="discussion.pinned"></ion-icon>
-                            <ion-icon name="fa-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"></ion-icon>
+                            <ion-icon name="fa-map-pin" *ngIf="discussion.pinned"
+                                [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate"></ion-icon>
+                            <ion-icon name="fa-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"
+                                [attr.aria-label]="'addon.mod_forum.favourites' | translate"></ion-icon>
                             <core-format-text
                                 [text]="discussion.subject"
                                 contextLevel="module" [contextInstanceId]="module && module.id" [courseId]="courseId">
@@ -96,7 +98,7 @@
                             fill="clear" color="dark"
                             [attr.aria-label]="('core.displayoptions' | translate)"
                             (click)="showOptionsMenu($event, discussion)">
-                            <ion-icon name="ellipsis-vertical" slot="icon-only">
+                            <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true">
                             </ion-icon>
                         </ion-button>
                     </div>
@@ -105,12 +107,15 @@
                         </core-user-avatar>
                         <div class="addon-mod-forum-discussion-author">
                             <h3 *ngIf="discussion.userfullname">{{discussion.userfullname}}</h3>
-                            <p *ngIf="discussion.groupname"><ion-icon name="people"></ion-icon> {{ discussion.groupname }}</p>
+                            <p *ngIf="discussion.groupname">
+                                <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate">
+                                </ion-icon> {{ discussion.groupname }}
+                            </p>
                             <p *ngIf="discussions.isOnlineDiscussion(discussion)">
                                 {{discussion.created * 1000 | coreFormatDate: "strftimerecentfull"}}
                             </p>
                             <p *ngIf="discussions.isOfflineDiscussion(discussion)">
-                                <ion-icon name="fas-clock"></ion-icon>
+                                <ion-icon name="fas-clock" aria-hidden="true"></ion-icon>
                                 {{ 'core.notsent' | translate }}
                             </p>
                         </div>
@@ -119,7 +124,7 @@
                         class="ion-text-center addon-mod-forum-discussion-more-info">
                         <ion-col class="ion-text-start">
                             <ion-note>
-                                <ion-icon name="fas-clock"></ion-icon> {{ 'addon.mod_forum.lastpost' | translate }}
+                                <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'addon.mod_forum.lastpost' | translate }}
                                 <ng-container *ngIf="discussion.timemodified > discussion.created">
                                     {{ discussion.timemodified | coreTimeAgo }}
                                 </ng-container>
@@ -130,7 +135,7 @@
                         </ion-col>
                         <ion-col class="ion-text-end">
                             <ion-note>
-                                <ion-icon name="fas-comments"></ion-icon>
+                                <ion-icon name="fas-comments" aria-hidden="true"></ion-icon>
                                 {{ 'addon.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}
                                 <ion-badge *ngIf="discussion.numunread" class="ion-text-center"
                                     [attr.aria-label]="'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread}">
@@ -151,7 +156,7 @@
 
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="forum && canAddDiscussion">
         <ion-fab-button (click)="openNewDiscussion()" [attr.aria-label]="addDiscussionText">
-            <ion-icon name="fas-plus"></ion-icon>
+            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
         </ion-fab-button>
     </ion-fab>
 </core-split-view>

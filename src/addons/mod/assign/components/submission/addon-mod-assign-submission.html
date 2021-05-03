@@ -2,7 +2,7 @@
 
     <!-- User and status of the submission. -->
     <ion-item class="ion-text-wrap" *ngIf="!blindMarking && user" core-user-link [userId]="submitId" [courseId]="courseId"
-        [title]="user!.fullname">
+        [attr.aria-label]="user!.fullname">
         <core-user-avatar [user]="user" slot="start"></core-user-avatar>
         <ion-label>
             <h2>{{ user!.fullname }}</h2>
@@ -183,7 +183,7 @@
                 <ng-container *ngIf="membersToSubmit && membersToSubmit.length > 0 && !blindMarking">
                     <ng-container *ngFor="let user of membersToSubmit">
                         <ion-item class="ion-text-wrap" core-user-link [userId]="user.id"
-                            [courseId]="courseId" [title]="user.fullname">
+                            [courseId]="courseId" [attr.aria-label]="user.fullname">
                             <core-user-avatar [user]="user" slot="start"></core-user-avatar>
                             <ion-label><h2>{{ user.fullname }}</h2></ion-label>
                         </ion-item>
@@ -225,8 +225,9 @@
                         <h2>{{ 'addon.mod_assign.currentgrade' | translate }}</h2>
                         <p><core-format-text [text]="feedback!.gradefordisplay" [filter]="false"></core-format-text></p>
                     </ion-label>
-                    <ion-button slot="end" *ngIf="feedback!.advancedgrade" (click)="showAdvancedGrade()">
-                        <ion-icon name="fas-search" slot="icon-only"></ion-icon>
+                    <ion-button slot="end" *ngIf="feedback!.advancedgrade" (click)="showAdvancedGrade()"
+                        [attr.aria-label]="'core.showadvanced' |translate">
+                        <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </ion-item>
 
@@ -328,7 +329,7 @@
 
                 <!-- Data about the grader (teacher who graded). -->
                 <ion-item class="ion-text-wrap" *ngIf="grader" core-user-link [userId]="grader!.id" [courseId]="courseId"
-                    [title]="grader!.fullname" detail="true">
+                    [attr.aria-label]="grader!.fullname" detail="true">
                     <core-user-avatar [user]="grader" slot="start"></core-user-avatar>
                     <ion-label>
                         <h2>{{ 'addon.mod_assign.gradedby' | translate }}</h2>
@@ -348,12 +349,12 @@
                 <!-- Warning message if cannot save grades. -->
                 <ion-card *ngIf="isGrading && !canSaveGrades" class="core-warning-card">
                     <ion-item>
-                        <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+                        <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                         <ion-label>
                             <p>{{ 'addon.mod_assign.cannotgradefromapp' | translate }}</p>
                             <ion-button expand="block" *ngIf="gradeUrl" [href]="gradeUrl" core-link >
                                 {{ 'core.openinbrowser' | translate }}
-                                <ion-icon name="fas-external-link-alt" slot="end"></ion-icon>
+                                <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
                             </ion-button>
                         </ion-label>
                     </ion-item>

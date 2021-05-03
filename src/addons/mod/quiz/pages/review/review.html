@@ -1,14 +1,14 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ 'addon.mod_quiz.review' | translate }}</ion-title>
 
         <ion-buttons slot="end">
             <ion-button *ngIf="navigation.length" [attr.aria-label]="'addon.mod_quiz.opentoc' | translate"
-                (click)="openNavigation()">
-                <ion-icon name="fas-bookmark" slot="icon-only"></ion-icon>
+                (click)="openNavigation()" aria-haspopup="true">
+                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -124,12 +124,13 @@
             <ion-col class="ion-text-start">
                 <ion-button color="light" *ngIf="previousPage >= 0" (click)="changePage(previousPage)"
                     [title]="'core.previous' | translate">
-                    <ion-icon name="fas-chevron-left" slot="icon-only"></ion-icon>
+                    <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
             </ion-col>
             <ion-col class="ion-text-end">
-                <ion-button color="light" *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [title]="'core.next' | translate">
-                    <ion-icon name="fas-chevron-right" slot="icon-only"></ion-icon>
+                <ion-button color="light" *ngIf="nextPage >= -1" (click)="changePage(nextPage)"
+                    [attr.aria-label]="'core.next' | translate">
+                    <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
             </ion-col>
         </ion-row>

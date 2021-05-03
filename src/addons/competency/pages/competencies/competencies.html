@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ title }}</ion-title>
     </ion-toolbar>
@@ -14,8 +14,8 @@
         <core-loading [hideUntil]="competencies.loaded">
             <ion-list>
                 <ion-item class="ion-text-wrap" *ngFor="let competency of competencies.items"
-                    [title]="competency.competency.shortname" (click)="competencies.select(competency)"
-                    [class.core-selected-item]="competencies.isSelected(competency)">
+                    [attr.aria-label]="competency.competency.shortname" (click)="competencies.select(competency)"
+                    [attr.aria-current]="competencies.getItemAriaCurrent(competency)" button>
                     <ion-label>
                         <h2>{{ competency.competency.shortname }} <em>{{competency.competency.idnumber}}</em></h2>
                     </ion-label>

@@ -122,6 +122,16 @@ export abstract class CorePageItemsListManager<Item> {
     }
 
     /**
+     * Return the current aria value.
+     *
+     * @param item Item.
+     * @return Will return the current value of the item if selected, false otherwise.
+     */
+    getItemAriaCurrent(item: Item): string {
+        return this.isSelected(item) ? 'page' : 'false';
+    }
+
+    /**
      * Select an item.
      *
      * @param item Item.

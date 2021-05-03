@@ -1,13 +1,13 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ 'core.settings.spaceusage' | translate }}</ion-title>
         <ion-buttons slot="end">
             <core-navbar-buttons>
                 <ion-button (click)="showInfo()" [attr.aria-label]="'core.info' | translate">
-                    <ion-icon name="fas-info-circle" slot="icon-only"></ion-icon>
+                    <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
             </core-navbar-buttons>
         </ion-buttons>
@@ -18,7 +18,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <ion-item *ngFor="let site of sites" [class.core-selected-item]="site.id == currentSiteId">
+        <ion-item *ngFor="let site of sites" [attr.aria-current]="site.id == currentSiteId ? 'page' :  'false'">
             <ion-label class="ion-text-wrap">
                 <h2>
                     <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>
@@ -32,7 +32,7 @@
             <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage(site)"
                 [hidden]="site.spaceUsage! + site.cacheEntries! <= 0"
                 [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
-                <ion-icon name="fas-trash" slot="icon-only"></ion-icon>
+                <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-item>
         <ion-item-divider>

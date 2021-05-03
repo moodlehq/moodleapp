@@ -38,7 +38,7 @@
     <ion-card class="ion-padding" *ngIf="survey && survey.surveydone">
         <p class="ion-padding">{{ 'addon.mod_survey.surveycompletednograph' | translate }}</p>
         <ion-button expand="block" [href]="externalUrl" core-link>
-            <ion-icon name="fas-external-link-alt" slot="start"></ion-icon>
+            <ion-icon name="fas-external-link-alt" slot="start" aria-hidden="true"></ion-icon>
             {{ 'addon.mod_survey.results' | translate }}
         </ion-button>
     </ion-card>
@@ -46,7 +46,7 @@
     <!-- Survey done in offline but not synchronized -->
     <ion-card class="core-warning-card" *ngIf="hasOffline">
         <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
         </ion-item>
     </ion-card>

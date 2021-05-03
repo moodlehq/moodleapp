@@ -77,7 +77,7 @@ export class AddonModDataEditPage implements OnInit {
     editFormRender = '';
     editForm: FormGroup;
     extraImports: Type<unknown>[]  = [AddonModDataComponentsCompileModule];
-    jsData? : {
+    jsData?: {
         fields: Record<number, AddonModDataField>;
         database?: AddonModDataData;
         contents: AddonModDataEntryFields;

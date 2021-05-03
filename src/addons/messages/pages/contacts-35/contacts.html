@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ 'addon.messages.contacts' | translate }}</ion-title>
         <ion-buttons slot="end">
@@ -38,8 +38,8 @@
                         <!-- Don't show deleted users -->
                         <ion-item class="ion-text-wrap addon-messages-conversation-item"
                             *ngIf="contact.profileimageurl || contact.profileimageurlsmall"
-                            [title]="contact.fullname" (click)="gotoDiscussion(contact.id)" detail
-                            [class.core-selected-item]="contact.id == discussionUserId">
+                            [attr.aria-label]="contact.fullname" (click)="gotoDiscussion(contact.id)" detail="true" button
+                            [attr.aria-current]="contact.id == discussionUserId ? 'page' :  'false'">
                             <core-user-avatar [user]="contact" slot="start" [checkOnline]="contact.showonlinestatus"></core-user-avatar>
                             <ion-label><h2>{{ contact.fullname }}</h2></ion-label>
                         </ion-item>

@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
             <core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
@@ -52,7 +52,7 @@
                 </ion-label>
             </ion-item>
             <ion-button *ngIf="showReviewColumn && attempt.finished" class="ion-margin" expand="block" (click)="reviewAttempt()">
-                <ion-icon name="fas-search" slot="start"></ion-icon>
+                <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
                 {{ 'addon.mod_quiz.review' | translate }}
             </ion-button>
             <ion-item class="ion-text-wrap core-danger-item" *ngIf="!showReviewColumn">

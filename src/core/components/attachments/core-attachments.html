@@ -33,6 +33,6 @@
 <ion-button expand="block"
     *ngIf="unlimitedFiles || (maxSubmissions !== undefined && maxSubmissions >= 0 && files && files.length < maxSubmissions)"
     class="ion-text-wrap ion-margin" (click)="add()">
-    <ion-icon name="fas-plus" slot="start"></ion-icon>
+    <ion-icon name="fas-plus" slot="start" aria-hidden="true"></ion-icon>
     {{ 'core.fileuploader.addfiletext' | translate }}
 </ion-button>

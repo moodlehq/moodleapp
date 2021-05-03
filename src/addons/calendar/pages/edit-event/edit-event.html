@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ title | translate }}</ion-title>
     </ion-toolbar>
@@ -120,9 +120,10 @@
             </ng-container>
 
             <!-- Advanced options. -->
-            <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggleAdvanced()">
-                <ion-icon *ngIf="!advanced" name="fas-caret-right" slot="start"></ion-icon>
-                <ion-icon *ngIf="advanced" name="fas-caret-down" slot="start"></ion-icon>
+            <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggleAdvanced()"
+                [attr.aria-label]="(advanced ? 'core.showless' : 'core.showmore') | translate" role="button">
+                <ion-icon *ngIf="!advanced" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="advanced" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <span *ngIf="!advanced">{{ 'core.showmore' | translate }}</span>
                     <span *ngIf="advanced">{{ 'core.showless' | translate }}</span>
@@ -161,14 +162,14 @@
                             <ion-radio slot="end" value="0"></ion-radio>
                             <ion-label>{{ 'addon.calendar.durationnone' | translate }}</ion-label>
                         </ion-item>
-                        <ion-item  (click)="selectDuration('1')">
+                        <ion-item button (click)="selectDuration('1')">
                             <ion-radio slot="end" value="1"></ion-radio>
                             <ion-label>{{ 'addon.calendar.durationuntil' | translate }}</ion-label>
                             <ion-datetime formControlName="timedurationuntil"
                                 [placeholder]="'addon.calendar.durationuntil' | translate"
                                 [displayFormat]="dateFormat" [disabled]="form.controls.duration.value != 1"></ion-datetime>
                         </ion-item>
-                        <ion-item (click)="selectDuration('2')">
+                        <ion-item button (click)="selectDuration('2')">
                             <ion-radio slot="end" value="2"></ion-radio>
                             <ion-label>{{ 'addon.calendar.durationminutes' | translate }}</ion-label>
                             <ion-input type="number" name="timedurationminutes" slot="end"

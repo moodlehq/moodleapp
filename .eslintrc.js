@@ -15,7 +15,6 @@ const appConfig = {
         'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
         'prettier',
-        'prettier/@typescript-eslint',
         'plugin:@angular-eslint/recommended',
         'plugin:promise/recommended',
     ],
@@ -90,7 +89,16 @@ const appConfig = {
                 },
             },
         ],
-        '@typescript-eslint/member-ordering': 'error',
+        '@typescript-eslint/member-ordering': [
+            'error',
+            {
+                default:
+                {
+                    order: 'as-written',
+                },
+
+            }
+        ],
         '@typescript-eslint/naming-convention': [
             'error',
             {
@@ -276,6 +284,13 @@ module.exports = {
             extends: ['plugin:@angular-eslint/template/recommended'],
             rules: {
                 'max-len': ['warn', { code: 140 }],
+                '@angular-eslint/template/accessibility-valid-aria': 'warn',
+                '@angular-eslint/template/accessibility-alt-text': 'error',
+                '@angular-eslint/template/accessibility-elements-content': 'error',
+                '@angular-eslint/template/accessibility-label-for': 'error',
+                '@angular-eslint/template/no-positive-tabindex': 'error',
+                '@angular-eslint/template/accessibility-table-scope': 'error',
+                '@angular-eslint/template/accessibility-valid-aria': 'error',
             },
         },
         {

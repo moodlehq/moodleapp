@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button *ngIf="canSearch" (click)="showSearch()" [attr.aria-label]="'addon.mod_data.search' | translate">
-        <ion-icon name="fas-search" slot="icon-only"></ion-icon>
+        <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
     <core-context-menu>
         <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
@@ -46,7 +46,7 @@
     <!-- Data done in offline but not synchronized -->
     <ion-card class="core-warning-card" *ngIf="hasOffline || hasOfflineRatings">
         <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
         </ion-item>
     </ion-card>
@@ -66,21 +66,21 @@
 
     <ion-card class="core-info-card" *ngIf="!access?.timeavailable && timeAvailableFrom">
         <ion-item>
-            <ion-icon name="fas-info-circle" slot="start"></ion-icon>
+            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'addon.mod_data.notopenyet' | translate:{$a: timeAvailableFromReadable} }}</ion-label>
         </ion-item>
     </ion-card>
 
     <ion-card class="core-info-card" *ngIf="!access?.timeavailable && timeAvailableTo">
         <ion-item>
-            <ion-icon name="fas-info-circle" slot="start"></ion-icon>
+            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'addon.mod_data.expired' | translate:{$a: timeAvailableToReadable} }}</ion-label>
         </ion-item>
     </ion-card>
 
     <ion-card class="core-info-card" *ngIf="access && access.entrieslefttoview">>
         <ion-item>
-            <ion-icon name="fas-info-circle" slot="start"></ion-icon>
+            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 {{ 'addon.mod_data.entrieslefttoaddtoview' | translate:{$a: {entrieslefttoview: access.entrieslefttoview} } }}
             </ion-label>
@@ -89,7 +89,7 @@
 
     <ion-card class="core-info-card" *ngIf="access && access.entrieslefttoadd">>
         <ion-item>
-            <ion-icon name="fas-info-circle" slot="start"></ion-icon>
+            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 {{ 'addon.mod_data.entrieslefttoadd' | translate:{$a: {entriesleft: access.entrieslefttoadd} } }}
             </ion-label>
@@ -121,14 +121,14 @@
         <ion-row class="ion-align-items-center">
             <ion-col *ngIf="search.page > 0">
                 <ion-button expand="block" fill="outline" (click)="searchEntries(search.page - 1)">
-                    <ion-icon name="fas-chevron-left" slot="start"></ion-icon>
+                    <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
                     {{ 'core.previous' | translate }}
                 </ion-button>
             </ion-col>
             <ion-col *ngIf="hasNextPage">
                 <ion-button expand="block" (click)="searchEntries(search.page + 1)">
                     {{ 'core.next' | translate }}
-                    <ion-icon name="fas-chevron-right" slot="end"></ion-icon>
+                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
                 </ion-button>
             </ion-col>
         </ion-row>
@@ -146,6 +146,6 @@
 
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canAdd">
     <ion-fab-button (click)="gotoAddEntries()" [attr.aria-label]="'addon.mod_data.addentries' | translate">
-        <ion-icon name="fas-plus"></ion-icon>
+        <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
     </ion-fab-button>
 </ion-fab>

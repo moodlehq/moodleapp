@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ 'addon.storagemanager.managestorage' | translate }}</ion-title>
     </ion-toolbar>
@@ -13,7 +13,7 @@
                 <ion-card-title class="ion-text-wrap">{{ 'core.courses.courses' | translate }}</ion-card-title>
                 <p class="ion-text-wrap">{{ 'addon.storagemanager.info' | translate }}</p>
                 <ion-item class="size ion-text-wrap ion-no-padding" lines="none">
-                    <ion-icon name="fas-archive" slot="start"></ion-icon>
+                    <ion-icon name="fas-archive" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label><h2 class="ion-text-wrap">{{ 'addon.storagemanager.storageused' | translate }}</h2></ion-label>
                     <p slot="end" class="ion-text-end">{{ totalSize | coreBytesToSize }}</p>
                     <ion-button slot="end" (click)="deleteCompletelyDownloadedCourses()"

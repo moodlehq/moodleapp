@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ 'addon.messages.searchcombined' | translate }}</ion-title>
         <ion-buttons slot="end">
@@ -42,13 +42,16 @@
         </ion-item-divider>
 
         <!-- List of results -->
-        <ion-item class="addon-message-discussion ion-text-wrap" *ngFor="let result of item.results" [title]="result.fullname"
-            (click)="openConversation(result)" [class.core-selected-item]="result == selectedResult" detail>
+        <ion-item class="addon-message-discussion ion-text-wrap" *ngFor="let result of item.results" [attr.aria-label]="result.fullname"
+            (click)="openConversation(result)" [attr.aria-current]="result == selectedResult ? 'page' :  'false'" detail="true"
+            button>
             <core-user-avatar slot="start" [user]="result" [checkOnline]="true" [linkProfile]="false"></core-user-avatar>
             <ion-label>
                 <h2>
-                    <core-format-text [text]="result.fullname" [highlight]="result.highlightName" [filter]="false"></core-format-text>
-                    <ion-icon name="fa-ban" *ngIf="result.isblocked" [title]="'addon.messages.contactblocked' | translate">
+                    <core-format-text [text]="result.fullname" [highlight]="result.highlightName" [filter]="false">
+                    </core-format-text>
+                    <ion-icon name="fa-ban" *ngIf="result.isblocked"
+                        [attr.aria-label]="'addon.messages.contactblocked' | translate">
                     </ion-icon>
                 </h2>
                 <ion-note *ngIf="result.lastmessagedate > 0">

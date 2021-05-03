@@ -3,7 +3,7 @@
         <ion-title>{{ 'core.course.sections' | translate }}</ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-times"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -12,7 +12,7 @@
     <ion-list id="core-course-section-selector">
         <ng-container *ngFor="let section of sections">
             <ion-item *ngIf="!section.hiddenbynumsections && section.id != stealthModulesSectionId" class="ion-text-wrap"
-                (click)="selectSection(section)" [class.core-selected-item]="selected?.id == section.id"
+                (click)="selectSection(section)" [attr.aria-current]="selected?.id == section.id ? 'page' :  'false'"
                 [class.item-dimmed]="section.visible === 0 || section.uservisible === false" detail="false"
                 [attr.aria-hidden]="section.uservisible === false" button>
 

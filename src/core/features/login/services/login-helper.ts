@@ -48,8 +48,8 @@ export class CoreLoginHelperProvider {
     static readonly OPEN_COURSE = 'open_course';
 
     static readonly ONBOARDING_DONE = 'onboarding_done';
-    static readonly FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation">';
-    static readonly FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation">';
+    static readonly FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation" alt="">';
+    static readonly FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation" alt="">';
 
     protected logger: CoreLogger;
     protected isSSOConfirmShown = false;

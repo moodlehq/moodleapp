@@ -1,12 +1,12 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ 'addon.messages.contacts' | translate }}</ion-title>
         <ion-buttons slot="end">
-            <ion-button (click)="gotoSearch()" [attr.aria-label]="'addon.messages.search' | translate">
-                <ion-icon name="fas-search" slot="icon-only"></ion-icon>
+            <ion-button (click)="gotoSearch()" [attr.aria-label]="'addon.messages.searchcombined' | translate">
+                <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <!-- Add an empty context menu so discussion page can add items in split view, otherwise the menu
                 disappears in some cases. -->
@@ -26,9 +26,9 @@
                     </ion-refresher>
                     <core-loading [hideUntil]="confirmedLoaded" class="core-loading-center">
                         <ion-list  class="ion-no-margin">
-                            <ion-item class="ion-text-wrap addon-messages-conversation-item"
-                                *ngFor="let contact of confirmedContacts" [title]="contact.fullname" detail
-                                (click)="selectUser(contact.id)" [class.core-selected-item]="contact.id == selectedUserId">
+                            <ion-item class="ion-text-wrap addon-messages-conversation-item" (click)="selectUser(contact.id)" button
+                                *ngFor="let contact of confirmedContacts" [attr.aria-label]="contact.fullname" detail="true"
+                                [attr.aria-current]="contact.id == selectedUserId ? 'page' :  'false'">
                                 <core-user-avatar slot="start" [user]="contact"
                                     [checkOnline]="contact.showonlinestatus" [linkProfile]="false">
                                 </core-user-avatar>
@@ -36,7 +36,8 @@
                                     <h2>
                                         <core-format-text [text]="contact.fullname" contextLevel="system" [contextInstanceId]="0">
                                         </core-format-text>
-                                        <ion-icon *ngIf="contact.isblocked" name="fas-user-slash" slot="end">
+                                        <ion-icon *ngIf="contact.isblocked" name="fas-user-slash" slot="end"
+                                            [attr.aria-label]="'addon.messages.contactblocked' | translate">
                                         </ion-icon>
                                     </h2>
                                 </ion-label>
@@ -63,8 +64,8 @@
                     <core-loading [hideUntil]="requestsLoaded" class="core-loading-center">
                         <ion-list  class="ion-no-margin">
                             <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngFor="let request of requests"
-                                [title]="request.fullname" (click)="selectUser(request.id)"
-                                [class.core-selected-item]="request.id == selectedUserId" detail>
+                                [attr.aria-label]="request.fullname" (click)="selectUser(request.id)" button
+                                [attr.aria-current]="request.id == selectedUserId ? 'page' :  'false'" detail="true">
                                 <core-user-avatar slot="start" [user]="request" [linkProfile]="false"></core-user-avatar>
                                 <ion-label>
                                     <core-format-text [text]="request.fullname" contextLevel="system" [contextInstanceId]="0">

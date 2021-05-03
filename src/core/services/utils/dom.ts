@@ -1450,7 +1450,7 @@ export class CoreDomUtilsProvider {
 
         const loading = new CoreIonLoadingElement(loadingElement);
 
-        loading.present();
+        await loading.present();
 
         return loading;
     }

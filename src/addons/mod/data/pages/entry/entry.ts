@@ -78,7 +78,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     entryHtml = '';
     siteId: string;
     extraImports: Type<unknown>[]  = [AddonModDataComponentsCompileModule];
-    jsData? : {
+    jsData?: {
         fields: Record<number, AddonModDataField>;
         entries: Record<number, AddonModDataEntry>;
         database: AddonModDataData;

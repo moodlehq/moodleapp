@@ -3,7 +3,7 @@
         <ion-title>{{ 'addon.mod_scorm.toc' | translate }}</ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-times"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -31,8 +31,8 @@
             <ng-container *ngFor="let sco of toc">
                 <ion-item *ngIf="sco.isvisible" class="ion-text-wrap" [detail]="sco.prereq && sco.launch"
                     [ngClass]="'core-padding-' + sco.level + ' addon-mod_scorm-type-' + sco.scormtype"
-                    [class.core-selected-item]="selected == sco.id" (click)="loadSco(sco)"
-                    [disabled]="!sco.prereq || !sco.launch ? true : null" tappable>
+                    [attr.aria-current]="selected == sco.id ? 'page' :  'false'" (click)="loadSco(sco)"
+                    [disabled]="!sco.prereq || !sco.launch ? true : null" [button]="sco.prereq && sco.launch">
                     <ion-icon *ngIf="sco.icon" [name]="sco.icon.icon" [attr.aria-label]="sco.icon.description" slot="start">
                     </ion-icon>
                     <ion-label>

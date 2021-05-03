@@ -1,29 +1,30 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
             <div class="toolbar-title">
                 <img *ngIf="loaded && !otherMember && conversationImage" class="core-bar-button-image" [src]="conversationImage"
-                    [alt]="title" onError="this.src='assets/img/group-avatar.png'" core-external-content role="presentation"
+                    alt="" onError="this.src='assets/img/group-avatar.png'" core-external-content role="presentation"
                     [siteId]="siteId || null">
                 <core-user-avatar *ngIf="loaded && otherMember" class="core-bar-button-image" [user]="otherMember"
                     [linkProfile]="false" [checkOnline]="otherMember.showonlinestatus" (click)="showInfo && viewInfo()">
                 </core-user-avatar>
                 <core-format-text [text]="title" contextLevel="system" [contextInstanceId]="0"
                     (click)="showInfo && !isGroup && viewInfo()"></core-format-text>
-                <ion-icon *ngIf="conversation && conversation.isfavourite" name="fas-star" [title]="'core.favourites' | translate">
+                <ion-icon *ngIf="conversation && conversation.isfavourite" name="fas-star"
+                    [attr.aria-label]="'core.favourites' | translate">
                 </ion-icon>
                 <ion-icon *ngIf="conversation && conversation.ismuted" name="fas-bell-slash"
-                    [title]="'addon.messages.mutedconversation' | translate">
+                    [attr.aria-label]="'addon.messages.mutedconversation' | translate">
                 </ion-icon>
             </div>
         </ion-title>
         <ion-buttons slot="end"></ion-buttons>
     </ion-toolbar>
     <core-navbar-buttons slot="end">
-        <core-context-menu [aria-label]="'addon.messages.conversationactions' | translate">
+        <core-context-menu [attr.aria-label]="'addon.messages.conversationactions' | translate">
             <core-context-menu-item [hidden]="isSelf || !showInfo || isGroup" [priority]="1000"
                 [content]="'addon.messages.info' | translate" (action)="viewInfo()"
                 iconAction="fas-info-circle"></core-context-menu-item>
@@ -82,7 +83,7 @@
                 <ion-chip class="addon-messages-unreadfrom" *ngIf="unreadMessageFrom && message.id == unreadMessageFrom"
                     color="light">
                     <ion-label>{{ 'addon.messages.newmessages' | translate }}</ion-label>
-                    <ion-icon name="arrow-round-down"></ion-icon>
+                    <ion-icon name="fas-arrow-down" aria-hidden="true"></ion-icon>
                 </ion-chip>
 
                 <ion-item class="ion-text-wrap addon-message" (longPress)="copyMessage(message)"
@@ -99,7 +100,9 @@
                             <div *ngIf="message.showUserData">{{ members[message.useridfrom].fullname }}</div>
 
                             <ion-note *ngIf="!message.pending">{{ message.timecreated | coreFormatDate: "strftimetime" }}</ion-note>
-                            <ion-note *ngIf="message.pending"><ion-icon name="far-clock"></ion-icon></ion-note>
+                            <ion-note *ngIf="message.pending">
+                                <ion-icon name="fas-clock" [attr.aria-label]="'core.notsent' | translate "></ion-icon>
+                            </ion-note>
                         </h2>
 
                         <!-- Some messages have <p> and some others don't. Add a <p> so they all have same styles. -->
@@ -111,7 +114,7 @@
                     <ion-button fill="clear" *ngIf="!message.sending && showDelete" (click)="deleteMessage(message, index)"
                         class="addon-messages-delete-button" [@coreSlideInOut]="'fromRight'"
                         [attr.aria-label]=" 'addon.messages.deletemessage' | translate" slot="end">
-                        <ion-icon name="fas-trash" color="danger" slot="icon-only"></ion-icon>
+                        <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
 
                     <div class="tail" *ngIf="message.showTail"></div>
@@ -126,7 +129,7 @@
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="loaded && newMessages > 0">
         <ion-fab-button size="small" (click)="scrollToFirstUnreadMessage()" color="light"
         [attr.aria-label]="'addon.messages.newmessages' | translate">
-            <ion-icon name="fas-arrow-down"></ion-icon>
+            <ion-icon name="fas-arrow-down" aria-hidden="true"></ion-icon>
             <span class="core-discussion-messages-badge">{{ newMessages }}</span>
         </ion-fab-button>
     </ion-fab>

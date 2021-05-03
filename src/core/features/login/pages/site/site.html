@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
 
         <ion-title>{{ 'core.login.connecttomoodle' | translate }}</ion-title>
@@ -9,7 +9,7 @@
         <ion-buttons slot="end">
             <ion-button router-direction="forward" routerLink="/settings"
                 [attr.aria-label]="'core.settings.appsettings' | translate">
-                <ion-icon slot="icon-only" name="fas-cog"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-cog" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -17,7 +17,7 @@
 <ion-content class="ion-padding">
     <div class="ion-text-center ion-padding ion-margin-bottom core-login-site-logo"
         [class.hidden]="hasSites || enteredSiteUrl">
-        <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation">
+        <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation" alt="">
     </div>
     <form [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites" #siteFormEl>
         <!-- Form to input the site URL if there are no fixed sites. -->
@@ -48,9 +48,9 @@
                     </ion-label>
                 </ion-item>
                 <ion-item button *ngIf="enteredSiteUrl" (click)="connect($event, enteredSiteUrl.url)"
-                    [attr.aria-label]="'core.login.connect' | translate" detail-push class="core-login-entered-site">
+                    [attr.aria-label]="'core.login.connect' | translate" detail="true" class="core-login-entered-site">
                     <ion-thumbnail slot="start" aria-hidden="true">
-                        <ion-icon name="fas-pen"></ion-icon>
+                        <ion-icon name="fas-pen" aria-hidden="true"></ion-icon>
                     </ion-thumbnail>
                     <ion-label>
                         <h2 class="ion-text-wrap">{{ 'core.login.yourenteredsite' | translate }}</h2>
@@ -102,7 +102,7 @@
     <ng-container *ngIf="showScanQR && !hasSites && !enteredSiteUrl">
         <div class="ion-text-center ion-padding ion-margin-top">{{ 'core.login.or' | translate }}</div>
         <ion-button expand="block" color="light" class="ion-margin" lines="none" (click)="showInstructionsAndScanQR()"
-            aria-haspopup="true">
+            aria-haspopup="dialog">
             <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'core.scanqr' | translate }}</ion-label>
         </ion-button>
@@ -111,7 +111,7 @@
     <!-- Help. -->
     <ion-list lines="none" class="ion-margin-top">
         <ion-item button class="ion-text-center ion-text-wrap core-login-need-help" (click)="showHelp()" detail="false"
-            aria-haspopup="true">
+            aria-haspopup="dialog">
             <ion-label>{{ 'core.needhelp' | translate }}</ion-label>
         </ion-item>
     </ion-list>
@@ -119,10 +119,10 @@
 
 <!-- Template site selector. -->
 <ng-template #site let-site="site">
-    <ion-item button (click)="connect($event, site.url, site)" [title]="site.name" detail>
+    <ion-item button (click)="connect($event, site.url, site)" [attr.aria-label]="site.name" detail="true">
         <ion-thumbnail *ngIf="siteFinderSettings.displayimage" slot="start">
-            <img [src]="site.imageurl" *ngIf="site.imageurl" onError="this.src='assets/icon/icon.png'">
-            <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon">
+            <img [src]="site.imageurl" *ngIf="site.imageurl" onError="this.src='assets/icon/icon.png'" alt="" role="presentation">
+            <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon" alt="" role="presentation">
         </ion-thumbnail>
         <ion-label>
             <h2 *ngIf="site.title" class="ion-text-wrap">{{site.title}}</h2>

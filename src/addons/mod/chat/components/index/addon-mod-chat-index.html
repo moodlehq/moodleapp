@@ -32,7 +32,7 @@
 
     <ion-card *ngIf="chatInfo" class="core-info-card">
         <ion-item>
-            <ion-icon name="fas-clock" slot="start"></ion-icon>
+            <ion-icon name="fas-clock" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'addon.mod_chat.sessionstart' | translate:{$a: chatInfo} }}</ion-label>
         </ion-item>
     </ion-card>

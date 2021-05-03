@@ -1,12 +1,12 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [attr.aria-label]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ (showCalendar ? 'addon.calendar.calendarevents' : 'addon.calendar.upcomingevents') | translate }}</ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="openFilter($event)" [attr.aria-label]="'core.filter' | translate">
-                <ion-icon slot="icon-only" name="fas-filter"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-filter" aria-hidden="true"></ion-icon>
             </ion-button>
             <core-context-menu>
                 <core-context-menu-item *ngIf="showCalendar" [priority]="800"
@@ -33,7 +33,7 @@
     <!-- There is data to be synchronized -->
     <ion-card class="core-warning-card" *ngIf="hasOffline">
         <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start"></ion-icon>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}</ion-label>
         </ion-item>
     </ion-card>
@@ -49,7 +49,7 @@
     <!-- Create a calendar event. -->
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canCreate">
         <ion-fab-button (click)="openEdit()" [attr.aria-label]="'addon.calendar.newevent' | translate">
-            <ion-icon name="fas-plus"></ion-icon>
+            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
         </ion-fab-button>
     </ion-fab>
 </ion-content>

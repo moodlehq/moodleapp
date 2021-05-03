@@ -1,11 +1,12 @@
 <ion-item *ngIf="module && module.handlerData && module.visibleoncoursepage !== 0 && !module.handlerData.loading"
     id="core-course-module-{{module.id}}" class="ion-text-wrap core-course-module-handler {{module.handlerData.class}}"
-    (click)="moduleClicked($event)" [title]="module.handlerData.a11yTitle" detail="false"
+    (click)="moduleClicked($event)" [attr.aria-label]="module.handlerData.a11yTitle" detail="false"
     [ngClass]="{'item-media': module.handlerData.icon, 'item-dimmed': module.visible === 0 || module.uservisible === false,
-    'core-not-clickable': !module.handlerData.action || module.uservisible === false}">
+    'core-not-clickable': !module.handlerData.action || module.uservisible === false}"
+    [button]="module.handlerData.action || module.uservisible">
 
     <img slot="start" *ngIf="module.handlerData.icon" [src]="module.handlerData.icon" [alt]="modNameTranslated"
-        [attr.aria-hidden]="true" class="core-module-icon">
+        class="core-module-icon">
 
     <ion-label>
         <div class="core-module-title">
@@ -32,7 +33,7 @@
                         [hidden]="button.hidden || spinner || module.handlerData.spinner" class="core-animate-show-hide"
                         (click)="buttonClicked($event, button)"
                         [attr.aria-label]="button.label | translate:{$a: module.handlerData.title}">
-                        <ion-icon [name]="button.icon" slot="icon-only"></ion-icon>
+                        <ion-icon [name]="button.icon" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </div>
             </div>
@@ -68,7 +69,7 @@
 
 <!-- Loading. -->
 <ion-item *ngIf="module && module.handlerData && module.visibleoncoursepage !== 0 && module.handlerData.loading" role="status"
-    class="ion-text-wrap" id="core-course-module-{{module.id}}" [title]="module.handlerData.a11yTitle"
+    class="ion-text-wrap" id="core-course-module-{{module.id}}" [attr.aria-label]="module.handlerData.a11yTitle"
     [ngClass]="['core-course-module-handler', 'core-module-loading', module.handlerData.class]" detail="false">
     <ion-label><ion-spinner></ion-spinner></ion-label>
 </ion-item>

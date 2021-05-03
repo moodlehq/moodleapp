@@ -5,8 +5,9 @@
     <!-- Download all courses. -->
     <div *ngIf="downloadCoursesEnabled && downloadEnabled && filteredCourses.length > 1 && !showFilter" class="core-button-spinner"
         slot="end">
-        <ion-button *ngIf="!prefetchCoursesData[selectedFilter].loading" fill="clear" color="dark" (click)="prefetchCourses()">
-            <ion-icon [name]="prefetchCoursesData[selectedFilter].icon" slot="icon-only">
+        <ion-button *ngIf="!prefetchCoursesData[selectedFilter].loading" fill="clear" color="dark" (click)="prefetchCourses()"
+            [attr.aria-label]="'core.courses.downloadcourses' | translate">
+            <ion-icon [name]="prefetchCoursesData[selectedFilter].icon" slot="icon-only" aria-hidden="true">
             </ion-icon>
         </ion-button>
         <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge">

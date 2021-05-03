@@ -27,8 +27,10 @@
                 [color]='(option.isCorrect === 1 ? "success": "") + (option.isCorrect === 0 ? "danger": "")'>
             </ion-checkbox>
 
-            <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success"></ion-icon>
-            <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-times" color="danger"></ion-icon>
+            <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success"
+                [attr.aria-label]="'core.question.correct' | translate"></ion-icon>
+            <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-times" color="danger"
+                [attr.aria-label]="'core.question.incorrect' | translate"></ion-icon>
 
             <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
             <input type="hidden" [ngModel]="option.checked" [attr.name]="option.name">
@@ -53,8 +55,10 @@
                 [color]='(option.isCorrect === 1 ? "success": "") + (option.isCorrect === 0 ? "danger": "")'>
             </ion-radio>
 
-            <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success"></ion-icon>
-            <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-times" color="danger"></ion-icon>
+            <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success"
+                [attr.aria-label]="'core.question.correct' | translate"></ion-icon>
+            <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-times" color="danger"
+                [attr.aria-label]="'core.question.incorrect' | translate"></ion-icon>
         </ion-item>
         <ion-button *ngIf="!multiQuestion.disabled" class="ion-text-wrap ion-margin" expand="full" color="light"
             [disabled]="!multiQuestion.singleChoiceModel" (click)="clear()" type="reset">

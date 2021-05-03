@@ -32,7 +32,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreMenuItem, CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 
 /**
@@ -571,27 +571,36 @@ export class CoreGradesHelperProvider {
      */
     protected setRowIcon<T extends CoreGradesFormattedRowCommonData>(row: T, text: string): T {
         text = text.replace('%2F', '/').replace('%2f', '/');
-
         if (text.indexOf('/agg_mean') > -1) {
             row.itemtype = 'agg_mean';
             row.image = 'assets/img/grades/agg_mean.png';
+            row.iconAlt = Translate.instant('core.grades.aggregatemean');
         } else if (text.indexOf('/agg_sum') > -1) {
             row.itemtype = 'agg_sum';
             row.image = 'assets/img/grades/agg_sum.png';
+            row.iconAlt = Translate.instant('core.grades.aggregatesum');
         } else if (text.indexOf('/outcomes') > -1 || text.indexOf('fa-tasks')  > -1) {
             row.itemtype = 'outcome';
             row.icon = 'fas-chart-pie';
+            row.iconAlt = Translate.instant('core.grades.outcome');
         } else if (text.indexOf('i/folder') > -1 || text.indexOf('fa-folder')  > -1) {
             row.itemtype = 'category';
             row.icon = 'fas-cubes';
+            row.iconAlt = Translate.instant('core.grades.category');
         } else if (text.indexOf('/manual_item') > -1 || text.indexOf('fa-square-o')  > -1) {
             row.itemtype = 'manual';
             row.icon = 'far-square';
+            row.iconAlt = Translate.instant('core.grades.manualitem');
+        } else if (text.indexOf('/calc') > -1 || text.indexOf('fa-calculator') > -1) {
+            row.itemtype = 'calc';
+            row.icon = 'fas-calculator';
+            row.iconAlt = Translate.instant('core.grades.calculatedgrade');
         } else if (text.indexOf('/mod/') > -1) {
             const module = text.match(/mod\/([^/]*)\//);
             if (typeof module?.[1] != 'undefined') {
                 row.itemtype = 'mod';
                 row.itemmodule = module[1];
+                row.iconAlt = CoreCourse.translateModuleName(row.itemmodule) || '';
                 row.image = CoreCourse.getModuleIconSrc(
                     module[1],
                     CoreDomUtils.convertToElement(text).querySelector('img')?.getAttribute('src') ?? undefined,
@@ -601,14 +610,17 @@ export class CoreGradesHelperProvider {
             if (row.rowspan && row.rowspan > 1) {
                 row.itemtype = 'category';
                 row.icon = 'fas-cubes';
+                row.iconAlt = Translate.instant('core.grades.category');
             } else if (text.indexOf('src=') > -1) {
                 row.itemtype = 'unknown';
                 const src = text.match(/src="([^"]*)"/);
                 row.image = src?.[1];
+                row.iconAlt = Translate.instant('core.unknown');
             } else if (text.indexOf('<i ') > -1) {
                 row.itemtype = 'unknown';
                 const src = text.match(/<i class="(?:[^"]*?\s)?(fa-[a-z0-9-]+)/);
                 row.icon = src ? src[1] : '';
+                row.iconAlt = Translate.instant('core.unknown');
             }
         }
 
@@ -708,6 +720,7 @@ export type CoreGradesFormattedRowCommonData = {
     itemtype?: string;
     image?: string;
     itemmodule?: string;
+    iconAlt?: string;
     rowspan?: number;
     weight?: string; // Weight column.
     grade?: string; // Grade column.

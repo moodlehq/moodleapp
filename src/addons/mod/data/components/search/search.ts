@@ -52,7 +52,7 @@ export class AddonModDataSearchComponent implements OnInit {
     extraImports: Type<unknown>[]  = [AddonModDataComponentsCompileModule];
 
     searchForm: FormGroup;
-    jsData? : {
+    jsData?: {
         fields: Record<number, AddonModDataField>;
         form: FormGroup;
         search: CoreFormFields;
