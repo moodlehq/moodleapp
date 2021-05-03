@@ -28,6 +28,8 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginCompo
 
     format!: string;
     displayDate?: number;
+    maxDate?: string;
+    minDate?: string;
 
     /**
      * @inheritdoc
@@ -43,6 +45,8 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginCompo
         this.format = CoreTimeUtils.fixFormatForDatetime(CoreTimeUtils.convertPHPToMoment(
             Translate.instant('core.strftimedate'),
         ));
+        this.maxDate = CoreTimeUtils.getDatetimeDefaultMax();
+        this.minDate = CoreTimeUtils.getDatetimeDefaultMin();
 
         if (this.searchMode) {
             this.addControl('f_' + this.field.id + '_z');

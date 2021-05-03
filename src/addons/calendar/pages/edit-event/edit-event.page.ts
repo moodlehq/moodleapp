@@ -75,6 +75,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     eventRepeatId?: number;
     otherEventsCount = 0;
     eventId?: number;
+    maxDate: string;
+    minDate: string;
 
     // Form variables.
     form: FormGroup;
@@ -94,7 +96,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         protected fb: FormBuilder,
         @Optional() protected svComponent: CoreSplitViewComponent,
     ) {
-
         this.currentSite = CoreSites.getCurrentSite()!;
         this.errors = {
             required: Translate.instant('core.required'),
@@ -122,6 +123,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         this.form.addControl('repeat', this.fb.control(false));
         this.form.addControl('repeats', this.fb.control('1'));
         this.form.addControl('repeateditall', this.fb.control(1));
+
+        this.maxDate = CoreTimeUtils.getDatetimeDefaultMax();
+        this.minDate = CoreTimeUtils.getDatetimeDefaultMin();
     }
 
     /**

@@ -367,6 +367,20 @@ export class CoreTimeUtilsProvider {
         }
     }
 
+    /**
+     * Get the default max year for datetime inputs.
+     */
+    getDatetimeDefaultMax(): string {
+        return String(moment().year() + 20);
+    }
+
+    /**
+     * Get the default min year for datetime inputs.
+     */
+    getDatetimeDefaultMin(): string {
+        return String(moment().year() - 20);
+    }
+
 }
 
 export const CoreTimeUtils = makeSingleton(CoreTimeUtilsProvider);
