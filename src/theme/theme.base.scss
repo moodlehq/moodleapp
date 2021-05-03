@@ -514,3 +514,15 @@ ion-back-button.md::part(text) {
         cursor: auto;
     }
 }
+
+.core-media-adapt-width {
+    max-width: 100%;
+}
+
+img.core-media-adapt-width {
+    height: auto;
+}
+
+audio.core-media-adapt-width {
+    width: 100%;
+}

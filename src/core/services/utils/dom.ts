@@ -971,7 +971,9 @@ export class CoreDomUtilsProvider {
         const media = Array.from(element.querySelectorAll('img, video, audio, source, track'));
         media.forEach((media: HTMLElement) => {
             const currentSrc = media.getAttribute('src');
-            const newSrc = currentSrc ? paths[CoreTextUtils.decodeURIComponent(currentSrc)] : undefined;
+            const newSrc = currentSrc ?
+                paths[CoreUrlUtils.removeUrlParams(CoreTextUtils.decodeURIComponent(currentSrc))] :
+                undefined;
 
             if (typeof newSrc != 'undefined') {
                 media.setAttribute('src', newSrc);
@@ -991,7 +993,9 @@ export class CoreDomUtilsProvider {
         const anchors = Array.from(element.querySelectorAll('a'));
         anchors.forEach((anchor: HTMLElement) => {
             const currentHref = anchor.getAttribute('href');
-            const newHref = currentHref ? paths[CoreTextUtils.decodeURIComponent(currentHref)] : undefined;
+            const newHref = currentHref ?
+                paths[CoreUrlUtils.removeUrlParams(CoreTextUtils.decodeURIComponent(currentHref))] :
+                undefined;
 
             if (typeof newHref != 'undefined') {
                 anchor.setAttribute('href', newHref);
