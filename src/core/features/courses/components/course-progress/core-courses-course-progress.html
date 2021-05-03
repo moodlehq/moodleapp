@@ -11,7 +11,8 @@
             [class.core-course-with-buttons]="courseOptionMenuEnabled || (downloadCourseEnabled && showDownload)"
             [class.core-course-with-spinner]="(downloadCourseEnabled && prefetchCourseData.icon == 'spinner') || showSpinner">
             <p *ngIf="course.categoryname || (course.displayname && course.shortname && course.fullname != course.displayname)"
-                class="core-course-additional-info" aria-hidden="true">
+                class="core-course-additional-info">
+                <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
                 <span *ngIf="course.categoryname" class="core-course-category">
                     <core-format-text [text]="course.categoryname"></core-format-text>
                 </span>

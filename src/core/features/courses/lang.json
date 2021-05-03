@@ -1,6 +1,7 @@
 {
     "addtofavourites": "Star this course",
     "allowguests": "This course allows guest users to enter",
+    "aria:coursecategory": "Course category",
     "aria:coursename": "Course name",
     "aria:courseprogress": "Course progress:",
     "aria:favourite": "Course is starred",

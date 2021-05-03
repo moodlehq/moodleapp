@@ -17,7 +17,7 @@ jobs:
         node-version: '12.x'
     - run: npm ci
     - run: git clone --branch master --depth 1 git://github.com/moodle/moodle $GITHUB_WORKSPACE/moodle
-    - run: git clone --branch ionic5 --depth 1 git://github.com/NoelDeMartin/moodle-local_moodlemobileapp $GITHUB_WORKSPACE/moodle/local/moodlemobileapp
+    - run: git clone --branch ionic5 --depth 1 git://github.com/moodlehq/moodle-local_moodlemobileapp $GITHUB_WORKSPACE/moodle/local/moodlemobileapp
     - run: git clone --branch MOBILE-3738 --depth 1 git://github.com/NoelDeMartin/moodle-docker $GITHUB_WORKSPACE/moodle-docker
     - run: cp $GITHUB_WORKSPACE/moodle-docker/config.docker-template.php $GITHUB_WORKSPACE/moodle/config.php
     - run: MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
