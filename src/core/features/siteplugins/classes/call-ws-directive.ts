@@ -74,7 +74,8 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
 
             this.onSuccess.emit(result);
 
-            return this.wsCallSuccess(result);
+            // Don't block the promise with the success function.
+            this.wsCallSuccess(result);
         } catch (error) {
             this.onError.emit(error);
             this.logger.error(`Error calling WS ${this.name}`, error);
@@ -108,9 +109,10 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
      * Function called when the WS call is successful.
      *
      * @param result Result of the WS call.
+     * @return If async, promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected wsCallSuccess(result: unknown): void {
+    protected wsCallSuccess(result: unknown): void | Promise<void> {
         // Function to be overridden.
     }
 
