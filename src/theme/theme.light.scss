@@ -65,7 +65,6 @@
     --ion-text-color: #{$text-color};
     --ion-text-color-rgb: 58,58,58;
     --ion-card-color: var(--ion-text-color);
-    --ion-item-background: var(--white);
 
     --text-hightlight-background-color: var(--custom-text-hightlight-background-color, #99c1ed);
 
@@ -142,6 +141,16 @@
     core-block-course-blocks {
         --side-blocks-max-width: var(--custom-side-blocks-max-width, 30%);
         --side-blocks-min-width: var(--custom-side-blocks-min-width, 280px);
+    }
+
+    --ion-item-background: var(--white);
+    --ion-item-detail-icon-color: var(--gray-darker);
+    --ion-item-detail-icon-font-size: 20px;
+    --ion-item-detail-icon-opacity: 1;
+    ion-item {
+        --detail-icon-color: var(--ion-item-detail-icon-color);
+        --detail-icon-font-size: var(--ion-item-detail-icon-font-size);
+        --detail-icon-opacity: var(--ion-item-detail-icon-opacity);
     }
 
     ion-item-divider {

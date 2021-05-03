@@ -149,8 +149,9 @@ ion-alert.core-nohead {
 // Ionic item divider.
 ion-item-divider {
     .item-detail-icon {
-        font-size: 20px;
-        opacity: 0.25;
+        color: var(--ion-item-detail-icon-color);
+        font-size: var(--ion-item-detail-icon-font-size);
+        opacity: var(--ion-item-detail-icon-opacity);
         padding-inline-end: 16px;
     }
 

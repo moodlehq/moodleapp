@@ -43,8 +43,6 @@
 
     --ion-tab-bar-background: #1f1f1f;
 
-    --ion-item-background: #1e1e1e;
-
     --ion-card-background: #1c1c1d;
 
     ion-content {
@@ -62,12 +60,11 @@
         --text-color: var(--custom-progress-text-color, var(--gray-lighter));
     }
 
+    --ion-item-background: #1e1e1e;
+    --ion-item-detail-icon-color: var(--white);
     ion-item-divider {
         --background: var(--black);
         --color: var(--white);
-        .item-detail-icon {
-            color: var(--white);
-        }
     }
 
     --core-button-select-background: var(--custom-button-select-background, #3a3a3a);
