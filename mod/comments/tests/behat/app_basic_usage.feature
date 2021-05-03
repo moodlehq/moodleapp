@@ -1,4 +1,4 @@
-@mod @mod_comments @app @javascript
+@mod @mod_comments @app @app_upto3.9.4 @javascript
 Feature: Test basic usage of comments in app
   In order to participate in the comments while using the mobile app
   As a student

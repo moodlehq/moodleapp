@@ -1,4 +1,4 @@
-@mod @mod_data @app @javascript
+@mod @mod_data @app @app_upto3.9.4 @javascript
 Feature: Users can manage entries in database activities
   In order to populate databases
   As a user

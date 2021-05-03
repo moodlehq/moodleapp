@@ -1,4 +1,4 @@
-@mod @mod_quiz @app @javascript
+@mod @mod_quiz @app @app_upto3.9.4 @javascript
 Feature: Attempt a quiz in app
   As a student
   In order to demonstrate what I know

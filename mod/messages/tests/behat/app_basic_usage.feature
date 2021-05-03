@@ -1,4 +1,4 @@
-@mod @mod_messages @app @javascript
+@mod @mod_messages @app @app_upto3.9.4 @javascript
 Feature: Test basic usage of messages in app
   In order to participate with messages while using the mobile app
   As a student

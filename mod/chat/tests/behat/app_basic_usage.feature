@@ -1,4 +1,4 @@
-@mod @mod_chat @app @javascript
+@mod @mod_chat @app @app_upto3.9.4 @javascript
 Feature: Test basic usage of chat in app
   As a student
   I need basic chat functionality to work

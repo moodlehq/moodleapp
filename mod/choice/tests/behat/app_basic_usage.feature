@@ -1,4 +1,4 @@
-@mod @mod_choice @app @javascript
+@mod @mod_choice @app @app_upto3.9.4 @javascript
 Feature: Test basic usage of choice activity in app
   In order to participate in the choice while using the mobile app
   As a student

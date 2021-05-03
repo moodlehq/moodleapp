@@ -1,4 +1,4 @@
-@mod @mod_glossary @app @javascript
+@mod @mod_glossary @app @app_upto3.9.4 @javascript
 Feature: Test basic usage of glossary in app
   In order to participate in the glossaries while using the mobile app
   As a student

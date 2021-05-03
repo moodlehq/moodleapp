@@ -1,4 +1,4 @@
-@mod @mod_survey @app @javascript
+@mod @mod_survey @app @app_upto3.9.4 @javascript
 Feature: Test basic usage of survey activity in app
   In order to participate in surveys while using the mobile app
   As a student

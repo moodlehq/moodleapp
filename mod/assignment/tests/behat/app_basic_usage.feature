@@ -1,4 +1,4 @@
-@mod @mod_assign @app @javascript
+@mod @mod_assign @app @app_upto3.9.4 @javascript
 Feature: Test basic usage of assignment activity in app
   In order to participate in the assignment while using the mobile app
   I need basic assignment functionality to work

@@ -22,17 +22,17 @@ Feature: Test course list shown on app start tab
   Scenario: View courses (shortnames not displayed)
     When I enter the app
     And I log in as "student1"
-    Then I should see "Course 1"
-    But I should not see "Course 2"
-    But I should not see "C1"
-    But I should not see "C2"
+    Then I should find "Course 1" in the app
+    But I should not find "Course 2" in the app
+    But I should not find "C1" in the app
+    But I should not find "C2" in the app
 
     When I enter the app
     And I log in as "student2"
-    Then I should see "Course 1"
-    And I should see "Course 2"
-    But I should not see "C1"
-    But I should not see "C2"
+    Then I should find "Course 1" in the app
+    And I should find "Course 2" in the app
+    But I should not find "C1" in the app
+    But I should not find "C2" in the app
 
   Scenario: Filter courses
     Given the following config values are set as admin:
@@ -78,26 +78,46 @@ Feature: Test course list shown on app start tab
       | student2 | Z10    | student |
     When I enter the app
     And I log in as "student2"
-    Then I press "Display options" near "Course overview" in the app
-    Then I should see "C1"
-    And I should see "C2"
-    And I should see "C3"
-    And I should see "C4"
-    And I should see "C5"
-    And I should see "C6"
-    Then I press "Filter my courses" in the app
-    And I set the field "Filter my courses" to "fr" in the app
-    Then I should not see "C1"
-    And I should not see "C2"
-    And I should see "C3"
-    And I should see "C4"
-    And I should not see "C5"
-    And I should not see "C6"
-    And I press "Display options" near "Course overview" in the app
+    Then I should find "C1" in the app
+    And I should find "C2" in the app
+    And I should find "C3" in the app
+    And I should find "C4" in the app
+    And I should find "C5" in the app
+    And I should find "C6" in the app
+    And I should find "Course 1" in the app
+    And I should find "Course 2" in the app
+    And I should find "Frog 3" in the app
+    And I should find "Frog 4" in the app
+    And I should find "Course 5" in the app
+    And I should find "Toad 6" in the app
+
+    When I press "Display options" near "Course overview" in the app
     And I press "Filter my courses" in the app
-    Then I should see "C1"
-    And I should see "C2"
-    And I should see "C3"
-    And I should see "C4"
-    And I should see "C5"
-    And I should see "C6"
+    And I set the field "Filter my courses" to "fr" in the app
+    Then I should find "C3" in the app
+    And I should find "C4" in the app
+    And I should find "Frog 3" in the app
+    And I should find "Frog 4" in the app
+    But I should not find "C1" in the app
+    And I should not find "C2" in the app
+    And I should not find "C5" in the app
+    And I should not find "C6" in the app
+    And I should not find "Course 1" in the app
+    And I should not find "Course 2" in the app
+    And I should not find "Course 5" in the app
+    And I should not find "Toad 6" in the app
+
+    When I press "Display options" near "Course overview" in the app
+    And I press "Filter my courses" in the app
+    Then I should find "C1" in the app
+    And I should find "C2" in the app
+    And I should find "C3" in the app
+    And I should find "C4" in the app
+    And I should find "C5" in the app
+    And I should find "C6" in the app
+    And I should find "Course 1" in the app
+    And I should find "Course 2" in the app
+    And I should find "Frog 3" in the app
+    And I should find "Frog 4" in the app
+    And I should find "Course 5" in the app
+    And I should find "Toad 6" in the app
