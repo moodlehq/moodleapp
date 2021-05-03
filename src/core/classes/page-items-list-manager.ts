@@ -154,12 +154,10 @@ export abstract class CorePageItemsListManager<Item> {
 
         // Navigate to item.
         const params = this.getItemQueryParams(item);
+        const reset = this.resetNavigation();
         const pathPrefix = selectedItemPath ? selectedItemPath.split('/').fill('../').join('') : '';
 
-        await CoreNavigator.navigate(pathPrefix + itemPath, {
-            params,
-            reset: CoreScreen.isTablet,
-        });
+        await CoreNavigator.navigate(pathPrefix + itemPath, { params, reset });
     }
 
     /**
@@ -198,6 +196,19 @@ export abstract class CorePageItemsListManager<Item> {
         this.selectedItem = selectedItemPath
             ? this.itemsMap?.[selectedItemPath] ?? null
             : null;
+    }
+
+    /**
+     * Check whether to reset navigation when selecting an item.
+     *
+     * @returns boolean Whether navigation should be reset.
+     */
+    protected resetNavigation(): boolean {
+        if (!CoreScreen.isTablet) {
+            return false;
+        }
+
+        return !this.splitView?.isNested;
     }
 
     /**
