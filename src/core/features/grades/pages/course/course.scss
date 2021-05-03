@@ -90,7 +90,7 @@
 
     .odd {
 
-        td, th, th.core-selected-item {
+        td, th, th[aria-current="page"] {
             background-color: var(--gray-lighter);
 
             // @include darkmode() {
@@ -102,7 +102,7 @@
 
     .even {
 
-        td, th, th.core-selected-item {
+        td, th, th[aria-current="page"] {
             background-color: var(--white);
 
             // @include darkmode() {

@@ -108,8 +108,8 @@
 <ng-template #conversationsTemplate let-conversations="conversations">
     <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let conversation of conversations" [title]="conversation.name"
         (click)="gotoConversation(conversation.id, conversation.userid)"
-        [class.core-selected-item]="(conversation.id && conversation.id == selectedConversationId) ||
-            (conversation.userid && conversation.userid == selectedUserId)"
+        [attr.aria-current]="((conversation.id && conversation.id == selectedConversationId) ||
+            (conversation.userid && conversation.userid == selectedUserId)) ? 'page': 'false'"
         id="addon-message-conversation-{{ conversation.id ? conversation.id : 'user-' + conversation.userid }}">
         <!-- Group conversation image. -->
         <ion-avatar slot="start" *ngIf="conversation.type == typeGroup">

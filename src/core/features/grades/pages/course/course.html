@@ -45,7 +45,7 @@
                                 <th
                                     class="core-grades-table-gradeitem ion-text-start"
                                     [class.column-itemname]="row.itemtype == 'category'"
-                                    [class.core-selected-item]="grades.isSelected(row)"
+                                    [attr.aria-current]="grades.getItemAriaCurrent(row)"
                                     [attr.colspan]="row.colspan"
                                 >
                                     <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start" [attr.aria-label]="row.iconAlt">

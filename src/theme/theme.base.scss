@@ -215,14 +215,11 @@ ion-toolbar {
     font-size: 14px;
 }
 
-.core-selected-item {
-    border-inline-start: var(--selected-item-border-width) solid var(--selected-item-color);
-}
-
 // Item styles
-.item.core-selected-item {
+[aria-current="page"] {
     // TODO: Add safe area to border and RTL
     --ion-safe-area-left: calc(-1 * var(--selected-item-border-width));
+    border-inline-start: var(--selected-item-border-width) solid var(--selected-item-color);
 }
 
 .item.item-file {

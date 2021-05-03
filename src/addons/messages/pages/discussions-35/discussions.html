@@ -40,7 +40,7 @@
                     </ion-item-divider>
                     <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let result of search.results" [title]="result.fullname"
                         (click)="gotoDiscussion(result.userid, result.messageid)"
-                        [class.core-selected-item]="result.userid == discussionUserId">
+                        [attr.aria-current]="result.userid == discussionUserId ? 'page' :  'false'">
                         <core-user-avatar [user]="result" slot="start" [checkOnline]="result.showonlinestatus"></core-user-avatar>
                         <ion-label>
                                 <h2>{{ result.fullname }}</h2>
@@ -52,7 +52,7 @@
                 <ng-container *ngIf="!search.showResults">
                     <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let discussion of discussions"
                         [title]="discussion.fullname" (click)="gotoDiscussion(discussion.message!.user)"
-                        [class.core-selected-item]="discussion.message!.user == discussionUserId">
+                        [attr.aria-current]="discussion.message!.user == discussionUserId ? 'page' :  'false'">
                         <core-user-avatar [user]="discussion" slot="start" checkOnline="false"></core-user-avatar>
                         <ion-label>
                             <h2>{{ discussion.fullname }}</h2>

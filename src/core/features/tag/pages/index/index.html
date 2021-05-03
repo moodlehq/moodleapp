@@ -19,7 +19,7 @@
                     <ion-label class="ion-text-wrap">{{ 'core.tag.warningareasnotsupported' | translate }}</ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngFor="let area of areas" [title]="area.nameKey | translate"
-                    (click)="openArea(area)" [class.core-selected-item]="area!.id == selectedAreaId">
+                    (click)="openArea(area)" [attr.aria-current]="area!.id == selectedAreaId ? 'page' :  'false'">
                     <ion-label>
                         <h2>{{ area!.nameKey | translate }}</h2>
                     </ion-label>

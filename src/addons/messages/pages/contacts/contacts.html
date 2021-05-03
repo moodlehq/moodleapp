@@ -28,7 +28,7 @@
                         <ion-list  class="ion-no-margin">
                             <ion-item class="ion-text-wrap addon-messages-conversation-item"
                                 *ngFor="let contact of confirmedContacts" [title]="contact.fullname" detail
-                                (click)="selectUser(contact.id)" [class.core-selected-item]="contact.id == selectedUserId">
+                                (click)="selectUser(contact.id)" [attr.aria-current]="contact.id == selectedUserId ? 'page' :  'false'">
                                 <core-user-avatar slot="start" [user]="contact"
                                     [checkOnline]="contact.showonlinestatus" [linkProfile]="false">
                                 </core-user-avatar>
@@ -65,7 +65,7 @@
                         <ion-list  class="ion-no-margin">
                             <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngFor="let request of requests"
                                 [title]="request.fullname" (click)="selectUser(request.id)"
-                                [class.core-selected-item]="request.id == selectedUserId" detail>
+                                [attr.aria-current]="request.id == selectedUserId ? 'page' :  'false'" detail>
                                 <core-user-avatar slot="start" [user]="request" [linkProfile]="false"></core-user-avatar>
                                 <ion-label>
                                     <core-format-text [text]="request.fullname" contextLevel="system" [contextInstanceId]="0">

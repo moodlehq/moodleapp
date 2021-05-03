@@ -29,7 +29,7 @@
 
                 <ion-item *ngFor="let handler of handlers.items" [ngClass]="['core-settings-handler', handler.class]"
                     [title]="handler.title | translate" detail="true" (click)="handlers.select(handler)" button
-                    [class.core-selected-item]="handlers.isSelected(handler)">
+                    [attr.aria-current]="handlers.getItemAriaCurrent(handler)">
                     <ion-icon [name]="handler.icon" slot="start" *ngIf="handler.icon" aria-hidden="true">
                     </ion-icon>
                     <ion-label>

@@ -31,7 +31,7 @@
             </ion-item>
 
             <ion-card *ngFor="let session of sessions.items" (click)="sessions.select(session)"
-                [class.core-selected-item]="sessions.isSelected(session)"
+                [attr.aria-current]="sessions.getItemAriaCurrent(session)"
                 [class.addon-mod-chat-session-show-more]="session.sessionusers.length < session.allsessionusers.length">
 
                 <ion-item class="ion-text-wrap">

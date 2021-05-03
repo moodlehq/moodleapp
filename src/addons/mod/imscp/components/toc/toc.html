@@ -12,7 +12,7 @@
     <nav>
         <ion-list>
             <ion-item *ngFor="let item of items" (click)="loadItem(item.href)"
-                [class.core-selected-item]="selected == item.href">
+                [attr.aria-current]="selected == item.href ? 'page' :  'false'">
                 <ion-label [class.core-bold]="!item.href">
                     <span class="ion-padding-left" *ngFor="let i of getNumberForPadding(item.level)"></span>{{item.title}}
                 </ion-label>

@@ -14,7 +14,7 @@
 <ion-content>
     <ion-list>
         <ng-container *ngFor="let phase of phases">
-            <ion-item-divider [class.core-selected-item]="workshopPhase == phase.code">
+            <ion-item-divider [attr.aria-current]="workshopPhase == phase.code ? 'page' :  'false'">
                 <ion-label>
                     <h2>{{ phase.title }}</h2>
                     <p class="ion-text-wrap" *ngIf="workshopPhase == phase.code">

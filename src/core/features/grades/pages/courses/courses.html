@@ -22,7 +22,7 @@
                 <ion-item
                     *ngFor="let course of courses.items"
                     [title]="course.courseFullName"
-                    [class.core-selected-item]="courses.isSelected(course)"
+                    [attr.aria-current]="courses.getItemAriaCurrent(course)"
                     class="ion-text-wrap"
                     button
                     detail

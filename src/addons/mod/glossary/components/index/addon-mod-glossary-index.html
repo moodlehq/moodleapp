@@ -67,7 +67,7 @@
                 <ion-label>{{ 'addon.mod_glossary.entriestobesynced' | translate }}</ion-label>
             </ion-item-divider>
             <ion-item *ngFor="let entry of entries.offlineEntries" (click)="entries.select(entry)" detail="false"
-                [class.core-selected-item]="entries.isSelected(entry)">
+                [attr.aria-current]="entries.getItemAriaCurrent(entry)">
                 <ion-label>
                     <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary!.coursemodule"
                         [courseId]="courseId">
@@ -82,7 +82,8 @@
                     {{ getDivider!(entry) }}
                 </ion-item-divider>
 
-                <ion-item (click)="entries.select(entry)" [class.core-selected-item]="entries.isSelected(entry)" detail="false">
+                <ion-item button (click)="entries.select(entry)" [attr.aria-current]="entries.getItemAriaCurrent(entry)"
+                    detail="false">
                     <ion-label>
                         <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary!.coursemodule"
                             [courseId]="courseId">

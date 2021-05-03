@@ -26,7 +26,7 @@
             </ion-item>
 
             <ion-item button class="ion-text-wrap {{question.stateClass}}" *ngFor="let question of navigation"
-                [ngClass]='{"core-selected-item": !summaryShown && currentPage == question.page}'
+                [attr.aria-current]="!summaryShown && currentPage == question.page ? 'page' : 'false'"
                 (click)="loadPage(question.page, question.slot)" detail="true">
 
                 <ion-label>

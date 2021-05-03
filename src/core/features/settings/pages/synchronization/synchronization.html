@@ -30,7 +30,7 @@
                 <h2>{{ 'core.settings.sites' | translate }}</h2>
             </ion-label>
         </ion-item-divider>
-        <ion-item *ngFor="let site of sites" [class.core-selected-item]="site.id == currentSiteId" class="ion-text-wrap">
+        <ion-item *ngFor="let site of sites" [attr.aria-current]="site.id == currentSiteId ? 'page' :  'false'" class="ion-text-wrap">
             <ion-label>
                 <h2>
                     <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>

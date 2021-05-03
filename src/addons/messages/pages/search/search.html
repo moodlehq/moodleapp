@@ -43,7 +43,7 @@
 
         <!-- List of results -->
         <ion-item class="addon-message-discussion ion-text-wrap" *ngFor="let result of item.results" [title]="result.fullname"
-            (click)="openConversation(result)" [class.core-selected-item]="result == selectedResult" detail>
+            (click)="openConversation(result)" [attr.aria-current]="result == selectedResult ? 'page' :  'false'" detail>
             <core-user-avatar slot="start" [user]="result" [checkOnline]="true" [linkProfile]="false"></core-user-avatar>
             <ion-label>
                 <h2>

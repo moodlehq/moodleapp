@@ -28,7 +28,7 @@
 
             <ion-list *ngIf="!participants.empty">
                 <ion-item *ngFor="let participant of participants.items"
-                    class="ion-text-wrap" [class.core-selected-item]="participants.isSelected(participant)"
+                    class="ion-text-wrap" [attr.aria-current]="participants.getItemAriaCurrent(participant)"
                     [title]="participant.fullname" (click)="participants.select(participant)">
 
                     <core-user-avatar [user]="participant" [linkProfile]="false" [checkOnline]="true" slot="start">

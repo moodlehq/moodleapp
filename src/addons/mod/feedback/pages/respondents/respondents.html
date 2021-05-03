@@ -33,7 +33,7 @@
                         </ion-label>
                     </ion-item-divider>
                     <ion-item *ngFor="let attempt of responses.responses.attempts" class="ion-text-wrap" tappable detail="true"
-                        (click)="responses.select(attempt)" [class.core-selected-item]="responses.isSelected(attempt)">
+                        (click)="responses.select(attempt)" [attr.aria-current]="responses.getItemAriaCurrent(attempt)">
                         <core-user-avatar [user]="attempt" slot="start"></core-user-avatar>
                         <ion-label>
                             <h2>{{ attempt.fullname }}</h2>
@@ -58,7 +58,7 @@
                         </ion-label>
                     </ion-item-divider>
                     <ion-item *ngFor="let attempt of responses.anonResponses.attempts" class="ion-text-wrap" tappable detail="true"
-                        (click)="responses.select(attempt)" [class.core-selected-item]="responses.isSelected(attempt)">
+                        (click)="responses.select(attempt)" [attr.aria-current]="responses.getItemAriaCurrent(attempt)">
                         <ion-label>
                             <h2>{{ 'addon.mod_feedback.response_nr' |translate }}: {{attempt.number}}</h2>
                         </ion-label>
