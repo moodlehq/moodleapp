@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonModAssignSubmissionPluginComponent } from '@addons/mod/assign/components/submission-plugin/submission-plugin';
 import { AddonModAssign, AddonModAssignProvider } from '@addons/mod/assign/services/assign';
 import { AddonModAssignHelper } from '@addons/mod/assign/services/assign-helper';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
@@ -22,6 +21,8 @@ import { CoreFileSession } from '@services/file-session';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignSubmissionFileHandlerService } from '../services/handler';
 import { FileEntry } from '@ionic-native/file/ngx';
+import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
+import { CoreFileEntry } from '@services/file-helper';
 
 /**
  * Component to render a file submission plugin.
@@ -30,9 +31,10 @@ import { FileEntry } from '@ionic-native/file/ngx';
     selector: 'addon-mod-assign-submission-file',
     templateUrl: 'addon-mod-assign-submission-file.html',
 })
-export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmissionPluginComponent implements OnInit {
+export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmissionPluginBaseComponent implements OnInit {
 
     component = AddonModAssignProvider.COMPONENT;
+    files: CoreFileEntry[] = [];
 
     maxSize?: number;
     acceptedTypes?: string;
@@ -48,12 +50,12 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
             undefined,
         );
 
-        this.acceptedTypes = this.data?.configs.filetypeslist;
-        this.maxSize = this.data?.configs.maxsubmissionsizebytes
-            ? parseInt(this.data?.configs.maxsubmissionsizebytes, 10)
+        this.acceptedTypes = this.configs?.filetypeslist;
+        this.maxSize = this.configs?.maxsubmissionsizebytes
+            ? parseInt(this.configs.maxsubmissionsizebytes, 10)
             : undefined;
-        this.maxSubmissions = this.data?.configs.maxfilesubmissions
-            ? parseInt(this.data?.configs.maxfilesubmissions, 10)
+        this.maxSubmissions = this.configs?.maxfilesubmissions
+            ? parseInt(this.configs.maxfilesubmissions, 10)
             : undefined;
 
         try {

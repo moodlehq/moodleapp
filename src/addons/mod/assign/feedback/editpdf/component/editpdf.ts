@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/components/feedback-plugin/feedback-plugin';
+import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 import { AddonModAssignProvider, AddonModAssign } from '@addons/mod/assign/services/assign';
 import { Component, OnInit } from '@angular/core';
 import { CoreWSFile } from '@services/ws';
@@ -24,7 +24,7 @@ import { CoreWSFile } from '@services/ws';
     selector: 'addon-mod-assign-feedback-edit-pdf',
     templateUrl: 'addon-mod-assign-feedback-editpdf.html',
 })
-export class AddonModAssignFeedbackEditPdfComponent extends AddonModAssignFeedbackPluginComponent implements OnInit {
+export class AddonModAssignFeedbackEditPdfComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 
     component = AddonModAssignProvider.COMPONENT;
     files: CoreWSFile[] = [];

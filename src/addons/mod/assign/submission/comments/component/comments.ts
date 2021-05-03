@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { Component, ViewChild } from '@angular/core';
-import { AddonModAssignSubmissionPluginComponent } from '@addons/mod/assign/components/submission-plugin/submission-plugin';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
 
@@ -24,7 +24,7 @@ import { CoreComments } from '@features/comments/services/comments';
     selector: 'addon-mod-assign-submission-comments',
     templateUrl: 'addon-mod-assign-submission-comments.html',
 })
-export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSubmissionPluginComponent {
+export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSubmissionPluginBaseComponent {
 
     @ViewChild(CoreCommentsCommentsComponent) commentsComponent!: CoreCommentsCommentsComponent;
 

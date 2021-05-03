@@ -304,6 +304,7 @@ export class CoreTextUtilsProvider {
 
     /**
      * Count words in a text.
+     * This function is based on Moodle's count_words.
      *
      * @param text Text to count.
      * @return Number of words.
@@ -312,27 +313,32 @@ export class CoreTextUtilsProvider {
         if (!text || typeof text != 'string') {
             return 0;
         }
-        const blockTags = ['address', 'article', 'aside', 'blockquote', 'br', ' details', 'dialog', 'dd', 'div', 'dl', 'dt',
-            'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'hr',
-            'li', 'main', 'nav', 'ol', 'p', 'pre', 'section', 'table', 'ul'];
 
-        // Clean HTML scripts and tags.
-        text = text.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
-        // Replace block tags by space to get word count aware of line break and remove inline tags.
-        text = text.replace(/<(\/[ ]*)?([a-zA-Z0-9]+)[^>]*>/gi, (str, p1, match) => {
-            if (blockTags.indexOf(match) >= 0) {
-                return ' ';
-            }
+        // Before stripping tags, add a space after the close tag of anything that is not obviously inline.
+        // Also, br is a special case because it definitely delimits a word, but has no close tag.
+        text = text.replace(/(<\/(?!a>|b>|del>|em>|i>|ins>|s>|small>|strong>|sub>|sup>|u>)\w+>|<br>|<br\s*\/>)/ig, '$1 ');
 
-            return '';
-        });
+        // Now remove HTML tags.
+        text = text.replace(/(<([^>]+)>)/ig, '');
         // Decode HTML entities.
         text = this.decodeHTMLEntities(text);
-        // Replace underscores (which are classed as word characters) with spaces.
-        text = text.replace(/_/gi, ' ');
 
-        // This RegEx will detect any word change including Unicode chars. Some languages without spaces won't be counted fine.
-        return text.match(/\S+/gi)?.length || 0;
+        // Now, the word count is the number of blocks of characters separated
+        // by any sort of space. That seems to be the definition used by all other systems.
+        // To be precise about what is considered to separate words:
+        // * Anything that Unicode considers a 'Separator'
+        // * Anything that Unicode considers a 'Control character'
+        // * An em- or en- dash.
+        let words: string[];
+        try {
+            words = text.split(/[\p{Z}\p{Cc}—–]+/u);
+        } catch {
+            // Unicode-aware flag not supported.
+            words = text.split(/\s+/);
+        }
+
+        // Filter empty words.
+        return words.filter(word => word).length;
     }
 
     /**
