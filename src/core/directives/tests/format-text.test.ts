@@ -29,6 +29,7 @@ import { Platform } from '@singletons';
 
 import { mock, mockSingleton, RenderConfig, renderWrapperComponent } from '@/testing/utils';
 import { CoreFilter } from '@features/filter/services/filter';
+import { CoreApp } from '@services/app';
 
 describe('CoreFormatTextDirective', () => {
 
@@ -87,6 +88,7 @@ describe('CoreFormatTextDirective', () => {
             getCurrentSite: () => Promise.resolve(site),
         });
         mockSingleton(CoreFilter, { formatText: (text) => Promise.resolve(text) });
+        mockSingleton(CoreApp, { isMobile: () => false });
 
         // Act
         const fixture = await renderWrapperComponent(
