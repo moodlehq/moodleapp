@@ -94,7 +94,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
         if (this.isEnrolled) {
             CoreCourseHelper.openCourse(this.course);
         } else {
-            CoreNavigator.navigate(
+            CoreNavigator.navigateToSitePath(
                 '/course/' + this.course.id + '/preview',
                 { params: { course: this.course } },
             );
