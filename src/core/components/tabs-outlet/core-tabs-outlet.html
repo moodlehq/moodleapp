@@ -7,15 +7,28 @@
             </ion-col>
             <ion-col class="ion-no-padding" size="10">
                 <ion-slides (ionSlideDidChange)="slideChanged()" [options]="slidesOpts" [dir]="direction" role="tablist"
-                    [attr.aria-label]="description" aria-hidden="false">
+                    [attr.aria-label]="description">
                     <ng-container *ngFor="let tab of tabs">
-                        <ion-slide [hidden]="!hideUntil" [attr.aria-selected]="selected == tab.id" class="tab-slide" role="tab"
-                            [attr.aria-label]="tab.title | translate" [attr.aria-controls]="tab.id" [id]="tab.id! + '-tab'"
-                            [tabindex]="selected == tab.id ? null : -1">
-                            <ion-tab-button (ionTabButtonClick)="selectTab(tab.id, $event)" [tab]="tab.page" [layout]="layout"
-                                class="{{tab.class}}" [attr.aria-label]="tab.title | translate">
-                                <ion-icon *ngIf="tab.icon" aria-hidden="true"></ion-icon>
-                                <ion-label aria-hidden="true">{{ tab.title | translate}}</ion-label>
+                        <ion-slide
+                            role="presentation"
+                            [hidden]="!hideUntil"
+                            [id]="tab.id! + '-tab'"
+                            class="tab-slide"
+                            [class.selected]="selected == tab.id">
+                            <ion-tab-button
+                                (ionTabButtonClick)="selectTab(tab.id, $event)"
+                                (keydown)="tabAction.keyDown($event)"
+                                (keyup)="tabAction.keyUp(tab.id, $event)"
+                                [tab]="tab.page"
+                                [layout]="layout"
+                                class="{{tab.class}}"
+                                role="tab"
+                                [attr.aria-controls]="tab.id"
+                                [attr.aria-selected]="selected == tab.id"
+                                [tabindex]="selected == tab.id ? 0 : -1"
+                            >
+                                <ion-icon *ngIf="tab.icon" [name]="tab.icon" aria-hidden="true"></ion-icon>
+                                <ion-label>{{ tab.title | translate}}</ion-label>
                                 <ion-badge *ngIf="tab.badge">{{ tab.badge }}</ion-badge>
                             </ion-tab-button>
                         </ion-slide>

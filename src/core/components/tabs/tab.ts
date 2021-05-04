@@ -84,6 +84,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
 
         this.element.setAttribute('role', 'tabpanel');
         this.element.setAttribute('tabindex', '0');
+        this.element.setAttribute('aria-hidden', 'true');
     }
 
     /**
@@ -113,6 +114,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
 
         this.tabElement = this.tabElement || document.getElementById(this.id + '-tab');
         this.tabElement?.setAttribute('aria-selected', 'true');
+        this.element.setAttribute('aria-hidden', 'false');
 
         this.loaded = true;
         this.ionSelect.emit(this);
@@ -128,6 +130,8 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     unselectTab(): void {
         this.tabElement?.setAttribute('aria-selected', 'false');
         this.element.classList.remove('selected');
+        this.element.setAttribute('aria-hidden', 'true');
+
         this.showHideNavBarButtons(false);
     }
 

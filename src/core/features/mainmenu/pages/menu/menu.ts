@@ -25,6 +25,8 @@ import { CoreMainMenu, CoreMainMenuProvider } from '../../services/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/mainmenu-delegate';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
+import { CoreUtils } from '@services/utils/utils';
+import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from '@classes/aria-role-tab';
 
 /**
  * Page that displays the main menu of the app.
@@ -40,19 +42,21 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     allHandlers?: CoreMainMenuHandlerToDisplay[];
     loaded = false;
     showTabs = false;
-    tabsPlacement = 'bottom';
+    tabsPlacement: 'bottom' | 'side' = 'bottom';
     hidden = false;
     morePageName = CoreMainMenuProvider.MORE_PAGE_NAME;
+    selectedTab?: string;
 
     protected subscription?: Subscription;
     protected keyboardObserver?: CoreEventObserver;
     protected resizeFunction: () => void;
     protected backButtonFunction: (event: BackButtonEvent) => void;
     protected selectHistory: string[] = [];
-    protected selectedTab?: string;
     protected firstSelectedTab?: string;
 
     @ViewChild('mainTabs') mainTabs?: IonTabs;
+
+    tabAction: CoreMainMenuRoleTab;
 
     constructor(
         protected route: ActivatedRoute,
@@ -61,6 +65,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     ) {
         this.resizeFunction = this.initHandlers.bind(this);
         this.backButtonFunction = this.backButtonClicked.bind(this);
+        this.tabAction = new CoreMainMenuRoleTab(this);
     }
 
     /**
@@ -111,10 +116,11 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
                 const handler = handlers[i];
 
                 // Check if the handler is already in the tabs list. If so, use it.
-                const tab = this.tabs.find((tab) => tab.title == handler.title && tab.icon == handler.icon);
+                const tab = this.tabs.find((tab) => tab.page == handler.page);
 
                 tab ? tab.hide = false : null;
                 handler.hide = false;
+                handler.id = handler.id || 'core-mainmenu-' + CoreUtils.getUniqueId('CoreMainMenuPage');
 
                 newTabs.push(tab || handler);
             }
@@ -243,6 +249,45 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
             processNextHandler();
         });
+    }
+
+}
+
+/**
+ * Helper class to manage rol tab.
+ */
+class CoreMainMenuRoleTab extends CoreAriaRoleTab<CoreMainMenuPage> {
+
+    /**
+     * @inheritdoc
+     */
+    selectTab(tabId: string, e: Event): void {
+        this.componentInstance.tabClicked(e, tabId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getSelectableTabs(): CoreAriaRoleTabFindable[] {
+        const allTabs: CoreAriaRoleTabFindable[] =
+            this.componentInstance.tabs.filter((tab) => !tab.hide).map((tab) => ({
+                id: tab.id || tab.page,
+                findIndex: tab.page,
+            }));
+
+        allTabs.push({
+            id: this.componentInstance.morePageName,
+            findIndex: this.componentInstance.morePageName,
+        });
+
+        return allTabs;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    isHorizontal(): boolean {
+        return this.componentInstance.tabsPlacement == 'bottom';
     }
 
 }

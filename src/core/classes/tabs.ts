@@ -31,6 +31,7 @@ import { Subscription } from 'rxjs';
 
 import { Platform, Translate } from '@singletons';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
+import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from './aria-role-tab';
 
 /**
  * Class to abstract some common code for tabs.
@@ -89,10 +90,13 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     protected slidesSwiperLoaded = false;
     protected scrollElements: Record<string | number, HTMLElement> = {}; // Scroll elements for each loaded tab.
 
+    tabAction: CoreTabsRoleTab<T>;
+
     constructor(
         protected element: ElementRef,
     ) {
         this.backButtonFunction = this.backButtonClicked.bind(this);
+        this.tabAction = new CoreTabsRoleTab(this);
     }
 
     /**
@@ -628,6 +632,30 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             window.removeEventListener('resize', this.resizeFunction);
         }
         this.languageChangedSubscription?.unsubscribe();
+    }
+
+}
+
+/**
+ * Helper class to manage rol tab.
+ */
+class CoreTabsRoleTab<T extends CoreTabBase> extends CoreAriaRoleTab<CoreTabsBaseComponent<T>> {
+
+    /**
+     * @inheritdoc
+     */
+    selectTab(tabId: string, e: Event): void {
+        this.componentInstance.selectTab(tabId, e);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getSelectableTabs(): CoreAriaRoleTabFindable[] {
+        return this.componentInstance.tabs.filter((tab) => tab.enabled).map((tab) => ({
+            id: tab.id!,
+            findIndex: tab.id!,
+        }));
     }
 
 }
