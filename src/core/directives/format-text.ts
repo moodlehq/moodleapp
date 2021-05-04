@@ -682,6 +682,10 @@ export class CoreFormatTextDirective implements OnChanges {
 
         this.addMediaAdaptClass(iframe);
 
+        if (CoreIframeUtils.shouldDisplayHelpForUrl(src)) {
+            this.addIframeHelp(iframe);
+        }
+
         if (currentSite?.containsUrl(src)) {
             // URL points to current site, try to use auto-login.
             const finalUrl = await currentSite.getAutoLoginUrl(src, false);
@@ -755,6 +759,32 @@ export class CoreFormatTextDirective implements OnChanges {
         }
 
         CoreIframeUtils.treatFrame(iframe, false);
+    }
+
+    /**
+     * Add iframe help option.
+     *
+     * @param iframe Iframe.
+     */
+    protected addIframeHelp(iframe: HTMLIFrameElement): void {
+        const helpDiv = document.createElement('div');
+
+        helpDiv.classList.add('ion-text-center');
+        helpDiv.classList.add('ion-text-wrap');
+        helpDiv.classList.add('core-iframe-help');
+
+        const button = document.createElement('ion-button');
+        button.setAttribute('fill', 'clear');
+        button.setAttribute('aria-haspopup', 'dialog');
+        button.innerHTML = Translate.instant('core.iframehelp');
+
+        button.addEventListener('click', () => {
+            CoreIframeUtils.openIframeHelpModal();
+        });
+
+        helpDiv.appendChild(button);
+
+        iframe.after(helpDiv);
     }
 
     /**

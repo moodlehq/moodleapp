@@ -40,6 +40,7 @@ export class CoreIframeComponent implements OnChanges {
 
     loading?: boolean;
     safeUrl?: SafeResourceUrl;
+    displayHelp = false;
 
     protected readonly IFRAME_TIMEOUT = 15000;
     protected logger: CoreLogger;
@@ -100,6 +101,7 @@ export class CoreIframeComponent implements OnChanges {
     async ngOnChanges(changes: {[name: string]: SimpleChange }): Promise<void> {
         if (changes.src) {
             const url = CoreUrlUtils.getYoutubeEmbedUrl(changes.src.currentValue) || changes.src.currentValue;
+            this.displayHelp = CoreIframeUtils.shouldDisplayHelpForUrl(url);
 
             await CoreIframeUtils.fixIframeCookies(url);
 
@@ -110,6 +112,13 @@ export class CoreIframeComponent implements OnChanges {
                 this.init();
             });
         }
+    }
+
+    /**
+     * Open help modal for iframes.
+     */
+    openIframeHelpModal(): void {
+        CoreIframeUtils.openIframeHelpModal();
     }
 
 }

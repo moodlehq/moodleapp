@@ -42,6 +42,8 @@
     "fontsizecharacter": "A",
     "forcedsetting": "This setting has been forced by your site configuration.",
     "general": "General",
+    "ioscookies": "Cross-Website Tracking",
+    "ioscookiesdescription": "Embedded content from the site might require cross-site cookies to work. To enable it, please go to the app's iOS settings and enable 'Allow Cross-Website Tracking'.",
     "language": "Language",
     "license": "Licence",
     "localnotifavailable": "Local notifications available",

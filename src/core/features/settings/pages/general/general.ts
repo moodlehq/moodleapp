@@ -21,6 +21,8 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../services/settings-helper';
 import { CoreApp } from '@services/app';
+import { CoreIframeUtils } from '@services/utils/iframe';
+import { Diagnostic } from '@singletons';
 
 /**
  * Page that displays the general settings.
@@ -44,6 +46,7 @@ export class CoreSettingsGeneralPage {
     selectedScheme: CoreColorScheme = CoreColorScheme.LIGHT;
     colorSchemeDisabled = false;
     isAndroid = false;
+    displayIframeHelp = false;
 
     constructor() {
         this.asyncInit();
@@ -98,6 +101,8 @@ export class CoreSettingsGeneralPage {
         if (this.analyticsSupported) {
             this.analyticsEnabled = await CoreConfig.get(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true);
         }
+
+        this.displayIframeHelp = CoreIframeUtils.shouldDisplayHelp();
     }
 
     /**
@@ -153,6 +158,13 @@ export class CoreSettingsGeneralPage {
         await CorePushNotifications.enableAnalytics(this.analyticsEnabled);
 
         CoreConfig.set(CoreConstants.SETTINGS_ANALYTICS_ENABLED, this.analyticsEnabled ? 1 : 0);
+    }
+
+    /**
+     * Open native settings.
+     */
+    openNativeSettings(): void {
+        Diagnostic.switchToSettings();
     }
 
 }
