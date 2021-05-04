@@ -19,7 +19,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourses, CoreCoursesProvider } from '@features/courses/services/courses';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
-import { PopoverController, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/course-options-menu';
@@ -198,7 +198,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         e.preventDefault();
         e.stopPropagation();
 
-        const popover = await PopoverController.create({
+        const popoverData = await CoreDomUtils.openPopover<string>({
             component: CoreCoursesCourseOptionsMenuComponent,
             componentProps: {
                 course: this.course,
@@ -207,37 +207,32 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             },
             event: e,
         });
-        await popover.present();
 
-        const action = await popover.onDidDismiss<string>();
-
-        if (action.data) {
-            switch (action.data) {
-                case 'download':
-                    if (!this.prefetchCourseData.loading) {
-                        this.prefetchCourse(e);
-                    }
-                    break;
-                case 'delete':
-                    if (this.courseStatus == 'downloaded' || this.courseStatus == 'outdated') {
-                        this.deleteCourse();
-                    }
-                    break;
-                case 'hide':
-                    this.setCourseHidden(true);
-                    break;
-                case 'show':
-                    this.setCourseHidden(false);
-                    break;
-                case 'favourite':
-                    this.setCourseFavourite(true);
-                    break;
-                case 'unfavourite':
-                    this.setCourseFavourite(false);
-                    break;
-                default:
-                    break;
-            }
+        switch (popoverData) {
+            case 'download':
+                if (!this.prefetchCourseData.loading) {
+                    this.prefetchCourse(e);
+                }
+                break;
+            case 'delete':
+                if (this.courseStatus == 'downloaded' || this.courseStatus == 'outdated') {
+                    this.deleteCourse();
+                }
+                break;
+            case 'hide':
+                this.setCourseHidden(true);
+                break;
+            case 'show':
+                this.setCourseHidden(false);
+                break;
+            case 'favourite':
+                this.setCourseFavourite(true);
+                break;
+            case 'unfavourite':
+                this.setCourseFavourite(false);
+                break;
+            default:
+                break;
         }
 
     }

@@ -17,7 +17,7 @@ import { Subject } from 'rxjs';
 import { auditTime } from 'rxjs/operators';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { PopoverController, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu-popover';
 
@@ -176,26 +176,23 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      */
     async showContextMenu(event: MouseEvent): Promise<void> {
         if (!this.expanded) {
-            const popover = await PopoverController.create(
-                {
-                    event,
-                    component: CoreContextMenuPopoverComponent,
-                    componentProps: {
-                        title: this.title,
-                        items: this.items,
-                    },
-                    showBackdrop: true,
-                    id: this.uniqueId,
-                },
-            );
-            await popover.present();
             this.expanded = true;
 
-            const data = await popover.onDidDismiss<CoreContextMenuItemComponent>();
+            const popoverData = await CoreDomUtils.openPopover<CoreContextMenuItemComponent>({
+                event,
+                component: CoreContextMenuPopoverComponent,
+                componentProps: {
+                    title: this.title,
+                    items: this.items,
+                },
+                showBackdrop: true,
+                id: this.uniqueId,
+            });
+
             this.expanded = false;
 
-            if (data.data) {
-                data.data.onClosed?.emit();
+            if (popoverData) {
+                popoverData.onClosed?.emit();
             }
 
         }

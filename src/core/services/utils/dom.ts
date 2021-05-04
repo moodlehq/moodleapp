@@ -15,7 +15,7 @@
 import { Injectable, SimpleChange, ElementRef, KeyValueChanges } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { IonContent } from '@ionic/angular';
-import { ModalOptions, AlertOptions, AlertButton, TextFieldTypes } from '@ionic/core';
+import { ModalOptions, PopoverOptions, AlertOptions, AlertButton, TextFieldTypes } from '@ionic/core';
 import { Md5 } from 'ts-md5';
 
 import { CoreApp } from '@services/app';
@@ -796,7 +796,7 @@ export class CoreDomUtilsProvider {
             el.addEventListener('click', async (ev: Event) => {
                 const html = el.getAttribute('data-html');
 
-                const popover = await PopoverController.create({
+                await CoreDomUtils.openPopover({
                     component: CoreBSTooltipComponent,
                     componentProps: {
                         content,
@@ -804,7 +804,6 @@ export class CoreDomUtilsProvider {
                     },
                     event: ev,
                 });
-                await popover.present();
             });
         });
     }
@@ -1719,6 +1718,26 @@ export class CoreDomUtilsProvider {
         });
 
         return await this.openModal<T>(modalOptions);
+    }
+
+    /**
+     * Opens a popover.
+     *
+     * @param popoverOptions Modal Options.
+     */
+    async openPopover<T = void>(
+        popoverOptions: PopoverOptions,
+    ): Promise<T | undefined> {
+
+        const popover = await PopoverController.create(popoverOptions);
+
+        await popover.present();
+
+        // If onDidDismiss is nedded we can add a new param to the function to wait one function or the other.
+        const result = await popover.onWillDismiss<T>();
+        if (result?.data) {
+            return result?.data;
+        }
     }
 
     /**

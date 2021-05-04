@@ -40,7 +40,7 @@ import {
     AddonModForumUpdateDiscussionPostWSOptionsObject,
 } from '../../services/forum';
 import { CoreTag } from '@features/tag/services/tag';
-import { PopoverController, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { IonContent } from '@ionic/angular';
 import { AddonModForumSync } from '../../services/forum-sync';
@@ -218,7 +218,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * @param event Click Event.
      */
     async showOptionsMenu(event: Event): Promise<void> {
-        const popover = await PopoverController.create({
+        const popoverData = await CoreDomUtils.openPopover<{ action?: string }>({
             component: AddonModForumPostOptionsMenuComponent,
             componentProps: {
                 post: this.post,
@@ -228,12 +228,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             event,
         });
 
-        await popover.present();
-
-        const result = await popover.onDidDismiss<{ action?: string }>();
-
-        if (result.data && result.data.action) {
-            switch (result.data.action) {
+        if (popoverData && popoverData.action) {
+            switch (popoverData.action) {
                 case 'edit':
                     this.editPost();
                     break;

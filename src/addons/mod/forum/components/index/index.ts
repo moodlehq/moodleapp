@@ -28,7 +28,7 @@ import {
     AddonModForumReplyDiscussionData,
 } from '@addons/mod/forum/services/forum';
 import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '@addons/mod/forum/services/forum-offline';
-import { PopoverController, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreGroups, CoreGroupsProvider } from '@services/groups';
@@ -667,7 +667,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param discussion Discussion.
      */
     async showOptionsMenu(event: Event, discussion: AddonModForumDiscussion): Promise<void> {
-        const popover = await PopoverController.create({
+        const popoverData = await CoreDomUtils.openPopover<{ action?: string; value: boolean }>({
             component: AddonModForumDiscussionOptionsMenuComponent,
             componentProps: {
                 discussion,
@@ -677,20 +677,16 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             event,
         });
 
-        await popover.present();
-
-        const result = await popover.onDidDismiss<{ action?: string; value: boolean }>();
-
-        if (result.data && result.data.action) {
-            switch (result.data.action) {
+        if (popoverData && popoverData.action) {
+            switch (popoverData.action) {
                 case 'lock':
-                    discussion.locked = result.data.value;
+                    discussion.locked = popoverData.value;
                     break;
                 case 'pin':
-                    discussion.pinned = result.data.value;
+                    discussion.pinned = popoverData.value;
                     break;
                 case 'star':
-                    discussion.starred = result.data.value;
+                    discussion.starred = popoverData.value;
                     break;
                 default:
                     break;
