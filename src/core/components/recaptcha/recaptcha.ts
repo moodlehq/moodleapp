@@ -16,9 +16,9 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { ModalController } from '@singletons';
-import { CoreRecaptchaModalComponent } from './recaptcha-modal';
+import { CoreRecaptchaModalComponent, CoreRecaptchaModalReturn } from './recaptcha-modal';
 
 /**
  * Component that allows answering a recaptcha.
@@ -66,7 +66,7 @@ export class CoreRecaptchaComponent implements OnInit {
         // Modal to answer the recaptcha.
         // This is because the size of the recaptcha is dynamic, so it could cause problems if it was displayed inline.
 
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openModal<CoreRecaptchaModalReturn>({
             component: CoreRecaptchaModalComponent,
             cssClass: 'core-modal-fullscreen',
             componentProps: {
@@ -74,12 +74,10 @@ export class CoreRecaptchaComponent implements OnInit {
             },
         });
 
-        await modal.present();
-
-        const result = await modal.onWillDismiss();
-
-        this.expired = result.data.expired;
-        this.model![this.modelValueName] = result.data.value;
+        if (modalData) {
+            this.expired = modalData.expired;
+            this.model![this.modelValueName] = modalData.value;
+        }
     }
 
 }

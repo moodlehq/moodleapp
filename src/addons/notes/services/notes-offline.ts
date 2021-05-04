@@ -17,6 +17,7 @@ import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton } from '@singletons';
 import { AddonNotesDBRecord, AddonNotesDeletedDBRecord, NOTES_DELETED_TABLE, NOTES_TABLE } from './database/notes';
+import { AddonNotesPublishState } from './notes';
 
 /**
  * Service to handle offline notes.
@@ -150,7 +151,7 @@ export class AddonNotesOfflineProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with notes.
      */
-    async getNotesWithPublishState(state: string, siteId?: string): Promise<AddonNotesDBRecord[]> {
+    async getNotesWithPublishState(state: AddonNotesPublishState, siteId?: string): Promise<AddonNotesDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
         return await site.getDb().getRecords(NOTES_TABLE, { publishstate: state });
@@ -189,7 +190,7 @@ export class AddonNotesOfflineProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with boolean: true if has offline notes, false otherwise.
      */
-    async hasNotesWithPublishState(state: string, siteId?: string): Promise<boolean> {
+    async hasNotesWithPublishState(state: AddonNotesPublishState, siteId?: string): Promise<boolean> {
         const notes = await this.getNotesWithPublishState(state, siteId);
 
         return !!notes.length;
@@ -205,7 +206,13 @@ export class AddonNotesOfflineProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved if stored, rejected if failure.
      */
-    async saveNote(userId: number, courseId: number, state: string, content: string, siteId?: string): Promise<void> {
+    async saveNote(
+        userId: number,
+        courseId: number,
+        state: AddonNotesPublishState,
+        content: string,
+        siteId?: string,
+    ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         const now = CoreTimeUtils.timestamp();

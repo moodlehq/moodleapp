@@ -19,11 +19,12 @@ import { ModalOptions } from '@ionic/core';
 import { CoreApp } from '@services/app';
 import { CoreLang } from '@services/lang';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
-import { makeSingleton, ModalController, Translate } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreWSFile } from '@services/ws';
 import { Locutus } from '@singletons/locutus';
 import { CoreViewerTextComponent } from '@features/viewer/components/text/text';
 import { CoreFileHelper } from '@services/file-helper';
+import { CoreDomUtils } from './dom';
 
 /**
  * Different type of errors the app can treat.
@@ -1097,9 +1098,7 @@ export class CoreTextUtilsProvider {
             ...options,
         };
 
-        const modal = await ModalController.create(modalOptions);
-
-        await modal.present();
+        await CoreDomUtils.openModal(modalOptions);
     }
 
 }

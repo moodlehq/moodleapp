@@ -50,6 +50,11 @@ ion-item.ion-text-wrap ion-label {
     white-space: normal !important;
 }
 
+// Buttons.
+.button-clear {
+    --ion-color-primary: var(--ion-text-color);
+}
+
 // It fixes the click on links where ion-ripple-effect is present.
 .ion-activatable ion-label,
 .item-multiple-items ion-label {

@@ -24,7 +24,7 @@ import { CoreLoginHelper, CoreLoginHelperProvider } from '@features/login/servic
 import { CoreSite } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
-import { Translate, ModalController } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreLoginSiteHelpComponent } from '@features/login/components/site-help/site-help';
@@ -215,24 +215,20 @@ export class CoreLoginSitePage implements OnInit {
      * Show a help modal.
      */
     async showHelp(): Promise<void> {
-        const modal = await ModalController.create({
+        await CoreDomUtils.openModal({
             component: CoreLoginSiteHelpComponent,
             cssClass: 'core-modal-fullscreen',
         });
-
-        await modal.present();
     }
 
     /**
      * Show an onboarding modal.
      */
     async showOnboarding(): Promise<void> {
-        const modal = await ModalController.create({
+        await CoreDomUtils.openModal({
             component: CoreLoginSiteOnboardingComponent,
             cssClass: 'core-modal-fullscreen',
         });
-
-        await modal.present();
     }
 
     /**

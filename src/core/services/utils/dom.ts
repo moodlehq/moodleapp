@@ -1684,21 +1684,41 @@ export class CoreDomUtilsProvider {
     /**
      * Opens a Modal.
      *
-     * @param opts Modal Options.
+     * @param modalOptions Modal Options.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async openModal<T = any>(
-        opts: ModalOptions,
+    async openModal<T = unknown>(
+        modalOptions: ModalOptions,
     ): Promise<T | undefined> {
 
-        const modal = await ModalController.create(opts);
+        const modal = await ModalController.create(modalOptions);
 
         await modal.present();
 
+        // If onDidDismiss is nedded we can add a new param to the function to wait one function or the other.
         const result = await modal.onWillDismiss<T>();
         if (result?.data) {
             return result?.data;
         }
+    }
+
+    /**
+     * Opens a side Modal.
+     *
+     * @param modalOptions Modal Options.
+     */
+    async openSideModal<T = unknown>(
+        modalOptions: ModalOptions,
+    ): Promise<T | undefined> {
+
+        modalOptions = Object.assign(modalOptions, {
+            cssClass: 'core-modal-lateral',
+            showBackdrop: true,
+            backdropDismiss: true,
+            // @todo enterAnimation: 'core-modal-lateral-transition',
+            // @todo leaveAnimation: 'core-modal-lateral-transition',
+        });
+
+        return await this.openModal<T>(modalOptions);
     }
 
     /**
@@ -1721,7 +1741,7 @@ export class CoreDomUtilsProvider {
             return;
         }
 
-        const modal = await ModalController.create({
+        await CoreDomUtils.openModal({
             component: CoreViewerImageComponent,
             componentProps: {
                 title,
@@ -1732,7 +1752,6 @@ export class CoreDomUtilsProvider {
             cssClass: fullScreen ? 'core-modal-fullscreen' : '',
         });
 
-        await modal.present();
     }
 
     /**

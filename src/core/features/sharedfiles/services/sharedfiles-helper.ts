@@ -23,7 +23,7 @@ import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { AlertController, ApplicationInit, makeSingleton, ModalController, Platform, Translate } from '@singletons';
+import { AlertController, ApplicationInit, makeSingleton, Platform, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSharedFilesListModalComponent } from '../components/list-modal/list-modal';
@@ -150,16 +150,11 @@ export class CoreSharedFilesHelperProvider {
      * @return Promise resolved when a file is picked, rejected if file picker is closed without selecting a file.
      */
     async pickSharedFile(mimetypes?: string[]): Promise<CoreFileUploaderHandlerResult> {
-        const modal = await ModalController.create({
+        const file = await CoreDomUtils.openModal<FileEntry>({
             component: CoreSharedFilesListModalComponent,
             cssClass: 'core-modal-fullscreen',
             componentProps: { mimetypes, pick: true },
         });
-
-        await modal.present();
-
-        const result = await modal.onDidDismiss();
-        const file: FileEntry | undefined = result.data;
 
         if (!file) {
             // User cancelled.

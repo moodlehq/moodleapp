@@ -17,7 +17,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from './contentlinks-delegate';
 import { CoreSite } from '@classes/site';
-import { makeSingleton, ModalController, Translate } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
 import { CoreContentLinksChooseSiteModalComponent } from '../components/choose-site-modal/choose-site-modal';
@@ -112,15 +112,13 @@ export class CoreContentLinksHelperProvider {
      * @todo set correct root.
      */
     async goToChooseSite(url: string): Promise<void> {
-        const modal = await ModalController.create({
+        await CoreDomUtils.openModal({
             component: CoreContentLinksChooseSiteModalComponent,
             componentProps: {
                 url: url,
             },
             cssClass: 'core-modal-fullscreen',
         });
-
-        await modal.present();
     }
 
     /**

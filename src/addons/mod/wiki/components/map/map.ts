@@ -47,14 +47,14 @@ export class AddonModWikiMapModalComponent implements OnInit {
      * @param page Clicked page.
      */
     goToPage(page: AddonModWikiSubwikiPage | AddonModWikiPageDBRecord): void {
-        ModalController.dismiss({ type: 'page', goto: page });
+        ModalController.dismiss(<AddonModWikiMapModalReturn>{ page });
     }
 
     /**
      * Go back to the initial page of the wiki.
      */
     goToWikiHome(): void {
-        ModalController.dismiss({ type: 'home', goto: this.homeView });
+        ModalController.dismiss(<AddonModWikiMapModalReturn>{ home: this.homeView });
     }
 
     /**
@@ -102,4 +102,9 @@ export class AddonModWikiMapModalComponent implements OnInit {
 type AddonModWikiPagesMapLetter = {
     label: string;
     pages: (AddonModWikiSubwikiPage | AddonModWikiPageDBRecord)[];
+};
+
+export type AddonModWikiMapModalReturn = {
+    page?: AddonModWikiSubwikiPage | AddonModWikiPageDBRecord;
+    home?: string;
 };

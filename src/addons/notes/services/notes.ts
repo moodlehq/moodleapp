@@ -42,7 +42,13 @@ export class AddonNotesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with boolean: true if note was sent to server, false if stored in device.
      */
-    async addNote(userId: number, courseId: number, publishState: string, noteText: string, siteId?: string): Promise<boolean> {
+    async addNote(
+        userId: number,
+        courseId: number,
+        publishState: AddonNotesPublishState,
+        noteText: string,
+        siteId?: string,
+    ): Promise<boolean> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Convenience function to store a note to be synchronized later.
@@ -82,7 +88,13 @@ export class AddonNotesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when added, rejected otherwise.
      */
-    async addNoteOnline(userId: number, courseId: number, publishState: string, noteText: string, siteId?: string): Promise<void> {
+    async addNoteOnline(
+        userId: number,
+        courseId: number,
+        publishState: AddonNotesPublishState,
+        noteText: string,
+        siteId?: string,
+    ): Promise<void> {
         const notes: AddonNotesCreateNoteData[] = [
             {
                 courseid: courseId,
@@ -438,7 +450,7 @@ export type AddonNotesNote = {
     created: number; // Time created (timestamp).
     lastmodified: number; // Time of last modification (timestamp).
     usermodified: number; // User id of the creator of this note.
-    publishstate: string; // State of the note (i.e. draft, public, site).
+    publishstate: AddonNotesPublishState; // State of the note (i.e. draft, public, site).
     offline?: boolean;
 };
 
@@ -474,7 +486,7 @@ export type AddonNotesNoteFormatted = AddonNotesNote & {
 
 export type AddonNotesCreateNoteData = {
     userid: number; // Id of the user the note is about.
-    publishstate: string; // 'personal', 'course' or 'site'.
+    publishstate: AddonNotesPublishState; // 'personal', 'course' or 'site'.
     courseid: number; // Course id of the note (in Moodle a note can only be created into a course,
     // even for site and personal notes).
     text: string; // The text of the message - text or HTML.
@@ -504,3 +516,5 @@ export type AddonNotesCreateNotesWSResponse = {
 type AddonNotesDeleteNotesWSParams = {
     notes: number[]; // Array of Note Ids to be deleted.
 };
+
+export type AddonNotesPublishState = 'personal' | 'site' | 'course';

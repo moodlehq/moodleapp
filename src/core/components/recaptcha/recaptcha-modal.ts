@@ -42,7 +42,7 @@ export class CoreRecaptchaModalComponent implements OnDestroy {
      * Close modal.
      */
     closeModal(): void {
-        ModalController.dismiss({
+        ModalController.dismiss(<CoreRecaptchaModalReturn>{
             expired: this.expired,
             value: this.value,
         });
@@ -119,3 +119,8 @@ export class CoreRecaptchaModalComponent implements OnDestroy {
     }
 
 }
+
+export type CoreRecaptchaModalReturn = {
+    expired: boolean;
+    value: string;
+};

@@ -21,7 +21,6 @@ import {
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreDomUtils } from '@services/utils/dom';
-import { ModalController } from '@singletons';
 import { AddonModImscpProvider, AddonModImscp, AddonModImscpTocItem } from '../../services/imscp';
 import { AddonModImscpTocComponent } from '../toc/toc';
 
@@ -150,25 +149,16 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
      */
     async showToc(): Promise<void> {
         // Create the toc modal.
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openSideModal<string>({
             component: AddonModImscpTocComponent,
             componentProps: {
                 items: this.items,
                 selected: this.currentItem,
             },
-            cssClass: 'core-modal-lateral',
-            showBackdrop: true,
-            backdropDismiss: true,
-            // @todo enterAnimation: 'core-modal-lateral-transition',
-            // @todo leaveAnimation: 'core-modal-lateral-transition',
         });
 
-        await modal.present();
-
-        const result = await modal.onDidDismiss();
-
-        if (result.data) {
-            this.loadItem(result.data);
+        if (modalData) {
+            this.loadItem(modalData);
         }
     }
 

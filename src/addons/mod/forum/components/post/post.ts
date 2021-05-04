@@ -40,7 +40,7 @@ import {
     AddonModForumUpdateDiscussionPostWSOptionsObject,
 } from '../../services/forum';
 import { CoreTag } from '@features/tag/services/tag';
-import { ModalController, PopoverController, Translate } from '@singletons';
+import { PopoverController, Translate } from '@singletons';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { IonContent } from '@ionic/angular';
 import { AddonModForumSync } from '../../services/forum-sync';
@@ -254,7 +254,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * Shows a form modal to edit an online post.
      */
     async editPost(): Promise<void> {
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openModal<AddonModForumReply>({
             component: AddonModForumEditPostComponent,
             componentProps: {
                 post: this.post,
@@ -265,18 +265,13 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             backdropDismiss: false,
         });
 
-        await modal.present();
-
-        const result = await modal.onDidDismiss<AddonModForumReply>();
-        const data = result.data;
-
-        if (!data) {
+        if (!modalData) {
             return;
         }
 
         // Add some HTML to the message if needed.
-        const message = CoreTextUtils.formatHtmlLines(data.message!);
-        const files = data.files;
+        const message = CoreTextUtils.formatHtmlLines(modalData.message!);
+        const files = modalData.files;
         const options: AddonModForumUpdateDiscussionPostWSOptionsObject = {};
 
         const sendingModal = await CoreDomUtils.showModalLoading('core.sending', true);
@@ -295,16 +290,16 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             }
 
             // Try to send it to server.
-            const sent = await AddonModForum.updatePost(this.post.id, data.subject!, message, options);
+            const sent = await AddonModForum.updatePost(this.post.id, modalData.subject!, message, options);
 
             if (sent && this.forum.id) {
                 // Data sent to server, delete stored files (if any).
                 AddonModForumHelper.deleteReplyStoredFiles(this.forum.id, this.post.id);
 
                 this.onPostChange.emit();
-                this.post.subject = data.subject!;
+                this.post.subject = modalData.subject!;
                 this.post.message = message;
-                this.post.attachments = data.files;
+                this.post.attachments = modalData.files;
             }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_forum.couldnotupdate', true);

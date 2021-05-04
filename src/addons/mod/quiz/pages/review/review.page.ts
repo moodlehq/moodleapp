@@ -21,9 +21,10 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
-import { ModalController, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import {
     AddonModQuizNavigationModalComponent,
+    AddonModQuizNavigationModalReturn,
     AddonModQuizNavigationQuestion,
 } from '../../components/navigation-modal/navigation-modal';
 import {
@@ -325,7 +326,7 @@ export class AddonModQuizReviewPage implements OnInit {
 
     async openNavigation(): Promise<void> {
         // Create the navigation modal.
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openSideModal<AddonModQuizNavigationModalReturn>({
             component: AddonModQuizNavigationModalComponent,
             componentProps: {
                 navigation: this.navigation,
@@ -335,24 +336,15 @@ export class AddonModQuizReviewPage implements OnInit {
                 numPages: this.numPages,
                 showAll: this.showAll,
             },
-            cssClass: 'core-modal-lateral',
-            showBackdrop: true,
-            backdropDismiss: true,
-            // @todo enterAnimation: 'core-modal-lateral-transition',
-            // @todo leaveAnimation: 'core-modal-lateral-transition',
         });
 
-        await modal.present();
-
-        const result = await modal.onWillDismiss();
-
-        if (!result.data) {
+        if (!modalData) {
             return;
         }
 
-        if (result.data.action == AddonModQuizNavigationModalComponent.CHANGE_PAGE) {
-            this.changePage(result.data.page, true, result.data.slot);
-        } else if (result.data.action == AddonModQuizNavigationModalComponent.SWITCH_MODE) {
+        if (modalData.action == AddonModQuizNavigationModalComponent.CHANGE_PAGE) {
+            this.changePage(modalData.page!, true, modalData.slot);
+        } else if (modalData.action == AddonModQuizNavigationModalComponent.SWITCH_MODE) {
             this.switchMode();
         }
     }

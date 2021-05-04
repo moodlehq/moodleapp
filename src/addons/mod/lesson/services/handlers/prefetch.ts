@@ -22,9 +22,10 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
 import { CoreFileSizeSum, CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
-import { makeSingleton, ModalController, Translate } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModLessonPasswordModalComponent } from '../../components/password-modal/password-modal';
 import {
     AddonModLesson,
@@ -54,19 +55,15 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      */
     protected async askUserPassword(): Promise<string> {
         // Create and show the modal.
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openModal<string>({
             component: AddonModLessonPasswordModalComponent,
         });
 
-        await modal.present();
-
-        const result = await modal.onWillDismiss();
-
-        if (typeof result.data != 'string') {
+        if (typeof modalData != 'string') {
             throw new CoreCanceledError();
         }
 
-        return result.data;
+        return modalData;
     }
 
     /**

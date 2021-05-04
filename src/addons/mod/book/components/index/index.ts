@@ -28,7 +28,7 @@ import {
 import { CoreTag, CoreTagItem } from '@features/tag/services/tag';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { ModalController, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourse } from '@features/course/services/course';
 import { AddonModBookTocComponent } from '../toc/toc';
@@ -84,7 +84,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      */
     async showToc(): Promise<void> {
         // Create the toc modal.
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openSideModal<number>({
             component: AddonModBookTocComponent,
             componentProps: {
                 moduleId: this.module.id,
@@ -93,19 +93,10 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
                 courseId: this.courseId,
                 book: this.book,
             },
-            cssClass: 'core-modal-lateral',
-            showBackdrop: true,
-            backdropDismiss: true,
-            // @todo enterAnimation: 'core-modal-lateral-transition',
-            // @todo leaveAnimation: 'core-modal-lateral-transition',
         });
 
-        await modal.present();
-
-        const result = await modal.onDidDismiss();
-
-        if (result.data) {
-            this.changeChapter(result.data);
+        if (modalData) {
+            this.changeChapter(modalData);
         }
     }
 

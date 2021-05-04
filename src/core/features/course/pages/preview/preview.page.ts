@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, NgZone, OnInit } from '@angular/core';
-import { ModalController, IonRefresher } from '@ionic/angular';
+import { IonRefresher } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -76,7 +76,6 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     protected courseStatusObserver?: CoreEventObserver;
 
     constructor(
-        protected modalCtrl: ModalController,
         protected zone: NgZone,
     ) {
         this.isMobile = CoreApp.isMobile();
@@ -347,19 +346,16 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
 
             if (error && error.errorcode === CoreCoursesProvider.ENROL_INVALID_KEY) {
                 // Initialize the self enrol modal.
-                const selfEnrolModal = await this.modalCtrl.create(
+                // Invalid password, show the modal to enter the password.
+                const modalData = await CoreDomUtils.openModal<string>(
                     {
                         component: CoreCoursesSelfEnrolPasswordComponent,
                         componentProps: { password },
                     },
                 );
 
-                // Invalid password, show the modal to enter the password.
-                await selfEnrolModal.present();
-
-                const data = await selfEnrolModal.onDidDismiss<string>();
-                if (typeof data?.data != 'undefined') {
-                    this.selfEnrolInCourse(data.data, instanceId);
+                if (typeof modalData != 'undefined') {
+                    this.selfEnrolInCourse(modalData, instanceId);
 
                     return;
                 }
