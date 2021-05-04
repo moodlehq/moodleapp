@@ -154,6 +154,20 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
     }
 
     /**
+     * Open preferences.
+     */
+    openPreferences(): void {
+        CoreNavigator.navigateToSitePath('preferences');
+    }
+
+    /**
+     * Open settings.
+     */
+    openSettings(): void {
+        CoreNavigator.navigateToSitePath('settings');
+    }
+
+    /**
      * Scan and treat a QR code.
      */
     async scanQR(): Promise<void> {
