@@ -20,6 +20,7 @@ import { Subject } from 'rxjs';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { Params } from '@angular/router';
 import { makeSingleton } from '@singletons';
+import { CoreBlockDefaultHandler } from './handlers/default-block';
 
 /**
  * Interface that all blocks must implement.
@@ -93,7 +94,9 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
 
     blocksUpdateObservable: Subject<void>;
 
-    constructor() {
+    constructor(
+        protected defaultHandler: CoreBlockDefaultHandler,
+    ) {
         super('CoreBlockDelegate', true);
 
         this.blocksUpdateObservable = new Subject<void>();
