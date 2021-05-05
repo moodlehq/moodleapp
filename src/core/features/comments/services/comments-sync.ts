@@ -44,17 +44,17 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllComments(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all comments', this.syncAllCommentsFunc.bind(this, siteId, force), siteId);
+        return this.syncOnSites('all comments', this.syncAllCommentsFunc.bind(this, !!force), siteId);
     }
 
     /**
      * Synchronize all the comments in a certain site
      *
-     * @param siteId Site ID to sync.
      * @param force Wether to force sync not depending on last execution.
+     * @param siteId Site ID to sync.
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
-    private async syncAllCommentsFunc(siteId: string, force: boolean): Promise<void> {
+    private async syncAllCommentsFunc(force: boolean, siteId: string): Promise<void> {
         const comments = await CoreCommentsOffline.getAllComments(siteId);
 
         const commentsUnique: { [syncId: string]: (CoreCommentsDBRecord | CoreCommentsDeletedDBRecord) } = {};

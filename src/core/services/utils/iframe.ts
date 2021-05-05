@@ -25,7 +25,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 
-import { makeSingleton, Network, Platform, NgZone, Translate } from '@singletons';
+import { makeSingleton, Network, Platform, NgZone, Translate, Diagnostic } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
@@ -556,6 +556,47 @@ export class CoreIframeUtilsProvider {
             // Ignore errors.
             this.logger.error('Error setting cookie', err);
         }
+    }
+
+    /**
+     * Check whether the help should be displayed in current OS.
+     *
+     * @return Boolean.
+     */
+    shouldDisplayHelp(): boolean {
+        return CoreApp.isIOS() && CoreApp.getPlatformMajorVersion() >= 14;
+    }
+
+    /**
+     * Check whether the help should be displayed for a certain iframe.
+     *
+     * @param url Iframe URL.
+     * @return Boolean.
+     */
+    shouldDisplayHelpForUrl(url: string): boolean {
+        return this.shouldDisplayHelp() && !CoreUrlUtils.isLocalFileUrl(url);
+    }
+
+    /**
+     * Open help modal for iframes.
+     */
+    openIframeHelpModal(): void {
+        CoreDomUtils.showAlertWithOptions({
+            header: Translate.instant('core.settings.ioscookies'),
+            message: Translate.instant('core.ioscookieshelp'),
+            buttons: [
+                {
+                    text: Translate.instant('core.cancel'),
+                    role: 'cancel',
+                },
+                {
+                    text: Translate.instant('core.opensettings'),
+                    handler: (): void => {
+                        Diagnostic.switchToSettings();
+                    },
+                },
+            ],
+        });
     }
 
 }

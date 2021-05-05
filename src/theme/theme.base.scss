@@ -526,3 +526,9 @@ img.core-media-adapt-width {
 audio.core-media-adapt-width {
     width: 100%;
 }
+
+.core-iframe-help ion-button {
+    text-transform: none;
+    text-decoration: underline;
+    --color: initial;
+}

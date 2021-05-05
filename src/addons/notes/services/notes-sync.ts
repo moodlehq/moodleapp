@@ -45,17 +45,17 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllNotes(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all notes', this.syncAllNotesFunc.bind(this, siteId, force), siteId);
+        return this.syncOnSites('all notes', this.syncAllNotesFunc.bind(this, !!force), siteId);
     }
 
     /**
      * Synchronize all the notes in a certain site
      *
-     * @param siteId Site ID to sync.
      * @param force Wether to force sync not depending on last execution.
+     * @param siteId Site ID to sync.
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
-    protected async syncAllNotesFunc(siteId: string, force: boolean): Promise<void> {
+    protected async syncAllNotesFunc(force: boolean, siteId: string): Promise<void> {
         const notesArray = await Promise.all([
             AddonNotesOffline.getAllNotes(siteId),
             AddonNotesOffline.getAllDeletedNotes(siteId),

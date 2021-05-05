@@ -19,6 +19,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
+import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModScormComponentsModule } from './components/components.module';
 import { OFFLINE_SITE_SCHEMA } from './services/database/scorm';
@@ -26,6 +27,7 @@ import { AddonModScormGradeLinkHandler } from './services/handlers/grade-link';
 import { AddonModScormIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModScormListLinkHandler } from './services/handlers/list-link';
 import { AddonModScormModuleHandler, AddonModScormModuleHandlerService } from './services/handlers/module';
+import { AddonModScormPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModScormPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModScormSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModScormProvider } from './services/scorm';
@@ -69,6 +71,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModScormGradeLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModScormIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModScormListLinkHandler.instance);
+                CorePluginFileDelegate.registerHandler(AddonModScormPluginFileHandler.instance);
             },
         },
     ],
