@@ -30,8 +30,8 @@ npm-debug.log*
 /www
 /src/assets/lib
 
-/moodle.*.config.json
-!/moodle.example.config.json
+/moodle.config.*.json
+!/moodle.config.example.json
 
 /src/assets/lang/*
 /src/assets/env.json

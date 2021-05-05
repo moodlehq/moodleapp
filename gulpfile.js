@@ -48,5 +48,5 @@ gulp.task('default', gulp.parallel(['lang', 'env']));
 
 gulp.task('watch', () => {
     gulp.watch(paths.lang, { interval: 500 }, gulp.parallel('lang'));
-    gulp.watch(['./moodle.config.json', './moodle.*.config.json'], { interval: 500 }, gulp.parallel('env'));
+    gulp.watch(['./moodle.config.json', './moodle.config.*.json'], { interval: 500 }, gulp.parallel('env'));
 });

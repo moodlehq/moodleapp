@@ -25,7 +25,7 @@ function getConfig(environment) {
     };
     const config = parseJsonc(readFileSync(resolve(__dirname, '../moodle.config.json')).toString());
     const envSuffixes =  (envSuffixesMap[environment] || []);
-    const envConfigPath = envSuffixes.map(suffix => resolve(__dirname, `../moodle.${suffix}.config.json`)).find(existsSync);
+    const envConfigPath = envSuffixes.map(suffix => resolve(__dirname, `../moodle.config.${suffix}.json`)).find(existsSync);
 
     if (envConfigPath) {
         const envConfig = parseJsonc(readFileSync(envConfigPath).toString());
