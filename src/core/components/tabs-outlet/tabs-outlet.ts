@@ -99,8 +99,15 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
                 return;
             }
 
-            this.listenContentScroll(stackEvent.enteringView.element, stackEvent.enteringView.id);
             this.showHideNavBarButtons(stackEvent.enteringView.element.tagName);
+
+            await this.listenContentScroll(stackEvent.enteringView.element, stackEvent.enteringView.id);
+
+            const scrollElement = this.scrollElements[stackEvent.enteringView.id];
+            if (scrollElement) {
+                // Show or hide tabs based on the new page scroll.
+                this.showHideTabs(scrollElement.scrollTop, scrollElement);
+            }
         });
     }
 

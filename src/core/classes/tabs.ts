@@ -87,7 +87,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     protected isInTransition = false; // Weather Slides is in transition.
     protected slidesSwiper: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     protected slidesSwiperLoaded = false;
-    protected scrollListenersSet: Record<string | number, boolean> = {}; // Prevent setting listeners twice.
+    protected scrollElements: Record<string | number, HTMLElement> = {}; // Scroll elements for each loaded tab.
 
     constructor(
         protected element: ElementRef,
@@ -444,11 +444,11 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     /**
      * Show or hide the tabs. This is used when the user is scrolling inside a tab.
      *
-     * @param scrollEvent Scroll event to check scroll position.
-     * @param content Content element to check measures.
+     * @param scrollTop Scroll top.
+     * @param scrollElement Content scroll element to check measures.
      */
-    showHideTabs(scrollEvent: CustomEvent, content: HTMLElement): void {
-        if (!this.tabBarElement || !this.tabsElement || !content) {
+    showHideTabs(scrollTop: number, scrollElement: HTMLElement): void {
+        if (!this.tabBarElement || !this.tabsElement || !scrollElement) {
             return;
         }
 
@@ -467,8 +467,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             return;
         }
 
-        const scroll = parseInt(scrollEvent.detail.scrollTop, 10);
-        if (scroll <= 0) {
+        if (scrollTop <= 0) {
             // Ensure tabbar is shown.
             this.tabsElement.style.top = '0';
             this.tabsElement.style.height = '';
@@ -479,30 +478,30 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             return;
         }
 
-        if (scroll == this.lastScroll) {
+        if (scrollTop == this.lastScroll) {
             // Ensure scroll has been modified to avoid flicks.
             return;
         }
 
-        if (this.tabsShown && scroll > this.tabBarHeight) {
+        if (this.tabsShown && scrollTop > this.tabBarHeight) {
             this.tabsShown = false;
 
             // Hide tabs.
             this.tabBarElement.classList.add('tabs-hidden');
             this.tabsElement.style.top = '0';
             this.tabsElement.style.height = '';
-        } else if (!this.tabsShown && scroll <= this.tabBarHeight) {
+        } else if (!this.tabsShown && scrollTop <= this.tabBarHeight) {
             this.tabsShown = true;
             this.tabBarElement.classList.remove('tabs-hidden');
         }
 
-        if (this.tabsShown && content.scrollHeight > content.clientHeight + (this.tabBarHeight - scroll)) {
+        if (this.tabsShown && scrollElement.scrollHeight > scrollElement.clientHeight + (this.tabBarHeight - scrollTop)) {
             // Smooth translation.
-            this.tabsElement.style.top = - scroll + 'px';
-            this.tabsElement.style.height = 'calc(100% + ' + scroll + 'px';
+            this.tabsElement.style.top = - scrollTop + 'px';
+            this.tabsElement.style.height = 'calc(100% + ' + scrollTop + 'px';
         }
         // Use lastScroll after moving the tabs to avoid flickering.
-        this.lastScroll = parseInt(scrollEvent.detail.scrollTop, 10);
+        this.lastScroll = scrollTop;
     }
 
     /**
@@ -580,17 +579,28 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      * @return Promise resolved when done.
      */
     async listenContentScroll(element: HTMLElement, id: number | string): Promise<void> {
-        const content = element.querySelector('ion-content');
+        if (this.scrollElements[id]) {
+            return; // Already set.
+        }
 
-        if (!content || this.scrollListenersSet[id]) {
+        let content = element.querySelector('ion-content');
+        if (!content) {
             return;
         }
 
+        // Search the inner ion-content if there's more than one.
+        let childContent = content.querySelector('ion-content') || null;
+        while (childContent != null) {
+            content = childContent;
+            childContent = content.querySelector('ion-content') || null;
+        }
+
         const scroll = await content.getScrollElement();
+
         content.scrollEvents = true;
-        this.scrollListenersSet[id] = true;
+        this.scrollElements[id] = scroll;
         content.addEventListener('ionScroll', (e: CustomEvent): void => {
-            this.showHideTabs(e, scroll);
+            this.showHideTabs(parseInt(e.detail.scrollTop, 10), scroll);
         });
     }
 
