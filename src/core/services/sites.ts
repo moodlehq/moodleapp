@@ -707,20 +707,19 @@ export class CoreSitesProvider {
     /**
      * Check the app for a site and show a download dialogs if necessary.
      *
-     * @param response Data obtained during site check.
+     * @param config Config object of the site.
      */
-    async checkApplication(response: CoreSiteCheckResponse): Promise<void> {
-        await this.checkRequiredMinimumVersion(response.config);
+    async checkApplication(config?: CoreSitePublicConfigResponse): Promise<void> {
+        await this.checkRequiredMinimumVersion(config);
     }
 
     /**
      * Check the required minimum version of the app for a site and shows a download dialog.
      *
-     * @param  config Config object of the site.
-     * @param siteId ID of the site to check. Current site id will be used otherwise.
+     * @param config Config object of the site.
      * @return Resolved with  if meets the requirements, rejected otherwise.
      */
-    async checkRequiredMinimumVersion(config?: CoreSitePublicConfigResponse, siteId?: string): Promise<void> {
+    protected async checkRequiredMinimumVersion(config?: CoreSitePublicConfigResponse): Promise<void> {
         if (!config || !config.tool_mobile_minimumversion) {
             return;
         }
@@ -736,7 +735,7 @@ export class CoreSitesProvider {
                 default: config.tool_mobile_setuplink,
             };
 
-            siteId = siteId || this.getCurrentSiteId();
+            const siteId = this.getCurrentSiteId();
 
             const downloadUrl = CoreApp.getAppStoreUrl(storesConfig);
 
@@ -838,7 +837,7 @@ export class CoreSitesProvider {
             }
 
             try {
-                await this.checkRequiredMinimumVersion(config);
+                await this.checkApplication(config);
 
                 this.login(siteId);
                 // Update site info. We don't block the UI.
@@ -1301,7 +1300,7 @@ export class CoreSitesProvider {
      * @param siteid Site's ID.
      * @return A promise resolved when the site is updated.
      */
-    async updateSiteInfo(siteId: string): Promise<void> {
+    async updateSiteInfo(siteId?: string): Promise<void> {
         const site = await this.getSite(siteId);
 
         try {

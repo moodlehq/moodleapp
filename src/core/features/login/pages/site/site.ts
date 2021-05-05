@@ -349,7 +349,7 @@ export class CoreLoginSitePage implements OnInit {
      */
     protected async login(response: CoreSiteCheckResponse, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
         try {
-            await CoreSites.checkApplication(response);
+            await CoreSites.checkApplication(response.config);
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, true);
 
@@ -545,7 +545,7 @@ export class CoreLoginSitePage implements OnInit {
             // Check if site uses SSO.
             const response = await CoreSites.checkSite(siteUrl);
 
-            await CoreSites.checkApplication(response);
+            await CoreSites.checkApplication(response.config);
 
             if (!CoreLoginHelper.isSSOLoginNeeded(response.code)) {
                 // No SSO, go to credentials page.

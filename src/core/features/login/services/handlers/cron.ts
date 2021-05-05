@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreCronHandler } from '@services/cron';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -40,9 +39,9 @@ export class CoreLoginCronHandlerService implements CoreCronHandler {
         // Do not check twice in the same 10 minutes.
         const site = await CoreSites.getSite(siteId);
 
-        const config = await CoreUtils.ignoreErrors(site.getPublicConfig(), <Partial<CoreSitePublicConfigResponse>> {});
+        const config = await CoreUtils.ignoreErrors(site.getPublicConfig());
 
-        CoreUtils.ignoreErrors(CoreSites.checkApplication(<any> config));
+        CoreUtils.ignoreErrors(CoreSites.checkApplication(config));
     }
 
     /**
