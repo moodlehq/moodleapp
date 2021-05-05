@@ -63,7 +63,7 @@
                         <ion-spinner></ion-spinner>
                     </div>
                     <ng-container *ngFor="let site of sites">
-                        <ng-container *ngTemplateOutlet="site; context: {site: site}"></ng-container>
+                        <ng-container *ngTemplateOutlet="sitelisting; context: {site: site}"></ng-container>
                     </ng-container>
                 </div>
             </ion-list>
@@ -118,7 +118,7 @@
 </ion-content>
 
 <!-- Template site selector. -->
-<ng-template #site let-site="site">
+<ng-template #sitelisting let-site="site">
     <ion-item button (click)="connect($event, site.url, site)" [attr.aria-label]="site.name" detail="true">
         <ion-thumbnail *ngIf="siteFinderSettings.displayimage" slot="start">
             <img [src]="site.imageurl" *ngIf="site.imageurl" onError="this.src='assets/icon/icon.png'" alt="" role="presentation">
