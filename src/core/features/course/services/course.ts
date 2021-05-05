@@ -43,6 +43,7 @@ import { CoreCourseLogCronHandler } from './handlers/log-cron';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreCourseAutoSyncData, CoreCourseSyncProvider } from './sync';
 import { CoreTagItem } from '@features/tag/services/tag';
+import { CoreNavigator } from '@services/navigator';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -176,10 +177,14 @@ export class CoreCourseProvider {
      * @param courseId Course ID.
      * @return Whether the current view is a certain course.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     currentViewIsCourse(courseId: number): boolean {
-        // @todo implement
-        return false;
+        const route = CoreNavigator.getCurrentRoute({ routeData: { isCourseIndex: true } });
+
+        if (!route) {
+            return false;
+        }
+
+        return Number(route.snapshot.params.courseId) == courseId;
     }
 
     /**

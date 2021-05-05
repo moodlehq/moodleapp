@@ -71,7 +71,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
                 const index = this.tabs.findIndex((tab) => tab.name == data.name);
 
                 if (index >= 0) {
-                    this.tabsComponent?.selectByIndex(index + 1);
+                    this.tabsComponent?.selectByIndex(index);
                 }
             }
         });
@@ -129,11 +129,9 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         // Load the course handlers.
         const handlers = await CoreCourseOptionsDelegate.getHandlersToDisplay(this.course!, false, false);
 
-        this.tabs = [...this.tabs, ...handlers.map(handler => handler.data)];
-
         let tabToLoad: number | undefined;
 
-        // Add the courseId to the handler component data.
+        // Create the full path.
         handlers.forEach((handler, index) => {
             handler.data.page = CoreTextUtils.concatenatePaths(this.currentPagePath, handler.data.page);
             handler.data.pageParams = handler.data.pageParams || {};
@@ -143,6 +141,11 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
                 tabToLoad = index + 1;
             }
         });
+
+        this.tabs = [...this.tabs, ...handlers.map(handler => ({
+            ...handler.data,
+            name: handler.name,
+        }))];
 
         // Select the tab if needed.
         this.firstTabName = undefined;

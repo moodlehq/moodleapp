@@ -64,6 +64,7 @@ export type CoreNavigatorCurrentRouteOptions = Partial<{
     params: Params; // Params to get the value from.
     route: ActivatedRoute; // Current Route.
     pageComponent: unknown;
+    routeData: Record<string, unknown>;
 }>;
 
 /**
@@ -401,18 +402,22 @@ export class CoreNavigatorService {
      */
     getCurrentRoute(): ActivatedRoute;
     getCurrentRoute(options: CoreNavigatorCurrentRouteOptions): ActivatedRoute | null;
-    getCurrentRoute({ route, pageComponent }: CoreNavigatorCurrentRouteOptions = {}): ActivatedRoute | null {
+    getCurrentRoute({ route, pageComponent, routeData }: CoreNavigatorCurrentRouteOptions = {}): ActivatedRoute | null {
         route = route ?? Router.routerState.root;
 
         if (pageComponent && route.component === pageComponent) {
             return route;
         }
 
-        if (route.firstChild) {
-            return this.getCurrentRoute({ route: route.firstChild, pageComponent });
+        if (routeData && CoreUtils.basicLeftCompare(routeData, route.snapshot.data, 3)) {
+            return route;
         }
 
-        return pageComponent ? null : route;
+        if (route.firstChild) {
+            return this.getCurrentRoute({ route: route.firstChild, pageComponent, routeData });
+        }
+
+        return pageComponent || routeData ? null : route;
     }
 
     /**

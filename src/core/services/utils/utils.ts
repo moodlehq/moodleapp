@@ -176,7 +176,7 @@ export class CoreUtilsProvider {
         maxLevels: number = 0,
         level: number = 0,
         undefinedIsNull: boolean = true,
-    ): boolean | undefined {
+    ): boolean {
         if (typeof itemA == 'function' || typeof itemB == 'function') {
             return true; // Don't compare functions.
         } else if (typeof itemA == 'object' && typeof itemB == 'object') {
@@ -189,7 +189,7 @@ export class CoreUtilsProvider {
                 const value = itemA[name];
                 if (name == '$$hashKey') {
                     // Ignore $$hashKey property since it's a "calculated" property.
-                    return;
+                    continue;
                 }
 
                 if (!this.basicLeftCompare(value, itemB[name], maxLevels, level + 1)) {
