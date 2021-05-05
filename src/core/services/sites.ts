@@ -1174,28 +1174,27 @@ export class CoreSitesProvider {
      * @return Promise resolved when the user is logged out.
      */
     async logout(): Promise<void> {
-        let siteId: string | undefined;
+        if (!this.currentSite) {
+            return;
+        }
+
+        const db = await this.appDB;
+
         const promises: Promise<unknown>[] = [];
+        const siteConfig = this.currentSite.getStoredConfig();
+        const siteId = this.currentSite.getId();
 
-        if (this.currentSite) {
-            const db = await this.appDB;
-            const siteConfig = this.currentSite.getStoredConfig();
-            siteId = this.currentSite.getId();
+        this.currentSite = undefined;
 
-            this.currentSite = undefined;
-
-            if (siteConfig && siteConfig.tool_mobile_forcelogout == '1') {
-                promises.push(this.setSiteLoggedOut(siteId, true));
-            }
-
-            promises.push(db.deleteRecords(CURRENT_SITE_TABLE_NAME, { id: 1 }));
+        if (siteConfig && siteConfig.tool_mobile_forcelogout == '1') {
+            promises.push(this.setSiteLoggedOut(siteId, true));
         }
 
-        try {
-            await Promise.all(promises);
-        } finally {
-            CoreEvents.trigger(CoreEvents.LOGOUT, {}, siteId);
-        }
+        promises.push(db.deleteRecords(CURRENT_SITE_TABLE_NAME, { id: 1 }));
+
+        await CoreUtils.ignoreErrors(Promise.all(promises));
+
+        CoreEvents.trigger(CoreEvents.LOGOUT, {}, siteId);
     }
 
     /**
