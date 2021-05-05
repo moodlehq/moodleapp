@@ -545,7 +545,12 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         }
 
         if (this.selected) {
-            await this.slides!.slideTo(index);
+            // Check if we need to slide to the tab because it's not visible.
+            const firstVisibleTab = await this.slides!.getActiveIndex();
+            const lastVisibleTab = firstVisibleTab + this.slidesOpts.slidesPerView - 1;
+            if (index < firstVisibleTab || index > lastVisibleTab) {
+                await this.slides!.slideTo(index, 0, true);
+            }
         }
 
         const ok = await this.loadTab(tabToSelect);
