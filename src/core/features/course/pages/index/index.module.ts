@@ -27,6 +27,9 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: '',
             component: CoreCourseIndexPage,
+            data: {
+                isCourseIndex: true,
+            },
             children: routes.children,
         },
         ...routes.siblings,

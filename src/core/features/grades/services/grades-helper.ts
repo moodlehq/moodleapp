@@ -34,6 +34,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 
 /**
  * Service that provides some features regarding grades information.
@@ -458,14 +459,13 @@ export class CoreGradesHelperProvider {
         siteId?: string,
     ): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading();
-        let currentUserId: number;
+
+        const site = await CoreSites.getSite(siteId);
+
+        siteId = site.id;
+        const currentUserId = site.getUserId();
 
         try {
-            const site = await CoreSites.getSite(siteId);
-
-            siteId = site.id;
-            currentUserId = site.getUserId();
-
             if (!moduleId) {
                 throw new CoreError('Invalid moduleId');
             }
@@ -477,27 +477,27 @@ export class CoreGradesHelperProvider {
                 throw new CoreError('No grades found.');
             }
 
+            // Can get grades. Do it.
+            const items = await CoreGrades.getGradeItems(courseId, userId, undefined, siteId);
+
+            // Find the item of the module.
+            const item = Array.isArray(items) && items.find((item) => moduleId == item.cmid);
+
+            if (!item) {
+                throw new CoreError('Grade item not found.');
+            }
+
+            // Open the item directly.
+            const gradeId = item.id;
+
+            await CoreUtils.ignoreErrors(
+                CoreNavigator.navigateToSitePath(`/grades/${courseId}/${gradeId}`, {
+                    siteId,
+                    params: { userId },
+                }),
+            );
+        } catch (error) {
             try {
-                // Can get grades. Do it.
-                const items = await CoreGrades.getGradeItems(courseId, userId, undefined, siteId);
-
-                // Find the item of the module.
-                const item = Array.isArray(items) && items.find((item) => moduleId == item.cmid);
-
-                if (!item) {
-                    throw new CoreError('Grade item not found.');
-                }
-
-                // Open the item directly.
-                const gradeId = item.id;
-
-                await CoreUtils.ignoreErrors(
-                    CoreNavigator.navigateToSitePath(`/grades/${courseId}/${gradeId}`, {
-                        siteId,
-                        params: { userId },
-                    }),
-                );
-            } catch (error) {
                 // Cannot get grade items or there's no need to.
                 if (userId && userId != currentUserId) {
                     // View another user grades. Open the grades page directly.
@@ -517,24 +517,12 @@ export class CoreGradesHelperProvider {
                     return;
                 }
 
-                // @todo
                 // Open the course with the grades tab selected.
-                // await CoreCourseHelper.getCourse(courseId, siteId).then(async (result) => {
-                //     const pageParams = {
-                //         course: result.course,
-                //         selectedTab: 'CoreGrades',
-                //     };
-
-                //     // CoreContentLinksHelper.goInSite(navCtrl, 'CoreCourseSectionPage', pageParams, siteId)
-                //     return await CoreUtils.ignoreErrors(CoreNavigator.navigateToSitePath('/course', {
-                //         siteId,
-                //         params: pageParams,
-                //     }));
-                // });
+                await CoreCourseHelper.getAndOpenCourse(courseId, { selectedTab: 'CoreGrades' }, siteId);
+            } catch (error) {
+                // Cannot get course for some reason, just open the grades page.
+                await CoreNavigator.navigateToSitePath(`/grades/${courseId}`, { siteId });
             }
-        } catch (error) {
-            // Cannot get course for some reason, just open the grades page.
-            await CoreNavigator.navigateToSitePath(`/grades/${courseId}`, { siteId });
         } finally {
             modal.dismiss();
         }
