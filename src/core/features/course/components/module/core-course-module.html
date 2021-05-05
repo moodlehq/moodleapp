@@ -6,7 +6,7 @@
             (click)="moduleClicked($event)"
             [attr.aria-label]="module.handlerData.a11yTitle"
             [ngClass]="{
-                'has-module-description': module.description,
+                'has-module-info': hasInfo,
                 'item-media': module.handlerData.icon,
                 'item-dimmed': module.visible === 0 || module.uservisible === false
             }"
@@ -74,9 +74,9 @@
             </div>
         </ion-item>
         <ion-item
-            *ngIf="module.description"
+            *ngIf="hasInfo"
             id="core-course-module-{{module.id}}-info"
-            class="ion-text-wrap core-course-module-handler core-module-module-description {{module.handlerData.class}}"
+            class="ion-text-wrap core-course-module-handler core-module-module-info {{module.handlerData.class}}"
             [ngClass]="{
                 'item-media': module.handlerData.icon,
                 'item-dimmed': module.visible === 0 || module.uservisible === false
@@ -84,6 +84,11 @@
             detail="false"
         >
             <ion-label>
+                <div *ngIf="showActivityDates && module.dates && module.dates.length" class="core-module-dates">
+                    <p *ngFor="let date of module.dates">
+                        <strong>{{ date.label }}</strong> {{ date.timestamp * 1000 | coreFormatDate:'strftimedatetime' }}
+                    </p>
+                </div>
                 <core-format-text class="core-module-description" *ngIf="module.description" maxHeight="80" [text]="module.description"
                     contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                 </core-format-text>

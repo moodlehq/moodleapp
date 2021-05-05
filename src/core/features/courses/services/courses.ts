@@ -1264,6 +1264,8 @@ export type CoreEnrolledCourseData = CoreEnrolledCourseBasicData & {
     isfavourite?: boolean; // If the user marked this course a favourite.
     hidden?: boolean; // If the user hide the course from the dashboard.
     overviewfiles?: CoreWSExternalFile[];
+    showactivitydates?: boolean; // @since 3.11. Whether the activity dates are shown or not.
+    showcompletionconditions?: boolean; // @since 3.11. Whether the activity completion conditions are shown or not.
 };
 
 /**
@@ -1281,6 +1283,8 @@ export type CoreCourseBasicSearchedData = CoreCourseBasicData & {
     }[];
     enrollmentmethods: string[]; // Enrollment methods list.
     customfields?: CoreCourseCustomField[]; // Custom fields and associated values.
+    showactivitydates?: boolean; // @since 3.11. Whether the activity dates are shown or not.
+    showcompletionconditions?: boolean; // @since 3.11. Whether the activity completion conditions are shown or not.
 };
 
 export type CoreCourseSearchedData = CoreCourseBasicSearchedData & {
@@ -1342,6 +1346,8 @@ export type CoreCourseGetCoursesData = CoreEnrolledCourseBasicData & {
     forcetheme?: string; // Name of the force theme.
     courseformatoptions?: CoreCourseFormatOption[]; // Additional options for particular course format.
     customfields?: CoreCourseCustomField[]; // Custom fields and associated values.
+    showactivitydates?: boolean; // @since 3.11. Whether the activity dates are shown or not.
+    showcompletionconditions?: boolean; // @since 3.11. Whether the activity completion conditions are shown or not.
 };
 
 /**

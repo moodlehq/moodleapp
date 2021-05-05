@@ -47,6 +47,8 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @Input() module!: CoreCourseModule; // The module to render.
     @Input() courseId?: number; // The course the module belongs to.
     @Input() section?: CoreCourseSection; // The section the module belongs to.
+    @Input() showActivityDates = false; // Whether to show activity dates.
+    @Input() showCompletionConditions = false;  // Whether to show activity completion conditions.
     // eslint-disable-next-line @angular-eslint/no-input-rename
     @Input('downloadEnabled') set enabled(value: boolean) {
         this.downloadEnabled = value;
@@ -61,7 +63,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
         // Get current status to decide which icon should be shown.
         this.calculateAndShowStatus();
-    };
+    }
 
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when module completion changes.
     @Output() statusChanged = new EventEmitter<CoreCourseModuleStatusChangedData>(); // Notify when the download status changes.
@@ -71,6 +73,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     spinner?: boolean; // Whether to display a loading spinner.
     downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     modNameTranslated = '';
+    hasInfo = false;
 
     protected prefetchHandler?: CoreCourseModulePrefetchHandler;
     protected statusObserver?: CoreEventObserver;
@@ -89,6 +92,10 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         }
 
         this.module.handlerData.a11yTitle = this.module.handlerData.a11yTitle ?? this.module.handlerData.title;
+        this.hasInfo = !!(
+            this.module.description ||
+            (this.showActivityDates && this.module.dates && this.module.dates.length)
+        );
 
         if (this.module.handlerData.showDownloadButton) {
             // Listen for changes on this module status, even if download isn't enabled.

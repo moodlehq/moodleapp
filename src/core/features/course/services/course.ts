@@ -1262,6 +1262,8 @@ export type CoreCourseSummary = {
     timeaccess?: number; // @since 3.6. Timeaccess.
     showshortname: boolean; // @since 3.6. Showshortname.
     coursecategory: string; // @since 3.7. Coursecategory.
+    showactivitydates: boolean | null; // @since 3.11. Whether the activity dates are shown or not.
+    showcompletionconditions: boolean | null; // @since 3.11. Whether the activity completion conditions are shown or not.
 };
 
 /**
@@ -1442,6 +1444,10 @@ export type CoreCourseWSModule = {
     completion?: number; // Type of completion tracking: 0 means none, 1 manual, 2 automatic.
     completiondata?: CoreCourseModuleWSCompletionData; // Module completion data.
     contents: CoreCourseModuleContentFile[];
+    dates?: {
+        label: string;
+        timestamp: number;
+    }[]; // @since 3.11. Activity dates.
     contentsinfo?: { // Contents summary information.
         filescount: number; // Total number of files.
         filessize: number; // Total files size.
