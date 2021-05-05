@@ -22,6 +22,17 @@ export type CoreObjectWithoutEmpty<T> = {
 export class CoreObject {
 
     /**
+     * Check if two objects have the same shape and the same leaf values.
+     *
+     * @param a First object.
+     * @param b Second object.
+     * @return Whether objects are equal.
+     */
+    static deepEquals(a: unknown, b: unknown): boolean {
+        return JSON.stringify(a) === JSON.stringify(b);
+    }
+
+    /**
      * Check whether the given object is empty.
      *
      * @param object Object.
