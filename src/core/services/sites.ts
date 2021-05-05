@@ -51,6 +51,7 @@ import {
 import { CoreArray } from '../singletons/array';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreNavigationOptions } from './navigator';
+import { CoreSitesFactory } from './sites-factory';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 
@@ -220,7 +221,7 @@ export class CoreSitesProvider {
         }
 
         // Site exists. Create a temporary site to check if local_mobile is installed.
-        const temporarySite = new CoreSite(undefined, siteUrl);
+        const temporarySite = CoreSitesFactory.makeSite(undefined, siteUrl);
         let data: LocalMobileResponse;
 
         try {
@@ -438,7 +439,7 @@ export class CoreSitesProvider {
         }
 
         // Create a "candidate" site to fetch the site info.
-        let candidateSite = new CoreSite(undefined, siteUrl, token, undefined, privateToken, undefined, undefined);
+        let candidateSite = CoreSitesFactory.makeSite(undefined, siteUrl, token, undefined, privateToken, undefined, undefined);
         let isNewSite = true;
 
         try {
@@ -1004,7 +1005,15 @@ export class CoreSitesProvider {
         const info = entry.info ? <CoreSiteInfo> CoreTextUtils.parseJSON(entry.info) : undefined;
         const config = entry.config ? <CoreSiteConfig> CoreTextUtils.parseJSON(entry.config) : undefined;
 
-        const site = new CoreSite(entry.id, entry.siteUrl, entry.token, info, entry.privateToken, config, entry.loggedOut == 1);
+        const site = CoreSitesFactory.makeSite(
+            entry.id,
+            entry.siteUrl,
+            entry.token,
+            info,
+            entry.privateToken,
+            config,
+            entry.loggedOut == 1,
+        );
         site.setOAuthId(entry.oauthId || undefined);
 
         return this.migrateSiteSchemas(site).then(() => {
@@ -1430,7 +1439,7 @@ export class CoreSitesProvider {
      * @return Promise resolved with the public config.
      */
     getSitePublicConfig(siteUrl: string): Promise<CoreSitePublicConfigResponse> {
-        const temporarySite = new CoreSite(undefined, siteUrl);
+        const temporarySite = CoreSitesFactory.makeSite(undefined, siteUrl);
 
         return temporarySite.getPublicConfig();
     }
