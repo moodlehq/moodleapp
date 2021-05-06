@@ -12,16 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { UrlTree } from '@angular/router';
-import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
+/**
+ * Singleton with helper functions for time operations.
+ */
+export class CoreTime {
 
-declare module '@ionic/angular' {
+    /**
+     * Wrap a function so that it is called only once.
+     *
+     * @param fn Function.
+     * @return Wrapper that will call the underlying function only once.
+     */
+    static once<T extends unknown[]>(fn: (...args: T) => unknown): (...args: T) => void {
+        let called = false;
 
-    export class NavController {
+        return (...args: T) => {
+            if (called) {
+                return;
+            }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        navigateForward(url: string | UrlTree | any[], options?: NavigationOptions): Promise<boolean | null>;
-
+            called = true;
+            fn.apply(null, args);
+        };
     }
 
 }

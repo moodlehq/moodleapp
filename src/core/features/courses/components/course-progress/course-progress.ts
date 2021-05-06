@@ -140,17 +140,17 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      *
      * @param e Click event.
      */
-    prefetchCourse(e: Event): void {
-        e.preventDefault();
-        e.stopPropagation();
+    async prefetchCourse(e?: Event): Promise<void> {
+        e?.preventDefault();
+        e?.stopPropagation();
 
-        /* @ todo try {
-            CoreCourseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course);
+        try {
+            await CoreCourseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course);
         } catch (error) {
             if (!this.isDestroyed) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
             }
-        }*/
+        }
     }
 
     /**

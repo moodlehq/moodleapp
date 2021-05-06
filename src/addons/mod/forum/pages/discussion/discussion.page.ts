@@ -38,6 +38,7 @@ import {
     AddonModForumDiscussion,
     AddonModForumPost,
     AddonModForumProvider,
+    AddonModForumReply,
 } from '../../services/forum';
 import { AddonModForumHelper } from '../../services/forum-helper';
 import { AddonModForumOffline } from '../../services/forum-offline';
@@ -72,18 +73,18 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     postHasOffline!: boolean;
     sort: SortType = 'nested';
     trackPosts!: boolean;
-    replyData = {
+    replyData: Omit<AddonModForumReply, 'id'> = {
         replyingTo: 0,
         isEditing: false,
         subject: '',
-        message: null, // Null means empty or just white space.
+        message: null,
         files: [],
         isprivatereply: false,
     };
 
-    originalData = {
-        subject: null, // Null means original data is not set.
-        message: null, // Null means empty or just white space.
+    originalData: Omit<AddonModForumReply, 'id'> = {
+        subject: null,
+        message: null,
         files: [],
         isprivatereply: false,
     };

@@ -560,7 +560,7 @@ export class CoreSite {
             return CoreUtils.clone(response);
         }
 
-        const promise = this.getFromCache<T>(method, data, preSets, false).catch(() => {
+        const promise = this.getFromCache<T>(method, data, preSets, false).catch(async () => {
             if (preSets.forceOffline) {
                 // Don't call the WS, just fail.
                 throw new CoreError(
@@ -569,13 +569,15 @@ export class CoreSite {
             }
 
             // Call the WS.
-            return this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets).then((response) => {
+            try {
+                const response = await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
+
                 if (preSets.saveToCache) {
                     this.saveToCache(method, data, response, preSets);
                 }
 
                 return response;
-            }).catch((error) => {
+            } catch (error) {
                 if (error.errorcode == 'invalidtoken' ||
                     (error.errorcode == 'accessexception' && error.message.indexOf('Invalid token - token expired') > -1)) {
                     if (initialToken !== this.token && !retrying) {
@@ -585,7 +587,9 @@ export class CoreSite {
                         return this.request<T>(method, data, preSets, true);
                     } else if (CoreApp.isSSOAuthenticationOngoing()) {
                         // There's an SSO authentication ongoing, wait for it to finish and try again.
-                        return CoreApp.waitForSSOAuthentication().then(() => this.request<T>(method, data, preSets, true));
+                        await CoreApp.waitForSSOAuthentication();
+
+                        return this.request<T>(method, data, preSets, true);
                     }
 
                     // Session expired, trigger event.
@@ -649,9 +653,7 @@ export class CoreSite {
 
                 if (preSets.deleteCacheIfWSError && CoreUtils.isWebServiceError(error)) {
                     // Delete the cache entry and return the entry. Don't block the user with the delete.
-                    this.deleteFromCache(method, data, preSets).catch(() => {
-                        // Ignore errors.
-                    });
+                    CoreUtils.ignoreErrors(this.deleteFromCache(method, data, preSets));
 
                     throw new CoreWSError(error);
                 }
@@ -660,10 +662,12 @@ export class CoreSite {
                 preSets.omitExpires = true;
                 preSets.getFromCache = true;
 
-                return this.getFromCache<T>(method, data, preSets, true).catch(() => {
+                try {
+                    return await this.getFromCache<T>(method, data, preSets, true);
+                } catch (e) {
                     throw new CoreWSError(error);
-                });
-            });
+                }
+            }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         }).then((response: any) => {
             // Check if the response is an error, this happens if the error was stored in the cache.

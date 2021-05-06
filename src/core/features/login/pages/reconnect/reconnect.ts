@@ -112,7 +112,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
             this.siteConfig = config;
 
-            await CoreSites.checkRequiredMinimumVersion(config);
+            await CoreSites.checkApplication(config);
 
             // Check logoURL if user avatar is not set.
             if (this.userAvatar.startsWith(this.siteUrl + '/theme/image.php')) {

@@ -40,6 +40,7 @@ import {
 } from './database/pushnotifications';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSExternalWarning } from '@services/ws';
+import { CoreSitesFactory } from '@services/sites-factory';
 
 /**
  * Service to handle push notifications.
@@ -751,7 +752,7 @@ export class CorePushNotificationsProvider {
 
         await Promise.all(results.map(async (result) => {
             // Create a temporary site to unregister.
-            const tmpSite = new CoreSite(
+            const tmpSite = CoreSitesFactory.makeSite(
                 result.siteid,
                 result.siteurl,
                 result.token,

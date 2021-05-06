@@ -380,7 +380,9 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         }
 
         // Fill user data for Offline discussions (should be already cached).
-        const promises = offlineDiscussions.map(async (discussion: any) => {
+        const promises = offlineDiscussions.map(async (offlineDiscussion) => {
+            const discussion = offlineDiscussion as unknown as AddonModForumDiscussion;
+
             if (discussion.parent === 0 || forum.type === 'single') {
                 // Do not show author for first post and type single.
                 return;

@@ -37,6 +37,14 @@
     flex-direction: row;
 }
 
+.margin-bottom-sm { margin-bottom: 8px; }
+.margin-bottom-md { margin-bottom: 12px; }
+
+.font-bold { font-weight: bold; }
+.font-italic { font-style: italic; }
+.font-lg { font-size: 1.7rem; }
+.font-sm { font-size: 1.2rem; }
+
 // Correctly inherit ion-text-wrap onto labels.
 ion-item.ion-text-wrap ion-label {
     white-space: normal !important;

@@ -66,7 +66,7 @@ export class CoreCustomURLSchemesProvider {
 
                 data.siteUrl = result.siteUrl;
 
-                await CoreSites.checkApplication(result);
+                await CoreSites.checkApplication(result.config);
             }
 
             return CoreSites.newSite(

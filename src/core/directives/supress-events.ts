@@ -31,7 +31,7 @@ import { Directive, ElementRef, OnInit, Input, Output, EventEmitter } from '@ang
  *
  * Example usage:
  *
- * <a ion-button [core-suppress-events] (onClick)="toggle($event)">
+ * <ion-button [core-suppress-events] (onClick)="toggle($event)">
  */
 @Directive({
     selector: '[core-suppress-events]',

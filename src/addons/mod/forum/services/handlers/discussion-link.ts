@@ -45,7 +45,7 @@ export class AddonModForumDiscussionLinkHandlerService extends CoreContentLinksH
         url: string,
         params: Params,
         courseId?: number,
-        data?: any,
+        data?: { instance?: string; cmid?: string; postid?: string },
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         data = data || {};
 
@@ -56,13 +56,13 @@ export class AddonModForumDiscussionLinkHandlerService extends CoreContentLinksH
             action: (siteId): void => {
                 const discussionId = parseInt(params.d, 10);
                 const pageParams: Params = {
-                    forumId: data.instance && parseInt(data.instance, 10),
-                    cmId: data.cmid && parseInt(data.cmid, 10),
+                    forumId: data?.instance && parseInt(data.instance, 10),
+                    cmId: data?.cmid && parseInt(data.cmid, 10),
                     courseId: courseId || parseInt(params.courseid, 10) || parseInt(params.cid, 10),
                 };
 
-                if (data.postid || params.urlHash) {
-                    pageParams.postId = parseInt(data.postid || params.urlHash.replace('p', ''));
+                if (data?.postid || params.urlHash) {
+                    pageParams.postId = parseInt(data?.postid || params.urlHash.replace('p', ''));
                 }
 
                 if (params.parent) {

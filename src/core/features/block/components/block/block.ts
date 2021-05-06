@@ -34,10 +34,10 @@ export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
     @Input() block!: CoreCourseBlock; // The block to render.
     @Input() contextLevel!: string; // The context where the block will be used.
     @Input() instanceId!: number; // The instance ID associated with the context level.
-    @Input() extraData: any; // Any extra data to be passed to the block.
+    @Input() extraData!: Record<string, unknown>; // Any extra data to be passed to the block.
 
     componentClass?: Type<unknown>; // The class of the component to render.
-    data: any = {}; // Data to pass to the component.
+    data: Record<string, unknown> = {}; // Data to pass to the component.
     class?: string; // CSS class to apply to the block.
     loaded = false;
 

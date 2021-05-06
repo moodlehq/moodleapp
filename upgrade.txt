@@ -4,6 +4,7 @@ information provided here is intended especially for developers.
 === 3.9.5 ===
 
 - Several functions inside AddonNotificationsProvider have been modified to accept an "options" parameter instead of having several optional parameters.
+- Schemas are now registered using Angular providers with the CORE_SITE_SCHEMAS injection token instead of CoreSitesProvider.registerSiteSchema.
 
 === 3.9.3 ===
 

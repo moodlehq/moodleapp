@@ -38,10 +38,18 @@ export class CoreConstants {
     /* eslint-disable max-len */
 
     static readonly SECONDS_YEAR = 31536000;
+    static readonly SECONDS_MONTH = 2592000;
     static readonly SECONDS_WEEK = 604800;
     static readonly SECONDS_DAY = 86400;
     static readonly SECONDS_HOUR = 3600;
     static readonly SECONDS_MINUTE = 60;
+    static readonly MILLISECONDS_YEAR = 31536000000;
+    static readonly MILLISECONDS_MONTH = 2592000000;
+    static readonly MILLISECONDS_WEEK = 604800000;
+    static readonly MILLISECONDS_DAY = 86400000;
+    static readonly MILLISECONDS_HOUR = 3600000;
+    static readonly MILLISECONDS_MINUTE = 60000;
+    static readonly MILLISECONDS_SECOND = 1000;
     static readonly WIFI_DOWNLOAD_THRESHOLD = 104857600; // 100MB.
     static readonly DOWNLOAD_THRESHOLD = 10485760; // 10MB.
     static readonly MINIMUM_FREE_SPACE = 10485760; // 10MB.
@@ -131,7 +139,7 @@ export class CoreConstants {
 
 }
 
-type EnvironmentConfig = {
+export interface EnvironmentConfig {
     app_id: string;
     appname: string;
     versioncode: number;
@@ -167,7 +175,7 @@ type EnvironmentConfig = {
     forceOpenLinksIn: 'app' | 'browser';
 };
 
-type EnvironmentBuild = {
+export interface EnvironmentBuild {
     version: string;
     isProduction: boolean;
     isTesting: boolean;

@@ -348,32 +348,36 @@ export class CoreLoginSitePage implements OnInit {
      * @return Promise resolved after logging in.
      */
     protected async login(response: CoreSiteCheckResponse, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreSites.checkApplication(response));
+        try {
+            await CoreSites.checkApplication(response.config);
 
-        CoreForms.triggerFormSubmittedEvent(this.formElement, true);
+            CoreForms.triggerFormSubmittedEvent(this.formElement, true);
 
-        if (response.warning) {
-            CoreDomUtils.showErrorModal(response.warning, true, 4000);
-        }
-
-        if (CoreLoginHelper.isSSOLoginNeeded(response.code)) {
-            // SSO. User needs to authenticate in a browser.
-            CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(
-                response.siteUrl,
-                response.code,
-                response.service,
-                response.config?.launchurl,
-            );
-        } else {
-            const pageParams = { siteUrl: response.siteUrl, siteConfig: response.config };
-            if (foundSite && !this.fixedSites) {
-                pageParams['siteName'] = foundSite.name;
-                pageParams['logoUrl'] = foundSite.imageurl;
+            if (response.warning) {
+                CoreDomUtils.showErrorModal(response.warning, true, 4000);
             }
 
-            CoreNavigator.navigate('/login/credentials', {
-                params: pageParams,
-            });
+            if (CoreLoginHelper.isSSOLoginNeeded(response.code)) {
+                // SSO. User needs to authenticate in a browser.
+                CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(
+                    response.siteUrl,
+                    response.code,
+                    response.service,
+                    response.config?.launchurl,
+                );
+            } else {
+                const pageParams = { siteUrl: response.siteUrl, siteConfig: response.config };
+                if (foundSite && !this.fixedSites) {
+                    pageParams['siteName'] = foundSite.name;
+                    pageParams['logoUrl'] = foundSite.imageurl;
+                }
+
+                CoreNavigator.navigate('/login/credentials', {
+                    params: pageParams,
+                });
+            }
+        } catch (error) {
+            // Ignore errors.
         }
     }
 
@@ -541,7 +545,7 @@ export class CoreLoginSitePage implements OnInit {
             // Check if site uses SSO.
             const response = await CoreSites.checkSite(siteUrl);
 
-            await CoreSites.checkApplication(response);
+            await CoreSites.checkApplication(response.config);
 
             if (!CoreLoginHelper.isSSOLoginNeeded(response.code)) {
                 // No SSO, go to credentials page.

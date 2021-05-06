@@ -51,6 +51,7 @@ import {
 import { CoreArray } from '../singletons/array';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreNavigationOptions } from './navigator';
+import { CoreSitesFactory } from './sites-factory';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 
@@ -220,7 +221,7 @@ export class CoreSitesProvider {
         }
 
         // Site exists. Create a temporary site to check if local_mobile is installed.
-        const temporarySite = new CoreSite(undefined, siteUrl);
+        const temporarySite = CoreSitesFactory.makeSite(undefined, siteUrl);
         let data: LocalMobileResponse;
 
         try {
@@ -438,7 +439,7 @@ export class CoreSitesProvider {
         }
 
         // Create a "candidate" site to fetch the site info.
-        let candidateSite = new CoreSite(undefined, siteUrl, token, undefined, privateToken, undefined, undefined);
+        let candidateSite = CoreSitesFactory.makeSite(undefined, siteUrl, token, undefined, privateToken, undefined, undefined);
         let isNewSite = true;
 
         try {
@@ -706,20 +707,19 @@ export class CoreSitesProvider {
     /**
      * Check the app for a site and show a download dialogs if necessary.
      *
-     * @param response Data obtained during site check.
+     * @param config Config object of the site.
      */
-    async checkApplication(response: CoreSiteCheckResponse): Promise<void> {
-        await this.checkRequiredMinimumVersion(response.config);
+    async checkApplication(config?: CoreSitePublicConfigResponse): Promise<void> {
+        await this.checkRequiredMinimumVersion(config);
     }
 
     /**
      * Check the required minimum version of the app for a site and shows a download dialog.
      *
-     * @param  config Config object of the site.
-     * @param siteId ID of the site to check. Current site id will be used otherwise.
+     * @param config Config object of the site.
      * @return Resolved with  if meets the requirements, rejected otherwise.
      */
-    async checkRequiredMinimumVersion(config?: CoreSitePublicConfigResponse, siteId?: string): Promise<void> {
+    protected async checkRequiredMinimumVersion(config?: CoreSitePublicConfigResponse): Promise<void> {
         if (!config || !config.tool_mobile_minimumversion) {
             return;
         }
@@ -735,7 +735,7 @@ export class CoreSitesProvider {
                 default: config.tool_mobile_setuplink,
             };
 
-            siteId = siteId || this.getCurrentSiteId();
+            const siteId = this.getCurrentSiteId();
 
             const downloadUrl = CoreApp.getAppStoreUrl(storesConfig);
 
@@ -837,7 +837,7 @@ export class CoreSitesProvider {
             }
 
             try {
-                await this.checkRequiredMinimumVersion(config);
+                await this.checkApplication(config);
 
                 this.login(siteId);
                 // Update site info. We don't block the UI.
@@ -1004,7 +1004,15 @@ export class CoreSitesProvider {
         const info = entry.info ? <CoreSiteInfo> CoreTextUtils.parseJSON(entry.info) : undefined;
         const config = entry.config ? <CoreSiteConfig> CoreTextUtils.parseJSON(entry.config) : undefined;
 
-        const site = new CoreSite(entry.id, entry.siteUrl, entry.token, info, entry.privateToken, config, entry.loggedOut == 1);
+        const site = CoreSitesFactory.makeSite(
+            entry.id,
+            entry.siteUrl,
+            entry.token,
+            info,
+            entry.privateToken,
+            config,
+            entry.loggedOut == 1,
+        );
         site.setOAuthId(entry.oauthId || undefined);
 
         return this.migrateSiteSchemas(site).then(() => {
@@ -1165,28 +1173,27 @@ export class CoreSitesProvider {
      * @return Promise resolved when the user is logged out.
      */
     async logout(): Promise<void> {
-        let siteId: string | undefined;
+        if (!this.currentSite) {
+            return;
+        }
+
+        const db = await this.appDB;
+
         const promises: Promise<unknown>[] = [];
+        const siteConfig = this.currentSite.getStoredConfig();
+        const siteId = this.currentSite.getId();
 
-        if (this.currentSite) {
-            const db = await this.appDB;
-            const siteConfig = this.currentSite.getStoredConfig();
-            siteId = this.currentSite.getId();
+        this.currentSite = undefined;
 
-            this.currentSite = undefined;
-
-            if (siteConfig && siteConfig.tool_mobile_forcelogout == '1') {
-                promises.push(this.setSiteLoggedOut(siteId, true));
-            }
-
-            promises.push(db.deleteRecords(CURRENT_SITE_TABLE_NAME, { id: 1 }));
+        if (siteConfig && siteConfig.tool_mobile_forcelogout == '1') {
+            promises.push(this.setSiteLoggedOut(siteId, true));
         }
 
-        try {
-            await Promise.all(promises);
-        } finally {
-            CoreEvents.trigger(CoreEvents.LOGOUT, {}, siteId);
-        }
+        promises.push(db.deleteRecords(CURRENT_SITE_TABLE_NAME, { id: 1 }));
+
+        await CoreUtils.ignoreErrors(Promise.all(promises));
+
+        CoreEvents.trigger(CoreEvents.LOGOUT, {}, siteId);
     }
 
     /**
@@ -1293,7 +1300,7 @@ export class CoreSitesProvider {
      * @param siteid Site's ID.
      * @return A promise resolved when the site is updated.
      */
-    async updateSiteInfo(siteId: string): Promise<void> {
+    async updateSiteInfo(siteId?: string): Promise<void> {
         const site = await this.getSite(siteId);
 
         try {
@@ -1430,7 +1437,7 @@ export class CoreSitesProvider {
      * @return Promise resolved with the public config.
      */
     getSitePublicConfig(siteUrl: string): Promise<CoreSitePublicConfigResponse> {
-        const temporarySite = new CoreSite(undefined, siteUrl);
+        const temporarySite = CoreSitesFactory.makeSite(undefined, siteUrl);
 
         return temporarySite.getPublicConfig();
     }

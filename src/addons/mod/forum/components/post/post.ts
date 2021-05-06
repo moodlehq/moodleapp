@@ -71,8 +71,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     @Input() discussion?: AddonModForumDiscussion; // Post's' discussion, only for starting posts.
     @Input() component!: string; // Component this post belong to.
     @Input() componentId!: number; // Component ID.
-    @Input() replyData: any; // Object with the new post data. Usually shared between posts.
-    @Input() originalData: any; // Object with the original post data. Usually shared between posts.
+    @Input() replyData!: AddonModForumReply; // Object with the new post data. Usually shared between posts.
+    @Input() originalData!: Omit<AddonModForumReply, 'id'>; // Object with the original post data. Usually shared between posts.
     @Input() trackPosts!: boolean; // True if post is being tracked.
     @Input() forum!: AddonModForumData; // The forum the post belongs to. Required for attachments and offline posts.
     @Input() accessInfo!: AddonModForumAccessInformation; // Forum access information.
@@ -103,7 +103,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     get showForm(): boolean {
         return this.post.id > 0
             ? !this.replyData.isEditing && this.replyData.replyingTo === this.post.id
-            : this.replyData.isEditing && this.replyData.replyingTo === this.post.parentid;
+            : !!this.replyData.isEditing && this.replyData.replyingTo === this.post.parentid;
     }
 
     /**
@@ -275,7 +275,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         }
 
         // Add some HTML to the message if needed.
-        const message = CoreTextUtils.formatHtmlLines(data.message);
+        const message = CoreTextUtils.formatHtmlLines(data.message!);
         const files = data.files;
         const options: AddonModForumUpdateDiscussionPostWSOptionsObject = {};
 
@@ -295,14 +295,14 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             }
 
             // Try to send it to server.
-            const sent = await AddonModForum.updatePost(this.post.id, data.subject, message, options);
+            const sent = await AddonModForum.updatePost(this.post.id, data.subject!, message, options);
 
             if (sent && this.forum.id) {
                 // Data sent to server, delete stored files (if any).
                 AddonModForumHelper.deleteReplyStoredFiles(this.forum.id, this.post.id);
 
                 this.onPostChange.emit();
-                this.post.subject = data.subject;
+                this.post.subject = data.subject!;
                 this.post.message = message;
                 this.post.attachments = data.files;
             }
@@ -419,7 +419,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         let saveOffline = false;
         let message = this.replyData.message;
         const subject = this.replyData.subject;
-        const replyingTo = this.replyData.replyingTo;
+        const replyingTo = this.replyData.replyingTo!;
         const files = this.replyData.files || [];
         const options: AddonModForumReplyOptions = {};
         const modal = await CoreDomUtils.showModalLoading('core.sending', true);

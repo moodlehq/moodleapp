@@ -29,7 +29,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 
 const SEPARATOR_35 = /\/\*\*? *3\.5(\.0)? *styles? *\*\//i; // A comment like "/* 3.5 styles */".
-const TMP_SITE_ID = 'tmpsite';
+export const TMP_SITE_ID = 'tmpsite';
 
 /**
  * Service to handle remote themes. A remote theme is a CSS sheet stored in the site that allows customising the Mobile app.

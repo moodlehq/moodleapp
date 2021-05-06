@@ -12,16 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { UrlTree } from '@angular/router';
-import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
+/**
+ * Singleton with helper functions for math operations.
+ */
+export class CoreMath {
 
-declare module '@ionic/angular' {
-
-    export class NavController {
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        navigateForward(url: string | UrlTree | any[], options?: NavigationOptions): Promise<boolean | null>;
-
+    /**
+     * Clamp a value between a minimum and a maximum.
+     *
+     * @param value Original value.
+     * @param min Minimum value.
+     * @param max Maximum value.
+     * @return Clamped value.
+     */
+    static clamp(value: number, min: number, max: number): number {
+        return Math.min(Math.max(value, min), max);
     }
 
 }

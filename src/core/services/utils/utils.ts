@@ -1491,7 +1491,7 @@ export class CoreUtilsProvider {
     debounce<T extends unknown[]>(fn: (...args: T) => unknown, delay: number): (...args: T) => void {
         let timeoutID: number;
 
-        const debounced = (...args: unknown[]): void => {
+        const debounced = (...args: T): void => {
             clearTimeout(timeoutID);
 
             timeoutID = window.setTimeout(() => fn.apply(null, args), delay);
