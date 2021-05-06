@@ -16,6 +16,16 @@ import moment from 'moment';
 
 import { CoreConstants } from '@/core/constants';
 
+import { CoreTime } from './time';
+
+/**
+ * Method to warn that logs are disabled, called only once.
+ */
+const warnLogsDisabled = CoreTime.once(() => {
+    // eslint-disable-next-line no-console
+    console.warn('Log is disabled in production app');
+});
+
 /**
  * Log function type.
  */
@@ -59,8 +69,7 @@ export class CoreLogger {
         // Disable log on production and testing.
         if (CoreConstants.BUILD.isProduction || CoreConstants.BUILD.isTesting) {
             if (CoreConstants.BUILD.isProduction) {
-                // eslint-disable-next-line no-console
-                console.warn('Log is disabled in production app');
+                warnLogsDisabled();
             }
 
             // eslint-disable-next-line @typescript-eslint/no-empty-function
