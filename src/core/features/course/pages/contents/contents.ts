@@ -353,6 +353,9 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         const shouldReload = typeof completionData.valueused == 'undefined' || completionData.valueused;
 
         if (!shouldReload) {
+            // Invalidate the completion.
+            await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.course.id));
+
             return;
         }
 

@@ -848,6 +848,7 @@ export type CoreSitePluginsCourseModuleHandlerData = CoreSitePluginsHandlerCommo
     coursepagemethod?: string;
     ptrenabled?: boolean;
     supportedfeatures?: Record<string, unknown>;
+    manualcompletionalwaysshown?: boolean;
 };
 
 /**

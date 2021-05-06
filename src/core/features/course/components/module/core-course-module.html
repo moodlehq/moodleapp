@@ -50,12 +50,13 @@
                 slot="end"
                 *ngIf="module.uservisible !== false"
                 class="buttons core-module-buttons"
-                [ngClass]="{'core-button-completion': module.completiondata}"
+                [ngClass]="{'core-button-completion': module.completiondata && showLegacyCompletion}"
             >
-                <!-- Module completion. -->
-                <core-course-module-completion *ngIf="module.completiondata" [completion]="module.completiondata"
-                    [moduleName]="module.name" [moduleId]="module.id" (completionChanged)="completionChanged.emit($event)">
-                </core-course-module-completion>
+                <!-- Module completion (legacy). -->
+                <core-course-module-completion-legacy *ngIf="module.completiondata && showLegacyCompletion"
+                    [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
+                    (completionChanged)="completionChanged.emit($event)">
+                </core-course-module-completion-legacy>
 
                 <div class="core-module-buttons-more">
                     <core-download-refresh [status]="downloadStatus" [enabled]="downloadEnabled"
@@ -84,11 +85,19 @@
             detail="false"
         >
             <ion-label>
+                <!-- Activity dates. -->
                 <div *ngIf="showActivityDates && module.dates && module.dates.length" class="core-module-dates">
                     <p *ngFor="let date of module.dates">
                         <strong>{{ date.label }}</strong> {{ date.timestamp * 1000 | coreFormatDate:'strftimedatetime' }}
                     </p>
                 </div>
+
+                <!-- Module completion. -->
+                <core-course-module-completion *ngIf="module.completiondata" [completion]="module.completiondata"
+                    [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions"
+                    [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)">
+                </core-course-module-completion>
+
                 <core-format-text class="core-module-description" *ngIf="module.description" maxHeight="80" [text]="module.description"
                     contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                 </core-format-text>

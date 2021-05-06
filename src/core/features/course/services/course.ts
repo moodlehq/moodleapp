@@ -1296,14 +1296,25 @@ export type CoreCourseCompletionActivityStatusWSResponse = {
  * Activity status.
  */
 export type CoreCourseCompletionActivityStatus = {
-    cmid: number; // Comment ID.
+    cmid: number; // Course module ID.
     modname: string; // Activity module name.
     instance: number; // Instance ID.
     state: number; // Completion state value: 0 means incomplete, 1 complete, 2 complete pass, 3 complete fail.
     timecompleted: number; // Timestamp for completed activity.
     tracking: number; // Type of tracking: 0 means none, 1 manual, 2 automatic.
-    overrideby?: number; // The user id who has overriden the status, or null.
+    overrideby?: number | null; // The user id who has overriden the status, or null.
     valueused?: boolean; // Whether the completion status affects the availability of another activity.
+    hascompletion?: boolean; // @since 3.11. Whether this activity module has completion enabled.
+    isautomatic?: boolean; // @since 3.11. Whether this activity module instance tracks completion automatically.
+    istrackeduser?: boolean; // @since 3.11. Whether completion is being tracked for this user.
+    uservisible?: boolean; // @since 3.11. Whether this activity is visible to the user.
+    details?: { // @since 3.11. An array of completion details containing the description and status.
+        rulename: string; // Rule name.
+        rulevalue: {
+            status: number; // Completion status.
+            description: string; // Completion description.
+        };
+    }[];
     offline?: boolean; // Whether the completions is offline and not yet synced.
 };
 
@@ -1463,8 +1474,24 @@ export type CoreCourseWSModule = {
 export type CoreCourseModuleWSCompletionData = {
     state: number; // Completion state value: 0 means incomplete, 1 complete, 2 complete pass, 3 complete fail.
     timecompleted: number; // Timestamp for completion status.
-    overrideby: number; // The user id who has overriden the status.
+    overrideby: number | null; // The user id who has overriden the status.
     valueused?: boolean; // Whether the completion status affects the availability of another activity.
+    hascompletion?: boolean; // @since 3.11. Whether this activity module has completion enabled.
+    isautomatic?: boolean; // @since 3.11. Whether this activity module instance tracks completion automatically.
+    istrackeduser?: boolean; // @since 3.11. Whether completion is being tracked for this user.
+    uservisible?: boolean; // @since 3.11. Whether this activity is visible to the user.
+    details?: CoreCourseModuleWSRuleDetails[]; // @since 3.11. An array of completion details.
+};
+
+/**
+ * Module completion rule details.
+ */
+export type CoreCourseModuleWSRuleDetails = {
+    rulename: string; // Rule name.
+    rulevalue: {
+        status: number; // Completion status.
+        description: string; // Completion description.
+    };
 };
 
 export type CoreCourseModuleContentFile = {

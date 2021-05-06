@@ -165,4 +165,20 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         return CoreSitePluginsModuleIndexComponent;
     }
 
+    /**
+     * @inheritdoc
+     */
+    manualCompletionAlwaysShown(module: CoreCourseModule): boolean {
+        if (this.handlerSchema.manualcompletionalwaysshown !== undefined) {
+            return this.handlerSchema.manualcompletionalwaysshown;
+        }
+
+        if (this.initResult?.jsResult && this.initResult.jsResult.manualCompletionAlwaysShown) {
+            // The init result defines a function to check if a feature is supported, use it.
+            return this.initResult.jsResult.manualCompletionAlwaysShown(module);
+        }
+
+        return false;
+    }
+
 }

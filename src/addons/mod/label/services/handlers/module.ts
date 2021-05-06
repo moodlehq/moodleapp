@@ -71,5 +71,12 @@ export class AddonModLabelModuleHandlerService implements CoreCourseModuleHandle
         return;
     }
 
+    /**
+     * @inheritdoc
+     */
+    manualCompletionAlwaysShown(): boolean {
+        return true;
+    }
+
 }
 export const AddonModLabelModuleHandler = makeSingleton(AddonModLabelModuleHandlerService);

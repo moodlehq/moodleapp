@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUser } from '@features/user/services/user';
-import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
-import { CoreFilterHelper } from '@features/filter/services/filter-helper';
-import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
+import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
+import { CoreCourseModuleWSRuleDetails, CoreCourseProvider } from '@features/course/services/course';
 import { Translate } from '@singletons';
 
 /**
@@ -35,142 +32,66 @@ import { Translate } from '@singletons';
     templateUrl: 'core-course-module-completion.html',
     styleUrls: ['module-completion.scss'],
 })
-export class CoreCourseModuleCompletionComponent implements OnChanges {
+export class CoreCourseModuleCompletionComponent extends CoreCourseModuleCompletionBaseComponent {
 
-    @Input() completion?: CoreCourseModuleCompletionData; // The completion status.
-    @Input() moduleId?: number; // The name of the module this completion affects.
-    @Input() moduleName?: string; // The name of the module this completion affects.
-    @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when completion changes.
+    @Input() showCompletionConditions = false; // Whether to show activity completion conditions.
+    @Input() showManualCompletion = false; // Whether to show manual completion when completion conditions are disabled.
 
-    completionImage?: string;
-    completionDescription?: string;
+    details?: CompletionRule[];
+    accessibleDescription: string | null = null;
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
-    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (changes.completion && this.completion) {
-            this.showStatus();
-        }
-    }
-
-    /**
-     * Completion clicked.
-     *
-     * @param e The click event.
-     */
-    async completionClicked(e: Event): Promise<void> {
-        if (!this.completion) {
+    protected calculateData(): void {
+        if (!this.completion?.details) {
             return;
         }
 
-        if (typeof this.completion.cmid == 'undefined' || this.completion.tracking !== 1) {
-            return;
-        }
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        const modal = await CoreDomUtils.showModalLoading();
-        this.completion.state = this.completion.state === 1 ? 0 : 1;
-
-        try {
-            const response = await CoreCourse.markCompletedManually(
-                this.completion.cmid,
-                this.completion.state === 1,
-                this.completion.courseId!,
-                this.completion.courseName,
-            );
-
-            if (this.completion.valueused === false) {
-                this.showStatus();
-                if (response.offline) {
-                    this.completion.offline = true;
-                }
-            }
-            this.completionChanged.emit(this.completion);
-        } catch (error) {
-            this.completion.state = this.completion.state === 1 ? 0 : 1;
-            CoreDomUtils.showErrorModalDefault(error, 'core.errorchangecompletion', true);
-        } finally {
-            modal.dismiss();
-        }
-    }
-
-    /**
-     * Set image and description to show as completion icon.
-     */
-    protected async showStatus(): Promise<void> {
-        if (!this.completion) {
-            return;
-        }
-
-        const moduleName = this.moduleName || '';
-        let langKey: string | undefined;
-        let image: string | undefined;
-
-        if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_MANUAL &&
-                this.completion.state === CoreCourseProvider.COMPLETION_INCOMPLETE) {
-            image = 'completion-manual-n';
-            langKey = 'core.completion-alt-manual-n';
-        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_MANUAL &&
-                this.completion.state === CoreCourseProvider.COMPLETION_COMPLETE) {
-            image = 'completion-manual-y';
-            langKey = 'core.completion-alt-manual-y';
-        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC &&
-                this.completion.state === CoreCourseProvider.COMPLETION_INCOMPLETE) {
-            image = 'completion-auto-n';
-            langKey = 'core.completion-alt-auto-n';
-        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC &&
-                this.completion.state === CoreCourseProvider.COMPLETION_COMPLETE) {
-            image = 'completion-auto-y';
-            langKey = 'core.completion-alt-auto-y';
-        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC &&
-                this.completion.state === CoreCourseProvider.COMPLETION_COMPLETE_PASS) {
-            image = 'completion-auto-pass';
-            langKey = 'core.completion-alt-auto-pass';
-        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC &&
-                this.completion.state === CoreCourseProvider.COMPLETION_COMPLETE_FAIL) {
-            image = 'completion-auto-fail';
-            langKey = 'core.completion-alt-auto-fail';
-        }
-
-        if (image) {
-            if (this.completion.overrideby > 0) {
-                image += '-override';
-            }
-            this.completionImage = 'assets/img/completion/' + image + '.svg';
-        }
-
-        if (!moduleName || !this.moduleId || !langKey) {
-            return;
-        }
-
-        const result = await CoreFilterHelper.getFiltersAndFormatText(
-            moduleName,
-            'module',
-            this.moduleId,
-            { clean: true, singleLine: true, shortenLength: 50, courseId: this.completion.courseId },
-        );
-
-        let translateParams: Record<string, unknown> = {
-            $a: result.text,
-        };
-
-        if (this.completion.overrideby > 0) {
-            langKey += '-override';
-
-            const profile = await CoreUser.getProfile(this.completion.overrideby, this.completion.courseId, true);
-
-            translateParams = {
+        // Set an accessible description for manual completions with overridden completion state.
+        if (!this.completion.isautomatic && this.completion.overrideby) {
+            const setByData = {
                 $a: {
-                    overrideuser: profile.fullname,
-                    modname: result.text,
+                    activityname: this.moduleName,
+                    setby: this.completion.overrideby,
                 },
             };
+            const setByLangKey = this.completion.state ? 'completion_setby:manual:done' : 'completion_setby:manual:markdone';
+            this.accessibleDescription = Translate.instant('core.course.' + setByLangKey, setByData);
+        } else {
+            const langKey = this.completion.state ? 'completion_manual:aria:done' : 'completion_manual:aria:markdone';
+            this.accessibleDescription = Translate.instant('core.course.' + langKey, { $a: this.moduleName });
         }
 
-        this.completionDescription = Translate.instant(langKey, translateParams);
+        // Format rules.
+        this.details = this.completion.details.map((rule: CompletionRule) => {
+            rule.statuscomplete = rule.rulevalue.status == CoreCourseProvider.COMPLETION_COMPLETE ||
+                    rule.rulevalue.status == CoreCourseProvider.COMPLETION_COMPLETE_PASS;
+            rule.statuscompletefail = rule.rulevalue.status == CoreCourseProvider.COMPLETION_COMPLETE_FAIL;
+            rule.statusincomplete = rule.rulevalue.status == CoreCourseProvider.COMPLETION_INCOMPLETE;
+            rule.accessibleDescription = null;
+
+            if (this.completion!.overrideby) {
+                const setByData = {
+                    $a: {
+                        condition: rule.rulevalue.description,
+                        setby: this.completion!.overrideby,
+                    },
+                };
+                const overrideStatus = rule.statuscomplete ? 'done' : 'todo';
+
+                rule.accessibleDescription = Translate.instant('core.course.completion_setby:auto:' + overrideStatus, setByData);
+            }
+
+            return rule;
+        });
     }
 
 }
+
+type CompletionRule = CoreCourseModuleWSRuleDetails & {
+    statuscomplete?: boolean;
+    statuscompletefail?: boolean;
+    statusincomplete?: boolean;
+    accessibleDescription?: string | null;
+};

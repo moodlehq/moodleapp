@@ -1,20 +1,18 @@
 :host {
-    min-width: var(--a11y-min-target-size);
-    min-height: var(--a11y-min-target-size);
-    --size: 30px;
+    .core-module-automatic-completion-conditions {
+        ion-badge {
+            font-weight: normal;
+            margin-right: 5px;
 
-    img {
-        padding: 5px;
-        width: var(--size);
-        vertical-align: middle;
-        max-width: none;
-        margin: 7px;
+            &[color="medium"] {
+                color: black;
+            }
+        }
     }
 
-    ion-button {
-        --padding-top: 0;
-        --padding-start: 0;
-        --padding-end: 0;
-        --padding-bottom: 0;
+    .core-module-manual-completion {
+        ion-button {
+            text-transform: none;
+        }
     }
 }

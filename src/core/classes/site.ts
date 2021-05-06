@@ -1826,15 +1826,15 @@ export class CoreSite {
      * @return Object with major and minor. Returns false if invalid version.
      */
     protected getMajorAndMinor(version: string): {major: string; minor: number} | false {
-        const match = version.match(/(\d)+(?:\.(\d)+)?(?:\.(\d)+)?/);
+        const match = version.match(/^(\d+)(\.(\d+)(\.\d+)?)?/);
         if (!match || !match[1]) {
             // Invalid version.
             return false;
         }
 
         return {
-            major: match[1] + '.' + (match[2] || '0'),
-            minor: parseInt(match[3], 10) || 0,
+            major: match[1] + '.' + (match[3] || '0'),
+            minor: parseInt(match[5], 10) || 0,
         };
     }
 
