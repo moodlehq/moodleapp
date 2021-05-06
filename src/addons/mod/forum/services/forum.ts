@@ -1407,7 +1407,7 @@ export type AddonModForumDiscussion = {
     mailnow: number; // Mail now?.
     userfullname: string | boolean; // Post author full name.
     usermodifiedfullname: string; // Post modifier full name.
-    userpictureurl: string; // Post author picture.
+    userpictureurl?: string; // Post author picture.
     usermodifiedpictureurl: string; // Post modifier picture.
     numreplies: number; // The number of replies in the discussion.
     numunread: number; // The number of unread discussions.
@@ -1564,9 +1564,12 @@ export type AddonModForumAccessInformation = {
  */
 export type AddonModForumReply = {
     id: number;
-    subject: string;
-    message: string;
+    subject: string | null; // Null means original data is not set.
+    message: string | null; // Null means empty or just white space.
     files: CoreFileEntry[];
+    replyingTo?: number;
+    isEditing?: boolean;
+    isprivatereply?: boolean;
 };
 
 /**

@@ -368,25 +368,25 @@ export class AddonModForumHelperProvider {
     /**
      * Check if the data of a post/discussion has changed.
      *
-     * @param post Current data.
+     * @param reply Current data.
      * @param original Original ata.
      * @return True if data has changed, false otherwise.
      */
-    hasPostDataChanged(post: any, original?: any): boolean {
+    hasPostDataChanged(reply: AddonModForumPostData, original?: AddonModForumPostData): boolean {
         if (!original || original.subject == null) {
             // There is no original data, assume it hasn't changed.
             return false;
         }
 
-        if (post.subject != original.subject || post.message != original.message) {
+        if (reply.subject != original.subject || reply.message != original.message) {
             return true;
         }
 
-        if (post.isprivatereply != original.isprivatereply) {
+        if (reply.isprivatereply != original.isprivatereply) {
             return true;
         }
 
-        return CoreFileUploader.areFileListDifferent(post.files, original.files);
+        return CoreFileUploader.areFileListDifferent(reply.files ?? [], original.files ?? []);
     }
 
     /**
@@ -541,3 +541,13 @@ export class AddonModForumHelperProvider {
 }
 
 export const AddonModForumHelper = makeSingleton(AddonModForumHelperProvider);
+
+/**
+ * Forum post data used to check changes.
+ */
+type AddonModForumPostData = {
+    subject?: string | null;
+    message?: string | null;
+    isprivatereply?: boolean;
+    files?: CoreFileEntry[];
+};

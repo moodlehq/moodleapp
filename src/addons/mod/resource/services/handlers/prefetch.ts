@@ -64,7 +64,7 @@ export class AddonModResourcePrefetchHandlerService extends CoreCourseResourcePr
             dirPath = await CoreFilepool.getPackageDirPathByUrl(CoreSites.getCurrentSiteId(), module.url!);
         }
 
-        const promises: Promise<any>[] = [];
+        const promises: Promise<unknown>[] = [];
 
         promises.push(super.downloadOrPrefetch(module, courseId, prefetch, dirPath));
 
