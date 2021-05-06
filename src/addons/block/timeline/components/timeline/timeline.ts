@@ -72,7 +72,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
         this.currentSite = CoreSites.getCurrentSite();
 
         this.filter = await this.currentSite!.getLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
-        this.switchFilter();
+        this.switchFilter(this.filter);
 
         this.sort = await this.currentSite!.getLocalSiteConfig('AddonBlockTimelineSort', this.sort);
 
@@ -183,8 +183,11 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
 
     /**
      * Change timeline filter being viewed.
+     *
+     * @param filter New filter.
      */
-    switchFilter(): void {
+    switchFilter(filter: string): void {
+        this.filter = filter;
         this.currentSite?.setLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
 
         switch (this.filter) {

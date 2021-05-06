@@ -41,13 +41,12 @@
             </ion-card>
 
             <!-- Show processor selector. -->
-            <ion-select *ngIf="preferences && preferences.processors && preferences.processors.length > 0"
-                [ngModel]="currentProcessor!.name" (ngModelChange)="changeProcessor($event)" interface="action-sheet"
-                class="core-button-select">
+            <core-combobox *ngIf="preferences && preferences.processors && preferences.processors.length > 0"
+                [selection]="currentProcessor!.name" (onChange)="changeProcessor($event)">
                 <ion-select-option *ngFor="let processor of preferences.processors" [value]="processor.name">
                     {{ processor.displayname }}
                 </ion-select-option>
-            </ion-select>
+            </core-combobox>
 
             <ion-card list *ngFor="let component of components" class="ion-margin-top">
                 <ion-item-divider class="ion-text-wrap">

@@ -19,18 +19,15 @@
                 <div *ngIf="displaySectionSelector && sections && hasSeveralSections"
                     class="ion-text-wrap clearfix ion-justify-content-between core-button-selector-row"
                     [class.core-section-download]="downloadEnabled">
-                    <ion-button class="core-button-select button-no-uppercase" (click)="showSectionSelector()"
-                        aria-haspopup="listbox" id="core-course-section-button" expand="block">
-                        <ion-icon name="fas-folder" slot="start" aria-hidden="true"></ion-icon>
-                        <span class="sr-only" *ngIf="selectedSection">{{ 'core.course.sections' | translate }}:</span>
-                        <span class="core-button-select-text">
+                    <core-combobox [modalOptions]="sectionSelectorModalOptions" interface="modal" listboxId="core-course-section-button"
+                        icon="fas-folder" [label]="'core.course.section' | translate" (onChange)="sectionChanged($event)">
+                        <span slot="text">
                             <core-format-text *ngIf="selectedSection" [text]="selectedSection.name" contextLevel="course"
                                 [contextInstanceId]="course?.id" [clean]="true" [singleLine]="true">
                             </core-format-text>
-                            <span *ngIf="!selectedSection">{{ 'core.course.sections' | translate }}</span>
+                            <ng-container *ngIf="!selectedSection">{{ 'core.course.sections' | translate }}</ng-container>
                         </span>
-                        <div class="select-icon" slot="end"><div class="select-icon-inner"></div></div>
-                    </ion-button>
+                    </core-combobox>
                     <!-- Section download. -->
                     <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: selectedSection}"></ng-container>
                 </div>

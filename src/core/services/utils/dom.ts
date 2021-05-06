@@ -15,7 +15,7 @@
 import { Injectable, SimpleChange, ElementRef, KeyValueChanges } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { IonContent } from '@ionic/angular';
-import { AlertOptions, AlertButton, TextFieldTypes } from '@ionic/core';
+import { ModalOptions, AlertOptions, AlertButton, TextFieldTypes } from '@ionic/core';
 import { Md5 } from 'ts-md5';
 
 import { CoreApp } from '@services/app';
@@ -1679,6 +1679,26 @@ export class CoreDomUtilsProvider {
                 }
             });
         });
+    }
+
+    /**
+     * Opens a Modal.
+     *
+     * @param opts Modal Options.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async openModal<T = any>(
+        opts: ModalOptions,
+    ): Promise<T | undefined> {
+
+        const modal = await ModalController.create(opts);
+
+        await modal.present();
+
+        const result = await modal.onWillDismiss<T>();
+        if (result?.data) {
+            return result?.data;
+        }
     }
 
     /**

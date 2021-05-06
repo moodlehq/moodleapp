@@ -1,6 +1,6 @@
 <ion-header>
     <ion-toolbar>
-        <ion-title>{{ 'core.course.sections' | translate }}</ion-title>
+        <ion-title id="core-course-section-selector-label">{{ 'core.course.sections' | translate }}</ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
                 <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
@@ -9,7 +9,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-list id="core-course-section-selector">
+    <ion-list id="core-course-section-selector" role="listbox" aria-labelledby="core-course-section-selector-label">
         <ng-container *ngFor="let section of sections">
             <ion-item *ngIf="!section.hiddenbynumsections && section.id != stealthModulesSectionId" class="ion-text-wrap"
                 (click)="selectSection(section)" [attr.aria-current]="selected?.id == section.id ? 'page' :  'false'"

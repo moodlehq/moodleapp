@@ -2,20 +2,6 @@
 
 :host {
 
-    .addon-forum-sorting-select {
-        display: flex;
-
-        .core-button-select {
-            flex: 1;
-        }
-
-        .core-button-select-text {
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-    }
-
     .addon-forum-star {
         color: var(--core-color);
     }

@@ -158,7 +158,8 @@
         --color: inherit;
     }
 
-    --core-button-select-background: var(--custom-button-select-background, var(--ion-color-primary-contrast));
+    --core-combobox-background: var(--custom-combobox-background, var(--ion-item-background));
+    --core-combobox-color: var(--custom-combobox-color, var(--ion-color-primary));
 
     --selected-item-color: var(--custom-selected-item-color, var(--core-color));
     --selected-item-border-width: var(--custom-selected-item-border-width, 5px);

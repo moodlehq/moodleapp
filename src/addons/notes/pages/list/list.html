@@ -35,13 +35,11 @@
             <ion-label><h2>{{user!.fullname}}</h2></ion-label>
         </ion-item>
 
-        <div class="ion-padding">
-            <ion-select [(ngModel)]="type" (ngModelChange)="typeChanged()" interface="popover" class="core-button-select">
-                <ion-select-option value="site">{{ 'addon.notes.sitenotes' | translate }}</ion-select-option>
-                <ion-select-option value="course">{{ 'addon.notes.coursenotes' | translate }}</ion-select-option>
-                <ion-select-option value="personal">{{ 'addon.notes.personalnotes' | translate }}</ion-select-option>
-            </ion-select>
-        </div>
+        <core-combobox [selection]="type" (onChange)="typeChanged($event)">
+            <ion-select-option value="site">{{ 'addon.notes.sitenotes' | translate }}</ion-select-option>
+            <ion-select-option value="course">{{ 'addon.notes.coursenotes' | translate }}</ion-select-option>
+            <ion-select-option value="personal">{{ 'addon.notes.personalnotes' | translate }}</ion-select-option>
+        </core-combobox>
 
         <ion-card class="core-warning-card" *ngIf="hasOffline">
             <ion-item>

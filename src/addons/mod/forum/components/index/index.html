@@ -67,15 +67,15 @@
             <core-empty-box *ngIf="discussions.empty" icon="chatbubbles" [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
             </core-empty-box>
 
-            <div *ngIf="!discussions.empty && sortingAvailable && selectedSortOrder" class="ion-text-wrap addon-forum-sorting-select">
-                <ion-button *ngIf="sortingAvailable" id="addon-mod-forum-sort-order-button"
-                    class="core-button-select button-no-uppercase"
-                    aria-haspopup="true" aria-controls="addon-mod-forum-sort-order-selector"
-                    [attr.aria-label]="('core.sort' | translate)"
-                    (click)="showSortOrderSelector()">
-                    <span class="core-button-select-text">{{ selectedSortOrder.label | translate }}</span>
-                    <div class="select-icon" slot="end"><div class="select-icon-inner"></div></div>
-                </ion-button>
+            <div *ngIf="!discussions.empty && sortingAvailable && selectedSortOrder" class="ion-text-wrap">
+                <core-combobox
+                    [modalOptions]="sortOrderSelectorModalOptions"
+                    listboxId="addon-mod-forum-sort-selector"
+                    [label]="('core.sort' | translate)"
+                    (onChange)="setSortOrder($event)"
+                    [selection]="selectedSortOrder.label | translate"
+                    interface="modal">
+                </core-combobox>
             </div>
 
             <ion-item *ngFor="let discussion of discussions.items"
