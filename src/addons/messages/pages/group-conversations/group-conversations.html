@@ -37,7 +37,7 @@
                     [attr.aria-expanded]="favourites.expanded" role="heading button">
                     <ion-icon *ngIf="!favourites.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
                     <ion-icon *ngIf="favourites.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
-                    <ion-label>{{ 'core.favourites' | translate }} ({{ favourites.count }})</ion-label>
+                    <ion-label><h2>{{ 'core.favourites' | translate }} ({{ favourites.count }})</h2></ion-label>
                     <ion-badge slot="end" *ngIf="favourites.unread">{{ favourites.unread }}</ion-badge>
                 </ion-item-divider>
                 <div [hidden]="!favourites.conversations || !favourites.expanded || favourites.loading" #favlist>
@@ -60,7 +60,7 @@
                     [attr.aria-expanded]="group.expanded" role="heading button">
                     <ion-icon *ngIf="!group.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
                     <ion-icon *ngIf="group.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
-                    <ion-label>{{ 'addon.messages.groupconversations' | translate }} ({{ group.count }})</ion-label>
+                    <ion-label><h2>{{ 'addon.messages.groupconversations' | translate }} ({{ group.count }})</h2></ion-label>
                     <ion-badge slot="end" *ngIf="group.unread">{{ group.unread }}</ion-badge>
                 </ion-item-divider>
                 <div [hidden]="!group.conversations || !group.expanded || group.loading" #grouplist>
@@ -82,7 +82,9 @@
                     [attr.aria-expanded]="individual.expanded" role="heading button">
                     <ion-icon *ngIf="!individual.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
                     <ion-icon *ngIf="individual.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
-                    <ion-label>{{ 'addon.messages.individualconversations' | translate }} ({{ individual.count }})</ion-label>
+                    <ion-label>
+                        <h2>{{ 'addon.messages.individualconversations' | translate }} ({{ individual.count }})</h2>
+                    </ion-label>
                     <ion-badge slot="end" *ngIf="individual.unread">{{ individual.unread }}</ion-badge>
                 </ion-item-divider>
                 <div [hidden]="!individual.conversations || !individual.expanded || individual.loading" #indlist>

@@ -18,7 +18,7 @@
             </ion-item>
             <ng-container *ngFor="let letter of map">
                 <ion-item-divider *ngIf="letter.label">
-                    <ion-label>{{ letter.label }}</ion-label>
+                    <ion-label><h2>{{ letter.label }}</h2></ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngFor="let page of letter.pages" (click)="goToPage(page)"
                     [attr.aria-current]="selectedTitle == page.title ? 'page' :  'false'" button>

@@ -31,7 +31,9 @@
 
                     <!-- Site home items: news, categories, courses, etc. -->
                     <ng-container *ngIf="items.length > 0">
-                        <ion-item-divider *ngIf="section && section!.hasContent"></ion-item-divider>
+                        <ion-item-divider *ngIf="section && section!.hasContent">
+                            <ion-label></ion-label>
+                        </ion-item-divider>
                         <ng-container *ngFor="let item of items">
                             <ng-container [ngSwitch]="item">
                                 <ng-container *ngSwitchCase="'LIST_OF_COURSE'">

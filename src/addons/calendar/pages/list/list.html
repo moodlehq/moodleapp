@@ -40,7 +40,7 @@
             <ion-list *ngIf="filteredEvents && filteredEvents.length"  class="ion-no-margin">
                 <ng-container *ngFor="let event of filteredEvents">
                     <ion-item-divider *ngIf="event.showDate">
-                        <ion-label>{{ event.timestart * 1000 | coreFormatDate: "strftimedayshort" }}</ion-label>
+                        <ion-label><h2>{{ event.timestart * 1000 | coreFormatDate: "strftimedayshort" }}</h2></ion-label>
                     </ion-item-divider>
                     <ion-item class="addon-calendar-event ion-text-wrap" [attr.aria-label]="event.name" (click)="gotoEvent(event.id)"
                         [attr.aria-current]="event.id == eventId ? 'page' : 'false'"

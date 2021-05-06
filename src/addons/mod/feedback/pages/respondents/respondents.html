@@ -29,7 +29,7 @@
                 <ng-container *ngIf="responses.responses.total > 0">
                     <ion-item-divider>
                         <ion-label>
-                            {{ 'addon.mod_feedback.non_anonymous_entries' | translate : {$a: responses.responses.total } }}
+                            <h2>{{ 'addon.mod_feedback.non_anonymous_entries' | translate : {$a: responses.responses.total } }}</h2>
                         </ion-label>
                     </ion-item-divider>
                     <ion-item *ngFor="let attempt of responses.responses.attempts" class="ion-text-wrap" button detail="true"
@@ -54,7 +54,7 @@
                 <ng-container *ngIf="responses.anonResponses.total > 0">
                     <ion-item-divider>
                         <ion-label>
-                            {{ 'addon.mod_feedback.anonymous_entries' |translate : {$a: responses.anonResponses.total } }}
+                            <h2>{{ 'addon.mod_feedback.anonymous_entries' |translate : {$a: responses.anonResponses.total } }}</h2>
                         </ion-label>
                     </ion-item-divider>
                     <ion-item *ngFor="let attempt of responses.anonResponses.attempts" class="ion-text-wrap" button detail="true"

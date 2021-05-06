@@ -126,8 +126,8 @@
                 <ion-icon *ngIf="!advanced" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
                 <ion-icon *ngIf="advanced" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
-                    <span *ngIf="!advanced">{{ 'core.showmore' | translate }}</span>
-                    <span *ngIf="advanced">{{ 'core.showless' | translate }}</span>
+                    <h2 *ngIf="!advanced">{{ 'core.showmore' | translate }}</h2>
+                    <h2 *ngIf="advanced">{{ 'core.showless' | translate }}</h2>
                 </ion-label>
             </ion-item-divider>
 

@@ -26,7 +26,7 @@
             </ion-item>
 
             <ion-item-divider>
-                <ion-label>{{ 'addon.mod_feedback.non_respondents_students' | translate : {$a: total } }}</ion-label>
+                <ion-label><h2>{{ 'addon.mod_feedback.non_respondents_students' | translate : {$a: total } }}</h2></ion-label>
             </ion-item-divider>
             <ng-container *ngIf="total > 0">
                 <ion-item *ngFor="let user of users" class="ion-text-wrap">
