@@ -7,7 +7,8 @@
         <ion-title>{{ 'core.settings.sites' | translate }}</ion-title>
 
         <ion-buttons slot="end">
-            <ion-button fill="clear" *ngIf="sites && sites.length > 0" (click)="toggleDelete()" [attr.aria-label]="'core.delete' | translate">
+            <ion-button fill="clear" *ngIf="sites && sites.length > 0" (click)="toggleDelete()"
+                [attr.aria-label]="'core.delete' | translate">
                 <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true"></ion-icon>
             </ion-button>
             <ion-button router-direction="forward" routerLink="/settings"

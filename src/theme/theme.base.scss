@@ -124,6 +124,27 @@ ion-button.button-small ion-icon.faicon[slot] {
     transform: scaleX(-1);
 }
 
+// Buttons.
+ion-button {
+    min-height: var(--a11y-min-target-size);
+    min-width: var(--a11y-min-target-size);
+}
+
+[role="button"] {
+    cursor: pointer;
+
+    [disabled],
+    [aria-disabled="true"] {
+        cursor: auto;
+    }
+}
+
+.core-iframe-help ion-button {
+    text-transform: none;
+    text-decoration: underline;
+    --color: initial;
+}
+
 // Ionic alert.
 ion-alert.core-alert-network-error .alert-head,
 div.core-iframe-network-error {
@@ -452,6 +473,10 @@ ion-select::part(text) {
     }
 }
 
+textarea {
+    min-height: var(--a11y-min-target-size);
+}
+
 textarea:not([core-auto-rows]) {
     height: 200px;
 }
@@ -468,14 +493,6 @@ ion-back-button.md::part(text) {
     display: none;
 }
 
-[role="button"] {
-    cursor: pointer;
-
-    [disabled],
-    [aria-disabled="true"] {
-        cursor: auto;
-    }
-}
 
 .core-media-adapt-width {
     max-width: 100%;
@@ -487,10 +504,4 @@ img.core-media-adapt-width {
 
 audio.core-media-adapt-width {
     width: 100%;
-}
-
-.core-iframe-help ion-button {
-    text-transform: none;
-    text-decoration: underline;
-    --color: initial;
 }

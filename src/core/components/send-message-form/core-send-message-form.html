@@ -1,11 +1,9 @@
 <form #messageForm>
     <textarea class="core-send-message-input" [autofocus]="showKeyboard" [placeholder]="placeholder" rows="1" core-auto-rows
-        [(ngModel)]="message" name="message" (onResize)="textareaResized()" (keydown.enter)="enterClicked($event)"
-        (keydown.control.enter)="enterClicked($event, 'control')" (keydown.meta.enter)="enterClicked($event, 'meta')"></textarea>
-    <ion-buttons>
-        <ion-button fill="clear" type="submit" [disabled]="!message || sendDisabled"
-            [attr.aria-label]="'core.send' | translate" [core-suppress-events] (onClick)="submitForm($event)">
-            <ion-icon name="send" color="dark" slot="icon-only" aria-hidden="true"></ion-icon>
-        </ion-button>
-    </ion-buttons>
+        [(ngModel)]="message" name="message" (onResize)="textareaResized()" (keyup.enter)="enterClicked($event)"
+        (keyup.control.enter)="enterClicked($event, 'control')" (keyup.meta.enter)="enterClicked($event, 'meta')"></textarea>
+    <ion-button fill="clear" size="large" type="submit" [disabled]="!message || sendDisabled"
+        [attr.aria-label]="'core.send' | translate" [core-suppress-events] (click)="submitForm($event)">
+        <ion-icon name="send" color="dark" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
 </form>

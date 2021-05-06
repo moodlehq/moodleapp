@@ -62,6 +62,9 @@
         @include generate-color($color-name);
     }
 
+    // Accessibility vars.
+    --a11y-min-target-size: 44px;
+
     --ion-text-color: #{$text-color};
     --ion-text-color-rgb: 58,58,58;
     --ion-card-color: var(--ion-text-color);
@@ -156,6 +159,7 @@
     ion-item-divider {
         --background: var(--gray-lighter);
         --color: inherit;
+        min-height: calc(var(--a11y-min-target-size) + 8px);
     }
 
     --core-combobox-background: var(--custom-combobox-background, var(--ion-item-background));
@@ -221,4 +225,5 @@
     --core-question-feedback-background-color: var(--yellow-light);
 
     --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-dark);
+
 }
