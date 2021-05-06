@@ -6,7 +6,7 @@
         <ion-title>{{ 'addon.mod_quiz.review' | translate }}</ion-title>
 
         <ion-buttons slot="end">
-            <ion-button *ngIf="navigation.length" [attr.aria-label]="'addon.mod_quiz.opentoc' | translate"
+            <ion-button fill="clear" *ngIf="navigation.length" [attr.aria-label]="'addon.mod_quiz.opentoc' | translate"
                 (click)="openNavigation()" aria-haspopup="true">
                 <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>

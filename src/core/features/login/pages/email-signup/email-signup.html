@@ -7,7 +7,7 @@
         <ion-title>{{ 'core.login.newaccount' | translate }}</ion-title>
 
         <ion-buttons slot="end">
-            <ion-button *ngIf="authInstructions" (click)="showAuthInstructions()"
+            <ion-button fill="clear" *ngIf="authInstructions" (click)="showAuthInstructions()"
                 [attr.aria-label]="'core.login.instructions' | translate">
                 <ion-icon slot="icon-only" name="far-question-circle" aria-hidden="true"></ion-icon>
             </ion-button>

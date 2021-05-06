@@ -77,6 +77,10 @@ ion-toolbar .in-toolbar.button-clear {
     --ion-toolbar-color: var(--ion-color-primary-contrast);
 }
 
+ion-header ion-toolbar .button.button-clear {
+    --color: var(--ion-color-primary-contrast);
+}
+
 ion-toolbar .core-navbar-button-hidden {
     display: none !important;
 }

@@ -10,7 +10,7 @@
         </ion-title>
 
         <ion-buttons slot="end">
-            <ion-button id="addon-mod_quiz-connection-error-button" [hidden]="!autoSaveError" (click)="showConnectionError($event)"
+            <ion-button fill="clear" id="addon-mod_quiz-connection-error-button" [hidden]="!autoSaveError" (click)="showConnectionError($event)"
                 [attr.aria-label]="'addon.mod_quiz.connectionerror' | translate" aria-haspopup="dialog">
                 <ion-icon name="fas-exclamation-circle" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
@@ -30,7 +30,7 @@
             </core-timer>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button *ngIf="previousPage >= 0" (click)="changePage(previousPage)" [attr.aria-label]="'core.previous' | translate">
+            <ion-button fill="clear" *ngIf="previousPage >= 0" (click)="changePage(previousPage)" [attr.aria-label]="'core.previous' | translate">
                 <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <ion-button *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [attr.aria-label]="'core.next' | translate">
@@ -43,7 +43,7 @@
         <!-- Navigation arrows if there's no timer. -->
         <ion-toolbar *ngIf="!endTime && questions.length && !quizAborted && !showSummary" color="light">
             <ion-buttons slot="end">
-                <ion-button *ngIf="previousPage >= 0" (click)="changePage(previousPage)"
+                <ion-button fill="clear" *ngIf="previousPage >= 0" (click)="changePage(previousPage)"
                     [attr.aria-label]="'core.previous' | translate">
                     <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
