@@ -292,7 +292,13 @@
 
             if (currentNode.shadowRoot) {
                 for (const childNode of currentNode.shadowRoot.childNodes) {
-                    if (!childNode) {
+                    if (
+                        !(childNode instanceof HTMLElement) || (
+                            childNode instanceof HTMLStyleElement ||
+                            childNode instanceof HTMLLinkElement ||
+                            childNode instanceof HTMLScriptElement
+                        )
+                    ) {
                         continue;
                     }
 
