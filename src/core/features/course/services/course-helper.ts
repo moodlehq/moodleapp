@@ -67,6 +67,7 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSiteHomeHomeHandlerService } from '@features/sitehome/services/handlers/sitehome-home';
+import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 
 /**
  * Prefetch info of a module.
@@ -1888,6 +1889,52 @@ export class CoreCourseHelperProvider {
         }
 
         await Promise.all(promises);
+    }
+
+    /**
+     * Completion clicked.
+     *
+     * @param completion The completion.
+     * @param event The click event.
+     * @return Promise resolved with the result.
+     */
+    async changeManualCompletion(
+        completion: CoreCourseModuleCompletionData,
+        event?: Event,
+    ): Promise<CoreStatusWithWarningsWSResponse | void> {
+        if (!completion) {
+            return;
+        }
+
+        if (typeof completion.cmid == 'undefined' || completion.tracking !== 1) {
+            return;
+        }
+
+        event?.preventDefault();
+        event?.stopPropagation();
+
+        const modal = await CoreDomUtils.showModalLoading();
+        completion.state = completion.state === 1 ? 0 : 1;
+
+        try {
+            const response = await CoreCourse.markCompletedManually(
+                completion.cmid,
+                completion.state === 1,
+                completion.courseId!,
+                completion.courseName,
+            );
+
+            if (response.offline) {
+                completion.offline = true;
+            }
+
+            return response;
+        } catch (error) {
+            completion.state = completion.state === 1 ? 0 : 1;
+            CoreDomUtils.showErrorModalDefault(error, 'core.errorchangecompletion', true);
+        } finally {
+            modal.dismiss();
+        }
     }
 
 }

@@ -122,6 +122,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     allowAddAttempt = false; // Allow adding a new attempt when grading.
     gradeUrl?: string; // URL to grade in browser.
     isPreviousAttemptEmpty = true; // Whether the previous attempt contains an empty submission.
+    showDates = false; // Whether to show some dates.
 
     // Some constants.
     statusNew = AddonModAssignProvider.SUBMISSION_STATUS_NEW;
@@ -181,6 +182,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
      */
     ngOnInit(): void {
         this.isSubmittedForGrading = !!this.submitId;
+        this.showDates = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
 
         this.loadData(true);
     }

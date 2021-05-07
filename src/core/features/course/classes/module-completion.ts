@@ -14,8 +14,6 @@
 
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 
 /**
@@ -32,7 +30,7 @@ export class CoreCourseModuleCompletionBaseComponent implements OnChanges {
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when completion changes.
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.completion && this.completion) {
@@ -45,49 +43,6 @@ export class CoreCourseModuleCompletionBaseComponent implements OnChanges {
      */
     protected calculateData(): void {
         return;
-    }
-
-    /**
-     * Completion clicked.
-     *
-     * @param e The click event.
-     */
-    async completionClicked(e: Event): Promise<void> {
-        if (!this.completion) {
-            return;
-        }
-
-        if (typeof this.completion.cmid == 'undefined' || this.completion.tracking !== 1) {
-            return;
-        }
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        const modal = await CoreDomUtils.showModalLoading();
-        this.completion.state = this.completion.state === 1 ? 0 : 1;
-
-        try {
-            const response = await CoreCourse.markCompletedManually(
-                this.completion.cmid,
-                this.completion.state === 1,
-                this.completion.courseId!,
-                this.completion.courseName,
-            );
-
-            if (this.completion.valueused === false) {
-                this.calculateData();
-                if (response.offline) {
-                    this.completion.offline = true;
-                }
-            }
-            this.completionChanged.emit(this.completion);
-        } catch (error) {
-            this.completion.state = this.completion.state === 1 ? 0 : 1;
-            CoreDomUtils.showErrorModalDefault(error, 'core.errorchangecompletion', true);
-        } finally {
-            modal.dismiss();
-        }
     }
 
 }

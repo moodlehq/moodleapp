@@ -35,7 +35,7 @@ import { Translate } from '@singletons';
 export class CoreCourseModuleCompletionComponent extends CoreCourseModuleCompletionBaseComponent {
 
     @Input() showCompletionConditions = false; // Whether to show activity completion conditions.
-    @Input() showManualCompletion = false; // Whether to show manual completion when completion conditions are disabled.
+    @Input() showManualCompletion = false; // Whether to show manual completion.
 
     details?: CompletionRule[];
     accessibleDescription: string | null = null;
@@ -46,21 +46,6 @@ export class CoreCourseModuleCompletionComponent extends CoreCourseModuleComplet
     protected calculateData(): void {
         if (!this.completion?.details) {
             return;
-        }
-
-        // Set an accessible description for manual completions with overridden completion state.
-        if (!this.completion.isautomatic && this.completion.overrideby) {
-            const setByData = {
-                $a: {
-                    activityname: this.moduleName,
-                    setby: this.completion.overrideby,
-                },
-            };
-            const setByLangKey = this.completion.state ? 'completion_setby:manual:done' : 'completion_setby:manual:markdone';
-            this.accessibleDescription = Translate.instant('core.course.' + setByLangKey, setByData);
-        } else {
-            const langKey = this.completion.state ? 'completion_manual:aria:done' : 'completion_manual:aria:markdone';
-            this.accessibleDescription = Translate.instant('core.course.' + langKey, { $a: this.moduleName });
         }
 
         // Format rules.

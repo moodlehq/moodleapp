@@ -1,0 +1,18 @@
+<ion-card *ngIf="module.dates?.length || (module.completiondata && (module.completiondata.isautomatic || showManualCompletion))">
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <!-- Activity dates. -->
+            <div *ngIf="module.dates && module.dates.length" class="core-module-dates">
+                <p *ngFor="let date of module.dates">
+                    <strong>{{ date.label }}</strong> {{ date.timestamp * 1000 | coreFormatDate:'strftimedatetime' }}
+                </p>
+            </div>
+
+            <!-- Module completion. -->
+            <core-course-module-completion *ngIf="module.completiondata" [completion]="module.completiondata"
+                [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="true"
+                [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)">
+            </core-course-module-completion>
+        </ion-label>
+    </ion-item>
+</ion-card>

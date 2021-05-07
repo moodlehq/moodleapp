@@ -150,9 +150,12 @@ export class CoreCourseProvider {
      * @param completion Completion status of the module.
      */
     checkModuleCompletion(courseId: number, completion?: CoreCourseModuleCompletionData): void {
-        if (completion && completion.tracking === 2 && completion.state === 0) {
+        if (completion && completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC && completion.state === 0) {
             this.invalidateSections(courseId).finally(() => {
-                CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, { courseId: courseId });
+                CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, {
+                    courseId: courseId,
+                    cmId: completion.cmid,
+                });
             });
         }
     }
@@ -968,6 +971,9 @@ export class CoreCourseProvider {
             } catch {
                 // Ignore errors, shouldn't happen.
             }
+
+            // Invalidate module now, completion has changed.
+            await this.invalidateModule(cmId, siteId);
 
             return result;
         } catch (error) {

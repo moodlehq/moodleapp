@@ -122,7 +122,14 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         this.syncIcon = CoreConstants.ICON_LOADING;
 
         try {
-            await CoreUtils.ignoreErrors(this.invalidateContent());
+            await CoreUtils.ignoreErrors(Promise.all([
+                this.invalidateContent(),
+                this.showCompletion ? CoreCourse.invalidateModule(this.module.id) : undefined,
+            ]));
+
+            if (this.showCompletion) {
+                this.module = await CoreCourse.getModule(this.module.id, this.courseId);
+            }
 
             await this.loadContent(true, sync, showErrors);
         } finally  {

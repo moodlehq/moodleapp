@@ -42,6 +42,11 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="discussions.loaded" class="core-loading-center">
+        <!-- Activity info. -->
+        <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+            (completionChanged)="onCompletionChange()">
+        </core-course-module-info>
+
         <core-course-module-description *ngIf="forum && forum.type != 'single'"
             [description]="description" [component]="component" [componentId]="componentId" [note]="descriptionNote"
             contextLevel="module" [contextInstanceId]="module && module.id" [courseId]="courseId">

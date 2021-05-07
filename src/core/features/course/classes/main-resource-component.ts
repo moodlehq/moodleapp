@@ -70,12 +70,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     isDestroyed = false; // Whether the component is destroyed, used when calling fillContextMenu.
     contextMenuStatusObserver?: CoreEventObserver; // Observer of package status, used when calling fillContextMenu.
     contextFileStatusObserver?: CoreEventObserver; // Observer of file status, used when calling fillContextMenu.
+    showCompletion = false; // Whether to show completion inside the activity.
 
     protected fetchContentDefaultError = 'core.course.errorgetmodule'; // Default error to show when loading contents.
     protected isCurrentView = false; // Whether the component is in the current view.
     protected siteId?: string; // Current Site ID.
     protected statusObserver?: CoreEventObserver; // Observer of package status. Only if setStatusListener is called.
     protected currentStatus?: string; // The current status of the module. Only if setStatusListener is called.
+    protected completionObserver?: CoreEventObserver;
     protected logger: CoreLogger;
 
     constructor(
@@ -94,6 +96,18 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.componentId = this.module.id;
         this.externalUrl = this.module.url;
         this.courseId = this.courseId || this.module.course!;
+        this.showCompletion = !!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
+
+        if (this.showCompletion) {
+            this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
+                if (data && data.cmId == this.module.id) {
+                    await CoreCourse.invalidateModule(this.module.id);
+
+                    this.module = await CoreCourse.getModule(this.module.id, this.courseId);
+                }
+            });
+        }
+
         this.blog = await AddonBlog.isPluginEnabled();
     }
 
@@ -140,7 +154,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.refreshIcon = CoreConstants.ICON_LOADING;
 
         try {
-            await CoreUtils.ignoreErrors(this.invalidateContent());
+            await CoreUtils.ignoreErrors(Promise.all([
+                this.invalidateContent(),
+                this.showCompletion ? CoreCourse.invalidateModule(this.module.id) : undefined,
+            ]));
+
+            if (this.showCompletion) {
+                this.module = await CoreCourse.getModule(this.module.id, this.courseId);
+            }
 
             await this.loadContent(true);
         } finally  {
@@ -377,6 +398,16 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     }
 
     /**
+     * The completion of the modules has changed.
+     *
+     * @return Promise resolved when done.
+     */
+    async onCompletionChange(): Promise<void> {
+        // Nothing to do.
+        return;
+    }
+
+    /**
      * Component being destroyed.
      */
     ngOnDestroy(): void {
@@ -384,6 +415,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.contextMenuStatusObserver?.off();
         this.contextFileStatusObserver?.off();
         this.statusObserver?.off();
+        this.completionObserver?.off();
     }
 
     /**

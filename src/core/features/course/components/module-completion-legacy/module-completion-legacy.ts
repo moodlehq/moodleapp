@@ -19,6 +19,7 @@ import { CoreCourseProvider } from '@features/course/services/course';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { Translate } from '@singletons';
 import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 
 /**
  * Component to handle activity completion in sites previous to 3.11.
@@ -113,6 +114,23 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
         }
 
         this.completionDescription = Translate.instant(langKey, translateParams);
+    }
+
+    /**
+     * Completion clicked.
+     *
+     * @param event The click event.
+     */
+    async completionClicked(event: Event): Promise<void> {
+        if (!this.completion) {
+            return;
+        }
+
+        await CoreCourseHelper.changeManualCompletion(this.completion, event);
+
+        this.calculateData();
+
+        this.completionChanged.emit(this.completion);
     }
 
 }

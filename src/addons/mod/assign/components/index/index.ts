@@ -120,7 +120,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT,
             (data) => {
                 if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
-                // Assignment submitted, check completion.
+                    // Assignment submitted, check completion.
                     CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
 
                     // Reload data since it can have offline data now.
