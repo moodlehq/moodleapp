@@ -79,6 +79,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected currentStatus?: string; // The current status of the module. Only if setStatusListener is called.
     protected completionObserver?: CoreEventObserver;
     protected logger: CoreLogger;
+    protected debouncedUpdateModule?: () => void; // Update the module after a certain time.
 
     constructor(
         @Optional() @Inject('') loggerName: string = 'CoreCourseModuleMainResourceComponent',
@@ -103,9 +104,13 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
                 if (data && data.cmId == this.module.id) {
                     await CoreCourse.invalidateModule(this.module.id);
 
-                    this.module = await CoreCourse.getModule(this.module.id, this.courseId);
+                    this.fetchModule();
                 }
             });
+
+            this.debouncedUpdateModule = CoreUtils.debounce(() => {
+                this.fetchModule();
+            }, 10000);
         }
 
         this.blog = await AddonBlog.isPluginEnabled();
@@ -160,7 +165,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             ]));
 
             if (this.showCompletion) {
-                this.module = await CoreCourse.getModule(this.module.id, this.courseId);
+                this.fetchModule();
             }
 
             await this.loadContent(true);
@@ -403,8 +408,23 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @return Promise resolved when done.
      */
     async onCompletionChange(): Promise<void> {
-        // Nothing to do.
-        return;
+        // Update the module data after a while.
+        this.debouncedUpdateModule?.();
+    }
+
+    /**
+     * Fetch module.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async fetchModule(): Promise<void> {
+        const module = await CoreCourse.getModule(this.module.id, this.courseId);
+
+        CoreCourseHelper.calculateModuleCompletionData(module, this.courseId);
+
+        await CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, module);
+
+        this.module = module;
     }
 
     /**

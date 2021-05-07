@@ -16,6 +16,7 @@ import { Component, Input } from '@angular/core';
 
 import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
 import { CoreCourseModuleWSRuleDetails, CoreCourseProvider } from '@features/course/services/course';
+import { CoreUser } from '@features/user/services/user';
 import { Translate } from '@singletons';
 
 /**
@@ -43,13 +44,13 @@ export class CoreCourseModuleCompletionComponent extends CoreCourseModuleComplet
     /**
      * @inheritdoc
      */
-    protected calculateData(): void {
+    protected async calculateData(): Promise<void> {
         if (!this.completion?.details) {
             return;
         }
 
         // Format rules.
-        this.details = this.completion.details.map((rule: CompletionRule) => {
+        this.details = await Promise.all(this.completion.details.map(async (rule: CompletionRule) => {
             rule.statuscomplete = rule.rulevalue.status == CoreCourseProvider.COMPLETION_COMPLETE ||
                     rule.rulevalue.status == CoreCourseProvider.COMPLETION_COMPLETE_PASS;
             rule.statuscompletefail = rule.rulevalue.status == CoreCourseProvider.COMPLETION_COMPLETE_FAIL;
@@ -57,10 +58,12 @@ export class CoreCourseModuleCompletionComponent extends CoreCourseModuleComplet
             rule.accessibleDescription = null;
 
             if (this.completion!.overrideby) {
+                const fullName = await CoreUser.getUserFullNameWithDefault(this.completion!.overrideby, this.completion!.courseId);
+
                 const setByData = {
                     $a: {
                         condition: rule.rulevalue.description,
-                        setby: this.completion!.overrideby,
+                        setby: fullName,
                     },
                 };
                 const overrideStatus = rule.statuscomplete ? 'done' : 'todo';
@@ -69,7 +72,7 @@ export class CoreCourseModuleCompletionComponent extends CoreCourseModuleComplet
             }
 
             return rule;
-        });
+        }));
     }
 
 }

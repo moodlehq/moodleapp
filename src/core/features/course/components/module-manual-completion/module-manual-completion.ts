@@ -15,6 +15,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChange } from '@angular/core';
 
 import { CoreCourseHelper, CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
+import { CoreUser } from '@features/user/services/user';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
@@ -41,10 +42,13 @@ export class CoreCourseModuleManualCompletionComponent implements OnInit, OnChan
      */
     ngOnInit(): void {
         this.manualChangedObserver = CoreEvents.on(CoreEvents.MANUAL_COMPLETION_CHANGED, (data) => {
-            if (this.completion && this.completion.cmid == data.completion.cmid) {
-                this.completion = data.completion;
-                this.calculateData();
+            if (!this.completion || this.completion.cmid != data.completion.cmid) {
+                return;
             }
+
+            this.completion = data.completion;
+            this.calculateData();
+            this.completionChanged.emit(this.completion);
         });
     }
 
@@ -60,17 +64,19 @@ export class CoreCourseModuleManualCompletionComponent implements OnInit, OnChan
     /**
      * @inheritdoc
      */
-    protected calculateData(): void {
-        if (!this.completion?.isautomatic) {
+    protected async calculateData(): Promise<void> {
+        if (!this.completion || this.completion.isautomatic) {
             return;
         }
 
         // Set an accessible description for manual completions with overridden completion state.
         if (this.completion.overrideby) {
+            const fullName = await CoreUser.getUserFullNameWithDefault(this.completion.overrideby, this.completion.courseId);
+
             const setByData = {
                 $a: {
                     activityname: this.moduleName,
-                    setby: this.completion.overrideby,
+                    setby: fullName,
                 },
             };
             const setByLangKey = this.completion.state ? 'completion_setby:manual:done' : 'completion_setby:manual:markdone';
@@ -93,10 +99,7 @@ export class CoreCourseModuleManualCompletionComponent implements OnInit, OnChan
 
         await CoreCourseHelper.changeManualCompletion(this.completion, event);
 
-        this.calculateData();
-
         CoreEvents.trigger(CoreEvents.MANUAL_COMPLETION_CHANGED, { completion: this.completion });
-        this.completionChanged.emit(this.completion);
     }
 
     /**

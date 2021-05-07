@@ -195,11 +195,8 @@ export class CoreCourseHelperProvider {
                     forCoursePage,
                 );
 
-                if (module.completiondata && module.completion && module.completion > 0) {
-                    module.completiondata.courseId = courseId;
-                    module.completiondata.courseName = courseName;
-                    module.completiondata.tracking = module.completion;
-                    module.completiondata.cmid = module.id;
+                if (module.completiondata) {
+                    this.calculateModuleCompletionData(module, courseId, courseName);
                 } else if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
                     // Should not happen on > 3.6. Check if activity has completions and if it's marked.
                     const activityStatus = completionStatus[module.id];
@@ -222,6 +219,24 @@ export class CoreCourseHelperProvider {
         });
 
         return { hasContent, sections: formattedSections };
+    }
+
+    /**
+     * Calculate completion data of a module.
+     *
+     * @param module Module.
+     * @param courseId Course ID of the module.
+     * @param courseName Course name.
+     */
+    calculateModuleCompletionData(module: CoreCourseModule, courseId: number, courseName?: string): void {
+        if (!module.completiondata || !module.completion) {
+            return;
+        }
+
+        module.completiondata.courseId = courseId;
+        module.completiondata.courseName = courseName;
+        module.completiondata.tracking = module.completion;
+        module.completiondata.cmid = module.id;
     }
 
     /**
@@ -1174,6 +1189,31 @@ export class CoreCourseHelperProvider {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Load offline completion for a certain module.
+     * This should be used in 3.6 sites or higher, where the course contents already include the completion.
+     *
+     * @param courseId The course to get the completion.
+     * @param mmodule The module.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    async loadModuleOfflineCompletion(courseId: number, module: CoreCourseModule, siteId?: string): Promise<void> {
+        if (!module.completiondata) {
+            return;
+        }
+
+        const offlineCompletions = await CoreCourseOffline.getCourseManualCompletions(courseId, siteId);
+
+        const offlineCompletion = offlineCompletions.find(completion => completion.cmid == module.id);
+
+        if (offlineCompletion && offlineCompletion.timecompleted >= module.completiondata.timecompleted * 1000) {
+            // The module has offline completion. Load it.
+            module.completiondata.state = offlineCompletion.completed;
+            module.completiondata.offline = true;
         }
     }
 
