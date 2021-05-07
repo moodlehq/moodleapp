@@ -623,7 +623,7 @@ export class CoreAppProvider {
     setStatusBarColor(color?: string): void {
         if (!color) {
             // Get the default color to reset it.
-            color = getComputedStyle(document.documentElement).getPropertyValue('--ion-statusbar-background').trim();
+            color = getComputedStyle(document.documentElement).getPropertyValue('--core-header-toolbar-background').trim();
         }
 
         // Make darker on Android.

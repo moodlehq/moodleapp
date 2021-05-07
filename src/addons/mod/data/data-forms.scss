@@ -41,7 +41,7 @@
                 }
 
                 &.has-focus {
-                    --input-border-color: var(--core-color);
+                    --input-border-color: var(--ion-color-primary);
                 }
                 &.has-focus.ion-valid {
                     --input-border-color: var(--success);

@@ -49,15 +49,15 @@
                         </ion-item>
                         <ion-item *ngIf="selectedSection && selectedSection.id != allSectionsId &&
                             (selectedSection.availabilityinfo || selectedSection.visible === 0)">
-                            <ion-badge color="secondary" class="ion-text-wrap"
+                            <ion-badge color="info" class="ion-text-wrap"
                                 *ngIf="selectedSection.visible === 0 && selectedSection.uservisible !== false">
                                 {{ 'core.course.hiddenfromstudents' | translate }}
                             </ion-badge>
-                            <ion-badge color="secondary" class="ion-text-wrap"
+                            <ion-badge color="info" class="ion-text-wrap"
                                 *ngIf="selectedSection.visible === 0 && selectedSection.uservisible === false">
                                 {{ 'core.notavailable' | translate }}
                             </ion-badge>
-                            <ion-badge color="secondary" class="ion-text-wrap" *ngIf="selectedSection.availabilityinfo">
+                            <ion-badge color="info" class="ion-text-wrap" *ngIf="selectedSection.availabilityinfo">
                                 <core-format-text [text]="selectedSection.availabilityinfo" contextLevel="course"
                                     [contextInstanceId]="course?.id">
                                 </core-format-text>
@@ -125,13 +125,13 @@
                 <!-- Section download. -->
                 <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: section}"></ng-container>
                 <p *ngIf="section.visible === 0 || section.availabilityinfo">
-                    <ion-badge color="secondary" *ngIf="section.visible === 0 && section.uservisible !== false" class="ion-text-wrap">
+                    <ion-badge color="info" *ngIf="section.visible === 0 && section.uservisible !== false" class="ion-text-wrap">
                         {{ 'core.course.hiddenfromstudents' | translate }}
                     </ion-badge>
-                    <ion-badge color="secondary" *ngIf="section.visible === 0 && section.uservisible === false" class="ion-text-wrap">
+                    <ion-badge color="info" *ngIf="section.visible === 0 && section.uservisible === false" class="ion-text-wrap">
                         {{ 'core.notavailable' | translate }}
                     </ion-badge>
-                    <ion-badge color="secondary" *ngIf="section.availabilityinfo" class="ion-text-wrap">
+                    <ion-badge color="info" *ngIf="section.availabilityinfo" class="ion-text-wrap">
                         <core-format-text [text]=" section.availabilityinfo" contextLevel="course" [contextInstanceId]="course?.id">
                         </core-format-text>
                     </ion-badge>

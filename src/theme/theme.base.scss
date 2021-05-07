@@ -50,11 +50,6 @@ ion-item.ion-text-wrap ion-label {
     white-space: normal !important;
 }
 
-// Buttons.
-.button-clear {
-    --ion-color-primary: var(--ion-text-color);
-}
-
 // It fixes the click on links where ion-ripple-effect is present.
 .ion-activatable ion-label,
 .item-multiple-items ion-label {
@@ -78,13 +73,23 @@ ion-item.ion-text-wrap ion-label {
 // Ionic toolbar.
 ion-toolbar ion-back-button,
 ion-toolbar .in-toolbar.button-clear {
-    --color: var(--ion-color-primary-contrast);
-    --ion-toolbar-color: var(--ion-color-primary-contrast);
+    --color: var(--core-header-toolbar-color);
+    --ion-toolbar-color: var(--core-header-toolbar-color);
 }
 
-ion-header ion-toolbar .button.button-clear {
-    --color: var(--ion-color-primary-contrast);
+ion-header ion-toolbar .button.button-clear,
+ion-header ion-toolbar .button.button-solid {
+    --color: var(--core-header-toolbar-color);
+    --ion-color-primary: var(--core-header-toolbar-color);
 }
+
+ion-header ion-toolbar .button.button-clear.button-has-icon-only,
+ion-header ion-toolbar .button.button-solid.button-has-icon-only {
+    --border-radius: 50%;
+    width: 48px;
+    height: 48px;
+}
+
 
 ion-toolbar .core-navbar-button-hidden {
     display: none !important;
@@ -379,9 +384,10 @@ ion-item img.core-module-icon[slot="start"] {
 ion-toolbar ion-title img.core-bar-button-image,
 ion-toolbar ion-title .core-bar-button-image img {
     padding: 0;
-    width: var(--core-toolbar-button-image-width);
-    height: var(--core-toolbar-button-image-width);
-    max-width: var(--core-toolbar-button-image-width);
+    width: var(--core-header-toolbar-button-image-size);
+    height: var(--core-header-toolbar-button-image-size);
+    max-width: var(--core-header-toolbar-button-image-size);
+    max-height: var(--core-header-toolbar-button-image-size);
     border-radius: 50%;
 }
 
@@ -422,7 +428,7 @@ ion-select::part(text) {
 }
 
 .core-anchor, core-format-text a {
-    color: -webkit-link;
+    color: var(--core-link-color);
     cursor: pointer;
     text-decoration: underline;
 }

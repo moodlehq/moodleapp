@@ -1,5 +1,6 @@
 :host {
     display: flex;
+    width: 100%;
 
     .core-progress-text {
         line-height: 40px;
@@ -16,7 +17,8 @@
         margin: 16px 0;
         padding: 0;
         display: block;
-        width: calc(100% - 55px);
+        width: 100%;
+        flex: 1;
 
         &[value]::-webkit-progress-bar {
             background-color: var(--background);

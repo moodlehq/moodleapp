@@ -41,7 +41,7 @@
                     <ion-item class="ion-text-wrap" *ngIf="spaceUsage">
                         <ion-label>
                             <h2 class="ion-text-wrap">{{ 'core.settings.spaceusage' | translate }} <ion-icon
-                                    name="fas-info-circle" color="secondary" [attr.aria-label]="'core.info' | translate"
+                                    name="fas-info-circle" color="info" [attr.aria-label]="'core.info' | translate"
                                     (click)="showSpaceInfo()"></ion-icon>
                             </h2>
                             <p *ngIf="spaceUsage.spaceUsage">{{ spaceUsage.spaceUsage | coreBytesToSize }}</p>
@@ -55,7 +55,7 @@
                     <ion-item class="ion-text-wrap">
                         <ion-label>
                             <h2>{{ 'core.settings.synchronizenow' | translate }} <ion-icon name="fas-info-circle"
-                                    color="secondary" [attr.aria-label]="'core.info' | translate" (click)="showSyncInfo()">
+                                    color="info" [attr.aria-label]="'core.info' | translate" (click)="showSyncInfo()">
                                 </ion-icon>
                             </h2>
                         </ion-label>

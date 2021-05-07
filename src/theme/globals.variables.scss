@@ -7,8 +7,8 @@
 /*
  * App colors
  */
-$black:           #3a3a3a !default; // Headings, standard text.
-$gray-darker:     #626262 !default; // Text (emphasis-detail), placeholder, background.
+$black:           #282828 !default; // Headings, standard text.
+$gray-darker:     #686566 !default; // Text (emphasis-detail), placeholder, background.
 $gray-dark:       #9e9e9e !default; // Borders (never text).
 $gray:            #dddddd !default;
 $gray-light:      #e9e9e9 !default; // Background.
@@ -40,19 +40,24 @@ $orange-light:    lighten($orange, 10%) !default;
 $yellow-light:    mix($yellow, white, 20%) !default;
 $yellow-dark:     mix($yellow, black, 40%) !default;
 
-$core-color:          $orange !default;
-$core-color-light:    lighten($core-color, 10%) !default;
-$core-color-dark:     darken($core-color, 10%) !default;
+$brand-color:          $orange !default;
+$brand-color-light:    lighten($brand-color, 10%) !default;
+$brand-color-dark:     darken($brand-color, 10%) !default;
 
-$text-color:          $black !default;
-$link-color:          $blue !default;
-$background-color:    $gray-light !default;
-$subdued-text-color:  $gray-darker !default;
+$text-color:               $black !default;
+$text-color-dark:          $white !default;
+$link-color:               $blue !default;
+$background-color:         $gray-light !default;
+$background-color-dark:     #1e1e1e !default;
+$subdued-text-color:       $gray-darker !default;
+
+$ion-item-background:      $white !default;
+$ion-item-background-dark: #1e1e1e !default;
 
 $core-online-color: #5cb85c !default;
 
-$primary:    $core-color !default;
-$secondary:  $blue !default;
+$primary:    $blue !default;
+$secondary:  $brand-color !default;
 $tertiary:   $turquoise !default;
 $danger:     $red !default;
 $warning:    $yellow !default;
@@ -65,61 +70,61 @@ $dark:       $black !default;
 $colors:  (
     primary: (
         base:             $primary,
-        contrast:         #fff,
+        contrast:         get_contrast_color($primary),
         shade:            get-color-shade($primary),
         tint:             get-color-tint($primary)
     ),
     secondary: (
         base:             $secondary,
-        contrast:         #fff,
+        contrast:         get_contrast_color($secondary),
         shade:            get-color-shade($secondary),
         tint:             get-color-tint($secondary)
     ),
     tertiary: (
         base:             $tertiary,
-        contrast:         #fff,
+        contrast:         get_contrast_color($tertiary),
         shade:            get-color-shade($tertiary),
         tint:             get-color-tint($tertiary)
     ),
     success: (
         base:             $success,
-        contrast:         #fff,
+        contrast:         get_contrast_color($success),
         shade:            get-color-shade($success),
         tint:             get-color-tint($success)
     ),
     warning: (
         base:             $warning,
-        contrast:         #000,
+        contrast:         get_contrast_color($warning),
         shade:            get-color-shade($warning),
         tint:             get-color-tint($warning)
     ),
     danger: (
         base:             $danger,
-        contrast:         #fff,
+        contrast:         get_contrast_color($danger),
         shade:            get-color-shade($danger),
         tint:             get-color-tint($danger)
     ),
     info: (
         base:             $info,
-        contrast:         #fff,
+        contrast:         get_contrast_color($info),
         shade:            get-color-shade($info),
         tint:             get-color-tint($info)
     ),
     light: (
         base:             $light,
-        contrast:         #000,
+        contrast:         get_contrast_color($light),
         shade:            get-color-shade($light),
         tint:             get-color-tint($light)
     ),
     medium: (
         base:             $medium,
-        contrast:         #fff,
+        contrast:         get_contrast_color($medium),
         shade:            get-color-shade($medium),
         tint:             get-color-tint($medium)
     ),
     dark: (
         base:             $dark,
-        contrast:         #fff,
+        contrast:         get_contrast_color($dark),
         shade:            get-color-shade($dark),
         tint:             get-color-tint($dark)
     )
@@ -170,3 +175,86 @@ $breakpoint-tablet: map-get($screen-breakpoints, tablet), !default;
 
 $z-index-overlay: 1001;
 $z-index-overlay-wrapper: 10;
+
+// Top header bar.
+$toolbar-background: $brand-color !default;
+$toolbar-color: get_contrast_color($toolbar-background) !default;
+$toolbar-button-image-size: 44px !default;
+
+// Bottom tab bar.
+$bottom-tabs-background: $white !default;
+$bottom-tabs-color: $gray-darker !default;
+$bottom-tabs-color-selected: $primary !default;
+
+$core-text-hightlight-background-color: lighten($blue, 40%) !default;
+
+$action-sheet-title-color: $primary !default;
+$action-sheet-selected: $primary !default;
+
+$core-tabs-background: $white !default;
+$core-tab-background: $core-tabs-background !default;
+$core-tab-color: $gray-dark !default;
+$core-tab-border-color: $gray !default;
+$core-tab-color-active: $primary !default;
+$core-tab-border-color-active: $core-tab-color-active !default;
+
+$core-tabs-background-dark: $black !default;
+$core-tab-background-dark: $core-tabs-background-dark !default;
+$core-tab-color-dark: $white !default;
+$core-tab-border-color-dark: $gray-light !default;
+
+$core-progressbar-color: $primary !default;
+$core-progressbar-text-color: $gray-darker !default;
+$core-progressbar-background: $gray-lighter !default;
+$core-progressbar-height: 8px !default;
+
+$core-progressbar-text-color-dark: $gray-lighter !default;
+
+$core-side-blocks-max-width: 30% !default;
+$core-side-blocks-min-width: 280px !default;
+
+////
+$core-combobox-color: $primary !default;
+
+$core-selected-item-color: $primary !default;
+$core-selected-item-border-width: 5px !default;
+
+$core-login-background: $white !default;
+$core-login-text-color: $black !default;
+
+$core-login-background-dark: $black !default;
+$core-login-text-color-dark: $white !default;
+
+$core-star-color: $brand-color !default;
+
+$core-large-avatar-size:  90px !default;
+$core-avatar-size:  40px !default;
+
+$core-send-message-input-background: $gray !default;
+$core-send-message-input-color: $black !default;
+
+$addon-calendar-event-category-color: $purple !default;
+$addon-calendar-event-course-color: $red !default;
+$addon-calendar-event-group-color: $yellow !default;
+$addon-calendar-event-user-color: $blue !default;
+$addon-calendar-event-site-color: $green !default;
+$addon-calendar-today-bgcolor: $primary !default;
+$addon-calendar-today-color: $white !default;
+$addon-calendar-border-color: $gray !default;
+
+$addon-messages-message-bg: $white !default;
+$addon-messages-message-activated-bg: $gray-light !default;
+$addon-messages-message-note-text: $gray-dark !default;
+$addon-messages-message-note-font-size: 75% !default;
+$addon-messages-message-mine-bg: $gray-light !default;
+$addon-messages-message-mine-activated-bg: $gray !default;
+$addon-messages-avatar-size: 30px !default;
+$addon-messages-discussion-badge: $primary !default;
+$addon-messages-discussion-badge-text: $white !default;
+
+$addon-forum-avatar-size: 28px !default;
+$addon-forum-border-color: $gray !default;
+$addon-forum-highlight-color: $gray-lighter !default;
+
+$addon-forum-border-color-dark: $gray-darker !default;
+$addon-forum-highlight-color-dark: $gray-dark !default;

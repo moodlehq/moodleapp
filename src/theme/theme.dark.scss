@@ -6,11 +6,11 @@
  */
 
 :root body.dark {
-    --ion-background-color: #1e1e1e;
-    --ion-background-color-rgb: 18,18,18;
+    --ion-background-color: #{$background-color-dark};
+    --ion-background-color-rgb: color-to-rgb-list(var(--ion-background-color));
 
-    --ion-text-color: #ffffff;
-    --ion-text-color-rgb: 255,255,255;
+    --ion-text-color: #{$text-color-dark};
+    --ion-text-color-rgb: color-to-rgb-list(var(--ion-text-color));
 
     --ion-border-color: #3f3f3f;
 
@@ -51,26 +51,30 @@
         --contrast-background: var(--ion-background-color);
     }
 
-    --core-tabs-background: var(--custom-tabs-background, #3a3a3a);
-    --core-tab-background: var(--custom-tab-background, #3a3a3a);
-    --core-tab-color: var(--custom-tab-color, var(--white));
-    --core-tab-border-color: var(--custom-tab-border-color, var(--gray-light));
-
-    core-progress-bar {
-        --text-color: var(--custom-progress-text-color, var(--gray-lighter));
+    ion-action-sheet {
+        .action-sheet-cancel {
+            --button-color: var(--ion-color-danger-tint);
+        }
     }
 
-    --ion-item-background: #1e1e1e;
+    --core-tabs-background: #{$core-tabs-background-dark};
+    --core-tab-background: #{$core-tab-background-dark};
+    --core-tab-color: #{$core-tab-color-dark};
+    --core-tab-border-color: #{$core-tab-border-color-dark};
+
+    core-progress-bar {
+        --text-color: #{$core-progressbar-text-color-dark};
+    }
+
+    --ion-item-background: #{$ion-item-background-dark};
     --ion-item-detail-icon-color: var(--white);
     ion-item-divider {
         --background: var(--black);
         --color: var(--white);
     }
 
-    --core-combobox-background: var(--custom-combobox-background, #3a3a3a);
-
-    --core-login-background: var(--custom-login-background, #3a3a3a);
-    --core-login-text-color: var(--custom-login-text-color, white);
+    --core-login-background: #{$core-login-background-dark};
+    --core-login-text-color: #{$core-login-text-color-dark};
 
     --core-question-correct-color: var(--green-light);
     --core-question-correct-color-bg: var(--green-dark);
@@ -91,6 +95,6 @@
 
     --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-light);
 
-    --addon-forum-border-color: var(--custom-forum-border-color, var(--gray-darker));
-    --addon-forum-highlight-color: var(--custom-forum-highlight-color, var(--gray-dark));
+    --addon-forum-border-color: #{$addon-forum-border-color-dark};
+    --addon-forum-highlight-color: #{$addon-forum-highlight-color-dark};
 }

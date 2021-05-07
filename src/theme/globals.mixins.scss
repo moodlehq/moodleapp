@@ -214,3 +214,15 @@
         }
     }
 }
+
+
+// Color mixins.
+@function get_brightness($color) {
+    @return (red($color) + green($color) + blue($color)) / 3;
+}
+
+@function get_contrast_color($color) {
+    $brightness: get_brightness($color);
+
+    @return if($brightness < 127, white, black);
+}
