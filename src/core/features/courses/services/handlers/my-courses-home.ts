@@ -13,12 +13,11 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
-import { CoreSiteHome } from '@features/sitehome/services/sitehome';
+import { CoreSiteHomeHomeHandler } from '@features/sitehome/services/handlers/sitehome-home';
 import { makeSingleton } from '@singletons';
 import { CoreCourses } from '../courses';
-import { CoreCoursesDashboard } from '../dashboard';
+import { CoreDashboardHomeHandler } from './dashboard-home';
 
 /**
  * Handler to add my courses into home page.
@@ -53,9 +52,10 @@ export class CoreCoursesMyCoursesHomeHandlerService implements CoreMainMenuHomeH
             return false;
         }
 
-        const blocks = await CoreCoursesDashboard.getDashboardBlocks(undefined, siteId);
+        const dashboardEnabled = await CoreDashboardHomeHandler.isEnabledForSite(siteId);
+        const siteHomeEnabled = await CoreSiteHomeHomeHandler.isEnabledForSite(siteId);
 
-        return !CoreBlockDelegate.hasSupportedBlock(blocks)&& !CoreSiteHome.isAvailable(siteId);
+        return !dashboardEnabled && !siteHomeEnabled;
     }
 
     /**
