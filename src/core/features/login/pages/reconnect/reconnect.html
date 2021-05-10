@@ -7,7 +7,7 @@
         <ion-title>{{ 'core.login.reconnect' | translate }}</ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
+<ion-content class="ion-padding" (keydown)="keyDown($event)" (keyup)="keyUp($event)">
     <div class="ion-text-wrap ion-text-center ion-margin-bottom" [ngClass]="{'item-avatar-center': showSiteAvatar}">
         <!-- Show user avatar. -->
         <img *ngIf="showSiteAvatar" [src]="userAvatar" class="large-avatar" core-external-content [siteId]="siteId"
