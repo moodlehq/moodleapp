@@ -39,7 +39,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 import moment from 'moment';
 import { CoreAnimations } from '@components/animations';
 import { CoreError } from '@classes/errors/error';
-import { ModalController, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { ActivatedRoute } from '@angular/router';
@@ -1302,18 +1302,14 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     async viewInfo(): Promise<void> {
         if (this.isGroup) {
             // Display the group information.
-            const modal = await ModalController.create({
+            const userId = await CoreDomUtils.openModal<number>({
                 component: AddonMessagesConversationInfoComponent,
                 componentProps: {
                     conversationId: this.conversationId,
                 },
             });
 
-            await modal.present();
-
-            const result = await modal.onDidDismiss();
-
-            if (typeof result.data != 'undefined') {
+            if (typeof userId != 'undefined') {
                 const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/**/discussion');
 
                 // Open user conversation.
@@ -1321,12 +1317,12 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                     // Notify the left pane to load it, this way the right conversation will be highlighted.
                     CoreEvents.trigger(
                         AddonMessagesProvider.OPEN_CONVERSATION_EVENT,
-                        { userId: result.data },
+                        { userId },
                         this.siteId,
                     );
                 } else {
                     // Open the discussion in a new view.
-                    CoreNavigator.navigateToSitePath('/messages/discussion', { params: { userId: result.data.userId } });
+                    CoreNavigator.navigateToSitePath('/messages/discussion', { params: { userId } });
                 }
             }
         } else {

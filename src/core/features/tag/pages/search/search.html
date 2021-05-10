@@ -18,12 +18,11 @@
                     searchArea="CoreTag"></core-search-box>
             </ion-col>
             <ion-col size="12" size-sm="6" *ngIf="collections && collections.length > 1">
-                <ion-select class="core-button-select ion-text-start" [(ngModel)]="collectionId" (ngModelChange)="searchTags(query)"
-                    [disabled]="searching" interface="popover">
+                <core-combobox [selection]="collectionId" (onChange)="searchTags($event)" [disabled]="searching">
                     <ion-select-option [value]="0">{{ 'core.tag.inalltagcoll' | translate }}</ion-select-option>
                     <ion-select-option *ngFor="let collection of collections" [value]="collection.id">
                         {{ collection.name }}</ion-select-option>
-                </ion-select>
+                </core-combobox>
             </ion-col>
         </ion-row>
     </ion-grid>

@@ -14,9 +14,7 @@ jobs:
       with:
         node-version: '12.x'
     - run: npm ci
-    - run: result=$(find src -type f -iname '*.html' -exec sh -c 'cat {} | tr "\n" " " | grep -Eo "class=\"[^\"]+\"[^>]+class=\"" ' \; | wc -l); test $result -eq 0
     - run: npm run lint
-    - run: npx tslint -c ionic-migration.json -p tsconfig.json
     - run: npm run test:ci
     - run: npm run build:prod
     - run: result=$(npx check-es-compat www/*.js 2> /dev/null | grep -v -E "Array\.prototype\.includes|Promise\.prototype\.finally|String\.prototype\.(matchAll|trimRight)|globalThis" | grep -Po "(?<=error).*?(?=\s+ecmascript)" | wc -l); test $result -eq 0

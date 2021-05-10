@@ -30,6 +30,7 @@
             overflow: hidden;
 
             ion-tab-button {
+                max-width: 100%;
                 ion-label {
                     font-size: 16px;
                     font-weight: 400;
@@ -44,7 +45,8 @@
                 }
             }
 
-            &[aria-selected=true] {
+            &[aria-selected=true],
+            &.selected {
                 color: var(--color-active);
                 border-bottom-color: var(--border-color-active);
                 ion-tab-button {

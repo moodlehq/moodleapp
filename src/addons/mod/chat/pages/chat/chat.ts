@@ -21,7 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { ModalController, Network, NgZone } from '@singletons';
+import { Network, NgZone } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { AddonModChatUsersModalComponent, AddonModChatUsersModalResult } from '../../components/users-modal/users-modal';
@@ -178,32 +178,23 @@ export class AddonModChatChatPage implements OnInit, OnDestroy {
      */
     async showChatUsers(): Promise<void> {
         // Create the toc modal.
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openSideModal<AddonModChatUsersModalResult>({
             component: AddonModChatUsersModalComponent,
             componentProps: {
                 sessionId: this.sessionId,
                 cmId: this.cmId,
             },
-            cssClass: 'core-modal-lateral',
-            showBackdrop: true,
-            backdropDismiss: true,
-            // @todo enterAnimation: 'core-modal-lateral-transition',
-            // @todo leaveAnimation: 'core-modal-lateral-transition',
         });
 
-        await modal.present();
-
-        const result = await modal.onDidDismiss<AddonModChatUsersModalResult>();
-
-        if (result.data) {
-            if (result.data.talkTo) {
-                this.newMessage = `To ${result.data.talkTo}: ` + (this.sendMessageForm?.message || '');
+        if (modalData) {
+            if (modalData.talkTo) {
+                this.newMessage = `To ${modalData.talkTo}: ` + (this.sendMessageForm?.message || '');
             }
-            if (result.data.beepTo) {
-                this.sendMessage('', result.data.beepTo);
+            if (modalData.beepTo) {
+                this.sendMessage('', modalData.beepTo);
             }
 
-            this.users = result.data.users;
+            this.users = modalData.users;
         }
     }
 

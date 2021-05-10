@@ -28,9 +28,10 @@
     }
     &.core-bar-button-image img {
         padding: 0;
-        width: var(--core-toolbar-button-image-width);
-        height: var(--core-toolbar-button-image-width);
-        max-width: var(--core-toolbar-button-image-width);
+        width: var(--core-header-toolbar-button-image-size);
+        height: var(--core-header-toolbar-button-image-size);
+        max-width: var(--core-header-toolbar-button-image-size);
+        max-height: var(--core-header-toolbar-button-image-size);
         border-radius: 50%;
     }
 

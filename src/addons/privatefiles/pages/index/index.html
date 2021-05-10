@@ -14,12 +14,10 @@
 
     <core-loading [hideUntil]="filesLoaded" *ngIf="showPrivateFiles || showSiteFiles">
         <!-- Allow selecting the files to see: private or site. -->
-        <div class="ion-padding" *ngIf="showPrivateFiles && showSiteFiles && !path">
-            <ion-select [(ngModel)]="root" (ngModelChange)="rootChanged()" interface="popover" class="core-button-select">
-                <ion-select-option value="my">{{ 'addon.privatefiles.privatefiles' | translate }}</ion-select-option>
-                <ion-select-option value="site">{{ 'addon.privatefiles.sitefiles' | translate }}</ion-select-option>
-            </ion-select>
-        </div>
+        <core-combobox [selection]="root" (onChange)="rootChanged($event)" *ngIf="showPrivateFiles && showSiteFiles && !path">
+            <ion-select-option value="my">{{ 'addon.privatefiles.privatefiles' | translate }}</ion-select-option>
+            <ion-select-option value="site">{{ 'addon.privatefiles.sitefiles' | translate }}</ion-select-option>
+        </core-combobox>
 
         <!-- Display info about space used and space left. -->
         <ion-card class="core-info-card" *ngIf="userQuota && filesInfo && filesInfo.filecount > 0">

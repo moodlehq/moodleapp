@@ -9,7 +9,7 @@
             </core-format-text>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button *ngIf="displayMenu || mediaFile" [attr.aria-label]="'addon.mod_lesson.lessonmenu' | translate"
+            <ion-button fill="clear" *ngIf="displayMenu || mediaFile" [attr.aria-label]="'addon.mod_lesson.lessonmenu' | translate"
                 (click)="showMenu()">
                 <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
@@ -57,9 +57,13 @@
                     (ngSubmit)="submitQuestion($event)">
 
                     <ion-item-divider class="ion-text-wrap" *ngIf="pageContent">
-                        <core-format-text [component]="component" [componentId]="lesson?.coursemodule" [text]="pageContent"
-                            contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId">
-                        </core-format-text>
+                        <ion-label>
+                            <h2>
+                                <core-format-text [component]="component" [componentId]="lesson?.coursemodule" [text]="pageContent"
+                                    contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId">
+                                </core-format-text>
+                            </h2>
+                        </ion-label>
                     </ion-item-divider>
 
                     <!-- Render a different input depending on the type of the question. -->

@@ -47,10 +47,6 @@ core-format-text {
                     background-color: var(--background);
                     color: var(--color);
                     padding-left: 10px; // RTL
-                    /*@include darkmode() {
-                        color: var(--white);
-                        background-color: $core-dark-item-bg-color;
-                    }*/
                 }
 
                 &:before {
@@ -71,12 +67,16 @@ core-format-text {
 
         &.core-expand-in-fullview {
             .core-show-more {
-                @include push-arrow-color(dedede, true);
+                @include push-arrow-color(626262, true);
                 @include padding-horizontal(null, 18px);
                 @include background-position(end, 0, center);
 
                 background-repeat: no-repeat;
                 background-size: 14px 14px;
+
+                @include darkmode() {
+                    @include push-arrow-color(ffffff, true);
+                }
             }
         }
     }

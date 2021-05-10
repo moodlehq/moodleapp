@@ -31,6 +31,7 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModQuizAutoSave } from '../../classes/auto-save';
 import {
     AddonModQuizNavigationModalComponent,
+    AddonModQuizNavigationModalReturn,
     AddonModQuizNavigationQuestion,
 } from '../../components/navigation-modal/navigation-modal';
 import {
@@ -581,7 +582,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         }
 
         // Create the navigation modal.
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openSideModal<AddonModQuizNavigationModalReturn>({
             component: AddonModQuizNavigationModalComponent,
             componentProps: {
                 navigation: this.navigation,
@@ -589,19 +590,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
                 currentPage: this.attempt?.currentpage,
                 isReview: false,
             },
-            cssClass: 'core-modal-lateral',
-            showBackdrop: true,
-            backdropDismiss: true,
-            // @todo enterAnimation: 'core-modal-lateral-transition',
-            // @todo leaveAnimation: 'core-modal-lateral-transition',
         });
 
-        await modal.present();
-
-        const result = await modal.onWillDismiss();
-
-        if (result.data && result.data.action == AddonModQuizNavigationModalComponent.CHANGE_PAGE) {
-            this.changePage(result.data.page, true, result.data.slot);
+        if (modalData && modalData.action == AddonModQuizNavigationModalComponent.CHANGE_PAGE) {
+            this.changePage(modalData.page!, true, modalData.slot);
         }
     }
 

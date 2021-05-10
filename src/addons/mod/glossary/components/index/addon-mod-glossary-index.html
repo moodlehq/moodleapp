@@ -64,7 +64,7 @@
 
         <ion-list *ngIf="!isSearch && entries.offlineEntries.length > 0">
             <ion-item-divider>
-                <ion-label>{{ 'addon.mod_glossary.entriestobesynced' | translate }}</ion-label>
+                <ion-label><h2>{{ 'addon.mod_glossary.entriestobesynced' | translate }}</h2></ion-label>
             </ion-item-divider>
             <ion-item *ngFor="let entry of entries.offlineEntries" (click)="entries.select(entry)" detail="false" button
                 [attr.aria-current]="entries.getItemAriaCurrent(entry)">
@@ -79,7 +79,7 @@
         <ion-list *ngIf="entries.onlineEntries.length > 0">
             <ng-container *ngFor="let entry of entries.onlineEntries; let index = index">
                 <ion-item-divider *ngIf="getDivider && showDivider(entry, entries.onlineEntries[index - 1])">
-                    {{ getDivider!(entry) }}
+                    <ion-label><h2>{{ getDivider!(entry) }}</h2></ion-label>
                 </ion-item-divider>
 
                 <ion-item button (click)="entries.select(entry)" [attr.aria-current]="entries.getItemAriaCurrent(entry)"

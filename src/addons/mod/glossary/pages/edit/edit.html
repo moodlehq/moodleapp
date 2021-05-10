@@ -46,14 +46,14 @@
                 </ion-textarea>
             </ion-item>
             <ion-item-divider>
-                <ion-label>{{ 'addon.mod_glossary.attachment' | translate }}</ion-label>
+                <ion-label><h2>{{ 'addon.mod_glossary.attachment' | translate }}</h2></ion-label>
             </ion-item-divider>
             <core-attachments [files]="attachments" [component]="component" [componentId]="glossary.coursemodule"
                 [allowOffline]="true">
             </core-attachments>
             <ng-container *ngIf="glossary.usedynalink">
                 <ion-item-divider>
-                    <ion-label>{{ 'addon.mod_glossary.linking' | translate }}</ion-label>
+                    <ion-label><h2>{{ 'addon.mod_glossary.linking' | translate }}</h2></ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap">
                     <ion-label>{{ 'addon.mod_glossary.entryusedynalink' | translate }}</ion-label>

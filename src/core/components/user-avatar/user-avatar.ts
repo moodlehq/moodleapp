@@ -20,6 +20,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreUserProvider, CoreUserBasicData } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
+import { CoreAriaRoleButton } from '@classes/aria-role-button';
 
 /**
  * Component to display a "user avatar".
@@ -36,14 +37,16 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     @Input() user?: CoreUserWithAvatar;
     // The following params will override the ones in user object.
     @Input() profileUrl?: string;
-    @Input() protected linkProfile = true; // Avoid linking to the profile if wanted.
+    @Input() linkProfile = true; // Avoid linking to the profile if wanted.
     @Input() fullname?: string;
-    @Input() protected userId?: number; // If provided or found it will be used to link the image to the profile.
-    @Input() protected courseId?: number;
+    @Input() userId?: number; // If provided or found it will be used to link the image to the profile.
+    @Input() courseId?: number;
     @Input() checkOnline = false; // If want to check and show online status.
     @Input() extraIcon?: string; // Extra icon to show near the avatar.
 
     avatarUrl?: string;
+
+    buttonAction: CoreUserAvatarButton;
 
     // Variable to check if we consider this user online or not.
     // @TODO: Use setting when available (see MDL-63972) so we can use site setting.
@@ -52,6 +55,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     protected pictureObserver: CoreEventObserver;
 
     constructor() {
+
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         this.pictureObserver = CoreEvents.on(
@@ -63,12 +67,15 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
             },
             CoreSites.getCurrentSiteId(),
         );
+
+        this.buttonAction = new CoreUserAvatarButton(this);
     }
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
+
         this.setFields();
     }
 
@@ -130,19 +137,14 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
      * @param event Click event.
      */
     gotoProfile(event: Event): void {
-        if (!this.linkProfile || !this.userId) {
+        if (!this.buttonAction.isAllowed()) {
             return;
         }
 
         event.preventDefault();
         event.stopPropagation();
 
-        CoreNavigator.navigateToSitePath('user', {
-            params: {
-                userId: this.userId,
-                courseId: this.courseId,
-            },
-        });
+        this.buttonAction.click();
     }
 
     /**
@@ -150,6 +152,32 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
      */
     ngOnDestroy(): void {
         this.pictureObserver.off();
+    }
+
+}
+
+/**
+ * Helper class to manage rol button.
+ */
+class CoreUserAvatarButton extends CoreAriaRoleButton<CoreUserAvatarComponent> {
+
+    /**
+     * @inheritdoc
+     */
+    click(): void {
+        CoreNavigator.navigateToSitePath('user', {
+            params: {
+                userId: this.componentInstance.userId,
+                courseId: this.componentInstance.courseId,
+            },
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    isAllowed(): boolean {
+        return this.componentInstance.linkProfile && !!this.componentInstance.userId;
     }
 
 }

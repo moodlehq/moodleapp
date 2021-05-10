@@ -13,7 +13,7 @@
     <core-loading [hideUntil]="userLoaded">
         <ion-list *ngIf="user">
             <ion-item-group *ngIf="hasContact">
-                <ion-item-divider><ion-label>{{ 'core.user.contact' | translate}}</ion-label></ion-item-divider>
+                <ion-item-divider><ion-label><h2>{{ 'core.user.contact' | translate}}</h2></ion-label></ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngIf="user.email">
                     <ion-label>
                         <h2>{{ 'core.user.email' | translate }}</h2>
@@ -60,7 +60,7 @@
                 </ion-item>
             </ion-item-group>
             <ion-item-group *ngIf="hasDetails">
-                <ion-item-divider><ion-label>{{ 'core.userdetails' | translate}}</ion-label></ion-item-divider>
+                <ion-item-divider><ion-label><h2>{{ 'core.userdetails' | translate}}</h2></ion-label></ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngIf="user.url">
                     <ion-label>
                         <h2>{{ 'core.user.webpage' | translate}}</h2>
@@ -80,7 +80,7 @@
                 </core-user-profile-field>
             </ion-item-group>
             <ion-item-group *ngIf="user.description">
-                <ion-item-divider><ion-label>{{ 'core.user.description' | translate}}</ion-label></ion-item-divider>
+                <ion-item-divider><ion-label><h2>{{ 'core.user.description' | translate}}</h2></ion-label></ion-item-divider>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <p><core-format-text [text]="user.description" contextLevel="user" [contextInstanceId]="user.id">

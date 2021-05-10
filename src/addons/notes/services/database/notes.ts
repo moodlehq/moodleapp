@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CoreSiteSchema } from '@services/sites';
+import { AddonNotesPublishState } from '../notes';
 
 /**
  * Database variables for AddonNotesOfflineProvider.
@@ -83,7 +84,7 @@ export type AddonNotesDBRecord = {
     content: string; // Primary key.
     created: number; // Primary key.
     courseid: number;
-    publishstate: string;
+    publishstate: AddonNotesPublishState;
     format: number;
     lastmodified: number;
 };

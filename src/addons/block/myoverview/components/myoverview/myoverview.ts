@@ -414,8 +414,11 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
     /**
      * The selected courses filter have changed.
+     *
+     * @param filter New filter
      */
-    selectedChanged(): void {
+    selectedChanged(filter: string): void {
+        this.selectedFilter = filter;
         this.setCourseFilter(this.selectedFilter);
     }
 

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { AddonNotesAddComponent } from '@addons/notes/components/add/add-modal';
-import { AddonNotes, AddonNotesNoteFormatted } from '@addons/notes/services/notes';
+import { AddonNotesAddComponent, AddonNotesAddModalReturn } from '@addons/notes/components/add/add-modal';
+import { AddonNotes, AddonNotesNoteFormatted, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { AddonNotesOffline } from '@addons/notes/services/notes-offline';
 import { AddonNotesSync, AddonNotesSyncProvider } from '@addons/notes/services/notes-sync';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
@@ -26,7 +26,6 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { ModalController } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
@@ -43,7 +42,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
 
     courseId: number;
     userId?: number;
-    type = 'course';
+    type: AddonNotesPublishState = 'course';
     refreshIcon = CoreConstants.ICON_LOADING;
     syncIcon = CoreConstants.ICON_LOADING;
     notes: AddonNotesNoteFormatted[] = [];
@@ -157,8 +156,11 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
 
     /**
      * Function called when the type has changed.
+     *
+     * @param type New type.
      */
-    async typeChanged(): Promise<void> {
+    async typeChanged(type: AddonNotesPublishState): Promise<void> {
+        this.type = type;
         this.notesLoaded = false;
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
@@ -176,7 +178,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         e.preventDefault();
         e.stopPropagation();
 
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openModal<AddonNotesAddModalReturn>({
             component: AddonNotesAddComponent,
             componentProps: {
                 userId: this.userId,
@@ -185,22 +187,17 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
             },
         });
 
-        await modal.present();
+        if (typeof modalData != 'undefined') {
 
-        const result = await modal.onDidDismiss();
-
-        if (typeof result.data != 'undefined') {
-
-            if (result.data.sent && result.data.type) {
-                if (result.data.type != this.type) {
-                    this.type = result.data.type;
+            if (modalData.sent && modalData.type) {
+                if (modalData.type != this.type) {
+                    this.type = modalData.type;
                     this.notesLoaded = false;
                 }
 
                 this.refreshNotes(false);
-            } else if (result.data.type && result.data.type != this.type) {
-                this.type = result.data.type;
-                this.typeChanged();
+            } else if (modalData.type && modalData.type != this.type) {
+                this.typeChanged(modalData.type);
             }
         }
     }

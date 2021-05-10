@@ -38,7 +38,7 @@
 <ng-template #resultsTemplate let-item="item">
     <ng-container *ngIf="item.results.length > 0">
         <ion-item-divider class="ion-text-wrap">
-            <ion-label>{{ item.titleString | translate }}</ion-label>
+            <ion-label><h2>{{ item.titleString | translate }}</h2></ion-label>
         </ion-item-divider>
 
         <!-- List of results -->

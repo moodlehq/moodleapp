@@ -50,7 +50,7 @@ export class AddonModQuizNavigationModalComponent {
      * @param slot Slot of the question to scroll to.
      */
     loadPage(page: number, slot?: number): void {
-        ModalController.dismiss({
+        ModalController.dismiss(<AddonModQuizNavigationModalReturn>{
             action: AddonModQuizNavigationModalComponent.CHANGE_PAGE,
             page,
             slot,
@@ -61,7 +61,7 @@ export class AddonModQuizNavigationModalComponent {
      * Switch mode in review.
      */
     switchMode(): void {
-        ModalController.dismiss({
+        ModalController.dismiss(<AddonModQuizNavigationModalReturn>{
             action: AddonModQuizNavigationModalComponent.SWITCH_MODE,
         });
     }
@@ -73,4 +73,10 @@ export class AddonModQuizNavigationModalComponent {
  */
 export type AddonModQuizNavigationQuestion = CoreQuestionQuestionParsed & {
     stateClass?: string;
+};
+
+export type AddonModQuizNavigationModalReturn = {
+    action: number;
+    page?: number;
+    slot?: number;
 };

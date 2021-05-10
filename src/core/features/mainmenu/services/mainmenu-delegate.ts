@@ -89,6 +89,11 @@ export interface CoreMainMenuHandlerToDisplay extends CoreDelegateToDisplay, Cor
      * Hide tab. Used then resizing.
      */
     hide?: boolean;
+
+    /**
+     * Used to control tabs.
+     */
+    id?: string;
 }
 
 /**

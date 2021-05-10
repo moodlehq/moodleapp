@@ -45,7 +45,8 @@ import { CoreTabBase, CoreTabsBaseComponent } from '@classes/tabs';
  * Tab contents will only be shown if that tab is selected.
  *
  * @todo: Test RTL and tab history.
- * @todo: This should behave like the split-view in relation to routing (maybe we could reuse some code from CoreItemsListManager).
+ * @todo: This should behave like the split-view in relation to routing (maybe we could reuse some code from
+ *  CorePageItemsListManager).
  */
 @Component({
     selector: 'core-tabs-outlet',

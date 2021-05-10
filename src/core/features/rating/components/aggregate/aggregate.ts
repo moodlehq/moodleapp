@@ -21,7 +21,7 @@ import {
     CoreRatingProvider,
 } from '@features/rating/services/rating';
 import { CoreSites } from '@services/sites';
-import { ModalController } from '@singletons';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreRatingRatingsComponent } from '../ratings/ratings';
 
@@ -117,7 +117,7 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        const modal = await ModalController.create({
+        await CoreDomUtils.openModal({
             component: CoreRatingRatingsComponent,
             componentProps: {
                 contextLevel: this.contextLevel,
@@ -129,8 +129,6 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
                 courseId: this.courseId,
             },
         });
-
-        await modal.present();
     }
 
     /**

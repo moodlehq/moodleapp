@@ -27,7 +27,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { ModalController, PopoverController, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Md5 } from 'ts-md5';
 import { AddonModWikiPageDBRecord } from '../../services/database/wiki';
@@ -51,7 +51,7 @@ import {
     AddonModWikiSyncWikiResult,
     AddonModWikiSyncWikiSubwiki,
 } from '../../services/wiki-sync';
-import { AddonModWikiMapModalComponent } from '../map/map';
+import { AddonModWikiMapModalComponent, AddonModWikiMapModalReturn } from '../map/map';
 import { AddonModWikiSubwikiPickerComponent } from '../subwiki-picker/subwiki-picker';
 
 /**
@@ -576,7 +576,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      */
     async openMap(): Promise<void> {
         // Create the toc modal.
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openSideModal<AddonModWikiMapModalReturn>({
             component: AddonModWikiMapModalComponent,
             componentProps: {
                 pages: this.subwikiPages,
@@ -585,23 +585,14 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 courseId: this.courseId,
                 selectedTitle: this.currentPageObj && this.currentPageObj.title,
             },
-            cssClass: 'core-modal-lateral',
-            showBackdrop: true,
-            backdropDismiss: true,
-            // @todo enterAnimation: 'core-modal-lateral-transition',
-            // @todo leaveAnimation: 'core-modal-lateral-transition',
         });
 
-        await modal.present();
-
-        const result = await modal.onDidDismiss();
-
-        if (result.data) {
-            if (result.data.type == 'home') {
+        if (modalData) {
+            if (modalData.home) {
                 // Go back to the initial page of the wiki.
-                CoreNavigator.navigateToSitePath(result.data.goto);
-            } else {
-                this.goToPage(result.data.goto);
+                CoreNavigator.navigateToSitePath(modalData.home);
+            } else if (modalData.page) {
+                this.goToPage(modalData.page);
             }
         }
 
@@ -803,7 +794,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @param event Event.
      */
     async showSubwikiPicker(event: MouseEvent): Promise<void> {
-        const popover = await PopoverController.create({
+        const popoverData = await CoreDomUtils.openPopover<AddonModWikiSubwiki>({
             component: AddonModWikiSubwikiPickerComponent,
             componentProps: {
                 subwikis: this.subwikiData.subwikis,
@@ -812,12 +803,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             event,
         });
 
-        await popover.present();
-
-        const result = await popover.onDidDismiss();
-
-        if (result.data) {
-            this.goToSubwiki(result.data.id, result.data.userid, result.data.groupid, result.data.canedit);
+        if (popoverData) {
+            this.goToSubwiki(popoverData.id, popoverData.userid, popoverData.groupid, popoverData.canedit);
         }
     }
 

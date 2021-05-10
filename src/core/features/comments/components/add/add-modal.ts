@@ -69,7 +69,7 @@ export class CoreCommentsAddComponent {
                 CoreSites.getCurrentSiteId(),
             );
 
-            ModalController.dismiss({ comment: commentsResponse }).finally(() => {
+            ModalController.dismiss(commentsResponse).finally(() => {
                 CoreDomUtils.showToast(
                     commentsResponse ? 'core.comments.eventcommentcreated' : 'core.datastoredoffline',
                     true,

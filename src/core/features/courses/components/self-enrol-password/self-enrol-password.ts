@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { ModalController, NavParams } from '@ionic/angular';
+import { NavParams } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
+import { ModalController } from '@singletons';
 import { CoreForms } from '@singletons/form';
 
 /**
@@ -30,7 +31,6 @@ export class CoreCoursesSelfEnrolPasswordComponent {
     password = '';
 
     constructor(
-        protected modalCtrl: ModalController,
         navParams: NavParams,
     ) {
         this.password = navParams.get('password') || '';
@@ -42,7 +42,7 @@ export class CoreCoursesSelfEnrolPasswordComponent {
     close(): void {
         CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
-        this.modalCtrl.dismiss();
+        ModalController.dismiss();
     }
 
     /**
@@ -57,7 +57,7 @@ export class CoreCoursesSelfEnrolPasswordComponent {
 
         CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
-        this.modalCtrl.dismiss(this.password);
+        ModalController.dismiss(this.password);
     }
 
 }

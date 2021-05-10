@@ -26,7 +26,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreWSError } from '@classes/errors/wserror';
-import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, QRScanner, Translate, ModalController } from '@singletons';
+import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, QRScanner, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreViewerQRScannerComponent } from '@features/viewer/components/qr-scanner/qr-scanner';
@@ -1515,20 +1515,14 @@ export class CoreUtilsProvider {
      * @param title Title of the modal. Defaults to "QR reader".
      * @return Promise resolved with the captured text or undefined if cancelled or error.
      */
-    async scanQR(title?: string): Promise<string> {
-        const modal = await ModalController.create({
+    async scanQR(title?: string): Promise<string | undefined> {
+        return await CoreDomUtils.openModal<string>({
             component: CoreViewerQRScannerComponent,
             cssClass: 'core-modal-fullscreen',
             componentProps: {
                 title,
             },
         });
-
-        await modal.present();
-
-        const result = await modal.onWillDismiss();
-
-        return result.data;
     }
 
     /**

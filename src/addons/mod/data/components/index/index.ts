@@ -29,7 +29,6 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
-import { ModalController } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     AddonModDataProvider,
@@ -376,7 +375,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * Display the chat users modal.
      */
     async showSearch(): Promise<void> {
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openModal<AddonModDataSearchDataParams>({
             component: AddonModDataSearchComponent,
             componentProps: {
                 search: this.search,
@@ -385,12 +384,9 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             },
         });
 
-        await modal.present();
-
-        const result = await modal.onDidDismiss();
         // Add data to search object.
-        if (result.data) {
-            this.search = result.data;
+        if (modalData) {
+            this.search = modalData;
             this.searchEntries(0);
         }
     }

@@ -27,7 +27,7 @@ import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { PopoverController, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     AddonModGlossary,
@@ -405,7 +405,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * @param event Event.
      */
     async openModePicker(event: MouseEvent): Promise<void> {
-        const popover = await PopoverController.create({
+        const mode = await CoreDomUtils.openPopover<AddonModGlossaryFetchMode>({
             component: AddonModGlossaryModePickerPopoverComponent,
             componentProps: {
                 browseModes: this.glossary!.browsemodes,
@@ -414,11 +414,6 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             event,
         });
 
-        await popover.present();
-
-        const result = await popover.onDidDismiss<AddonModGlossaryFetchMode>();
-
-        const mode = result.data;
         if (mode) {
             if (mode !== this.fetchMode) {
                 this.changeFetchMode(mode);

@@ -15,6 +15,8 @@
 import { Component, Optional, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { IonContent } from '@ionic/angular';
+import { ModalOptions } from '@ionic/core';
+
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import {
     AddonModForum,
@@ -26,7 +28,7 @@ import {
     AddonModForumReplyDiscussionData,
 } from '@addons/mod/forum/services/forum';
 import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '@addons/mod/forum/services/forum-offline';
-import { ModalController, PopoverController, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreGroups, CoreGroupsProvider } from '@services/groups';
@@ -80,18 +82,20 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     sortOrders: AddonModForumSortOrder[] = [];
     selectedSortOrder: AddonModForumSortOrder | null = null;
     canPin = false;
+    trackPosts = false;
+    hasOfflineRatings = false;
+    sortOrderSelectorModalOptions: ModalOptions = {
+        component: AddonModForumSortOrderSelectorComponent,
+    };
 
     protected syncEventName = AddonModForumSyncProvider.AUTO_SYNCED;
     protected page = 0;
-    trackPosts = false;
     protected usesGroups = false;
     protected syncManualObserver?: CoreEventObserver; // It will observe the sync manual event.
     protected replyObserver?: CoreEventObserver;
     protected newDiscObserver?: CoreEventObserver;
     protected viewDiscObserver?: CoreEventObserver;
     protected changeDiscObserver?: CoreEventObserver;
-
-    hasOfflineRatings = false;
     protected ratingOfflineObserver?: CoreEventObserver;
     protected ratingSyncObserver?: CoreEventObserver;
 
@@ -116,6 +120,10 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.addDiscussionText = Translate.instant('addon.mod_forum.addanewdiscussion');
         this.sortingAvailable = AddonModForum.isDiscussionListSortingAvailable();
         this.sortOrders = AddonModForum.getAvailableSortOrders();
+
+        this.sortOrderSelectorModalOptions.componentProps = {
+            sortOrders: this.sortOrders,
+        };
 
         await super.ngOnInit();
 
@@ -516,6 +524,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         const value = await getSortOrder();
 
         this.selectedSortOrder = this.sortOrders.find(sortOrder => sortOrder.value === value) || this.sortOrders[0];
+        this.sortOrderSelectorModalOptions.componentProps!.selected = this.selectedSortOrder.value;
     }
 
     /**
@@ -621,35 +630,33 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     }
 
     /**
-     * Display the sort order selector modal.
+     * Changes the sort order.
+     *
+     * @param sortOrder Sort order new data.
      */
-    async showSortOrderSelector(): Promise<void> {
-        if (!this.sortingAvailable) {
-            return;
-        }
-
-        const modal = await ModalController.create({
-            component: AddonModForumSortOrderSelectorComponent,
-            componentProps: {
-                sortOrders: this.sortOrders,
-                selected: this.selectedSortOrder!.value,
-            },
-        });
-
-        await modal.present();
-
-        const result = await modal.onDidDismiss<AddonModForumSortOrder>();
-
-        if (result.data && result.data.value != this.selectedSortOrder?.value) {
-            this.selectedSortOrder = result.data;
+    async setSortOrder(sortOrder: AddonModForumSortOrder): Promise<void> {
+        if (sortOrder.value != this.selectedSortOrder?.value) {
+            this.selectedSortOrder = sortOrder;
+            this.sortOrderSelectorModalOptions.componentProps!.selected = this.selectedSortOrder.value;
             this.page = 0;
 
             try {
-                await CoreUser.setUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER, result.data.value.toFixed(0));
+                await CoreUser.setUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER, sortOrder.value.toFixed(0));
                 await this.showLoadingAndFetch();
             } catch (error) {
                 CoreDomUtils.showErrorModalDefault(error, 'Error updating preference.');
             }
+        }
+    }
+
+    /**
+     * Display the sort order selector modal.
+     */
+    async showSortOrderSelector(): Promise<void> {
+        const modalData = await CoreDomUtils.openModal<AddonModForumSortOrder>(this.sortOrderSelectorModalOptions);
+
+        if (modalData) {
+            this.setSortOrder(modalData);
         }
     }
 
@@ -660,7 +667,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param discussion Discussion.
      */
     async showOptionsMenu(event: Event, discussion: AddonModForumDiscussion): Promise<void> {
-        const popover = await PopoverController.create({
+        const popoverData = await CoreDomUtils.openPopover<{ action?: string; value: boolean }>({
             component: AddonModForumDiscussionOptionsMenuComponent,
             componentProps: {
                 discussion,
@@ -670,20 +677,16 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             event,
         });
 
-        await popover.present();
-
-        const result = await popover.onDidDismiss<{ action?: string; value: boolean }>();
-
-        if (result.data && result.data.action) {
-            switch (result.data.action) {
+        if (popoverData && popoverData.action) {
+            switch (popoverData.action) {
                 case 'lock':
-                    discussion.locked = result.data.value;
+                    discussion.locked = popoverData.value;
                     break;
                 case 'pin':
-                    discussion.pinned = result.data.value;
+                    discussion.pinned = popoverData.value;
                     break;
                 case 'star':
-                    discussion.starred = result.data.value;
+                    discussion.starred = popoverData.value;
                     break;
                 default:
                     break;

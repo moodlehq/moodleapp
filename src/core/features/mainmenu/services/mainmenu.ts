@@ -179,7 +179,7 @@ export class CoreMainMenuProvider {
      *
      * @return Tabs placement including side value.
      */
-    getTabPlacement(): string {
+    getTabPlacement(): 'bottom' | 'side' {
         const tablet = !!(window.innerWidth && window.innerWidth >= 576 && (window.innerHeight >= 576 ||
                 ((CoreApp.isKeyboardVisible() || CoreApp.isKeyboardOpening()) && window.innerHeight >= 200)));
 

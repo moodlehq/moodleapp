@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonNotes } from '@addons/notes/services/notes';
+import { AddonNotes, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { Component, ViewChild, ElementRef, Input } from '@angular/core';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
@@ -32,7 +32,7 @@ export class AddonNotesAddComponent {
 
     @Input() protected courseId!: number;
     @Input() protected userId?: number;
-    @Input() type = 'personal';
+    @Input() type: AddonNotesPublishState = 'personal';
     text = '';
     processing = false;
 
@@ -56,7 +56,7 @@ export class AddonNotesAddComponent {
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
 
-            ModalController.dismiss({ type: this.type, sent: true }).finally(() => {
+            ModalController.dismiss(<AddonNotesAddModalReturn>{ type: this.type, sent: true }).finally(() => {
                 CoreDomUtils.showToast(sent ? 'addon.notes.eventnotecreated' : 'core.datastoredoffline', true, 3000);
             });
         } catch (error){
@@ -73,7 +73,12 @@ export class AddonNotesAddComponent {
     closeModal(): void {
         CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
-        ModalController.dismiss({ type: this.type });
+        ModalController.dismiss(<AddonNotesAddModalReturn>{ type: this.type });
     }
 
 }
+
+export type AddonNotesAddModalReturn = {
+    type: AddonNotesPublishState;
+    sent?: boolean;
+};

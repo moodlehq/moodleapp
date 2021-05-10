@@ -762,21 +762,12 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
     async showMenu(): Promise<void> {
         this.menuShown = true;
 
-        const menuModal = await ModalController.create({
+        await CoreDomUtils.openSideModal({
             component: AddonModLessonMenuModalPage,
             componentProps: {
                 pageInstance: this,
             },
-            cssClass: 'core-modal-lateral',
-            showBackdrop: true,
-            backdropDismiss: true,
-            // @todo enterAnimation: 'core-modal-lateral-transition',
-            // leaveAnimation: 'core-modal-lateral-transition',
         });
-
-        await menuModal.present();
-
-        await menuModal.onWillDismiss();
 
         this.menuShown = false;
     }

@@ -3,7 +3,7 @@
         <ion-title *ngIf="title">{{ title | translate }}</ion-title>
 
         <ion-buttons slot="end">
-            <ion-button (click)="cancel()">{{ 'core.cancel' | translate }}</ion-button>
+            <ion-button fill="clear" (click)="cancel()">{{ 'core.cancel' | translate }}</ion-button>
             <ion-button *ngIf="hasCaptured" (click)="done()">{{ 'core.done' | translate }}</ion-button>
         </ion-buttons>
     </ion-toolbar>

@@ -20,8 +20,9 @@ import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { ModalController, Platform } from '@singletons';
+import { Platform } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { AddonModWorkshopModuleHandlerService } from '../../services/handlers/module';
@@ -387,7 +388,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      */
     async viewPhaseInfo(): Promise<void> {
         if (this.phases) {
-            const modal = await ModalController.create({
+            const modalData = await CoreDomUtils.openModal<boolean>({
                 component: AddonModWorkshopPhaseInfoComponent,
                 componentProps: {
                     phases: CoreUtils.objectToArray(this.phases),
@@ -396,10 +397,8 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
                     showSubmit: this.showSubmit,
                 },
             });
-            await modal.present();
 
-            const result = await modal.onDidDismiss();
-            if (result.data === true) {
+            if (modalData === true) {
                 this.gotoSubmit();
             }
         }

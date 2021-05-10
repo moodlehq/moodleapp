@@ -20,7 +20,6 @@ import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
-import { ModalController } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModScormDataModel12 } from '../../classes/data-model-12';
 import { AddonModScormTocComponent } from '../../components/toc/toc';
@@ -486,7 +485,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * Show the TOC.
      */
     async openToc(): Promise<void> {
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openSideModal<AddonModScormScoWithData>({
             component: AddonModScormTocComponent,
             componentProps: {
                 toc: this.toc,
@@ -497,19 +496,10 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
                 accessInfo: this.accessInfo,
                 mode: this.mode,
             },
-            cssClass: 'core-modal-lateral',
-            showBackdrop: true,
-            backdropDismiss: true,
-            // @todo enterAnimation: 'core-modal-lateral-transition',
-            // leaveAnimation: 'core-modal-lateral-transition'
         });
 
-        await modal.present();
-
-        const result = await modal.onDidDismiss();
-
-        if (result.data) {
-            this.loadSco(result.data);
+        if (modalData) {
+            this.loadSco(modalData);
         }
     }
 

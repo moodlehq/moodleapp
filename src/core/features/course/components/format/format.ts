@@ -27,7 +27,7 @@ import {
     ViewChild,
     ElementRef,
 } from '@angular/core';
-
+import { ModalOptions } from '@ionic/core';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
@@ -49,7 +49,6 @@ import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreBlockCourseBlocksComponent } from '@features/block/components/course-blocks/course-blocks';
-import { ModalController } from '@singletons';
 import { CoreCourseSectionSelectorComponent } from '../section-selector/section-selector';
 
 /**
@@ -104,6 +103,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     hasSeveralSections?: boolean;
     imageThumb?: string;
     progress?: number;
+    sectionSelectorModalOptions: ModalOptions = {
+        component: CoreCourseSectionSelectorComponent,
+    };
 
     protected sectionStatusObserver?: CoreEventObserver;
     protected selectTabObserver?: CoreEventObserver;
@@ -122,6 +124,12 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Component being initialized.
      */
     ngOnInit(): void {
+
+        this.sectionSelectorModalOptions.componentProps = {
+            course: this.course,
+            sections: this.sections,
+        };
+
         // Listen for section status changes.
         this.sectionStatusObserver = CoreEvents.on(
             CoreEvents.SECTION_STATUS_CHANGED,
@@ -194,6 +202,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (changes.sections && this.sections) {
+            this.sectionSelectorModalOptions.componentProps!.sections = this.sections;
             this.treatSections(this.sections);
         }
 
@@ -342,21 +351,11 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         this.sectionSelectorExpanded = true;
 
-        const modal = await ModalController.create({
-            component: CoreCourseSectionSelectorComponent,
-            componentProps: {
-                course: this.course,
-                sections: this.sections,
-                selected: this.selectedSection,
-            },
-        });
-        await modal.present();
-
-        const result = await modal.onWillDismiss();
+        const data = await CoreDomUtils.openModal<CoreCourseSection>(this.sectionSelectorModalOptions);
 
         this.sectionSelectorExpanded = false;
-        if (result?.data) {
-            this.sectionChanged(result?.data);
+        if (data) {
+            this.sectionChanged(data);
         }
     }
 
@@ -368,6 +367,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     sectionChanged(newSection: CoreCourseSection): void {
         const previousValue = this.selectedSection;
         this.selectedSection = newSection;
+        this.sectionSelectorModalOptions.componentProps!.selected = this.selectedSection;
         this.data.section = this.selectedSection;
 
         if (newSection.id != this.allSectionsId) {

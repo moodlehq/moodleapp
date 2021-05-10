@@ -30,7 +30,7 @@ import {
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import { CoreNavigator } from '@services/navigator';
-import { ModalController, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
@@ -279,19 +279,15 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             content: this.offlineComment ? this.offlineComment!.content : '',
         };
 
-        const modal = await ModalController.create({
+        const comment = await CoreDomUtils.openModal<CoreCommentsDataWithUser>({
             component: CoreCommentsAddComponent,
             componentProps: params,
         });
 
-        await modal.present();
-
-        const result = await modal.onDidDismiss();
-
-        if (result?.data?.comment) {
+        if (comment) {
             this.invalidateComments();
 
-            const addedComments = await this.loadCommentProfile(result.data.comment);
+            const addedComments = await this.loadCommentProfile(comment);
             // Add the comment to the top.
             this.comments = [addedComments].concat(this.comments);
             this.canDeleteComments = this.addDeleteCommentsAvailable;
@@ -305,7 +301,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 countChange: 1,
             }, CoreSites.getCurrentSiteId());
 
-        } else if (result?.data?.comment === false) {
+        } else if (comment === false) {
             // Comments added in offline mode.
             return this.loadOfflineData();
         }

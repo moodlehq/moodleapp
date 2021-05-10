@@ -28,7 +28,7 @@
         </ion-card>
         <ion-card *ngIf="completion && tracked">
             <ion-item-divider>
-                <ion-label>{{ 'addon.coursecompletion.requiredcriteria' | translate }}</ion-label>
+                <ion-label><h2>{{ 'addon.coursecompletion.requiredcriteria' | translate }}</h2></ion-label>
             </ion-item-divider>
             <ion-item class="ion-hide-md-up ion-text-wrap" *ngFor="let criteria of completion.completions">
                 <ion-label>
@@ -71,7 +71,7 @@
         </ion-card>
         <ion-card *ngIf="showSelfComplete && tracked">
             <ion-item-divider>
-                <ion-label>{{ 'addon.coursecompletion.manualselfcompletion' | translate }}</ion-label>
+                <ion-label><h2>{{ 'addon.coursecompletion.manualselfcompletion' | translate }}</h2></ion-label>
             </ion-item-divider>
             <ion-item>
                 <ion-label>

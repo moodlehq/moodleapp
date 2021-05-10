@@ -34,10 +34,9 @@
     </core-context-menu>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" class="core-loading-center">
-    <div class="ion-padding safe-padding-horizontal" [hidden]="showFilter || !showSelectorFilter">
+    <div class="safe-padding-horizontal" [hidden]="showFilter || !showSelectorFilter">
         <!-- "Time" selector. -->
-        <ion-select class="core-button-select ion-text-start" [title]="'core.show' | translate" [(ngModel)]="selectedFilter"
-            (ngModelChange)="selectedChanged()" interface="popover">
+        <core-combobox [label]="'core.show' | translate" [selection]="selectedFilter" (onChange)="selectedChanged($event)">
             <ion-select-option value="allincludinghidden" *ngIf="showFilters.allincludinghidden != 'hidden'">
                 {{ 'addon.block_myoverview.allincludinghidden' | translate }}
             </ion-select-option>
@@ -66,7 +65,7 @@
             <ion-select-option value="hidden" *ngIf="showFilters.hidden != 'hidden'" [disabled]="showFilters.hidden == 'disabled'">
                 {{ 'addon.block_myoverview.hiddencourses' | translate }}
             </ion-select-option>
-        </ion-select>
+        </core-combobox>
     </div>
 
     <!-- Filter courses. -->

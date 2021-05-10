@@ -34,7 +34,7 @@ import { CoreCategoryData, CoreCourses, CoreEnrolledCourseData } from '@features
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { AddonCalendarFilterPopoverComponent } from '../../components/filter/filter';
 import moment from 'moment';
-import { Network, NgZone, PopoverController } from '@singletons';
+import { Network, NgZone } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -535,7 +535,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * @param event Event.
      */
     async openFilter(event: MouseEvent): Promise<void> {
-        const popover = await PopoverController.create({
+        await CoreDomUtils.openPopover({
             component: AddonCalendarFilterPopoverComponent,
             componentProps: {
                 courses: this.courses,
@@ -543,7 +543,6 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             },
             event,
         });
-        await popover.present();
     }
 
     /**

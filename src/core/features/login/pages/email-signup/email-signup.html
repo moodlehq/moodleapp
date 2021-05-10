@@ -7,7 +7,7 @@
         <ion-title>{{ 'core.login.newaccount' | translate }}</ion-title>
 
         <ion-buttons slot="end">
-            <ion-button *ngIf="authInstructions" (click)="showAuthInstructions()"
+            <ion-button fill="clear" *ngIf="authInstructions" (click)="showAuthInstructions()"
                 [attr.aria-label]="'core.login.instructions' | translate">
                 <ion-icon slot="icon-only" name="far-question-circle" aria-hidden="true"></ion-icon>
             </ion-button>
@@ -90,7 +90,7 @@
 
             <!-- Username and password. -->
             <ion-item-divider class="ion-text-wrap">
-                <ion-label>{{ 'core.login.createuserandpass' | translate }}</ion-label>
+                <ion-label><h3>{{ 'core.login.createuserandpass' | translate }}</h3></ion-label>
             </ion-item-divider>
             <ion-item class="ion-text-wrap">
                 <ion-label position="stacked">
@@ -119,7 +119,7 @@
             <!-- More details. -->
             <ion-item-divider class="ion-text-wrap">
                 <ion-label>
-                    {{ 'core.login.supplyinfo' | translate }}
+                    <h3>{{ 'core.login.supplyinfo' | translate }}</h3>
                 </ion-label>
             </ion-item-divider>
             <ion-item class="ion-text-wrap">
@@ -169,7 +169,7 @@
             <!-- Other categories. -->
             <ng-container *ngFor="let category of categories">
                 <ion-item-divider class="ion-text-wrap">
-                    <ion-label>{{ category.name }}</ion-label>
+                    <ion-label><h3>{{ category.name }}</h3></ion-label>
                 </ion-item-divider>
                 <core-user-profile-field *ngFor="let field of category.fields" [field]="field" [edit]="true" [signup]="true"
                     registerAuth="email" [form]="signupForm"></core-user-profile-field>
@@ -179,7 +179,7 @@
             <ng-container *ngIf="settings.recaptchapublickey">
                 <ion-item-divider class="ion-text-wrap">
                     <ion-label>
-                        <span [core-mark-required]="true">{{ 'core.login.security_question' | translate }}</span>
+                        <h3><span [core-mark-required]="true">{{ 'core.login.security_question' | translate }}</span></h3>
                     </ion-label>
                 </ion-item-divider>
                 <core-recaptcha [publicKey]="settings.recaptchapublickey" [model]="captcha" [siteUrl]="siteUrl"></core-recaptcha>
@@ -188,7 +188,7 @@
             <!-- Site policy (if any). -->
             <ng-container *ngIf="settings.sitepolicy">
                 <ion-item-divider class="ion-text-wrap">
-                    <ion-label>{{ 'core.login.policyagreement' | translate }}</ion-label>
+                    <ion-label><h3>{{ 'core.login.policyagreement' | translate }}</h3></ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
@@ -217,9 +217,9 @@
     <ion-list *ngIf="allRequiredSupported && isMinor">
         <ion-item-divider class="ion-text-wrap">
             <ion-label>
-                <p *ngIf="siteName" class="item-heading ion-padding">
+                <h3 *ngIf="siteName" class="item-heading ion-padding">
                     <core-format-text [text]="siteName" [filter]="false"></core-format-text>
-                </p>
+                </h3>
             </ion-label>
         </ion-item-divider>
         <ion-item class="ion-text-wrap" lines="none">

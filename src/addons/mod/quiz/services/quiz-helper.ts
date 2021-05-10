@@ -21,7 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { makeSingleton, ModalController, Translate } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModQuizPreflightModalComponent } from '../components/preflight-modal/preflight-modal';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizModuleHandlerService } from './handlers/module';
@@ -160,7 +160,7 @@ export class AddonModQuizHelperProvider {
         }
 
         // Create and show the modal.
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openModal<Record<string, string>>({
             component: AddonModQuizPreflightModalComponent,
             componentProps: {
                 title: title,
@@ -172,15 +172,11 @@ export class AddonModQuizHelperProvider {
             },
         });
 
-        await modal.present();
-
-        const result = await modal.onWillDismiss();
-
-        if (!result.data) {
+        if (!modalData) {
             throw new CoreCanceledError();
         }
 
-        return <Record<string, string>> result.data;
+        return  modalData;
     }
 
     /**

@@ -40,9 +40,9 @@
     --yellow-dark:     #{$yellow-dark};
     --purple:          #{$purple};
 
-    --core-color:      #{$core-color};
-    --core-color-light: #{$core-color-light};
-    --core-color-dark:  #{$core-color-dark};
+    --brand-color:      #{$brand-color};
+    --brand-color-light: #{$brand-color-light};
+    --brand-color-dark:  #{$brand-color-dark};
 
     --core-online-color: #{$core-online-color};
 
@@ -62,12 +62,14 @@
         @include generate-color($color-name);
     }
 
+    // Accessibility vars.
+    --a11y-min-target-size: 44px;
+
     --ion-text-color: #{$text-color};
     --ion-text-color-rgb: 58,58,58;
     --ion-card-color: var(--ion-text-color);
-    --ion-item-background: var(--white);
 
-    --text-hightlight-background-color: var(--custom-text-hightlight-background-color, #99c1ed);
+    --text-hightlight-background-color: #{$core-text-hightlight-background-color};
 
     ion-content {
         --background: #{$background-color};
@@ -75,30 +77,43 @@
         --contrast-background: var(--white);
     }
 
+    --core-bottom-tabs-background: #{$bottom-tabs-background};
+    --core-bottom-tabs-color: #{$bottom-tabs-color};
+    --core-bottom-tabs-color-selected: #{$bottom-tabs-color-selected};
     ion-tab-bar {
-        --background: var(--custom-bottom-tabs-background, var(--gray-darker));
-        --color: var(--custom-bottom-tabs-color, var(--white));
+        --background: var(--core-bottom-tabs-background);
+        --color: var(--core-bottom-tabs-color);
+        --color-selected: var(--core-bottom-tabs-color-selected);
     }
 
-    --core-toolbar-button-image-width: var(--custom-toolbar-button-image-width, 32px);
-    --ion-statusbar-background: var(--custom-toolbar-background, var(--ion-color-primary));
+    --core-link-color: #{$link-color};
+    a {
+        color: var(--core-link-color);
+    }
+
+    --core-header-toolbar-button-image-size: #{$toolbar-button-image-size};
+    --core-header-toolbar-background: #{$toolbar-background};
+    --core-header-toolbar-color: #{$toolbar-color};
     ion-toolbar {
-        --color: var(--custom-toolbar-color, var(--ion-color-primary-contrast));
-        --background: var(--ion-statusbar-background);
+        --color: var(--core-header-toolbar-color);
+        --background: var(--core-header-toolbar-background);
         ion-button {
             --ion-toolbar-color: transparent;
-            --color: var(--custom-toolbar-color, var(--ion-color-primary-contrast));
+            --color: var(--core-header-toolbar-color);
         }
 
         ion-spinner {
-            --color: var(--custom-toolbar-color, var(--ion-color-primary-contrast));
+            --color: var(--core-header-toolbar-color);
         }
     }
 
     ion-action-sheet {
-        --action-sheet-shadow-color: var(--custom--action-sheet-shadow-color, 0, 0, 0, 1);
-        --button-color-selected: var(--custom--action-sheet-selected-color, var(--core-color));
-        --title-border-color: var(--custom-title-border-color, var(--gray));
+        --button-color-selected: #{$action-sheet-selected};
+        --title-border-color: var(--gray);
+
+        .action-sheet-title {
+            --color: #{$action-sheet-title-color};
+        }
 
         @media (min-height: 500px) {
             --max-height: 50%;
@@ -110,12 +125,12 @@
         }
     }
 
-    --core-tabs-background: var(--custom-tabs-background, var(--white));
-    --core-tab-background: var(--custom-tab-background, var(--core-tabs-background));
-    --core-tab-color: var(--custom-tab-color, var(--gray-dark));
-    --core-tab-border-color: var(--custom-tab-border-color, var(--gray));
-    --core-tab-color-active: var(--custom-tab-color-active, var(--core-color));
-    --core-tab-border-color-active: var(--custom-tab-border-color-active, var(--core-color));
+    --core-tabs-background: #{$core-tabs-background};
+    --core-tab-background: #{$core-tab-background};
+    --core-tab-color: #{$core-tab-color};
+    --core-tab-border-color: #{$core-tab-border-color};
+    --core-tab-color-active: #{$core-tab-color-active};
+    --core-tab-border-color-active: #{$core-tab-border-color-active};
 
     core-tabs, core-tabs-outlet {
         --background: var(--core-tabs-background);
@@ -129,69 +144,81 @@
     }
 
     ion-spinner {
-        --color: var(--core-color);
+        --color: var(--ion-color-primary);
     }
 
     core-progress-bar {
-        --height: var(--custom-progress-bar-height, 8px);
-        --color: var(--custom-progress-color, var(--core-color));
-        --text-color: var(--custom-progress-text-color, var(--gray-darker));
-        --background: var(--custom-progress-background, var(--gray-lighter));
+        --height: #{$core-progressbar-height};
+        --color: #{$core-progressbar-color};
+        --text-color: #{$core-progressbar-text-color};
+        --background: #{$core-progressbar-background};
     }
 
     core-block-course-blocks {
-        --side-blocks-max-width: var(--custom-side-blocks-max-width, 30%);
-        --side-blocks-min-width: var(--custom-side-blocks-min-width, 280px);
+        --side-blocks-max-width: #{$core-side-blocks-max-width};
+        --side-blocks-min-width: #{$core-side-blocks-min-width};
+    }
+
+    --ion-item-background: #{$ion-item-background};
+    --ion-item-detail-icon-color: var(--gray-darker);
+    --ion-item-detail-icon-font-size: 20px;
+    --ion-item-detail-icon-opacity: 1;
+    ion-item {
+        --detail-icon-color: var(--ion-item-detail-icon-color);
+        --detail-icon-font-size: var(--ion-item-detail-icon-font-size);
+        --detail-icon-opacity: var(--ion-item-detail-icon-opacity);
     }
 
     ion-item-divider {
         --background: var(--gray-lighter);
         --color: inherit;
+        min-height: calc(var(--a11y-min-target-size) + 8px);
     }
 
-    --core-button-select-background: var(--custom-button-select-background, var(--ion-color-primary-contrast));
+    --core-combobox-background: var(--ion-item-background);
+    --core-combobox-color: #{$core-combobox-color};
 
-    --selected-item-color: var(--custom-selected-item-color, var(--core-color));
-    --selected-item-border-width: var(--custom-selected-item-border-width, 5px);
+    --selected-item-color: #{$core-selected-item-color};
+    --selected-item-border-width: #{$core-selected-item-border-width};
 
-    --core-login-background: var(--custom-login-background, var(--white));
-    --core-login-text-color: var(--custom-login-text-color, var(--black));
+    --core-login-background: #{$core-login-background};
+    --core-login-text-color: #{$core-login-text-color};
 
-    --core-star-color: var(--custom-star-color, var(--core-color));
+    --core-star-color: #{$core-star-color};
 
-    --core-large-avatar-size:  var(--custom-large-avatar-size, 90px);
-    --core-avatar-size:  var(--custom-avatar-size, 40px);
+    --core-large-avatar-size:  #{$core-large-avatar-size};
+    --core-avatar-size:  #{$core-avatar-size};
 
-    --core-send-message-input-background: var(--custom-send-message-input-background, var(--gray));
-    --core-send-message-input-color: var(--custom-send-message-input-color, var(--black));
+    --core-send-message-input-background: #{$core-send-message-input-background};
+    --core-send-message-input-color: #{$core-send-message-input-color};
 
-    --addon-calendar-event-category-color: var(--custom-calendar-event-category-color, var(--purple));
-    --addon-calendar-event-course-color: var(--custom-calendar-event-course-color, var(--red));
-    --addon-calendar-event-group-color: var(--custom-calendar-event-group-color, var(--yellow));
-    --addon-calendar-event-user-color: var(--custom-calendar-event-user-color, var(--blue));
-    --addon-calendar-event-site-color: var(--custom-calendar-event-site-color, var(--green));
-    --addon-calendar-today-bgcolor: var(--custom-calendar-today-bgcolor, var(--core-color));
-    --addon-calendar-today-color: var(--custom-calendar-today-color, var(--white));
-    --addon-calendar-border-color: var(--custom-calendar-border-color, var(--gray));
+    --addon-calendar-event-category-color: #{$addon-calendar-event-category-color};
+    --addon-calendar-event-course-color: #{$addon-calendar-event-course-color};
+    --addon-calendar-event-group-color: #{$addon-calendar-event-group-color};
+    --addon-calendar-event-user-color: #{$addon-calendar-event-user-color};
+    --addon-calendar-event-site-color: #{$addon-calendar-event-site-color};
+    --addon-calendar-today-bgcolor: #{$addon-calendar-today-bgcolor};
+    --addon-calendar-today-color: #{$addon-calendar-today-color};
+    --addon-calendar-border-color: #{$addon-calendar-border-color};
 
-    --addon-messages-message-bg: var(--custom-messages-message-bg, var(--white));
-    --addon-messages-message-activated-bg: var(--custom-messages-message-activated-bg, var(--gray-light));
-    --addon-messages-message-note-text: var(--custom-messages-message-note-text, var(--gray-dark));
-    --addon-messages-message-note-font-size: var(--custom-messages-message-note-font-size, 75%);
-    --addon-messages-message-mine-bg: var(--custom-messages-message-mine-bg, var(--gray-light));
-    --addon-messages-message-mine-activated-bg: var(--custom-messages-message-mine-activated-bg, var(--gray));
-    --addon-messages-avatar-size: var(--custom-messages-avatar-size, 30px);
-    --addon-messages-discussion-badge: var(--custom-messages-discussion-badge, var(--core-color));
-    --addon-messages-discussion-badge-text: var(--custom-messages-discussion-badge-text, var(--white));
+    --addon-messages-message-bg: #{$addon-messages-message-bg};
+    --addon-messages-message-activated-bg: #{$addon-messages-message-activated-bg};
+    --addon-messages-message-note-text: #{$addon-messages-message-note-text};
+    --addon-messages-message-note-font-size: #{$addon-messages-message-note-font-size};
+    --addon-messages-message-mine-bg: #{$addon-messages-message-mine-bg};
+    --addon-messages-message-mine-activated-bg: #{$addon-messages-message-mine-activated-bg};
+    --addon-messages-avatar-size: #{$addon-messages-avatar-size};
+    --addon-messages-discussion-badge: #{$addon-messages-discussion-badge};
+    --addon-messages-discussion-badge-text: #{$addon-messages-discussion-badge-text};
 
-    --addon-forum-avatar-size: var(--custom-forum-avatar-size, 28px);
-    --addon-forum-border-color: var(--custom-forum-border-color, var(--gray));
-    --addon-forum-highlight-color: var(--custom-forum-highlight-color, var(--gray-lighter));
+    --addon-forum-avatar-size: #{$addon-forum-avatar-size};
+    --addon-forum-border-color: #{$addon-forum-border-color};
+    --addon-forum-highlight-color: #{$addon-forum-highlight-color};
 
-    --drop-shadow: var(--custom-drop-shadow, 0, 0, 0, 0.2);
+    --drop-shadow: 0, 0, 0, 0.2;
 
-    --core-menu-box-shadow-end: var(--custom-menu-box-shadow-end, -4px 0px 16px rgba(0, 0, 0, 0.18));
-    --core-menu-box-shadow-start: var(--custom-menu-box-shadow-start, 4px 0px 16px rgba(0, 0, 0, 0.18));
+    --core-menu-box-shadow-end: -4px 0px 16px rgba(0, 0, 0, 0.18);
+    --core-menu-box-shadow-start: 4px 0px 16px rgba(0, 0, 0, 0.18);
 
     --core-question-correct-color: var(--green-dark);
     --core-question-correct-color-bg: var(--green-light);
@@ -211,4 +238,5 @@
     --core-question-feedback-background-color: var(--yellow-light);
 
     --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-dark);
+
 }

@@ -23,7 +23,7 @@ import { AddonCalendar, AddonCalendarProvider } from '../../services/calendar';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarSync, AddonCalendarSyncProvider } from '../../services/calendar-sync';
 import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calendar-helper';
-import { Network, NgZone, PopoverController } from '@singletons';
+import { Network, NgZone } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -333,7 +333,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * @param event Event.
      */
     async openFilter(event: MouseEvent): Promise<void> {
-        const popover = await PopoverController.create({
+        await CoreDomUtils.openPopover({
             component: AddonCalendarFilterPopoverComponent,
             componentProps: {
                 courses: this.courses,
@@ -341,7 +341,6 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             },
             event,
         });
-        await popover.present();
     }
 
     /**

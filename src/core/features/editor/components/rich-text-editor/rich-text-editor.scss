@@ -37,13 +37,13 @@
 
         .core-rte-info-message {
             padding: 5px;
-            border-top: 1px solid var(--ion-color-secondary);
+            border-top: 1px solid var(--ion-color-info);
             background: var(--background);
             flex-shrink: 1;
             font-size: 1.1rem;
 
             .icon {
-                color: var(--ion-color-secondary);
+                color: var(--ion-color-info);
             }
         }
     }

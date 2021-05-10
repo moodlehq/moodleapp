@@ -1,13 +1,13 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-button (click)="previous($event)" [attr.aria-label]="'core.back' | translate">
+            <ion-button fill="clear" (click)="previous($event)" [attr.aria-label]="'core.back' | translate">
                 <ion-icon slot="icon-only" name="fas-arrow-left" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
 
         <ion-buttons slot="end">
-            <ion-button (click)="skip($event)" [attr.aria-label]="'core.skip' | translate">
+            <ion-button fill="clear" (click)="skip($event)" [attr.aria-label]="'core.skip' | translate">
                 {{'core.skip' | translate}}
             </ion-button>
         </ion-buttons>

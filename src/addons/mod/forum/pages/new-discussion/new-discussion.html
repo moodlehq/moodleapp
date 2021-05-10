@@ -35,7 +35,7 @@
                 [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') |translate" role="heading button">
                 <ion-icon *ngIf="!advanced" name="fa-caret-right" slot="start" aria-hidden="true"></ion-icon>
                 <ion-icon *ngIf="advanced" name="fa-caret-down" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label>{{ 'addon.mod_forum.advanced' | translate }}</ion-label>
+                <ion-label><h2>{{ 'addon.mod_forum.advanced' | translate }}</h2></ion-label>
             </ion-item-divider>
             <ng-container *ngIf="advanced">
                 <ion-item *ngIf="showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups">

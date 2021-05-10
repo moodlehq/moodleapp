@@ -93,7 +93,8 @@
                     [@coreSlideInOut]="message.useridfrom == currentUserId ? '' : 'fromLeft'">
                     <ion-label>
                         <!-- User data. -->
-                        <h2 class="addon-message-user">
+                        <h2 class="addon-message-user" [attr.aria-label]="message.useridfrom == currentUserId ?
+                            ('addon.messages.you' | translate) : members[message.useridfrom].fullname">
                             <core-user-avatar slot="start" [user]="members[message.useridfrom]" [linkProfile]="false"
                                 *ngIf="message.showUserData"></core-user-avatar>
 
@@ -101,7 +102,7 @@
 
                             <ion-note *ngIf="!message.pending">{{ message.timecreated | coreFormatDate: "strftimetime" }}</ion-note>
                             <ion-note *ngIf="message.pending">
-                                <ion-icon name="fas-clock" [attr.aria-label]="'core.notsent' | translate "></ion-icon>
+                                <ion-icon name="fas-clock" [attr.aria-label]="'core.notsent' | translate" role="status"></ion-icon>
                             </ion-note>
                         </h2>
 

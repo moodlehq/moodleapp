@@ -5,7 +5,7 @@
         </ion-buttons>
         <ion-title>{{ 'addon.calendar.calendarevents' | translate }}</ion-title>
         <ion-buttons slot="end">
-            <ion-button (click)="openFilter($event)" [attr.aria-label]="'core.filter' | translate">
+            <ion-button fill="clear" (click)="openFilter($event)" [attr.aria-label]="'core.filter' | translate">
                 <ion-icon slot="icon-only" name="fas-filter" aria-hidden="true"></ion-icon>
             </ion-button>
             <core-context-menu>
@@ -40,7 +40,7 @@
             <ion-list *ngIf="filteredEvents && filteredEvents.length"  class="ion-no-margin">
                 <ng-container *ngFor="let event of filteredEvents">
                     <ion-item-divider *ngIf="event.showDate">
-                        <ion-label>{{ event.timestart * 1000 | coreFormatDate: "strftimedayshort" }}</ion-label>
+                        <ion-label><h2>{{ event.timestart * 1000 | coreFormatDate: "strftimedayshort" }}</h2></ion-label>
                     </ion-item-divider>
                     <ion-item class="addon-calendar-event ion-text-wrap" [attr.aria-label]="event.name" (click)="gotoEvent(event.id)"
                         [attr.aria-current]="event.id == eventId ? 'page' : 'false'"

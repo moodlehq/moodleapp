@@ -15,7 +15,7 @@
 import { Component, Input } from '@angular/core';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
-import { ModalController } from '@singletons';
+import { CoreDomUtils } from '@services/utils/dom';
 import { AddonModAssignEditFeedbackModalComponent } from '../components/edit-feedback-modal/edit-feedback-modal';
 import { AddonModAssignFeedbackCommentsTextData } from '../feedback/comments/services/handler';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '../services/assign';
@@ -47,7 +47,7 @@ export class AddonModAssignFeedbackPluginBaseComponent {
         }
 
         // Create the navigation modal.
-        const modal = await ModalController.create({
+        const modalData = await CoreDomUtils.openModal<AddonModAssignFeedbackCommentsTextData>({
             component: AddonModAssignEditFeedbackModalComponent,
             componentProps: {
                 assign: this.assign,
@@ -57,15 +57,11 @@ export class AddonModAssignFeedbackPluginBaseComponent {
             },
         });
 
-        await modal.present();
-
-        const result = await modal.onDidDismiss();
-
-        if (typeof result.data == 'undefined') {
+        if (typeof modalData == 'undefined') {
             throw new CoreCanceledError(); // User cancelled.
-        } else {
-            return result.data;
         }
+
+        return modalData;
     }
 
     /**

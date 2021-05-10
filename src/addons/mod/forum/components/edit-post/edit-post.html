@@ -2,7 +2,7 @@
     <ion-toolbar>
         <ion-title>{{ 'addon.mod_forum.yourreply' | translate }}</ion-title>
         <ion-buttons slot="end">
-            <ion-button (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
                 <ion-icon name="fas-times" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
@@ -29,7 +29,7 @@
             [attr.aria-expanded]="advanced" [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate">
             <ion-icon *ngIf="!advanced" name="fa-caret-right" slot="start" aria-hidden="true"></ion-icon>
             <ion-icon *ngIf="advanced" name="fa-caret-down" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>{{ 'addon.mod_forum.advanced' | translate }}</ion-label>
+            <ion-label><h2>{{ 'addon.mod_forum.advanced' | translate }}</h2></ion-label>
         </ion-item-divider>
         <ng-container *ngIf="advanced">
             <core-attachments *ngIf="forum.id && forum.maxattachments > 0"
