@@ -1,5 +1,5 @@
 <form #messageForm>
-    <textarea class="core-send-message-input" [autofocus]="showKeyboard" [placeholder]="placeholder" rows="1" core-auto-rows
+    <textarea class="core-send-message-input" [core-auto-focus]="showKeyboard" [placeholder]="placeholder" rows="1" core-auto-rows
         [(ngModel)]="message" name="message" (onResize)="textareaResized()" (keyup.enter)="enterClicked($event)"
         (keyup.control.enter)="enterClicked($event, 'control')" (keyup.meta.enter)="enterClicked($event, 'meta')"></textarea>
     <ion-button fill="clear" size="large" type="submit" [disabled]="!message || sendDisabled"

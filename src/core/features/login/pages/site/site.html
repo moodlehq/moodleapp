@@ -27,7 +27,7 @@
                     <h2>{{ 'core.login.siteaddress' | translate }}</h2>
                 </ion-label>
                 <ion-input name="url" type="url" placeholder="{{ 'core.login.siteaddressplaceholder' | translate }}"
-                    formControlName="siteUrl" [autofocus]="showKeyboard && !showScanQR">
+                    formControlName="siteUrl" [core-auto-focus]="showKeyboard">
                 </ion-input>
             </ion-item>
         </ng-container>
@@ -37,7 +37,7 @@
                     <h2>{{ 'core.login.siteaddress' | translate }}</h2>
                 </ion-label>
                 <ion-input name="url" placeholder="{{ 'core.login.siteaddressplaceholder' | translate }}" formControlName="siteUrl"
-                    [autofocus]="showKeyboard && !showScanQR" (ionChange)="searchSite($event, siteForm.value.siteUrl)">
+                    [core-auto-focus]="showKeyboard" (ionChange)="searchSite($event, siteForm.value.siteUrl)">
                 </ion-input>
             </ion-item>
 

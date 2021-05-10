@@ -58,7 +58,7 @@
                             <ion-label position="stacked">{{ 'addon.mod_lesson.enterpassword' | translate }}</ion-label>
                             <core-show-password name="password">
                                 <ion-input name="password" type="password" placeholder="{{ 'core.login.password' | translate }}"
-                                    [autofocus]="true" #passwordinput [clearOnEdit]="false">
+                                    core-auto-focus #passwordinput [clearOnEdit]="false">
                                 </ion-input>
                             </core-show-password>
                         </ion-item>
