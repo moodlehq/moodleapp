@@ -63,7 +63,7 @@ export class CoreWSProvider {
     protected async init(): Promise<void> {
         await Platform.ready();
 
-        if (CoreApp.isIOS()) {
+        if (CoreApp.isMobile()) {
             NativeHttp.setHeader('*', 'User-Agent', navigator.userAgent);
         }
     }
