@@ -187,7 +187,11 @@
             context: 'iframe',
             action: 'link_clicked',
             frameUrl: location.href,
-            link: {href: link.href, target: link.target},
+            link: {
+                href: link.href,
+                target: link.target,
+                originalHref: link.getAttribute('href'),
+            },
         }, '*');
     }
 

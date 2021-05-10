@@ -427,13 +427,13 @@ export class CoreIframeUtilsProvider {
     /**
      * A link inside a frame was clicked.
      *
-     * @param link Data of the link clicked.
+     * @param link Link clicked, or data of the link clicked.
      * @param element Frame element.
      * @param event Click event.
      * @return Promise resolved when done.
      */
     protected async linkClicked(
-        link: {href: string; target?: string},
+        link: CoreIframeHTMLAnchorElement | {href: string; target?: string; originalHref?: string},
         element?: HTMLFrameElement | HTMLObjectElement,
         event?: Event,
     ): Promise<void> {
@@ -443,7 +443,8 @@ export class CoreIframeUtilsProvider {
         }
 
         const urlParts = CoreUrl.parse(link.href);
-        if (!link.href || !urlParts || (urlParts.protocol && urlParts.protocol == 'javascript')) {
+        const originalHref = 'getAttribute' in link ? link.getAttribute('href') : link.originalHref;
+        if (!link.href || !originalHref || originalHref == '#' || !urlParts || urlParts.protocol == 'javascript') {
             // Links with no URL and Javascript links are ignored.
             return;
         }
