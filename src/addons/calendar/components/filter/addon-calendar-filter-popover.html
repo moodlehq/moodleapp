@@ -4,9 +4,7 @@
         <ion-label>{{ 'addon.calendar.' + type + 'events' | translate}}</ion-label>
         <ion-toggle [(ngModel)]="filter[type]" (ionChange)="onChange()" slot="end"></ion-toggle>
     </ion-item>
-    <ion-item-divider *ngIf="filter.course || filter.category || filter.group">
-        <ion-label></ion-label>
-    </ion-item-divider>
+    <core-spacer *ngIf="filter.course || filter.category || filter.group"></core-spacer>
     <ng-container *ngIf="filter.course || filter.category || filter.group">
         <ion-radio-group [(ngModel)]="courseId" (ionChange)="onChange()">
             <ion-item class="ion-text-wrap" *ngFor="let course of courses">

@@ -44,14 +44,14 @@ import {
 })
 export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
-    @Input() module?: CoreCourseModule; // The module to render.
+    @Input() module!: CoreCourseModule; // The module to render.
     @Input() courseId?: number; // The course the module belongs to.
     @Input() section?: CoreCourseSection; // The section the module belongs to.
     // eslint-disable-next-line @angular-eslint/no-input-rename
     @Input('downloadEnabled') set enabled(value: boolean) {
         this.downloadEnabled = value;
 
-        if (!this.module?.handlerData?.showDownloadButton || !this.downloadEnabled || this.statusCalculated) {
+        if (!this.module.handlerData?.showDownloadButton || !this.downloadEnabled || this.statusCalculated) {
             return;
         }
 
@@ -81,10 +81,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      * Component being initialized.
      */
     ngOnInit(): void {
-        if (!this.module) {
-            return;
-        }
-
         this.courseId = this.courseId || this.module.course;
         this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname) || '';
 
@@ -125,7 +121,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      * @param event Click event.
      */
     moduleClicked(event: Event): void {
-        if (this.module?.uservisible !== false && this.module?.handlerData?.action) {
+        if (this.module.uservisible !== false && this.module.handlerData?.action) {
             this.module.handlerData.action(event, this.module, this.courseId!);
         }
     }
@@ -195,7 +191,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         this.spinner = false;
         this.downloadStatus = status;
 
-        this.module?.handlerData?.updateStatus?.(status);
+        this.module.handlerData?.updateStatus?.(status);
     }
 
     /**
@@ -218,7 +214,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         // this.statusObserver?.off();
-        this.module?.handlerData?.onDestroy?.();
+        this.module.handlerData?.onDestroy?.();
         this.isDestroyed = true;
     }
 

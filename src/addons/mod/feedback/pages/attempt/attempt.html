@@ -33,9 +33,7 @@
             </ion-item >
             <ng-container *ngIf="items && items.length">
                 <ng-container *ngFor="let item of items">
-                    <ion-item-divider *ngIf="item.typ == 'pagebreak'">
-                        <ion-label></ion-label>
-                    </ion-item-divider>
+                    <core-spacer *ngIf="item.typ == 'pagebreak'"></core-spacer>
                     <ion-item class="ion-text-wrap" *ngIf="item.typ != 'pagebreak'" [color]="item.dependitem > 0 ? 'light' : ''">
                         <ion-label>
                             <h2 *ngIf="item.name" [core-mark-required]="item.required">

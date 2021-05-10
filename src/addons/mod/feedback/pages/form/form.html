@@ -21,9 +21,7 @@
                     </ion-label>
                 </ion-item>
                 <ng-container *ngFor="let item of items">
-                    <ion-item-divider *ngIf="item.typ == 'pagebreak'">
-                        <ion-label></ion-label>
-                    </ion-item-divider>
+                    <core-spacer *ngIf="item.typ == 'pagebreak'"></core-spacer>
                     <ng-container *ngIf="item.typ != 'pagebreak'">
                         <ion-item class="ion-text-wrap addon-mod_feedback-item" [color]="item.dependitem > 0 ? 'light' : ''"
                             [class.core-danger-item]="item.isEmpty || item.hasError">

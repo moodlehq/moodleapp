@@ -56,6 +56,7 @@ import { CoreTabsOutletComponent } from './tabs-outlet/tabs-outlet';
 import { CoreTimerComponent } from './timer/timer';
 import { CoreUserAvatarComponent } from './user-avatar/user-avatar';
 import { CoreComboboxComponent } from './combobox/combobox';
+import { CoreSpacerComponent } from './spacer/spacer';
 
 @NgModule({
     declarations: [
@@ -94,6 +95,7 @@ import { CoreComboboxComponent } from './combobox/combobox';
         CoreTimerComponent,
         CoreUserAvatarComponent,
         CoreComboboxComponent,
+        CoreSpacerComponent,
     ],
     imports: [
         CommonModule,
@@ -139,6 +141,7 @@ import { CoreComboboxComponent } from './combobox/combobox';
         CoreTimerComponent,
         CoreUserAvatarComponent,
         CoreComboboxComponent,
+        CoreSpacerComponent,
     ],
 })
 export class CoreComponentsModule {}

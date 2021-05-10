@@ -171,10 +171,11 @@
         --detail-icon-opacity: var(--ion-item-detail-icon-opacity);
     }
 
+    --item-divider-min-height: calc(var(--a11y-min-target-size) + 8px);
     ion-item-divider {
         --background: var(--gray-lighter);
         --color: inherit;
-        min-height: calc(var(--a11y-min-target-size) + 8px);
+        min-height: var(--item-divider-min-height);
     }
 
     --core-combobox-background: var(--ion-item-background);
