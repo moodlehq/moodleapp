@@ -1,22 +1,57 @@
-<ion-item *ngIf="module && module.handlerData && module.visibleoncoursepage !== 0 && !module.handlerData.loading"
-    id="core-course-module-{{module.id}}" class="ion-text-wrap core-course-module-handler {{module.handlerData.class}}"
-    (click)="moduleClicked($event)" [attr.aria-label]="module.handlerData.a11yTitle" detail="false"
-    [ngClass]="{'item-media': module.handlerData.icon, 'item-dimmed': module.visible === 0 || module.uservisible === false,
-    'core-not-clickable': !module.handlerData.action || module.uservisible === false}"
-    [button]="module.handlerData.action || module.uservisible">
+<ng-container *ngIf="module.handlerData && module.visibleoncoursepage !== 0">
+    <ng-container *ngIf="!module.handlerData.loading">
+        <ion-item
+            id="core-course-module-{{module.id}}"
+            class="ion-text-wrap core-course-module-handler core-module-main-item {{module.handlerData.class}}"
+            (click)="moduleClicked($event)"
+            [attr.aria-label]="module.handlerData.a11yTitle"
+            [ngClass]="{
+                'has-module-description': module.description,
+                'item-media': module.handlerData.icon,
+                'item-dimmed': module.visible === 0 || module.uservisible === false
+            }"
+            [button]="module.handlerData.action && module.uservisible"
+            detail="false">
 
-    <img slot="start" *ngIf="module.handlerData.icon" [src]="module.handlerData.icon" [alt]="modNameTranslated"
-        class="core-module-icon">
+            <img slot="start" *ngIf="module.handlerData.icon" [src]="module.handlerData.icon" [alt]="modNameTranslated"
+                class="core-module-icon">
 
-    <ion-label>
-        <div class="core-module-title">
-            <core-format-text [text]="module.handlerData.title" contextLevel="module" [contextInstanceId]="module.id"
-                [courseId]="courseId" [attr.aria-label]="module.handlerData.a11yTitle + ', ' + modNameTranslated">
-            </core-format-text>
-
+            <ion-label class="core-module-title">
+                <h2>
+                    <core-format-text [text]="module.handlerData.title" contextLevel="module" [contextInstanceId]="module.id"
+                        [courseId]="courseId" [attr.aria-label]="module.handlerData.a11yTitle + ', ' + modNameTranslated">
+                    </core-format-text>
+                </h2>
+                <ion-badge
+                    *ngIf="module.handlerData.extraBadge"
+                    [color]="module.handlerData.extraBadgeColor"
+                    class="ion-text-wrap ion-text-start"
+                >
+                    <span [innerHTML]="module.handlerData.extraBadge"></span>
+                </ion-badge>
+                <ion-badge *ngIf="module.visible === 0 && (!section || section.visible)" class="ion-text-wrap">
+                    {{ 'core.course.hiddenfromstudents' | translate }}
+                </ion-badge>
+                <ion-badge *ngIf="module.visible !== 0 && module.isStealth" class="ion-text-wrap">
+                    {{ 'core.course.hiddenoncoursepage' | translate }}
+                </ion-badge>
+                <div class="core-module-availabilityinfo" *ngIf="module.availabilityinfo">
+                    <ion-badge class="ion-text-wrap">{{ 'core.restricted' | translate }}</ion-badge>
+                    <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
+                        [courseId]="courseId" class="ion-text-wrap">
+                    </core-format-text>
+                </div>
+                <ion-badge *ngIf="module.completiondata?.offline" color="warning" class="ion-text-wrap">
+                    {{ 'core.course.manualcompletionnotsynced' | translate }}
+                </ion-badge>
+            </ion-label>
             <!-- Buttons. -->
-            <div slot="end" *ngIf="module.uservisible !== false" class="buttons core-module-buttons"
-                [ngClass]="{'core-button-completion': module.completiondata}">
+            <div
+                slot="end"
+                *ngIf="module.uservisible !== false"
+                class="buttons core-module-buttons"
+                [ngClass]="{'core-button-completion': module.completiondata}"
+            >
                 <!-- Module completion. -->
                 <core-course-module-completion *ngIf="module.completiondata" [completion]="module.completiondata"
                     [moduleName]="module.name" [moduleId]="module.id" (completionChanged)="completionChanged.emit($event)">
@@ -37,39 +72,34 @@
                     </ion-button>
                 </div>
             </div>
-        </div>
-
-        <div class="core-module-more-info">
-            <ion-badge slot="end" *ngIf="module.handlerData.extraBadge" [color]="module.handlerData.extraBadgeColor"
-                class="ion-text-wrap ion-text-start">
-                <span [innerHTML]="module.handlerData.extraBadge"></span>
-            </ion-badge>
-            <ion-badge slot="end" *ngIf="module.visible === 0 && (!section || section.visible)" class="ion-text-wrap">
-                {{ 'core.course.hiddenfromstudents' | translate }}
-            </ion-badge>
-            <ion-badge slot="end" *ngIf="module.visible !== 0 && module.isStealth" class="ion-text-wrap">
-                {{ 'core.course.hiddenoncoursepage' | translate }}
-            </ion-badge>
-            <div class="core-module-availabilityinfo" *ngIf="module.availabilityinfo" slot="end">
-                <ion-badge class="ion-text-wrap">{{ 'core.restricted' | translate }}</ion-badge>
-                <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
-                    [courseId]="courseId" class="ion-text-wrap">
+        </ion-item>
+        <ion-item
+            *ngIf="module.description"
+            id="core-course-module-{{module.id}}-info"
+            class="ion-text-wrap core-course-module-handler core-module-module-description {{module.handlerData.class}}"
+            [ngClass]="{
+                'item-media': module.handlerData.icon,
+                'item-dimmed': module.visible === 0 || module.uservisible === false
+            }"
+            detail="false"
+        >
+            <ion-label>
+                <core-format-text class="core-module-description" *ngIf="module.description" maxHeight="80" [text]="module.description"
+                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                 </core-format-text>
-            </div>
-            <ion-badge slot="end" *ngIf="module.completiondata?.offline" color="warning" class="ion-text-wrap">
-                {{ 'core.course.manualcompletionnotsynced' | translate }}
-            </ion-badge>
-        </div>
+            </ion-label>
+        </ion-item>
+    </ng-container>
 
-        <core-format-text class="core-module-description" *ngIf="module.description" maxHeight="80" [text]="module.description"
-            contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-        </core-format-text>
-    </ion-label>
-</ion-item>
-
-<!-- Loading. -->
-<ion-item *ngIf="module && module.handlerData && module.visibleoncoursepage !== 0 && module.handlerData.loading" role="status"
-    class="ion-text-wrap" id="core-course-module-{{module.id}}" [attr.aria-label]="module.handlerData.a11yTitle"
-    [ngClass]="['core-course-module-handler', 'core-module-loading', module.handlerData.class]" detail="false">
-    <ion-label><ion-spinner></ion-spinner></ion-label>
-</ion-item>
+    <!-- Loading. -->
+    <ion-item *ngIf="module.handlerData.loading"
+        role="status"
+        class="ion-text-wrap"
+        id="core-course-module-{{module.id}}"
+        [attr.aria-label]="module.handlerData.a11yTitle"
+        [ngClass]="['core-course-module-handler', 'core-module-loading', module.handlerData.class]"
+        detail="false"
+    >
+        <ion-label><ion-spinner></ion-spinner></ion-label>
+    </ion-item>
+</ng-container>
