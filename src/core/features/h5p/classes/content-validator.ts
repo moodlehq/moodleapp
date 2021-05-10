@@ -678,7 +678,7 @@ export class CoreH5PContentValidator {
             return '&lt;';
         }
 
-        const matches = tag.match(/^<\s*(\/\s*)?([a-zA-Z0-9-]+)([^>]*)>?|(<!--.*?-->)$/);
+        const matches = tag.match(/^<\s*(\/\s*)?([a-zA-Z0-9-]+)\s*([^>]*)>?|(<!--.*?-->)$/);
         if (!matches) {
             // Seriously malformed.
             return '';
@@ -746,7 +746,8 @@ export class CoreH5PContentValidator {
                     matches = attr.match(/^([-a-zA-Z]+)/);
                     if (matches && matches.length > 1) {
                         attrName = matches[1].toLowerCase();
-                        skip = (attrName == 'style' || attrName.substr(0, 2) == 'on');
+                        skip = attrName == 'style' || attrName.substr(0, 2) == 'on' || attrName.substr(0, 1) == '-' ||
+                                attrName.length > 96; // Ignore long attributes to avoid unnecessary processing overhead.
                         working = mode = 1;
                         attr = attr.replace(/^[-a-zA-Z]+/, '');
                     }
