@@ -109,12 +109,16 @@
     </ng-container>
 
     <!-- Help. -->
-    <ion-list lines="none" class="ion-margin-top">
-        <ion-item button class="ion-text-center ion-text-wrap core-login-need-help" (click)="showHelp()" detail="false"
-            aria-haspopup="dialog">
-            <ion-label>{{ 'core.needhelp' | translate }}</ion-label>
-        </ion-item>
-    </ion-list>
+    <ion-button
+        class="ion-margin-top core-login-need-help core-button-as-link"
+        (click)="showHelp()"
+        aria-haspopup="dialog"
+        expand="block"
+        fill="clear"
+        color="dark"
+    >
+        <ion-label>{{ 'core.needhelp' | translate }}</ion-label>
+    </ion-button>
 </ion-content>
 
 <!-- Template site selector. -->

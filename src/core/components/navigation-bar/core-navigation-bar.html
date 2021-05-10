@@ -1,7 +1,7 @@
 <ion-grid class="ion-no-padding ion-padding-bottom" *ngIf="previous || info || next">
     <ion-row>
         <ion-col class="ion-text-start" size="4">
-            <ion-button *ngIf="previous" class="core-navigation-bar-arrow" color="light"
+            <ion-button *ngIf="previous" class="core-navigation-bar-arrow"
                 [title]="previousTitle || ('core.previous' | translate)" (click)="action?.emit(previous)">
                 <ion-icon name="fas-arrow-left" [slot]="previousTitle ? 'start' : 'icon-only'" aria-hidden="true"></ion-icon>
                 <core-format-text *ngIf="previousTitle" [text]="previousTitle" [component]="component" [componentId]="componentId"

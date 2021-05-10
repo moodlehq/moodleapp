@@ -14,11 +14,16 @@
         <ion-list *ngIf="user && !isDeleted && isEnrolled">
             <ion-item class="ion-text-center core-user-profile-maininfo">
                 <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true">
-                    <div class="core-icon-foreground" *ngIf="canChangeProfilePicture">
-                        <ion-icon name="fa-pen" (click)="changeProfilePicture()"
-                            [attr.aria-label]="'core.user.newpicture' | translate">
-                        </ion-icon>
-                    </div>
+                    <ion-button
+                        class="edit-avatar"
+                        *ngIf="canChangeProfilePicture"
+                        (click)="changeProfilePicture()"
+                        [attr.aria-label]="'core.user.newpicture' | translate"
+                        fill="clear"
+                        color="dark"
+                    >
+                        <ion-icon slot="icon-only" name="fa-pen" aria-hidden="true"></ion-icon>
+                    </ion-button>
                 </core-user-avatar>
                 <ion-label>
                     <h2>{{ user.fullname }}</h2>

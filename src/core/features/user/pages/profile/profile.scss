@@ -17,16 +17,12 @@
                 height: 24px !important;
             }
 
-            .core-icon-foreground {
+            .edit-avatar {
                 position: absolute;
-                right: 0;
-                bottom: 0;
-                line-height: 30px;
-                text-align: center;
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                background-color:var(--background);
+                right: -24px;
+                bottom: -12px;
+                --border-radius: 50%;
+                --background: var(--ion-item-background);
 
                 :host-context([dir="rtl"]) & {
                     left: 0;
@@ -38,8 +34,7 @@
 
 }
 
-:host-context([dir="rtl"]) ::ng-deep core-user-avatar .core-icon-foreground {
-    left: 0;
+:host-context([dir="rtl"]) ::ng-deep core-user-avatar .edit-avatar {
+    left: -24px;
     right: unset;
 }
-

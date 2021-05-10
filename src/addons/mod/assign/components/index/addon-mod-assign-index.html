@@ -31,7 +31,7 @@
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
     <!-- Description and intro attachments. -->
-    <ion-card *ngIf="description" (click)="expandDescription($event)" class="core-clickable">
+    <ion-card *ngIf="description">
         <ion-item class="ion-text-wrap">
             <ion-label>
                 <core-format-text [text]="description" [component]="component" [componentId]="componentId" maxHeight="120"

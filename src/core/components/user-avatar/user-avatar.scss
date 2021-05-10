@@ -1,6 +1,9 @@
 :host {
     position: relative;
-    cursor: pointer;
+
+    .clickable {
+        cursor: pointer;
+    }
     img {
         border-radius: 50%;
         width: var(--core-avatar-size);

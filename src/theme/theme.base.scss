@@ -79,6 +79,7 @@ ion-toolbar .in-toolbar.button-clear {
 
 ion-header ion-toolbar .button.button-clear,
 ion-header ion-toolbar .button.button-solid {
+    --background: transparent;
     --color: var(--core-header-toolbar-color);
     --ion-color-primary: var(--core-header-toolbar-color);
 }
@@ -130,7 +131,7 @@ ion-button.button-small ion-icon.faicon[slot] {
 }
 
 // Buttons.
-ion-button {
+ion-button, button, [role="button"] {
     min-height: var(--a11y-min-target-size);
     min-width: var(--a11y-min-target-size);
 }
@@ -144,10 +145,13 @@ ion-button {
     }
 }
 
-.core-iframe-help ion-button {
+ion-button.core-button-as-link {
     text-transform: none;
     text-decoration: underline;
-    --color: initial;
+    font-size: inherit;
+    font-weight: normal;
+    letter-spacing: normal;
+    white-space: break-spaces;
 }
 
 // Ionic alert.
@@ -363,7 +367,7 @@ img[alt] {
 
 // Activity modules
 .core-module-icon {
-    --size: 24px;
+    --size: var(--module-icon-size);
     width: var(--size);
     height: var(--size);
     max-width: var(--size);

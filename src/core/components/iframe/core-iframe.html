@@ -5,11 +5,15 @@
         [attr.allowfullscreen]="allowFullscreen ? 'allowfullscreen' : null">
     </iframe>
 
-    <div [hidden]="loading" class="ion-text-center ion-text-wrap core-iframe-help">
-        <ion-button fill="clear" (click)="openIframeHelpModal()" aria-haspopup="dialog">
-            {{ 'core.iframehelp' | translate }}
-        </ion-button>
-    </div>
+    <ion-button
+        *ngIf="!loading"
+        color="dark" expand="block" fill="clear"
+        (click)="openIframeHelpModal()"
+        aria-haspopup="dialog"
+        class="core-button-as-link"
+    >
+        <ion-label>{{ 'core.iframehelp' | translate }}</ion-label>
+    </ion-button>
 
     <span class="core-loading-spinner">
         <ion-spinner *ngIf="loading"></ion-spinner>

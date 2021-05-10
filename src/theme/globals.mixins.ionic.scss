@@ -107,6 +107,7 @@
     $tint: map-get($value, tint);
 
     --ion-color-#{$color-name}: #{$base};
+    --ion-color-#{$color-name}-base: #{$base};
     --ion-color-#{$color-name}-rgb: #{color-to-rgb-list($base)};
     --ion-color-#{$color-name}-contrast: #{$contrast};
     --ion-color-#{$color-name}-contrast-rgb: #{color-to-rgb-list($contrast)};
@@ -115,6 +116,7 @@
 
     .ion-color-#{$color-name} {
         --ion-color: #{$base};
+        --ion-color-base: #{$base};
         --ion-color-rgb: #{color-to-rgb-list($base)};
         --ion-color-contrast: #{$contrast};
         --ion-color-contrast-rgb: #{color-to-rgb-list($contrast)};
