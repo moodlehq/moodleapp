@@ -222,6 +222,27 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Go to available courses.
+     */
+    openAvailableCourses(): void {
+        CoreNavigator.navigateToSitePath('courses/all');
+    }
+
+    /**
+     * Go to my courses.
+     */
+    openMyCourses(): void {
+        CoreNavigator.navigateToSitePath('courses/my');
+    }
+
+    /**
+     * Go to course categories.
+     */
+    openCourseCategories(): void {
+        CoreNavigator.navigateToSitePath('courses/categories');
+    }
+
+    /**
      * Component being destroyed.
      */
     ngOnDestroy(): void {

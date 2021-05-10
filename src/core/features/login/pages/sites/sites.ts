@@ -139,4 +139,11 @@ export class CoreLoginSitesPage implements OnInit {
         this.showDelete = !this.showDelete;
     }
 
+    /**
+     * Open settings page.
+     */
+    openSettings(): void {
+        CoreNavigator.navigate('/settings');
+    }
+
 }

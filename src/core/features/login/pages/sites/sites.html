@@ -11,8 +11,7 @@
                 [attr.aria-label]="'core.delete' | translate">
                 <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true"></ion-icon>
             </ion-button>
-            <ion-button router-direction="forward" routerLink="/settings"
-                [attr.aria-label]="'core.settings.appsettings' | translate">
+            <ion-button (click)="openSettings()" [attr.aria-label]="'core.settings.appsettings' | translate">
                 <ion-icon slot="icon-only" name="fas-cog" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>

@@ -567,6 +567,13 @@ export class CoreLoginSitePage implements OnInit {
         CoreCustomURLSchemes.treatHandleCustomURLError(error);
     }
 
+    /**
+     * Open settings page.
+     */
+    openSettings(): void {
+        CoreNavigator.navigate('/settings');
+    }
+
 }
 
 /**

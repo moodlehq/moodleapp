@@ -288,6 +288,20 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Open email signup page.
+     */
+    openEmailSignup(): void {
+        CoreNavigator.navigate('/login/emailsignup', { params: { siteUrl: this.siteUrl } });
+    }
+
+    /**
+     * Open settings page.
+     */
+    openSettings(): void {
+        CoreNavigator.navigate('/settings');
+    }
+
+    /**
      * View destroyed.
      */
     ngOnDestroy(): void {

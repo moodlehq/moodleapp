@@ -7,8 +7,7 @@
         <ion-title>{{ 'core.login.connecttomoodle' | translate }}</ion-title>
 
         <ion-buttons slot="end">
-            <ion-button fill="clear" router-direction="forward" routerLink="/settings"
-                [attr.aria-label]="'core.settings.appsettings' | translate">
+            <ion-button fill="clear" (click)="openSettings()" [attr.aria-label]="'core.settings.appsettings' | translate">
                 <ion-icon slot="icon-only" name="fas-cog" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
