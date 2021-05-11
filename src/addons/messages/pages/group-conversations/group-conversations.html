@@ -25,11 +25,13 @@
 
         <core-loading [hideUntil]="loaded" [message]="loadingMessage">
             <ion-list>
-                <ion-item class="ion-text-wrap addon-message-discussion" (click)="gotoContacts()"
-                    [attr.aria-label]="'addon.messages.contacts' | translate" detail="true" button>
+                <ion-item class="ion-text-wrap addon-message-discussion" (click)="gotoContacts()" detail="true" button>
                     <ion-icon name="fas-address-book" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label><h2>{{ 'addon.messages.contacts' | translate }}</h2></ion-label>
-                    <ion-badge *ngIf="contactRequestsCount > 0" slot="end">{{contactRequestsCount}}</ion-badge>
+                    <ion-badge *ngIf="contactRequestsCount > 0" slot="end" aria-hidden="true">{{contactRequestsCount}}</ion-badge>
+                    <span *ngIf="contactRequestsCount > 0" class="sr-only">
+                        {{ 'addon.messages.pendingcontactrequests' | translate:{$a: contactRequestsCount} }}
+                    </span>
                 </ion-item>
                 <!-- Favourite conversations. -->
                 <ion-item
@@ -46,7 +48,10 @@
                     <ion-icon *ngIf="!favourites.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
                     <ion-icon *ngIf="favourites.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label><h2>{{ 'core.favourites' | translate }} ({{ favourites.count }})</h2></ion-label>
-                    <ion-badge slot="end" *ngIf="favourites.unread">{{ favourites.unread }}</ion-badge>
+                    <ion-badge slot="end" *ngIf="favourites.unread" aria-hidden="true">{{ favourites.unread }}</ion-badge>
+                    <span *ngIf="favourites.unread" class="sr-only">
+                        {{ 'addon.messages.unreadconversations' | translate:{$a: favourites.unread} }}
+                    </span>
                 </ion-item>
                 <div [hidden]="!favourites.conversations || !favourites.expanded || favourites.loading" #favlist
                     id="addon-messages-groupconversations-favourite">
@@ -78,7 +83,10 @@
                     <ion-icon *ngIf="!group.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
                     <ion-icon *ngIf="group.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label><h2>{{ 'addon.messages.groupconversations' | translate }} ({{ group.count }})</h2></ion-label>
-                    <ion-badge slot="end" *ngIf="group.unread">{{ group.unread }}</ion-badge>
+                    <ion-badge slot="end" *ngIf="group.unread" aria-hidden="true">{{ group.unread }}</ion-badge>
+                    <span *ngIf="group.unread" class="sr-only">
+                        {{ 'addon.messages.unreadconversations' | translate:{$a: group.unread} }}
+                    </span>
                 </ion-item>
                 <div [hidden]="!group.conversations || !group.expanded || group.loading" #grouplist
                     id="addon-messages-groupconversations-group">
@@ -111,7 +119,10 @@
                     <ion-label>
                         <h2>{{ 'addon.messages.individualconversations' | translate }} ({{ individual.count }})</h2>
                     </ion-label>
-                    <ion-badge slot="end" *ngIf="individual.unread">{{ individual.unread }}</ion-badge>
+                    <ion-badge slot="end" *ngIf="individual.unread" aria-hidden="true">{{ individual.unread }}</ion-badge>
+                    <span *ngIf="individual.unread" class="sr-only">
+                        {{ 'addon.messages.unreadconversations' | translate:{$a: individual.unread} }}
+                    </span>
                 </ion-item>
                 <div [hidden]="!individual.conversations || !individual.expanded || individual.loading" #indlist
                     id="addon-messages-groupconversations-individual">
@@ -171,7 +182,10 @@
             </p>
         </ion-label>
         <ion-note *ngIf="conversation.lastmessagedate > 0 || conversation.unreadcount" slot="end">
-            <ion-badge *ngIf="conversation.unreadcount > 0">{{ conversation.unreadcount }}</ion-badge>
+            <ion-badge *ngIf="conversation.unreadcount > 0" aria-label="true">{{ conversation.unreadcount }}</ion-badge>
+            <span *ngIf="conversation.unreadcount > 0" class="sr-only">
+                {{ 'addon.messages.unreadmessages' | translate:{$a: conversation.unreadcount} }}
+            </span>
             <span *ngIf="conversation.lastmessagedate > 0">{{conversation.lastmessagedate | coreDateDayOrTime}}</span>
         </ion-note>
     </ion-item>
