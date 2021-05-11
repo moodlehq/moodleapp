@@ -347,7 +347,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         if (!newValue || this.courses.allincludinghidden.length <= 0) {
             this.filteredCourses = this.courses.allincludinghidden;
         } else {
-            // Use displayname if avalaible, or fullname if not.
+            // Use displayname if available, or fullname if not.
             if (this.courses.allincludinghidden.length > 0 &&
                     typeof this.courses.allincludinghidden[0].displayname != 'undefined') {
                 this.filteredCourses = this.courses.allincludinghidden.filter((course) =>

@@ -87,7 +87,7 @@ export class CoreGradesProvider {
 
     /**
      * Get the grade items for a certain module. Keep in mind that may have more than one item to include outcomes and scales.
-     * Fallback function only used if 'gradereport_user_get_grade_items' WS is not avalaible Moodle < 3.2.
+     * Fallback function only used if 'gradereport_user_get_grade_items' WS is not available Moodle < 3.2.
      *
      * @param courseId ID of the course to get the grades from.
      * @param userId ID of the user to get the grades from. If not defined use site's current user.
@@ -109,7 +109,7 @@ export class CoreGradesProvider {
 
         userId = userId || site.getUserId();
 
-        const enabled = await this.isGradeItemsAvalaible(siteId);
+        const enabled = await this.isGradeItemsAvailable(siteId);
 
         if (enabled) {
             try {
@@ -340,13 +340,13 @@ export class CoreGradesProvider {
     }
 
     /**
-     * Returns whether or not WS Grade Items is avalaible.
+     * Returns whether or not WS Grade Items is available.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return True if ws is avalaible, false otherwise.
+     * @return True if ws is available, false otherwise.
      * @since  Moodle 3.2
      */
-    async isGradeItemsAvalaible(siteId?: string): Promise<boolean> {
+    async isGradeItemsAvailable(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
 
         return site.wsAvailable('gradereport_user_get_grade_items');

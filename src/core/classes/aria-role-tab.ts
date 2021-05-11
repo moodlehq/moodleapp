@@ -21,7 +21,7 @@ export class CoreAriaRoleTab<T = unknown> {
     }
 
     /**
-     * A11y key functionallity that prevents keyDown events.
+     * A11y key functionality that prevents keyDown events.
      *
      * @param e Event.
      */
@@ -39,7 +39,7 @@ export class CoreAriaRoleTab<T = unknown> {
     }
 
     /**
-     * A11y key functionallity.
+     * A11y key functionality.
      *
      * Enter or Space: When a tab has focus, activates the tab, causing its associated panel to be displayed.
      * Right Arrow: When a tab has focus: Moves focus to the next tab. If focus is on the last tab, moves focus to the first tab.

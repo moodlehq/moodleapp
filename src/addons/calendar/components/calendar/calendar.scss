@@ -146,8 +146,7 @@
     .core-module-icon {
         margin-right: 1px;
         margin-left: 1px;
-        width: 16px;
-        height: 16px;
+        --size: 16px;
         display: inline-block;
         vertical-align: bottom;
     }

@@ -1,3 +1,9 @@
-<button *ngIf="completion" (click)="completionClicked($event)" [title]="completionDescription">
+<img *ngIf="completion && completion.tracking !== 1" [src]="completionImage" [alt]="completionDescription">
+
+<ion-button
+    fill="clear"
+    *ngIf="completion && completion.tracking === 1"
+    (click)="completionClicked($event)"
+    [title]="completionDescription">
     <img [src]="completionImage" role="presentation" alt="">
-</button>
+</ion-button>

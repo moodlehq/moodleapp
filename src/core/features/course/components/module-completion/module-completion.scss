@@ -1,13 +1,20 @@
 :host {
-    button {
-        display: block;
-        background-color: transparent;
+    min-width: var(--a11y-min-target-size);
+    min-height: var(--a11y-min-target-size);
+    --size: 30px;
 
-        img {
-            padding: 5px;
-            width: 30px;
-            vertical-align: middle;
-            max-width: none;
-        }
+    img {
+        padding: 5px;
+        width: var(--size);
+        vertical-align: middle;
+        max-width: none;
+        margin: 7px;
+    }
+
+    ion-button {
+        --padding-top: 0;
+        --padding-start: 0;
+        --padding-end: 0;
+        --padding-bottom: 0;
     }
 }

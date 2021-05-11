@@ -39,9 +39,8 @@
                 </ion-label>
             </ion-item-divider>
             <section *ngFor="let category of categories">
-                <ion-item class="ion-text-wrap" router-direction="forward"
-                    [routerLink]="['/main/home/courses/categories', category.id]"
-                    [attr.aria-label]="category.name" detail="true">
+                <ion-item button class="ion-text-wrap" (click)="openCategory(category.id)" [attr.aria-label]="category.name"
+                    detail="true">
                     <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.category' | translate"></ion-icon>
                     <ion-label>
                         <h2>

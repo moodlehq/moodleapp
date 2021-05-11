@@ -7,8 +7,7 @@
         <ion-title>{{ 'core.login.connecttomoodle' | translate }}</ion-title>
 
         <ion-buttons slot="end">
-            <ion-button fill="clear" router-direction="forward" routerLink="/settings"
-                [attr.aria-label]="'core.settings.appsettings' | translate">
+            <ion-button fill="clear" (click)="openSettings()" [attr.aria-label]="'core.settings.appsettings' | translate">
                 <ion-icon slot="icon-only" name="fas-cog" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
@@ -27,7 +26,7 @@
                     <h2>{{ 'core.login.siteaddress' | translate }}</h2>
                 </ion-label>
                 <ion-input name="url" type="url" placeholder="{{ 'core.login.siteaddressplaceholder' | translate }}"
-                    formControlName="siteUrl" [autofocus]="showKeyboard && !showScanQR">
+                    formControlName="siteUrl" [core-auto-focus]="showKeyboard">
                 </ion-input>
             </ion-item>
         </ng-container>
@@ -37,7 +36,7 @@
                     <h2>{{ 'core.login.siteaddress' | translate }}</h2>
                 </ion-label>
                 <ion-input name="url" placeholder="{{ 'core.login.siteaddressplaceholder' | translate }}" formControlName="siteUrl"
-                    [autofocus]="showKeyboard && !showScanQR" (ionChange)="searchSite($event, siteForm.value.siteUrl)">
+                    [core-auto-focus]="showKeyboard" (ionChange)="searchSite($event, siteForm.value.siteUrl)">
                 </ion-input>
             </ion-item>
 
@@ -109,12 +108,16 @@
     </ng-container>
 
     <!-- Help. -->
-    <ion-list lines="none" class="ion-margin-top">
-        <ion-item button class="ion-text-center ion-text-wrap core-login-need-help" (click)="showHelp()" detail="false"
-            aria-haspopup="dialog">
-            <ion-label>{{ 'core.needhelp' | translate }}</ion-label>
-        </ion-item>
-    </ion-list>
+    <ion-button
+        class="ion-margin-top core-login-need-help core-button-as-link"
+        (click)="showHelp()"
+        aria-haspopup="dialog"
+        expand="block"
+        fill="clear"
+        color="dark"
+    >
+        <ion-label>{{ 'core.needhelp' | translate }}</ion-label>
+    </ion-button>
 </ion-content>
 
 <!-- Template site selector. -->

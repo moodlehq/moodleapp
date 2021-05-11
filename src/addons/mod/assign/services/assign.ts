@@ -849,13 +849,13 @@ export class AddonModAssignProvider {
             return this.gradingOfflineEnabled[siteId];
         }
 
-        this.gradingOfflineEnabled[siteId] = await CoreGrades.isGradeItemsAvalaible(siteId);
+        this.gradingOfflineEnabled[siteId] = await CoreGrades.isGradeItemsAvailable(siteId);
 
         return this.gradingOfflineEnabled[siteId];
     }
 
     /**
-     * Outcomes only can be edited if mod_assign_submit_grading_form is avalaible.
+     * Outcomes only can be edited if mod_assign_submit_grading_form is available.
      *
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with true if outcomes edit is enabled, rejected or resolved with false otherwise.

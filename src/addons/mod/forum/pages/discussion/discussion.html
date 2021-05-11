@@ -101,7 +101,7 @@
 
         <ion-card *ngIf="sort != 'nested'">
             <ng-container *ngFor="let post of posts; first as first">
-                <ion-item-divider *ngIf="!first"><ion-label></ion-label></ion-item-divider>
+                <core-spacer *ngIf="!first"></core-spacer>
                 <addon-mod-forum-post
                     [post]="post" [courseId]="courseId" [discussionId]="discussionId"
                     [component]="component" [componentId]="cmId" [replyData]="replyData"

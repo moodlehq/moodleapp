@@ -117,4 +117,13 @@ export class CoreCoursesCategoriesPage implements OnInit {
         });
     }
 
+    /**
+     * Open a category.
+     *
+     * @param categoryId Category Id.
+     */
+    openCategory(categoryId: number): void {
+        CoreNavigator.navigateToSitePath('courses/categories/' + categoryId);
+    }
+
 }

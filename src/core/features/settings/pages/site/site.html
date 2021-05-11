@@ -25,7 +25,7 @@
                         <p>{{ siteUrl }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item-divider><ion-label></ion-label></ion-item-divider>
+                <core-spacer></core-spacer>
 
                 <ion-item *ngFor="let handler of handlers.items" [ngClass]="['core-settings-handler', handler.class]"
                     [attr.aria-label]="handler.title | translate" detail="true" (click)="handlers.select(handler)" button

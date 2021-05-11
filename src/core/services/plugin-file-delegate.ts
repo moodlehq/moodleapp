@@ -412,5 +412,5 @@ export type CorePluginFileDownloadableResult = {
  */
 export type CoreFileSizeSum = {
     size: number; // Sum of file sizes.
-    total: boolean; // False if any file size is not avalaible.
+    total: boolean; // False if any file size is not available.
 };

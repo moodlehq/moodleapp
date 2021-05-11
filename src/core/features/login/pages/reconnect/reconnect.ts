@@ -271,4 +271,27 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     * A11y key functionality that prevents keyDown events.
+     *
+     * @param e Event.
+     */
+    keyDown(e: KeyboardEvent): void {
+        if (e.key == 'Escape') {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }
+
+    /**
+     * Cancel reconnect.
+     *
+     * @param e Event.
+     */
+    keyUp(e: KeyboardEvent): void {
+        if (e.key == 'Escape') {
+            this.cancel(e);
+        }
+    }
+
 }

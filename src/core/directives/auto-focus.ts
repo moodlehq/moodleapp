@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef } from '@angular/core';
+import { Directive, Input, ElementRef, AfterViewInit } from '@angular/core';
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -20,16 +20,17 @@ import { CoreUtils } from '@services/utils/utils';
 /**
  * Directive to auto focus an element when a view is loaded.
  *
- * You can apply it conditionallity assigning it a boolean value: <ion-input [core-auto-focus]="{{showKeyboard}}">
+ * The value of the input will decide if show keyboard when focusing the element (only on Android).
+ * In case value is nofocus, the directive is disabled.
  *
- * @deprecated since 3.9.5. ion-input now supports an [autofocus] attribute, please use that one instead.
+ * <ion-input [core-auto-focus]="showKeyboard">
  */
 @Directive({
     selector: '[core-auto-focus]',
 })
-export class CoreAutoFocusDirective implements OnInit {
+export class CoreAutoFocusDirective implements AfterViewInit {
 
-    @Input('core-auto-focus') coreAutoFocus: boolean | string = true;
+    @Input('core-auto-focus') showKeyboard: boolean | string = true;
 
     protected element: HTMLElement;
 
@@ -38,31 +39,54 @@ export class CoreAutoFocusDirective implements OnInit {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
-    ngOnInit(): void {
-        this.autoFocus();
+    ngAfterViewInit(): void {
+        if (this.showKeyboard === 'nofocus') {
+            return;
+        }
+
+        this.setFocus();
     }
 
     /**
-     * Function after the view is initialized.
+     * Function to focus the element.
+     *
+     * @param retries Internal param to stop retrying then 0.
      */
-    protected autoFocus(): void {
-        const autoFocus = CoreUtils.isTrueOrOne(this.coreAutoFocus);
-        if (autoFocus) {
-            // Wait a bit to make sure the view is loaded.
-            setTimeout(() => {
-                // If it's a ion-input or ion-textarea, search the right input to use.
-                let element = this.element;
-                if (this.element.tagName == 'ION-INPUT') {
-                    element = this.element.querySelector('input') || element;
-                } else if (this.element.tagName == 'ION-TEXTAREA') {
-                    element = this.element.querySelector('textarea') || element;
-                }
-
-                CoreDomUtils.focusElement(element);
-            }, 200);
+    protected setFocus(retries = 10): void {
+        if (retries == 0) {
+            return;
         }
+
+        // Wait a bit to make sure the view is loaded.
+        setTimeout(() => {
+            // If it's a ion-input or ion-textarea, search the right input to use.
+            let element: HTMLElement | null = null;
+
+            if (this.element.tagName == 'ION-INPUT') {
+                element = this.element.querySelector('input');
+            } else if (this.element.tagName == 'ION-TEXTAREA') {
+                element = this.element.querySelector('textarea');
+            } else {
+                element = this.element;
+            }
+
+            if (!element) {
+                this.setFocus(retries - 1);
+
+                return;
+            }
+
+            const showKeyboard = this.showKeyboard === '' || CoreUtils.isTrueOrOne(this.showKeyboard);
+            CoreDomUtils.focusElement(element, showKeyboard);
+
+            if (element != document.activeElement) {
+                this.setFocus(retries - 1);
+
+                return;
+            }
+        }, 200);
     }
 
 }

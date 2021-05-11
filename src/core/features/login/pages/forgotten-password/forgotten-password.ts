@@ -35,7 +35,7 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
 
     myForm!: FormGroup;
     siteUrl!: string;
-    autoFocus!: boolean;
+    showKeyboard!: boolean;
 
     constructor(
         protected formBuilder: FormBuilder,
@@ -55,7 +55,7 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
         }
 
         this.siteUrl = siteUrl;
-        this.autoFocus = Platform.is('tablet');
+        this.showKeyboard = Platform.is('tablet');
         this.myForm = this.formBuilder.group({
             field: ['username', Validators.required],
             value: [CoreNavigator.getRouteParam<string>('username') || '', Validators.required],

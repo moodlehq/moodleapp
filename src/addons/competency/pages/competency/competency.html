@@ -43,8 +43,7 @@
                     </ng-container>
                     &nbsp;/&nbsp;
                     <span *ngFor="let ancestor of competency.competency.comppath.ancestors">
-                        <a *ngIf="competency.competency.comppath.showlinks" (click)="openCompetencySummary(ancestor.id)"
-                            class="core-clickable">
+                        <a *ngIf="competency.competency.comppath.showlinks" (click)="openCompetencySummary(ancestor.id)">
                             {{ ancestor.name }}
                         </a>
                         <ng-container *ngIf="!competency.competency.comppath.showlinks">{{ ancestor.name }}</ng-container>
@@ -60,7 +59,7 @@
                     </div>
                     <div *ngIf="competency.competency.hasrelatedcompetencies">
                         <p *ngFor="let relatedcomp of competency.competency.relatedcompetencies">
-                            <a (click)="openCompetencySummary(relatedcomp.id)" class="core-clickable">
+                            <a (click)="openCompetencySummary(relatedcomp.id)">
                                 {{ relatedcomp.shortname }} - {{ relatedcomp.idnumber }}
                             </a>
                         </p>

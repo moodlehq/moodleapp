@@ -65,6 +65,8 @@
     // Accessibility vars.
     --a11y-min-target-size: 44px;
 
+    --module-icon-size: 24px;
+
     --ion-text-color: #{$text-color};
     --ion-text-color-rgb: 58,58,58;
     --ion-card-color: var(--ion-text-color);
@@ -169,10 +171,11 @@
         --detail-icon-opacity: var(--ion-item-detail-icon-opacity);
     }
 
+    --item-divider-min-height: calc(var(--a11y-min-target-size) + 8px);
     ion-item-divider {
         --background: var(--gray-lighter);
         --color: inherit;
-        min-height: calc(var(--a11y-min-target-size) + 8px);
+        min-height: var(--item-divider-min-height);
     }
 
     --core-combobox-background: var(--ion-item-background);
@@ -215,10 +218,10 @@
     --addon-forum-border-color: #{$addon-forum-border-color};
     --addon-forum-highlight-color: #{$addon-forum-highlight-color};
 
-    --drop-shadow: 0, 0, 0, 0.2;
+    --drop-shadow: 0, 0, 0, 0.18;
 
-    --core-menu-box-shadow-end: -4px 0px 16px rgba(0, 0, 0, 0.18);
-    --core-menu-box-shadow-start: 4px 0px 16px rgba(0, 0, 0, 0.18);
+    --core-menu-box-shadow-end: -4px 0px 16px rgba(var(--drop-shadow));
+    --core-menu-box-shadow-start: 4px 0px 16px rgba(var(--drop-shadow));
 
     --core-question-correct-color: var(--green-dark);
     --core-question-correct-color-bg: var(--green-light);

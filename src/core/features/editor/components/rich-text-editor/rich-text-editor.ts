@@ -511,6 +511,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * @param event The event.
      */
     async toggleEditor(event: Event): Promise<void> {
+        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+            return;
+        }
+
         this.stopBubble(event);
 
         this.setContent(this.control?.value || '');
@@ -654,6 +658,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      *                      toolbar styles button when set.
      */
     buttonAction(event: Event, command: string, parameters?: string): void {
+        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+            return;
+        }
+
         this.stopBubble(event);
 
         if (!command) {
@@ -725,6 +733,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * Hide the toolbar in phone mode.
      */
     hideToolbar(event: Event): void {
+        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+            return;
+        }
+
         this.element.classList.remove('has-focus');
 
         this.stopBubble(event);
@@ -732,6 +744,16 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         if (this.isPhone) {
             this.toolbarHidden = true;
         }
+    }
+
+    /**
+     * Checks if Space or Enter have been pressed.
+     *
+     * @param event Keyboard Event.
+     * @returns Wether space or enter have been pressed.
+     */
+    protected isValidKeyboardKey(event: KeyboardEvent): boolean {
+        return event.key == ' ' || event.key == 'Enter';
     }
 
     /**
@@ -754,7 +776,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * @param event Event.
      */
     stopBubble(event: Event): void {
-        if (event.type != 'mouseup') {
+        if (event.type != 'mouseup' && event.type != 'keyup') {
             event.preventDefault();
         }
         event.stopPropagation();
@@ -765,7 +787,11 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      *
      * @param event Event.
      */
-    mouseDownAction(event: Event): void {
+    downAction(event: Event): void {
+        if (event.type == 'keydown' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+            return;
+        }
+
         const selection = window.getSelection()?.toString();
 
         // When RTE is focused with a whole paragraph in desktop the stopBubble will not fire click.
@@ -778,6 +804,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * Method that shows the next toolbar buttons.
      */
     async toolbarNext(event: Event): Promise<void> {
+        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+            return;
+        }
+
         this.stopBubble(event);
 
         if (!this.toolbarNextHidden) {
@@ -792,6 +822,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * Method that shows the previous toolbar buttons.
      */
     async toolbarPrev(event: Event): Promise<void> {
+        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+            return;
+        }
+
         this.stopBubble(event);
 
         if (!this.toolbarPrevHidden) {

@@ -65,7 +65,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     lateSubmissions?: string; // Message about late submissions.
     showNumbers = true; // Whether to show number of submissions with each status.
     summary?: AddonModAssignSubmissionGradingSummary; // The grading summary.
-    needsGradingAvalaible = false; // Whether we can see the submissions that need grading.
+    needsGradingAvailable = false; // Whether we can see the submissions that need grading.
 
     groupInfo: CoreGroupInfo = {
         groups: [],
@@ -275,7 +275,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         this.summary = submissionStatus.gradingsummary;
         if (!this.summary) {
-            this.needsGradingAvalaible = false;
+            this.needsGradingAvailable = false;
 
             return;
         }
@@ -296,7 +296,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             }
         }
 
-        this.needsGradingAvalaible =
+        this.needsGradingAvailable =
             (submissionStatus.gradingsummary?.submissionsneedgradingcount || 0) > 0 &&
             this.currentSite!.isVersionGreaterEqualThan('3.2');
     }

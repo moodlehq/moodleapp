@@ -21,7 +21,7 @@ export abstract class CoreAriaRoleButton<T = unknown> {
     }
 
     /**
-     * A11y key functionallity that prevents keyDown events.
+     * A11y key functionality that prevents keyDown events.
      *
      * @param event Event.
      */
@@ -33,7 +33,7 @@ export abstract class CoreAriaRoleButton<T = unknown> {
     }
 
     /**
-     * A11y key functionallity that translates space and enter keys to click action.
+     * A11y key functionality that translates space and enter keys to click action.
      *
      * @param event Event.
      */
@@ -47,7 +47,7 @@ export abstract class CoreAriaRoleButton<T = unknown> {
     }
 
     /**
-     * A11y click functionallity.
+     * A11y click functionality.
      *
      * @param event Event.
      */

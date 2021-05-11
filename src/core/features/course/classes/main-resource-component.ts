@@ -57,7 +57,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     loaded = false; // If the component has been loaded.
     component?: string; // Component name.
     componentId?: number; // Component ID.
-    blog?: boolean; // If blog is avalaible.
+    blog?: boolean; // If blog is available.
 
     // Data for context menu.
     externalUrl?: string; // External URL to open in browser.

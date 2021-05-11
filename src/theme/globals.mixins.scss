@@ -30,7 +30,7 @@
     }
 }
 
-@mixin border-start($px, $type, $color) {
+@mixin border-start($px, $type: null, $color: null) {
     @include ltr() {
         border-left: $px $type $color;
     }
@@ -41,7 +41,7 @@
 }
 
 
-@mixin border-end($px, $type, $color) {
+@mixin border-end($px, $type: null, $color: null) {
     @include ltr() {
         border-right: $px $type $color;
     }

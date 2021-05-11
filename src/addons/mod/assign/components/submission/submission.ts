@@ -1123,7 +1123,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             ) {
                 if (this.previousAttempt && this.previousAttempt.submission!.plugins &&
                         this.userSubmission.status == this.statusReopened) {
-                    // Get latest attempt if avalaible.
+                    // Get latest attempt if available.
                     this.submissionPlugins = this.previousAttempt.submission!.plugins;
                 } else {
                     this.submissionPlugins = this.userSubmission.plugins!;

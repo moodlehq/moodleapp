@@ -3,7 +3,7 @@
         <ion-item>
             <ion-label></ion-label>
             <ion-input type="search" name="search" [(ngModel)]="searchText" [placeholder]="placeholder"
-                [autocorrect]="autocorrect" [spellcheck]="spellcheck" [autofocus]="autoFocus"
+                [autocorrect]="autocorrect" [spellcheck]="spellcheck" [core-auto-focus]="autoFocus || 'nofocus'"
                 [disabled]="disabled" role="searchbox" (ionFocus)="focus($event)">
             </ion-input>
             <ion-button slot="end" fill="clear" type="submit" size="small" [attr.aria-label]="searchLabel"
