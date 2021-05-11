@@ -30,8 +30,12 @@
             <ion-label>
                 <h2>{{ handler.title | translate}}</h2>
             </ion-label>
-            <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge">{{handler.badge}}
+            <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
+                {{handler.badge}}
             </ion-badge>
+            <span *ngIf="handler.showBadge && handler.badge && handler.badgeA11yText" class="sr-only">
+                {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+            </span>
             <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading"></ion-spinner>
         </ion-item>
         <ng-container *ngFor="let item of customItems">

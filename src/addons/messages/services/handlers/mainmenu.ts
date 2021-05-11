@@ -47,6 +47,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
         class: 'addon-messages-handler',
         showBadge: true, // Do not check isMessageCountEnabled because we'll use fallback it not enabled.
         badge: '',
+        badgeA11yText: 'addon.messages.unreadconversations',
         loading: true,
     };
 
