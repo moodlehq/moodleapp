@@ -14,6 +14,7 @@
 
 import { Type } from '@angular/core';
 
+import { CoreConstants } from '@/core/constants';
 import { CoreCourseAnyModuleData, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
@@ -65,10 +66,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         sectionId?: number,
         forCoursePage?: boolean,
     ): CoreCourseModuleHandlerData {
-        const callMethod = forCoursePage && this.handlerSchema.coursepagemethod;
-
-        if ('noviewlink' in module && module.noviewlink && !callMethod) {
-            // The module doesn't link to a new page (similar to label). Only display the description.
+        if ('description' in module && this.shouldOnlyDisplayDescription(module, forCoursePage)) {
             const title = module.description;
             module.description = '';
 
@@ -105,12 +103,38 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
             };
         }
 
-        if (callMethod && module.visibleoncoursepage !== 0) {
+        if (forCoursePage && this.handlerSchema.coursepagemethod && module.visibleoncoursepage !== 0) {
             // Call the method to get the course page template.
             this.loadCoursePageTemplate(module, courseId, handlerData);
         }
 
         return handlerData;
+    }
+
+    /**
+     * Check whether the plugin should only display the description, similar to mod_label.
+     *
+     * @param module Module.
+     * @param forCoursePage Whether the data will be used to render the course page.
+     * @return Bool.
+     */
+    protected shouldOnlyDisplayDescription(module: CoreCourseAnyModuleData, forCoursePage?: boolean): boolean {
+        if (forCoursePage && this.handlerSchema.coursepagemethod) {
+            // The plugin defines a method for course page, don't display just the description.
+            return false;
+        }
+
+        // Check if the plugin specifies if FEATURE_NO_VIEW_LINK is supported.
+        const noViewLink = <boolean | undefined> (this.supportsFeature ?
+            this.supportsFeature(CoreConstants.FEATURE_NO_VIEW_LINK) :
+            this.supportedFeatures?.[CoreConstants.FEATURE_NO_VIEW_LINK]);
+
+        if (noViewLink !== undefined) {
+            return noViewLink;
+        }
+
+        // The plugin doesn't specify it. Use the value returned by the site.
+        return 'noviewlink' in module && !!module.noviewlink;
     }
 
     /**
