@@ -526,7 +526,7 @@ export class CoreCoursesProvider {
             response.courses = response.courses.filter((course) => courseIds.indexOf(course.id) >= 0);
         }
 
-        // Courses will be sorted using sortorder if avalaible.
+        // Courses will be sorted using sortorder if available.
         return response.courses.sort((a, b) => {
             if (typeof a.sortorder == 'undefined' && typeof b.sortorder == 'undefined') {
                 return b.id - a.id;

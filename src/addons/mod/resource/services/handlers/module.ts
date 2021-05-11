@@ -198,7 +198,7 @@ export class AddonModResourceModuleHandlerService implements CoreCourseModuleHan
             }
 
             if (options.showtype) {
-                // We should take it from options.filedetails.size if avalaible but it's already translated.
+                // We should take it from options.filedetails.size if available but it's already translated.
                 extra.push(CoreMimetypeUtils.getMimetypeDescription(file));
             }
 

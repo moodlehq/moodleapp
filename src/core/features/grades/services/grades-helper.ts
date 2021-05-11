@@ -471,7 +471,7 @@ export class CoreGradesHelperProvider {
             }
 
             // Try to open the module grade directly. Check if it's possible.
-            const grades = await CoreGrades.isGradeItemsAvalaible(siteId);
+            const grades = await CoreGrades.isGradeItemsAvailable(siteId);
 
             if (!grades) {
                 throw new CoreError('No grades found.');
@@ -543,7 +543,7 @@ export class CoreGradesHelperProvider {
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
-        const enabled = await CoreGrades.isGradeItemsAvalaible(siteId);
+        const enabled = await CoreGrades.isGradeItemsAvailable(siteId);
 
         return enabled
             ? CoreGrades.invalidateCourseGradesItemsData(courseId, userId, groupId, siteId)

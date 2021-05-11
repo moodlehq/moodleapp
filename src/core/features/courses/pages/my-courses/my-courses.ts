@@ -163,7 +163,7 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
         if (!newValue || !this.courses) {
             this.filteredCourses = this.courses;
         } else {
-            // Use displayname if avalaible, or fullname if not.
+            // Use displayname if available, or fullname if not.
             if (this.courses.length > 0 && typeof this.courses[0].displayname != 'undefined') {
                 this.filteredCourses = this.courses.filter((course) => course.displayname!.toLowerCase().indexOf(newValue) > -1);
             } else {

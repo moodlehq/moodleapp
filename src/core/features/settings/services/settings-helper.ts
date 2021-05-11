@@ -449,7 +449,7 @@ export class CoreSettingsHelperProvider {
      * Check if device can detect color scheme system preference.
      * https://caniuse.com/prefers-color-scheme
      *
-     * @returns if the color scheme system preference is avalaible.
+     * @returns if the color scheme system preference is available.
      */
     canIUsePrefersColorScheme(): boolean {
         // The following check will check browser support but system may differ from that.

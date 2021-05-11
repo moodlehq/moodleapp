@@ -125,7 +125,7 @@ export class AddonModFolderProvider {
     /**
      * Returns whether or not getFolder WS available or not.
      *
-     * @return If WS is avalaible.
+     * @return If WS is available.
      * @since 3.3
      */
     isGetFolderWSAvailable(): boolean {

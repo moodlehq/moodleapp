@@ -321,7 +321,7 @@ export class AddonModForumProvider {
     /**
      * Returns whether or not getDiscussionPost WS available or not.
      *
-     * @return If WS is avalaible.
+     * @return If WS is available.
      * @since 3.8
      */
     isGetDiscussionPostAvailable(): boolean {
@@ -332,7 +332,7 @@ export class AddonModForumProvider {
      * Returns whether or not getDiscussionPost WS available or not.
      *
      * @param site Site. If not defined, current site.
-     * @return If WS is avalaible.
+     * @return If WS is available.
      * @since 3.7
      */
     isGetDiscussionPostsAvailable(site?: CoreSite): boolean {
@@ -344,7 +344,7 @@ export class AddonModForumProvider {
     /**
      * Returns whether or not deletePost WS available or not.
      *
-     * @return If WS is avalaible.
+     * @return If WS is available.
      * @since 3.8
      */
     isDeletePostAvailable(): boolean {
@@ -354,7 +354,7 @@ export class AddonModForumProvider {
     /**
      * Returns whether or not updatePost WS available or not.
      *
-     * @return If WS is avalaible.
+     * @return If WS is available.
      * @since 3.8
      */
     isUpdatePostAvailable(): boolean {

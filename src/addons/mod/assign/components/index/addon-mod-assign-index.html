@@ -119,8 +119,8 @@
 
             <!-- Summary of submissions that need grading. -->
             <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled && !assign.teamsubmission && showNumbers"
-                [detail]="needsGradingAvalaible" [button]="needsGradingAvalaible"
-                (click)="goToSubmissionList(needGrading, needsGradingAvalaible)">
+                [detail]="needsGradingAvailable" [button]="needsGradingAvailable"
+                (click)="goToSubmissionList(needGrading, needsGradingAvailable)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofsubmissionsneedgrading' | translate }}</h2></ion-label>
                 <ion-badge slot="end" color="primary">
                     {{ summary.submissionsneedgradingcount }}

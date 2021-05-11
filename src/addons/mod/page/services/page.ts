@@ -127,7 +127,7 @@ export class AddonModPageProvider {
     /**
      * Returns whether or not getPage WS available or not.
      *
-     * @return If WS is avalaible.
+     * @return If WS is available.
      * @since 3.3
      */
     isGetPageWSAvailable(): boolean {
