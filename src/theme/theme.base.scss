@@ -500,3 +500,18 @@ img.core-media-adapt-width {
 audio.core-media-adapt-width {
     width: 100%;
 }
+
+// Focus highlight for accessibility.
+.ion-focused,
+ion-input.has-focus,
+.ion-focused ion-toggle:focus-within,
+.ion-focused ion-select:focus-within,
+.ion-focused ion-checkbox:focus-within,
+.ion-focused ion-radio:focus-within {
+    border: 2px solid var(--a11y-focus-outline-color);
+}
+
+// Treat cases where there's a focusable element inside an item, like a button.
+ion-item.ion-focused:not(:focus) {
+    border: none;
+}

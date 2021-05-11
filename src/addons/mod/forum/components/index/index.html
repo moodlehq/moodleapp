@@ -86,7 +86,7 @@
             <ion-item *ngFor="let discussion of discussions.items"
                 class="addon-mod-forum-discussion" detail="true"
                 [lines]="discussion.groupname && 'none'" [attr.aria-current]="discussions.getItemAriaCurrent(discussion)"
-                (click)="discussions.select(discussion)">
+                (click)="discussions.select(discussion)" button>
                 <ion-label>
                     <div class="addon-mod-forum-discussion-title">
                         <h2 class="ion-text-wrap">

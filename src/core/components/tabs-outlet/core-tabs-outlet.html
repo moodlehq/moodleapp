@@ -14,6 +14,7 @@
                             [hidden]="!hideUntil"
                             [id]="tab.id! + '-tab'"
                             class="tab-slide"
+                            tabindex="-1"
                             [class.selected]="selected == tab.id">
                             <ion-tab-button
                                 (ionTabButtonClick)="selectTab(tab.id, $event)"

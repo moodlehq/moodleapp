@@ -19,17 +19,17 @@
         --padding-end: 10px;
         --padding-bottom: 10px;
         --padding-start: 16px;
+
+        &.md {
+            --background-activated-opacity: 0;
+            --background-focused-opacity: .12;
+        }
+
+        &.ios {
+            --background-activated-opacity: .12;
+            --background-focused-opacity: .15;
+        }
     }
-}
-
-:host-context(.md) {
-    --background-activated-opacity: 0;
-    --background-focused-opacity: .12;
-}
-
-:host-context(.ios) {
-    --background-activated-opacity: .12;
-    --background-focused-opacity: .15;
 }
 
 ion-select,
@@ -42,6 +42,11 @@ ion-button {
     overflow: hidden;
     margin: 8px;
     box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
+
+    &:focus,
+    &:focus-within {
+        border: 2px solid var(--a11y-focus-outline-color);
+    }
 }
 
 ion-select {
