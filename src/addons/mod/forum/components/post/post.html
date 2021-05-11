@@ -122,20 +122,26 @@
             <ion-checkbox slot="end" [(ngModel)]="replyData.isprivatereply" name="isprivatereply"></ion-checkbox>
         </ion-item>
         <ng-container *ngIf="forum.id && forum.maxattachments > 0">
-            <ion-item-divider class="core-expandable ion-text-wrap" (click)="toggleAdvanced()" [attr.aria-expanded]="advanced"
-                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') |translate" role="button">
+            <ion-item
+                button
+                class="divider core-expandable ion-text-wrap"
+                (click)="toggleAdvanced()" detail="false"
+                [attr.aria-expanded]="advanced"
+                [attr.aria-controls]="'addon-forum-reply-edit-form-advanced-' + uniqueId"
+                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate"
+            >
                 <ion-label>
                     <ion-icon *ngIf="!advanced" name="fa-caret-right" slot="start" aria-hidden="true"></ion-icon>
                     <ion-icon *ngIf="advanced" name="fa-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     <h2>{{ 'addon.mod_forum.advanced' | translate }}</h2>
                 </ion-label>
-            </ion-item-divider>
-            <ng-container *ngIf="advanced">
+            </ion-item>
+            <div *ngIf="advanced" [id]="'addon-forum-reply-edit-form-advanced-' + uniqueId">
                 <core-attachments
                     [files]="replyData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments"
                     [component]="component" [componentId]="forum.cmid" [allowOffline]="true">
                 </core-attachments>
-            </ng-container>
+            </div>
         </ng-container>
         <ion-grid>
             <ion-row>

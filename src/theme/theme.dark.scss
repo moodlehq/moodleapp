@@ -67,8 +67,8 @@
     }
 
     --ion-item-background: #{$ion-item-background-dark};
-    --ion-item-detail-icon-color: var(--white);
-    ion-item-divider {
+    --ion-item-detail-icon-: var(--white);
+    ion-item-divider, ion-item.divider {
         --background: var(--black);
         --color: var(--white);
     }
