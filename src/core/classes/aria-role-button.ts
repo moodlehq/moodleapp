@@ -36,13 +36,14 @@ export abstract class CoreAriaRoleButton<T = unknown> {
      * A11y key functionality that translates space and enter keys to click action.
      *
      * @param event Event.
+     * @param args Additional args.
      */
-    keyUp(event: KeyboardEvent): void {
+    keyUp(event: KeyboardEvent, ...args: unknown[]): void {
         if ((event.key == ' ' || event.key == 'Enter') && this.isAllowed()) {
             event.preventDefault();
             event.stopPropagation();
 
-            this.click(event);
+            this.click(event, ...args);
         }
     }
 
@@ -50,9 +51,10 @@ export abstract class CoreAriaRoleButton<T = unknown> {
      * A11y click functionality.
      *
      * @param event Event.
+     * @param args Additional args.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    click(event?: Event): void {
+    click(event?: Event, ...args: unknown[]): void {
         // Nothing defined here.
     }
 

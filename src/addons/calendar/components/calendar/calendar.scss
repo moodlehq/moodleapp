@@ -71,6 +71,7 @@
             overflow: hidden;
             white-space: nowrap;
             color: var(--text-color);
+            min-height: auto;
 
             &.addon-calendar-event-past {
                 opacity: 0.5;
@@ -102,6 +103,7 @@
 
     .addon-calendar-weekday {
         border-bottom: 1px solid var(--addon-calendar-border-color);
+        font-weight: bold;
     }
 
     .addon-calendar-day-events {

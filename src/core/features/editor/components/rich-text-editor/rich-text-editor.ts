@@ -89,8 +89,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     protected resetObserver?: CoreEventObserver;
     protected initHeightInterval?: number;
     protected isCurrentView = true;
-    protected toolbarButtonWidth = 40;
-    protected toolbarArrowWidth = 28;
+    protected toolbarButtonWidth = 44;
+    protected toolbarArrowWidth = 44;
     protected pageInstance: string;
     protected autoSaveInterval?: number;
     protected hideMessageTimeout?: number;
@@ -100,6 +100,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     protected resizeFunction?: () => Promise<number>;
     protected selectionChangeFunction?: () => void;
     protected languageChangedSubscription?: Subscription;
+    protected resizeObserver?: IntersectionObserver;
 
     rteEnabled = false;
     isPhone = false;
@@ -127,6 +128,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         initialSlide: 0,
         slidesPerView: 6,
         centerInsufficientSlides: true,
+        watchSlidesVisibility: true,
     };
 
     constructor(
@@ -136,6 +138,14 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         this.contentChanged = new EventEmitter<string>();
         this.element = elementRef.nativeElement as HTMLDivElement;
         this.pageInstance = 'app_' + Date.now(); // Generate a "unique" ID based on timestamp.
+
+        if ('IntersectionObserver' in window) {
+            this.resizeObserver = new IntersectionObserver((observerEntry: IntersectionObserverEntry[]) => {
+                if (observerEntry[0].boundingClientRect.width > 0) {
+                    this.updateToolbarButtons();
+                }
+            });
+        }
     }
 
     /**
@@ -231,8 +241,12 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         });
 
         this.resizeFunction = this.maximizeEditorSize.bind(this);
-        this.selectionChangeFunction = this.updateToolbarStyles.bind(this);
         window.addEventListener('resize', this.resizeFunction!);
+
+        // Start observing the target node for configured mutations
+        this.resizeObserver?.observe(this.element);
+
+        this.selectionChangeFunction = this.updateToolbarStyles.bind(this);
         document.addEventListener('selectionchange', this.selectionChangeFunction!);
 
         this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, (kbHeight: number) => {
@@ -273,7 +287,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
             setTimeout(async () => {
                 // Editor is ready, adjust Height if needed.
-                let height;
+                let height: number;
 
                 if (CoreApp.isAndroid()) {
                     // In Android we ignore the keyboard height because it is not part of the web view.
@@ -760,6 +774,11 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * Show the toolbar.
      */
     showToolbar(event: Event): void {
+        if (!('IntersectionObserver' in window)) {
+            // Fallback if IntersectionObserver is not supported.
+            this.updateToolbarButtons();
+        }
+
         this.element.classList.add('ion-touched');
         this.element.classList.remove('ion-untouched');
         this.element.classList.add('has-focus');
@@ -776,7 +795,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * @param event Event.
      */
     stopBubble(event: Event): void {
-        if (event.type != 'mouseup' && event.type != 'keyup') {
+        if (event.type != 'touchend' &&event.type != 'mouseup' && event.type != 'keyup') {
             event.preventDefault();
         }
         event.stopPropagation();
@@ -840,7 +859,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * Update the number of toolbar buttons displayed.
      */
     async updateToolbarButtons(): Promise<void> {
-        if (!this.isCurrentView || !this.toolbar || !this.toolbarSlides) {
+        if (!this.isCurrentView || !this.toolbar || !this.toolbarSlides || this.element.offsetParent == null) {
             // Don't calculate if component isn't in current view, the calculations are wrong.
             return;
         }
@@ -856,7 +875,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
             return;
         }
 
-        if (width > length * this.toolbarButtonWidth) {
+        if (length > 0 && width > length * this.toolbarButtonWidth) {
             this.slidesOpts = { ...this.slidesOpts, slidesPerView: length };
             this.toolbarArrows = false;
         } else {
@@ -1096,6 +1115,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         clearInterval(this.initHeightInterval);
         clearInterval(this.autoSaveInterval);
         clearTimeout(this.hideMessageTimeout);
+        this.resizeObserver?.disconnect();
         this.resetObserver?.off();
         this.keyboardObserver?.off();
     }

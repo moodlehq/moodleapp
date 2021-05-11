@@ -2026,6 +2026,7 @@ export type AddonCalendarWeekDay = AddonCalendarDay & {
     ispast?: boolean; // Calculated in the app. Whether the day is in the past.
     filteredEvents?: AddonCalendarEventToDisplay[]; // Calculated in the app. Filtered events.
     eventsFormated?: AddonCalendarEventToDisplay[]; // Events.
+    periodName?: string;
 };
 
 /**
