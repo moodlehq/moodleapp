@@ -27,6 +27,7 @@
 
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
+use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ExpectationException;
 
@@ -401,7 +402,7 @@ class behat_app extends behat_base {
         // If it's the login page, we automatically fill in the URL and leave it on the user/pass
         // page. If it's the main page, we just leave it there.
         if ($situation === 'login') {
-            $this->i_set_the_field_in_the_app('campus.example.edu', $CFG->wwwroot);
+            $this->i_set_the_field_in_the_app($islegacy ? 'campus.example.edu' : 'Your site', $CFG->wwwroot);
             $this->i_press_in_the_app($islegacy ? 'Connect!' : 'Connect to your site');
         }
 
@@ -453,6 +454,36 @@ class behat_app extends behat_base {
             }
             return true;
         });
+        $this->wait_for_pending_js();
+    }
+
+    /**
+     * Receives push notifications for forum events.
+     *
+     * @Given /^I receive a forum push notification for:$/
+     * @param TableNode $data
+     */
+    public function i_receive_a_forum_push_notification(TableNode $data) {
+        global $DB, $CFG;
+
+        $data = (object) $data->getColumnsHash()[0];
+        $module = $DB->get_record('course_modules', ['idnumber' => $data->module]);
+        $discussion = $DB->get_record('forum_discussions', ['name' => $data->discussion]);
+        $notification = json_encode([
+            'site' => md5($CFG->wwwroot . $data->username),
+            'courseid' => $discussion->course,
+            'moodlecomponent' => 'mod_forum',
+            'name' => 'posts',
+            'contexturl' => '',
+            'notif' => 1,
+            'customdata' => [
+                'discussionid' => $discussion->id,
+                'cmid' => $module->id,
+                'instance' => $discussion->forum,
+            ],
+        ]);
+
+        $this->evaluate_script("return window.pushNotifications.notificationClicked($notification)");
         $this->wait_for_pending_js();
     }
 

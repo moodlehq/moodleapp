@@ -1,11 +1,11 @@
 @app @javascript
-Feature: It navigates properly between pages.
+Feature: It navigates properly in pages with a split-view component.
 
   Background:
     Given the following "users" exist:
       | username |
       | student1 |
-    Given the following "courses" exist:
+    And the following "courses" exist:
       | fullname | shortname |
       | Course 2 | C2        |
       | Course 1 | C1        |
@@ -22,7 +22,7 @@ Feature: It navigates properly between pages.
       | Grade category C1 | Grade item C1 | 20       | 40       | C1     |
       | Grade category C2 | Grade item C2 | 60       | 80       | C2     |
 
-  Scenario: Navigate between split-view items in mobiles
+  Scenario: Navigate in grades tab on mobile
 
     # Open more tab
     Given I enter the app
@@ -85,7 +85,7 @@ Feature: It navigates properly between pages.
     And I should find "App settings" in the app
     But I should not find "Back" in the app
 
-  Scenario: Navigate between split-view items in tablets
+  Scenario: Navigate in grades tab on tablet
 
     # Open more tab
     Given I enter the app
