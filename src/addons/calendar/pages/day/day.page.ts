@@ -91,7 +91,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     currentMoment!: moment.Moment;
     filter: AddonCalendarFilter = {
         filtered: false,
-        courseId: -1,
+        courseId: undefined,
         categoryId: undefined,
         course: true,
         group: true,
@@ -235,7 +235,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             this.filter[name] = CoreNavigator.getRouteBooleanParam(name) ?? true;
             types.push(value);
         });
-        this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId') || -1;
+        this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId');
         this.filter.categoryId = CoreNavigator.getRouteNumberParam('categoryId');
 
         this.filter.filtered = typeof this.filter.courseId != 'undefined' || types.some((name) => !this.filter[name]);
