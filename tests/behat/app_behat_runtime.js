@@ -203,7 +203,10 @@
      */
     var isElementSelected = (element, container) => {
         const ariaCurrent = element.getAttribute('aria-current');
-        if (ariaCurrent && ariaCurrent !== 'false')
+        if (
+            (ariaCurrent && ariaCurrent !== 'false') ||
+            (element.getAttribute('aria-selected') === 'true')
+        )
             return true;
 
         if (!element.parentElement || element.parentElement === container)
@@ -238,18 +241,21 @@
     };
 
     /**
-     * Finds an element within a given container.
+     * Finds elements within a given container.
      *
      * @param {HTMLElement} container Parent element to search the element within
      * @param {string} text Text to look for
-     * @return {HTMLElement} Found element
+     * @return {HTMLElement} Elements containing the given text
      */
-    var findElementBasedOnTextWithin = (container, text) => {
+    var findElementsBasedOnTextWithin = (container, text) => {
+        const elements = [];
         const attributesSelector = `[aria-label*="${text}"], a[title*="${text}"], img[alt*="${text}"]`;
 
         for (const foundByAttributes of container.querySelectorAll(attributesSelector)) {
-            if (isElementVisible(foundByAttributes, container))
-                return foundByAttributes;
+            if (!isElementVisible(foundByAttributes, container))
+                continue;
+
+            elements.push(foundByAttributes);
         }
 
         const treeWalker = document.createTreeWalker(
@@ -280,15 +286,18 @@
         while (currentNode = treeWalker.nextNode()) {
             if (currentNode instanceof Text) {
                 if (currentNode.textContent.includes(text)) {
-                    return currentNode.parentElement;
+                    elements.push(currentNode.parentElement);
                 }
 
                 continue;
             }
 
             const labelledBy = currentNode.getAttribute('aria-labelledby');
-            if (labelledBy && container.querySelector(`#${labelledBy}`)?.innerText?.includes(text))
-                return currentNode;
+            if (labelledBy && container.querySelector(`#${labelledBy}`)?.innerText?.includes(text)) {
+                elements.push(currentNode);
+
+                continue;
+            }
 
             if (currentNode.shadowRoot) {
                 for (const childNode of currentNode.shadowRoot.childNodes) {
@@ -303,47 +312,51 @@
                     }
 
                     if (childNode.matches(attributesSelector)) {
-                        return childNode;
+                        elements.push(childNode);
+
+                        continue;
                     }
 
-                    const foundByText = findElementBasedOnTextWithin(childNode, text);
-
-                    if (foundByText) {
-                        return foundByText;
-                    }
+                    elements.push(...findElementsBasedOnTextWithin(childNode, text));
                 }
             }
         }
+
+        return elements;
     };
 
     /**
-     * Function to find an element based on its text or Aria label.
+     * Function to find elements based on their text or Aria label.
      *
      * @param {string} text Text (full or partial)
      * @param {string} [near] Optional 'near' text - if specified, must have a single match on page
-     * @return {HTMLElement} Found element
+     * @return {HTMLElement} Found elements
      */
-    var findElementBasedOnText = function(text, near) {
+    var findElementsBasedOnText = function(text, near) {
         const topContainer = document.querySelector('ion-alert, ion-popover, ion-action-sheet, core-ion-tab.show-tab ion-page.show-page, ion-page.show-page, html');
         let container = topContainer;
 
         if (topContainer && near) {
-            const nearElement = findElementBasedOnText(near);
+            const nearElements = findElementsBasedOnText(near);
 
-            if (!nearElement) {
-                return;
+            if (nearElements.length === 0) {
+                throw new Error('There was no match for near text')
+            } else if (nearElements.length > 1) {
+                throw new Error('Too many matches for near text');
             }
 
-            container = nearElement.parentElement;
+            container = nearElements[0].parentElement;
         }
 
         do {
-            const node = findElementBasedOnTextWithin(container, text);
+            const elements = findElementsBasedOnTextWithin(container, text);
 
-            if (node) {
-                return node;
+            if (elements.length > 0) {
+                return elements;
             }
         } while ((container = container.parentElement) && container !== topContainer);
+
+        return [];
     };
 
     /**
@@ -398,10 +411,10 @@
         } else {
             switch (button) {
                 case 'back':
-                    foundButton = findElementBasedOnText('Back');
+                    foundButton = findElementsBasedOnText('Back')[0];
                     break;
                 case 'main menu':
-                    foundButton = findElementBasedOnText('more', 'Notifications');
+                    foundButton = findElementsBasedOnText('more', 'Notifications')[0];
                     break;
                 default:
                     return 'ERROR: Unsupported standard button type';
@@ -462,7 +475,7 @@
         log(`Action - Find ${text}`);
 
         try {
-            const element = findElementBasedOnText(text, near);
+            const element = findElementsBasedOnText(text, near)[0];
 
             if (!element) {
                 return 'ERROR: No matches for text';
@@ -502,7 +515,7 @@
         log(`Action - Is Selected: "${text}"${near ? ` near "${near}"`: ''}`);
 
         try {
-            const element = findElementBasedOnText(text, near);
+            const element = findElementsBasedOnText(text, near)[0];
 
             return isElementSelected(element, document.body) ? 'YES' : 'NO';
         } catch (error) {
@@ -522,7 +535,7 @@
 
         var found;
         try {
-            found = findElementBasedOnText(text, near);
+            found = findElementsBasedOnText(text, near)[0];
 
             if (!found) {
                 return 'ERROR: No matches for text';
@@ -603,51 +616,60 @@
     var behatSetField = function(field, value) {
         log('Action - Set field ' + field + ' to: ' + value);
 
-        // Find input(s) with given placeholder.
-        var escapedText = field.replace('"', '""');
-        var exactMatches = [];
-        var anyMatches = [];
-        findPossibleMatches(
-                '//input[contains(@placeholder, "' + escapedText + '")] |' +
-                '//textarea[contains(@placeholder, "' + escapedText + '")] |' +
-                '//core-rich-text-editor/descendant::div[contains(@data-placeholder-text, "' +
-                escapedText + '")]', function(match) {
-                    // Add to array depending on if it's an exact or partial match.
-                    var placeholder;
-                    if (match.nodeName === 'DIV') {
-                        placeholder = match.getAttribute('data-placeholder-text');
-                    } else {
-                        placeholder = match.getAttribute('placeholder');
-                    }
-                    if (placeholder.trim() === field) {
-                        exactMatches.push(match);
-                    } else {
-                        anyMatches.push(match);
-                    }
-                });
+        if (window.BehatMoodleAppLegacy) {
+            // Find input(s) with given placeholder.
+            var escapedText = field.replace('"', '""');
+            var exactMatches = [];
+            var anyMatches = [];
+            findPossibleMatches(
+                    '//input[contains(@placeholder, "' + escapedText + '")] |' +
+                    '//textarea[contains(@placeholder, "' + escapedText + '")] |' +
+                    '//core-rich-text-editor/descendant::div[contains(@data-placeholder-text, "' +
+                    escapedText + '")]', function(match) {
+                        // Add to array depending on if it's an exact or partial match.
+                        var placeholder;
+                        if (match.nodeName === 'DIV') {
+                            placeholder = match.getAttribute('data-placeholder-text');
+                        } else {
+                            placeholder = match.getAttribute('placeholder');
+                        }
+                        if (placeholder.trim() === field) {
+                            exactMatches.push(match);
+                        } else {
+                            anyMatches.push(match);
+                        }
+                    });
 
-        // Select the resulting match.
-        var found = null;
-        do {
-            // If there is an exact text match, use that (regardless of other matches).
-            if (exactMatches.length > 1) {
-                return 'ERROR: Too many exact placeholder matches for text';
-            } else if (exactMatches.length) {
-                found = exactMatches[0];
-                break;
+            // Select the resulting match.
+            var found = null;
+            do {
+                // If there is an exact text match, use that (regardless of other matches).
+                if (exactMatches.length > 1) {
+                    return 'ERROR: Too many exact placeholder matches for text';
+                } else if (exactMatches.length) {
+                    found = exactMatches[0];
+                    break;
+                }
+
+                // If there is one partial text match, use that.
+                if (anyMatches.length > 1) {
+                    return 'ERROR: Too many partial placeholder matches for text';
+                } else if (anyMatches.length) {
+                    found = anyMatches[0];
+                    break;
+                }
+            } while (false);
+
+            if (!found) {
+                return 'ERROR: No matches for text';
             }
+        } else {
+            const elements = findElementsBasedOnText(field);
+            var found = elements.filter(element => element.matches('input, textarea'))[0];
 
-            // If there is one partial text match, use that.
-            if (anyMatches.length > 1) {
-                return 'ERROR: Too many partial placeholder matches for text';
-            } else if (anyMatches.length) {
-                found = anyMatches[0];
-                break;
+            if (!found) {
+                return 'ERROR: No matches for text';
             }
-        } while (false);
-
-        if (!found) {
-            return 'ERROR: No matches for text';
         }
 
         // Functions to get/set value depending on field type.

@@ -93,7 +93,10 @@ Feature: Test course list shown on app start tab
 
     When I press "Display options" near "Course overview" in the app
     And I press "Filter my courses" in the app
-    And I set the field "Filter my courses" to "fr" in the app
+
+    # TODO field should be "Filter my courses"
+    And I set the field "search text" to "fr" in the app
+
     Then I should find "C3" in the app
     And I should find "C4" in the app
     And I should find "Frog 3" in the app
