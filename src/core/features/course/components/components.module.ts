@@ -23,13 +23,19 @@ import { CoreCourseModuleDescriptionComponent } from './module-description/modul
 import { CoreCourseSectionSelectorComponent } from './section-selector/section-selector';
 import { CoreCourseTagAreaComponent } from './tag-area/tag-area';
 import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsupported-module';
+import { CoreCourseModuleCompletionLegacyComponent } from './module-completion-legacy/module-completion-legacy';
+import { CoreCourseModuleInfoComponent } from './module-info/module-info';
+import { CoreCourseModuleManualCompletionComponent } from './module-manual-completion/module-manual-completion';
 
 @NgModule({
     declarations: [
         CoreCourseFormatComponent,
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
+        CoreCourseModuleCompletionLegacyComponent,
         CoreCourseModuleDescriptionComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleManualCompletionComponent,
         CoreCourseSectionSelectorComponent,
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
@@ -42,7 +48,10 @@ import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsup
         CoreCourseFormatComponent,
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
+        CoreCourseModuleCompletionLegacyComponent,
         CoreCourseModuleDescriptionComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleManualCompletionComponent,
         CoreCourseSectionSelectorComponent,
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,

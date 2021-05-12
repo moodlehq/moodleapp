@@ -81,6 +81,8 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     protected courseStatusObserver?: CoreEventObserver;
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
+    protected modulesHaveCompletion = false;
+    protected debouncedUpdateCachedCompletion?: () => void; // Update the cached completion after a certain time.
 
     /**
      * Component being initialized.
@@ -103,6 +105,21 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         this.displayEnableDownload = !CoreSites.getCurrentSite()?.isOfflineDisabled() &&
             CoreCourseFormatDelegate.displayEnableDownload(this.course);
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+
+        this.debouncedUpdateCachedCompletion = CoreUtils.debounce(() => {
+            if (this.modulesHaveCompletion) {
+                CoreUtils.ignoreErrors(CoreCourse.getSections(this.course.id, false, true));
+            } else {
+                CoreUtils.ignoreErrors(CoreCourse.getActivitiesCompletionStatus(
+                    this.course.id,
+                    undefined,
+                    undefined,
+                    false,
+                    false,
+                    false,
+                ));
+            }
+        }, 30000);
 
         this.initListeners();
 
@@ -254,6 +271,8 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
 
             if (sectionWithModules && typeof sectionWithModules.modules[0].completion != 'undefined') {
                 // The module already has completion (3.6 onwards). Load the offline completion.
+                this.modulesHaveCompletion = true;
+
                 await CoreUtils.ignoreErrors(CoreCourseHelper.loadOfflineCompletion(this.course.id, sections));
             } else {
                 const fetchedData = await CoreUtils.ignoreErrors(
@@ -353,6 +372,11 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         const shouldReload = typeof completionData.valueused == 'undefined' || completionData.valueused;
 
         if (!shouldReload) {
+            // Invalidate the completion.
+            await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.course.id));
+
+            this.debouncedUpdateCachedCompletion?.();
+
             return;
         }
 

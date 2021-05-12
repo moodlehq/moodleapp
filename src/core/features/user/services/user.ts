@@ -21,7 +21,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreUserOffline } from './user-offline';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
@@ -303,6 +303,25 @@ export class CoreUserProvider {
         const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecord(USERS_TABLE_NAME, { id: userId });
+    }
+
+    /**
+     * Get a user fullname, using a default text if user not found.
+     *
+     * @param userId User ID.
+     * @param courseId Course ID.
+     * @param siteId Site ID.
+     * @return Promise resolved with user name.
+     */
+    async getUserFullNameWithDefault(userId: number, courseId?: number, siteId?: string): Promise<string> {
+        try {
+            const user = await CoreUser.getProfile(userId, courseId, true, siteId);
+
+            return user.fullname;
+
+        } catch {
+            return Translate.instant('core.user.userwithid', { id: userId });
+        }
     }
 
     /**

@@ -18,6 +18,12 @@
 
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
+
+    <!-- Activity info. -->
+    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        (completionChanged)="onCompletionChange()">
+    </core-course-module-info>
+
     <core-course-module-description *ngIf="lti && lti.showdescriptionlaunch" [description]="description" [component]="component"
         [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
     </core-course-module-description>

@@ -24,7 +24,7 @@ import {
     CoreCourseSection,
 } from '@features/course/services/course-helper';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseModuleHandlerButton } from '@features/course/services/module-delegate';
+import { CoreCourseModuleDelegate, CoreCourseModuleHandlerButton } from '@features/course/services/module-delegate';
 import {
     CoreCourseModulePrefetchDelegate,
     CoreCourseModulePrefetchHandler,
@@ -47,6 +47,8 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @Input() module!: CoreCourseModule; // The module to render.
     @Input() courseId?: number; // The course the module belongs to.
     @Input() section?: CoreCourseSection; // The section the module belongs to.
+    @Input() showActivityDates = false; // Whether to show activity dates.
+    @Input() showCompletionConditions = false; // Whether to show activity completion conditions.
     // eslint-disable-next-line @angular-eslint/no-input-rename
     @Input('downloadEnabled') set enabled(value: boolean) {
         this.downloadEnabled = value;
@@ -61,7 +63,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
         // Get current status to decide which icon should be shown.
         this.calculateAndShowStatus();
-    };
+    }
 
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when module completion changes.
     @Output() statusChanged = new EventEmitter<CoreCourseModuleStatusChangedData>(); // Notify when the download status changes.
@@ -71,6 +73,9 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     spinner?: boolean; // Whether to display a loading spinner.
     downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     modNameTranslated = '';
+    hasInfo = false;
+    showLegacyCompletion = false; // Whether to show module completion in the old format.
+    showManualCompletion = false; // Whether to show manual completion when completion conditions are disabled.
 
     protected prefetchHandler?: CoreCourseModulePrefetchHandler;
     protected statusObserver?: CoreEventObserver;
@@ -83,12 +88,20 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.courseId = this.courseId || this.module.course;
         this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname) || '';
+        this.showLegacyCompletion = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
+        this.showManualCompletion =
+            this.showCompletionConditions || CoreCourseModuleDelegate.manualCompletionAlwaysShown(this.module);
 
         if (!this.module.handlerData) {
             return;
         }
 
         this.module.handlerData.a11yTitle = this.module.handlerData.a11yTitle ?? this.module.handlerData.title;
+        this.hasInfo = !!(
+            this.module.description ||
+            (this.showActivityDates && this.module.dates && this.module.dates.length) ||
+            this.module.completiondata
+        );
 
         if (this.module.handlerData.showDownloadButton) {
             // Listen for changes on this module status, even if download isn't enabled.

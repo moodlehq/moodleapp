@@ -27,6 +27,12 @@
 
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
+
+    <!-- Activity info. -->
+    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        (completionChanged)="onCompletionChange()">
+    </core-course-module-info>
+
     <ion-card class="with-borders" *ngIf="phases">
         <ion-item button (click)="viewPhaseInfo()" detail="true">
             <ion-label>

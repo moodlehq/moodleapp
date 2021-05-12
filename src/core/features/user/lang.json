@@ -23,5 +23,6 @@
     "sendemail": "Email",
     "student": "Student",
     "teacher": "Non-editing teacher",
+    "userwithid": "User with ID {{id}}",
     "webpage": "Web page"
 }

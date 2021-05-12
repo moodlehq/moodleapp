@@ -30,6 +30,11 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
+    <!-- Activity info. -->
+    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        (completionChanged)="onCompletionChange()">
+    </core-course-module-info>
+
     <!-- Description and intro attachments. -->
     <ion-card *ngIf="description">
         <ion-item class="ion-text-wrap">
@@ -141,5 +146,4 @@
     <addon-mod-assign-submission *ngIf="loaded && !canViewAllSubmissions && canViewOwnSubmission" [courseId]="courseId"
         [moduleId]="module.id">
     </addon-mod-assign-submission>
-
 </core-loading>

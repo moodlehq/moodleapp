@@ -150,9 +150,12 @@ export class CoreCourseProvider {
      * @param completion Completion status of the module.
      */
     checkModuleCompletion(courseId: number, completion?: CoreCourseModuleCompletionData): void {
-        if (completion && completion.tracking === 2 && completion.state === 0) {
+        if (completion && completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC && completion.state === 0) {
             this.invalidateSections(courseId).finally(() => {
-                CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, { courseId: courseId });
+                CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, {
+                    courseId: courseId,
+                    cmId: completion.cmid,
+                });
             });
         }
     }
@@ -969,6 +972,9 @@ export class CoreCourseProvider {
                 // Ignore errors, shouldn't happen.
             }
 
+            // Invalidate module now, completion has changed.
+            await this.invalidateModule(cmId, siteId);
+
             return result;
         } catch (error) {
             if (CoreUtils.isWebServiceError(error) || !courseId) {
@@ -1262,6 +1268,8 @@ export type CoreCourseSummary = {
     timeaccess?: number; // @since 3.6. Timeaccess.
     showshortname: boolean; // @since 3.6. Showshortname.
     coursecategory: string; // @since 3.7. Coursecategory.
+    showactivitydates: boolean | null; // @since 3.11. Whether the activity dates are shown or not.
+    showcompletionconditions: boolean | null; // @since 3.11. Whether the activity completion conditions are shown or not.
 };
 
 /**
@@ -1294,14 +1302,25 @@ export type CoreCourseCompletionActivityStatusWSResponse = {
  * Activity status.
  */
 export type CoreCourseCompletionActivityStatus = {
-    cmid: number; // Comment ID.
+    cmid: number; // Course module ID.
     modname: string; // Activity module name.
     instance: number; // Instance ID.
     state: number; // Completion state value: 0 means incomplete, 1 complete, 2 complete pass, 3 complete fail.
     timecompleted: number; // Timestamp for completed activity.
     tracking: number; // Type of tracking: 0 means none, 1 manual, 2 automatic.
-    overrideby?: number; // The user id who has overriden the status, or null.
+    overrideby?: number | null; // The user id who has overriden the status, or null.
     valueused?: boolean; // Whether the completion status affects the availability of another activity.
+    hascompletion?: boolean; // @since 3.11. Whether this activity module has completion enabled.
+    isautomatic?: boolean; // @since 3.11. Whether this activity module instance tracks completion automatically.
+    istrackeduser?: boolean; // @since 3.11. Whether completion is being tracked for this user.
+    uservisible?: boolean; // @since 3.11. Whether this activity is visible to the user.
+    details?: { // @since 3.11. An array of completion details containing the description and status.
+        rulename: string; // Rule name.
+        rulevalue: {
+            status: number; // Completion status.
+            description: string; // Completion description.
+        };
+    }[];
     offline?: boolean; // Whether the completions is offline and not yet synced.
 };
 
@@ -1442,6 +1461,10 @@ export type CoreCourseWSModule = {
     completion?: number; // Type of completion tracking: 0 means none, 1 manual, 2 automatic.
     completiondata?: CoreCourseModuleWSCompletionData; // Module completion data.
     contents: CoreCourseModuleContentFile[];
+    dates?: {
+        label: string;
+        timestamp: number;
+    }[]; // @since 3.11. Activity dates.
     contentsinfo?: { // Contents summary information.
         filescount: number; // Total number of files.
         filessize: number; // Total files size.
@@ -1457,8 +1480,24 @@ export type CoreCourseWSModule = {
 export type CoreCourseModuleWSCompletionData = {
     state: number; // Completion state value: 0 means incomplete, 1 complete, 2 complete pass, 3 complete fail.
     timecompleted: number; // Timestamp for completion status.
-    overrideby: number; // The user id who has overriden the status.
+    overrideby: number | null; // The user id who has overriden the status.
     valueused?: boolean; // Whether the completion status affects the availability of another activity.
+    hascompletion?: boolean; // @since 3.11. Whether this activity module has completion enabled.
+    isautomatic?: boolean; // @since 3.11. Whether this activity module instance tracks completion automatically.
+    istrackeduser?: boolean; // @since 3.11. Whether completion is being tracked for this user.
+    uservisible?: boolean; // @since 3.11. Whether this activity is visible to the user.
+    details?: CoreCourseModuleWSRuleDetails[]; // @since 3.11. An array of completion details.
+};
+
+/**
+ * Module completion rule details.
+ */
+export type CoreCourseModuleWSRuleDetails = {
+    rulename: string; // Rule name.
+    rulevalue: {
+        status: number; // Completion status.
+        description: string; // Completion description.
+    };
 };
 
 export type CoreCourseModuleContentFile = {

@@ -54,7 +54,7 @@
                     </ion-label>
                 </ion-item>
 
-                <ion-item class="ion-text-wrap" *ngIf="fromDate && !isSubmittedForGrading">
+                <ion-item class="ion-text-wrap" *ngIf="showDates && fromDate && !isSubmittedForGrading">
                     <ion-label>
                         <p *ngIf="assign!.intro"
                             [innerHTML]="'addon.mod_assign.allowsubmissionsfromdatesummary' | translate: {'$a': fromDate}">
@@ -66,7 +66,7 @@
                     </ion-label>
                 </ion-item>
 
-                <ion-item class="ion-text-wrap" *ngIf="assign!.duedate && !isSubmittedForGrading">
+                <ion-item class="ion-text-wrap" *ngIf="showDates && assign!.duedate && !isSubmittedForGrading">
                     <ion-label>
                         <h2>{{ 'addon.mod_assign.duedate' | translate }}</h2>
                         <p *ngIf="assign!.duedate" >{{ assign!.duedate * 1000 | coreFormatDate }}</p>

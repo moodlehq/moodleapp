@@ -370,7 +370,7 @@ export class AddonNotesProvider {
 
                 return;
             }).catch(() => {
-                note.userfullname = Translate.instant('addon.notes.userwithid', { id: note.userid });
+                note.userfullname = Translate.instant('core.user.userwithid', { id: note.userid });
             }));
 
         await Promise.all(promises);

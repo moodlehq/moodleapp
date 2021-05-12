@@ -146,7 +146,8 @@
         <ng-container *ngFor="let module of section.modules">
             <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [courseId]="course?.id"
                 [downloadEnabled]="downloadEnabled" [section]="section" (completionChanged)="onCompletionChange($event)"
-                (statusChanged)="onModuleStatusChange()">
+                (statusChanged)="onModuleStatusChange()" [showActivityDates]="course?.showactivitydates"
+                [showCompletionConditions]="course?.showcompletionconditions">
             </core-course-module>
         </ng-container>
     </section>

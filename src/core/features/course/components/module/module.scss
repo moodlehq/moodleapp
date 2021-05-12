@@ -31,7 +31,7 @@
         }
     }
 
-    .core-module-module-description {
+    .core-module-module-info {
         ion-badge {
             text-align: start;
         }
@@ -51,15 +51,15 @@
         clear: both;
     }
 
-    .core-module-main-item + .core-module-module-description ion-label {
+    .core-module-main-item + .core-module-module-info ion-label {
         margin-top: 0px;
     }
 
-    .core-module-main-item.has-module-description {
+    .core-module-main-item.has-module-info {
         --inner-border-width: 0;
     }
 
-    .core-module-module-description ion-label {
+    .core-module-module-info ion-label {
         margin-inline-start: 50px;
     }
 

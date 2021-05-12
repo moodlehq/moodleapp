@@ -92,6 +92,15 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @return The result of the supports check.
      */
     supportsFeature?(feature: string): unknown;
+
+    /**
+     * Return true to show the manual completion regardless of the course's showcompletionconditions setting.
+     * Returns false by default.
+     *
+     * @param module Module.
+     * @return Whether the manual completion should always be displayed.
+     */
+    manualCompletionAlwaysShown?(module: CoreCourseModule): boolean;
 }
 
 /**
@@ -364,6 +373,17 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
         }
 
         return result ?? defaultValue;
+    }
+
+    /**
+     * Return true to show the manual completion regardless of the course's showcompletionconditions setting.
+     * Returns false by default.
+     *
+     * @param module Module.
+     * @return Whether the manual completion should always be displayed.
+     */
+    manualCompletionAlwaysShown(module: CoreCourseModule): boolean {
+        return !!this.executeFunctionOnEnabled<boolean>(module.modname, 'manualCompletionAlwaysShown', [module]);
     }
 
 }

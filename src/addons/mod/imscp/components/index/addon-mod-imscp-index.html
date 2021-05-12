@@ -28,6 +28,11 @@
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
 
+    <!-- Activity info. -->
+    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        (completionChanged)="onCompletionChange()">
+    </core-course-module-info>
+
     <ion-card class="core-warning-card" *ngIf="warning">
         <ion-item>
             <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
