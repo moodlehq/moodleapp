@@ -26,7 +26,7 @@ import { CoreSites } from '@services/sites';
 })
 export class AddonCalendarSettingsPage implements OnInit {
 
-    defaultTime = 0;
+    defaultTime = -1;
 
     /**
      * View loaded.

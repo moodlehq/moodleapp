@@ -92,7 +92,7 @@
                     </ion-label>
                     <ion-select formControlName="groupcourseid" aria-labelledby="addon-calendar-groupcourse-label"
                         interface="action-sheet" [placeholder]="'core.noselection' | translate"
-                        (ionChange)="groupCourseSelected($event)">
+                        (ionChange)="groupCourseSelected()">
                         <ion-select-option *ngFor="let course of courses" [value]="course.id">
                             {{ course.fullname }}
                         </ion-select-option>

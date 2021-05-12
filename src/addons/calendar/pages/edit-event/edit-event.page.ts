@@ -396,10 +396,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
     /**
      * A course was selected, get its groups.
-     *
-     * @param courseId Course ID.
      */
-    async groupCourseSelected(courseId: number): Promise<void> {
+    async groupCourseSelected(): Promise<void> {
+        const courseId = this.form.controls.groupcourseid.value;
         if (!courseId) {
             return;
         }
