@@ -16,6 +16,7 @@ import { Injector, NgModule } from '@angular/core';
 import { Route, RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { AddonMessagesIndexGuard } from './guards';
 
 export const AddonMessagesDiscussionRoute: Route = {
     path: 'discussion',
@@ -51,8 +52,7 @@ function buildRoutes(injector: Injector): Routes {
                 .then(m => m.AddonMessagesContactsPageModule),
         },
         ...buildTabMainRoutes(injector, {
-            redirectTo: 'index',
-            pathMatch: 'full',
+            canActivate: [AddonMessagesIndexGuard],
         }),
     ];
 }

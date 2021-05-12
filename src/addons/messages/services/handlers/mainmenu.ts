@@ -43,7 +43,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
     protected handler: CoreMainMenuHandlerToDisplay = {
         icon: 'fas-comments',
         title: 'addon.messages.messages',
-        page: AddonMessages.getMainMessagesPagePath(),
+        page: AddonMessagesMainMenuHandlerService.PAGE_NAME,
         class: 'addon-messages-handler',
         showBadge: true, // Do not check isMessageCountEnabled because we'll use fallback it not enabled.
         badge: '',
@@ -107,8 +107,6 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
      * @return Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerToDisplay {
-        this.handler.page = AddonMessages.getMainMessagesPagePath();
-
         if (this.handler.loading) {
             this.refreshBadge();
         }
