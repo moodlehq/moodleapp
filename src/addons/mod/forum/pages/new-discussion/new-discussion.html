@@ -31,13 +31,21 @@
                     (contentChanged)="onMessageChange($event)">
                 </core-rich-text-editor>
             </ion-item>
-            <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggleAdvanced()" [attr.aria-expanded]="advanced"
-                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') |translate" role="heading button">
+            <ion-item
+                button
+                class="divider ion-text-wrap core-expandable"
+                (click)="toggleAdvanced()"
+                detail="false"
+                [attr.aria-expanded]="advanced"
+                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate"
+                role="heading"
+                aria-controls="addon-mod-forum-new-discussion-advanced"
+            >
                 <ion-icon *ngIf="!advanced" name="fa-caret-right" slot="start" aria-hidden="true"></ion-icon>
                 <ion-icon *ngIf="advanced" name="fa-caret-down" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label><h2>{{ 'addon.mod_forum.advanced' | translate }}</h2></ion-label>
-            </ion-item-divider>
-            <ng-container *ngIf="advanced">
+            </ion-item>
+            <div *ngIf="advanced" id="addon-mod-forum-new-discussion-advanced">
                 <ion-item *ngIf="showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups">
                     <ion-label>{{ 'addon.mod_forum.posttomygroups' | translate }}</ion-label>
                     <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups" name="postallgroups"></ion-toggle>
@@ -61,7 +69,7 @@
                     [files]="newDiscussion.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments"
                     [component]="component" [componentId]="forum.cmid" [allowOffline]="true">
                 </core-attachments>
-            </ng-container>
+            </div>
             <ion-item>
                 <ion-label>
                     <ion-row>

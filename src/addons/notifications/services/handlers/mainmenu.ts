@@ -41,6 +41,7 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
         class: 'addon-notifications-handler',
         showBadge: true,
         badge: '',
+        badgeA11yText: 'addon.notifications.unreadnotification',
         loading: true,
     };
 

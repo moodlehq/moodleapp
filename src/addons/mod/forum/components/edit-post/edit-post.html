@@ -25,18 +25,25 @@
                 (contentChanged)="onMessageChange($event)">
             </core-rich-text-editor>
         </ion-item>
-        <ion-item-divider class="ion-text-wrap core-expandable" (click)="toggleAdvanced()" role="heading button"
-            [attr.aria-expanded]="advanced" [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate">
+        <ion-item
+            button class="divider ion-text-wrap core-expandable"
+            (click)="toggleAdvanced()"
+            role="heading"
+            detail="false"
+            [attr.aria-expanded]="advanced"
+            aria-controls="addon-mod-forum-advanced"
+            [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate"
+        >
             <ion-icon *ngIf="!advanced" name="fa-caret-right" slot="start" aria-hidden="true"></ion-icon>
             <ion-icon *ngIf="advanced" name="fa-caret-down" slot="start" aria-hidden="true"></ion-icon>
             <ion-label><h2>{{ 'addon.mod_forum.advanced' | translate }}</h2></ion-label>
-        </ion-item-divider>
-        <ng-container *ngIf="advanced">
+        </ion-item>
+        <div *ngIf="advanced" id="addon-mod-forum-advanced">
             <core-attachments *ngIf="forum.id && forum.maxattachments > 0"
                 [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [allowOffline]="true" [files]="replyData.files"
                 [component]="component" [componentId]="forum.cmid">
             </core-attachments>
-        </ng-container>
+        </div>
         <ion-grid>
             <ion-row>
                 <ion-col>

@@ -87,7 +87,6 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     constructor(
         differs: KeyValueDiffers,
     ) {
-
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
         if (CoreLocalNotifications.isAvailable()) {
@@ -233,6 +232,10 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
         this.weeks.forEach((week) => {
             week.days.forEach((day) => {
+                day.periodName = CoreTimeUtils.userDate(
+                    new Date(this.year!, this.month! - 1, day.mday).getTime(),
+                    'core.strftimedaydate',
+                );
                 day.eventsFormated = day.eventsFormated || [];
                 day.filteredEvents = day.filteredEvents || [];
                 day.events.forEach((event) => {
@@ -372,7 +375,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      * @param calendarEvent Calendar event..
      * @param event Mouse event.
      */
-    eventClicked(calendarEvent: AddonCalendarEventToDisplay, event: MouseEvent): void {
+    eventClicked(calendarEvent: AddonCalendarEventToDisplay, event: Event): void {
         this.onEventClicked.emit(calendarEvent.id);
         event.stopPropagation();
     }

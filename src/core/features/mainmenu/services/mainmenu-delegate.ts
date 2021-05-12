@@ -66,6 +66,11 @@ export interface CoreMainMenuHandlerData {
     badge?: string;
 
     /**
+     * Accessibility text to add on the badge. Only used if showBadge is true.
+     */
+    badgeA11yText?: string;
+
+    /**
      * If true, the badge number is being loaded. Only used if showBadge is true.
      */
     loading?: boolean;
