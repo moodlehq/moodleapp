@@ -24,6 +24,7 @@ import { CoreLinkDirective } from './link';
 import { CoreLongPressDirective } from './long-press';
 import { CoreSupressEventsDirective } from './supress-events';
 import { CoreUserLinkDirective } from './user-link';
+import { CoreAriaButtonClickDirective } from './aria-button';
 
 @NgModule({
     declarations: [
@@ -37,6 +38,7 @@ import { CoreUserLinkDirective } from './user-link';
         CoreLongPressDirective,
         CoreSupressEventsDirective,
         CoreUserLinkDirective,
+        CoreAriaButtonClickDirective,
     ],
     exports: [
         CoreAutoFocusDirective,
@@ -49,6 +51,7 @@ import { CoreUserLinkDirective } from './user-link';
         CoreLongPressDirective,
         CoreSupressEventsDirective,
         CoreUserLinkDirective,
+        CoreAriaButtonClickDirective,
     ],
 })
 export class CoreDirectivesModule {}

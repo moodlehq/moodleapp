@@ -41,7 +41,6 @@ import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { CoreCategoryData, CoreCourses } from '@features/courses/services/courses';
 import { CoreApp } from '@services/app';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { CoreAriaRoleButton } from '@classes/aria-role-button';
 
 /**
  * Component that displays a calendar.
@@ -68,8 +67,6 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     timeFormat?: string;
     isCurrentMonth = false;
     isPastMonth = false;
-    dayAction: AddonCalendarDayButton;
-    eventAction: AddonCalendarEventButton;
 
     protected year?: number;
     protected month?: number;
@@ -90,10 +87,6 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     constructor(
         differs: KeyValueDiffers,
     ) {
-
-        this.dayAction = new AddonCalendarDayButton(this);
-        this.eventAction = new AddonCalendarEventButton(this);
-
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
         if (CoreLocalNotifications.isAvailable()) {
@@ -532,34 +525,6 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     ngOnDestroy(): void {
         this.undeleteEventObserver?.off();
         this.obsDefaultTimeChange?.off();
-    }
-
-}
-
-/**
- * Helper class to manage day button.
- */
-class AddonCalendarDayButton extends CoreAriaRoleButton<AddonCalendarCalendarComponent> {
-
-    /**
-     * @inheritdoc
-     */
-    click(event: Event, day: number): void {
-        this.componentInstance.dayClicked(day);
-    }
-
-}
-
-/**
- * Helper class to manage event button.
- */
-class AddonCalendarEventButton extends CoreAriaRoleButton<AddonCalendarCalendarComponent> {
-
-    /**
-     * @inheritdoc
-     */
-    click(event: Event, calendarEvent: AddonCalendarEventToDisplay): void {
-        this.componentInstance.eventClicked(calendarEvent, event);
     }
 
 }

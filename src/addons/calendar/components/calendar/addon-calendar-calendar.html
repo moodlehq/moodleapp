@@ -58,9 +58,7 @@
                     [class.addon-calendar-event-past-day]="isPastMonth || day.ispast"
                     role="button cell"
                     tabindex="0"
-                    (click)="dayClicked(day.mday)"
-                    (keyup)="dayAction.keyUp($event, day.mday)"
-                    (keydown)="dayAction.keyDown($event)"
+                    (ariaButtonClick)="dayClicked(day.mday)"
                 >
                     <p class="addon-calendar-day-number">
                         <span aria-hidden="true">{{ day.mday }}</span>
@@ -80,9 +78,7 @@
                                 [class.addon-calendar-event-past]="event.ispast"
                                 role="button"
                                 tabindex="0"
-                                (click)="eventClicked(event, $event)"
-                                (keyup)="eventAction.keyUp($event, event)"
-                                (keydown)="eventAction.keyDown($event)"
+                                (ariaButtonClick)="eventClicked(event, $event)"
                             >
                                 <span class="calendar_event_type calendar_event_{{event.formattedType}}"></span>
                                 <ion-icon *ngIf="event.offline && !event.deleted" name="fas-clock"
