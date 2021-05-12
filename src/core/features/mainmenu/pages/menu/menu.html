@@ -13,6 +13,7 @@
             [disabled]="tab.hide"
             layout="label-hide"
             class="{{tab.class}}"
+            [selected]="tab.page === selectedTab"
             [tabindex]="selectedTab == tab.page ? 0 : -1"
             [attr.aria-controls]="tab.id"
             [attr.aria-label]="tab.title | translate"
