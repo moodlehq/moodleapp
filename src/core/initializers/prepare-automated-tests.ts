@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { ApplicationRef } from '@angular/core';
+import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
 import { Application } from '@singletons';
@@ -21,12 +22,14 @@ type AutomatedTestsWindow = Window & {
     appRef?: ApplicationRef;
     appProvider?: CoreAppProvider;
     cronProvider?: CoreCronDelegateService;
+    pushNotifications?: CorePushNotificationsProvider;
 };
 
 function initializeAutomatedTestsWindow(window: AutomatedTestsWindow) {
     window.appRef = Application.instance;
     window.appProvider = CoreApp.instance;
     window.cronProvider = CoreCronDelegate.instance;
+    window.pushNotifications = CorePushNotifications.instance;
 }
 
 export default function(): void {
