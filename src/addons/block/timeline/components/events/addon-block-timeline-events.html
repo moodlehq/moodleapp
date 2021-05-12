@@ -20,7 +20,7 @@
                     </core-format-text>
                 </p>
 
-                <ion-button fill="clear" class="ion-hide-md-up" (click)="action($event, event.action.url)"
+                <ion-button fill="clear" class="ion-hide-md-up ion-text-wrap" (click)="action($event, event.action.url)"
                     [title]="event.action.name" [disabled]="!event.action.actionable" *ngIf="event.action">
                     {{event.action.name}}
                     <ion-badge slot="end" class="ion-margin-start" *ngIf="event.action.showitemcount">{{event.action.itemcount}}
@@ -28,19 +28,23 @@
                 </ion-button>
             </ion-label>
 
-            <ion-grid slot="end">
-                <ion-row class="ion-justify-content-end">
+            <div slot="end" class="events-info">
+                <div>
                     <ion-badge color="light">{{event.timesort * 1000 | coreFormatDate:"strftimetime24" }}</ion-badge>
-                </ion-row>
-                <ion-row class="ion-justify-content-end">
-                    <ion-button fill="clear" class="ion-hide-md-down" (click)="action($event, event.action.url)"
-                        [title]="event.action.name" [disabled]="!event.action.actionable" *ngIf="event.action">
-                        {{event.action.name}}
-                        <ion-badge slot="end" class="ion-margin-start" *ngIf="event.action.showitemcount">{{event.action.itemcount}}
-                        </ion-badge>
-                    </ion-button>
-                </ion-row>
-            </ion-grid>
+                </div>
+                <ion-button
+                    class="ion-hide-md-down"
+                    fill="clear"
+                    (click)="action($event, event.action.url)"
+                    [title]="event.action.name"
+                    [disabled]="!event.action.actionable" *ngIf="event.action"
+                >
+                    {{event.action.name}}
+                    <ion-badge slot="end" class="ion-margin-start" *ngIf="event.action.showitemcount">
+                        {{event.action.itemcount}}
+                    </ion-badge>
+                </ion-button>
+            </div>
         </ion-item>
     </ng-container>
 </ion-item-group>

@@ -103,7 +103,7 @@ export class AddonBlockTimelineProvider {
     async getActionEventsByCourses(
         courseIds: number[],
         siteId?: string,
-    ): Promise<{[courseId: string]: { events: AddonCalendarEvent[]; canLoadMore: number } }> {
+    ): Promise<{[courseId: string]: { events: AddonCalendarEvent[]; canLoadMore?: number } }> {
         const site = await CoreSites.getSite(siteId);
 
         const time = moment().subtract(14, 'days').unix(); // Check two weeks ago.
@@ -123,17 +123,13 @@ export class AddonBlockTimelineProvider {
             preSets,
         );
 
-        if (events && events.groupedbycourse) {
-            const courseEvents = {};
+        const courseEvents: {[courseId: string]: { events: AddonCalendarEvent[]; canLoadMore?: number } } = {};
 
-            events.groupedbycourse.forEach((course) => {
-                courseEvents[course.courseid] = this.treatCourseEvents(course, time);
-            });
+        events.groupedbycourse.forEach((course) => {
+            courseEvents[course.courseid] = this.treatCourseEvents(course, time);
+        });
 
-            return courseEvents;
-        }
-
-        throw new CoreError('No events returned on core_calendar_get_action_events_by_courses.');
+        return courseEvents;
     }
 
     /**
