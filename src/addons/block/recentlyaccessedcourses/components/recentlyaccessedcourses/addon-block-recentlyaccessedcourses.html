@@ -29,9 +29,11 @@
         class="core-horizontal-scroll"
         (scroll)="scrollControls.updateScrollPosition()"
     >
-        <ng-container *ngFor="let course of courses">
-            <core-courses-course-progress [course]="course" class="core-recentlyaccessedcourses"
-                [showDownload]="downloadCourseEnabled && downloadEnabled"></core-courses-course-progress>
-        </ng-container>
+        <div (onResize)="scrollControls.updateScrollPosition()" class="flex-row">
+            <ng-container *ngFor="let course of courses">
+                <core-courses-course-progress [course]="course" class="core-recentlyaccessedcourses"
+                    [showDownload]="downloadCourseEnabled && downloadEnabled"></core-courses-course-progress>
+            </ng-container>
+        </div>
     </div>
 </core-loading>

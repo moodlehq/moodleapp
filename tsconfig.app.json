@@ -8,6 +8,7 @@
       "cordova",
       "dom-mediacapture-record",
       "node",
+      "resize-observer-browser",
       "webpack-env"
     ],
     "paths": {

@@ -12,7 +12,8 @@
       "dom-mediacapture-record",
       "faker",
       "jest",
-      "node"
+      "node",
+      "resize-observer-browser"
     ],
     "paths": {
       "@addons/*": ["addons/*"],
