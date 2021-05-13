@@ -1,4 +1,4 @@
-@import "./globals.mixins.ionic.scss";
+@import "./globals.scss";
 
 // Common styles.
 .text-left           { text-align: left; }
@@ -126,7 +126,9 @@ ion-button.button-small ion-icon.faicon[slot] {
     font-size: 1.5em !important;
 }
 
-[dir=rtl] ion-icon.icon-flip-rtl {
+[dir=rtl] ion-icon.icon-flip-rtl,
+[dir=rtl] ion-item::part(detail-icon),
+[dir=rtl] ion-icon.item-detail-icon {
     transform: scaleX(-1);
 }
 
@@ -206,7 +208,7 @@ ion-toolbar {
 // Modals.
 .core-modal-fullscreen  .modal-wrapper {
     position: absolute;
-    // @todo @include position(0 !important, null, null, 0 !important);
+    @include position(0 !important, null, null, 0 !important);
     display: block;
     width: 100% !important;
     height: 100% !important;
@@ -218,11 +220,10 @@ ion-toolbar {
 
 @media only screen and (min-height: 400px) and (min-width: 300px) {
     .core-modal-lateral {
-        // @todo @include core-split-area-end();
 
         .modal-wrapper {
             position: absolute;
-            @include position(0 !important, 0 !important, 0 !important, auto);
+            @include position(0 !important, 0 !important, 0 !important, unset !important);
             display: block;
             height: 100% !important;
             width: auto;
@@ -423,6 +424,16 @@ ion-select::part(text) {
     color: var(--core-link-color);
     cursor: pointer;
     text-decoration: underline;
+}
+
+core-block ion-item-divider .core-button-spinner {
+    display: flex;
+    align-items: center;
+    @include margin-horizontal(10px);
+
+    ion-badge.core-course-download-courses-progress {
+        @include margin(null, 12px, null, null);
+    }
 }
 
 // Horizontal scrolling elements

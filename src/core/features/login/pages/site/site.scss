@@ -2,14 +2,6 @@
     margin-bottom: 20px;
 }
 
-.searchbar-ios {
-    background: transparent;
-
-    .searchbar-input {
-        background-color: white; // @todo $searchbar-ios-toolbar-input-background;
-    }
-}
-
 .item {
     &.core-login-need-help {
         margin-top: 16px;

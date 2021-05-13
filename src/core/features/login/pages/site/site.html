@@ -93,7 +93,7 @@
                 (ionCancel)="filterChanged()" [placeholder]="'core.login.findyoursite' | translate">
             </ion-searchbar>
             <ng-container *ngFor="let site of filteredSites">
-                <ng-container *ngTemplateOutlet="site"></ng-container>
+                <ng-container *ngTemplateOutlet="sitelisting; context: {site: site}"></ng-container>
             </ng-container>
         </ion-list>
     </ng-container>

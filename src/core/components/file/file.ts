@@ -34,7 +34,6 @@ import { CoreWSFile } from '@services/ws';
 @Component({
     selector: 'core-file',
     templateUrl: 'core-file.html',
-    styleUrls: ['file.scss'],
 })
 export class CoreFileComponent implements OnInit, OnDestroy {
 
