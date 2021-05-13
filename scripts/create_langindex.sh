@@ -310,7 +310,7 @@ function array_contains {
 
 
 print_title 'Generating language from code...'
-gulp lang
+npx gulp lang
 
 print_title 'Getting languages'
 

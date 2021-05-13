@@ -10,8 +10,9 @@ DEFAULT_LASTVERSION='4.0'
 
 # Checks if AWS is available and configured.
 function check_aws {
-    aws --version &> /dev/null
     AWS_SERVICE=1
+
+    aws --version &> /dev/null
     if [ $? -ne 0 ]; then
         AWS_SERVICE=0
         echo 'AWS not installed. Check https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html for more info.'
@@ -19,7 +20,7 @@ function check_aws {
     fi
 
     # In order to login to AWS, use credentials file or AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY vars.
-    if [ ! -f ~/.aws/credentials ] && [ [ -z $AWS_ACCESS_KEY_ID ] || [ -z $AWS_SECRET_ACCESS_KEY ] ]; then
+    if [ ! -f ~/.aws/credentials ] && ([ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]); then
         AWS_SERVICE=0
         lastversion=$DEFAULT_LASTVERSION
         echo 'AWS Cannot authenticate. Use aws configure or set the proper env vars.'
@@ -63,6 +64,13 @@ function get_last_version {
     lastversion=$DEFAULT_LASTVERSION
 }
 
+# Create langfolder
+function create_langfolder {
+    if [ ! -d $LANGPACKSFOLDER ]; then
+        mkdir $LANGPACKSFOLDER
+    fi
+}
+
 # Get all language list from AWS.
 function get_all_languages_aws {
     langsfiles=`aws s3 ls s3://$BUCKET/$lastversion/`
@@ -86,6 +94,8 @@ function get_language {
     lang=${lang/-/_}
 
     get_last_version
+
+    create_langfolder
 
     echo "Getting $lang language"
 
@@ -115,7 +125,7 @@ function get_languages {
             return
         fi
     else
-        mkdir $LANGPACKSFOLDER
+        create_langfolder
     fi
 
 
