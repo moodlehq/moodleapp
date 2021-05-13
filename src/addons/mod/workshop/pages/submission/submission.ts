@@ -362,7 +362,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     /**
      * Parse assessment to be shown.
      *
-     * @param  assessment Original assessment.
+     * @param assessment Original assessment.
      * @return Parsed assessment.
      */
     protected parseAssessment(

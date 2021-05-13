@@ -28,7 +28,7 @@
             <core-empty-box *ngIf="!hasContacts && searchString != ''" icon="fas-address-book"
                 [message]="'addon.messages.nousersfound' | translate"></core-empty-box>
 
-            <ion-list *ngFor="let contactType of contactTypes"  class="ion-no-margin">
+            <ion-list *ngFor="let contactType of contactTypes" class="ion-no-margin">
                 <ng-container *ngIf="contacts[contactType] && (contacts[contactType].length > 0 || contactType === searchType)">
                     <ion-item-divider>
                         <ion-label><h2>{{ 'addon.messages.type_' + contactType | translate }}</h2></ion-label>
@@ -39,7 +39,7 @@
                         <ion-item class="ion-text-wrap addon-messages-conversation-item"
                             *ngIf="contact.profileimageurl || contact.profileimageurlsmall"
                             [attr.aria-label]="contact.fullname" (click)="gotoDiscussion(contact.id)" detail="true" button
-                            [attr.aria-current]="contact.id == discussionUserId ? 'page' :  'false'">
+                            [attr.aria-current]="contact.id == discussionUserId ? 'page' : 'false'">
                             <core-user-avatar [user]="contact" slot="start" [checkOnline]="contact.showonlinestatus"></core-user-avatar>
                             <ion-label><h2>{{ contact.fullname }}</h2></ion-label>
                         </ion-item>

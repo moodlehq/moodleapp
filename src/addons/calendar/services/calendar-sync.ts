@@ -203,7 +203,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
                         id: event.id,
                         repeatid: event.repeatid,
                         timestart: event.timestart,
-                        repeated:  data?.repeat ? (event as AddonCalendarEvent).eventcount || 1 : 1,
+                        repeated: data?.repeat ? (event as AddonCalendarEvent).eventcount || 1 : 1,
                     });
 
                     return;

@@ -132,7 +132,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit {
             return;
         }
 
-        const modules: AddonStorageManagerModule[]  = [];
+        const modules: AddonStorageManagerModule[] = [];
         section.modules.forEach((module) => {
             if (module.totalSize && module.totalSize > 0) {
                 modules.push(module);

@@ -195,7 +195,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
                         this.preventReasons = [preventReason!];
                         lessonReady = false;
                     }
-                } else  {
+                } else {
                     // Lesson cannot be started.
                     this.preventReasons = [preventReason!];
                     lessonReady = false;

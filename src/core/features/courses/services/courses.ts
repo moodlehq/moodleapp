@@ -558,8 +558,8 @@ export class CoreCoursesProvider {
     /**
      * Get courses matching the given custom field. Only works in online.
      *
-     * @param  customFieldName Custom field name.
-     * @param  customFieldValue Custom field value.
+     * @param customFieldName Custom field name.
+     * @param customFieldValue Custom field value.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the list of courses.
      * @since 3.8
@@ -1308,7 +1308,7 @@ export type CoreCourseSearchedData = CoreCourseBasicSearchedData & {
     legacyfiles?: number; // If legacy files are enabled.
     calendartype?: string; // Calendar type.
     timecreated?: number; // Time when the course was created.
-    timemodified?: number; // Last time  the course was updated.
+    timemodified?: number; // Last time the course was updated.
     requested?: number; // If is a requested course.
     cacherev?: number; // Cache revision number.
     filters?: { // Course filters.
@@ -1364,7 +1364,7 @@ export type CoreCourseCustomField = {
 /**
  * Additional options for particular course format.
  */
-export type CoreCourseFormatOption =  {
+export type CoreCourseFormatOption = {
     name: string; // Course format option name.
     value: string; // Course format option value.
 };

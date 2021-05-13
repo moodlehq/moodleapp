@@ -55,7 +55,7 @@ export class CoreColors {
     /**
      * Gets the luma of a color.
      *
-     * @param  color Hex RGB color.
+     * @param color Hex RGB color.
      * @return Luma number based on SMPTE C, Rec. 709 weightings.
      */
     protected static luma(color: string): number {
@@ -67,7 +67,7 @@ export class CoreColors {
     /**
      * Converts Hex RGB to Color components.
      *
-     * @param  color Hexadec RGB Color.
+     * @param color Hexadec RGB Color.
      * @return RGB color components.
      */
     protected static hexToRGB(color: string): ColorComponents {
@@ -92,7 +92,7 @@ export class CoreColors {
     /**
      * Converts RGB components to Hex string.
      *
-     * @param  color Color components.
+     * @param color Color components.
      * @return RGB color in string.
      */
     protected static RGBToHex(color: ColorComponents): string {

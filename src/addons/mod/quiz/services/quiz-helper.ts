@@ -176,7 +176,7 @@ export class AddonModQuizHelperProvider {
             throw new CoreCanceledError();
         }
 
-        return  modalData;
+        return modalData;
     }
 
     /**

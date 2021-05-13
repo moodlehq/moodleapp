@@ -204,7 +204,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
             // Can't self enrol. Check if the user can view the course contents (guest access or similar).
             try {
                 await CoreCourse.getSections(courseId, false, true);
-            } catch  {
+            } catch {
                 // Error. Show error message and allow the user to open the link in browser.
                 modal.dismiss();
 

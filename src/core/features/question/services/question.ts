@@ -449,7 +449,7 @@ export class CoreQuestionProvider {
     async removeQuestion(component: string, attemptId: number, slot: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await site.getDb().deleteRecords(QUESTION_TABLE_NAME, { component, attemptid: attemptId,  slot });
+        await site.getDb().deleteRecords(QUESTION_TABLE_NAME, { component, attemptid: attemptId, slot });
     }
 
     /**

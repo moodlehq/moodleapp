@@ -186,7 +186,7 @@ export class CoreFilepoolProvider {
      * @return Promise resolved on success.
      */
     protected async addFileLinks(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): Promise<void> {
-        const promises = links.map((link) =>  this.addFileLink(siteId, fileId, link.component, link.componentId));
+        const promises = links.map((link) => this.addFileLink(siteId, fileId, link.component, link.componentId));
 
         await Promise.all(promises);
     }
@@ -593,7 +593,7 @@ export class CoreFilepoolProvider {
      * @return Link, null if nothing to link.
      */
     protected createComponentLink(component?: string, componentId?: string | number): CoreFilepoolComponentLink | undefined {
-        if (typeof component != 'undefined' && component != null)  {
+        if (typeof component != 'undefined' && component != null) {
             return { component, componentId: this.fixComponentId(componentId) };
         }
     }
@@ -1210,7 +1210,7 @@ export class CoreFilepoolProvider {
             throw new CoreError('File system cannot be used.');
         }
 
-        const file = await  this.fixPluginfileURL(siteId, fileUrl);
+        const file = await this.fixPluginfileURL(siteId, fileUrl);
         const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
         const filePath = await this.getFilePath(siteId, fileId, '');
         const dirEntry = await CoreFile.getDir(filePath);

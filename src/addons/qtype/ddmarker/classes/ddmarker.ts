@@ -452,7 +452,7 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Make proportional position of the point.
      *
-     * @param  point Point coordinates.
+     * @param point Point coordinates.
      * @return Converted point.
      */
     makePointProportional(point: AddonQtypeDdMarkerQuestionPoint): AddonQtypeDdMarkerQuestionPoint {

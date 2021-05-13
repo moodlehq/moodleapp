@@ -15,7 +15,7 @@
             <core-empty-box *ngIf="plans.empty" icon="fas-route" [message]="'addon.competency.noplanswerecreated' | translate">
 
             </core-empty-box>
-            <ion-list *ngIf="!plans.empty"  class="ion-no-margin">
+            <ion-list *ngIf="!plans.empty" class="ion-no-margin">
                 <ion-item class="ion-text-wrap" *ngFor="let plan of plans.items" [attr.aria-label]="plan.name"
                     (click)="plans.select(plan)" [attr.aria-current]="plans.getItemAriaCurrent(plan)" button>
                     <ion-label>

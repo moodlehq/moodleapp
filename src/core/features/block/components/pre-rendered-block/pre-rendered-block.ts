@@ -22,7 +22,7 @@ import { CoreBlockBaseComponent } from '../../classes/base-block-component';
     selector: 'core-block-pre-rendered',
     templateUrl: 'core-block-pre-rendered.html',
 })
-export class CoreBlockPreRenderedComponent  extends CoreBlockBaseComponent implements OnInit {
+export class CoreBlockPreRenderedComponent extends CoreBlockBaseComponent implements OnInit {
 
     courseId?: number;
 

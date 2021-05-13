@@ -465,7 +465,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     async add(): Promise<void> {
         const forumName = this.forum.name;
         const subject = this.newDiscussion.subject;
-        let  message = this.newDiscussion.message || '';
+        let message = this.newDiscussion.message || '';
         const pin = this.newDiscussion.pin;
         const attachments = this.newDiscussion.files;
         const discTimecreated = this.timeCreated || Date.now();

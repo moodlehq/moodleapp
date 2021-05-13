@@ -109,7 +109,7 @@ export class AddonModChatHelperProvider {
     /**
      * Check if the date should be displayed between messages (when the day changes at midnight for example).
      *
-     * @param message  New message object.
+     * @param message New message object.
      * @param prevMessage Previous message object.
      * @return True if messages are from diferent days, false othetwise.
      */

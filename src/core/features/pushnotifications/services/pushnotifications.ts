@@ -284,7 +284,7 @@ export class CorePushNotificationsProvider {
     }
 
     /**
-     * Get Sitebadge  counter from the database.
+     * Get Sitebadge counter from the database.
      *
      * @param siteId Site ID.
      * @return Promise resolved with the stored badge counter for the site.

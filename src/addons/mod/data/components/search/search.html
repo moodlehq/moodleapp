@@ -17,7 +17,7 @@
         <ion-toggle [(ngModel)]="search.searchingAdvanced"></ion-toggle>
     </ion-item>
     <form (ngSubmit)="searchEntries($event)" [formGroup]="searchForm" #searchFormEl>
-        <ion-list  class="ion-no-margin">
+        <ion-list class="ion-no-margin">
             <ion-item [hidden]="search.searchingAdvanced">
                 <ion-label></ion-label>
                 <ion-input type="text" placeholder="{{ 'addon.mod_data.search' | translate}}"

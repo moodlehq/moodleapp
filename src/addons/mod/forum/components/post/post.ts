@@ -255,7 +255,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             componentProps: {
                 post: this.post,
                 component: this.component,
-                componentId:  this.componentId,
+                componentId: this.componentId,
                 forum: this.forum,
             },
             backdropDismiss: false,

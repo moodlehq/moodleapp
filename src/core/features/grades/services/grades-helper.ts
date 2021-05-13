@@ -567,15 +567,15 @@ export class CoreGradesHelperProvider {
             row.itemtype = 'agg_sum';
             row.image = 'assets/img/grades/agg_sum.png';
             row.iconAlt = Translate.instant('core.grades.aggregatesum');
-        } else if (text.indexOf('/outcomes') > -1 || text.indexOf('fa-tasks')  > -1) {
+        } else if (text.indexOf('/outcomes') > -1 || text.indexOf('fa-tasks') > -1) {
             row.itemtype = 'outcome';
             row.icon = 'fas-chart-pie';
             row.iconAlt = Translate.instant('core.grades.outcome');
-        } else if (text.indexOf('i/folder') > -1 || text.indexOf('fa-folder')  > -1) {
+        } else if (text.indexOf('i/folder') > -1 || text.indexOf('fa-folder') > -1) {
             row.itemtype = 'category';
             row.icon = 'fas-cubes';
             row.iconAlt = Translate.instant('core.grades.category');
-        } else if (text.indexOf('/manual_item') > -1 || text.indexOf('fa-square-o')  > -1) {
+        } else if (text.indexOf('/manual_item') > -1 || text.indexOf('fa-square-o') > -1) {
             row.itemtype = 'manual';
             row.icon = 'far-square';
             row.iconAlt = Translate.instant('core.grades.manualitem');

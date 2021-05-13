@@ -577,7 +577,7 @@ export class AddonCalendarProvider {
             value = site.getStoredConfig('calendar_lookahead');
         }
 
-        return  parseInt(value as string, 10);
+        return parseInt(value as string, 10);
     }
 
     /**
@@ -1595,7 +1595,7 @@ export class AddonCalendarProvider {
      * @param siteId ID of the site the event belongs to. If not defined, use current site.
      * @return Promise resolved when stored.
      */
-    async storeEventInLocalDb(event:  AddonCalendarGetEventsEvent | AddonCalendarCalendarEvent, siteId?: string): Promise<void> {
+    async storeEventInLocalDb(event: AddonCalendarGetEventsEvent | AddonCalendarCalendarEvent, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
         siteId = site.getId();
         try {
@@ -1775,7 +1775,7 @@ export const AddonCalendar = makeSingleton(AddonCalendarProvider);
 
 /**
  * Data returned by calendar's events_exporter.
- *  Data returned by core_calendar_get_action_events_by_course and core_calendar_get_action_events_by_timesort WS.
+ * Data returned by core_calendar_get_action_events_by_course and core_calendar_get_action_events_by_timesort WS.
  */
 export type AddonCalendarEvents = {
     events: AddonCalendarEvent[]; // Events.
@@ -1912,7 +1912,7 @@ export type AddonCalendarEventBase = {
 };
 
 /**
- * Data returned by calendar's event_exporter.  Don't confuse it with AddonCalendarCalendarEvent.
+ * Data returned by calendar's event_exporter. Don't confuse it with AddonCalendarCalendarEvent.
  */
 export type AddonCalendarEvent = AddonCalendarEventBase & {
     url: string; // Url.

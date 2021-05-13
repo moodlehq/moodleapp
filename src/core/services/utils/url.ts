@@ -253,7 +253,7 @@ export class CoreUrlUtilsProvider {
     /**
      * Returns the Youtube Embed Video URL or null if not found.
      *
-     * @param  url URL
+     * @param url URL
      * @return Youtube Embed Video URL or null if not found.
      */
     getYoutubeEmbedUrl(url?: string): string | void {

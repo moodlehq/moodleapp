@@ -146,7 +146,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
             return;
         }
 
-        CoreDomUtils.showErrorModalDefault(error,  'Error getting location');
+        CoreDomUtils.showErrorModalDefault(error, 'Error getting location');
     }
 
     /**

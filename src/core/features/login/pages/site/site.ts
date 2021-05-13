@@ -164,7 +164,7 @@ export class CoreLoginSitePage implements OnInit {
     /**
      * Extend info of Login Site Info to get UI tweaks.
      *
-     * @param  sites Sites list.
+     * @param sites Sites list.
      * @return Sites list with extended info.
      */
     protected extendCoreLoginSiteInfo(sites: CoreLoginSiteInfoExtended[]): CoreLoginSiteInfoExtended[] {

@@ -399,7 +399,7 @@ export class AddonModDataHelperProvider {
         database: AddonModDataData,
         accessInfo: AddonModDataGetDataAccessInformationWSResponse,
         entry: AddonModDataEntry,
-    ):  Record<AddonModDataAction, boolean> {
+    ): Record<AddonModDataAction, boolean> {
         return {
             add: false, // Not directly used on entries.
             more: true,
@@ -719,7 +719,7 @@ export class AddonModDataHelperProvider {
                 // Ignore errors.
             }
 
-            CoreEvents.trigger(AddonModDataProvider.ENTRY_CHANGED, { dataId, entryId,  deleted: true }, siteId);
+            CoreEvents.trigger(AddonModDataProvider.ENTRY_CHANGED, { dataId, entryId, deleted: true }, siteId);
 
             CoreDomUtils.showToast('addon.mod_data.recorddeleted', true, 3000);
 

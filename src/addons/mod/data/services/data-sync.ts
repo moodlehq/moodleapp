@@ -481,7 +481,7 @@ export type AddonModDataSyncResult = {
     updated: boolean; // Whether some data was sent to the server or offline data was updated.
 };
 
-export type AddonModDataAutoSyncData =  {
+export type AddonModDataAutoSyncData = {
     dataId: number;
     warnings: string[];
     entryId?: number;

@@ -93,7 +93,7 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
             {
                 fieldid: field.id,
                 subfield: 'year',
-                value:  date[0],
+                value: date[0],
             },
             {
                 fieldid: field.id,

@@ -893,7 +893,7 @@ export class AddonModScormProvider {
 
         const data = await this.getScormUserData(scormId, attempt, userDataOptions);
 
-        const trackDataBySCO: Record<string, Record<string, AddonModScormDataValue>>  = {};
+        const trackDataBySCO: Record<string, Record<string, AddonModScormDataValue>> = {};
 
         // First populate trackDataBySCO to index by SCO identifier.
         // We want the full list first because it's needed by evalPrerequisites.

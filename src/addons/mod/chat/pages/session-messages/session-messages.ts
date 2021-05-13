@@ -120,7 +120,7 @@ export class AddonModChatSessionMessagesPage implements OnInit {
             return user.fullname;
         } catch {
             // Error getting profile.
-            return  id;
+            return id;
         }
     }
 

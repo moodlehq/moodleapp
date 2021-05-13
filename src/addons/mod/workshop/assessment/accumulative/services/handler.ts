@@ -115,7 +115,7 @@ export class AddonModWorkshopAssessmentStrategyAccumulativeHandlerService implem
         currentValues: AddonModWorkshopGetAssessmentFormFieldsParsedData[],
         form: AddonModWorkshopGetAssessmentFormDefinitionData,
     ): Promise<CoreFormFields> {
-        const data: CoreFormFields =  {};
+        const data: CoreFormFields = {};
         const errors: AddonModWorkshopAssessmentStrategyFieldErrors = {};
         let hasErrors = false;
 
@@ -135,7 +135,7 @@ export class AddonModWorkshopAssessmentStrategyAccumulativeHandlerService implem
 
                 data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
                 data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
-                data['weight__idx_' + idx] = parseInt(field.weight, 10) ||  0;
+                data['weight__idx_' + idx] = parseInt(field.weight, 10) || 0;
             }
         });
 

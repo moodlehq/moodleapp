@@ -185,7 +185,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         const fileProvider = CoreFile.instance;
 
         const lang = await CoreLang.getCurrentLanguage();
-        this.deviceInfo.currentLanguage =  lang;
+        this.deviceInfo.currentLanguage = lang;
         this.currentLangName = CoreConstants.CONFIG.languages[lang];
 
         if (fileProvider.isAvailable()) {

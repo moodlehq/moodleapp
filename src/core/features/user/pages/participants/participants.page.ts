@@ -229,7 +229,7 @@ class CoreUserParticipantsManager extends CorePageItemsListManager<CoreUserParti
     /**
      * @inheritdoc
      */
-    protected async logActivity(): Promise<void>  {
+    protected async logActivity(): Promise<void> {
         await CoreUser.logParticipantsView(this.courseId);
     }
 

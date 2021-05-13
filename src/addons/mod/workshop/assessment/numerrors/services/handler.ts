@@ -66,7 +66,7 @@ export class AddonModWorkshopAssessmentStrategyNumErrorsHandlerService implement
             originalValues[n] = {};
             originalValues[n].peercomment = form.current[n].peercomment || '';
             originalValues[n].number = field.number; // eslint-disable-line id-blacklist
-            originalValues[n].grade  = form.current[n].grade || '';
+            originalValues[n].grade = form.current[n].grade || '';
         });
 
         return originalValues;
@@ -98,7 +98,7 @@ export class AddonModWorkshopAssessmentStrategyNumErrorsHandlerService implement
         currentValues: AddonModWorkshopGetAssessmentFormFieldsParsedData[],
         form: AddonModWorkshopGetAssessmentFormDefinitionData,
     ): Promise<CoreFormFields> {
-        const data: CoreFormFields =  {};
+        const data: CoreFormFields = {};
         const errors: AddonModWorkshopAssessmentStrategyFieldErrors = {};
         let hasErrors = false;
 
@@ -118,7 +118,7 @@ export class AddonModWorkshopAssessmentStrategyNumErrorsHandlerService implement
 
                 data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
                 data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
-                data['weight__idx_' + idx] = parseInt(field.weight, 10) ||  0;
+                data['weight__idx_' + idx] = parseInt(field.weight, 10) || 0;
             }
         });
 

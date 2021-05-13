@@ -36,7 +36,7 @@ export class CoreAnimations {
             style({ transform: 'translateX(0)', opacity: 1 }),
             animate(300, keyframes([
                 style({ opacity: 0, transform: 'translateX(-100%)', offset: 0 }),
-                style({ opacity: 1, transform: 'translateX(5%)',  offset: 0.7 }),
+                style({ opacity: 1, transform: 'translateX(5%)', offset: 0.7 }),
                 style({ opacity: 1, transform: 'translateX(0)',     offset: 1.0 }),
             ])),
         ]),
@@ -45,7 +45,7 @@ export class CoreAnimations {
             style({ transform: 'translateX(-100%)', opacity: 0 }),
             animate(300, keyframes([
                 style({ opacity: 1, transform: 'translateX(0)', offset: 0 }),
-                style({ opacity: 1, transform: 'translateX(5%)',  offset: 0.3 }),
+                style({ opacity: 1, transform: 'translateX(5%)', offset: 0.3 }),
                 style({ opacity: 0, transform: 'translateX(-100%)',     offset: 1.0 }),
             ])),
         ]),
@@ -55,7 +55,7 @@ export class CoreAnimations {
             animate(300, keyframes([
                 style({ opacity: 0, transform: 'translateX(100%)',     offset: 0 }),
                 style({ opacity: 1, transform: 'translateX(-5%)', offset: 0.7 }),
-                style({ opacity: 1, transform: 'translateX(0)',  offset: 1.0 }),
+                style({ opacity: 1, transform: 'translateX(0)', offset: 1.0 }),
             ])),
         ]),
         // Leave animation.
@@ -63,7 +63,7 @@ export class CoreAnimations {
             style({ transform: 'translateX(-100%)', opacity: 0 }),
             animate(300, keyframes([
                 style({ opacity: 1, transform: 'translateX(0)', offset: 0 }),
-                style({ opacity: 1, transform: 'translateX(-5%)',  offset: 0.3 }),
+                style({ opacity: 1, transform: 'translateX(-5%)', offset: 0.3 }),
                 style({ opacity: 0, transform: 'translateX(100%)',     offset: 1.0 }),
             ])),
         ]),

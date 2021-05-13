@@ -105,7 +105,7 @@ export class CoreXAPIOfflineProvider {
      * Save statements.
      *
      * @param contextId Context ID.
-     * @param component  Component to send the statements to.
+     * @param component Component to send the statements to.
      * @param statements Statements (JSON-encoded).
      * @param options Options.
      * @return Promise resolved when statements are successfully saved.

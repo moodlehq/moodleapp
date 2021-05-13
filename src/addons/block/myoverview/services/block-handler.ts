@@ -21,7 +21,7 @@ import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler
 import { makeSingleton } from '@singletons';
 
 /**
- * Block  handler.
+ * Block handler.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonBlockMyOverviewHandlerService extends CoreBlockBaseHandler {

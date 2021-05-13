@@ -18,7 +18,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <ion-item *ngFor="let site of sites" [attr.aria-current]="site.id == currentSiteId ? 'page' :  'false'">
+        <ion-item *ngFor="let site of sites" [attr.aria-current]="site.id == currentSiteId ? 'page' : 'false'">
             <ion-label class="ion-text-wrap">
                 <h2>
                     <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>

@@ -78,14 +78,14 @@ export class AddonModDataFieldFileHandlerService implements AddonModDataFieldHan
      * @inheritdoc
      */
     getFieldEditFiles(field: AddonModDataField): CoreFileEntry[] {
-        return CoreFileSession.getFiles(AddonModDataProvider.COMPONENT,  field.dataid + '_' + field.id);
+        return CoreFileSession.getFiles(AddonModDataProvider.COMPONENT, field.dataid + '_' + field.id);
     }
 
     /**
      * @inheritdoc
      */
     hasFieldDataChanged(field: AddonModDataField, inputData: CoreFormFields, originalFieldData: AddonModDataEntryField): boolean {
-        const files = CoreFileSession.getFiles(AddonModDataProvider.COMPONENT,  field.dataid + '_' + field.id) || [];
+        const files = CoreFileSession.getFiles(AddonModDataProvider.COMPONENT, field.dataid + '_' + field.id) || [];
         let originalFiles = (originalFieldData && originalFieldData.files) || [];
 
         if (originalFiles.length) {

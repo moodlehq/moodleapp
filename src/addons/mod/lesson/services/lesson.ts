@@ -884,7 +884,7 @@ export class AddonModLessonProvider {
                 // Answer found.
                 result.correctanswer = this.isAnswerCorrect(lesson, pageData.page!.id, answer, pageIndex);
                 result.newpageid = answer.jumpto || 0;
-                result.response  = answer.response || '';
+                result.response = answer.response || '';
                 result.studentanswer = result.userresponse = answer.answer || '';
                 break;
             }
@@ -3195,7 +3195,7 @@ export class AddonModLessonProvider {
         }
 
         let nAttempts: number | undefined;
-        result.attemptsremaining  = 0;
+        result.attemptsremaining = 0;
         result.maxattemptsreached = false;
 
         if (result.noanswer) {
@@ -3902,7 +3902,7 @@ export type AddonModLessonGetPagesWSResponse = {
  */
 export type AddonModLessonGetPagesPageWSData = {
     page: AddonModLessonPageWSData; // Page fields.
-    answerids: number[]; // List of answers ids (empty for content pages in  Moodle 1.9).
+    answerids: number[]; // List of answers ids (empty for content pages in Moodle 1.9).
     jumps: number[]; // List of possible page jumps.
     filescount: number; // The total number of files attached to the page.
     filessizetotal: number; // The total size of the files.

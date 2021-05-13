@@ -12,7 +12,7 @@
                 <core-context-menu-item *ngIf="!isCurrentDay" [priority]="900" [content]="'addon.calendar.today' | translate"
                     iconAction="fas-calendar-day" (action)="goToCurrentDay()">
                 </core-context-menu-item>
-                <core-context-menu-item [hidden]="!loaded || !hasOffline || !isOnline"  [priority]="400"
+                <core-context-menu-item [hidden]="!loaded || !hasOffline || !isOnline" [priority]="400"
                     [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event)"
                     [iconAction]="syncIcon" [closeOnClick]="false">
                 </core-context-menu-item>
@@ -57,7 +57,7 @@
             [message]="'addon.calendar.noevents' | translate">
         </core-empty-box>
 
-        <ion-list *ngIf="filteredEvents && filteredEvents.length"  class="ion-no-margin">
+        <ion-list *ngIf="filteredEvents && filteredEvents.length" class="ion-no-margin">
             <ng-container *ngFor="let event of filteredEvents">
                 <ion-item class="addon-calendar-event ion-text-wrap" [attr.aria-label]="event.name" (click)="gotoEvent(event.id)"
                 [class.item-dimmed]="event.ispast" [ngClass]="['addon-calendar-eventtype-'+event.eventtype]" button>

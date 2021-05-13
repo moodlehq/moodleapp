@@ -717,7 +717,7 @@ export class CoreSitesProvider {
      * Check the required minimum version of the app for a site and shows a download dialog.
      *
      * @param config Config object of the site.
-     * @return Resolved with  if meets the requirements, rejected otherwise.
+     * @return Resolved with if meets the requirements, rejected otherwise.
      */
     protected async checkRequiredMinimumVersion(config?: CoreSitePublicConfigResponse): Promise<void> {
         if (!config || !config.tool_mobile_minimumversion) {
@@ -773,7 +773,7 @@ export class CoreSitesProvider {
     /**
      * Convert version name to numbers.
      *
-     * @param  name Version name (dot separated).
+     * @param name Version name (dot separated).
      * @return Version translated to a comparable number.
      */
     protected convertVersionName(name: string): number {

@@ -145,7 +145,7 @@
                 </ion-label>
             </ion-item>
             <ng-container *ngFor="let reminder of reminders">
-                <ion-item  *ngIf="reminder.time > 0 || defaultTime > 0" class="ion-text-wrap"
+                <ion-item *ngIf="reminder.time > 0 || defaultTime > 0" class="ion-text-wrap"
                     [class.item-dimmed]="(reminder.time == -1 ? (event.timestart - defaultTime) : reminder.time) <= currentTime!">
                     <ion-label>
                         <p *ngIf="reminder.time == -1">

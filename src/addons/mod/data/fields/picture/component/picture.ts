@@ -133,7 +133,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
                 }
             }, 1);
 
-            this.width  = CoreDomUtils.formatPixelsSize(this.field.param1);
+            this.width = CoreDomUtils.formatPixelsSize(this.field.param1);
             this.height = CoreDomUtils.formatPixelsSize(this.field.param2);
         }
     }

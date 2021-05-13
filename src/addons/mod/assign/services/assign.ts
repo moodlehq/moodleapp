@@ -90,7 +90,7 @@ export class AddonModAssignProvider {
     static readonly SUBMITTED_FOR_GRADING_EVENT = 'addon_mod_assign_submitted_for_grading';
     static readonly GRADED_EVENT = 'addon_mod_assign_graded';
 
-    protected gradingOfflineEnabled: {[siteId: string]: boolean}  = {};
+    protected gradingOfflineEnabled: {[siteId: string]: boolean} = {};
 
     /**
      * Check if the user can submit in offline. This should only be used if submissionStatus.lastattempt.cansubmit cannot
@@ -1302,7 +1302,7 @@ export class AddonModAssignProvider {
             );
 
             return true;
-        } catch (error)  {
+        } catch (error) {
             if (error && !CoreUtils.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();

@@ -531,9 +531,9 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     /**
      * Convenience function to load discussion.
      *
-     * @param  forumId Forum ID.
-     * @param  cmId Forum cmid.
-     * @param  discussionId Discussion ID.
+     * @param forumId Forum ID.
+     * @param cmId Forum cmid.
+     * @param discussionId Discussion ID.
      * @return Promise resolved when done.
      */
     protected async loadDiscussion(forumId: number, cmId: number, discussionId: number): Promise<void> {

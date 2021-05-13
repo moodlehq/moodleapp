@@ -343,8 +343,8 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             const minute = Math.floor(currentTime / 60) * 60;
 
             // Check if the notification time is in the same minute as we are, so the notification is triggered.
-            if (notificationTime >=  minute && notificationTime < minute + 60) {
-                notificationTime  = currentTime + 1;
+            if (notificationTime >= minute && notificationTime < minute + 60) {
+                notificationTime = currentTime + 1;
             }
 
             await AddonCalendar.addEventReminder(this.event, notificationTime);

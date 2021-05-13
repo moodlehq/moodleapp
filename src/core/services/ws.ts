@@ -910,7 +910,7 @@ export class CoreWSProvider {
     /**
      * Perform an HTTP request requesting for a text response.
      *
-     * @param  url Url to get.
+     * @param url Url to get.
      * @return Resolved with the text when done.
      */
     async getText(url: string): Promise<string> {

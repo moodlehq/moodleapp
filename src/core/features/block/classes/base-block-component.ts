@@ -71,7 +71,7 @@ export abstract class CoreBlockBaseComponent implements OnInit {
      * @param showErrors If show errors to the user of hide them.
      * @return Promise resolved when done.
      */
-    async doRefresh(refresher?:  IonRefresher, done?: () => void, showErrors: boolean = false): Promise<void> {
+    async doRefresh(refresher?: IonRefresher, done?: () => void, showErrors: boolean = false): Promise<void> {
         if (this.loaded) {
             return this.refreshContent(showErrors).finally(() => {
                 refresher?.complete();

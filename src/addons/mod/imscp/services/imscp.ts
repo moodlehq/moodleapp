@@ -144,7 +144,7 @@ export class AddonModImscpProvider {
      * @return Cache key.
      */
     protected getImscpDataCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY +  'imscp:' + courseId;
+        return ROOT_CACHE_KEY + 'imscp:' + courseId;
     }
 
     /**

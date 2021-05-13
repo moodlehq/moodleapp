@@ -206,7 +206,7 @@ ion-toolbar {
 }
 
 // Modals.
-.core-modal-fullscreen  .modal-wrapper {
+.core-modal-fullscreen .modal-wrapper {
     position: absolute;
     @include position(0 !important, null, null, 0 !important);
     display: block;

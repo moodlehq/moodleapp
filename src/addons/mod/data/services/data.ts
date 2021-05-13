@@ -635,7 +635,7 @@ export class AddonModDataProvider {
     }
 
     /**
-     * Get  access information for a given database.
+     * Get access information for a given database.
      *
      * @param dataId Data ID.
      * @param options Other options.
@@ -1304,7 +1304,7 @@ type AddonModDataDeleteEntryWSParams = {
  */
 type AddonModDataUpdateEntryWSParams = {
     entryid: number; // The entry record id.
-    data: AddonModDataEntryWSField[];  // The fields data to be updated.
+    data: AddonModDataEntryWSField[]; // The fields data to be updated.
 };
 
 /**

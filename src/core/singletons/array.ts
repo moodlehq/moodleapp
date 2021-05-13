@@ -20,7 +20,7 @@ export class CoreArray {
     /**
      * Check whether an array contains an item.
      *
-     * @param arr  Array.
+     * @param arr Array.
      * @param item Item.
      * @return Whether item is within the array.
      */

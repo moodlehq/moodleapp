@@ -67,7 +67,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
         protected route: ActivatedRoute,
     ) {
 
-        this.search.loading =  Translate.instant('core.searching');
+        this.search.loading = Translate.instant('core.searching');
         this.loadingMessages = Translate.instant('core.loading');
         this.siteId = CoreSites.getCurrentSiteId();
 

@@ -12,7 +12,7 @@
     <ion-list id="core-course-section-selector" role="listbox" aria-labelledby="core-course-section-selector-label">
         <ng-container *ngFor="let section of sections">
             <ion-item *ngIf="!section.hiddenbynumsections && section.id != stealthModulesSectionId" class="ion-text-wrap"
-                (click)="selectSection(section)" [attr.aria-current]="selected?.id == section.id ? 'page' :  'false'"
+                (click)="selectSection(section)" [attr.aria-current]="selected?.id == section.id ? 'page' : 'false'"
                 [class.item-dimmed]="section.visible === 0 || section.uservisible === false" detail="false"
                 [attr.aria-hidden]="section.uservisible === false" button>
 

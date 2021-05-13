@@ -93,7 +93,7 @@ export class CoreAppProvider {
                     return entry.version;
                 } catch (error) {
                     // No installed version yet.
-                    return  0;
+                    return 0;
                 }
             },
             set: async (name, version) => {
@@ -181,7 +181,7 @@ export class CoreAppProvider {
     /**
      * Get app store URL.
      *
-     * @param  storesConfig Config params to send the user to the right place.
+     * @param storesConfig Config params to send the user to the right place.
      * @return Store URL.
      */
     getAppStoreUrl(storesConfig: CoreStoreConfig): string | undefined {
