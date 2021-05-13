@@ -1,22 +1,22 @@
 #!/bin/bash
+#
+# Script to update language packs on assets and detect new translated languages.
+# ./update_lang.sh [language]
+# If language is set it will only update the selected language.
+#
 source "functions.sh"
-forceLang=$1
+source "lang_functions.sh"
 
-print_title 'Getting languages'
-git clone --depth 1 --no-single-branch https://git.in.moodle.com/moodle/moodle-langpacks.git $LANGPACKSFOLDER
-pushd $LANGPACKSFOLDER
-BRANCHES=($(git branch -r --format="%(refname:lstrip=3)" --sort="refname" | grep MOODLE_))
-BRANCH=${BRANCHES[${#BRANCHES[@]}-1]}
-git checkout $BRANCH
-git pull
-popd
+forceLang=$1
 
 print_title 'Getting local mobile langs'
 git clone --depth 1 https://github.com/moodlehq/moodle-local_moodlemobileapp.git ../../moodle-local_moodlemobileapp
 
 if [ -z $forceLang ]; then
+    get_languages
     php -f moodle_to_json.php
 else
+    get_language "$forceLang"
     php -f moodle_to_json.php "$forceLang"
 fi
 

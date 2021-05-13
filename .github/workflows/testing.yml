@@ -13,8 +13,45 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.x'
-    - run: npm ci
-    - run: npm run lint
-    - run: npm run test:ci
-    - run: npm run build:prod
-    - run: result=$(npx check-es-compat www/*.js 2> /dev/null | grep -v -E "Array\.prototype\.includes|Promise\.prototype\.finally|String\.prototype\.(matchAll|trimRight)|globalThis" | grep -Po "(?<=error).*?(?=\s+ecmascript)" | wc -l); test $result -eq 0
+    - name: Install npm packages
+      run: npm ci
+    - name: Check langindex
+      run: |
+        result=$(cat scripts/langindex.json | grep \"TBD\" | wc -l); test $result -eq 0
+        if [ $result -ne 0 ]; then
+          echo "There are lang strings to be decided on langindex.json"
+          exit 1
+        fi
+        gulp
+        langlength=`jq -r '. | length' src/assets/lang/en.json`
+        langindexlength=`jq -r '. | length' scripts/langindex.json`
+        if [ $langlength -ne $langindexlength ]; then
+          echo "Lang file has $langlength while langindex $langindexlength"
+          exit 1
+        fi
+
+        langkeys=`jq -r 'keys[]' src/assets/lang/en.json`
+        langindex=`jq -r 'keys[]' scripts/langindex.json`
+        found=0
+        for i in $langkeys; do
+            skip=
+            for j in $langindex; do
+                if [ "$i" == "$j" ]; then
+                  skip=1
+                  break;
+                fi
+            done
+            [[ -n $skip ]] || { echo "$i key not found"; found=$(($found + 1)); }
+        done
+        if [ $found -ne 0 ]; then
+          echo "Found $found missing langkeys"
+          exit 1
+        fi
+    - name: Run Linter
+      run: npm run lint
+    - name: Run tests
+      run: npm run test:ci
+    - name: Production builds
+      run: npm run build:prod
+    - name: JavaScript code compatibility
+      run: result=$(npx check-es-compat www/*.js 2> /dev/null | grep -v -E "Array\.prototype\.includes|Promise\.prototype\.finally|String\.prototype\.(matchAll|trimRight)|globalThis" | grep -Po "(?<=error).*?(?=\s+ecmascript)" | wc -l); test $result -eq 0
