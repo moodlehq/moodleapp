@@ -131,7 +131,10 @@ ion-button.button-small ion-icon.faicon[slot] {
 }
 
 // Buttons.
-ion-button, button, [role="button"] {
+ion-button,
+ion-fab-button,
+button,
+[role="button"] {
     min-height: var(--a11y-min-target-size);
     min-width: var(--a11y-min-target-size);
 }
