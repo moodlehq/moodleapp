@@ -61,7 +61,7 @@ export class CoreCoursesCategoriesPage {
     protected fetchCategories(): Promise<any> {
         return this.coursesProvider.getCategories(this.categoryId, true).then((cats) => {
             this.currentCategory = undefined;
-
+            console.log("Shunmugaraj--cats:",cats)
             cats.forEach((cat, index) => {
                 if (cat.id == this.categoryId) {
                     this.currentCategory = cat;
