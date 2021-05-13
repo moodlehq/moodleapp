@@ -73,7 +73,8 @@
                 <ion-item>
                     <ion-label>
                         <h2>{{ 'addon.calendar.when' | translate }}</h2>
-                        <p [innerHTML]="event.formattedtime"></p>
+                        <core-format-text [text]="event.formattedtime" [contextLevel]="event.contextLevel"
+                        [contextInstanceId]="event.contextInstanceId"></core-format-text>
                     </ion-label>
                     <ion-note slot="end" *ngIf="!isSplitViewOn && event.deleted">
                         <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> {{ 'core.deletedoffline' | translate }}
