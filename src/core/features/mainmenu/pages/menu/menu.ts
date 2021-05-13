@@ -13,13 +13,12 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { IonTabs } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
 
 import { CoreApp } from '@services/app';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import { CoreMainMenu, CoreMainMenuProvider } from '../../services/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/mainmenu-delegate';
@@ -27,6 +26,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from '@classes/aria-role-tab';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the main menu of the app.
@@ -61,7 +61,6 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
         protected changeDetector: ChangeDetectorRef,
-        protected router: Router,
     ) {
         this.resizeFunction = this.initHandlers.bind(this);
         this.backButtonFunction = this.backButtonClicked.bind(this);
@@ -172,27 +171,25 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             return;
         }
 
-        const trimmedUrl = CoreTextUtils.trimCharacter(this.router.url, '/');
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
 
         // Current tab was clicked. Check if user is already at root level.
-        if (trimmedUrl  == CoreTextUtils.trimCharacter(page, '/')) {
-            // Already at root level, nothing to do.
-            return;
+        const mainMenuRootRoute = CoreNavigator.getCurrentRoute({ routeData: { isMainMenuRoot: true } });
+        if (mainMenuRootRoute) {
+            return; // Already at root level, nothing to do.
+        }
+
+        // Current route doesn't define isMainMenuRoot. Check if the current path is the tab one.
+        const currentPath = CoreNavigator.getCurrentPath();
+        if (currentPath == `/main/${page}`) {
+            return; // Already at root level, nothing to do.
         }
 
         // Ask the user if he wants to go back to the root page of the tab.
-        e.preventDefault();
-        e.stopPropagation();
-
         try {
             const tab = this.tabs.find((tab) => tab.page == page);
-
-            // Use tab's subPage to check if user is already at root level.
-            if (tab?.subPage && trimmedUrl ==
-                CoreTextUtils.trimCharacter(CoreTextUtils.concatenatePaths(tab.page, tab.subPage), '/')) {
-                // Already at root level, nothing to do.
-                return;
-            }
 
             if (tab?.title) {
                 await CoreDomUtils.showConfirm(Translate.instant('core.confirmgotabroot', {

@@ -391,12 +391,11 @@ export class CoreDomUtilsProvider {
      * Focus an element and open keyboard.
      *
      * @param el HTML element to focus.
-     * @param showKeyboard Show keyboard when focusing the element.
      */
-    focusElement(el: HTMLElement, showKeyboard = true): void {
+    focusElement(el: HTMLElement): void {
         if (el?.focus) {
             el.focus();
-            if (showKeyboard && CoreApp.isAndroid() && this.supportsInputKeyboard(el)) {
+            if (CoreApp.isAndroid() && this.supportsInputKeyboard(el)) {
                 // On some Android versions the keyboard doesn't open automatically.
                 CoreApp.openKeyboard();
             }

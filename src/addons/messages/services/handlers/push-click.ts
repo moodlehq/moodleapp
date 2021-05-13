@@ -20,6 +20,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonMessages } from '../messages';
+import { AddonMessagesMainMenuHandlerService } from './mainmenu';
 
 /**
  * Handler for messaging push notifications clicks.
@@ -61,7 +62,6 @@ export class AddonMessagesPushClickHandlerService implements CorePushNotificatio
 
         // Check if group messaging is enabled, to determine which page should be loaded.
         const enabled = await AddonMessages.isGroupMessagingEnabledInSite(notification.site);
-        const pageName = await AddonMessages.getMainMessagesPagePathInSite(notification.site);
 
         let nextPageParams: Params | undefined;
 
@@ -76,7 +76,7 @@ export class AddonMessagesPushClickHandlerService implements CorePushNotificatio
             };
         }
 
-        await CoreNavigator.navigateToSitePath(pageName, {
+        await CoreNavigator.navigateToSitePath(AddonMessagesMainMenuHandlerService.PAGE_NAME, {
             siteId: notification.site,
             preferCurrentTab: false,
             nextNavigation: nextPageParams ?

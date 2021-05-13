@@ -136,7 +136,6 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * Open a handler.
      *
      * @param handler Handler to open.
-     * @todo: use subPage?
      */
     openHandler(handler: CoreMainMenuHandlerData): void {
         const params = handler.pageParams;

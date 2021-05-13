@@ -37,32 +37,34 @@
     <div class="safe-padding-horizontal" [hidden]="showFilter || !showSelectorFilter">
         <!-- "Time" selector. -->
         <core-combobox [label]="'core.show' | translate" [selection]="selectedFilter" (onChange)="selectedChanged($event)">
-            <ion-select-option value="allincludinghidden" *ngIf="showFilters.allincludinghidden != 'hidden'">
+            <ion-select-option class="ion-text-wrap" value="allincludinghidden" *ngIf="showFilters.allincludinghidden != 'hidden'">
                 {{ 'addon.block_myoverview.allincludinghidden' | translate }}
             </ion-select-option>
-            <ion-select-option value="all" *ngIf="showFilters.all != 'hidden'">
+            <ion-select-option class="ion-text-wrap" value="all" *ngIf="showFilters.all != 'hidden'">
                 {{ 'addon.block_myoverview.all' | translate }}
             </ion-select-option>
-            <ion-select-option value="inprogress" *ngIf="showFilters.inprogress != 'hidden'"
+            <ion-select-option class="ion-text-wrap" value="inprogress" *ngIf="showFilters.inprogress != 'hidden'"
                 [disabled]="showFilters.inprogress == 'disabled'">
                 {{ 'addon.block_myoverview.inprogress' | translate }}
             </ion-select-option>
-            <ion-select-option value="future" *ngIf="showFilters.future != 'hidden'" [disabled]="showFilters.future == 'disabled'">
+            <ion-select-option class="ion-text-wrap" value="future" *ngIf="showFilters.future != 'hidden'"
+                [disabled]="showFilters.future == 'disabled'">
                 {{ 'addon.block_myoverview.future' | translate }}
             </ion-select-option>
-            <ion-select-option value="past" *ngIf="showFilters.past != 'hidden'" [disabled]="showFilters.past == 'disabled'">
+            <ion-select-option class="ion-text-wrap" value="past" *ngIf="showFilters.past != 'hidden'" [disabled]="showFilters.past == 'disabled'">
                 {{ 'addon.block_myoverview.past' | translate }}
             </ion-select-option>
             <ng-container *ngIf="showFilters.custom != 'hidden'">
                 <ng-container *ngFor="let customOption of customFilter; let index = index">
-                    <ion-select-option value="custom-{{index}}">{{ customOption.name }}</ion-select-option>
+                    <ion-select-option class="ion-text-wrap" value="custom-{{index}}">{{ customOption.name }}</ion-select-option>
                 </ng-container>
             </ng-container>
-            <ion-select-option value="favourite" *ngIf="showFilters.favourite != 'hidden'"
+            <ion-select-option class="ion-text-wrap" value="favourite" *ngIf="showFilters.favourite != 'hidden'"
                 [disabled]="showFilters.favourite == 'disabled'">
                 {{ 'addon.block_myoverview.favourites' | translate }}
             </ion-select-option>
-            <ion-select-option value="hidden" *ngIf="showFilters.hidden != 'hidden'" [disabled]="showFilters.hidden == 'disabled'">
+            <ion-select-option class="ion-text-wrap" value="hidden" *ngIf="showFilters.hidden != 'hidden'"
+                [disabled]="showFilters.hidden == 'disabled'">
                 {{ 'addon.block_myoverview.hiddencourses' | translate }}
             </ion-select-option>
         </core-combobox>

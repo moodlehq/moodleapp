@@ -30,7 +30,6 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
-import { AddonMessagesMainMenuHandlerService } from './handlers/mainmenu';
 import { AddonMessagesSyncEvents, AddonMessagesSyncProvider } from './messages-sync';
 
 const ROOT_CACHE_KEY = 'mmaMessages:';
@@ -1409,29 +1408,6 @@ export class AddonMessagesProvider {
         }
 
         throw new CoreError('Error getting message preferences');
-    }
-
-    /**
-     * Gets the site main messages page path for a site.
-     *
-     * @param siteId Site ID. If not defined, use current site.
-     * @return Main messages page path of the site.
-     */
-    async getMainMessagesPagePathInSite(siteId?: string): Promise<string> {
-        const enabled = await this.isGroupMessagingEnabledInSite(siteId);
-
-        return AddonMessagesMainMenuHandlerService.PAGE_NAME + ( enabled ? '/group-conversations' : '');
-    }
-
-    /**
-     * Gets the site main messages page path.
-     *
-     * @return Main messages page path of the site.
-     */
-    getMainMessagesPagePath(): string {
-        const enabled = this.isGroupMessagingEnabled();
-
-        return AddonMessagesMainMenuHandlerService.PAGE_NAME + ( enabled ? '/group-conversations' : '');
     }
 
     /**

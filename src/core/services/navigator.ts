@@ -519,6 +519,31 @@ export class CoreNavigatorService {
         return path;
     }
 
+    /**
+     * Get the full path of a certain route, including parent routes paths.
+     *
+     * @param route Route.
+     * @return Path.
+     */
+    getRouteFullPath(route: ActivatedRoute | null): string {
+        if (!route) {
+            return '';
+        }
+
+        const parentPath = this.getRouteFullPath(route.parent);
+        const routePath = route.snapshot.url.join('/');
+
+        if (!parentPath && !routePath) {
+            return '';
+        } else if (parentPath && !routePath) {
+            return parentPath;
+        } else if (!parentPath && routePath) {
+            return '/' + routePath;
+        } else {
+            return parentPath + '/' + routePath;
+        }
+    }
+
 }
 
 export const CoreNavigator = makeSingleton(CoreNavigatorService);

@@ -48,7 +48,6 @@ export class AddonPrivateFilesMainMenuHandlerService implements CoreMainMenuHand
             icon: 'fas-folder',
             title: 'addon.privatefiles.files',
             page: AddonPrivateFilesMainMenuHandlerService.PAGE_NAME,
-            subPage: 'root',
             class: 'addon-privatefiles-handler',
         };
     }

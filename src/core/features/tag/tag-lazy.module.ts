@@ -31,6 +31,9 @@ function buildRoutes(injector: Injector): Routes {
         },
         {
             path: 'search',
+            data: {
+                isMainMenuRoot: true,
+            },
             loadChildren: () => import('@features/tag//pages/search/search.page.module').then(m => m.CoreTagSearchPageModule),
         },
         CoreTagIndexAreaRoute,

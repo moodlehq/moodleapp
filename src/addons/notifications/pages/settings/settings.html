@@ -43,7 +43,7 @@
             <!-- Show processor selector. -->
             <core-combobox *ngIf="preferences && preferences.processors && preferences.processors.length > 0"
                 [selection]="currentProcessor!.name" (onChange)="changeProcessor($event)">
-                <ion-select-option *ngFor="let processor of preferences.processors" [value]="processor.name">
+                <ion-select-option class="ion-text-wrap" *ngFor="let processor of preferences.processors" [value]="processor.name">
                     {{ processor.displayname }}
                 </ion-select-option>
             </core-combobox>

@@ -32,10 +32,16 @@ function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: 'index',
+            data: {
+                isMainMenuRoot: true,
+            },
             loadChildren: () => import('@/addons/calendar/pages/index/index.module').then(m => m.AddonCalendarIndexPageModule),
         },
         {
             path: 'list',
+            data: {
+                isMainMenuRoot: true,
+            },
             loadChildren: () => import('@/addons/calendar/pages/list/list.module').then(m => m.AddonCalendarListPageModule),
         },
         {
