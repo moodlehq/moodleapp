@@ -34,8 +34,6 @@ export class AddonBlockLearningPlansHandlerService extends CoreBlockBaseHandler 
      * @return Data or promise resolved with the data.
      */
     getDisplayData(): CoreBlockHandlerData {
-        // @todo
-
         return {
             title: 'addon.block_learningplans.pluginname',
             class: 'addon-block-learning-plans',
