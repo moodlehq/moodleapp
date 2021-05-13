@@ -103,8 +103,6 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         this.canEdit = AddonCalendar.canEditEventsInSite();
         this.canDelete = AddonCalendar.canDeleteEventsInSite();
 
-        this.asyncConstructor();
-
         // Listen for event edited. If current event is edited, reload the data.
         this.editEventObserver = CoreEvents.on(AddonCalendarProvider.EDIT_EVENT_EVENT, (data) => {
             if (data && data.eventId == this.eventId) {
@@ -136,7 +134,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         });
     }
 
-    protected async asyncConstructor(): Promise<void> {
+    protected async initReminders(): Promise<void> {
         if (this.notificationsEnabled) {
             this.monthNames = CoreLang.getMonthNames();
 
@@ -159,6 +157,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         this.syncIcon = CoreConstants.ICON_LOADING;
 
         this.fetchEvent();
+        this.initReminders();
     }
 
     /**
