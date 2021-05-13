@@ -183,6 +183,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         // Ask the user if he wants to go back to the root page of the tab.
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
 
         try {
             const tab = this.tabs.find((tab) => tab.page == page);
