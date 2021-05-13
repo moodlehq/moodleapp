@@ -15,14 +15,21 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.x'
-    - run: npm ci
-    - run: git clone --branch master --depth 1 git://github.com/moodle/moodle $GITHUB_WORKSPACE/moodle
-    - run: git clone --branch ionic5 --depth 1 git://github.com/moodlehq/moodle-local_moodlemobileapp $GITHUB_WORKSPACE/moodle/local/moodlemobileapp
-    - run: git clone --branch MOBILE-3738 --depth 1 git://github.com/NoelDeMartin/moodle-docker $GITHUB_WORKSPACE/moodle-docker
-    - run: cp $GITHUB_WORKSPACE/moodle-docker/config.docker-template.php $GITHUB_WORKSPACE/moodle/config.php
-    - run: MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
-    - run: MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose up -d
-    - run: MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-db
-    - run: MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-app
-    - run: MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/init.php"
-    - run: MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --tags="@app" --auto-rerun"
+    - name: Install npm packages
+      run: npm ci
+    - name: Additional checkouts
+      run: |
+        git clone --branch master --depth 1 git://github.com/moodle/moodle $GITHUB_WORKSPACE/moodle
+        git clone --branch ionic5 --depth 1 git://github.com/moodlehq/moodle-local_moodlemobileapp $GITHUB_WORKSPACE/moodle/local/moodlemobileapp
+        git clone --branch MOBILE-3738 --depth 1 git://github.com/NoelDeMartin/moodle-docker $GITHUB_WORKSPACE/moodle-docker
+    - name: Setup docker machine
+      run: |
+        cp $GITHUB_WORKSPACE/moodle-docker/config.docker-template.php $GITHUB_WORKSPACE/moodle/config.php
+        MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
+        MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose up -d
+        MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-db
+        MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-app
+    - name: Init behat
+      run: MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/init.php"
+    - name: Run tests
+      run: MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --tags="@app" --auto-rerun"

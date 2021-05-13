@@ -37,7 +37,7 @@ export class CoreEmptyBoxComponent {
      * If this has to be shown inline instead of occupying whole page.
      * If image or icon is not supplied, it's true by default.
      */
-    @Input() inline?: boolean;
-    @Input() flipIconRtl?: boolean; // Whether to flip the icon in RTL. Defaults to false.
+    @Input() inline = false;
+    @Input() flipIconRtl = false; // Whether to flip the icon in RTL. Defaults to false.
 
 }

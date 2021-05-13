@@ -724,7 +724,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
 
         await Promise.all(modules.map(async (module) => {
             const handler = this.getPrefetchHandlerFor(module);
-            if (!handler || onlyToDisplay || handler.skipListStatus) {
+            if (!handler || (onlyToDisplay && handler.skipListStatus)) {
                 return;
             }
 

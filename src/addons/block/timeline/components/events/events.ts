@@ -29,6 +29,7 @@ import { AddonCalendarEvent } from '@addons/calendar/services/calendar';
 @Component({
     selector: 'addon-block-timeline-events',
     templateUrl: 'addon-block-timeline-events.html',
+    styleUrls: ['events.scss'],
 })
 export class AddonBlockTimelineEventsComponent implements OnChanges {
 

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-LANGPACKSFOLDER='../../moodle-langpacks'
-
 function check_success_exit {
     if [ $? -ne 0 ]; then
         print_error "$1"

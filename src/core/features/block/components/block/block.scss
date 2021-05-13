@@ -1,6 +1,7 @@
 :host {
     position: relative;
     display: block;
+    background: var(--background);
 
     ion-item-divider {
         min-height: 60px;
