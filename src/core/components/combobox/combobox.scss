@@ -45,7 +45,7 @@ ion-button {
 
     &:focus,
     &:focus-within {
-        border: 2px solid var(--a11y-focus-outline-color);
+        @include core-focus-style();
     }
 }
 

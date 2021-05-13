@@ -502,16 +502,47 @@ audio.core-media-adapt-width {
 }
 
 // Focus highlight for accessibility.
+ion-item.item-input.ion-focused:not(:focus),
 .ion-focused,
+ion-item.ion-activatable.ion-focused:not(:focus),
 ion-input.has-focus,
 .ion-focused ion-toggle:focus-within,
 .ion-focused ion-select:focus-within,
 .ion-focused ion-checkbox:focus-within,
 .ion-focused ion-radio:focus-within {
-    border: 2px solid var(--a11y-focus-outline-color);
+    @include core-focus();
 }
 
 // Treat cases where there's a focusable element inside an item, like a button.
-ion-item.ion-focused:not(:focus) {
-    border: none;
+ion-item.ion-focused:not(:focus),
+ion-item.item-input ion-input.has-focus {
+    position: relative;
+    &::after {
+        box-shadow: revert;
+        opacity: revert;
+        z-index: revert;
+    }
+    .item-highlight, .item-inner-highlight {
+        position: unset;
+    }
+}
+
+// Change default outline.
+:focus-visible {
+    @include core-focus-style();
+    outline: none;
+}
+
+textarea, button, select, input, a {
+    &:focus {
+        @include core-focus-style();
+        outline: none;
+    }
+}
+
+ion-input .native-input{
+    &:focus, &:focus-visible {
+        box-shadow: none;
+        outline: none;
+    }
 }
