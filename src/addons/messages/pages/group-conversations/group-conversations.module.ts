@@ -25,6 +25,9 @@ import { AddonMessagesGroupConversationsPage } from './group-conversations.page'
 const mobileRoutes: Routes = [
     {
         path: '',
+        data: {
+            isMainMenuRoot: true,
+        },
         component: AddonMessagesGroupConversationsPage,
     },
     AddonMessagesDiscussionRoute,
@@ -33,6 +36,9 @@ const mobileRoutes: Routes = [
 const tabletRoutes: Routes = [
     {
         path: '',
+        data: {
+            isMainMenuRoot: true,
+        },
         component: AddonMessagesGroupConversationsPage,
         children: [
             AddonMessagesDiscussionRoute,

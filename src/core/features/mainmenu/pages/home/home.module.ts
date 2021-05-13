@@ -28,6 +28,9 @@ function buildRoutes(injector: Injector): Routes {
     return [
         ...buildTabMainRoutes(injector, {
             path: '',
+            data: {
+                isMainMenuRoot: true,
+            },
             component: CoreMainMenuHomePage,
             children: routes.children,
         }),

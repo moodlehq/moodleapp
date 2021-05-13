@@ -26,6 +26,9 @@ import { AddonMessagesDiscussions35Page } from './discussions.page';
 const mobileRoutes: Routes = [
     {
         path: '',
+        data: {
+            isMainMenuRoot: true,
+        },
         component: AddonMessagesDiscussions35Page,
     },
     AddonMessagesDiscussionRoute,
@@ -34,6 +37,9 @@ const mobileRoutes: Routes = [
 const tabletRoutes: Routes = [
     {
         path: '',
+        data: {
+            isMainMenuRoot: true,
+        },
         component: AddonMessagesDiscussions35Page,
         children: [
             AddonMessagesDiscussionRoute,

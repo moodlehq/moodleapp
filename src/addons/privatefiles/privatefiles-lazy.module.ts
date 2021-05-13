@@ -20,11 +20,18 @@ import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.modu
 function buildRoutes(injector: Injector): Routes {
     return [
         {
+            path: 'root',
+            data: {
+                isMainMenuRoot: true,
+            },
+            loadChildren: () => import('./pages/index/index.module').then(m => m.AddonPrivateFilesIndexPageModule),
+        },
+        {
             path: ':hash',
             loadChildren: () => import('./pages/index/index.module').then(m => m.AddonPrivateFilesIndexPageModule),
         },
         ...buildTabMainRoutes(injector, {
-            redirectTo: 'root', // Fake "hash".
+            redirectTo: 'root',
             pathMatch: 'full',
         }),
     ];

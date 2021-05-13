@@ -21,6 +21,9 @@ function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: 'list',
+            data: {
+                isMainMenuRoot: true,
+            },
             loadChildren: () => import('./pages/list/list.module').then(m => m.AddonNotificationsListPageModule),
         },
         ...buildTabMainRoutes(injector, {
