@@ -51,7 +51,8 @@
                 [disabled]="showFilters.future == 'disabled'">
                 {{ 'addon.block_myoverview.future' | translate }}
             </ion-select-option>
-            <ion-select-option class="ion-text-wrap" value="past" *ngIf="showFilters.past != 'hidden'" [disabled]="showFilters.past == 'disabled'">
+            <ion-select-option class="ion-text-wrap" value="past" *ngIf="showFilters.past != 'hidden'"
+                [disabled]="showFilters.past == 'disabled'">
                 {{ 'addon.block_myoverview.past' | translate }}
             </ion-select-option>
             <ng-container *ngIf="showFilters.custom != 'hidden'">

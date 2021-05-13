@@ -242,7 +242,8 @@ export class CoreUrlUtilsProvider {
         }
 
         try {
-            const lang = await CoreLang.getCurrentLanguage();
+            let lang = await CoreLang.getCurrentLanguage();
+            lang = CoreLang.getParentLanguage(lang) || lang;
 
             return docsUrl.replace('/en/', '/' + lang + '/');
         } catch (error) {
