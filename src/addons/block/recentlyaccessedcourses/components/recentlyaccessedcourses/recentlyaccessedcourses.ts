@@ -46,6 +46,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
+    scrollElementId!: string;
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed = false;
@@ -62,6 +63,10 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
+        // Generate unique id for scroll element.
+        const scrollId = CoreUtils.getUniqueId('AddonBlockRecentlyAccessedCoursesComponent-Scroll');
+
+        this.scrollElementId = `addon-block-recentlyaccessedcourses-scroll-${scrollId}`;
 
         // Refresh the enabled flags if enabled.
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();

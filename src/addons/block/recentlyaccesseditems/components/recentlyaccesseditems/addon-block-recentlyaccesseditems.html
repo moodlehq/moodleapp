@@ -1,8 +1,17 @@
 <ion-item-divider sticky="true">
     <ion-label><h2>{{ 'addon.block_recentlyaccesseditems.pluginname' | translate }}</h2></ion-label>
+    <div slot="end">
+        <core-horizontal-scroll-controls #scrollControls [aria-controls]="scrollElementId">
+        </core-horizontal-scroll-controls>
+    </div>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
-    <div class="core-horizontal-scroll" *ngIf="items && items.length > 0">
+    <div
+        [id]="scrollElementId"
+        [hidden]="!items || items.length === 0"
+        class="core-horizontal-scroll"
+        (scroll)="scrollControls.updateScrollPosition()"
+    >
         <div *ngFor="let item of items">
             <ion-card>
                 <ion-item class="core-course-module-handler item-media ion-text-wrap" detail="false" (click)="action($event, item)"

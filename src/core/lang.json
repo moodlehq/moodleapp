@@ -269,6 +269,8 @@
     "sorry": "Sorry...",
     "sort": "Sort",
     "sortby": "Sort by",
+    "scrollbackward": "Scroll backward",
+    "scrollforward": "Scroll forward",
     "start": "Start",
     "storingfiles": "Storing files",
     "strftimedate": "%d %B %Y",

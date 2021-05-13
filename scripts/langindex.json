@@ -2036,6 +2036,8 @@
   "core.save": "moodle",
   "core.savechanges": "assign",
   "core.scanqr": "local_moodlemobileapp",
+  "core.scrollbackward": "local_moodlemobileapp",
+  "core.scrollforward": "local_moodlemobileapp",
   "core.search": "moodle",
   "core.searching": "local_moodlemobileapp",
   "core.searchresults": "moodle",

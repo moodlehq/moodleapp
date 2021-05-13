@@ -1,0 +1,23 @@
+<ion-button
+    fill="clear"
+    color="dark"
+    (click)="scroll('backward')"
+    [hidden]="scrollPosition === 'hidden'"
+    [disabled]="scrollPosition === 'start'"
+    [attr.aria-label]="'core.scrollbackward' | translate"
+    [attr.aria-controls]="targetId"
+>
+    <ion-icon name="fas-caret-left" slot="icon-only" aria-hidden="true"></ion-icon>
+</ion-button>
+
+<ion-button
+    fill="clear"
+    color="dark"
+    (click)="scroll('forward')"
+    [hidden]="scrollPosition === 'hidden'"
+    [disabled]="scrollPosition === 'end'"
+    [attr.aria-label]="'core.scrollforward' | translate"
+    [attr.aria-controls]="targetId"
+>
+    <ion-icon name="fas-caret-right" slot="icon-only" aria-hidden="true"></ion-icon>
+</ion-button>

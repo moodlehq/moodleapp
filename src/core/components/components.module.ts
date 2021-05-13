@@ -57,6 +57,7 @@ import { CoreTimerComponent } from './timer/timer';
 import { CoreUserAvatarComponent } from './user-avatar/user-avatar';
 import { CoreComboboxComponent } from './combobox/combobox';
 import { CoreSpacerComponent } from './spacer/spacer';
+import { CoreHorizontalScrollControlsComponent } from './horizontal-scroll-controls/horizontal-scroll-controls';
 
 @NgModule({
     declarations: [
@@ -96,6 +97,7 @@ import { CoreSpacerComponent } from './spacer/spacer';
         CoreUserAvatarComponent,
         CoreComboboxComponent,
         CoreSpacerComponent,
+        CoreHorizontalScrollControlsComponent,
     ],
     imports: [
         CommonModule,
@@ -142,6 +144,7 @@ import { CoreSpacerComponent } from './spacer/spacer';
         CoreUserAvatarComponent,
         CoreComboboxComponent,
         CoreSpacerComponent,
+        CoreHorizontalScrollControlsComponent,
     ],
 })
 export class CoreComponentsModule {}

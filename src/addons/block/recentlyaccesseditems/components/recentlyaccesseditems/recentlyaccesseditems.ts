@@ -22,6 +22,7 @@ import {
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Component to render a recently accessed items block.
@@ -34,11 +35,24 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseComponent implements OnInit {
 
     items: AddonBlockRecentlyAccessedItemsItem[] = [];
+    scrollElementId!: string;
 
     protected fetchContentDefaultError = 'Error getting recently accessed items data.';
 
     constructor() {
         super('AddonBlockRecentlyAccessedItemsComponent');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async ngOnInit(): Promise<void> {
+        // Generate unique id for scroll element.
+        const scrollId = CoreUtils.getUniqueId('AddonBlockRecentlyAccessedItemsComponent-Scroll');
+
+        this.scrollElementId = `addon-block-recentlyaccesseditems-scroll-${scrollId}`;
+
+        super.ngOnInit();
     }
 
     /**
