@@ -30,7 +30,7 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class CoreAutoFocusDirective implements AfterViewInit {
 
-    @Input('core-auto-focus') showKeyboard: boolean | string = true;
+    @Input('core-auto-focus') autoFocus: boolean | string = true;
 
     protected element: HTMLElement;
 
@@ -42,7 +42,7 @@ export class CoreAutoFocusDirective implements AfterViewInit {
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        if (this.showKeyboard === 'nofocus') {
+        if (CoreUtils.isFalseOrZero(this.autoFocus)) {
             return;
         }
 
@@ -78,8 +78,7 @@ export class CoreAutoFocusDirective implements AfterViewInit {
                 return;
             }
 
-            const showKeyboard = this.showKeyboard === '' || CoreUtils.isTrueOrOne(this.showKeyboard);
-            CoreDomUtils.focusElement(element, showKeyboard);
+            CoreDomUtils.focusElement(element);
 
             if (element != document.activeElement) {
                 this.setFocus(retries - 1);
