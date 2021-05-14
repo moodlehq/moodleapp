@@ -52,13 +52,15 @@
                 </ion-item>
                 <ion-item class="ion-text-wrap" lines="none">
                     <ion-label>
-                        <p>
+                        <p id="addon-competency-plan-{{plan.plan.id}}-progress">
                             <strong>{{ 'addon.competency.progress' | translate }}</strong>:
                             {{ 'addon.competency.xcompetenciesproficientoutofy' | translate:
                                 {$a: {x: plan.proficientcompetencycount, y: plan.competencycount} } }}
                         </p>
                         <core-progress-bar [progress]="plan.proficientcompetencypercentage"
-                            [text]="plan.proficientcompetencypercentageformatted"></core-progress-bar>
+                            [text]="plan.proficientcompetencypercentageformatted"
+                            ariaDescribedBy="addon-competency-plan-{{plan.plan.id}}-progress">
+                        </core-progress-bar>
                     </ion-label>
                 </ion-item>
             </ion-list>

@@ -1452,6 +1452,7 @@
   "core.course.activitynotyetviewableremoteaddon": "local_moodlemobileapp",
   "core.course.activitynotyetviewablesiteupgradeneeded": "local_moodlemobileapp",
   "core.course.allsections": "local_moodlemobileapp",
+  "core.course.aria:sectionprogress": "local_moodlemobileapp",
   "core.course.askadmintosupport": "local_moodlemobileapp",
   "core.course.availablespace": "local_moodlemobileapp",
   "core.course.cannotdeletewhiledownloading": "local_moodlemobileapp",

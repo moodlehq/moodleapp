@@ -8,7 +8,7 @@
             <ion-icon [name]="prefetchCoursesData.icon" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
         <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData.badge"
-            role="progressbar" aria-valuemin="0" [attr.aria-valuemax]="prefetchCoursesData.total"
+            role="progressbar" [attr.aria-valuemax]="prefetchCoursesData.total"
             [attr.aria-valuenow]="prefetchCoursesData.count" [attr.aria-valuetext]="prefetchCoursesData.badgeA11yText">
             {{prefetchCoursesData.badge}}
         </ion-badge>
