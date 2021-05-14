@@ -49,6 +49,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     @Input() icon?: string; // The tab icon.
     @Input() badge?: string; // A badge to add in the tab.
     @Input() badgeStyle?: string; // The badge color.
+    @Input() badgeA11yText?: string; // Accessibility text to add on the badge.
     @Input() class?: string; // Class, if needed.
     @Input() set enabled(value: boolean) { // Whether the tab should be shown.
         value = value === undefined ? true : value;

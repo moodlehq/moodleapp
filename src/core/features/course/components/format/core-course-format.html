@@ -158,7 +158,9 @@
     <div *ngIf="section && downloadEnabled" slot="end" class="core-button-spinner core-section-download">
         <!-- Download progress. -->
         <ion-badge class="core-course-download-section-progress"
-            *ngIf="section.isDownloading && section.total > 0 && section.count < section.total">
+            *ngIf="section.isDownloading && section.total > 0 && section.count < section.total" role="progressbar"
+            aria-valuemin="0" [attr.aria-valuemax]="section.total" [attr.aria-valuenow]="section.count"
+            [attr.aria-valuetext]="'core.course.downloadsectionprogressdescription' | translate:section">
             {{section.count}} / {{section.total}}
         </ion-badge>
 

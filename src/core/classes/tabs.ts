@@ -670,5 +670,6 @@ export type CoreTabBase = {
     icon?: string; // The tab icon.
     badge?: string; // A badge to add in the tab.
     badgeStyle?: string; // The badge color.
+    badgeA11yText?: string; // Accessibility text to add on the badge.
     enabled?: boolean; // Whether the tab is enabled.
 };

@@ -20,7 +20,10 @@
                 [attr.aria-label]="'core.loading' | translate"></ion-spinner>
                 <ion-badge [hidden]="!downloadAllCoursesEnabled || !courses || courses.length < 2 || !downloadAllCoursesLoading ||
                     downloadAllCoursesBadge == '' || !downloadAllCoursesLoading"
-                [attr.aria-label]="'core.downloading' | translate">{{downloadAllCoursesBadge}}</ion-badge>
+                    role="progressbar" aria-valuemin="0" [attr.aria-valuemax]="downloadAllCoursesTotal"
+                    [attr.aria-valuenow]="downloadAllCoursesCount" [attr.aria-valuetext]="downloadAllCoursesBadgeA11yText">
+                    {{downloadAllCoursesBadge}}
+                </ion-badge>
             </core-navbar-buttons>
         </ion-buttons>
     </ion-toolbar>

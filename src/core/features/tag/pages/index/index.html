@@ -23,7 +23,10 @@
                     <ion-label>
                         <h2>{{ area!.nameKey | translate }}</h2>
                     </ion-label>
-                    <ion-badge slot="end" *ngIf="area!.badge">{{ area!.badge }}</ion-badge>
+                    <ion-badge slot="end" *ngIf="area!.badge">
+                        <span aria-hidden="true">{{ area!.badge }}</span>
+                        <span class="sr-only">{{ 'core.tag.tagareabadgedescription' | translate:{ count: area!.badge } }}</span>
+                    </ion-badge>
                 </ion-item>
             </ion-list>
             <core-empty-box icon="fa-tag" *ngIf="!hasUnsupportedAreas && (!areas || !areas.length)"

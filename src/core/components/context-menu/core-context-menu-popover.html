@@ -12,6 +12,11 @@
             [class.icon-slash]="item.iconSlash" slot="end">
         </ion-icon>
         <ion-spinner *ngIf="(item.href || item.action) && item.iconAction == 'spinner'" slot="end"></ion-spinner>
-        <ion-badge class="{{item.badgeClass}}" slot="end" *ngIf="item.badge">{{item.badge}}</ion-badge>
+        <ion-badge class="{{item.badgeClass}}" slot="end" *ngIf="item.badge">
+            <span [attr.ara-hidden]="!!item.badgeA11yText">{{item.badge}}</span>
+            <span class="sr-only" *ngIf="item.badgeA11yText">
+                {{ item.badgeA11yText | translate: {$a : item.badge } }}
+            </span>
+        </ion-badge>
     </ion-item>
 </ion-list>

@@ -35,7 +35,12 @@
                             contextLevel="course"
                         ></core-format-text>
                     </ion-label>
-                    <ion-badge slot="end" color="light">{{course.grade}}</ion-badge>
+                    <ion-badge slot="end" color="light">
+                        <span class="sr-only" *ngIf="course.grade && course.grade != '-'">
+                            {{ 'core.grades.grade' | translate }}
+                        </span>
+                        {{course.grade}}
+                    </ion-badge>
                 </ion-item>
             </ion-list>
         </core-loading>

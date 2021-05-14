@@ -142,9 +142,11 @@
                             <ion-note>
                                 <ion-icon name="fas-comments" aria-hidden="true"></ion-icon>
                                 {{ 'addon.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}
-                                <ion-badge *ngIf="discussion.numunread" class="ion-text-center"
-                                    [attr.aria-label]="'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread}">
-                                    {{ discussion.numunread }}
+                                <ion-badge *ngIf="discussion.numunread" class="ion-text-center">
+                                    <span aria-hidden="true">{{ discussion.numunread }}</span>
+                                    <span class="sr-only">
+                                        {{ 'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread} }}
+                                    </span>
                                 </ion-badge>
                             </ion-note>
                         </ion-col>

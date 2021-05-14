@@ -135,6 +135,9 @@ export type CorePrefetchStatusInfo = {
     icon: string; // Icon based on the status.
     loading: boolean; // If it's a loading status.
     badge?: string; // Progress badge string if any.
+    badgeA11yText?: string; // Description of the badge if any.
+    count?: number; // Amount of already downloaded courses.
+    total?: number; // Total of courses.
     downloadSucceeded?: boolean; // Whether download has succeeded (in case it's downloaded).
 };
 
@@ -1235,6 +1238,9 @@ export class CoreCourseHelperProvider {
         try {
             await this.confirmAndPrefetchCourses(courses, (progress) => {
                 prefetch.badge = progress.count + ' / ' + progress.total;
+                prefetch.badgeA11yText = Translate.instant('core.course.downloadcoursesprogressdescription', progress);
+                prefetch.count = progress.count;
+                prefetch.total = progress.total;
             });
             prefetch.icon = CoreConstants.ICON_OUTDATED;
         } finally {

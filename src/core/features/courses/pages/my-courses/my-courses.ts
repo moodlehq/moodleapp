@@ -26,6 +26,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreConstants } from '@/core/constants';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreNavigator } from '@services/navigator';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -48,6 +49,9 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
     downloadAllCoursesLoading = false;
     downloadAllCoursesBadge = '';
     downloadAllCoursesEnabled = false;
+    downloadAllCoursesCount?: number;
+    downloadAllCoursesTotal?: number;
+    downloadAllCoursesBadgeA11yText = '';
 
     protected myCoursesObserver: CoreEventObserver;
     protected siteUpdatedObserver: CoreEventObserver;
@@ -183,6 +187,10 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
         try {
             await CoreCourseHelper.confirmAndPrefetchCourses(this.courses, (progress) => {
                 this.downloadAllCoursesBadge = progress.count + ' / ' + progress.total;
+                this.downloadAllCoursesBadgeA11yText =
+                    Translate.instant('core.course.downloadcoursesprogressdescription', progress);
+                this.downloadAllCoursesCount = progress.count;
+                this.downloadAllCoursesTotal = progress.total;
             });
         } catch (error) {
             if (!this.isDestroyed) {

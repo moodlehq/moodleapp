@@ -78,7 +78,12 @@
             <ion-label>
                 <h2>{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</h2>
             </ion-label>
-            <ion-badge slot="end">{{completedCount}}</ion-badge>
+            <ion-badge slot="end">
+                <span aria-hidden="true">{{completedCount}}</span>
+                <span class="sr-only">
+                    {{ 'addon.mod_feedback.completedfeedbackscountdescription' | translate:{count: completedCount} }}
+                </span>
+            </ion-badge>
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="!access.isanonymous && access.canviewreports" (click)="openNonRespondents()"
             detail="true" button>
@@ -90,7 +95,12 @@
             <ion-label>
                 <h2>{{ 'addon.mod_feedback.questions' | translate }}</h2>
             </ion-label>
-            <ion-badge slot="end">{{itemsCount}}</ion-badge>
+            <ion-badge slot="end">
+                <span aria-hidden="true">{{itemsCount}}</span>
+                <span class="sr-only">
+                    {{ 'addon.mod_feedback.questionscountdescription' | translate:{count: itemsCount} }}
+                </span>
+            </ion-badge>
         </ion-item>
     </ion-list>
 </ng-template>

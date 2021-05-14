@@ -30,6 +30,8 @@
     "couldnotloadsections": "Could not load the sections. Please try again later.",
     "coursesummary": "Course summary",
     "downloadcourse": "Download course",
+    "downloadcoursesprogressdescription": "Downloading courses: downloaded {{count}} out of {{total}}.",
+    "downloadsectionprogressdescription": "Downloading section: downloaded {{count}} out of {{total}}.",
     "errordownloadingcourse": "Error downloading course.",
     "errordownloadingsection": "Error downloading section.",
     "errorgetmodule": "Error getting activity data.",

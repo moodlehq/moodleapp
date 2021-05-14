@@ -48,7 +48,10 @@
                             </core-format-text>
                         </h2>
                     </ion-label>
-                    <ion-badge slot="end" *ngIf="category.coursecount > 0" color="light">{{category.coursecount}}</ion-badge>
+                    <ion-badge slot="end" *ngIf="category.coursecount > 0" color="light">
+                        <span aria-hidden="true">{{ category.coursecount }}</span>
+                        <span class="sr-only">{{ 'core.courses.therearecourses' | translate:{ $a: category.coursecount } }}</span>
+                    </ion-badge>
                 </ion-item>
             </section>
         </div>
