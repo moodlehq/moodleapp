@@ -119,6 +119,19 @@ export class CoreLangProvider {
     }
 
     /**
+     * Get the parent language defined on the language strings.
+     *
+     * @param currentLanguage Current language.
+     * @returns If a parent language is set, return the index name.
+     */
+    getParentLanguage(currentLanguage: string): string | undefined {
+        const parentLang = Translate.instant('core.parentlanguage');
+        if (parentLang != '' && parentLang != 'core.parentlanguage' && parentLang != currentLanguage) {
+            return parentLang;
+        }
+    }
+
+    /**
      * Change current language.
      *
      * @param language New language to use.
@@ -131,9 +144,9 @@ export class CoreLangProvider {
         promises.push(new Promise((resolve, reject) => {
             CoreSubscriptions.once(Translate.use(language), data => {
                 // It's a language override, load the original one first.
-                const fallbackLang = Translate.instant('core.parentlanguage');
+                const fallbackLang = this.getParentLanguage(language);
 
-                if (fallbackLang != '' && fallbackLang != 'core.parentlanguage' && fallbackLang != language) {
+                if (fallbackLang) {
                     CoreSubscriptions.once(
                         Translate.use(fallbackLang),
                         fallbackData => {

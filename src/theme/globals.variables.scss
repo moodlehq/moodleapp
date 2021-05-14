@@ -132,15 +132,7 @@ $colors:  (
 
 // Just swipe light and dark.
 $colors-dark:  (
-    primary: map-get($colors, primary),
-    secondary: map-get($colors, secondary),
-    tertiary: map-get($colors, tertiary),
-    success: map-get($colors, success),
-    warning: map-get($colors, warning),
-    danger: map-get($colors, danger),
-    info: map-get($colors, info),
     light: map-get($colors, dark),
-    medium: map-get($colors, medium),
     dark: map-get($colors, light),
 ) !default;
 

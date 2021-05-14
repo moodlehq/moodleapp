@@ -59,7 +59,7 @@
     --medium: #{$medium};
 
     @each $color-name, $value in $colors {
-        @include generate-color($color-name);
+        @include generate-color($color-name, $colors);
     }
 
     // Accessibility vars.
