@@ -132,7 +132,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
             }
 
             await this.loadContent(true, sync, showErrors);
-        } finally  {
+        } finally {
             this.refreshIcon = CoreConstants.ICON_REFRESH;
             this.syncIcon = CoreConstants.ICON_SYNC;
         }

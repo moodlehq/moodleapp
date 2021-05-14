@@ -464,7 +464,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         // Override offline grade and outcomes based on the gradebook data.
         grades.forEach((grade: CoreGradesFormattedItem | CoreGradesFormattedRow) => {
-            if ('gradedategraded' in  grade && (grade.gradedategraded || 0) >= offlineData.timemodified) {
+            if ('gradedategraded' in grade && (grade.gradedategraded || 0) >= offlineData.timemodified) {
                 if (!grade.outcomeid && !grade.scaleid) {
                     if (gradeInfo && gradeInfo.scale) {
                         offlineData.grade = this.getSelectedScaleId(gradeInfo.scale, grade.grade || '');

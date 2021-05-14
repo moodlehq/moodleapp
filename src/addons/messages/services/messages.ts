@@ -1165,7 +1165,7 @@ export class AddonMessagesProvider {
             canLoadMore: false,
         };
 
-        const preSets: CoreSiteWSPreSets =  {
+        const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForDiscussion(userId),
         };
         const params: AddonMessagesGetMessagesWSParams = {
@@ -2012,7 +2012,7 @@ export class AddonMessagesProvider {
      * Returns whether or not we can mark all messages as read.
      *
      * @return If related WS is available on current site.
-     * @since  3.2
+     * @since 3.2
      */
     isMarkAllMessagesReadEnabled(): boolean {
         return CoreSites.wsAvailableInCurrentSite('core_message_mark_all_conversation_messages_as_read') ||
@@ -2023,7 +2023,7 @@ export class AddonMessagesProvider {
      * Returns whether or not we can count unread messages.
      *
      * @return True if enabled, false otherwise.
-     * @since  3.2
+     * @since 3.2
      */
     isMessageCountEnabled(): boolean {
         return CoreSites.wsAvailableInCurrentSite('core_message_get_unread_conversations_count');
@@ -2033,7 +2033,7 @@ export class AddonMessagesProvider {
      * Returns whether or not the message preferences are enabled for the current site.
      *
      * @return True if enabled, false otherwise.
-     * @since  3.2
+     * @since 3.2
      */
     isMessagePreferencesEnabled(): boolean {
         return CoreSites.wsAvailableInCurrentSite('core_message_get_user_message_preferences');
@@ -2100,7 +2100,7 @@ export class AddonMessagesProvider {
     /**
      * Returns whether or not we can search messages.
      *
-     * @since  3.2
+     * @since 3.2
      */
     isSearchMessagesEnabled(): boolean {
         return CoreSites.wsAvailableInCurrentSite('core_message_data_for_messagearea_search_messages');
@@ -2167,7 +2167,7 @@ export class AddonMessagesProvider {
             conversationid: conversationId,
         };
 
-        const preSets: CoreSiteWSPreSets =  {
+        const preSets: CoreSiteWSPreSets = {
             responseExpected: false,
         };
 
@@ -2187,7 +2187,7 @@ export class AddonMessagesProvider {
             useridfrom: userIdFrom,
         };
 
-        const preSets: CoreSiteWSPreSets =  {
+        const preSets: CoreSiteWSPreSets = {
             typeExpected: 'boolean',
         };
 
@@ -2834,7 +2834,7 @@ export class AddonMessagesProvider {
      * @param discussions List of discussions.
      * @param siteId Site ID. If not defined, current site.
      */
-    protected storeUsersFromDiscussions(discussions:  { [userId: number]: AddonMessagesDiscussion }, siteId?: string): void {
+    protected storeUsersFromDiscussions(discussions: { [userId: number]: AddonMessagesDiscussion }, siteId?: string): void {
         const users: CoreUserBasicData[] = [];
 
         for (const userId in discussions) {
@@ -3377,7 +3377,7 @@ export type AddonMessagesMarkMessageReadResult = {
  * Result of WS core_message_send_instant_messages.
  */
 export type AddonMessagesSendInstantMessagesMessage = {
-    msgid: number; // Test this to know if it succeeds:  id of the created message if it succeeded, -1 when failed.
+    msgid: number; // Test this to know if it succeeds: i of the created message if it succeeded, -1 when failed.
     clientmsgid?: string; // Your own id for the message.
     errormessage?: string; // Error message - if it failed.
     text?: string; // @since 3.6. The text of the message.

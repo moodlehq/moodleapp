@@ -1870,9 +1870,9 @@ export class CoreCourseHelperProvider {
     /**
      * Wait for any course format plugin to load, and open the course page.
      *
-     * If the plugin's promise is resolved, the course page will be opened.  If it is rejected, they will see an error.
+     * If the plugin's promise is resolved, the course page will be opened. If it is rejected, they will see an error.
      * If the promise for the plugin is still in progress when the user tries to open the course, a loader
-     * will be displayed until it is complete, before the course page is opened.  If the promise is already complete,
+     * will be displayed until it is complete, before the course page is opened. If the promise is already complete,
      * they will see the result immediately.
      *
      * @param course Course to open

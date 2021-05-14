@@ -201,7 +201,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy {
     /**
      * Get the user fullname for a beep.
      *
-     * @param  id User Id before parsing.
+     * @param id User Id before parsing.
      * @return User fullname.
      */
     protected async getUserFullname(id: string): Promise<string> {

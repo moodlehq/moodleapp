@@ -145,7 +145,7 @@ export class AddonModForumModuleHandlerService implements CoreCourseModuleHandle
             return;
         }
 
-        data.extraBadge =  Translate.instant('core.loading');
+        data.extraBadge = Translate.instant('core.loading');
         data.extraBadgeColor = 'light';
 
         await CoreUtils.ignoreErrors(AddonModForum.invalidateForumData(courseId));

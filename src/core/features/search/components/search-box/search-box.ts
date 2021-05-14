@@ -51,7 +51,7 @@ export class CoreSearchBoxComponent implements OnInit {
     /* If provided. It will save and display a history of searches for this particular Id.
      * To use different history lists, place different Id.
      * I.e. AddonMessagesContacts or CoreUserParticipants-6 (using the course Id).*/
-    @Input() protected searchArea  = '';
+    @Input() protected searchArea = '';
 
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the search form.
     @Output() onClear: EventEmitter<void>; // Send event when clearing the search form.

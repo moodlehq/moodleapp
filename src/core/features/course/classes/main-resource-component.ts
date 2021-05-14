@@ -169,7 +169,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             }
 
             await this.loadContent(true);
-        } finally  {
+        } finally {
             this.refreshIcon = CoreConstants.ICON_REFRESH;
         }
     }

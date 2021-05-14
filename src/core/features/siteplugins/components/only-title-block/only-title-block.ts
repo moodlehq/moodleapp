@@ -27,7 +27,7 @@ import { CoreNavigator } from '@services/navigator';
     selector: 'core-siteplugins-only-title-block',
     templateUrl: 'core-siteplugins-only-title-block.html',
 })
-export class CoreSitePluginsOnlyTitleBlockComponent  extends CoreBlockBaseComponent implements OnInit {
+export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseComponent implements OnInit {
 
     constructor() {
         super('CoreSitePluginsOnlyTitleBlockComponent');

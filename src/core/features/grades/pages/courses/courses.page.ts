@@ -103,7 +103,7 @@ class CoreGradesCoursesManager extends CorePageItemsListManager<CoreGradesGradeO
     /**
      * @inheritdoc
      */
-    protected async logActivity(): Promise<void>  {
+    protected async logActivity(): Promise<void> {
         await CoreGrades.logCoursesGradesView();
     }
 

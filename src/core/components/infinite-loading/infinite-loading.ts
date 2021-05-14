@@ -42,7 +42,7 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
     @ViewChild('spinnercontainer') spinnerContainer?: ElementRef;
     @ViewChild(IonInfiniteScroll) infiniteScroll?: IonInfiniteScroll;
 
-    loadingMore = false;   // Hide button and avoid loading more.
+    loadingMore = false; // Hide button and avoid loading more.
 
     constructor(protected element: ElementRef) {
         this.action = new EventEmitter();

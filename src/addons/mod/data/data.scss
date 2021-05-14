@@ -17,8 +17,6 @@ $grid-column-paddings: (
     white-space: normal;
     word-break: break-word;
     padding: 16px;
-    // @todo check if needed
-    // @include safe-area-padding-horizontal(16px !important, 16px !important);
 
     background-color: var(--ion-item-background);
     border-width: 1px 0;

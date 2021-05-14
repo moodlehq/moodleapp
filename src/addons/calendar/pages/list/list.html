@@ -12,7 +12,7 @@
                 <core-context-menu-item [hidden]="!notificationsEnabled" [priority]="600"
                 [content]="'core.settings.settings' | translate" (action)="openSettings()" iconAction="fas-cogs">
             </core-context-menu-item>
-                <core-context-menu-item [hidden]="!eventsLoaded || !hasOffline || !isOnline"  [priority]="400"
+                <core-context-menu-item [hidden]="!eventsLoaded || !hasOffline || !isOnline" [priority]="400"
                 [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event, true)"
                 [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
             </core-context-menu>
@@ -37,7 +37,7 @@
                 [message]="'addon.calendar.noevents' | translate">
             </core-empty-box>
 
-            <ion-list *ngIf="filteredEvents && filteredEvents.length"  class="ion-no-margin">
+            <ion-list *ngIf="filteredEvents && filteredEvents.length" class="ion-no-margin">
                 <ng-container *ngFor="let event of filteredEvents">
                     <ion-item-divider *ngIf="event.showDate">
                         <ion-label><h2>{{ event.timestart * 1000 | coreFormatDate: "strftimedayshort" }}</h2></ion-label>

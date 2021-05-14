@@ -531,7 +531,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
                 try {
                     await AddonCalendarHelper.refreshAfterChangeEvent(result.event, numberOfRepetitions);
-                } catch  {
+                } catch {
                     // Ignore errors.
                 }
             }

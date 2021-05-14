@@ -346,7 +346,7 @@ export class AddonModChoiceProvider {
     async invalidateOptions(choiceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await  site.invalidateWsCacheForKey(this.getChoiceOptionsCacheKey(choiceId));
+        await site.invalidateWsCacheForKey(this.getChoiceOptionsCacheKey(choiceId));
     }
 
     /**
@@ -359,7 +359,7 @@ export class AddonModChoiceProvider {
     async invalidateResults(choiceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await  site.invalidateWsCacheForKey(this.getChoiceResultsCacheKey(choiceId));
+        await site.invalidateWsCacheForKey(this.getChoiceResultsCacheKey(choiceId));
     }
 
     /**

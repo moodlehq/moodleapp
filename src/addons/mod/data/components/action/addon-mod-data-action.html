@@ -2,7 +2,7 @@
     <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 
-<ion-button *ngIf="action == 'edit'" fill="clear" (click)="editEntry()"  [attr.aria-label]="'core.edit' | translate">
+<ion-button *ngIf="action == 'edit'" fill="clear" (click)="editEntry()" [attr.aria-label]="'core.edit' | translate">
     <ion-icon name="fas-cog" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 
@@ -27,8 +27,8 @@
 component="mod_data" [itemId]="entry.id" area="database_entry" [courseId]="database.course">
 </core-comments>
 
-<span *ngIf="action == 'timeadded'">{{ entry.timecreated * 1000 |  coreFormatDate }}</span>
-<span *ngIf="action == 'timemodified'">{{ entry.timemodified * 1000 |  coreFormatDate }}</span>
+<span *ngIf="action == 'timeadded'">{{ entry.timecreated * 1000 | coreFormatDate }}</span>
+<span *ngIf="action == 'timemodified'">{{ entry.timemodified * 1000 | coreFormatDate }}</span>
 
 <a *ngIf="action == 'userpicture'" core-user-link [courseId]="database.course" [userId]="entry.userid" [title]="entry.fullname">
     <img class="avatar-round" [src]="userPicture" [alt]="'core.pictureof' | translate:{$a: entry.fullname}" core-external-content

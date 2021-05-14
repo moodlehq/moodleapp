@@ -601,7 +601,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             disabled: false,
         };
 
-        this.originalGrades =  {
+        this.originalGrades = {
             addAttempt: false,
             applyToAll: false,
             outcomes: {},
@@ -613,7 +613,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             // If we have data about the grader, get its profile.
             if (feedback.grade && feedback.grade.grader > 0) {
                 try {
-                    this.grader =  await CoreUser.getProfile(feedback.grade.grader, this.courseId);
+                    this.grader = await CoreUser.getProfile(feedback.grade.grader, this.courseId);
                 } catch {
                     // Ignore errors.
                 }

@@ -43,7 +43,7 @@ export class CoreFabDirective implements OnDestroy {
         if (this.content) {
             this.scrollElement = await this.content.getScrollElement();
             if (!this.done) {
-                const bottom = parseInt(this.scrollElement.style.paddingBottom, 10) ||  0;
+                const bottom = parseInt(this.scrollElement.style.paddingBottom, 10) || 0;
                 this.scrollElement.style.paddingBottom = (bottom + CoreFabDirective.PADDINGBOTTOM) + 'px';
                 this.done = true;
             }
@@ -55,7 +55,7 @@ export class CoreFabDirective implements OnDestroy {
      */
     ngOnDestroy(): void {
         if (this.done && this.scrollElement) {
-            const bottom = parseInt(this.scrollElement.style.paddingBottom, 10) ||  0;
+            const bottom = parseInt(this.scrollElement.style.paddingBottom, 10) || 0;
             this.scrollElement.style.paddingBottom = (bottom - CoreFabDirective.PADDINGBOTTOM) + 'px';
         }
     }

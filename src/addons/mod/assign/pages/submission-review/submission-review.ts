@@ -37,7 +37,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, CanLeave {
     title = ''; // Title to display.
     moduleId!: number; // Module ID the submission belongs to.
     courseId!: number; // Course ID the assignment belongs to.
-    submitId!: number; //  User that did the submission.
+    submitId!: number; // User that did the submission.
     blindId?: number; // Blinded user ID (if it's blinded).
     loaded = false; // Whether data has been loaded.
     canSaveGrades = false; // Whether the user can save grades.

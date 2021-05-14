@@ -4,9 +4,6 @@
     background: var(--background);
 
     ion-item-divider {
-        min-height: 60px;
-        .core-button-spinner {
-            margin: 0;
-        }
+        min-height: var(--item-divider-min-height);
     }
 }

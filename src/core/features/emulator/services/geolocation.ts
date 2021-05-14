@@ -38,7 +38,7 @@ export class GeolocationMock extends Geolocation {
     }
 
     /**
-     * Watch the current device's position.  Clear the watch by unsubscribing from
+     * Watch the current device's position. Clear the watch by unsubscribing from
      * Observable changes.
      *
      * @param options The geolocation options.

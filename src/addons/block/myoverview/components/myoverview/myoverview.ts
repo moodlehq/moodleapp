@@ -327,8 +327,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * Helper function to help with filter values.
      *
-     * @param  showCondition     If true, filter will be shown.
-     * @param  disabledCondition If true, and showCondition is also met, it will be shown as disabled.
+     * @param showCondition     If true, filter will be shown.
+     * @param disabledCondition If true, and showCondition is also met, it will be shown as disabled.
      * @return                   show / disabled / hidden value.
      */
     protected getShowFilterValue(showCondition: boolean, disabledCondition: boolean): string {
@@ -507,7 +507,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         courses.forEach((course) => {
             if (course.hidden) {
                 this.courses.hidden.push(course);
-            } else  {
+            } else {
                 this.courses.all.push(course);
 
                 if ((course.enddate && course.enddate < today) || course.completed) {

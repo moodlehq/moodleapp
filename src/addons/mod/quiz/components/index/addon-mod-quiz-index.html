@@ -13,7 +13,7 @@
         <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
             (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline"  [priority]="600" (action)="doRefresh(null, $event, true)"
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline" [priority]="600" (action)="doRefresh(null, $event, true)"
             [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon" [closeOnClick]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)"
@@ -61,51 +61,62 @@
     <!-- List of user attempts. -->
     <ion-card class="addon-mod_quiz-table" *ngIf="quiz && attempts.length">
         <ion-card-header class="ion-text-wrap">
-            <ion-card-header>
-                <ion-card-title>{{ 'addon.mod_quiz.summaryofattempts' | translate }}</ion-card-title>
-            </ion-card-header>
+            <ion-card-title>{{ 'addon.mod_quiz.summaryofattempts' | translate }}</ion-card-title>
         </ion-card-header>
-        <ion-card-content>
+        <ion-card-content role="table">
             <!-- "Header" of the table -->
-            <ion-item class="ion-text-wrap addon-mod_quiz-table-header" detail="true">
-                <ion-label>
-                    <ion-row class="ion-align-items-center">
-                        <ion-col class="ion-text-center ion-hide-md-down" *ngIf="quiz.showAttemptColumn">
-                            <strong>{{ 'addon.mod_quiz.attemptnumber' | translate }}</strong>
+            <ion-item class="ion-text-wrap addon-mod_quiz-table-header">
+                <ion-label role="rowgroup">
+                    <ion-row class="ion-align-items-center" role="row">
+                        <ion-col class="ion-text-center" *ngIf="quiz.showAttemptColumn" role="columnheader">
+                            <strong class="ion-hide-md-up" aria-hidden="true">#</strong>
+                            <span class="sr-only ion-hide-md-up">{{ 'addon.mod_quiz.attemptnumber' | translate }}</span>
+                            <strong class="ion-hide-md-down">{{ 'addon.mod_quiz.attemptnumber' | translate }}</strong>
                         </ion-col>
-                        <ion-col class="ion-text-center ion-hide-md-up" *ngIf="quiz.showAttemptColumn"><strong>#</strong></ion-col>
-                        <ion-col size="7"><strong>{{ 'addon.mod_quiz.attemptstate' | translate }}</strong></ion-col>
-                        <ion-col class="ion-text-center ion-hide-md-down" *ngIf="quiz.showMarkColumn">
+                        <ion-col size="7" role="columnheader">
+                            <strong>{{ 'addon.mod_quiz.attemptstate' | translate }}</strong>
+                        </ion-col>
+                        <ion-col class="ion-text-center ion-hide-md-down" *ngIf="quiz.showMarkColumn" role="columnheader">
                             <strong>{{ 'addon.mod_quiz.marks' | translate }} / {{ quiz.sumGradesFormatted }}</strong>
                         </ion-col>
-                        <ion-col class="ion-text-center" *ngIf="quiz.showGradeColumn">
+                        <ion-col class="ion-text-center" *ngIf="quiz.showGradeColumn" role="columnheader">
                             <strong>{{ 'addon.mod_quiz.grade' | translate }} / {{ quiz.gradeFormatted }}</strong>
                         </ion-col>
                     </ion-row>
                 </ion-label>
             </ion-item>
-            <!-- List of attempts. -->
-            <ion-item class="ion-text-wrap" *ngFor="let attempt of attempts" button detail="true"
-                [ngClass]='{"addon-mod_quiz-highlighted": attempt.highlightGrade}'
-                [attr.aria-label]="'core.seemoredetail' | translate" (click)="viewAttempt(attempt.id)">
-                <ion-label>
-                    <ion-row class="ion-align-items-center">
-                        <ion-col class="ion-text-center" *ngIf="quiz.showAttemptColumn && attempt.preview">
-                            {{ 'addon.mod_quiz.preview' | translate }}
-                        </ion-col>
-                        <ion-col class="ion-text-center" *ngIf="quiz.showAttemptColumn && !attempt.preview">
-                            {{ attempt.attempt }}
-                        </ion-col>
-                        <ion-col size="7">
-                            <p *ngFor="let sentence of attempt.readableState">{{ sentence }}</p>
-                        </ion-col>
-                        <ion-col class="ion-text-center ion-hide-md-down" *ngIf="quiz.showMarkColumn">
-                            <p>{{ attempt.readableMark }}</p>
-                        </ion-col>
-                        <ion-col class="ion-text-center" *ngIf="quiz.showGradeColumn"><p>{{ attempt.readableGrade }}</p></ion-col>
-                    </ion-row>
-                </ion-label>
-            </ion-item>
+            <div role="rowgroup">
+                <!-- List of attempts. -->
+                <ion-item
+                    button
+                    detail="true"
+                    *ngFor="let attempt of attempts"
+                    class="ion-text-wrap"
+                    [ngClass]='{"addon-mod_quiz-highlighted": attempt.highlightGrade}'
+                    [attr.aria-label]="'core.seemoredetail' | translate"
+                    (click)="viewAttempt(attempt.id)"
+                >
+                    <ion-label>
+                        <ion-row class="ion-align-items-center" role="row">
+                            <ion-col class="ion-text-center" *ngIf="quiz.showAttemptColumn && attempt.preview" role="cell">
+                                {{ 'addon.mod_quiz.preview' | translate }}
+                            </ion-col>
+                            <ion-col class="ion-text-center" *ngIf="quiz.showAttemptColumn && !attempt.preview" role="cell">
+                                {{ attempt.attempt }}
+                            </ion-col>
+                            <ion-col size="7" role="cell">
+                                <p *ngFor="let sentence of attempt.readableState">{{ sentence }}</p>
+                            </ion-col>
+                            <ion-col class="ion-text-center ion-hide-md-down" *ngIf="quiz.showMarkColumn" role="cell">
+                                <p>{{ attempt.readableMark }}</p>
+                            </ion-col>
+                            <ion-col class="ion-text-center" *ngIf="quiz.showGradeColumn" role="cell">
+                                <p>{{ attempt.readableGrade }}</p>
+                            </ion-col>
+                        </ion-row>
+                    </ion-label>
+                </ion-item>
+            </div>
         </ion-card-content>
     </ion-card>
 

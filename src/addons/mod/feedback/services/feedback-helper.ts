@@ -117,7 +117,7 @@ export class AddonModFeedbackHelperProvider {
                     if (itemData.typ == 'multichoice' || itemData.typ == 'multichoicerated') {
                         value = itemData.value || 0;
                     } else if (this.isNumericItem(itemData)) {
-                        value = itemData.value || itemData.value  == 0 ? itemData.value : '';
+                        value = itemData.value || itemData.value == 0 ? itemData.value : '';
 
                         if (value != '') {
                             if ((itemData.rangefrom != '' && value < itemData.rangefrom) ||
@@ -126,7 +126,7 @@ export class AddonModFeedbackHelperProvider {
                             }
                         }
                     } else {
-                        value = itemData.value || itemData.value  == 0 ? itemData.value : '';
+                        value = itemData.value || itemData.value == 0 ? itemData.value : '';
                     }
 
                     answered = !!value;

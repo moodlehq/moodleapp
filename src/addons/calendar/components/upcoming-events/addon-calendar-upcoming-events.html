@@ -2,7 +2,7 @@
     <core-empty-box *ngIf="!filteredEvents || !filteredEvents.length" icon="fas-calendar" [message]="'addon.calendar.noevents' | translate">
     </core-empty-box>
 
-    <ion-list *ngIf="filteredEvents && filteredEvents.length"  class="ion-no-margin">
+    <ion-list *ngIf="filteredEvents && filteredEvents.length" class="ion-no-margin">
         <ng-container *ngFor="let event of filteredEvents">
             <ion-item class="ion-text-wrap addon-calendar-event" [attr.aria-label]="event.name" (click)="eventClicked(event)" button
                 [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">

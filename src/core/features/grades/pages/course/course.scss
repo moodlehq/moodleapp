@@ -1,7 +1,18 @@
 @import "~theme/globals";
 
-// @todo darkmode
-// @todo RTL layout
+:host {
+    --header-background: var(--white);
+    --odd-cell-background: var(--gray-lighter);
+    --even-cell-background: var(--white);
+    --icon-color: #999999;
+}
+
+:host-context(body.dark) {
+    --header-background: var(--black);
+    --odd-cell-background: var(--gray-darker);
+    --even-cell-background: var(--black);
+    --icon-color: #eeeeee;
+}
 
 :host-context(ion-app.md) {
     --border-color: var(--ion-item-border-color, var(--ion-border-color, var(--ion-color-step-150, rgba(0, 0, 0, .13))));
@@ -18,16 +29,12 @@
     font-size: 16px;
     color: var(--ion-text-color);
 
-    // @include darkmode() {
-    //   color: $core-dark-text-color;
-    // }
-
     tr {
         border-bottom: 1px solid var(--border-color);
     }
 
     th, td {
-        padding: 10px 0 10px 10px;
+        @include padding(10px, 10px, 10px, null);
         vertical-align: top;
         white-space: normal;
         text-align: start;
@@ -36,11 +43,7 @@
     thead th {
         vertical-align: bottom;
         font-weight: bold;
-        background-color: var(--white);
-
-    //   @include darkmode() {
-    //     background-color: $black;
-    //   }
+        background-color: var(--header-background);
     }
 
     tbody th {
@@ -48,15 +51,15 @@
     }
 
     #gradeitem {
-        padding-left: 5px;
+        @include padding(null, null, null, 5px);
     }
 
     .core-grades-table-gradeitem {
-        padding-left: 5px;
+        @include padding(null, null, null, 5px);
         font-weight: bold;
 
         &.column-itemname {
-            padding-left: 0;
+            @include padding(null, null, null, 0);
         }
 
         img {
@@ -65,17 +68,17 @@
         }
 
         ion-icon {
-            color: #999999;
+            color: var(--icon-color);
         }
 
         span {
-            margin-left: 5px;
+            @include margin(null, null, null, 5px);
         }
 
     }
 
     .core-grades-table-feedback {
-        padding-left: 5px;
+        @include padding(null, null, null, 5px);
 
         .no-overflow {
             overflow: auto;
@@ -89,27 +92,16 @@
     }
 
     .odd {
-
         td, th, th[aria-current="page"] {
-            background-color: var(--gray-lighter);
-
-            // @include darkmode() {
-            //     background-color: $gray-darker;
-            // }
+            background-color: var(--odd-cell-background);
         }
 
     }
 
     .even {
-
         td, th, th[aria-current="page"] {
-            background-color: var(--white);
-
-            // @include darkmode() {
-            //     background-color: $black;
-            // }
+            background-color: var(--even-cell-background);
         }
-
     }
 
     .core-grades-grade-clickable {

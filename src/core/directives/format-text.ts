@@ -153,9 +153,9 @@ export class CoreFormatTextDirective implements OnChanges {
         const forcedWidth = Number(originalWidth?.value);
         if (!isNaN(forcedWidth)) {
             if (originalWidth!.value.indexOf('%') < 0) {
-                img.style.width = forcedWidth  + 'px';
+                img.style.width = forcedWidth + 'px';
             } else {
-                img.style.width = forcedWidth  + '%';
+                img.style.width = forcedWidth + '%';
             }
         }
 

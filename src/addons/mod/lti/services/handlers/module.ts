@@ -119,7 +119,7 @@ export class AddonModLtiModuleHandlerService implements CoreCourseModuleHandler 
         const siteId = CoreSites.getCurrentSiteId();
 
         try {
-            await CoreFilepool.downloadUrl(siteId,  icon, false, AddonModLtiProvider.COMPONENT, module.id);
+            await CoreFilepool.downloadUrl(siteId, icon, false, AddonModLtiProvider.COMPONENT, module.id);
 
             // Get the internal URL.
             const url = await CoreFilepool.getSrcByUrl(siteId, icon, AddonModLtiProvider.COMPONENT, module.id);

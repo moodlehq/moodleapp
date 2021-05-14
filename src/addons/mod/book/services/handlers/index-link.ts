@@ -33,8 +33,8 @@ export class AddonModBookIndexLinkHandlerService extends CoreContentLinksModuleI
     /**
      * Get the mod params necessary to open an activity.
      *
-     * @param  url      The URL to treat.
-     * @param  params   The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param url      The URL to treat.
+     * @param params   The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @return List of params to pass to navigateToModule / navigateToModuleByInstance.
      */
     getPageParams(url: string, params: Record<string, string>): Params {

@@ -2042,7 +2042,7 @@ export type AddonModQuizAttemptWSData = {
     timefinish?: number; // Time when the attempt was submitted. 0 if the attempt has not been submitted yet.
     timemodified?: number; // Last modified time.
     timemodifiedoffline?: number; // Last modified time via webservices.
-    timecheckstate?: number; // Next time quiz cron should check attempt for state changes.  NULL means never check.
+    timecheckstate?: number; // Next time quiz cron should check attempt for state changes. NULL means never check.
     sumgrades?: number | null; // Total marks for this attempt.
 };
 

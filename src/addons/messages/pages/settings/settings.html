@@ -83,7 +83,7 @@
                         <ng-container *ngIf="!groupMessagingEnabled">
                             <!-- Tablet view -->
                             <ion-row class="ion-text-wrap ion-hide-md-down ion-align-items-center">
-                                <ion-col  class="ion-margin-horizontal">{{ processor.displayname }}</ion-col>
+                                <ion-col class="ion-margin-horizontal">{{ processor.displayname }}</ion-col>
                                 <ion-col size="2" class="ion-text-center" *ngFor="let state of ['loggedin', 'loggedoff']">
                                     <!-- If notifications not disabled, show toggle. -->
                                     <ion-spinner [hidden]="preferences.disableall ||

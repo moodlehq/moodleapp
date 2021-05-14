@@ -393,7 +393,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
     /**
      * Loads the profile info onto the comment object.
      *
-     * @param  comment Comment object.
+     * @param comment Comment object.
      * @return Promise resolved with modified comment when done.
      */
     protected async loadCommentProfile(comment: CoreCommentsDataWithUser): Promise<CoreCommentsDataWithUser> {

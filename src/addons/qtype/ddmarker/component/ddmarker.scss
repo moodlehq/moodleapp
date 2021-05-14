@@ -140,7 +140,7 @@
         div.draghomes img.target {
             position: absolute;
             left: -7px; /* This must be half the size of the target image, minus 0.5. */
-            top: -7px;  /* In other words, this works for a 15x15 cross-hair. */
+            top: -7px; /* In other words, this works for a 15x15 cross-hair. */
         }
         div.dragitems div.draghome img.target,
         div.draghomes div.marker img.target {

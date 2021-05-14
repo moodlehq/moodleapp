@@ -35,7 +35,7 @@ const routes: Routes = [
         canDeactivate: [CanLeaveGuard],
     },
     {
-        path: ':courseId/:cmId/:submissionId/edit', // @todo
+        path: ':courseId/:cmId/:submissionId/edit',
         component: AddonModWorkshopEditSubmissionPage,
         canDeactivate: [CanLeaveGuard],
     },

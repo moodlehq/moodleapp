@@ -49,8 +49,6 @@ declare module '@singletons/events' {
 
 /**
  * Service that provides some features for forums.
- *
- * @todo Add all content.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonModForumProvider {

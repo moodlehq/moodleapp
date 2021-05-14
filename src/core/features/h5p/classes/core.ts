@@ -431,7 +431,7 @@ export class CoreH5PCore {
                 if (matches) {
                     slug = matches[1] + (Number(matches[2]) + 1);
                 } else {
-                    slug +=  '-2';
+                    slug += '-2';
                 }
             }
 

@@ -483,7 +483,7 @@ export class AddonModWorkshopHelperProvider {
         actions.forEach((action) => {
             switch (action.action) {
                 case AddonModWorkshopAction.ADD:
-                case  AddonModWorkshopAction.UPDATE:
+                case AddonModWorkshopAction.UPDATE:
                     submission!.title = action.title;
                     submission!.content = action.content;
                     submission!.title = action.title;
@@ -492,7 +492,7 @@ export class AddonModWorkshopHelperProvider {
                     submission!.offline = true;
                     attachmentsId = action.attachmentsid as CoreFileUploaderStoreFilesResult;
                     break;
-                case  AddonModWorkshopAction.DELETE:
+                case AddonModWorkshopAction.DELETE:
                     submission!.deleted = true;
                     submission!.submissionmodified = action.timemodified / 1000;
                     break;

@@ -87,7 +87,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
     hasNextPage = false;
     entriesRendered = '';
-    extraImports: Type<unknown>[]  = [AddonModDataComponentsCompileModule];
+    extraImports: Type<unknown>[] = [AddonModDataComponentsCompileModule];
 
     jsData?: {
         fields: Record<number, AddonModDataField>;

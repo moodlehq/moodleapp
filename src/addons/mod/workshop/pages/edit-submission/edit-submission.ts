@@ -61,7 +61,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
     component = AddonModWorkshopProvider.COMPONENT;
     componentId!: number;
     editForm: FormGroup; // The form group.
-    editorExtraParams:  Record<string, unknown> = {}; // Extra params to identify the draft.
+    editorExtraParams: Record<string, unknown> = {}; // Extra params to identify the draft.
     workshop?: AddonModWorkshopData;
     textAvailable = false;
     textRequired = false;

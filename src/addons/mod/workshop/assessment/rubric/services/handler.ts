@@ -94,7 +94,7 @@ export class AddonModWorkshopAssessmentStrategyRubricHandlerService implements A
         currentValues: AddonModWorkshopGetAssessmentFormFieldsParsedData[],
         form: AddonModWorkshopGetAssessmentFormDefinitionData,
     ): Promise<CoreFormFields> {
-        const data: CoreFormFields =  {};
+        const data: CoreFormFields = {};
         const errors: AddonModWorkshopAssessmentStrategyFieldErrors = {};
         let hasErrors = false;
 

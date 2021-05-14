@@ -511,7 +511,7 @@ export class AddonModFeedbackProvider {
     }
 
     /**
-     * Get  access information for a given feedback.
+     * Get access information for a given feedback.
      *
      * @param feedbackId Feedback ID.
      * @param options Other options.

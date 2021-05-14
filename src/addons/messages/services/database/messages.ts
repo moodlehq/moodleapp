@@ -86,7 +86,7 @@ export type AddonMessagesOfflineMessagesDBRecord = {
     deviceoffline: number; // If message was stored because device was offline.
 };
 
-export type  AddonMessagesOfflineConversationMessagesDBRecord = {
+export type AddonMessagesOfflineConversationMessagesDBRecord = {
     conversationid: number;
     text: string;
     timecreated: number;

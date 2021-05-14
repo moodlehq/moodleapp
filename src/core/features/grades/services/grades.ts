@@ -307,7 +307,7 @@ export class CoreGradesProvider {
      *
      * @param siteId Site ID. If not defined, current site.
      * @return Resolve with true if plugin is enabled, false otherwise.
-     * @since  Moodle 3.2
+     * @since Moodle 3.2
      */
     async isCourseGradesEnabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -344,7 +344,7 @@ export class CoreGradesProvider {
      *
      * @param siteId Site ID. If not defined, current site.
      * @return True if ws is available, false otherwise.
-     * @since  Moodle 3.2
+     * @since Moodle 3.2
      */
     async isGradeItemsAvailable(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);

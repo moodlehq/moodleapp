@@ -298,7 +298,7 @@ export class CoreGroupsProvider {
     }
 
     /**
-     * Get prefix cache key for  user groups in course WS calls.
+     * Get prefix cache key for user groups in course WS calls.
      *
      * @return Prefix Cache key.
      */

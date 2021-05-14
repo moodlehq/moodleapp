@@ -91,7 +91,7 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
             site.cacheEntries = siteInfo.cacheEntries;
             site.spaceUsage = siteInfo.spaceUsage;
 
-            totalSize += site.spaceUsage ||  0;
+            totalSize += site.spaceUsage || 0;
             totalEntries += site.cacheEntries || 0;
         }));
 

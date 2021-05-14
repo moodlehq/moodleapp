@@ -611,7 +611,7 @@ type CoreCommentsGetCommentsWSParams = {
 export type CoreCommentsGetCommentsWSResponse = {
     comments: CoreCommentsData[]; // List of comments.
     count?: number; // @since 3.8. Total number of comments.
-    perpage?: number; // @since 3.8.  Number of comments per page.
+    perpage?: number; // @since 3.8. Number of comments per page.
     canpost?: boolean; // Whether the user can post in this comment area.
     warnings?: CoreWSExternalWarning[];
 };

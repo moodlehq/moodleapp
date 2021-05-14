@@ -28,7 +28,10 @@
         </p>
     </ion-label>
     <ng-container *ngIf="!isEnrolled">
-        <ion-icon *ngFor="let icon of icons" color="dark" size="small"
-        [name]="icon.icon" [attr.aria-label]="icon.label | translate" slot="end"></ion-icon>
+        <ion-icon *ngFor="let icon of icons" color="dark" size="small" [name]="icon.icon"
+            [title]="icon.label | translate"
+            [attr.aria-label]="icon.label | translate"
+            slot="end">
+        </ion-icon>
     </ng-container>
 </ion-item>

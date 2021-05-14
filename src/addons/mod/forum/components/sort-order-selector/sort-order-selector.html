@@ -12,7 +12,7 @@
     <ion-list id="addon-mod-forum-sort-selector" role="listbox" aria-labelledby="addon-mod-forum-sort-order-label">
         <ng-container *ngFor="let sortOrder of sortOrders">
             <ion-item class="ion-text-wrap" detail="false" role="combobox"
-                [attr.aria-current]="selected == sortOrder.value ? 'page' :  'false'" [attr.aria-label]="sortOrder.label | translate"
+                [attr.aria-current]="selected == sortOrder.value ? 'page' : 'false'" [attr.aria-label]="sortOrder.label | translate"
                 (click)="selectSortOrder(sortOrder)" button aria-haspopup="dialog">
                 <ion-label>
                     <h2>{{ sortOrder.label | translate }}</h2>

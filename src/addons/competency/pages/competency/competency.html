@@ -98,7 +98,7 @@
                     <ion-badge slot="end" color="success" *ngIf="userCompetency.proficiency">
                         {{ 'core.yes' | translate }}
                     </ion-badge>
-                    <ion-badge  slot="end" color="danger" *ngIf="!userCompetency.proficiency">
+                    <ion-badge slot="end" color="danger" *ngIf="!userCompetency.proficiency">
                         {{ 'core.no' | translate }}
                     </ion-badge>
                 </ion-item>
@@ -112,8 +112,8 @@
         </ion-card>
 
         <div *ngIf="competency">
-            <h3  class="ion-margin-horizontal">{{ 'addon.competency.evidence' | translate }}</h3>
-            <p  class="ion-margin-horizontal" *ngIf="competency.evidence.length == 0">
+            <h3 class="ion-margin-horizontal">{{ 'addon.competency.evidence' | translate }}</h3>
+            <p class="ion-margin-horizontal" *ngIf="competency.evidence.length == 0">
                 {{ 'addon.competency.noevidence' | translate }}
             </p>
             <ion-card *ngFor="let evidence of competency.evidence">
@@ -128,7 +128,7 @@
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <p><ion-badge color="dark">{{ evidence.gradename }}</ion-badge></p>
-                        <p  class="ion-margin-top" *ngIf="evidence.description">{{ evidence.description }}</p>
+                        <p class="ion-margin-top" *ngIf="evidence.description">{{ evidence.description }}</p>
                         <blockquote *ngIf="evidence.note">{{ evidence.note }}</blockquote>
                     </ion-label>
                 </ion-item>

@@ -1,5 +1,7 @@
 :host {
     position: relative;
+    width: var(--core-avatar-size);
+    height: var(--core-avatar-size);
 
     .clickable {
         cursor: pointer;

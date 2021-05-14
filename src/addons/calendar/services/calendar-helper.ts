@@ -476,7 +476,7 @@ export class AddonCalendarHelperProvider {
 
         const categoryId = filter.categoryId ? Number(filter.categoryId) : undefined;
 
-        return  events.filter((event) => filter[event.formattedType] &&
+        return events.filter((event) => filter[event.formattedType] &&
                 this.shouldDisplayEvent(event, categories, courseId, categoryId));
     }
 

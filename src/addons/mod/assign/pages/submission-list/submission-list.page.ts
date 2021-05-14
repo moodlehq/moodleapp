@@ -54,7 +54,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
     assign?: AddonModAssignAssign; // Assignment.
     submissions: AddonModAssignSubmissionListManager; // List of submissions
     loaded = false; // Whether data has been loaded.
-    haveAllParticipants  = true; // Whether all participants have been loaded.
+    haveAllParticipants = true; // Whether all participants have been loaded.
     groupId = 0; // Group ID to show.
     courseId!: number; // Course ID the assignment belongs to.
     moduleId!: number; // Module ID the submission belongs to.

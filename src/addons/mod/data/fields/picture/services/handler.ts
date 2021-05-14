@@ -89,7 +89,7 @@ export class AddonModDataFieldPictureHandlerService implements AddonModDataField
      * @inheritdoc
      */
     getFieldEditFiles(field: AddonModDataField): CoreFileEntry[] {
-        return CoreFileSession.getFiles(AddonModDataProvider.COMPONENT,  field.dataid + '_' + field.id);
+        return CoreFileSession.getFiles(AddonModDataProvider.COMPONENT, field.dataid + '_' + field.id);
     }
 
     /**

@@ -27,17 +27,17 @@ const ALLOWED_STYLEABLE_TAGS = ['span', 'p', 'div', 'h1', 'h2', 'h3', 'td'];
 export class CoreH5PContentValidator {
 
     protected typeMap = {
-        text:  'validateText',
-        number:  'validateNumber', // eslint-disable-line id-blacklist
-        boolean:  'validateBoolean', // eslint-disable-line id-blacklist
-        list:  'validateList',
-        group:  'validateGroup',
-        file:  'validateFile',
-        image:  'validateImage',
-        video:  'validateVideo',
-        audio:  'validateAudio',
-        select:  'validateSelect',
-        library:  'validateLibrary',
+        text: 'validateText',
+        number: 'validateNumber', // eslint-disable-line id-blacklist
+        boolean: 'validateBoolean', // eslint-disable-line id-blacklist
+        list: 'validateList',
+        group: 'validateGroup',
+        file: 'validateFile',
+        image: 'validateImage',
+        video: 'validateVideo',
+        audio: 'validateAudio',
+        select: 'validateSelect',
+        library: 'validateLibrary',
     };
 
     protected nextWeight = 1;

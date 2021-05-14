@@ -54,9 +54,9 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
     /**
      * Get the mod params necessary to open an activity.
      *
-     * @param  url The URL to treat.
-     * @param  params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param  courseId Course ID related to the URL. Optional but recommended.
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param courseId Course ID related to the URL. Optional but recommended.
      * @return List of params to pass to navigateToModule / navigateToModuleByInstance.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

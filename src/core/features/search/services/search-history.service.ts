@@ -49,8 +49,8 @@ export class CoreSearchHistoryProvider {
     /**
      * Controls search limit and removes the last item if overflows.
      *
-     * @param  searchArea Search area to control
-     * @param  db SQLite DB where to perform the search.
+     * @param searchArea Search area to control
+     * @param db SQLite DB where to perform the search.
      * @return Resolved when done.
      */
     protected async controlSearchLimit(searchArea: string, db: SQLiteDB): Promise<void> {
@@ -71,9 +71,9 @@ export class CoreSearchHistoryProvider {
     /**
      * Updates the search history item if exists.
      *
-     * @param  searchArea Area where the search has been performed.
-     * @param  text Text of the performed text.
-     * @param  db SQLite DB where to perform the search.
+     * @param searchArea Area where the search has been performed.
+     * @param text Text of the performed text.
+     * @param db SQLite DB where to perform the search.
      * @return True if exists, false otherwise.
      */
     protected async updateExistingItem(searchArea: string, text: string, db: SQLiteDB): Promise<boolean> {
@@ -100,9 +100,9 @@ export class CoreSearchHistoryProvider {
     /**
      * Inserts a searched term on the history.
      *
-     * @param  searchArea Area where the search has been performed.
-     * @param  text Text of the performed text.
-     * @param  siteId Site ID. If not defined, current site.
+     * @param searchArea Area where the search has been performed.
+     * @param text Text of the performed text.
+     * @param siteId Site ID. If not defined, current site.
      * @return Resolved when done.
      */
     async insertOrUpdateSearchText(searchArea: string, text: string, siteId?: string): Promise<void> {

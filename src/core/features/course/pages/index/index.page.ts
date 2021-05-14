@@ -163,7 +163,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      */
     protected async loadTitle(): Promise<void> {
         // Get the title to display initially.
-        this.title =  CoreCourseFormatDelegate.getCourseTitle(this.course!);
+        this.title = CoreCourseFormatDelegate.getCourseTitle(this.course!);
 
         // Load sections.
         const sections = await CoreUtils.ignoreErrors(CoreCourse.getSections(this.course!.id, false, true));

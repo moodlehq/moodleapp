@@ -79,7 +79,7 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
                 // No offline data, get the online files.
                 this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);
             }
-        } finally  {
+        } finally {
             CoreFileSession.setFiles(this.component, this.assign.id, this.files);
         }
     }

@@ -151,7 +151,7 @@ export class CoreSettingsHelperProvider {
     /**
      * Calculates each site's usage, and the total usage.
      *
-     * @param  siteId ID of the site. Current site if undefined.
+     * @param siteId ID of the site. Current site if undefined.
      * @return Resolved with detailed info when done.
      */
     async getSiteSpaceUsage(siteId?: string): Promise<CoreSiteSpaceUsage> {

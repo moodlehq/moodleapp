@@ -75,7 +75,7 @@
                             [required]="item.required" name="{{item.typ}}_{{item.id}}">
                             <ion-item *ngFor="let option of item.choices">
                                 <ion-label>
-                                    <core-format-text  [component]="component" [componentId]="cmId"
+                                    <core-format-text [component]="component" [componentId]="cmId"
                                         [text]="option.label" contextLevel="module" [contextInstanceId]="cmId"
                                         [wsNotFiltered]="true" [courseId]="courseId">
                                     </core-format-text>
@@ -146,7 +146,7 @@
                         {{ 'addon.mod_feedback.feedback_submitted_offline' | translate }}
                     </p>
                     <p *ngIf="completionPageContents">
-                        <core-format-text  [component]="component" componentId="componentId" [text]="completionPageContents"
+                        <core-format-text [component]="component" componentId="componentId" [text]="completionPageContents"
                             contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
                         </core-format-text>
                     </p>

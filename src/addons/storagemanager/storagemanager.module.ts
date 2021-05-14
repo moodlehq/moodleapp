@@ -43,4 +43,4 @@ const routes: Routes = [
         },
     ],
 })
-export class  AddonStorageManagerModule {}
+export class AddonStorageManagerModule {}

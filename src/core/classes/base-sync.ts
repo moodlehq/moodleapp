@@ -199,7 +199,7 @@ export class CoreSyncBaseProvider<T = void> {
         try {
             const entry = await CoreSync.getSyncRecord(this.component, id, siteId);
 
-            return  <string[]> CoreTextUtils.parseJSON(entry.warnings, []);
+            return <string[]> CoreTextUtils.parseJSON(entry.warnings, []);
         } catch {
             return [];
         }

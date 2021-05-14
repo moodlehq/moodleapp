@@ -12,7 +12,7 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
         <core-loading [hideUntil]="loaded">
-            <ion-list  class="ion-no-margin">
+            <ion-list class="ion-no-margin">
                 <ion-item class="ion-text-wrap" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
                     <ion-label id="addon-feedback-groupslabel">
                         <ng-container *ngIf="groupInfo.separateGroups">{{'core.groupsseparate' | translate }}</ng-container>

@@ -411,7 +411,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             // Fetch messages. Invalidate the cache before fetching.
             if (this.groupMessagingEnabled) {
                 await AddonMessages.invalidateConversationMessages(this.conversationId!);
-                messages =  await this.getConversationMessages(this.pagesLoaded);
+                messages = await this.getConversationMessages(this.pagesLoaded);
             } else {
                 await AddonMessages.invalidateDiscussionCache(this.userId!);
                 messages = await this.getDiscussionMessages(this.pagesLoaded);

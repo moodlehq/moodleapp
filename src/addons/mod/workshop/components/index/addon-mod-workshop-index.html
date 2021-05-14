@@ -13,7 +13,7 @@
         <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
             (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline"  [priority]="600"
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline" [priority]="600"
             [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon"
             [closeOnClick]="false">
         </core-context-menu-item>

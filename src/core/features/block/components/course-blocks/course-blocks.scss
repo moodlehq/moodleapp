@@ -16,7 +16,6 @@
                 box-shadow: none !important;
                 flex-grow: 1;
                 max-width: 100%;
-                // @todo @include core-split-area-start();
             }
 
             div.core-course-blocks-side {
@@ -24,7 +23,6 @@
                 min-width: var(--side-blocks-min-width);
                 box-shadow: var(--side-blocks-box-shadow);
                 z-index: 2;
-                // @todo @include core-split-area-end();
             }
 
             .core-course-blocks-content,
