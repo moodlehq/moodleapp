@@ -146,7 +146,7 @@
 
 <!-- Template to render a list of conversations. -->
 <ng-template #conversationsTemplate let-conversations="conversations">
-    <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let conversation of conversations" button
+    <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let conversation of conversations" button detail="false"
         [attr.aria-label]="conversation.name" (click)="gotoConversation(conversation.id, conversation.userid)"
         [attr.aria-current]="((conversation.id && conversation.id == selectedConversationId) ||
             (conversation.userid && conversation.userid == selectedUserId)) ? 'page': 'false'"
@@ -162,13 +162,24 @@
             [linkProfile]="false" [checkOnline]="conversation.showonlinestatus" slot="start"></core-user-avatar>
 
         <ion-label>
-            <h2>
-                <core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0"></core-format-text>
-                <ion-icon name="fas-user-slash" *ngIf="conversation.isblocked"
-                    [title]="'addon.messages.contactblocked' | translate"></ion-icon>
-                <ion-icon *ngIf="conversation.ismuted" name="fas-volume-mute"
-                    [title]="'addon.messages.mutedconversation' | translate"></ion-icon>
-            </h2>
+            <div class="flex-row ion-justify-content-between">
+                <h2>
+                    <core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0"></core-format-text>
+                    <ion-icon name="fas-user-slash" *ngIf="conversation.isblocked"
+                        [title]="'addon.messages.contactblocked' | translate"></ion-icon>
+                    <ion-icon *ngIf="conversation.ismuted" name="fas-volume-mute"
+                        [title]="'addon.messages.mutedconversation' | translate"></ion-icon>
+                </h2>
+                <ion-note *ngIf="conversation.lastmessagedate > 0 || conversation.unreadcount">
+                    <span *ngIf="conversation.lastmessagedate > 0" class="addon-message-last-message-date">
+                        {{conversation.lastmessagedate | coreDateDayOrTime}}
+                    </span>
+                    <ion-badge *ngIf="conversation.unreadcount > 0" aria-label="true">{{ conversation.unreadcount }}</ion-badge>
+                    <span *ngIf="conversation.unreadcount > 0" class="sr-only">
+                        {{ 'addon.messages.unreadmessages' | translate:{$a: conversation.unreadcount} }}
+                    </span>
+                </ion-note>
+            </div>
             <p *ngIf="conversation.subname"><core-format-text [text]="conversation.subname" contextLevel="system"
                 [contextInstanceId]="0"></core-format-text></p>
             <p class="addon-message-last-message">
@@ -181,12 +192,5 @@
                     class="addon-message-last-message-text" contextLevel="system" [contextInstanceId]="0"></core-format-text>
             </p>
         </ion-label>
-        <ion-note *ngIf="conversation.lastmessagedate > 0 || conversation.unreadcount" slot="end">
-            <ion-badge *ngIf="conversation.unreadcount > 0" aria-label="true">{{ conversation.unreadcount }}</ion-badge>
-            <span *ngIf="conversation.unreadcount > 0" class="sr-only">
-                {{ 'addon.messages.unreadmessages' | translate:{$a: conversation.unreadcount} }}
-            </span>
-            <span *ngIf="conversation.lastmessagedate > 0">{{conversation.lastmessagedate | coreDateDayOrTime}}</span>
-        </ion-note>
     </ion-item>
 </ng-template>
