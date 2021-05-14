@@ -38,7 +38,7 @@
     --dark: #{$light};
 
     @each $color-name, $value in $colors-dark {
-        @include generate-color($color-name);
+        @include generate-color($color-name, $colors-dark);
     }
 
     --ion-tab-bar-background: #1f1f1f;

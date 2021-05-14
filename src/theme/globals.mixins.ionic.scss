@@ -98,7 +98,7 @@
 // Generates the color classes and variables based on the
 // colors map
 
-@mixin generate-color($color-name) {
+@mixin generate-color($color-name, $colors) {
     $value: map-get($colors, $color-name);
 
     $base: map-get($value, base);
