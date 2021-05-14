@@ -4,6 +4,25 @@
  * Place here our custom mixins.
  */
 
+ @mixin core-focus() {
+    outline: none;
+    position: relative;
+    &::after {
+        @include position(0, 0, 0, 0);
+        position: absolute;
+        content: "";
+        opacity: 1;
+        z-index: 1;
+        @include core-focus-style();
+    }
+ }
+
+ @mixin core-focus-style() {
+    box-shadow: inset 0 0 var(--a11y-focus-width) 1px var(--a11y-focus-color);
+    // Thicker option:
+    // border: var(--a11y-focus-width) solid var(--a11y-focus-color);
+}
+
 @mixin core-transition($where: all, $time: 500ms) {
     -webkit-transition: $where $time ease-in-out;
     -moz-transition: $where $time ease-in-out;

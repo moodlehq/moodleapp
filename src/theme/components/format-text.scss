@@ -38,6 +38,7 @@ core-format-text {
                 min-height: 50px;
 
                 .core-show-more {
+                    text-transform: none;
                     text-align: end;
                     font-size: 14px;
                     display: block;
@@ -45,7 +46,7 @@ core-format-text {
                     @include position(null, 0, 0, null);
                     z-index: 7;
                     background-color: var(--background);
-                    color: var(--color);
+                    color: var(--text-color);
                     padding-left: 10px; // RTL
                 }
 
@@ -68,7 +69,7 @@ core-format-text {
         &.core-expand-in-fullview {
             .core-show-more {
                 @include push-arrow-color(626262, true);
-                @include padding-horizontal(null, 18px);
+                @include padding-horizontal(null, 5px);
                 @include background-position(end, 0, center);
 
                 background-repeat: no-repeat;

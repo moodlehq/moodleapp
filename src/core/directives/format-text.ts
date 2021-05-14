@@ -256,14 +256,17 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     protected displayShowMore(): void {
         const expandInFullview = CoreUtils.isTrueOrOne(this.fullOnClick) || false;
-        const showMoreDiv = document.createElement('div');
+        const showMoreButton = document.createElement('ion-button');
 
-        showMoreDiv.classList.add('core-show-more');
-        showMoreDiv.innerHTML = Translate.instant('core.showmore');
-        this.element.appendChild(showMoreDiv);
+        showMoreButton.classList.add('core-show-more');
+        showMoreButton.setAttribute('fill', 'clear');
+        showMoreButton.innerHTML = Translate.instant('core.showmore');
+        this.element.appendChild(showMoreButton);
 
         if (expandInFullview) {
             this.element.classList.add('core-expand-in-fullview');
+        } else {
+            showMoreButton.setAttribute('aria-expanded', 'false');
         }
         this.element.classList.add('core-text-formatted');
         this.element.classList.add('core-shortened');
@@ -624,11 +627,8 @@ export class CoreFormatTextDirective implements OnChanges {
      * "Hide" the "Show more" in the element if it's shown.
      */
     protected hideShowMore(): void {
-        const showMoreDiv = this.element.querySelector('div.core-show-more');
-
-        if (showMoreDiv) {
-            showMoreDiv.remove();
-        }
+        const showMoreButton = this.element.querySelector('ion-button.core-show-more');
+        showMoreButton?.remove();
 
         this.element.classList.remove('core-expand-in-fullview');
         this.element.classList.remove('core-text-formatted');
