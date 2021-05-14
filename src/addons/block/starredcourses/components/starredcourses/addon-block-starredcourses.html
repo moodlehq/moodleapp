@@ -14,10 +14,10 @@
     </div>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
-    <core-empty-box *ngIf="courses.length == 0" image="assets/img/icons/courses.svg"
+    <core-empty-box *ngIf="courses.length == 0" image="assets/img/icons/courses.svg" inline="true"
         [message]="'addon.block_starredcourses.nocourses' | translate"></core-empty-box>
     <!-- List of courses. -->
-    <div class="core-horizontal-scroll">
+    <div class="core-horizontal-scroll" *ngIf="courses.length > 0">
         <ng-container *ngFor="let course of courses">
             <core-courses-course-progress [course]="course" class="core-block_starredcourses"
                 [showDownload]="downloadCourseEnabled && downloadEnabled"></core-courses-course-progress>
