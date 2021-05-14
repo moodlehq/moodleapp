@@ -244,4 +244,11 @@
 
     --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-dark);
 
+    @if ($core-more-icon) {
+        --core-more-icon: #{$core-more-icon};
+    }
+
+    @if ($core-more-item-border) {
+        --core-more-item-border: #{$core-more-item-border};
+    }
 }
