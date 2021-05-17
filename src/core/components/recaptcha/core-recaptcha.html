@@ -2,7 +2,7 @@
 <div *ngIf="publicKey && siteUrl && model">
     <!-- A button to open the recaptcha modal. -->
     <ion-button expand="block" color="light" class="ion-margin" *ngIf="!model[modelValueName]" (click)="answerRecaptcha()">
-        {{ 'core.resourcedisplayopen' | translate }}
+        {{ 'core.opensecurityquestion' | translate }}
     </ion-button>
     <ion-item *ngIf="model[modelValueName]">
         <ion-label color="success">{{ 'core.answered' | translate }}</ion-label>
