@@ -49,6 +49,15 @@
                     <p>{{ gradeMethodReadable }}</p>
                 </ion-label>
             </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="bestGrade && bestGrade.gradetopass && quiz && quiz.gradeFormatted">
+                <ion-label>
+                    <h3>{{ 'core.grades.gradepass' | translate }}</h3>
+                    <p>{{ 'addon.mod_quiz.outof' | translate: { $a: {
+                        grade: bestGrade.gradetopass,
+                        maxgrade: quiz.gradeFormatted
+                    } } }}</p>
+                </ion-label>
+            </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="syncTime">
                 <ion-label>
                     <h3>{{ 'core.lastsync' | translate }}</h3>

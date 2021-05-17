@@ -2295,6 +2295,7 @@ export type AddonModQuizGetUserBestGradeWSParams = {
 export type AddonModQuizGetUserBestGradeWSResponse = {
     hasgrade: boolean; // Whether the user has a grade on the given quiz.
     grade?: number; // The grade (only if the user has a grade).
+    gradetopass?: number; // @since 3.11. The grade to pass the quiz (only if set).
     warnings?: CoreWSExternalWarning[];
 };
 
