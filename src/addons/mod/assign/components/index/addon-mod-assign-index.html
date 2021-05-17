@@ -96,7 +96,13 @@
                     <h2 *ngIf="!assign.teamsubmission">{{ 'addon.mod_assign.numberofparticipants' | translate }}</h2>
                 </ion-label>
                 <ion-badge slot="end" *ngIf="showNumbers" color="primary">
-                    {{ summary.participantcount }}
+                    <span aria-hidden="true">{{ summary.participantcount }}</span>
+                    <span class="sr-only" *ngIf="!assign.teamsubmission">
+                        {{ 'addon.mod_assign.numberofparticipantscountdescription' | translate:{count: summary.participantcount} }}
+                    </span>
+                    <span class="sr-only" *ngIf="assign.teamsubmission">
+                        {{ 'addon.mod_assign.numberofteamscountdescription' | translate:{count: summary.participantcount} }}
+                    </span>
                 </ion-badge>
             </ion-item>
 
@@ -107,7 +113,11 @@
                 (click)="goToSubmissionList(submissionStatusDraft, !!summary.submissiondraftscount)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</h2></ion-label>
                 <ion-badge slot="end" *ngIf="showNumbers" color="primary">
-                    {{ summary.submissiondraftscount }}
+                    <span aria-hidden="true">{{ summary.submissiondraftscount }}</span>
+                    <span class="sr-only">
+                        {{ 'addon.mod_assign.numberofdraftsubmissionscountdescription' | translate:
+                            {count: summary.submissiondraftscount} }}
+                    </span>
                 </ion-badge>
             </ion-item>
 
@@ -118,7 +128,11 @@
                 (click)="goToSubmissionList(submissionStatusSubmitted, !!summary.submissionssubmittedcount)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</h2></ion-label>
                 <ion-badge slot="end" *ngIf="showNumbers" color="primary">
-                    {{ summary.submissionssubmittedcount }}
+                    <span aria-hidden="true">{{ summary.submissionssubmittedcount }}</span>
+                    <span class="sr-only">
+                        {{ 'addon.mod_assign.numberofsubmittedassignmentscountdescription' | translate:
+                            {count: summary.submissionssubmittedcount} }}
+                    </span>
                 </ion-badge>
             </ion-item>
 
@@ -128,7 +142,11 @@
                 (click)="goToSubmissionList(needGrading, needsGradingAvailable)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofsubmissionsneedgrading' | translate }}</h2></ion-label>
                 <ion-badge slot="end" color="primary">
-                    {{ summary.submissionsneedgradingcount }}
+                    <span aria-hidden="true">{{ summary.submissionsneedgradingcount }}</span>
+                    <span class="sr-only">
+                        {{ 'addon.mod_assign.numberofsubmissionsneedgradingcountdescription' | translate:
+                            {count: summary.submissionsneedgradingcount} }}
+                    </span>
                 </ion-badge>
             </ion-item>
         </ion-list>

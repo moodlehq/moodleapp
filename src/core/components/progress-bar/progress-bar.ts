@@ -14,6 +14,7 @@
 
 import { Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import { Translate } from '@singletons';
 
 /**
  * Component to show a progress bar and its value.
@@ -31,7 +32,12 @@ export class CoreProgressBarComponent implements OnChanges {
 
     @Input() progress!: number | string; // Percentage from 0 to 100.
     @Input() text?: string; // Percentage in text to be shown at the right. If not defined, progress will be used.
+    @Input() a11yText?: string; // Accessibility text to read before the percentage.
+    @Input() ariaDescribedBy?: string; // ID of the element that described the progress, if any.
+
     width?: SafeStyle;
+    progressBarValueText?: string;
+
     protected textSupplied = false;
 
     constructor(private sanitizer: DomSanitizer) { }
@@ -65,6 +71,11 @@ export class CoreProgressBarComponent implements OnChanges {
 
                 this.width = this.sanitizer.bypassSecurityTrustStyle(this.progress + '%');
             }
+        }
+
+        if (changes.text || changes.progress || changes.a11yText) {
+            this.progressBarValueText = (this.a11yText ? Translate.instant(this.a11yText) + ' ' : '') +
+                Translate.instant('core.percentagenumber', { $a: this.text });
         }
     }
 

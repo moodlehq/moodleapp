@@ -242,7 +242,8 @@
                     <ion-label>
                         <ion-spinner></ion-spinner>
                         <h2 *ngIf="progressMessage">{{ progressMessage | translate }}</h2>
-                        <core-progress-bar *ngIf="showPercentage" [progress]="percentage"></core-progress-bar>
+                        <core-progress-bar *ngIf="showPercentage" [progress]="percentage" [a11yText]="progressMessage">
+                        </core-progress-bar>
                     </ion-label>
                 </ion-item>
             </ion-list>

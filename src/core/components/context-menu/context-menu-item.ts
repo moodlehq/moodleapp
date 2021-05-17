@@ -50,6 +50,7 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     @Input() priority?: number; // Used to sort items. The highest priority, the highest position.
     @Input() badge?: string; // A badge to show in the item.
     @Input() badgeClass?: number; // A class to set in the badge.
+    @Input() badgeA11yText?: string; // Description for the badge, if needed.
     @Input() hidden?: boolean; // Whether the item should be hidden.
     @Output() action?: EventEmitter<() => void>; // Will emit an event when the item clicked.
     @Output() onClosed?: EventEmitter<() => void>; // Will emit an event when the popover is closed because the item was clicked.

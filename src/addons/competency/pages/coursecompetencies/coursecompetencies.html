@@ -22,9 +22,13 @@
             </ng-container>
             <ion-item class="ion-text-wrap" *ngIf="competencies.statistics.canbegradedincourse">
                 <ion-label>
-                    {{ 'addon.competency.xcompetenciesproficientoutofyincourse' | translate: {$a:
-                        {x: competencies.statistics.proficientcompetencycount, y: competencies.statistics.competencycount} } }}
-                    <core-progress-bar [progress]="competencies.statistics.proficientcompetencypercentage"></core-progress-bar>
+                    <span id="addon-competency-course-{{courseId}}-progress">
+                        {{ 'addon.competency.xcompetenciesproficientoutofyincourse' | translate: {$a:
+                            {x: competencies.statistics.proficientcompetencycount, y: competencies.statistics.competencycount} } }}
+                    </span>
+                    <core-progress-bar [progress]="competencies.statistics.proficientcompetencypercentage"
+                        ariaDescribedBy="addon-competency-course-{{courseId}}-progress">
+                    </core-progress-bar>
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap"

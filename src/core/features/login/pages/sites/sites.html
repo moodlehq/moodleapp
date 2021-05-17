@@ -29,7 +29,10 @@
                 <p><core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text></p>
                 <p>{{site.siteUrl}}</p>
             </ion-label>
-            <ion-badge slot="end" *ngIf="!showDelete && site.badge">{{site.badge}}</ion-badge>
+            <ion-badge slot="end" *ngIf="!showDelete && site.badge">
+                <span aria-hidden="true">{{site.badge}}</span>
+                <span class="sr-only">{{ 'core.login.sitebadgedescription' | translate:{ count: site.badge } }}</span>
+            </ion-badge>
             <ion-button *ngIf="showDelete" slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
                 [attr.aria-label]="'core.delete' | translate">
                 <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>

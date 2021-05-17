@@ -24,7 +24,7 @@
             </core-format-text>
         </h2>
         <p *ngIf="isEnrolled && course.progress! >= 0 && course.completionusertracked !== false">
-            <core-progress-bar [progress]="course.progress"></core-progress-bar>
+            <core-progress-bar [progress]="course.progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
         </p>
     </ion-label>
     <ng-container *ngIf="!isEnrolled">

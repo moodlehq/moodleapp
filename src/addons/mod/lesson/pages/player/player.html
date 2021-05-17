@@ -170,8 +170,11 @@
                 </ion-grid>
                 <ion-item class="ion-text-wrap" *ngIf="lesson?.progressbar && !canManage && pageData">
                     <ion-label>
-                        {{ 'addon.mod_lesson.progresscompleted' | translate:{$a: pageData.progress} }}
-                        <core-progress-bar [progress]="pageData.progress"></core-progress-bar>
+                        <span id="addon-mod_lesson-{{cmId}}-progress">
+                            {{ 'addon.mod_lesson.progresscompleted' | translate:{$a: pageData.progress} }}
+                        </span>
+                        <core-progress-bar [progress]="pageData.progress" ariaDescribedBy="addon-mod_lesson-{{cmId}}-progress">
+                        </core-progress-bar>
                     </ion-label>
                 </ion-item>
                 <div class="core-info-card" *ngIf="lesson?.progressbar && canManage">
@@ -224,8 +227,12 @@
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="lesson.progressbar && eolData.progresscompleted" lines="none">
                     <ion-label>
-                        {{ 'addon.mod_lesson.progresscompleted' | translate:{$a: eolData.progresscompleted.value} }}
-                        <core-progress-bar [progress]="eolData.progresscompleted.value"></core-progress-bar>
+                        <span id="addon-mod_lesson-{{cmId}}-progress-end">
+                            {{ 'addon.mod_lesson.progresscompleted' | translate:{$a: eolData.progresscompleted.value} }}
+                        </span>
+                        <core-progress-bar [progress]="eolData.progresscompleted.value"
+                            ariaDescribedBy="addon-mod_lesson-{{cmId}}-progress-end">
+                        </core-progress-bar>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="eolData.displayofgrade" lines="none">

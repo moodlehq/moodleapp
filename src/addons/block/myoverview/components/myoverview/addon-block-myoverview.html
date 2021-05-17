@@ -10,10 +10,13 @@
             <ion-icon [name]="prefetchCoursesData[selectedFilter].icon" slot="icon-only" aria-hidden="true">
             </ion-icon>
         </ion-button>
-        <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge">
+        <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge"
+            role="progressbar" [attr.aria-valuemax]="prefetchCoursesData[selectedFilter].total"
+            [attr.aria-valuenow]="prefetchCoursesData[selectedFilter].count"
+            [attr.aria-valuetext]="prefetchCoursesData[selectedFilter].badgeA11yText">
             {{prefetchCoursesData[selectedFilter].badge}}
         </ion-badge>
-        <ion-spinner *ngIf="prefetchCoursesData[selectedFilter].loading"></ion-spinner>
+        <ion-spinner *ngIf="prefetchCoursesData[selectedFilter].loading" aria-hidden="true"></ion-spinner>
     </div>
     <core-context-menu slot="end">
         <core-context-menu-item *ngIf="loaded && showFilterSwitchButton()" [priority]="1000"

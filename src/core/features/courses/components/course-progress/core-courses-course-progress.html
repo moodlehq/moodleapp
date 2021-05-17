@@ -56,7 +56,7 @@
     </ion-item>
     <ion-item *ngIf="showAll && course.progress! >= 0 && course.completionusertracked !== false" lines="none">
         <ion-label>
-            <core-progress-bar [progress]="course.progress"></core-progress-bar>
+            <core-progress-bar [progress]="course.progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
         </ion-label>
     </ion-item>
     <ng-content></ng-content>

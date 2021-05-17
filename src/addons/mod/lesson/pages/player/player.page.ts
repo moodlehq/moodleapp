@@ -98,8 +98,8 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
     loadingMenu?: boolean; // Whether the lesson menu is being loaded.
     mediaFile?: CoreWSExternalFile; // Media file of the lesson.
     activityLink?: AddonModLessonActivityLink; // Next activity link data.
+    cmId!: number; // Course module ID.
 
-    protected cmId!: number; // Course module ID.
     protected password?: string; // Lesson password (if any).
     protected forceLeave = false; // If true, don't perform any check when leaving the view.
     protected offline?: boolean; // Whether we are in offline mode.

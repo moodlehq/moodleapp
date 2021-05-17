@@ -56,7 +56,8 @@
             </core-tab>
 
             <!-- Requests tab. -->
-            <core-tab [title]="'addon.messages.requests' | translate" (ionSelect)="selectTab('requests')" [badge]="requestsBadge">
+            <core-tab [title]="'addon.messages.requests' | translate" (ionSelect)="selectTab('requests')" [badge]="requestsBadge"
+                badgeA11yText="addon.messages.pendingcontactrequests">
                 <ng-template>
                     <ion-refresher slot="fixed" [disabled]="!requestsLoaded" (ionRefresh)="refreshData($event.target)">
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>

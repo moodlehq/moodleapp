@@ -45,7 +45,8 @@
                     <ng-container *ngIf="selectedSection">
                         <ion-item class="core-course-progress"
                             *ngIf="selectedSection?.id == allSectionsId && progress !== undefined">
-                            <core-progress-bar [progress]="progress"></core-progress-bar>
+                            <core-progress-bar [progress]="progress" a11yText="core.course.aria:sectionprogress">
+                            </core-progress-bar>
                         </ion-item>
                         <ion-item *ngIf="selectedSection && selectedSection.id != allSectionsId &&
                             (selectedSection.availabilityinfo || selectedSection.visible === 0)">
@@ -158,7 +159,9 @@
     <div *ngIf="section && downloadEnabled" slot="end" class="core-button-spinner core-section-download">
         <!-- Download progress. -->
         <ion-badge class="core-course-download-section-progress"
-            *ngIf="section.isDownloading && section.total > 0 && section.count < section.total">
+            *ngIf="section.isDownloading && section.total > 0 && section.count < section.total" role="progressbar"
+            [attr.aria-valuemax]="section.total" [attr.aria-valuenow]="section.count"
+            [attr.aria-valuetext]="'core.course.downloadsectionprogressdescription' | translate:section">
             {{section.count}} / {{section.total}}
         </ion-badge>
 

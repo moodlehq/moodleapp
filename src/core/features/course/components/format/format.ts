@@ -105,6 +105,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     progress?: number;
     sectionSelectorModalOptions: ModalOptions = {
         component: CoreCourseSectionSelectorComponent,
+        componentProps: {},
     };
 
     protected sectionStatusObserver?: CoreEventObserver;
@@ -124,12 +125,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Component being initialized.
      */
     ngOnInit(): void {
-
-        this.sectionSelectorModalOptions.componentProps = {
-            course: this.course,
-            sections: this.sections,
-        };
-
         // Listen for section status changes.
         this.sectionStatusObserver = CoreEvents.on(
             CoreEvents.SECTION_STATUS_CHANGED,
@@ -187,6 +182,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         this.setInputData();
+        this.sectionSelectorModalOptions.componentProps!.course = this.course;
+        this.sectionSelectorModalOptions.componentProps!.sections = this.sections;
 
         if (changes.course && this.course) {
             // Course has changed, try to get the components.
