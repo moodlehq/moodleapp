@@ -33,7 +33,7 @@
         (completionChanged)="onCompletionChange()">
     </core-course-module-info>
 
-    <ion-card class="with-borders" *ngIf="phases">
+    <ion-card *ngIf="phases">
         <ion-item button (click)="viewPhaseInfo()" detail="true">
             <ion-label>
                 <h2 class="ion-text-wrap">{{ phases[workshop!.phase].title }}</h2>
@@ -95,7 +95,7 @@
                 </ion-item>
             </ion-card>
 
-            <ion-card class="with-borders" *ngIf="userGrades">
+            <ion-card *ngIf="userGrades">
                 <ion-item-divider class="ion-text-wrap">
                     <ion-label><h2>{{ 'addon.mod_workshop.yourgrades' | translate }}</h2></ion-label>
                 </ion-item-divider>
@@ -128,30 +128,26 @@
         </ion-card>
 
         <ion-card *ngIf="canSubmit">
+            <ion-item-divider class="ion-text-wrap">
+                <ion-label>
+                    <h2 *ngIf="workshop!.phase != PHASE_CLOSED || !submission">
+                        {{ 'addon.mod_workshop.yoursubmission' | translate }}
+                    </h2>
+                    <h2 *ngIf="workshop!.phase == PHASE_CLOSED && submission">
+                        {{ 'addon.mod_workshop.yoursubmissionwithassessments' | translate }}
+                    </h2>
+                </ion-label>
+            </ion-item-divider>
             <ion-item class="ion-text-wrap" *ngIf="!submission">
                 <ion-label>
-                    <h2>{{ 'addon.mod_workshop.yoursubmission' | translate }}</h2>
-                    <p>{{ 'addon.mod_workshop.noyoursubmission' | translate }}</p>
+                    <p *ngIf="!submission">{{ 'addon.mod_workshop.noyoursubmission' | translate }}</p>
                 </ion-label>
             </ion-item>
+            <addon-mod-workshop-submission *ngIf="submission" [submission]="submission" [courseId]="workshop!.course" [module]="module"
+                [workshop]="workshop" [access]="access">
+            </addon-mod-workshop-submission>
 
-            <ng-container *ngIf="submission">
-                <ion-item-divider class="ion-text-wrap">
-                    <ion-label>
-                        <h2 *ngIf="workshop!.phase != PHASE_CLOSED">{{ 'addon.mod_workshop.yoursubmission' | translate }}</h2>
-                        <h2 *ngIf="workshop!.phase == PHASE_CLOSED">
-                            {{ 'addon.mod_workshop.yoursubmissionwithassessments' | translate }}
-                        </h2>
-                    </ion-label>
-                </ion-item-divider>
-                <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop!.course" [module]="module"
-                    [workshop]="workshop" [access]="access">
-                </addon-mod-workshop-submission>
-            </ng-container>
-        </ion-card>
-
-        <!-- Show only on current phase -->
-        <ng-container *ngIf="workshop!.phase == PHASE_SUBMISSION">
+            <!-- Show only on current phase -->
             <ion-item class="ion-text-wrap" *ngIf="showSubmit">
                 <ion-label>
                     <ion-button expand="block" *ngIf="access.creatingsubmissionallowed && !submission" (click)="gotoSubmit()">
@@ -164,10 +160,11 @@
                     </ion-button>
                 </ion-label>
             </ion-item>
-        </ng-container>
+        </ion-card>
+
 
         <ng-container *ngIf="workshop!.phase >= PHASE_CLOSED">
-            <ion-card class="with-borders" *ngIf="publishedSubmissions && publishedSubmissions.length">
+            <ion-card *ngIf="publishedSubmissions && publishedSubmissions.length">
                 <ion-item-divider class="ion-text-wrap">
                     <ion-label><h2>{{ 'addon.mod_workshop.publishedsubmissions' | translate }}</h2></ion-label>
                 </ion-item-divider>
@@ -193,7 +190,7 @@
                 </ion-item>
             </ion-card>
 
-            <ion-card class="with-borders" *ngIf="canAssess">
+            <ion-card *ngIf="canAssess">
                 <ion-item-divider class="ion-text-wrap">
                     <ion-label><h2>{{ 'addon.mod_workshop.assignedassessments' | translate }}</h2></ion-label>
                 </ion-item-divider>
@@ -210,7 +207,7 @@
         </ng-container>
 
         <!-- MULTIPLE PHASES SUBMISSION OR GREATER only teachers -->
-        <ion-card class="with-borders" *ngIf="access.canviewallsubmissions && workshop!.phase >= PHASE_SUBMISSION &&
+        <ion-card *ngIf="access.canviewallsubmissions && workshop!.phase >= PHASE_SUBMISSION &&
             ((grades && grades.length) || (groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)))">
             <ion-item-divider class="ion-text-wrap">
                 <ion-label>

@@ -434,7 +434,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             this.phases![AddonModWorkshopPhase.PHASE_SUBMISSION].tasks,
         );
 
-        this.showSubmit = this.workshop!.phase == AddonModWorkshopPhase.PHASE_SUBMISSION && this.canSubmit &&
+        this.showSubmit = this.canSubmit &&
             ((this.access!.creatingsubmissionallowed && !this.submission) ||
                 (this.access!.modifyingsubmissionallowed && !!this.submission));
 

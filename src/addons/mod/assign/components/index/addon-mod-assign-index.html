@@ -61,7 +61,7 @@
 
     <!-- User can view all submissions (teacher). -->
     <ng-container *ngIf="assign && canViewAllSubmissions">
-        <ion-list class="core-list-align-detail-right with-borders">
+        <ion-list class="core-list-align-detail-right">
             <ion-item class="ion-text-wrap" *ngIf="(groupInfo.separateGroups || groupInfo.visibleGroups)">
                 <ion-label id="addon-assign-groupslabel">
                     <ng-container *ngIf="groupInfo.separateGroups">{{'core.groupsseparate' | translate }}</ng-container>
