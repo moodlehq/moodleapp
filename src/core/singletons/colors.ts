@@ -45,11 +45,34 @@ export class CoreColors {
     static darker(color: string, percent: number = 10): string {
         percent = 1 - (percent / 100);
         const components = CoreColors.hexToRGB(color);
-        components.red = Math.floor(components.red * percent) ;
-        components.green = Math.floor(components.green * percent) ;
-        components.blue = Math.floor(components.blue * percent) ;
+        components.red = Math.floor(components.red * percent);
+        components.green = Math.floor(components.green * percent);
+        components.blue = Math.floor(components.blue * percent);
 
         return CoreColors.RGBToHex(components);
+    }
+
+    /**
+     * Returns the hex code from any color css type (ie named).
+     *
+     * @param color Color in any format.
+     * @returns Color in hex format.
+     */
+    static getColorHex(color: string): string {
+        const d = document.createElement('div');
+        d.style.color = color;
+        document.body.appendChild(d);
+
+        // Color in RGB .
+        const rgba = getComputedStyle(d).color.match(/\d+/g)!.map((a) => parseInt(a, 10));
+
+        const hex = [0,1,2].map(
+            (idx) => this.componentToHex(rgba[idx]),
+        ).join('');
+
+        document.body.removeChild(d);
+
+        return '#'+hex;
     }
 
     /**
@@ -109,9 +132,7 @@ export class CoreColors {
      * @return Hexadec of the color component.
      */
     protected static componentToHex(c: number): string {
-        const hex = c.toString(16);
-
-        return hex.length == 1 ? '0' + hex : hex;
+        return ('0' + c.toString(16)).slice(-2);
     }
 
 }

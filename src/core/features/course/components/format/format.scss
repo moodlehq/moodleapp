@@ -1,8 +1,4 @@
-// ion-app.app-root ion-badge.core-course-download-section-progress {
-//     display: block;
-//     @include float(start);
-//     @include margin(12px, 12px, null, 12px);
-// }
+@import '~theme/globals.scss';
 
 :host {
 
@@ -49,6 +45,16 @@
         display: flex;
         core-combobox {
             flex-grow: 1;
+        }
+    }
+
+    .core-section-download.core-button-spinner {
+        display: flex;
+        align-items: center;
+        @include margin-horizontal(10px);
+
+        ion-badge.core-course-download-courses-progress {
+            @include margin(null, 12px, null, null);
         }
     }
 

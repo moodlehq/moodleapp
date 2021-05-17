@@ -155,7 +155,7 @@
 
 <!-- Template to render a section download button/progress. -->
 <ng-template #sectionDownloadTemplate let-section="section">
-    <div *ngIf="section && downloadEnabled" slot="end">
+    <div *ngIf="section && downloadEnabled" slot="end" class="core-button-spinner core-section-download">
         <!-- Download progress. -->
         <ion-badge class="core-course-download-section-progress"
             *ngIf="section.isDownloading && section.total > 0 && section.count < section.total">

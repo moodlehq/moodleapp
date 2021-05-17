@@ -1,5 +1,5 @@
 :host {
-    height: 80px;
+    height: 73px;
     display: block;
     position: relative;
 
@@ -8,9 +8,11 @@
         left: 0;
         right: 0;
         z-index: 4;
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
 
-    ion-button.button:last-child {
+    ion-button.button {
         margin-left: unset;
         margin-inline-start: 10px;
     }
@@ -27,5 +29,10 @@
 
     ion-label {
         margin: 0;
+    }
+
+    ion-input {
+        --padding-start: 0;
+        --padding-end: 0;
     }
 }

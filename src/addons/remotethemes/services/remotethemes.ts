@@ -43,7 +43,7 @@ export class AddonRemoteThemesProvider {
     protected stylesEls: {[siteId: string]: { element: HTMLStyleElement; hash: string }} = {};
 
     constructor() {
-        this.logger = CoreLogger.getInstance('AddonRemoteThemesProvider');
+        this.logger = CoreLogger.getInstance('AddonRemoteThemes');
     }
 
     /**
@@ -363,6 +363,9 @@ export class AddonRemoteThemesProvider {
             // Adding styles to a style element automatically enables it. Disable it again.
             if (disabled) {
                 this.disableElement(this.stylesEls[siteId].element, true);
+            } else {
+                // Set StatusBar properties.
+                CoreApp.setStatusBarColor();
             }
         }
 

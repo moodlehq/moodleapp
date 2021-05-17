@@ -554,6 +554,13 @@ textarea, button, select, input, a {
     }
 }
 
+ion-loading:focus-visible,
+ion-alert:focus-visible,
+ion-popover:focus-visible,
+ion-modal:focus-visible {
+    box-shadow: none;
+}
+
 ion-input .native-input{
     &:focus, &:focus-visible {
         box-shadow: none;

@@ -1,6 +1,11 @@
 :host {
     .addon-messages-conversation-item,
     .addon-message-discussion {
+        ion-label {
+            margin-right: 0;
+            margin-left: 0;
+        }
+
         h2 {
             core-format-text {
                 font-weight: bold;
@@ -12,10 +17,18 @@
         }
 
         ion-note {
-            ion-badge {
-                margin-left: 6px;
-                margin-right: 6px;
-                vertical-align: middle;
+            display: flex;
+            flex-direction: column;
+            align-self: flex-start;
+            margin-left: 2px;
+
+            ion-badge, ion-icon {
+                margin-top: 3px;
+                align-self: flex-end;
+            }
+            .addon-message-last-message-date {
+                white-space: nowrap;
+                font-size: 11px;
             }
         }
 

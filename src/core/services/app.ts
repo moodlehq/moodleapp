@@ -622,14 +622,24 @@ export class CoreAppProvider {
      */
     setStatusBarColor(color?: string): void {
         if (!color) {
-            // Get the default color to reset it.
-            color = getComputedStyle(document.documentElement).getPropertyValue('--core-header-toolbar-background').trim();
+            // Get the default color to change it.
+            const element = document.querySelector('ion-header ion-toolbar');
+            if (element) {
+                color = getComputedStyle(element).getPropertyValue('--background').trim();
+            } else {
+                // Fallback, it won't always work.
+                color = getComputedStyle(document.body).getPropertyValue('--core-header-toolbar-background').trim();
+            }
+
+            color = CoreColors.getColorHex(color);
         }
 
         // Make darker on Android.
         if (this.isAndroid()) {
             color = CoreColors.darker(color);
         }
+
+        this.logger.debug(`Set status bar color ${color}`);
 
         const useLightText = CoreColors.isWhiteContrastingBetter(color);
         const statusBar = StatusBar.instance;
