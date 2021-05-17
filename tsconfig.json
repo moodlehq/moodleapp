@@ -27,6 +27,7 @@
         "faker",
         "jest",
         "node",
+        "resize-observer-browser",
         "webpack-env"
     ],
     "paths": {

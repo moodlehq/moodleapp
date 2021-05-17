@@ -32,6 +32,10 @@
     text-transform: none;
 }
 
+.flex { display: flex; }
+.inline-block { display: inline-block; }
+.block { display: block; }
+
 .flex-row {
     display: flex;
     flex-direction: row;
