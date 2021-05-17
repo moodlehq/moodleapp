@@ -1645,6 +1645,7 @@
   "core.grades.feedback": "grades",
   "core.grades.grade": "grades",
   "core.grades.gradeitem": "grades",
+  "core.grades.gradepass": "grades",
   "core.grades.grades": "grades",
   "core.grades.lettergrade": "grades",
   "core.grades.manualitem": "grades",

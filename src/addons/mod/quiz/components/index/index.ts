@@ -79,6 +79,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     gradeMethodReadable?: string; // Grade method in a readable format.
     showReviewColumn = false; // Whether to show the review column.
     attempts: AddonModQuizAttempt[] = []; // List of attempts the user has made.
+    bestGrade?: AddonModQuizGetUserBestGradeWSResponse; // Best grade data.
 
     protected fetchContentDefaultError = 'addon.mod_quiz.errorgetquiz'; // Default error to show when loading contents.
     protected syncEventName = AddonModQuizSyncProvider.AUTO_SYNCED;
@@ -89,7 +90,6 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected attemptAccessInfo?: AddonModQuizGetAttemptAccessInformationWSResponse; // Last attempt access info.
     protected moreAttempts = false; // Whether user can create/continue attempts.
     protected options?: AddonModQuizCombinedReviewOptions; // Combined review options.
-    protected bestGrade?: AddonModQuizGetUserBestGradeWSResponse; // Best grade data.
     protected gradebookData?: { grade?: number; feedback?: string }; // The gradebook grade and feedback.
     protected overallStats = false; // Equivalent to overallstats in mod_quiz_view_object in Moodle.
     protected finishedObserver?: CoreEventObserver; // It will observe attempt finished events.
@@ -264,6 +264,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * @return Promise resolved when done.
      */
     protected async getAttempts(quiz: AddonModQuizQuizData): Promise<void> {
+        // Always get the best grade because it includes the grade to pass.
+        this.bestGrade = await AddonModQuiz.getUserBestGrade(quiz.id, { cmId: this.module.id });
 
         // Get access information of last attempt (it also works if no attempts made).
         this.attemptAccessInfo = await AddonModQuiz.getAttemptAccessInformation(quiz.id, 0, { cmId: this.module.id });
@@ -343,7 +345,6 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * @return Promise resolved when done.
      */
     protected async getResultInfo(quiz: AddonModQuizQuizData): Promise<void> {
-
         if (!this.attempts.length || !quiz.showGradeColumn || !this.bestGrade?.hasgrade ||
             this.gradebookData?.grade === undefined) {
             this.showResults = false;
@@ -584,6 +585,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     ): Promise<AddonModQuizAttempt[]> {
         if (!attempts || !attempts.length) {
             // There are no attempts to treat.
+            quiz.gradeFormatted = AddonModQuiz.formatGrade(quiz.grade, quiz.decimalpoints);
+
             return [];
         }
 
@@ -607,7 +610,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         }));
 
         // Get best grade.
-        promises.push(this.getQuizGrade(quiz));
+        promises.push(this.getQuizGrade());
 
         await Promise.all(promises);
 
@@ -635,12 +638,9 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Get quiz grade data.
      *
-     * @param quiz Quiz.
      * @return Promise resolved when done.
      */
-    protected async getQuizGrade(quiz: AddonModQuizQuizData): Promise<void> {
-        this.bestGrade = await AddonModQuiz.getUserBestGrade(quiz.id, { cmId: this.module.id });
-
+    protected async getQuizGrade(): Promise<void> {
         try {
             // Get gradebook grade.
             const data = await AddonModQuiz.getGradeFromGradebook(this.courseId, this.module.id);
@@ -654,7 +654,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         } catch {
             // Fallback to quiz best grade if failure or not found.
             this.gradebookData = {
-                grade: this.bestGrade.grade,
+                grade: this.bestGrade?.grade,
             };
         }
     }
