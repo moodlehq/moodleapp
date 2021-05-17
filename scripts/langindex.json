@@ -1981,6 +1981,7 @@
   "core.openfullimage": "local_moodlemobileapp",
   "core.openinbrowser": "local_moodlemobileapp",
   "core.openmodinbrowser": "local_moodlemobileapp",
+  "core.opensecurityquestion": "local_moodlemobileapp",
   "core.opensettings": "local_moodlemobileapp",
   "core.othergroups": "group",
   "core.pagea": "moodle",
