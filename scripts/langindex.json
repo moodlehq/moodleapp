@@ -430,6 +430,7 @@
   "addon.mod_book.toc": "book",
   "addon.mod_chat.beep": "chat",
   "addon.mod_chat.chatreport": "chat",
+  "addon.mod_chat.confirmloss": "local_moodlemobileapp",
   "addon.mod_chat.currentusers": "chat",
   "addon.mod_chat.enterchat": "chat",
   "addon.mod_chat.entermessage": "chat",

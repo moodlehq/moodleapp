@@ -1,6 +1,7 @@
 {
     "beep": "Beep",
     "chatreport": "Chat sessions",
+    "confirmloss": "Are you sure? Chat history can be lost.",
     "currentusers": "Current users",
     "enterchat": "Click here to enter the chat now",
     "entermessage": "Enter your message",

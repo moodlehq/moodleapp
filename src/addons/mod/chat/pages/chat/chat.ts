@@ -15,13 +15,14 @@
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { CoreAnimations } from '@components/animations';
 import { CoreSendMessageFormComponent } from '@components/send-message-form/send-message-form';
+import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { Network, NgZone } from '@singletons';
+import { Network, NgZone, Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { AddonModChatUsersModalComponent, AddonModChatUsersModalResult } from '../../components/users-modal/users-modal';
@@ -37,7 +38,7 @@ import { AddonModChatFormattedMessage, AddonModChatHelper } from '../../services
     animations: [CoreAnimations.SLIDE_IN_OUT],
     styleUrls: ['chat.scss', '../../../../messages/pages/discussion/discussion.scss'],
 })
-export class AddonModChatChatPage implements OnInit, OnDestroy {
+export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreSendMessageFormComponent) sendMessageForm?: CoreSendMessageFormComponent;
@@ -379,6 +380,22 @@ export class AddonModChatChatPage implements OnInit, OnDestroy {
         //         this.content.scrollTo(0, top, 0);
         //     }
         // });
+    }
+
+    /**
+     * Check if we can leave the page or not.
+     *
+     * @return Resolved with true if we can leave it, rejected if not.
+     */
+    async canLeave(): Promise<boolean> {
+        if (! this.messages.some((message) => !message.special)) {
+            return true;
+        }
+
+        // Modified, confirm user wants to go back.
+        await CoreDomUtils.showConfirm(Translate.instant('addon.mod_chat.confirmloss'));
+
+        return true;
     }
 
     /**
