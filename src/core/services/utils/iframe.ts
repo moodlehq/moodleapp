@@ -516,14 +516,8 @@ export class CoreIframeUtilsProvider {
     private injectiOSScripts(userScriptWindow: WKUserScriptWindow) {
         const wwwPath = CoreFile.getWWWAbsolutePath();
         const linksPath = CoreTextUtils.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
-        const recaptchaPath = CoreTextUtils.concatenatePaths(wwwPath, 'assets/js/iframe-recaptcha.js');
 
         userScriptWindow.WKUserScript?.addScript({ id: 'CoreIframeUtilsLinksScript', file: linksPath });
-        userScriptWindow.WKUserScript?.addScript({
-            id: 'CoreIframeUtilsRecaptchaScript',
-            file: recaptchaPath,
-            injectionTime: userScriptWindow.WKUserScript?.InjectionTime.END,
-        });
 
         // Handle post messages received by iframes.
         window.addEventListener('message', this.handleIframeMessage.bind(this));
