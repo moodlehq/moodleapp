@@ -3,7 +3,7 @@
 :host {
     position: static;
     @include core-transition(height, 200ms);
-    --loading-background: rgba(255, 255, 255, 0.26);
+    --loading-background: var(--ion-background-color);
 
     > .core-loading-container {
         position: absolute;
@@ -48,8 +48,4 @@
             position: relative;
         }
     }
-}
-
-:host-context(body.dark) {
-    --loading-background: rgba(0, 0, 0, 0.26);
 }

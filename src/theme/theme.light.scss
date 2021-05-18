@@ -69,6 +69,9 @@
 
     --module-icon-size: 24px;
 
+    --ion-background-color: #{$background-color};
+    --ion-background-color-rgb: color-to-rgb-list(var(--ion-background-color));
+
     --ion-text-color: #{$text-color};
     --ion-text-color-rgb: 58,58,58;
     --ion-card-color: var(--ion-text-color);
@@ -76,7 +79,7 @@
     --text-hightlight-background-color: #{$core-text-hightlight-background-color};
 
     ion-content {
-        --background: #{$background-color};
+        --background: var(--ion-background-color);
         --background-lighter: var(--gray-lighter);
         --contrast-background: var(--white);
     }
