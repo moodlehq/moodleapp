@@ -205,7 +205,8 @@
         const ariaCurrent = element.getAttribute('aria-current');
         if (
             (ariaCurrent && ariaCurrent !== 'false') ||
-            (element.getAttribute('aria-selected') === 'true')
+            (element.getAttribute('aria-selected') === 'true') ||
+            (element.getAttribute('aria-checked') === 'true')
         )
             return true;
 

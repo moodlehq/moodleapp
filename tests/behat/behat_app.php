@@ -423,7 +423,7 @@ class behat_app extends behat_base {
 
         // Note there are two 'Log in' texts visible (the title and the button) so we have to use
         // a 'near' value here.
-        $this->i_press_near_in_the_app('Log in', 'Forgotten');
+        $this->i_press_in_the_app('Log in', 'Forgotten');
 
         // Wait until the main page appears.
         $this->spin(
@@ -510,27 +510,29 @@ class behat_app extends behat_base {
      * Note it is difficult to use the standard 'click on' or 'press' steps because those do not
      * distinguish visible items and the app always has many non-visible items in the DOM.
      *
-     * @Given /^I press "(?P<text_string>(?:[^"]|\\")*)" in the app$/
-     * @param string $text Text identifying click target
-     * @throws DriverException If the press doesn't work
-     */
-    public function i_press_in_the_app(string $text) {
-        $this->press($text);
-    }
-
-    /**
-     * Clicks on / touches something that is visible in the app, near some other text.
-     *
-     * This is the same as the other step, but when there are multiple matches, it picks the one
-     * nearest (in DOM terms) the second text. The second text should be an exact match, or a partial
-     * match that only has one result.
-     *
-     * @Given /^I press "(?P<text_string>(?:[^"]|\\")*)" near "(?P<nearby_string>(?:[^"]|\\")*)" in the app$/
+     * @Then /^I press "(?P<text_string>(?:[^"]|\\")*)"(?: near "(?P<near_string>(?:[^"]|\\")*)")? in the app$/
      * @param string $text Text identifying click target
      * @param string $near Text identifying a nearby unique piece of text
      * @throws DriverException If the press doesn't work
      */
-    public function i_press_near_in_the_app(string $text, string $near) {
+    public function i_press_in_the_app($text, $near='') {
+        $this->press($text, $near);
+    }
+
+    /**
+     * Select an item from a list of options, such as a radio button.
+     *
+     * It may be necessary to use this step instead of "I press..." because radio buttons in Ionic are initialized
+     * with JavaScript, and clicks may not work until they are initialized properly which may cause flaky tests due
+     * to race conditions.
+     *
+     * @Then /^I select "(?P<text_string>(?:[^"]|\\")*)"(?: near "(?P<near_string>(?:[^"]|\\")*)")? in the app$/
+     * @param string $text Text identifying click target
+     * @param string $near Text identifying a nearby unique piece of text
+     * @throws DriverException If the press doesn't work
+     */
+    public function i_select_in_the_app($text, $near='') {
+        $this->getSession()->wait(100);
         $this->press($text, $near);
     }
 
