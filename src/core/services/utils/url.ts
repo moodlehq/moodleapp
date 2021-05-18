@@ -20,6 +20,7 @@ import { CoreConstants } from '@/core/constants';
 import { makeSingleton } from '@singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreApp } from '@services/app';
+import { CoreSites } from '@services/sites';
 
 /*
  * "Utils" service with helper functions for URLs.
@@ -233,7 +234,8 @@ export class CoreUrlUtilsProvider {
         let docsUrl = 'https://docs.moodle.org/en/' + page;
 
         if (typeof release != 'undefined') {
-            const version = release.substr(0, 3).replace('.', '');
+            const version = CoreSites.getMajorReleaseNumber(release).replace('.', '');
+
             // Check is a valid number.
             if (Number(version) >= 24) {
                 // Append release number.

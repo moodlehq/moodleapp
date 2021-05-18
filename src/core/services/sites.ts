@@ -669,6 +669,21 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Returns the major release number from site release info.
+     *
+     * @param rawRelease Raw release info text.
+     * @return Major release number or empty.
+     */
+    getMajorReleaseNumber(rawRelease: string): string {
+        const matches = rawRelease.match(/^\d+(\.\d+)?/);
+        if (matches) {
+            return matches[0];
+        }
+
+        return '';
+    }
+
+    /**
      * Saves a site in local DB.
      *
      * @param id Site ID.
