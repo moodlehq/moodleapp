@@ -1,9 +1,18 @@
 @import "~theme/globals";
 
 :host {
+    --loading-background: var(--ion-background-color);
+    --loading-spinner: var(--ion-color-primary);
+    --loading-text-color: var(--ion-text-color);
+
     position: static;
     @include core-transition(height, 200ms);
-    --loading-background: var(--ion-background-color);
+    color: var(--loading-text-color);
+
+    ion-spinner {
+        --color: var(--loading-spinner);
+        color: var(--color);
+    }
 
     > .core-loading-container {
         position: absolute;

@@ -62,6 +62,8 @@
     --core-bottom-tabs-background: #{$bottom-tabs-background-dark};
     --core-bottom-tabs-color: #{$bottom-tabs-color-dark};
     --core-bottom-tabs-color-selected: #{$bottom-tabs-color-selected-dark};
+    --core-bottom-tabs-badge-color: #{$bottom-tabs-badge-color-dark};
+    --core-bottom-tabs-badge-text-color: #{$bottom-tabs-badge-text-color-dark};
 
     ion-action-sheet {
         .action-sheet-cancel {
@@ -84,10 +86,8 @@
 
     --ion-item-background: #{$ion-item-background-dark};
     --ion-item-detail-icon-color: var(--white);
-    ion-item-divider, ion-item.divider {
-        --background: #{$ion-item-divider-background-dark};
-        --color: #{$text-color-dark};
-    }
+    --item-divider-background: #{$ion-item-divider-background-dark};
+    --item-divider-color: #{$ion-item-divider-color-dark};
 
     --core-combobox-background: var(--ion-item-background);
     --core-combobox-color: #{$core-combobox-color-dark};
@@ -96,6 +96,8 @@
 
     --core-login-background: #{$core-login-background-dark};
     --core-login-text-color: #{$core-login-text-color-dark};
+    --core-login-input-background: #{$core-login-input-background-dark};
+    --core-login-input-color: #{$core-login-input-color-dark};
 
     --core-question-correct-color: var(--green-light);
     --core-question-correct-color-bg: var(--green-dark);

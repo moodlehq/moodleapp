@@ -1,12 +1,37 @@
+@import "~theme/globals";
+
 :host {
-    ion-content {
+    ion-content,
+    ion-list {
         --background: var(--core-login-background);
+        --ion-item-background: var(--core-login-background);
         --color: var(--core-login-text-color);
+    }
+
+    ion-item ion-label {
+        --color: var(--core-login-text-color);
+
+        p, h2, h3, .core-oauth-icon {
+            color: var(--core-login-text-color);
+        }
+    }
+    ion-button.core-button-as-link {
+        --color: var(--core-login-text-color);
+        text-decoration-color: var(--core-login-text-color);
+
+        ion-label {
+            color: var(--core-login-text-color);
+        }
     }
 
     form .item.item-input,
     form .core-username.item {
         margin-bottom: 16px;
+    }
+
+    form .item {
+        --background: var(--core-login-input-background);
+        --color: var(--core-login-input-color);
     }
 
     form .core-username.item p {
@@ -38,5 +63,45 @@
 
     .core-login-reconnect-warning {
         font-size: 0.9em;
+    }
+
+    @if ($core-fixed-url) {
+        .core-sitename, .core-siteurl {
+            display: none;
+        }
+    }
+
+    @if ($core-login-button-outline) {
+        form ion-button {
+            --background: white;
+            --color: var(--core-login-background);
+        }
+    }
+
+    @if ($core-login-loading-color) {
+        core-loading {
+            --loading-background: var(--core-login-background);
+            --loading-text-color: #{$core-login-loading-color};
+            --loading-spinner: #{$core-login-loading-color};
+        }
+    }
+
+
+}
+
+:host-context(body.dark) {
+    @if ($core-login-button-outline-dark) {
+        form ion-button-dark {
+            --background: white;
+            --color: var(--core-login-background-dark);
+        }
+    }
+
+    @if ($core-login-loading-color-dark) {
+        core-loading {
+            --loading-background: var(--core-login-background-dark);
+            --loading-text-color: #{$core-login-loading-color-dark};
+            --loading-spinner: #{$core-login-loading-color-dark};
+        }
     }
 }
