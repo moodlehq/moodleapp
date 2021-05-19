@@ -1,7 +1,7 @@
 <ion-card>
     <form (ngSubmit)="submitForm($event)" role="search" #searchForm>
         <ion-item>
-            <ion-label></ion-label>
+            <ion-label class="sr-only">{{ placeholder }}</ion-label>
             <ion-input type="search" name="search" [(ngModel)]="searchText" [placeholder]="placeholder"
                 [autocorrect]="autocorrect" [spellcheck]="spellcheck" [core-auto-focus]="autoFocus"
                 [disabled]="disabled" role="searchbox" (ionFocus)="focus($event)">
