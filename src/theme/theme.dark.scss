@@ -12,8 +12,7 @@
     --ion-text-color: #{$text-color-dark};
     --ion-text-color-rgb: color-to-rgb-list(var(--ion-text-color));
 
-    --ion-border-color: #3f3f3f;
-
+    // Enlighten the ionic shades.
     --ion-color-step-50: #1e1e1e;
     --ion-color-step-100: #2a2a2a;
     --ion-color-step-150: #363636;
@@ -34,16 +33,25 @@
     --ion-color-step-900: #e7e7e7;
     --ion-color-step-950: #f3f3f3;
 
-    --light: #{$dark};
-    --dark: #{$light};
+    --primary: #{$primary-dark};
+    --secondary: #{$secondary-dark};
+    --tertiary: #{$tertiary-dark};
+    --success: #{$success-dark};
+    --danger: #{$danger-dark};
+    --warning: #{$warning-dark};
+    --info: #{$info-dark};
+    --light: #{$light-dark};
+    --dark: #{$dark-dark};
+    --medium: #{$medium-dark};
 
     @each $color-name, $value in $colors-dark {
         @include generate-color($color-name, $colors-dark);
     }
 
-    --ion-tab-bar-background: #1f1f1f;
+    --ion-border-color: #{$shade-15};
 
-    --ion-card-background: #1c1c1d;
+    --ion-card-color: #{$text-color-dark};
+    --ion-card-background: #{$ion-item-background-dark};
 
     ion-content {
         --background: var(--ion-background-color);
@@ -51,27 +59,40 @@
         --contrast-background: var(--ion-background-color);
     }
 
+    --core-bottom-tabs-background: #{$bottom-tabs-background-dark};
+    --core-bottom-tabs-color: #{$bottom-tabs-color-dark};
+    --core-bottom-tabs-color-selected: #{$bottom-tabs-color-selected-dark};
+
     ion-action-sheet {
         .action-sheet-cancel {
             --button-color: var(--ion-color-danger-tint);
         }
     }
 
+    --core-link-color: #{$link-color-dark};
+
     --core-tabs-background: #{$core-tabs-background-dark};
     --core-tab-background: #{$core-tab-background-dark};
     --core-tab-color: #{$core-tab-color-dark};
     --core-tab-border-color: #{$core-tab-border-color-dark};
-
+    --core-tab-color-active: #{$core-tab-color-active-dark};
+    --core-tab-border-color-active: #{$core-tab-border-color-active-dark};
     core-progress-bar {
+        --color: #{$core-progressbar-color-dark};
         --text-color: #{$core-progressbar-text-color-dark};
     }
 
     --ion-item-background: #{$ion-item-background-dark};
-    --ion-item-detail-icon-: var(--white);
+    --ion-item-detail-icon-color: var(--white);
     ion-item-divider, ion-item.divider {
-        --background: var(--black);
-        --color: var(--white);
+        --background: #{$ion-item-divider-background-dark};
+        --color: #{$text-color-dark};
     }
+
+    --core-combobox-background: var(--ion-item-background);
+    --core-combobox-color: #{$core-combobox-color-dark};
+
+    --selected-item-color: #{$core-selected-item-color-dark};
 
     --core-login-background: #{$core-login-background-dark};
     --core-login-text-color: #{$core-login-text-color-dark};
@@ -94,6 +115,14 @@
     --core-question-feedback-background-color: var(--yellow-dark);
 
     --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-light);
+
+    --addon-messages-message-bg: #{$addon-messages-message-bg-dark};
+    --addon-messages-message-activated-bg: #{$addon-messages-message-activated-bg-dark};
+    --addon-messages-message-note-text: #{$addon-messages-message-note-text-dark};
+    --addon-messages-message-mine-bg: #{$addon-messages-message-mine-bg-dark};
+    --addon-messages-message-mine-activated-bg: #{$addon-messages-message-mine-activated-bg-dark};
+    --addon-messages-discussion-badge: #{$addon-messages-discussion-badge-dark};
+    --addon-messages-discussion-badge-text: #{$addon-messages-discussion-badge-text-dark};
 
     --addon-forum-border-color: #{$addon-forum-border-color-dark};
     --addon-forum-highlight-color: #{$addon-forum-highlight-color-dark};
