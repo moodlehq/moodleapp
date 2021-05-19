@@ -135,14 +135,6 @@ export class CoreSitePluginsHelperProvider {
             }
         });
 
-        // Unload plugins on logout if any.
-        CoreEvents.on(CoreEvents.LOGOUT, () => {
-            if (CoreSitePlugins.hasSitePluginsLoaded) {
-                // Temporary fix. Reload the page to unload all plugins.
-                window.location.reload();
-            }
-        });
-
         // Re-load plugins restricted for courses when the list of user courses changes.
         CoreEvents.on(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, (data) => {
             if (data && data.siteId && data.siteId == CoreSites.getCurrentSiteId() && data.added && data.added.length) {
