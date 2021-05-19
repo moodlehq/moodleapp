@@ -145,6 +145,7 @@
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "check-es-compat": "^1.1.1",
+    "cordova-plugin-prevent-override": "git+https://github.com/moodlemobile/cordova-plugin-prevent-override.git",
     "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-header": "^3.1.1",
@@ -231,7 +232,8 @@
         "ANDROID_SUPPORT_VERSION": "28.+"
       },
       "cordova-plugin-globalization": {},
-      "cordova-plugin-file-transfer": {}
+      "cordova-plugin-file-transfer": {},
+      "cordova-plugin-prevent-override": {}
     }
   },
   "optionalDependencies": {
