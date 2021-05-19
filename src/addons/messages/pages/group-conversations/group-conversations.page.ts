@@ -35,7 +35,6 @@ import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifi
 import { ActivatedRoute, Params } from '@angular/router';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
-import { AddonMessagesSettingsHandlerService } from '@addons/messages/services/handlers/settings';
 import { CoreScreen } from '@services/screen';
 
 /**
@@ -529,7 +528,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Navigate to message settings.
      */
     gotoSettings(): void {
-        CoreNavigator.navigateToSitePath(AddonMessagesSettingsHandlerService.PAGE_NAME);
+        CoreNavigator.navigateToSitePath('../preferences');
     }
 
     /**

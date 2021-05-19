@@ -51,6 +51,10 @@ function buildRoutes(injector: Injector): Routes {
             loadChildren: () => import('./pages/contacts/contacts.module')
                 .then(m => m.AddonMessagesContactsPageModule),
         },
+        {
+            path: 'preferences',
+            loadChildren: () => import('./pages/settings/settings.module').then(m => m.AddonMessagesSettingsPageModule),
+        },
         ...buildTabMainRoutes(injector, {
             canActivate: [AddonMessagesIndexGuard],
         }),
