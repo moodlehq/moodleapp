@@ -194,6 +194,10 @@ ion-alert.core-nohead {
     }
 }
 
+ion-alert .alert-message {
+    user-select: text;
+}
+
 // Ionic list.
 ion-list.list-md {
     padding: 0;
