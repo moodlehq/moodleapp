@@ -7,13 +7,36 @@
 /*
  * App colors
  */
+$shade-0: #000000 !default;
+$shade-100: #ffffff !default;
+$shade-5: mix($shade-100, $shade-0, 5%) !default;   // #0d0d0d
+$shade-10: mix($shade-100, $shade-0, 10%) !default; // #1a1a1a
+$shade-15: mix($shade-100, $shade-0, 15%) !default; // #262626
+$shade-20: mix($shade-100, $shade-0, 20%) !default; // #333333
+$shade-25: mix($shade-100, $shade-0, 25%) !default; // #404040
+$shade-30: mix($shade-100, $shade-0, 30%) !default; // #4d4d4d
+$shade-35: mix($shade-100, $shade-0, 35%) !default; // #595959
+$shade-40: mix($shade-100, $shade-0, 40%) !default; // #666666
+$shade-45: mix($shade-100, $shade-0, 45%) !default; // #737373
+$shade-50: mix($shade-100, $shade-0, 50%) !default; // #808080
+$shade-55: mix($shade-100, $shade-0, 55%) !default; // #8c8c8c
+$shade-60: mix($shade-100, $shade-0, 60%) !default; // #999999
+$shade-65: mix($shade-100, $shade-0, 65%) !default; // #a6a6a6
+$shade-70: mix($shade-100, $shade-0, 70%) !default; // #b3b3b3
+$shade-75: mix($shade-100, $shade-0, 75%) !default; // #bfbfbf
+$shade-80: mix($shade-100, $shade-0, 80%) !default; // #cccccc
+$shade-85: mix($shade-100, $shade-0, 85%) !default; // #d9d9d9
+$shade-90: mix($shade-100, $shade-0, 90%) !default; // #e6e6e6
+$shade-95: mix($shade-100, $shade-0, 95%) !default; // #f2f2f2
+
 $black:           #282828 !default; // Headings, standard text.
 $gray-darker:     #686566 !default; // Text (emphasis-detail), placeholder, background.
 $gray-dark:       #9e9e9e !default; // Borders (never text).
 $gray:            #dddddd !default;
 $gray-light:      #e9e9e9 !default; // Background.
 $gray-lighter:    #f5f5f5 !default;
-$white:           #ffffff !default; // Background, reversed text.
+$white:           $shade-100 !default; // Background, reversed text.
+
 
 $blue:            #0064d2 !default; // Link, background.
 $turquoise:       #007982 !default; // Accent.
@@ -23,21 +46,21 @@ $orange:          #f98012 !default; // Accent (never text).
 $yellow:          #fbad1a !default; // Accent (never text).
 $purple:          #8e24aa !default; // Accent (never text).
 
-$blue-light:      mix($blue, white, 20%) !default; // Background.
+$blue-light:      mix($blue, white, 40%) !default; // Background.
 $blue-dark:       darken($blue, 10%) !default;
 
-$turquoise-light: mix($turquoise, white, 20%) !default; // Background.
+$turquoise-light: mix($turquoise, white, 40%) !default; // Background.
 $turquoise-dark:  darken($turquoise, 10%) !default;
 
-$green-light:     mix($green, white, 20%) !default;
+$green-light:     mix($green, white, 40%) !default;
 $green-dark:      darken($green, 10%) !default;
 
-$red-light:       mix($red, white, 20%) !default;
+$red-light:       mix($red, white, 40%) !default;
 $red-dark:        darken($red, 10%) !default;
 
 $orange-light:    lighten($orange, 10%) !default;
 
-$yellow-light:    mix($yellow, white, 20%) !default;
+$yellow-light:    mix($yellow, white, 40%) !default;
 $yellow-dark:     mix($yellow, black, 40%) !default;
 
 $brand-color:          $orange !default;
@@ -47,12 +70,14 @@ $brand-color-dark:     darken($brand-color, 10%) !default;
 $text-color:               $black !default;
 $text-color-dark:          $white !default;
 $link-color:               $blue !default;
+$link-color-dark:          $blue-light !default;
 $background-color:         $gray-light !default;
-$background-color-dark:     #1e1e1e !default;
+$background-color-dark:    #{$shade-10} !default;
 $subdued-text-color:       $gray-darker !default;
 
 $ion-item-background:      $white !default;
-$ion-item-background-dark: #1e1e1e !default;
+$ion-item-background-dark: #{$shade-20} !default;
+$ion-item-divider-background-dark: #{$shade-25} !default;
 
 $core-online-color: #5cb85c !default;
 
@@ -130,10 +155,79 @@ $colors:  (
     )
 ) !default;
 
+$primary-dark:    $blue-light !default;
+$secondary-dark:  $brand-color !default;
+$tertiary-dark:   $turquoise-light !default;
+$danger-dark:     $red-light !default;
+$warning-dark:    $yellow-light !default;
+$success-dark:    $green-light !default;
+$info-dark:       $blue-light !default;
+$light-dark:      $dark !default;
+$medium-dark:     $gray-light !default;
+$dark-dark:       $light !default;
+
 // Just swipe light and dark.
 $colors-dark:  (
-    light: map-get($colors, dark),
-    dark: map-get($colors, light),
+    primary: (
+        base:             $primary-dark,
+        contrast:         get_contrast_color($primary-dark),
+        shade:            get-color-shade($primary-dark),
+        tint:             get-color-tint($primary-dark)
+    ),
+    secondary: (
+        base:             $secondary-dark,
+        contrast:         get_contrast_color($secondary-dark),
+        shade:            get-color-shade($secondary-dark),
+        tint:             get-color-tint($secondary-dark)
+    ),
+    tertiary: (
+        base:             $tertiary-dark,
+        contrast:         get_contrast_color($tertiary-dark),
+        shade:            get-color-shade($tertiary-dark),
+        tint:             get-color-tint($tertiary-dark)
+    ),
+    success: (
+        base:             $success-dark,
+        contrast:         get_contrast_color($success-dark),
+        shade:            get-color-shade($success-dark),
+        tint:             get-color-tint($success-dark)
+    ),
+    warning: (
+        base:             $warning-dark,
+        contrast:         get_contrast_color($warning-dark),
+        shade:            get-color-shade($warning-dark),
+        tint:             get-color-tint($warning-dark)
+    ),
+    danger: (
+        base:             $danger-dark,
+        contrast:         get_contrast_color($danger-dark),
+        shade:            get-color-shade($danger-dark),
+        tint:             get-color-tint($danger-dark)
+    ),
+    info: (
+        base:             $info-dark,
+        contrast:         get_contrast_color($info-dark),
+        shade:            get-color-shade($info-dark),
+        tint:             get-color-tint($info-dark)
+    ),
+    light: (
+        base:             $light-dark,
+        contrast:         get_contrast_color($light-dark),
+        shade:            get-color-shade($light-dark),
+        tint:             get-color-tint($light-dark)
+    ),
+    medium: (
+        base:             $medium-dark,
+        contrast:         get_contrast_color($medium-dark),
+        shade:            get-color-shade($medium-dark),
+        tint:             get-color-tint($medium-dark)
+    ),
+    dark: (
+        base:             $dark-dark,
+        contrast:         get_contrast_color($dark-dark),
+        shade:            get-color-shade($dark-dark),
+        tint:             get-color-tint($dark-dark)
+    )
 ) !default;
 
 $core-course-image-background: #81ecec, #74b9ff, #a29bfe, #dfe6e9, #00b894, #0984e3, #b2bec3, #fdcb6e, #fd79a8, #6c5ce7 !default;
@@ -175,8 +269,11 @@ $toolbar-button-image-size: 44px !default;
 
 // Bottom tab bar.
 $bottom-tabs-background: $white !default;
+$bottom-tabs-background-dark: $shade-15 !default;
 $bottom-tabs-color: $gray-darker !default;
+$bottom-tabs-color-dark: $white !default;
 $bottom-tabs-color-selected: $primary !default;
+$bottom-tabs-color-selected-dark: $primary-dark !default;
 
 $core-text-hightlight-background-color: lighten($blue, 40%) !default;
 
@@ -188,14 +285,17 @@ $core-tab-background: $core-tabs-background !default;
 $core-tab-color: $gray-dark !default;
 $core-tab-border-color: $gray !default;
 $core-tab-color-active: $primary !default;
-$core-tab-border-color-active: $core-tab-color-active !default;
+$core-tab-color-active-dark: $primary-dark !default;
 
-$core-tabs-background-dark: $black !default;
+$core-tabs-background-dark: $shade-25 !default;
 $core-tab-background-dark: $core-tabs-background-dark !default;
 $core-tab-color-dark: $white !default;
 $core-tab-border-color-dark: $gray-light !default;
+$core-tab-border-color-active: $core-tab-color-active !default;
+$core-tab-border-color-active-dark: $core-tab-color-active-dark !default;
 
 $core-progressbar-color: $primary !default;
+$core-progressbar-color-dark: $primary !default;
 $core-progressbar-text-color: $gray-darker !default;
 $core-progressbar-background: $gray-lighter !default;
 $core-progressbar-height: 8px !default;
@@ -207,8 +307,10 @@ $core-side-blocks-min-width: 280px !default;
 
 ////
 $core-combobox-color: $primary !default;
+$core-combobox-color-dark: $primary-dark !default;
 
 $core-selected-item-color: $primary !default;
+$core-selected-item-color-dark: $primary-dark !default;
 $core-selected-item-border-width: 5px !default;
 
 $core-login-background: $white !default;
@@ -243,6 +345,14 @@ $addon-messages-message-mine-activated-bg: $gray !default;
 $addon-messages-avatar-size: 30px !default;
 $addon-messages-discussion-badge: $primary !default;
 $addon-messages-discussion-badge-text: $white !default;
+
+$addon-messages-message-bg-dark: $black !default;
+$addon-messages-message-activated-bg-dark: $gray-dark !default;
+$addon-messages-message-note-text-dark: $gray-light !default;
+$addon-messages-message-mine-bg-dark: $shade-0 !default;
+$addon-messages-message-mine-activated-bg-dark: $gray !default;
+$addon-messages-discussion-badge-dark: $primary-dark !default;
+$addon-messages-discussion-badge-text-dark: $black !default;
 
 $addon-forum-avatar-size: 44px !default;
 $addon-forum-border-color: $gray !default;
