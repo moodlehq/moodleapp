@@ -69,8 +69,7 @@ export class CoreWindow {
 
             if (name != '_system') {
                 // Check if it can be opened in the app.
-                treated = false;
-                await CoreContentLinksHelper.handleLink(url, undefined, true, true);
+                treated = await CoreContentLinksHelper.handleLink(url, undefined, true, true);
             }
 
             if (!treated) {

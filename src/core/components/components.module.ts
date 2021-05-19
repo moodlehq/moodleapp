@@ -44,7 +44,6 @@ import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
 import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
 import { CoreProgressBarComponent } from './progress-bar/progress-bar';
 import { CoreRecaptchaComponent } from './recaptcha/recaptcha';
-import { CoreRecaptchaModalComponent } from './recaptcha/recaptcha-modal';
 import { CoreSendMessageFormComponent } from './send-message-form/send-message-form';
 import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
@@ -84,7 +83,6 @@ import { CoreHorizontalScrollControlsComponent } from './horizontal-scroll-contr
         CoreNavigationBarComponent,
         CoreProgressBarComponent,
         CoreRecaptchaComponent,
-        CoreRecaptchaModalComponent,
         CoreSendMessageFormComponent,
         CoreShowPasswordComponent,
         CoreSitePickerComponent,
@@ -131,7 +129,6 @@ import { CoreHorizontalScrollControlsComponent } from './horizontal-scroll-contr
         CoreNavigationBarComponent,
         CoreProgressBarComponent,
         CoreRecaptchaComponent,
-        CoreRecaptchaModalComponent,
         CoreSendMessageFormComponent,
         CoreShowPasswordComponent,
         CoreSitePickerComponent,

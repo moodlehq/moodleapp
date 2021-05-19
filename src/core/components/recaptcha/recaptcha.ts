@@ -16,9 +16,8 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreRecaptchaModalComponent, CoreRecaptchaModalReturn } from './recaptcha-modal';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Component that allows answering a recaptcha.
@@ -57,27 +56,49 @@ export class CoreRecaptchaComponent implements OnInit {
     }
 
     /**
-     * Open the recaptcha modal.
+     * Let the user answer the recaptcha.
      */
     async answerRecaptcha(): Promise<void> {
-        // Set the iframe src. We use an iframe because reCaptcha V2 doesn't work with file:// protocol.
+        // Open the recaptcha challenge in an InAppBrowser.
+        // The app used to use an iframe for this, but the app can no longer access the iframe to create the required callbacks.
+        // The app cannot render the recaptcha directly because it has problems with the local protocols and domains.
         const src = CoreTextUtils.concatenatePaths(this.siteUrl!, 'webservice/recaptcha.php?lang=' + this.lang);
 
-        // Modal to answer the recaptcha.
-        // This is because the size of the recaptcha is dynamic, so it could cause problems if it was displayed inline.
+        const inAppBrowserWindow = CoreUtils.openInApp(src);
+        if (!inAppBrowserWindow) {
+            return;
+        }
 
-        const modalData = await CoreDomUtils.openModal<CoreRecaptchaModalReturn>({
-            component: CoreRecaptchaModalComponent,
-            cssClass: 'core-modal-fullscreen',
-            componentProps: {
-                recaptchaUrl: src,
-            },
+        // Set the callbacks once the page is loaded.
+        const loadStopSubscription = inAppBrowserWindow.on('loadstop').subscribe(() => {
+            inAppBrowserWindow.executeScript({
+                code:
+                    'window.recaptchacallback = (value) => webkit.messageHandlers.cordova_iab.postMessage(' +
+                        'JSON.stringify({ action: "callback", value }));' +
+                    'window.recaptchaexpiredcallback = () => webkit.messageHandlers.cordova_iab.postMessage(' +
+                        'JSON.stringify({ action: "expired" }));',
+            });
         });
 
-        if (modalData) {
-            this.expired = modalData.expired;
-            this.model![this.modelValueName] = modalData.value;
-        }
+        // Listen for events.
+        const messageSubscription = inAppBrowserWindow.on('message').subscribe((event) => {
+            if (!event.data) {
+                return;
+            }
+
+            if (event.data.action == 'expired') {
+                this.expired = true;
+                this.model![this.modelValueName] = '';
+            } else if (event.data.action == 'callback') {
+                this.expired = false;
+                this.model![this.modelValueName] = event.data.value;
+
+                // Close the InAppBrowser now.
+                inAppBrowserWindow.close();
+                messageSubscription.unsubscribe();
+                loadStopSubscription.unsubscribe();
+            }
+        });
     }
 
 }

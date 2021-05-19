@@ -167,6 +167,11 @@ export class AppComponent implements OnInit, AfterViewInit {
             CoreWindow.open(url, name);
         };
 
+        // Treat URLs that try to override the app.
+        win.onOverrideUrlLoading = (url: string) => {
+            CoreWindow.open(url);
+        };
+
         CoreEvents.on(CoreEvents.LOGIN, async (data) => {
             if (data.siteId) {
                 const site = await CoreSites.getSite(data.siteId);
