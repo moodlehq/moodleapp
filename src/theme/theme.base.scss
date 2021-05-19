@@ -614,9 +614,13 @@ ion-modal:focus-visible {
     box-shadow: none;
 }
 
-ion-input .native-input{
+ion-input .native-input {
     &:focus, &:focus-visible {
         box-shadow: none;
         outline: none;
     }
+}
+
+ion-checkbox {
+    --border-radius: 2px;
 }
