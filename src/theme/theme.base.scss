@@ -558,6 +558,16 @@ ion-item.item-multiple-inputs {
     }
 }
 
+// Case with ion-input + ion-select inside.
+ion-item.item-input.item-multiple-inputs {
+    .flex-row {
+        width: 100%;
+        ion-select {
+            position: relative;
+        }
+    }
+}
+
 // Focus highlight for accessibility.
 ion-item.item-input.ion-focused:not(:focus),
 .ion-focused,
