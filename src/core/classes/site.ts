@@ -146,7 +146,7 @@ export class CoreSite {
      * @return Site ID.
      */
     getId(): string {
-        if (!this.id) {
+        if (this.id === undefined) {
             // Shouldn't happen for authenticated sites.
             throw new CoreError('This site doesn\'t have an ID');
         }
@@ -169,7 +169,7 @@ export class CoreSite {
      * @return Site token.
      */
     getToken(): string {
-        if (!this.token) {
+        if (this.token === undefined) {
             // Shouldn't happen for authenticated sites.
             throw new CoreError('This site doesn\'t have a token');
         }

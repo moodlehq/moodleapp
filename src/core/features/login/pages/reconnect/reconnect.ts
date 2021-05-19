@@ -62,7 +62,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     constructor(
         protected fb: FormBuilder,
     ) {
-
         const currentSite = CoreSites.getCurrentSite();
 
         this.isLoggedOut = !!currentSite?.isLoggedOut();
@@ -80,7 +79,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             return this.cancel();
         }
 
-        this.siteUrl = siteId;
+        this.siteId = siteId;
         this.page = CoreNavigator.getRouteParam('pageName');
         this.pageOptions = CoreNavigator.getRouteParam('pageOptions');
         this.showScanQR = CoreLoginHelper.displayQRInSiteScreen() || CoreLoginHelper.displayQRInCredentialsScreen();

@@ -903,12 +903,12 @@ export class CoreLoginHelperProvider {
                 if (!CoreApp.isSSOAuthenticationOngoing() && !this.isSSOConfirmShown && !this.waitingForBrowser) {
                     this.isSSOConfirmShown = true;
 
-                    if (this.shouldShowSSOConfirm(result.code)) {
-                        await CoreDomUtils.showConfirm(Translate.instant('core.login.' +
-                            (currentSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription')));
-                    }
-
                     try {
+                        if (this.shouldShowSSOConfirm(result.code)) {
+                            await CoreDomUtils.showConfirm(Translate.instant('core.login.' +
+                                (currentSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription')));
+                        }
+
                         this.waitingForBrowser = true;
 
                         this.openBrowserForSSOLogin(

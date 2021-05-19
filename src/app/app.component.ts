@@ -28,6 +28,7 @@ import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreConstants } from '@/core/constants';
+import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
@@ -61,15 +62,20 @@ export class AppComponent implements OnInit, AfterViewInit {
         document.body.classList.add('ionic5');
         this.addVersionClass(MOODLEAPP_VERSION_PREFIX, CoreConstants.CONFIG.versionname.replace('-dev', ''));
 
-        CoreEvents.on(CoreEvents.LOGOUT, () => {
-            // Go to sites page when user is logged out.
-            CoreNavigator.navigate('/login/sites', { reset: true });
-
+        CoreEvents.on(CoreEvents.LOGOUT, async () => {
             // Unload lang custom strings.
             CoreLang.clearCustomStrings();
 
             // Remove version classes from body.
             this.removeVersionClass(MOODLE_VERSION_PREFIX);
+
+            // Go to sites page when user is logged out.
+            await CoreNavigator.navigate('/login/sites', { reset: true });
+
+            if (CoreSitePlugins.hasSitePluginsLoaded) {
+                // Temporary fix. Reload the page to unload all plugins.
+                window.location.reload();
+            }
         });
 
         // Listen for session expired events.
