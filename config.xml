@@ -39,6 +39,7 @@
     <preference name="SplashScreenDelay" value="15000" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
+    <preference name="ShowSplashScreenSpinner" value="false" />
     <preference name="android-minSdkVersion" value="22" />
     <preference name="android-targetSdkVersion" value="30" />
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
