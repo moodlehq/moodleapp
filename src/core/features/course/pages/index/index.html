@@ -10,6 +10,4 @@
         <ion-buttons slot="end"></ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content>
-    <core-tabs-outlet [tabs]="tabs" [hideUntil]="loaded" (ionChange)="tabSelected()"></core-tabs-outlet>
-</ion-content>
+<core-tabs-outlet [tabs]="tabs" [hideUntil]="loaded" (ionChange)="tabSelected()"></core-tabs-outlet>
