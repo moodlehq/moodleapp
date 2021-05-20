@@ -628,3 +628,12 @@ ion-input .native-input {
 ion-checkbox {
     --border-radius: 2px;
 }
+
+// Disable scroll on parent ion contents to enabled PTR on the ones inside the splitview. See split-view component for more info.
+ion-content.disable-scroll-y::part(scroll) {
+    touch-action: auto;
+    overflow-y: hidden;
+    overscroll-behavior-y: auto;
+    z-index: auto;
+    will-change: auto;
+}

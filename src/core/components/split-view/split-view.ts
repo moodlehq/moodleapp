@@ -24,6 +24,8 @@ export enum CoreSplitViewMode {
     MenuAndContent = 'menu-and-content', // Shows both menu and content.
 }
 
+const disabledScrollClass = 'disable-scroll-y';
+
 @Component({
     selector: 'core-split-view',
     templateUrl: 'split-view.html',
@@ -36,6 +38,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     @Input() placeholderText = 'core.emptysplit';
     @Input() mode?: CoreSplitViewMode;
     isNested = false;
+    disabledScrollOuterContents: HTMLIonContentElement[] = [];
 
     private outletRouteSubject: BehaviorSubject<ActivatedRouteSnapshot | null> = new BehaviorSubject(null);
     private subscriptions?: Subscription[];
@@ -59,6 +62,9 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      */
     ngAfterViewInit(): void {
         this.isNested = !!this.element.nativeElement.parentElement?.closest('core-split-view');
+
+        this.disableScrollOnParent();
+
         this.subscriptions = [
             this.contentOutlet.activateEvents.subscribe(() => {
                 this.updateClasses();
@@ -79,6 +85,8 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.subscriptions?.forEach(subscription => subscription.unsubscribe());
+
+        this.enableScrollOnParent();
     }
 
     /**
@@ -120,6 +128,32 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
         }
 
         return CoreSplitViewMode.MenuAndContent;
+    }
+
+    /**
+     * Will disable scroll on parent ion contents to enabled PTR on the ones inside the splitview.
+     * This error only happens on iOS.
+     * Another manual solution is to add scroll-y=false on the ion-contents outside the split view.
+     */
+    protected disableScrollOnParent(): void {
+        let outerContent = this.element.nativeElement.parentElement?.closest('ion-content');
+        while (outerContent) {
+            if (outerContent?.getAttribute('scroll-y') != 'false' && !outerContent?.classList.contains(disabledScrollClass)) {
+                outerContent.classList.add(disabledScrollClass);
+                this.disabledScrollOuterContents.push(outerContent);
+            }
+
+            outerContent = outerContent.parentElement?.closest('ion-content');
+        }
+    }
+
+    /**
+     * Will enable scroll on parent ion contents previouly disabled.
+     */
+    protected enableScrollOnParent(): void {
+        this.disabledScrollOuterContents.forEach((outerContent) => {
+            outerContent.classList.remove(disabledScrollClass);
+        });
     }
 
 }
