@@ -1,19 +1,19 @@
 @import "~theme/globals";
 
 @if ($core-dashboard-logo) {
-    .toolbar-title-default.md .title-default .core-header-logo {
+    .in-toolbar.md h1 .core-header-logo {
         max-height: $toolbar-md-height - 24;
     }
 
-    .toolbar-title-default.ios .title-default .core-header-logo {
+    .in-toolbar.ios h1 .core-header-logo {
         max-height: $toolbar-ios-height - 24;
     }
 
-    .toolbar-title-default .title-default core-format-text {
+    .in-toolbar h1 core-format-text {
         display: none;
     }
 } @else {
-    .toolbar-title-default .core-header-logo {
+    .in-toolbar h1 .core-header-logo {
         display: none;
     }
 }

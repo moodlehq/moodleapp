@@ -269,6 +269,8 @@ $z-index-overlay-wrapper: 10;
 $toolbar-background: $brand-color !default;
 $toolbar-color: get_contrast_color($toolbar-background) !default;
 $toolbar-button-image-size: 44px !default;
+$toolbar-height-md: 56px !default;
+$toolbar-height-ios: 54px !default;
 
 // Bottom tab bar.
 $bottom-tabs-background: $white !default;
