@@ -7,7 +7,7 @@
             "",
             "@Component({",
             "    selector: '$2${TM_FILENAME_BASE}',",
-            "    templateUrl: '${TM_FILENAME_BASE}.html',",
+            "    templateUrl: '$2${TM_FILENAME_BASE}.html',",
             "})",
             "export class ${1:${TM_FILENAME_BASE}}Component {",
             "",
