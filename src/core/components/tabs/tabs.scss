@@ -12,6 +12,7 @@
     ion-tab-bar.core-tabs-bar {
         position: relative;
         width: 100%;
+        height: auto;
         background: var(--tabs-background);
         color: var(--tabs-color);
         -webkit-filter: drop-shadow(0px 3px 3px rgba(var(--drop-shadow)));
