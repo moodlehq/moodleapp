@@ -36,7 +36,7 @@
                         (click)="responses.select(attempt)" [attr.aria-current]="responses.getItemAriaCurrent(attempt)">
                         <core-user-avatar [user]="attempt" slot="start"></core-user-avatar>
                         <ion-label>
-                            <h2>{{ attempt.fullname }}</h2>
+                            <p class="item-heading">{{ attempt.fullname }}</p>
                             <p *ngIf="attempt.timemodified">{{attempt.timemodified * 1000 | coreFormatDate }}</p>
                         </ion-label>
                     </ion-item>

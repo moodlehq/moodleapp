@@ -30,10 +30,10 @@
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="!showAuthor">
                 <ion-label>
-                    <h2>
+                    <p class="item-heading">
                         <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId">
                         </core-format-text>
-                    </h2>
+                    </p>
                 </ion-label>
                 <ion-note slot="end" *ngIf="showDate">{{ entry.timemodified | coreDateDayOrTime }}</ion-note>
             </ion-item>

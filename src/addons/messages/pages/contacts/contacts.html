@@ -33,13 +33,13 @@
                                     [checkOnline]="contact.showonlinestatus" [linkProfile]="false">
                                 </core-user-avatar>
                                 <ion-label>
-                                    <h2>
+                                    <p class="item-heading">
                                         <core-format-text [text]="contact.fullname" contextLevel="system" [contextInstanceId]="0">
                                         </core-format-text>
                                         <ion-icon *ngIf="contact.isblocked" name="fas-user-slash" slot="end"
                                             [attr.aria-label]="'addon.messages.contactblocked' | translate">
                                         </ion-icon>
-                                    </h2>
+                                    </p>
                                 </ion-label>
                             </ion-item>
                         </ion-list>

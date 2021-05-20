@@ -36,7 +36,7 @@
                     role="presentation" class="core-notification-icon" slot="start">
 
                 <ion-label>
-                    <h2>{{ notification.subject }}</h2>
+                    <p class="item-heading">{{ notification.subject }}</p>
                     <p *ngIf="notification.userfromfullname">{{ notification.userfromfullname }}</p>
                 </ion-label>
                 <ion-note slot="end" class="ion-float-end ion-padding-left ion-text-end">

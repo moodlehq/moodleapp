@@ -183,7 +183,7 @@
 
     ion-item.addon-message.addon-message-mine + ion-item.addon-message.addon-message-no-user.addon-message-mine,
     ion-item.addon-message.addon-message-not-mine + ion-item.addon-message.addon-message-no-user.addon-message-not-mine {
-        h2 {
+        .item-heading {
             margin-bottom: 0;
         }
         margin-top: -8px;

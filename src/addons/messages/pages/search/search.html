@@ -47,13 +47,13 @@
             button>
             <core-user-avatar slot="start" [user]="result" [checkOnline]="true" [linkProfile]="false"></core-user-avatar>
             <ion-label>
-                <h2>
+                <p class="item-heading">
                     <core-format-text [text]="result.fullname" [highlight]="result.highlightName" [filter]="false">
                     </core-format-text>
                     <ion-icon name="fa-ban" *ngIf="result.isblocked"
                         [attr.aria-label]="'addon.messages.contactblocked' | translate">
                     </ion-icon>
-                </h2>
+                </p>
                 <ion-note *ngIf="result.lastmessagedate > 0">
                     {{result.lastmessagedate | coreDateDayOrTime}}
                 </ion-note>

@@ -64,7 +64,7 @@
                 <ion-item class="ion-text-wrap">
                     <core-user-avatar [user]="note" [courseId]="courseId" slot="start" *ngIf="!userId"></core-user-avatar>
                     <ion-label>
-                        <h2 *ngIf="!userId">{{note.userfullname}}</h2>
+                        <p class="item-heading" *ngIf="!userId">{{note.userfullname}}</p>
                         <p *ngIf="!note.deleted && !note.offline" slot="end">
                             <span class="ion-text-wrap">{{note.lastmodified | coreDateDayOrTime}}</span>
                         </p>

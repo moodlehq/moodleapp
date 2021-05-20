@@ -21,10 +21,10 @@
                         <ion-label>
                             <!-- Add the icon title so accessibility tools read it. -->
                             <span class="sr-only" *ngIf="item.iconTitle">{{ item.iconTitle }}</span>
-                            <h2>
+                            <p class="item-heading">
                                 <core-format-text [text]="item.name" contextLevel="module" [contextInstanceId]="item.cmid"
                                     [courseId]="item.courseid"></core-format-text>
-                            </h2>
+                            </p>
                             <p>
                                 <core-format-text [text]="item.coursename" contextLevel="course" [contextInstanceId]="item.courseid">
                                 </core-format-text>

@@ -36,7 +36,7 @@
 
                     <ion-label>
                         <ng-container *ngIf="!searchQuery">
-                            <h2>{{ participant.fullname }}</h2>
+                            <p class="item-heading">{{ participant.fullname }}</p>
                             <p *ngIf="participant.lastcourseaccess">
                                 <strong>{{ 'core.lastaccess' | translate }}: </strong>
                                 {{ participant.lastcourseaccess | coreTimeAgo }}
@@ -48,10 +48,10 @@
                         </ng-container>
 
                         <ng-container *ngIf="searchQuery">
-                            <h2>
+                            <p class="item-heading">
                                 <core-format-text [text]="participant.fullname" [highlight]="searchQuery" [filter]="false">
                                 </core-format-text>
-                            </h2>
+                            </p>
                         </ng-container>
                     </ion-label>
 

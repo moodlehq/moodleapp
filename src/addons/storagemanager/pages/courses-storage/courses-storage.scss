@@ -2,11 +2,11 @@
 
 :host {
     ion-item.course {
-        h2 {
+        .item-heading {
             font-weight: bold;
         }
 
-        h3 {
+        .item-heading.item-heading-secondary {
             color: $subdued-text-color;
         }
     }

@@ -47,7 +47,7 @@
             <ion-item class="ion-text-wrap">
                 <core-user-avatar [user]="offlineComment" slot="start"></core-user-avatar>
                 <ion-label>
-                    <h2>{{ offlineComment.fullname }}</h2>
+                    <p class="item-heading">{{ offlineComment.fullname }}</p>
                     <p>
                         <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}
                     </p>
@@ -70,7 +70,7 @@
             <ion-item class="ion-text-wrap">
                 <core-user-avatar [user]="comment" slot="start"></core-user-avatar>
                 <ion-label>
-                    <h2>{{ comment.fullname }}</h2>
+                    <p class="item-heading">{{ comment.fullname }}</p>
                     <p *ngIf="!comment.deleted">{{ comment.timecreated * 1000 | coreFormatDate: 'strftimerecentfull' }}</p>
                     <p *ngIf="comment.deleted">
                         <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> <span class="ion-text-wrap">

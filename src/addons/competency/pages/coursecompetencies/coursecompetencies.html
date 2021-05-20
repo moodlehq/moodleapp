@@ -44,9 +44,9 @@
             </ion-item>
         </ion-card>
 
-        <h3 class="ion-margin-horizontal" *ngIf="competencies && competencies.statistics.competencycount > 0">
+        <h2 class="ion-margin-horizontal" *ngIf="competencies && competencies.statistics.competencycount > 0">
             {{ 'addon.competency.coursecompetencies' | translate }}
-        </h3>
+        </h2>
         <ion-card *ngIf="user">
              <ion-item class="ion-text-wrap">
                 <core-user-avatar [user]="user" slot="start"></core-user-avatar>
@@ -62,7 +62,9 @@
                 <ion-item class="ion-text-wrap" (click)="openCompetency(competency.competency.id)"
                     [attr.aria-label]="competency.competency.shortname" detail="true" button>
                     <ion-label>
-                        <h2><strong>{{competency.competency.shortname}} <em>{{competency.competency.idnumber}}</em></strong></h2>
+                        <p class="item-heading">
+                            <strong>{{competency.competency.shortname}} <em>{{competency.competency.idnumber}}</em></strong>
+                        </p>
                     </ion-label>
                     <ion-badge slot="end" *ngIf="competency.usercompetencycourse && competency.usercompetencycourse.gradename"
                         [color]="competency.usercompetencycourse.proficiency ? 'success' : 'danger'">

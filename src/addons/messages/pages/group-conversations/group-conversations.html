@@ -163,13 +163,13 @@
 
         <ion-label>
             <div class="flex-row ion-justify-content-between">
-                <h2>
+                <p class="item-heading">
                     <core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0"></core-format-text>
                     <ion-icon name="fas-user-slash" *ngIf="conversation.isblocked"
                         [title]="'addon.messages.contactblocked' | translate"></ion-icon>
                     <ion-icon *ngIf="conversation.ismuted" name="fas-volume-mute"
                         [title]="'addon.messages.mutedconversation' | translate"></ion-icon>
-                </h2>
+                </p>
                 <ion-note *ngIf="conversation.lastmessagedate > 0 || conversation.unreadcount">
                     <span *ngIf="conversation.lastmessagedate > 0" class="addon-message-last-message-date">
                         {{conversation.lastmessagedate | coreDateDayOrTime}}

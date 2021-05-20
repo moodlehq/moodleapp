@@ -20,9 +20,9 @@
     <core-loading [hideUntil]="loaded">
         <ion-item *ngFor="let site of sites" [attr.aria-current]="site.id == currentSiteId ? 'page' : 'false'">
             <ion-label class="ion-text-wrap">
-                <h2>
+                <p class="item-heading">
                     <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>
-                </h2>
+                </p>
                 <p class="ion-text-wrap">{{ site.fullName }}</p>
                 <p>{{ site.siteUrl }}</p>
             </ion-label>

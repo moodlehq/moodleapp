@@ -131,11 +131,11 @@
                     <ion-item-group *ngFor="let result of results">
                         <ion-item-divider class="ion-text-wrap">
                             <ion-label>
-                                <h2>
+                                <h3 class="item-heading">
                                     <core-format-text [text]="result.text" contextLevel="module" [contextInstanceId]="module.id"
                                         [courseId]="courseId">
                                     </core-format-text>
-                                </h2>
+                                </h3>
                                 <p>
                                     {{ 'addon.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }}
                                     ({{ 'core.percentagenumber' | translate: {$a: result.percentageamountfixed} }})

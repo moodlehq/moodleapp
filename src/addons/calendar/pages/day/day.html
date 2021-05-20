@@ -71,8 +71,10 @@
                             {{ 'addon.calendar.type' + event.formattedType | translate }}
                             <span class="sr-only" *ngIf="event.moduleIcon && event.iconTitle">{{ event.iconTitle }}</span>
                         </span>
-                        <h2><core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
-                            [contextInstanceId]="event.contextInstanceId"></core-format-text></h2>
+                        <p class="item-heading">
+                            <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
+                            [contextInstanceId]="event.contextInstanceId"></core-format-text>
+                        </p>
                         <p [innerHTML]="event.formattedtime"></p>
                     </ion-label>
                     <ion-note *ngIf="event.offline && !event.deleted" slot="end">

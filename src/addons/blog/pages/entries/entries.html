@@ -24,14 +24,14 @@
                 <ion-item class="ion-text-wrap">
                     <core-user-avatar [user]="entry.user" slot="start" [courseId]="entry.courseid"></core-user-avatar>
                     <ion-label>
-                        <h2>
+                        <p class="item-heading">
                             <core-format-text [text]="entry.subject" [contextLevel]="contextLevel"
                                 [contextInstanceId]="contextInstanceId">
                             </core-format-text>
                             <ion-note class="ion-float-end ion-padding-left ion-text-end">
                                 {{ 'addon.blog.' + entry.publishTranslated! | translate}}
                             </ion-note>
-                        </h2>
+                        </p>
                         <p>
                             <ion-note class="ion-float-end ion-padding-left ion-text-end">
                                 {{entry.created | coreDateDayOrTime}}

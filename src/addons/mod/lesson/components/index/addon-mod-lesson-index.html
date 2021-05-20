@@ -300,7 +300,7 @@
                             <core-user-avatar [user]="student" slot="start" [userId]="student.id" [courseId]="courseId">
                             </core-user-avatar>
                             <ion-label>
-                                <h2>{{ student.fullname }}</h2>
+                                <p class="item-heading">{{ student.fullname }}</p>
                                 <core-progress-bar [progress]="student.bestgrade" a11yText="addon.mod_lesson.grade">
                                 </core-progress-bar>
                             </ion-label>

@@ -73,12 +73,14 @@
             <p class="ion-text-center"><i>{{ 'addon.messages.selfconversationdefaultmessage' | translate }}</i></p>
         </ng-container>
 
+        <h2 class="sr-only">{{ title }}</h2>
+
         <ion-list class="addon-messages-discussion-container" [class.addon-messages-discussion-group]="isGroup"
             [attr.aria-live]="'polite'">
             <ng-container *ngFor="let message of messages; index as index; last as last">
-                <h6 class="ion-text-center addon-messages-date" *ngIf="message.showDate">
+                <h3 class="ion-text-center addon-messages-date" *ngIf="message.showDate">
                     {{ message.timecreated | coreFormatDate: "strftimedayshort" }}
-                </h6>
+                </h3>
 
                 <ion-chip class="addon-messages-unreadfrom" *ngIf="unreadMessageFrom && message.id == unreadMessageFrom"
                     color="light">
@@ -93,7 +95,7 @@
                     [@coreSlideInOut]="message.useridfrom == currentUserId ? '' : 'fromLeft'">
                     <ion-label>
                         <!-- User data. -->
-                        <h2 class="addon-message-user" [attr.aria-label]="message.useridfrom == currentUserId ?
+                        <div class="item-heading addon-message-user" [attr.aria-label]="message.useridfrom == currentUserId ?
                             ('addon.messages.you' | translate) : members[message.useridfrom].fullname">
                             <core-user-avatar slot="start" [user]="members[message.useridfrom]" [linkProfile]="false"
                                 *ngIf="message.showUserData"></core-user-avatar>
@@ -104,7 +106,7 @@
                             <ion-note *ngIf="message.pending">
                                 <ion-icon name="fas-clock" [attr.aria-label]="'core.notsent' | translate" role="status"></ion-icon>
                             </ion-note>
-                        </h2>
+                        </div>
 
                         <!-- Some messages have <p> and some others don't. Add a <p> so they all have same styles. -->
                         <p class="addon-message-text">

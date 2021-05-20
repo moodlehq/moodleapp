@@ -20,14 +20,14 @@
         <ng-container *ngIf="!error">
             <ion-item *ngFor="let license of licenses" class="ion-text-wrap">
                 <ion-label>
-                    <h2>
+                    <p class="item-heading">
                         <a *ngIf="license.repository" [href]="license.repository" core-link
                             auto-login="no">{{ license.name }}</a>
                         <ng-container *ngIf="!license.repository">{{ license.name }}</ng-container> - {{ license.version }}
-                    </h2>
-                    <h3 *ngIf="license.publisher">
+                    </p>
+                    <p class="item-heading" *ngIf="license.publisher">
                         {{ 'core.settings.publisher' | translate }}{{ 'core.labelsep' | translate }} {{ license.publisher }}
-                    </h3>
+                    </p>
                     <p>{{ 'core.settings.license' | translate }}{{ 'core.labelsep' | translate }} {{ license.licenses }}</p>
                     <p><a *ngIf="license.url" [href]="license.url" core-link auto-login="no">{{ license.url }}</a></p>
                     <p><a *ngIf="license.email" [href]="'mailto:' + license.email" core-link

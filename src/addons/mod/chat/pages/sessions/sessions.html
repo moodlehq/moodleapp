@@ -36,7 +36,7 @@
 
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <h2>{{ session.sessionstart * 1000 | coreFormatDate }}</h2>
+                        <p class="item-heading">{{ session.sessionstart * 1000 | coreFormatDate }}</p>
                         <p *ngIf="session.duration">{{ session.duration | coreDuration }}</p>
                     </ion-label>
                 </ion-item>

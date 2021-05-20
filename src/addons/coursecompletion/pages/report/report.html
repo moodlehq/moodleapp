@@ -32,7 +32,9 @@
             </ion-item-divider>
             <ion-item class="ion-hide-md-up ion-text-wrap" *ngFor="let criteria of completion.completions">
                 <ion-label>
-                    <h2><core-format-text clean="true" [text]="criteria.details.criteria" [filter]="false"></core-format-text></h2>
+                    <p class="item-heading">
+                        <core-format-text clean="true" [text]="criteria.details.criteria" [filter]="false"></core-format-text>
+                    </p>
                     <p><core-format-text clean="true" [text]="criteria.details.requirement" [filter]="false"></core-format-text></p>
                 </ion-label>
                 <strong slot="end">{{ criteria.status }}</strong>

@@ -40,7 +40,7 @@
             <ion-list *ngIf="filteredEvents && filteredEvents.length" class="ion-no-margin">
                 <ng-container *ngFor="let event of filteredEvents">
                     <ion-item-divider *ngIf="event.showDate">
-                        <ion-label><h2>{{ event.timestart * 1000 | coreFormatDate: "strftimedayshort" }}</h2></ion-label>
+                        <ion-label><p class="item-heading">{{ event.timestart * 1000 | coreFormatDate: "strftimedayshort" }}</p></ion-label>
                     </ion-item-divider>
                     <ion-item class="addon-calendar-event ion-text-wrap" [attr.aria-label]="event.name" (click)="gotoEvent(event.id)"
                         [attr.aria-current]="event.id == eventId ? 'page' : 'false'"
@@ -51,7 +51,7 @@
                             aria-hidden="true">
                         </ion-icon>
                         <ion-label>
-                            <h2>
+                            <p class="item-heading">
                                 <!-- Add the icon title so accessibility tools read it. -->
                                 <span class="sr-only">
                                     {{ 'addon.calendar.type' + event.formattedType | translate }}
@@ -60,7 +60,7 @@
                                 <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
                                     [contextInstanceId]="event.contextInstanceId">
                                 </core-format-text>
-                            </h2>
+                            </p>
                             <p>
                                 {{ event.timestart * 1000 | coreFormatDate: "strftimetime" }}
                                 <span *ngIf="event.timeduration && event.endsSameDay">

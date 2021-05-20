@@ -30,9 +30,11 @@
                 <ion-list>
                     <ion-item *ngFor="let course of downloadedCourses" class="course">
                         <ion-label class="ion-text-wrap">
-                            <h2 *ngIf="course.displayname">{{ course.displayname }}</h2>
-                            <h2 *ngIf="!course.displayname">{{ course.fullname }}</h2>
-                            <h3 *ngIf="course.isDownloading">{{ 'core.downloading' | translate }}</h3>
+                            <p class="item-heading" *ngIf="course.displayname">{{ course.displayname }}</p>
+                            <p class="item-heading" *ngIf="!course.displayname">{{ course.fullname }}</p>
+                            <p class="item-heading item-heading-secondary" *ngIf="course.isDownloading">
+                                {{ 'core.downloading' | translate }}
+                            </p>
                         </ion-label>
                         <p slot="end" class="ion-text-end">{{ course.totalSize | coreBytesToSize }}</p>
                         <ion-button slot="end" (click)="deleteCourse(course)" [disabled]="course.isDownloading">

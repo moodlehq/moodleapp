@@ -49,6 +49,11 @@
 .font-lg { font-size: 1.7rem; }
 .font-sm { font-size: 1.2rem; }
 
+.item-heading {
+    font-size: 16px !important;
+    color: initial !important;
+}
+
 // Correctly inherit ion-text-wrap onto labels.
 ion-item.ion-text-wrap ion-label {
     white-space: normal !important;

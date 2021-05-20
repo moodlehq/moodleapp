@@ -74,7 +74,7 @@
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngFor="let data of additionalData">
                     <ion-label>
-                        <h2>{{ data.title }}</h2>
+                        <p class="item-heading">{{ data.title }}</p>
                         <core-format-text [component]="component" [componentId]="cmId" [text]="data.content"
                             contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
                         </core-format-text>

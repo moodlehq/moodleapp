@@ -25,7 +25,7 @@
                     alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}" onError="this.src='assets/img/user-avatar.png'">
             </ion-avatar>
             <ion-label>
-                <h2>{{site.fullName}}</h2>
+                <p class="item-heading">{{site.fullName}}</p>
                 <p><core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text></p>
                 <p>{{site.siteUrl}}</p>
             </ion-label>

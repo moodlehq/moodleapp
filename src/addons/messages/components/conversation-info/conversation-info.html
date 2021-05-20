@@ -37,12 +37,12 @@
             <core-user-avatar [user]="member" [linkProfile]="false" [checkOnline]="member.showonlinestatus" slot="start">
             </core-user-avatar>
             <ion-label>
-                <h2>
+                <p class="item-heading">
                     {{ member.fullname }}
                     <ion-icon name="fas-user-slash" *ngIf="member.isblocked"
                         [attr.aria-label]="'addon.messages.contactblocked' | translate">
                     </ion-icon>
-                </h2>
+                </p>
             </ion-label>
         </ion-item>
 

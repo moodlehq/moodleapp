@@ -55,7 +55,7 @@
                         [courseId]="isEnrolled ? course.id : null">
                     </core-user-avatar>
                     <ion-label>
-                        <h2>{{contact.fullname}}</h2>
+                        <p class="item-heading">{{contact.fullname}}</p>
                     </ion-label>
                 </ion-item>
                 <core-spacer></core-spacer>
@@ -83,7 +83,7 @@
             <div *ngIf="!isEnrolled" detail="false">
                 <ion-item class="ion-text-wrap" *ngFor="let instance of selfEnrolInstances">
                     <ion-label>
-                        <h2>{{ instance.name }}</h2>
+                        <p class="item-heading">{{ instance.name }}</p>
                         <ion-button expand="block" class="ion-margin-top" (click)="selfEnrolClicked(instance.id)">
                             {{ 'core.courses.enrolme' | translate }}
                         </ion-button>

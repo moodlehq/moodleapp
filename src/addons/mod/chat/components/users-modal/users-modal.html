@@ -18,7 +18,7 @@
 
             <core-user-avatar [user]="user" slot="start" [linkProfile]="false"></core-user-avatar>
             <ion-label>
-                <h2>{{ user.fullname }}</h2>
+                <p class="item-heading">{{ user.fullname }}</p>
                 <ng-container *ngIf="currentUserId != user.id && isOnline">
                     <ion-button fill="clear" (click)="talkTo(user)">
                         <ion-icon name="fas-comments" slot="start" aria-hidden="true"></ion-icon>
