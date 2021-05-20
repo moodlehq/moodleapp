@@ -155,6 +155,7 @@ export class CoreCoursesDashboardPage implements OnDestroy {
 
                 return this.dashboardProvider.getDashboardBlocks().then((blocks) => {
                     this.blocks = blocks;
+                    console.log("Shunmugaraj:",this.blocks)
                 }).catch((error) => {
                     this.domUtils.showErrorModal(error);
 

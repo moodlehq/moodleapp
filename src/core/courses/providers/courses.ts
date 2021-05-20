@@ -777,6 +777,7 @@ export class CoreCoursesProvider {
 
         return this.getUserCourses(preferCache, siteId).then((courses) => {
             let course;
+            console.log("Shunmugaraj-courses:",courses)
             for (const i in courses) {
                 if (courses[i].id == id) {
                     course = courses[i];

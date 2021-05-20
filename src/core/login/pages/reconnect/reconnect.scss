@@ -1,5 +1,5 @@
-$core-login-reconnect-warning: $red !default;
-$core-dark-login-reconnect-warning: mix($red, white, 20%) !default;
+$core-login-reconnect-warning: #000000 !default;
+$core-dark-login-reconnect-warning: #000 !default;
 
 ion-app.app-root page-core-login-reconnect {
     form .core-username.item p {
@@ -23,5 +23,8 @@ ion-app.app-root page-core-login-reconnect {
         @include darkmode() {
             background-color: $core-dark-login-reconnect-warning;
         }
+    }
+    .head{
+        text-align: center;
     }
 }

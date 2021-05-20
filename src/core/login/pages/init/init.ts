@@ -88,6 +88,9 @@ export class CoreLoginInitPage {
             if (this.loginHelper.isSiteLoggedOut()) {
                 return this.sitesProvider.logout().then(() => {
                     return this.loadPage();
+                    //return this.navCtrl.setRoot('CoreLoginSitesPage');
+                    //return this.loginHelper.goToSiteInitialPage();
+                    
                 });
             }
 

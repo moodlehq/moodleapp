@@ -25,6 +25,10 @@
             <ion-icon padding name="alert"></ion-icon> {{ 'core.login.reconnectdescription' | translate }}
         </p>
     </div>
+    <div class="head" padding>
+        <!-- <h1 padding style="color:#fff;">Welcome back! </h1> -->
+        <h3 padding >Login</h3>
+    </div>
     <form ion-list *ngIf="!isOAuth" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
         <ion-item text-wrap class="core-username">
             <p>{{username}}</p>
