@@ -29,8 +29,9 @@
     .core-rte-editor-container {
         max-height: calc(100% - 46px);
         display: flex;
-        flex-direction: column;
         flex-grow: 1;
+        flex-direction: column;
+        justify-content: space-between;
         &.toolbar-hidden {
             max-height: 100%;
         }
@@ -51,7 +52,7 @@
     .core-rte-editor, .core-textarea {
         padding: 2px;
         margin: 2px;
-        width: 100%;
+        width: calc(100% - 4px);
         resize: none;
         background-color: var(--background);
         color: var(--color);
@@ -59,8 +60,6 @@
     }
 
     .core-rte-editor {
-        flex-grow: 1;
-        flex-shrink: 1;
         -webkit-user-select: auto !important;
         user-select: auto !important;
         word-wrap: break-word;
@@ -86,8 +85,6 @@
     }
 
     .core-textarea {
-        flex-grow: 1;
-        flex-shrink: 1;
         position: relative;
 
         ::ng-deep textarea {
@@ -97,6 +94,7 @@
             overflow-x: hidden;
             overflow-y: auto;
             position: absolute;
+            height: auto;
             top: 0;
             bottom: 0;
         }
@@ -160,7 +158,7 @@
         }
 
         &.toolbar-hidden {
-            visibility: none;
+            visibility: hidden;
             height: 0;
             border: none;
         }
