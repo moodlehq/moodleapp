@@ -12,13 +12,11 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content>
-    <core-loading [hideUntil]="loaded">
-        <core-tabs-outlet *ngIf="tabs.length > 0" [selectedIndex]="selectedTab" [hideUntil]="loaded" [tabs]="tabs"
-            (ionChange)="tabSelected()">
-        </core-tabs-outlet>
-        <ng-container *ngIf="tabs.length == 0">
-            <core-empty-box icon="fas-home" [message]="'core.courses.nocourses' | translate"></core-empty-box>
-        </ng-container>
-    </core-loading>
-</ion-content>
+<core-loading [hideUntil]="loaded">
+    <ng-container *ngIf="tabs.length == 0">
+        <core-empty-box icon="fas-home" [message]="'core.courses.nocourses' | translate"></core-empty-box>
+    </ng-container>
+</core-loading>
+<core-tabs-outlet *ngIf="tabs.length > 0" [selectedIndex]="selectedTab" [hideUntil]="loaded" [tabs]="tabs"
+    (ionChange)="tabSelected()">
+</core-tabs-outlet>
