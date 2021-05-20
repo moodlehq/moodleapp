@@ -14,6 +14,7 @@
 
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { IonRouterOutlet } from '@ionic/angular';
+import { BackButtonEvent } from '@ionic/core';
 
 import { CoreLang } from '@services/lang';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
@@ -214,7 +215,28 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.onPlatformReady();
 
-        // @todo: Quit app with back button. How to tell if we're at root level?
+        // Quit app with back button.
+        document.addEventListener('ionBackButton', (event: BackButtonEvent) => {
+            // This callback should have the lowest priority in the app.
+            event.detail.register(-100, async () => {
+                // This callback can be called at the same time as Ionic's back navigation callback.
+                // Check if the path changes due to the back navigation handler, to know if we're at root level.
+                // Ionic doc recommends IonRouterOutlet.canGoBack, but there's no easy way to get the current outlet from here.
+                const initialPath = CoreNavigator.getCurrentPath();
+
+                // The path seems to change immediately (0 ms timeout), but use 50ms just in case.
+                await CoreUtils.wait(50);
+
+                if (CoreNavigator.getCurrentPath() != initialPath) {
+                    // Ionic has navigated back, nothing else to do.
+                    return;
+                }
+
+                // Quit the app.
+                const nav = <any> window.navigator; // eslint-disable-line @typescript-eslint/no-explicit-any
+                nav.app?.exitApp();
+            });
+        });
     }
 
     /**

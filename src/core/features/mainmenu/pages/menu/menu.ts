@@ -223,7 +223,22 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
      * @param event Event.
      */
     protected backButtonClicked(event: BackButtonEvent): void {
-        event.detail.register(20, (processNextHandler: () => void) => {
+        // Use a priority lower than 0 (navigation).
+        event.detail.register(-10, async (processNextHandler: () => void) => {
+            // This callback can be called at the same time as Ionic's back navigation callback.
+            // Check if the path changes due to the back navigation handler, to know if we're at root level of the tab.
+            // Ionic doc recommends IonRouterOutlet.canGoBack, but there's no easy way to get the current outlet from here.
+            const initialPath = CoreNavigator.getCurrentPath();
+
+            // The path seems to change immediately (0 ms timeout), but use 50ms just in case.
+            await CoreUtils.wait(50);
+
+            if (CoreNavigator.getCurrentPath() != initialPath) {
+                // Ionic has navigated back, nothing else to do.
+                return;
+            }
+
+            // No back navigation, already at root level. Check if we should change tab.
             if (this.selectHistory.length > 1) {
                 // The previous page in history is not the last one, we need the previous one.
                 const previousTab = this.selectHistory[this.selectHistory.length - 2];
