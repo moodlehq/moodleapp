@@ -3,10 +3,10 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title *ngIf="startingPost">
+        <h1 *ngIf="startingPost">
             <core-format-text contextLevel="module" [text]="startingPost.subject" [contextInstanceId]="cmId" [courseId]="courseId">
             </core-format-text>
-        </ion-title>
+        </h1>
         <ion-buttons slot="end">
             <!-- The context menu will be added in here. -->
         </ion-buttons>

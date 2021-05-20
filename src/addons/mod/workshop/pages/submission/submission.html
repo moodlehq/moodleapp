@@ -3,10 +3,10 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>
+        <h1>
             <core-format-text *ngIf="title" [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
             </core-format-text>
-        </ion-title>
+        </h1>
         <ion-buttons slot="end" [hidden]="!loaded">
             <ion-button *ngIf="assessmentId && access.assessingallowed" fill="clear" (click)="saveAssessment()"
                 [attr.aria-label]="'core.save' | translate">

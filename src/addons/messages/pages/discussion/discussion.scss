@@ -217,7 +217,7 @@
         }
     }
 
-    ion-header ion-toolbar .toolbar-title {
+    ion-header ion-toolbar .addon-messages-discussion-title {
         display: flex;
         align-items: center;
         padding: 0;
@@ -240,7 +240,7 @@
 }
 
 :host-context([dir=rtl]) {
-    ion-header ion-toolbar .toolbar-title {
+    ion-header ion-toolbar .addon-messages-discussion-title {
         .core-bar-button-image {
             margin-left: 6px;
             margin-right: 0;
@@ -291,7 +291,7 @@
 }
 
 :host-context(.ios) {
-    ion-header ion-toolbar .toolbar-title {
+    ion-header ion-toolbar .addon-messages-discussion-title {
         justify-content: center;
     }
 

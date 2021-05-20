@@ -3,10 +3,10 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>
+        <h1>
             <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
             </core-format-text>
-        </ion-title>
+        </h1>
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="loaded" (click)="showChatUsers()" [attr.aria-label]="'core.users' | translate">
                 <ion-icon name="fas-users" slot="icon-only" aria-hidden="true"></ion-icon>

@@ -3,11 +3,11 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>
+        <h1>
             <core-format-text *ngIf="h5pActivity" [text]="h5pActivity.name" contextLevel="module"
                 [contextInstanceId]="h5pActivity.coursemodule" [courseId]="courseId">
             </core-format-text>
-        </ion-title>
+        </h1>
     </ion-toolbar>
 </ion-header>
 <ion-content>

@@ -3,10 +3,10 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>
+        <h1>
             <core-format-text [text]="title" [contextLevel]="contextLevel" [contextInstanceId]="instanceId" [courseId]="courseId">
             </core-format-text>
-        </ion-title>
+        </h1>
         <ion-buttons slot="end">
             <ion-button *ngIf="canDeleteComments" slot="end" fill="clear" (click)="toggleDelete()"
                 [attr.aria-label]="'core.toggledelete' | translate">

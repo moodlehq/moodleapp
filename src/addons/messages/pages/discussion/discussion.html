@@ -3,8 +3,8 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>
-            <div class="toolbar-title">
+        <h1>
+            <div class="addon-messages-discussion-title">
                 <img *ngIf="loaded && !otherMember && conversationImage" class="core-bar-button-image" [src]="conversationImage"
                     alt="" onError="this.src='assets/img/group-avatar.png'" core-external-content role="presentation"
                     [siteId]="siteId || null">
@@ -20,7 +20,7 @@
                     [attr.aria-label]="'addon.messages.mutedconversation' | translate">
                 </ion-icon>
             </div>
-        </ion-title>
+        </h1>
         <ion-buttons slot="end"></ion-buttons>
     </ion-toolbar>
     <core-navbar-buttons slot="end">

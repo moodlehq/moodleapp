@@ -4,7 +4,7 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
 
-        <ion-title>{{ 'core.settings.sites' | translate }}</ion-title>
+        <h1>{{ 'core.settings.sites' | translate }}</h1>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="sites && sites.length > 0" (click)="toggleDelete()"
