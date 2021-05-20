@@ -77,7 +77,10 @@ $subdued-text-color:       $gray-darker !default;
 
 $ion-item-background:      $white !default;
 $ion-item-background-dark: #{$shade-20} !default;
+$ion-item-divider-background: #{$gray-lighter} !default;
+$ion-item-divider-color: #{$text-color} !default;
 $ion-item-divider-background-dark: #{$shade-25} !default;
+$ion-item-divider-color-dark: #{$text-color-dark} !default;
 
 $core-online-color: #5cb85c !default;
 
@@ -274,6 +277,10 @@ $bottom-tabs-color: $gray-darker !default;
 $bottom-tabs-color-dark: $white !default;
 $bottom-tabs-color-selected: $primary !default;
 $bottom-tabs-color-selected-dark: $primary-dark !default;
+$bottom-tabs-badge-color: $primary !default;
+$bottom-tabs-badge-text-color: get_contrast_color($bottom-tabs-badge-color) !default;
+$bottom-tabs-badge-color-dark: $primary-dark !default;
+$bottom-tabs-badge-text-color-dark: get_contrast_color($bottom-tabs-badge-color-dark) !default;
 
 $core-text-hightlight-background-color: lighten($blue, 40%) !default;
 
@@ -297,10 +304,10 @@ $core-tab-border-color-active-dark: $core-tab-color-active-dark !default;
 $core-progressbar-color: $primary !default;
 $core-progressbar-color-dark: $primary !default;
 $core-progressbar-text-color: $gray-darker !default;
+$core-progressbar-text-color-dark: $gray-lighter !default;
 $core-progressbar-background: $gray-lighter !default;
 $core-progressbar-height: 8px !default;
 
-$core-progressbar-text-color-dark: $gray-lighter !default;
 
 $core-side-blocks-max-width: 30% !default;
 $core-side-blocks-min-width: 280px !default;
@@ -314,10 +321,18 @@ $core-selected-item-color-dark: $primary-dark !default;
 $core-selected-item-border-width: 5px !default;
 
 $core-login-background: $white !default;
-$core-login-text-color: $black !default;
-
 $core-login-background-dark: $black !default;
+$core-login-text-color: $black !default;
 $core-login-text-color-dark: $white !default;
+$core-login-input-background: $white !default;
+$core-login-input-background-dark: $core-login-background-dark !default;
+$core-login-input-color: $black !default;
+$core-login-input-color-dark: $core-login-text-color-dark !default;
+
+$core-login-button-outline: false !default;
+$core-login-button-outline-dark: $core-login-button-outline !default;
+$core-login-loading-color: false !default;
+$core-login-loading-color-dark: $text-color-dark !default;
 
 $core-star-color: $brand-color !default;
 
@@ -363,3 +378,5 @@ $addon-forum-highlight-color-dark: $gray-dark !default;
 
 $core-more-icon: null !default;
 $core-more-item-border: null !default;
+$core-fixed-url: false !default;
+$core-dashboard-logo: false !default;

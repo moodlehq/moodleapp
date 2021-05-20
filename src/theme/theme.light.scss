@@ -87,10 +87,16 @@
     --core-bottom-tabs-background: #{$bottom-tabs-background};
     --core-bottom-tabs-color: #{$bottom-tabs-color};
     --core-bottom-tabs-color-selected: #{$bottom-tabs-color-selected};
+    --core-bottom-tabs-badge-color: #{$bottom-tabs-badge-color};
+    --core-bottom-tabs-badge-text-color: #{$bottom-tabs-badge-text-color};
     ion-tab-bar {
         --background: var(--core-bottom-tabs-background);
         --color: var(--core-bottom-tabs-color);
         --color-selected: var(--core-bottom-tabs-color-selected);
+        ion-badge {
+            --background: var(--core-bottom-tabs-badge-color);
+            --color: var(--core-bottom-tabs-badge-text-color);
+        }
     }
 
     --core-link-color: #{$link-color};
@@ -110,6 +116,7 @@
         }
 
         ion-spinner {
+            --ion-color-base: var(--core-header-toolbar-color);
             --color: var(--core-header-toolbar-color);
         }
     }
@@ -150,6 +157,7 @@
     }
 
     ion-spinner {
+        --ion-color-base: var(--ion-color-primary);
         --color: var(--ion-color-primary);
     }
 
@@ -176,9 +184,11 @@
     }
 
     --item-divider-min-height: calc(var(--a11y-min-target-size) + 8px);
+    --item-divider-background: #{$ion-item-divider-background};
+    --item-divider-color: #{$ion-item-divider-color};
     ion-item-divider, ion-item.divider {
-        --background: var(--gray-lighter);
-        --color: inherit;
+        --background: var(--item-divider-background);
+        --color: var(--item-divider-color);
         --min-height: var(--item-divider-min-height);
         min-height: var(--min-height);
     }
@@ -191,6 +201,8 @@
 
     --core-login-background: #{$core-login-background};
     --core-login-text-color: #{$core-login-text-color};
+    --core-login-input-background: #{$core-login-input-background};
+    --core-login-input-color: #{$core-login-input-color};
 
     --core-star-color: #{$core-star-color};
 

@@ -1,6 +1,6 @@
-$core-dashboard-logo: false !default;
+@import "~theme/globals";
 
-@if $core-dashboard-logo {
+@if ($core-dashboard-logo) {
     .toolbar-title-default.md .title-default .core-header-logo {
         max-height: $toolbar-md-height - 24;
     }
