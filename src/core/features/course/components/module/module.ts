@@ -100,7 +100,10 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         this.hasInfo = !!(
             this.module.description ||
             (this.showActivityDates && this.module.dates && this.module.dates.length) ||
-            this.module.completiondata
+            (this.module.completiondata &&
+                ((this.showManualCompletion && !this.module.completiondata.isautomatic) ||
+                    (this.showCompletionConditions && this.module.completiondata.isautomatic))
+            )
         );
 
         if (this.module.handlerData.showDownloadButton) {
