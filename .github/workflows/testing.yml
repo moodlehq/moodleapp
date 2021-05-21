@@ -24,7 +24,7 @@ jobs:
         fi
         gulp
         langcount=`jq -r '. | length' src/assets/lang/en.json`
-        freemiumcount=`jq 'keys' src/assets/lang/en.json | grep "freemium." | wc -l | xargs`
+        freemiumcount=`jq 'keys' src/assets/lang/en.json | grep "freemium\." | wc -l | xargs`
         allcount=$(($langcount - $freemiumcount))
         langindexcount=`jq -r '. | length' scripts/langindex.json`
         if [ $allcount -ne $langindexcount ]; then
@@ -32,7 +32,7 @@ jobs:
           exit 1
         fi
 
-        langkeys=`jq -r 'keys[]' src/assets/lang/en.json`
+        langkeys=`jq -r 'keys[]' src/assets/lang/en.json | grep -v "freemium\."`
         langindex=`jq -r 'keys[]' scripts/langindex.json`
         found=0
         for i in $langkeys; do
