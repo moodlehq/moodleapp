@@ -7,27 +7,27 @@
 /*
  * App colors
  */
-$shade-0: #000000 !default;
-$shade-100: #ffffff !default;
-$shade-5: mix($shade-100, $shade-0, 5%) !default;   // #0d0d0d
-$shade-10: mix($shade-100, $shade-0, 10%) !default; // #1a1a1a
-$shade-15: mix($shade-100, $shade-0, 15%) !default; // #262626
-$shade-20: mix($shade-100, $shade-0, 20%) !default; // #333333
-$shade-25: mix($shade-100, $shade-0, 25%) !default; // #404040
-$shade-30: mix($shade-100, $shade-0, 30%) !default; // #4d4d4d
-$shade-35: mix($shade-100, $shade-0, 35%) !default; // #595959
-$shade-40: mix($shade-100, $shade-0, 40%) !default; // #666666
-$shade-45: mix($shade-100, $shade-0, 45%) !default; // #737373
+$shade-0: #ffffff !default;
+$shade-100: #000000 !default;
+$shade-5: mix($shade-100, $shade-0, 5%) !default;   // #f2f2f2
+$shade-10: mix($shade-100, $shade-0, 10%) !default; // #e6e6e6
+$shade-15: mix($shade-100, $shade-0, 15%) !default; // #d9d9d9
+$shade-20: mix($shade-100, $shade-0, 20%) !default; // #cccccc
+$shade-25: mix($shade-100, $shade-0, 25%) !default; // #bfbfbf
+$shade-30: mix($shade-100, $shade-0, 30%) !default; // #b3b3b3
+$shade-35: mix($shade-100, $shade-0, 35%) !default; // #a6a6a6
+$shade-40: mix($shade-100, $shade-0, 40%) !default; // #999999
+$shade-45: mix($shade-100, $shade-0, 45%) !default; // #8c8c8c
 $shade-50: mix($shade-100, $shade-0, 50%) !default; // #808080
-$shade-55: mix($shade-100, $shade-0, 55%) !default; // #8c8c8c
-$shade-60: mix($shade-100, $shade-0, 60%) !default; // #999999
-$shade-65: mix($shade-100, $shade-0, 65%) !default; // #a6a6a6
-$shade-70: mix($shade-100, $shade-0, 70%) !default; // #b3b3b3
-$shade-75: mix($shade-100, $shade-0, 75%) !default; // #bfbfbf
-$shade-80: mix($shade-100, $shade-0, 80%) !default; // #cccccc
-$shade-85: mix($shade-100, $shade-0, 85%) !default; // #d9d9d9
-$shade-90: mix($shade-100, $shade-0, 90%) !default; // #e6e6e6
-$shade-95: mix($shade-100, $shade-0, 95%) !default; // #f2f2f2
+$shade-55: mix($shade-100, $shade-0, 55%) !default; // #737373
+$shade-60: mix($shade-100, $shade-0, 60%) !default; // #666666
+$shade-65: mix($shade-100, $shade-0, 65%) !default; // #595959
+$shade-70: mix($shade-100, $shade-0, 70%) !default; // #4d4d4d
+$shade-75: mix($shade-100, $shade-0, 75%) !default; // #404040
+$shade-80: mix($shade-100, $shade-0, 80%) !default; // #333333
+$shade-85: mix($shade-100, $shade-0, 85%) !default; // #262626
+$shade-90: mix($shade-100, $shade-0, 90%) !default; // #1a1a1a
+$shade-95: mix($shade-100, $shade-0, 95%) !default; // #0d0d0d
 
 $black:           #282828 !default; // Headings, standard text.
 $gray-darker:     #686566 !default; // Text (emphasis-detail), placeholder, background.
@@ -35,7 +35,7 @@ $gray-dark:       #9e9e9e !default; // Borders (never text).
 $gray:            #dddddd !default;
 $gray-light:      #e9e9e9 !default; // Background.
 $gray-lighter:    #f5f5f5 !default;
-$white:           $shade-100 !default; // Background, reversed text.
+$white:           $shade-0 !default; // Background, reversed text.
 
 
 $blue:            #0064d2 !default; // Link, background.
@@ -72,15 +72,17 @@ $text-color-dark:          $white !default;
 $link-color:               $blue !default;
 $link-color-dark:          $blue-light !default;
 $background-color:         $gray-light !default;
-$background-color-dark:    #{$shade-10} !default;
+$background-color-dark:    #{$shade-90} !default;
 $subdued-text-color:       $gray-darker !default;
 
 $ion-item-background:      $white !default;
-$ion-item-background-dark: #{$shade-20} !default;
+$ion-item-background-dark: #{$shade-80} !default;
 $ion-item-divider-background: #{$gray-lighter} !default;
 $ion-item-divider-color: #{$text-color} !default;
-$ion-item-divider-background-dark: #{$shade-25} !default;
+$core-spacer-background: #{$ion-item-divider-background} !default;
+$ion-item-divider-background-dark: #{$shade-75} !default;
 $ion-item-divider-color-dark: #{$text-color-dark} !default;
+$core-spacer-background-dark: #{$shade-100} !default;
 
 $core-online-color: #5cb85c !default;
 
@@ -274,7 +276,7 @@ $toolbar-height-ios: 54px !default;
 
 // Bottom tab bar.
 $bottom-tabs-background: $white !default;
-$bottom-tabs-background-dark: $shade-15 !default;
+$bottom-tabs-background-dark: $shade-85 !default;
 $bottom-tabs-color: $gray-darker !default;
 $bottom-tabs-color-dark: $white !default;
 $bottom-tabs-color-selected: $primary !default;
@@ -296,7 +298,7 @@ $core-tab-border-color: $gray !default;
 $core-tab-color-active: $primary !default;
 $core-tab-color-active-dark: $primary-dark !default;
 
-$core-tabs-background-dark: $shade-25 !default;
+$core-tabs-background-dark: $shade-75 !default;
 $core-tab-background-dark: $core-tabs-background-dark !default;
 $core-tab-color-dark: $white !default;
 $core-tab-border-color-dark: $gray-light !default;
@@ -363,11 +365,12 @@ $addon-messages-avatar-size: 30px !default;
 $addon-messages-discussion-badge: $primary !default;
 $addon-messages-discussion-badge-text: $white !default;
 
-$addon-messages-message-bg-dark: $black !default;
-$addon-messages-message-activated-bg-dark: $gray-dark !default;
+$addon-messages-message-bg-dark:  $shade-75 !default;
+
+$addon-messages-message-activated-bg-dark: $shade-65 !default;
 $addon-messages-message-note-text-dark: $gray-light !default;
-$addon-messages-message-mine-bg-dark: $shade-0 !default;
-$addon-messages-message-mine-activated-bg-dark: $gray !default;
+$addon-messages-message-mine-bg-dark: $shade-60 !default;
+$addon-messages-message-mine-activated-bg-dark: $shade-50 !default;
 $addon-messages-discussion-badge-dark: $primary-dark !default;
 $addon-messages-discussion-badge-text-dark: $black !default;
 

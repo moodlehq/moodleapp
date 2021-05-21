@@ -1,6 +1,8 @@
+@import "~theme/globals.scss";
+
 :host {
     ion-content {
-        --background: var(--background-lighter);
+        --background: var(--background-alternative);
 
         &::part(scroll) {
             padding-bottom: 0 !important;
@@ -11,7 +13,7 @@
         display: flex;
         flex-direction: column;
         padding-bottom: 15px;
-        background: var(--background-lighter);
+        background: var(--background-alternative);
     }
 
     .addon-messages-date {
@@ -35,17 +37,16 @@
     ion-item.addon-message {
         border: 0;
         border-radius: 4px;
-        padding: 8px;
-        margin: 8px 8px 0 8px;
+        padding: 0 8px 0 8px;
+        margin: 10px 8px 0 8px;
         --background: var(--addon-messages-message-bg);
         background: var(--background);
         align-self: flex-start;
         width: 90%;
         max-width: 90%;
-        min-height: 0;
+        --min-height: var(--a11y-min-target-size);
         position: relative;
-        -webkit-transition: width 500ms ease-in-out;
-        transition: width 500ms ease-in-out;
+        @include core-transition(width);
         // This is needed to display bubble tails.
         overflow: visible;
 
@@ -78,22 +79,19 @@
             div {
                 font-weight: 500;
                 flex-grow: 1;
-                padding-right: .5rem;
-                padding-left: .5rem;
+                @include padding-horizontal(.5rem);
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
             }
-
-            ion-note {
-                text-align: end;;
-                color: var(--addon-messages-message-note-text);
-                font-size: var(--addon-messages-message-note-font-size);
-            }
         }
 
-        &.addon-message-no-user .addon-message-user ion-note {
-            width: 100%;
+        ion-note {
+            color: var(--addon-messages-message-note-text);
+            font-size: var(--addon-messages-message-note-font-size);
+            margin: 0;
+            padding: 0 0 8px 0;
+            align-self: flex-end;
         }
 
         &:active {
@@ -102,7 +100,7 @@
 
         ion-label {
             margin: 0;
-            padding: 0;
+            padding: 8px 0;
         }
 
         .addon-message-text {
@@ -115,12 +113,9 @@
         .addon-messages-delete-button {
             min-height: initial;
             line-height: initial;
-            margin: 0 0 0 10px;
-            height: 1.6em !important;
-            -webkit-align-self: flex-end;
+            @include margin(0, null, 0, null);
+            height: var(--a11y-min-target-size) !important;
             align-self: flex-end;
-            vertical-align: middle;
-            float: inline-end;
 
             ion-icon {
                 font-size: 1.4em;
@@ -136,6 +131,7 @@
             border: 0.5rem solid transparent;
             position: absolute;
             touch-action: none;
+            bottom: 0;
         }
 
         // Defines when an item-message is the user's.
@@ -148,19 +144,18 @@
             }
 
             .spinner {
-                float: inline-end;
-                margin: 2px, -3px, -2px, 5px;
+                @include float(end);
+                @include margin(2px, -3px, -2px, 5px);
 
                 svg {
-                  width: 16px;
-                  height: 16px;
+                    width: 16px;
+                    height: 16px;
                 }
             }
 
             .tail {
-                right: -8px;
-                bottom: -8px;
-                margin-right: -0.5rem;
+                @include position(null, -8px, null, null);
+                @include margin-horizontal(null, -0.5rem);
                 border-bottom-color: var(--addon-messages-message-mine-bg);
             }
 
@@ -171,9 +166,8 @@
 
         &.addon-message-not-mine .tail {
             border-bottom-color: var(--addon-messages-message-bg);
-            bottom: -8px;
-            left: -8px;
-            margin-left: -0.5rem;
+            @include position(null, null, null, -8px);
+            @include margin-horizontal(-0.5rem, null);
         }
 
         &.addon-message-not-mine.activated .tail {
@@ -186,10 +180,7 @@
         .item-heading {
             margin-bottom: 0;
         }
-        margin-top: -8px;
         padding-top: 0;
-        border-top-right-radius: 0;
-        border-top-left-radius: 0;
     }
 
     .has-fab .scroll-content {
@@ -211,19 +202,17 @@
             line-height: 20px;
             height: 20px;
             width: 20px;
-            right: -6px;
-            top: -6px;
-
+            @include position(-6px, -6px, null, null);
         }
     }
 
-    ion-header ion-toolbar .addon-messages-discussion-title {
+    ion-header ion-toolbar h1 {
         display: flex;
         align-items: center;
         padding: 0;
 
         .core-bar-button-image {
-            margin-right: 6px;
+            @include margin-horizontal(null, 6px);
         }
 
         core-format-text {
@@ -234,64 +223,13 @@
         }
 
         ion-icon {
-            margin-left: 6px;
-        }
-    }
-}
-
-:host-context([dir=rtl]) {
-    ion-header ion-toolbar .addon-messages-discussion-title {
-        .core-bar-button-image {
-            margin-left: 6px;
-            margin-right: 0;
-        }
-
-        ion-icon {
-            margin-right: 6px;
-            margin-left: 0;
-        }
-    }
-
-    // Message item.
-    ion-item.addon-message {
-
-        .addon-messages-delete-button {
-            margin-right: 10px;
-            margin-left: 0;
-        }
-
-        &.addon-message-mine {
-            .spinner {
-                margin-right: 5px;
-                margin-left: -3px;
-            }
-
-            .tail {
-                right: unset;
-                left: -8px;
-                margin-right: unset;
-                margin-left: 0;
-            }
-        }
-
-        &.addon-message-not-mine .tail {
-            right: -8px;
-            margin-right: -0.5rem;
-            left: unset;
-            margin-left: 0;
-        }
-    }
-
-    ion-fab button {
-        .core-discussion-messages-badge {
-            left: -6px;
-            right: unset;
+            @include margin-horizontal(6px, null);
         }
     }
 }
 
 :host-context(.ios) {
-    ion-header ion-toolbar .addon-messages-discussion-title {
+    ion-header ion-toolbar h1 {
         justify-content: center;
     }
 

@@ -80,7 +80,7 @@
 
     ion-content {
         --background: var(--ion-background-color);
-        --background-lighter: var(--gray-lighter);
+        --background-alternative: var(--gray-lighter);
         --contrast-background: var(--white);
     }
 
@@ -192,6 +192,12 @@
         --min-height: var(--item-divider-min-height);
         min-height: var(--min-height);
     }
+
+    --spacer-background: #{$core-spacer-background};
+    core-spacer {
+    --item-divider-background: var(--spacer-background);
+    }
+
 
     --core-combobox-background: var(--ion-item-background);
     --core-combobox-color: #{$core-combobox-color};

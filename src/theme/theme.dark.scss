@@ -48,14 +48,14 @@
         @include generate-color($color-name, $colors-dark);
     }
 
-    --ion-border-color: #{$shade-15};
+    --ion-border-color: #{$shade-85};
 
     --ion-card-color: #{$text-color-dark};
     --ion-card-background: #{$ion-item-background-dark};
 
     ion-content {
         --background: var(--ion-background-color);
-        --background-lighter: var(--gray-darker);
+        --background-alternative: var(--black);
         --contrast-background: var(--ion-background-color);
     }
 
@@ -88,6 +88,7 @@
     --ion-item-detail-icon-color: var(--white);
     --item-divider-background: #{$ion-item-divider-background-dark};
     --item-divider-color: #{$ion-item-divider-color-dark};
+    --spacer-background: #{$core-spacer-background-dark};
 
     --core-combobox-background: var(--ion-item-background);
     --core-combobox-color: #{$core-combobox-color-dark};

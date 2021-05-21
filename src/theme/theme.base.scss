@@ -464,6 +464,12 @@ ion-item img.core-module-icon[slot="start"] {
     margin-right: 32px;
 }
 
+ion-card ion-item img.core-module-icon[slot="start"] {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    margin-right: 12px;
+}
+
 [dir=rtl] ion-item img.core-module-icon[slot="start"] {
     margin-right: unset;
     margin-left: 32px;
