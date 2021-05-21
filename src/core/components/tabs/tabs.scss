@@ -1,6 +1,7 @@
 :host {
     --tabs-background: var(--core-tabs-background);
     --tabs-color: var(--color);
+    --height: 56px;
     height: 100%;
     display: block;
 
@@ -12,8 +13,8 @@
     ion-tab-bar.core-tabs-bar {
         position: relative;
         width: 100%;
-        height: auto;
         background: var(--tabs-background);
+        height: var(--height);
         color: var(--tabs-color);
         -webkit-filter: drop-shadow(0px 3px 3px rgba(var(--drop-shadow)));
         filter: drop-shadow(0px 3px 3px rgba(var(--drop-shadow)));
@@ -26,7 +27,7 @@
         .tab-slide {
             border-bottom: 2px solid transparent;
             min-width: 100px;
-            min-height: 56px;
+            min-height: var(--height);
             cursor: pointer;
             overflow: hidden;
 
@@ -94,4 +95,9 @@
             }
         }
     }
+}
+
+
+:host-context(.ios) {
+    --height: 53px;
 }

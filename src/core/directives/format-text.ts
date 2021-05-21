@@ -206,20 +206,21 @@ export class CoreFormatTextDirective implements OnChanges {
 
             const imgSrc = CoreTextUtils.escapeHTML(img.getAttribute('data-original-src') || img.getAttribute('src'));
             const label = Translate.instant('core.openfullimage');
-            const anchor = document.createElement('a');
+            const button = document.createElement('button');
 
-            anchor.classList.add('core-image-viewer-icon');
-            anchor.setAttribute('aria-label', label);
+            button.classList.add('core-image-viewer-icon');
+            button.setAttribute('aria-label', label);
             // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
-            anchor.innerHTML = '<ion-icon name="fas-search" src="assets/fonts/font-awesome/solid/search.svg"></ion-icon>';
+            button.innerHTML = '<ion-icon name="fas-search" aria-hidden="true" src="assets/fonts/font-awesome/solid/search.svg">\
+            </ion-icon>';
 
-            anchor.addEventListener('click', (e: Event) => {
+            button.addEventListener('click', (e: Event) => {
                 e.preventDefault();
                 e.stopPropagation();
                 CoreDomUtils.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId, true);
             });
 
-            img.parentNode?.appendChild(anchor);
+            img.parentNode?.appendChild(button);
         });
     }
 

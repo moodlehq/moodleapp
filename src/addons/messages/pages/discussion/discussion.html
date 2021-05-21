@@ -4,22 +4,20 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <h1>
-            <div class="addon-messages-discussion-title">
-                <img *ngIf="loaded && !otherMember && conversationImage" class="core-bar-button-image" [src]="conversationImage"
-                    alt="" onError="this.src='assets/img/group-avatar.png'" core-external-content role="presentation"
-                    [siteId]="siteId || null">
-                <core-user-avatar *ngIf="loaded && otherMember" class="core-bar-button-image" [user]="otherMember"
-                    [linkProfile]="false" [checkOnline]="otherMember.showonlinestatus" (click)="showInfo && viewInfo()">
-                </core-user-avatar>
-                <core-format-text [text]="title" contextLevel="system" [contextInstanceId]="0"
-                    (click)="showInfo && !isGroup && viewInfo()"></core-format-text>
-                <ion-icon *ngIf="conversation && conversation.isfavourite" name="fas-star"
-                    [attr.aria-label]="'core.favourites' | translate">
-                </ion-icon>
-                <ion-icon *ngIf="conversation && conversation.ismuted" name="fas-bell-slash"
-                    [attr.aria-label]="'addon.messages.mutedconversation' | translate">
-                </ion-icon>
-            </div>
+            <img *ngIf="loaded && !otherMember && conversationImage" class="core-bar-button-image" [src]="conversationImage"
+                alt="" onError="this.src='assets/img/group-avatar.png'" core-external-content role="presentation"
+                [siteId]="siteId || null">
+            <core-user-avatar *ngIf="loaded && otherMember" class="core-bar-button-image" [user]="otherMember"
+                [linkProfile]="false" [checkOnline]="otherMember.showonlinestatus" (click)="showInfo && viewInfo()">
+            </core-user-avatar>
+            <core-format-text [text]="title" contextLevel="system" [contextInstanceId]="0"
+                (click)="showInfo && !isGroup && viewInfo()"></core-format-text>
+            <ion-icon *ngIf="conversation && conversation.isfavourite" name="fas-star"
+                [attr.aria-label]="'core.favourites' | translate">
+            </ion-icon>
+            <ion-icon *ngIf="conversation && conversation.ismuted" name="fas-bell-slash"
+                [attr.aria-label]="'addon.messages.mutedconversation' | translate">
+            </ion-icon>
         </h1>
         <ion-buttons slot="end"></ion-buttons>
     </ion-toolbar>
@@ -101,11 +99,6 @@
                                 *ngIf="message.showUserData"></core-user-avatar>
 
                             <div *ngIf="message.showUserData">{{ members[message.useridfrom].fullname }}</div>
-
-                            <ion-note *ngIf="!message.pending">{{ message.timecreated | coreFormatDate: "strftimetime" }}</ion-note>
-                            <ion-note *ngIf="message.pending">
-                                <ion-icon name="fas-clock" [attr.aria-label]="'core.notsent' | translate" role="status"></ion-icon>
-                            </ion-note>
                         </div>
 
                         <!-- Some messages have <p> and some others don't. Add a <p> so they all have same styles. -->
@@ -114,6 +107,10 @@
                                 [contextInstanceId]="0"></core-format-text>
                         </p>
                     </ion-label>
+                    <ion-note *ngIf="!message.pending" slot="end">{{ message.timecreated | coreFormatDate: "strftimetime" }}</ion-note>
+                    <ion-note *ngIf="message.pending" slot="end">
+                        <ion-icon name="fas-clock" [attr.aria-label]="'core.notsent' | translate" role="status"></ion-icon>
+                    </ion-note>
                     <ion-button fill="clear" *ngIf="!message.sending && showDelete" (click)="deleteMessage(message, index)"
                         class="addon-messages-delete-button" [@coreSlideInOut]="'fromRight'"
                         [attr.aria-label]=" 'addon.messages.deletemessage' | translate" slot="end">
