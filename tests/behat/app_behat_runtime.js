@@ -585,7 +585,7 @@
 
         var result = null;
         var resultCount = 0;
-        var titles = Array.from(document.querySelectorAll('ion-header ion-title'));
+        var titles = Array.from(document.querySelectorAll('ion-header ion-title, ion-header h1'));
         titles.forEach(function(title) {
             if (
                 (window.BehatMoodleAppLegacy && title.offsetParent) ||
