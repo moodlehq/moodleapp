@@ -688,7 +688,10 @@ export class CoreFormatTextDirective implements OnChanges {
 
         if (currentSite?.containsUrl(src)) {
             // URL points to current site, try to use auto-login.
-            const finalUrl = await currentSite.getAutoLoginUrl(src, false);
+            // Remove iframe src, otherwise it can cause auto-login issues if there are several iframes with auto-login.
+            iframe.src = '';
+
+            const finalUrl = await CoreIframeUtils.getAutoLoginUrlForIframe(iframe, src);
             await CoreIframeUtils.fixIframeCookies(finalUrl);
 
             iframe.src = finalUrl;

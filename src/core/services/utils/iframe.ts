@@ -23,7 +23,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 
 import { makeSingleton, Network, Platform, NgZone, Translate, Diagnostic } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -48,6 +48,7 @@ export class CoreIframeUtilsProvider {
     static readonly FRAME_TAGS = ['iframe', 'frame', 'object', 'embed'];
 
     protected logger: CoreLogger;
+    protected waitAutoLoginDefer?: PromiseDefer<void>;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreUtilsProvider');
@@ -180,6 +181,50 @@ export class CoreIframeUtilsProvider {
         div.appendChild(link);
 
         element.parentElement?.insertBefore(div, element);
+    }
+
+    /**
+     * Get auto-login URL for an iframe.
+     *
+     * @param iframe Iframe element.
+     * @param url Original URL.
+     * @return Promise resolved with the URL.
+     */
+    async getAutoLoginUrlForIframe(iframe: HTMLIFrameElement, url: string): Promise<string> {
+        const currentSite = CoreSites.getCurrentSite();
+        if (!currentSite) {
+            return url;
+        }
+
+        if (this.waitAutoLoginDefer) {
+            // Another iframe is already using auto-login. Wait for it to finish.
+            await this.waitAutoLoginDefer.promise;
+
+            // Return the original URL, we can't request a new auto-login.
+            return url;
+        }
+
+        // First iframe requesting auto-login.
+        this.waitAutoLoginDefer = CoreUtils.promiseDefer();
+
+        const finalUrl = await currentSite.getAutoLoginUrl(url, false);
+
+        // Resolve the promise once the iframe is loaded, or after a certain time.
+        let unblocked = false;
+        const unblock = () => {
+            if (unblocked) {
+                return;
+            }
+
+            unblocked = true;
+            this.waitAutoLoginDefer!.resolve();
+            delete this.waitAutoLoginDefer;
+        };
+
+        iframe.addEventListener('load', () => unblock());
+        setTimeout(() => unblock(), 15000);
+
+        return finalUrl;
     }
 
     /**
