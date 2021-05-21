@@ -89,7 +89,7 @@
                 (click)="discussions.select(discussion)" button>
                 <ion-label>
                     <div class="addon-mod-forum-discussion-title">
-                        <h2 class="ion-text-wrap">
+                        <p class="ion-text-wrap item-heading">
                             <ion-icon name="fa-map-pin" *ngIf="discussion.pinned"
                                 [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate"></ion-icon>
                             <ion-icon name="fa-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"
@@ -98,7 +98,7 @@
                                 [text]="discussion.subject"
                                 contextLevel="module" [contextInstanceId]="module && module.id" [courseId]="courseId">
                             </core-format-text>
-                        </h2>
+                        </p>
                         <ion-button *ngIf="canPin || discussion.canlock || discussion.canfavourite"
                             fill="clear" color="dark"
                             [attr.aria-label]="('core.displayoptions' | translate)"
@@ -111,7 +111,7 @@
                         <core-user-avatar *ngIf="discussion.userfullname" [user]="discussion" slot="start" [courseId]="courseId">
                         </core-user-avatar>
                         <div class="addon-mod-forum-discussion-author">
-                            <h3 *ngIf="discussion.userfullname">{{discussion.userfullname}}</h3>
+                            <span *ngIf="discussion.userfullname">{{discussion.userfullname}}</span>
                             <p *ngIf="discussion.groupname">
                                 <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate">
                                 </ion-icon> {{ discussion.groupname }}

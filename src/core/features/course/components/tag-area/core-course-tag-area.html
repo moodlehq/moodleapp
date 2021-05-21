@@ -2,7 +2,7 @@
     button>
     <ion-icon name="fas-graduation-cap" slot="start" aria-hidden="true"></ion-icon>
     <ion-label>
-        <h2>{{ item.courseName }}</h2>
+        <p class="item-heading">{{ item.courseName }}</p>
         <p *ngIf="item.categoryName">{{ 'core.category' | translate }}: {{ item.categoryName }}</p>
     </ion-label>
 </ion-item>

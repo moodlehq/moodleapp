@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title *ngIf="plan">{{plan.plan.name}}</ion-title>
+        <h1 *ngIf="plan">{{plan.plan.name}}</h1>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -78,7 +78,9 @@
                 <ion-item class="ion-text-wrap" *ngFor="let competency of plan.competencies"
                     (click)="openCompetency(competency.competency.id)"
                     [attr.aria-label]="competency.competency.shortname" detail="true" button>
-                    <ion-label><h2>{{competency.competency.shortname}} <em>{{competency.competency.idnumber}}</em></h2></ion-label>
+                    <ion-label>
+                        <p class="item-heading">{{competency.competency.shortname}} <em>{{competency.competency.idnumber}}</em></p>
+                    </ion-label>
                     <ion-badge *ngIf="competency.usercompetencyplan" slot="end"
                         [color]="competency.usercompetencyplan.proficiency ? 'success' : 'danger'">
                             {{ competency.usercompetencyplan.gradename }}

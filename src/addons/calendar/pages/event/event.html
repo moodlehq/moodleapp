@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title *ngIf="event">
+        <h1 *ngIf="event">
             <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" alt="" role="presentation" class="core-module-icon">
             <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" aria-hidden="true"></ion-icon>
             <!-- Add the icon title so accessibility tools read it. -->
@@ -13,7 +13,7 @@
             </span>
             <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
                 [contextInstanceId]="event.contextInstanceId"></core-format-text>
-        </ion-title>
+        </h1>
         <ion-buttons slot="end">
             <!-- The context menu will be added in here. -->
         </ion-buttons>

@@ -17,11 +17,11 @@
                 class="core-module-icon">
 
             <ion-label class="core-module-title">
-                <h2>
+                <p class="item-heading">
                     <core-format-text [text]="module.handlerData.title" contextLevel="module" [contextInstanceId]="module.id"
                         [courseId]="courseId" [attr.aria-label]="module.handlerData.a11yTitle + ', ' + modNameTranslated">
                     </core-format-text>
-                </h2>
+                </p>
                 <ion-badge
                     *ngIf="module.handlerData.extraBadge"
                     [color]="module.handlerData.extraBadgeColor"

@@ -6,7 +6,7 @@
             margin-left: 0;
         }
 
-        h2 {
+        .item-heading {
             core-format-text {
                 font-weight: bold;
             }
@@ -52,7 +52,7 @@
     }
 
     .addon-message-discussion {
-        h2 {
+        .item-heading {
             margin-top: 10px;
         }
     }
@@ -66,7 +66,7 @@
 :host-context([dir=rtl]) {
     .addon-messages-conversation-item,
     .addon-message-discussion {
-        h2 ion-icon {
+        .item-heading ion-icon {
             margin-right: 2px;
             margin-left: 0;
         }

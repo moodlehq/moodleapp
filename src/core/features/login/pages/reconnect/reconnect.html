@@ -4,7 +4,7 @@
             <ion-back-button></ion-back-button>
         </ion-buttons>
 
-        <ion-title>{{ 'core.login.reconnect' | translate }}</ion-title>
+        <h1>{{ 'core.login.reconnect' | translate }}</h1>
     </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding" (keydown)="keyDown($event)" (keyup)="keyUp($event)">
@@ -19,9 +19,9 @@
             <img *ngIf="!logoUrl" src="assets/img/login_logo.png" role="presentation" alt="">
         </div>
 
-        <h6 *ngIf="siteName" class="ion-padding core-sitename">
+        <p *ngIf="siteName" class="ion-padding core-sitename">
             <core-format-text [text]="siteName" [filter]="false"></core-format-text>
-        </h6>
+        </p>
         <p class="core-siteurl">{{siteUrl}}</p>
 
         <ion-item *ngIf="!isLoggedOut" class="ion-text-center core-login-reconnect-warning" lines="none">

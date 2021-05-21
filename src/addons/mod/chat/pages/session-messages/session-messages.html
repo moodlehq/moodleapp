@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>{{ 'addon.mod_chat.messages' | translate }}</ion-title>
+        <h1>{{ 'addon.mod_chat.messages' | translate }}</h1>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -14,9 +14,9 @@
         <ion-list class="addon-messages-discussion-container" aria-live="polite">
             <ng-container *ngFor="let message of messages; index as index;">
 
-                <h6 class="ion-text-center addon-messages-date" *ngIf="message.showDate">
+                <div class="ion-text-center addon-messages-date" *ngIf="message.showDate">
                     {{ message.timestamp * 1000 | coreFormatDate:"strftimedayshort" }}
-                </h6>
+                </div>
 
                 <div class="ion-text-center addon-mod_chat-notice" *ngIf="message.special">
                     <ion-badge class="ion-text-wrap" color="success" *ngIf="message.issystem && message.message == 'enter'">

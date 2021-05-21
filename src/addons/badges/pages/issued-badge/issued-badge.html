@@ -3,8 +3,8 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title *ngIf="badge">{{ badge.name }}</ion-title>
-        <ion-title *ngIf="!badge">{{ 'addon.badges.badges' | translate }}</ion-title>
+        <h1 *ngIf="badge">{{ badge.name }}</h1>
+        <h1 *ngIf="!badge">{{ 'addon.badges.badges' | translate }}</h1>
     </ion-toolbar>
 </ion-header>
 <ion-content>

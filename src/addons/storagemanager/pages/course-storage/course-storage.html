@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>{{ 'addon.storagemanager.managestorage' | translate }}</ion-title>
+        <h1>{{ 'addon.storagemanager.managestorage' | translate }}</h1>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -16,7 +16,7 @@
                 <ion-item class="size ion-text-wrap ion-no-padding" lines="none">
                     <ion-icon name="fas-archive" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>
-                        <h2 class="ion-text-wrap">{{ 'addon.storagemanager.storageused' | translate }}</h2>
+                        <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.storageused' | translate }}</p>
                     </ion-label>
                     <p slot="end" class="ion-text-end">{{ totalSize | coreBytesToSize }}</p>
                     <ion-button slot="end" (click)="deleteForCourse()" [disabled]="totalSize == 0">
@@ -32,7 +32,7 @@
                 <ion-card-header>
                     <ion-item class="ion-no-padding">
                         <ion-label>
-                            <h2 class="ion-text-wrap">{{ section.name }}</h2>
+                            <p class="item-heading ion-text-wrap">{{ section.name }}</p>
                         </ion-label>
                         <p slot="end" class="ion-text-end">{{ section.totalSize | coreBytesToSize }}</p>
                         <ion-button slot="end" (click)="deleteForSection(section)">

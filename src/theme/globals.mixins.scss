@@ -150,7 +150,7 @@
     h1 {
         font-size: 3rem;
     }
-    h2 {
+    h2, .item-heading {
         font-size: 2.8rem;
     }
     h3 {
@@ -226,7 +226,7 @@
     }
 
     .ion-text-wrap ion-label {
-        h2, p {
+        .item-heading, h2, p {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;

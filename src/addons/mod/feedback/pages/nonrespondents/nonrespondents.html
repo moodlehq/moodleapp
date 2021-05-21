@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>{{ 'addon.mod_feedback.responses' |translate }}</ion-title>
+        <h1>{{ 'addon.mod_feedback.responses' |translate }}</h1>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -32,7 +32,7 @@
                 <ion-item *ngFor="let user of users" class="ion-text-wrap">
                     <core-user-avatar [user]="user" slot="start"></core-user-avatar>
                     <ion-label>
-                        <h2>{{ user.fullname }}</h2>
+                        <p class="item-heading">{{ user.fullname }}</p>
                         <p>
                             <ion-badge color="success" *ngIf="user.started">
                                 {{ 'addon.mod_feedback.started' | translate}}

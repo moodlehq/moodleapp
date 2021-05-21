@@ -3,10 +3,10 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>
+        <h1>
             <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
             </core-format-text>
-        </ion-title>
+        </h1>
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="loaded" (click)="showChatUsers()" [attr.aria-label]="'core.users' | translate">
                 <ion-icon name="fas-users" slot="icon-only" aria-hidden="true"></ion-icon>
@@ -19,9 +19,9 @@
         <ion-list class="addon-messages-discussion-container" aria-live="polite">
             <ng-container *ngFor="let message of messages; index as index; last as last">
 
-                <h6 class="ion-text-center addon-messages-date" *ngIf="message.showDate">
+                <p class="ion-text-center addon-messages-date" *ngIf="message.showDate">
                     {{ message.timestamp * 1000 | coreFormatDate: "strftimedayshort" }}
-                </h6>
+                </p>
 
                 <div class="ion-text-center addon-mod_chat-notice" *ngIf="message.special">
                     <ion-badge class="ion-text-wrap" color="success" *ngIf="message.system && message.message == 'enter'">

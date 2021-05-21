@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>{{ 'addon.messages.contacts' | translate }}</ion-title>
+        <h1>{{ 'addon.messages.contacts' | translate }}</h1>
         <ion-buttons slot="end">
             <!-- Add an empty context menu so discussion page can add items in split view,
                 otherwise the menu disappears in some cases. -->
@@ -31,7 +31,7 @@
             <ion-list *ngFor="let contactType of contactTypes" class="ion-no-margin">
                 <ng-container *ngIf="contacts[contactType] && (contacts[contactType].length > 0 || contactType === searchType)">
                     <ion-item-divider>
-                        <ion-label><h2>{{ 'addon.messages.type_' + contactType | translate }}</h2></ion-label>
+                        <ion-label><p class="item-heading">{{ 'addon.messages.type_' + contactType | translate }}</p></ion-label>
                         <ion-note slot="end" class="ion-padding-end"><ion-badge>{{ contacts[contactType].length }}</ion-badge></ion-note>
                     </ion-item-divider>
                     <ng-container *ngFor="let contact of contacts[contactType]">
@@ -41,7 +41,7 @@
                             [attr.aria-label]="contact.fullname" (click)="gotoDiscussion(contact.id)" detail="true" button
                             [attr.aria-current]="contact.id == discussionUserId ? 'page' : 'false'">
                             <core-user-avatar [user]="contact" slot="start" [checkOnline]="contact.showonlinestatus"></core-user-avatar>
-                            <ion-label><h2>{{ contact.fullname }}</h2></ion-label>
+                            <ion-label><p class="item-heading">{{ contact.fullname }}</p></ion-label>
                         </ion-item>
                     </ng-container>
                 </ng-container>

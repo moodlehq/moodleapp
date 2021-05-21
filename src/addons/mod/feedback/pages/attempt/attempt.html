@@ -3,12 +3,12 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>
+        <h1>
             <ng-container *ngIf="attempt">{{ attempt.fullname }}</ng-container>
             <ng-container *ngIf="anonAttempt">
                 {{ 'addon.mod_feedback.response_nr' |translate }}: {{anonAttempt.number}}
             </ng-container>
-        </ion-title>
+        </h1>
     </ion-toolbar>
 </ion-header>
 <ion-content>

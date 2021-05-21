@@ -3,9 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>
+        <h1>
             <core-format-text [text]="course?.fullname" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
-        </ion-title>
+        </h1>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -55,7 +55,7 @@
                         [courseId]="isEnrolled ? course.id : null">
                     </core-user-avatar>
                     <ion-label>
-                        <h2>{{contact.fullname}}</h2>
+                        <p class="item-heading">{{contact.fullname}}</p>
                     </ion-label>
                 </ion-item>
                 <core-spacer></core-spacer>
@@ -83,7 +83,7 @@
             <div *ngIf="!isEnrolled" detail="false">
                 <ion-item class="ion-text-wrap" *ngFor="let instance of selfEnrolInstances">
                     <ion-label>
-                        <h2>{{ instance.name }}</h2>
+                        <p class="item-heading">{{ instance.name }}</p>
                         <ion-button expand="block" class="ion-margin-top" (click)="selfEnrolClicked(instance.id)">
                             {{ 'core.courses.enrolme' | translate }}
                         </ion-button>

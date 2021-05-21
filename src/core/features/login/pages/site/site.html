@@ -4,7 +4,7 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
 
-        <ion-title>{{ 'core.login.connecttomoodle' | translate }}</ion-title>
+        <h1>{{ 'core.login.connecttomoodle' | translate }}</h1>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="openSettings()" [attr.aria-label]="'core.settings.appsettings' | translate">
@@ -128,7 +128,7 @@
             <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon" alt="" role="presentation">
         </ion-thumbnail>
         <ion-label>
-            <h2 *ngIf="site.title" class="ion-text-wrap">{{site.title}}</h2>
+            <p *ngIf="site.title" class="item-heading ion-text-wrap">{{site.title}}</p>
             <p *ngIf="site.noProtocolUrl">{{site.noProtocolUrl}}</p>
             <p *ngIf="site.location">{{site.location}}</p>
         </ion-label>

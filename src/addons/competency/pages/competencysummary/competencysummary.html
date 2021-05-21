@@ -3,9 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title *ngIf="competency">
+        <h1 *ngIf="competency">
             {{ competency.competency.shortname }} <small>{{ competency.competency.idnumber }}</small>
-        </ion-title>
+        </h1>
     </ion-toolbar>
 </ion-header>
 <ion-content>

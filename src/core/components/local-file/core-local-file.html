@@ -6,7 +6,7 @@
 
         <ion-label>
             <!-- File name and edit button (if editable). -->
-            <h3 *ngIf="!editMode">{{fileName}}</h3>
+            <p class="item-heading" *ngIf="!editMode">{{fileName}}</p>
             <!-- More data about the file. -->
             <p *ngIf="size && !editMode">{{ size }}</p>
             <p *ngIf="timemodified && !editMode">{{ timemodified }}</p>

@@ -3,10 +3,10 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>
+        <h1>
             <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
             </core-format-text>
-        </ion-title>
+        </h1>
 
         <ion-buttons slot="end"></ion-buttons>
     </ion-toolbar>
@@ -43,10 +43,10 @@
                         [attr.aria-current]="submissions.getItemAriaCurrent(submission)">
                         <core-user-avatar [user]="submission" [linkProfile]="false" slot="start"></core-user-avatar>
                         <ion-label>
-                            <h2 *ngIf="submission.userfullname">{{submission.userfullname}}</h2>
-                            <h2 *ngIf="!submission.userfullname">
+                            <p class="item-heading" *ngIf="submission.userfullname">{{submission.userfullname}}</p>
+                            <p class="item-heading" *ngIf="!submission.userfullname">
                                 {{ 'addon.mod_assign.hiddenuser' | translate }}{{submission.blindid}}
-                            </h2>
+                            </p>
                             <p *ngIf="assign && assign!.teamsubmission">
                                 <span *ngIf="submission.groupname">{{submission.groupname}}</span>
                                 <span *ngIf="assign!.preventsubmissionnotingroup && !submission.groupname && submission.noGroups

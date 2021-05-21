@@ -204,11 +204,11 @@
             <ion-list *ngIf="items && items.length">
                 <ion-item class="ion-text-wrap core-analysis" *ngFor="let item of items">
                     <ion-label>
-                        <h2>
+                        <p class="item-heading">
                             {{item.num}}. <core-format-text [component]="component" [componentId]="componentId" [text]="item.name"
                             contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                             </core-format-text>
-                        </h2>
+                        </p>
                         <p>
                             <core-format-text [component]="component" [componentId]="componentId" [text]="item.label"
                                 contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">

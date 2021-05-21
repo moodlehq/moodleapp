@@ -4,7 +4,7 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
 
-        <ion-title>{{ 'core.login.newaccount' | translate }}</ion-title>
+        <h1>{{ 'core.login.newaccount' | translate }}</h1>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="authInstructions" (click)="showAuthInstructions()"
@@ -169,7 +169,7 @@
             <!-- Other categories. -->
             <ng-container *ngFor="let category of categories">
                 <ion-item-divider class="ion-text-wrap">
-                    <ion-label><h3>{{ category.name }}</h3></ion-label>
+                    <ion-label><p class="item-heading">{{ category.name }}</p></ion-label>
                 </ion-item-divider>
                 <core-user-profile-field *ngFor="let field of category.fields" [field]="field" [edit]="true" [signup]="true"
                     registerAuth="email" [form]="signupForm"></core-user-profile-field>

@@ -4,7 +4,7 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
 
-        <ion-title><core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0"></core-format-text></ion-title>
+        <h1><core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0"></core-format-text></h1>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -28,7 +28,7 @@
             (click)="openHandler(handler)" [attr.aria-label]="handler.title | translate" detail="true" detail="true">
             <ion-icon [name]="handler.icon" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
-                <h2>{{ handler.title | translate}}</h2>
+                <p class="item-heading">{{ handler.title | translate}}</p>
             </ion-label>
             <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
                 {{handler.badge}}
@@ -43,54 +43,54 @@
                 [capture]="item.type == 'app'" [inApp]="item.type == 'inappbrowser'" class="core-moremenu-customitem" detail="true">
                 <ion-icon [name]="item.icon" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
-                    <h2>{{item.label}}</h2>
+                    <p class="item-heading">{{item.label}}</p>
                 </ion-label>
             </ion-item>
             <ion-item button *ngIf="item.type == 'embedded'" (click)="openItem(item)" [attr.aria-label]="item.label"
                 class="core-moremenu-customitem" detail="true">
                 <ion-icon [name]="item.icon" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
-                    <h2>{{item.label}}</h2>
+                    <p class="item-heading">{{item.label}}</p>
                 </ion-label>
             </ion-item>
         </ng-container>
         <ion-item button *ngIf="showScanQR" (click)="scanQR()" detail="true">
             <ion-icon name="fas-qrcode" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
-                <h2>{{ 'core.scanqr' | translate }}</h2>
+                <p class="item-heading">{{ 'core.scanqr' | translate }}</p>
             </ion-label>
         </ion-item>
         <ion-item button *ngIf="showWeb && siteInfo" [href]="siteInfo.siteurl" core-link autoLogin="yes"
             [attr.aria-label]="'core.mainmenu.website' | translate" detail="true">
             <ion-icon name="fas-globe" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
-                <h2>{{ 'core.mainmenu.website' | translate }}</h2>
+                <p class="item-heading">{{ 'core.mainmenu.website' | translate }}</p>
             </ion-label>
         </ion-item>
         <ion-item button *ngIf="showHelp" [href]="docsUrl" core-link autoLogin="no"
             [attr.aria-label]="'core.mainmenu.help' | translate" detail="true">
             <ion-icon name="far-life-ring" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
-                <h2>{{ 'core.mainmenu.help' | translate }}</h2>
+                <p class="item-heading">{{ 'core.mainmenu.help' | translate }}</p>
             </ion-label>
         </ion-item>
         <ion-item button (click)="openPreferences()" [attr.aria-label]="'core.settings.preferences' | translate" detail="true">
             <ion-icon name="fas-wrench" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
-                <h2>{{ 'core.settings.preferences' | translate }}</h2>
+                <p class="item-heading">{{ 'core.settings.preferences' | translate }}</p>
             </ion-label>
         </ion-item>
         <ion-item button (click)="logout()" [attr.aria-label]="logoutLabel | translate" detail="true">
             <ion-icon name="fas-sign-out-alt" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
-                <h2>{{ logoutLabel | translate }}</h2>
+                <p class="item-heading">{{ logoutLabel | translate }}</p>
             </ion-label>
         </ion-item>
         <core-spacer></core-spacer>
         <ion-item button (click)="openSettings()" [attr.aria-label]="'core.settings.appsettings' | translate" detail="true">
             <ion-icon name="fas-cogs" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
-                <h2>{{ 'core.settings.appsettings' | translate }}</h2>
+                <p class="item-heading">{{ 'core.settings.appsettings' | translate }}</p>
             </ion-label>
         </ion-item>
     </ion-list>

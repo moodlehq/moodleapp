@@ -24,13 +24,13 @@
                     </core-format-text>
                 </span>
             </p>
-            <h2>
+            <p class="item-heading">
                 <ion-icon name="fas-star" *ngIf="course.isfavourite" [attr.aria-label]="'core.courses.favourite' | translate">
                 </ion-icon>
                 <span class="sr-only" *ngIf="course.isfavourite">{{ 'core.courses.aria:favourite' | translate }}</span>
                 <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
                 <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id"></core-format-text>
-            </h2>
+            </p>
         </ion-label>
 
         <div class="core-button-spinner" *ngIf="downloadCourseEnabled && !courseOptionMenuEnabled && showDownload" slot="end">

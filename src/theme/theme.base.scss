@@ -49,6 +49,50 @@
 .font-lg { font-size: 1.7rem; }
 .font-sm { font-size: 1.2rem; }
 
+// Headings.
+.item-heading {
+    font-size: 16px !important;
+    color: initial !important;
+}
+
+ion-header h1,
+ion-header h2 {
+    display: block;
+    transform: translateZ(0);
+    color: initial;
+    margin: 0;
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    pointer-events: auto;
+}
+
+ion-app.md ion-header h1,
+ion-app.md ion-header h2 {
+    padding-inline: 20px;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: .0125em;
+}
+
+ion-app.ios ion-header h1,
+ion-app.ios ion-header h2 {
+    top: 0;
+    left: 0;
+    padding-inline: 90px;
+    position: absolute;
+    display: block;
+    text-align: center;
+    width: 100%;
+    transform: translateZ(0);
+    font-size: 17px;
+    font-weight: 600;
+    line-height: #{$toolbar-height-ios};
+    box-sizing: border-box;
+    pointer-events: none;
+}
+
 // Correctly inherit ion-text-wrap onto labels.
 ion-item.ion-text-wrap ion-label {
     white-space: normal !important;
@@ -75,6 +119,14 @@ ion-item.ion-text-wrap ion-label {
 }
 
 // Ionic toolbar.
+ion-app.md ion-toolbar {
+    --min-height: #{$toolbar-height-md};
+}
+
+ion-app.ios ion-toolbar {
+    --min-height: #{$toolbar-height-ios};
+}
+
 ion-toolbar ion-back-button,
 ion-toolbar .in-toolbar.button-clear {
     --color: var(--core-header-toolbar-color);
@@ -382,8 +434,8 @@ ion-item img.core-module-icon[slot="start"] {
     margin-left: 32px;
 }
 
-ion-toolbar ion-title img.core-bar-button-image,
-ion-toolbar ion-title .core-bar-button-image img {
+ion-toolbar h1 img.core-bar-button-image,
+ion-toolbar h1 .core-bar-button-image img {
     padding: 0;
     width: var(--core-header-toolbar-button-image-size);
     height: var(--core-header-toolbar-button-image-size);

@@ -11,7 +11,7 @@
         ion-label {
             margin-top: 4px;
 
-            h2 {
+            .item-heading {
                 margin-top: 8px;
                 margin-bottom: 8px;
                 font-weight: bold;
@@ -36,7 +36,7 @@
             align-items: center;
         }
 
-        .addon-mod-forum-discussion-title h2,
+        .addon-mod-forum-discussion-title .item-heading,
         .addon-mod-forum-discussion-info .addon-mod-forum-discussion-author {
             flex-grow: 1;
         }

@@ -4,7 +4,7 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
 
-        <ion-title>{{ 'core.settings.sites' | translate }}</ion-title>
+        <h1>{{ 'core.settings.sites' | translate }}</h1>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="sites && sites.length > 0" (click)="toggleDelete()"
@@ -25,7 +25,7 @@
                     alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}" onError="this.src='assets/img/user-avatar.png'">
             </ion-avatar>
             <ion-label>
-                <h2>{{site.fullName}}</h2>
+                <p class="item-heading">{{site.fullName}}</p>
                 <p><core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text></p>
                 <p>{{site.siteUrl}}</p>
             </ion-label>

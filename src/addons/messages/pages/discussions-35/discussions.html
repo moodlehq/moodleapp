@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>{{ 'addon.messages.messages' | translate }}</ion-title>
+        <h1>{{ 'addon.messages.messages' | translate }}</h1>
         <ion-buttons slot="end">
             <!-- Add an empty context menu so discussion page can add items in split view,
                 otherwise the menu disappears in some cases. -->
@@ -43,7 +43,7 @@
                         [attr.aria-current]="result.userid == discussionUserId ? 'page' : 'false'">
                         <core-user-avatar [user]="result" slot="start" [checkOnline]="result.showonlinestatus"></core-user-avatar>
                         <ion-label>
-                                <h2>{{ result.fullname }}</h2>
+                            <p class="item-heading">{{ result.fullname }}</p>
                             <p><core-format-text clean="true" singleLine="true" [text]="result.lastmessage" contextLevel="system"
                                 [contextInstanceId]="0"></core-format-text></p>
                         </ion-label>
@@ -56,7 +56,7 @@
                         <core-user-avatar [user]="discussion" slot="start" checkOnline="false"></core-user-avatar>
                         <ion-label>
                             <div class="flex-row ion-justify-content-between">
-                                <h2>{{ discussion.fullname }}</h2>
+                                <p class="item-heading">{{ discussion.fullname }}</p>
                                 <ion-note *ngIf="discussion.message!.timecreated > 0 || discussion.unread">
                                     <span *ngIf="discussion.message!.timecreated > 0" class="addon-message-last-message-date">
                                         {{discussion.message!.timecreated / 1000 | coreDateDayOrTime}}

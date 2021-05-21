@@ -3,11 +3,11 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <ion-title>
+        <h1>
             <core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
                 [courseId]="courseId">
             </core-format-text>
-        </ion-title>
+        </h1>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" id="addon-mod_quiz-connection-error-button" [hidden]="!autoSaveError"

@@ -1,6 +1,6 @@
 <ion-item-group *ngFor="let dayEvents of filteredEvents">
     <ion-item-divider [color]="dayEvents.color">
-        <ion-label><h2>{{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedayshort" }}</h2></ion-label>
+        <ion-label><h3>{{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedayshort" }}</h3></ion-label>
     </ion-item-divider>
     <ng-container *ngFor="let event of dayEvents.events">
         <ion-item class="ion-text-wrap core-course-module-handler item-media" detail="false" (click)="action($event, event.url)"
@@ -9,11 +9,11 @@
             <ion-label>
                 <!-- Add the icon title so accessibility tools read it. -->
                 <span class="sr-only" *ngIf="event.iconTitle">{{ event.iconTitle }}</span>
-                <h2>
+                <p class="item-heading">
                     <core-format-text [text]="event.name" contextLevel="module" [contextInstanceId]="event.id"
                         [courseId]="event.course && event.course.id">
                     </core-format-text>
-                </h2>
+                </p>
                 <p *ngIf="showCourse && event.course">
                     <core-format-text [text]="event.course.fullnamedisplay" contextLevel="course"
                         [contextInstanceId]="event.course.id">

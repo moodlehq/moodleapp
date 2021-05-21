@@ -3,7 +3,7 @@
         <img [src]="fileIcon" alt="" role="presentation" />
     </ion-thumbnail>
     <ion-label>
-        <h2>{{fileName}}</h2>
+        <p class="item-heading">{{fileName}}</p>
         <p *ngIf="fileSizeReadable">{{ fileSizeReadable }}</p>
         <p *ngIf="showTime">{{ timemodified * 1000 | coreFormatDate }}</p>
     </ion-label>

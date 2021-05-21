@@ -1,6 +1,6 @@
 <ion-header>
     <ion-toolbar>
-        <ion-title *ngIf="title">{{ title | translate }}</ion-title>
+        <h1 *ngIf="title">{{ title | translate }}</h1>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="cancel()">{{ 'core.cancel' | translate }}</ion-button>
