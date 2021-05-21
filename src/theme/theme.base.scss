@@ -50,16 +50,54 @@
 .font-sm { font-size: 1.2rem; }
 
 // Headings.
-.item-heading {
-    font-size: 16px !important;
-    color: initial !important;
+// Some styles taken from ion-label
+ion-label .item-heading {
+    text-overflow: inherit;
+    overflow: inherit;
+    --color: initial;
+    color: var(--color);
+    line-height: 20px;
 }
 
+.md ion-label .item-heading {
+    @include margin(2px, 0);
+
+    font-size: 16px;
+    font-weight: normal;
+
+    &.item-heading-secondary {
+        @include margin(2px, 0);
+
+        font-size: 14px;
+        font-weight: normal;
+
+        line-height: normal;
+    }
+}
+
+.ios ion-label .item-heading {
+    @include margin(0, 0, 2px);
+
+    font-size: 17px;
+    font-weight: normal;
+
+    &.item-heading-secondary {
+        @include margin(0, 0, 3px);
+
+        font-size: 14px;
+        font-weight: normal;
+
+        line-height: normal;
+    }
+}
+
+// Some styles taken from ion-title
 ion-header h1,
 ion-header h2 {
     display: block;
     transform: translateZ(0);
-    color: initial;
+    --color: initial;
+    color: var(--color);
     margin: 0;
     width: 100%;
     text-overflow: ellipsis;
@@ -70,7 +108,7 @@ ion-header h2 {
 
 ion-app.md ion-header h1,
 ion-app.md ion-header h2 {
-    padding-inline: 20px;
+    @include padding(0, 20px);
     font-size: 20px;
     font-weight: 500;
     letter-spacing: .0125em;
@@ -78,14 +116,11 @@ ion-app.md ion-header h2 {
 
 ion-app.ios ion-header h1,
 ion-app.ios ion-header h2 {
-    top: 0;
-    left: 0;
-    padding-inline: 90px;
+    @include position(0, null, null, 0);
+    @include padding(0, 90px, 0);
+
     position: absolute;
-    display: block;
     text-align: center;
-    width: 100%;
-    transform: translateZ(0);
     font-size: 17px;
     font-weight: 600;
     line-height: #{$toolbar-height-ios};
