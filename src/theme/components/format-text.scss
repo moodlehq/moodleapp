@@ -2,6 +2,18 @@
 /** Styles of elements inside the directive should be placed in format-text.scss */
 @import "~theme/globals";
 
+:root {
+    --background: var(--background, #{$ion-item-background});
+    --background-gradient-rgb: var(--background-rgb, #{color-to-rgb-list($ion-item-background)});
+    --viewer-icon-background: rgba(255, 255, 255, .5);
+}
+
+:root body.dark {
+    --background: var(--background, #{$ion-item-background-dark});
+    --background-gradient-rgb: var(--background-rgb, #{color-to-rgb-list($ion-item-background-dark)});
+    --viewer-icon-background: rgba(0, 0, 0, .5);
+}
+
 core-format-text {
     user-select: text;
     word-break: break-word;
@@ -47,20 +59,19 @@ core-format-text {
                     z-index: 7;
                     background-color: var(--background);
                     color: var(--text-color);
-                    padding-left: 10px; // RTL
+                    @include padding(null, null, null, 10px);
+                    margin: 0;
                 }
 
                 &:before {
                     content: '';
                     height: 100%;
                     position: absolute;
-                    right: 0;
-                    bottom: 0;
-                    left: 0;
-                    background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) calc(100% - 50px), var(--background) calc(100% - 15px));
-                    background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(0, 0, 0, 0)), color-stop(calc(100% - 15px), var(--background)));
-                    background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) calc(100% - 50px), var(--background) calc(100% - 15px));
-                    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) calc(100% - 50px), var(--background) calc(100% - 15px));
+                    @include position(null, 0, 0, 0);
+                    background: -moz-linear-gradient(top, rgba(var(--background-gradient-rgb), 0) calc(100% - 50px), rgba(var(--background-gradient-rgb), 1) calc(100% - 15px));
+                    background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(var(--background-gradient-rgb), 0)), color-stop(calc(100% - 15px), rgba(var(--background-gradient-rgb), 1)));
+                    background: -webkit-linear-gradient(top, rgba(var(--background-gradient-rgb), 0) calc(100% - 50px), rgba(var(--background-gradient-rgb), 1) calc(100% - 15px));
+                    background: linear-gradient(to bottom, rgba(var(--background-gradient-rgb), 0) calc(100% - 50px), rgba(var(--background-gradient-rgb), 1) calc(100% - 15px));
                     z-index: 6;
                 }
             }
@@ -70,7 +81,7 @@ core-format-text {
             .core-show-more {
                 @include push-arrow-color(626262, true);
                 @include padding-horizontal(null, 5px);
-                @include background-position(end, 0, center);
+                @include background-position(end, 5px, center);
 
                 background-repeat: no-repeat;
                 background-size: 14px 14px;
@@ -93,28 +104,21 @@ core-format-text {
         @include position(null, 10px, 10px, null);
         color: var(--black);
         border-radius: 5px;
-        background-color: rgba(255, 255, 255, .5);
-        text-align: center;
-        cursor: pointer;
+        background-color: var(--viewer-icon-background);
+        display: flex;
 
-        width: 32px;
-        height: 32px;
-        max-width: 32px;
-        line-height: 32px;
+        width: var(--a11y-min-target-size);
+        height: var(--a11y-min-target-size);
+        max-width: var(--a11y-min-target-size);
         font-size: 24px;
 
         ion-icon {
-            margin-top: 3px;
+            flex: 1;
+            align-self: center;
         }
 
         &:hover {
             opacity: .7;
         }
-    }
-}
-
-body.dark {
-    core-format-text .core-image-viewer-icon {
-        background-color: rgba(0, 0, 0, .5);
     }
 }

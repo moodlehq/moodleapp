@@ -72,17 +72,17 @@ $text-color-dark:          $white !default;
 $link-color:               $blue !default;
 $link-color-dark:          $blue-light !default;
 $background-color:         $gray-light !default;
-$background-color-dark:    #{$shade-90} !default;
+$background-color-dark:    $shade-90 !default;
 $subdued-text-color:       $gray-darker !default;
 
 $ion-item-background:      $white !default;
-$ion-item-background-dark: #{$shade-80} !default;
-$ion-item-divider-background: #{$gray-lighter} !default;
-$ion-item-divider-color: #{$text-color} !default;
-$core-spacer-background: #{$ion-item-divider-background} !default;
-$ion-item-divider-background-dark: #{$shade-75} !default;
-$ion-item-divider-color-dark: #{$text-color-dark} !default;
-$core-spacer-background-dark: #{$shade-100} !default;
+$ion-item-background-dark: $shade-80 !default;
+$ion-item-divider-background: $gray-lighter !default;
+$ion-item-divider-color: $text-color !default;
+$core-spacer-background: $ion-item-divider-background !default;
+$ion-item-divider-background-dark: $shade-75 !default;
+$ion-item-divider-color-dark: $text-color-dark !default;
+$core-spacer-background-dark: $shade-100 !default;
 
 $core-online-color: #5cb85c !default;
 

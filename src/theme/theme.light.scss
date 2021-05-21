@@ -70,7 +70,7 @@
     --module-icon-size: 24px;
 
     --ion-background-color: #{$background-color};
-    --ion-background-color-rgb: color-to-rgb-list(var(--ion-background-color));
+    --ion-background-color-rgb: #{color-to-rgb-list($background-color)};
 
     --ion-text-color: #{$text-color};
     --ion-text-color-rgb: 58,58,58;
