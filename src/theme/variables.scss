@@ -27,8 +27,8 @@ $blue:            #0064d2; // Link, background.
 $turquoise:       #007982; // Accent.
 $green:           #5e8100; // Accent.
 $red:             #cb3d4d;
-$orange:          #f98012; // Accent (never text).
-$yellow:          #fbad1a; // Accent (never text).
+$orange:          #16412A; // Accent (never text).
+$yellow:          #16412A; // Accent (never text).
 $purple:          #8e24aa; // Accent (never text).
 
 // Branded apps customization
@@ -174,12 +174,12 @@ $core-star-color: $core-color !default;
 
 // Init screen.
 $core-color-init-screen:          #ffffff !default;
-$core-init-screen-spinner-color:  $core-color !default;
+$core-init-screen-spinner-color:  #E48E00 !default;
 
 $core-fixed-url:                  false !default;
 
-$core-loading-spinner-color: $core-color !default;
-$core-spinner-color: $core-color !default;
+$core-loading-spinner-color: #E48E00 !default;
+$core-spinner-color: #E48E00!default;
 $core-button-outline-background-color: $white !default;
 
 $core-network-message-height: 16px !default;
