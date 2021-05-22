@@ -28,6 +28,7 @@ ion-app.app-root page-core-login-site {
 
     .item p, .item h2, .item h3, .list .item.core-oauth-icon .label, .text-input {
         color: $core-login-page-text-color;
+        opacity: 80%;
         @include darkmode() {
             color: $core-dark-login-page-text-color;
         }
@@ -48,10 +49,11 @@ ion-app.app-root page-core-login-site {
     .core-sitename {
         font-size: 1.8rem;
     }
-
+  
     @if $core-login-button-outline {
         .button-md.button-default-md, .button-ios.button-default-ios {
             @extend .button-md-light;
+            
         }
     }
 
@@ -85,6 +87,9 @@ ion-app.app-root page-core-login-site {
         margin-bottom: 20px;
     }
 
+    .item-block{
+        width:96%;
+    }
 
     .core-login-form .item,
     .core-login-form .item-inner {
@@ -107,7 +112,7 @@ ion-app.app-root page-core-login-site {
 
         a.item {
             background: transparent;
-            text-decoration: underline;
+            text-decoration: none;
 
             @include darkmode() {
                 background: transparent;
@@ -135,5 +140,21 @@ ion-app.app-root page-core-login-site {
         text-align: center;
         margin-top: 12px;
         font-size: 1.2em;
+    }
+
+    .core-login-headerText {
+        color:#fff;
+        text-align: center;
+    }
+
+    .button-md {
+        overflow: hidden;
+        height: 5.5rem;
+        font-size: 1.4rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        color: #fff;
+        background-color: #E48E00;
+       
     }
 }
