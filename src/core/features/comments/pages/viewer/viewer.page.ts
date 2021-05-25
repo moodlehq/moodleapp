@@ -15,7 +15,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreAnimations } from '@components/animations';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CoreSites } from '@services/sites';
 import {
     CoreComments,
@@ -33,13 +33,14 @@ import { CoreNavigator } from '@services/navigator';
 import { Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUser, CoreUserProfile } from '@features/user/services/user';
+import { CoreUser } from '@features/user/services/user';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreError } from '@classes/errors/error';
 import { CoreCommentsOffline } from '@features/comments/services/comments-offline';
 import { CoreCommentsDBRecord } from '@features/comments/services/database/comments';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreCommentsAddComponent } from '@features/comments/components/add/add-modal';
+import { CoreApp } from '@services/app';
+import moment from 'moment';
 
 /**
  * Page that displays comments.
@@ -48,12 +49,13 @@ import { CoreCommentsAddComponent } from '@features/comments/components/add/add-
     selector: 'page-core-comments-viewer',
     templateUrl: 'viewer.html',
     animations: [CoreAnimations.SLIDE_IN_OUT],
+    styleUrls: ['viewer.scss'],
 })
 export class CoreCommentsViewerPage implements OnInit, OnDestroy {
 
     @ViewChild(IonContent) content?: IonContent;
 
-    comments: CoreCommentsDataWithUser[] = [];
+    comments: CoreCommentsDataToDisplay[] = [];
     commentsLoaded = false;
     contextLevel!: ContextLevel;
     instanceId!: number;
@@ -73,10 +75,12 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
     syncIcon = CoreConstants.ICON_LOADING;
     offlineComment?: CoreCommentsOfflineWithUser;
     currentUserId: number;
+    sending = false;
+    newComment = '';
 
     protected addDeleteCommentsAvailable = false;
     protected syncObserver?: CoreEventObserver;
-    protected currentUser?: CoreUserProfile;
+    protected viewDestroyed = false;
 
     constructor(
         protected route: ActivatedRoute,
@@ -94,8 +98,6 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 this.commentsLoaded = false;
                 this.refreshIcon = CoreConstants.ICON_LOADING;
                 this.syncIcon = CoreConstants.ICON_LOADING;
-
-                this.content?.scrollToTop();
 
                 this.page = 0;
                 this.comments = [];
@@ -151,7 +153,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             );
             this.canAddComments = this.addDeleteCommentsAvailable && !!commentsResponse.canpost;
 
-            let comments = commentsResponse.comments.sort((a, b) => b.timecreated - a.timecreated);
+            let comments = commentsResponse.comments.sort((a, b) => a.timecreated - b.timecreated);
             if (typeof commentsResponse.count != 'undefined') {
                 this.canLoadMore = (this.comments.length + comments.length) < commentsResponse.count;
             } else {
@@ -162,7 +164,13 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
 
             comments = await Promise.all(comments.map((comment) => this.loadCommentProfile(comment)));
 
-            this.comments = this.comments.concat(comments);
+            this.comments = comments.concat(this.comments);
+
+            this.comments.forEach((comment, index) => {
+                comment.showDate = this.showDate(comment, this.comments[index - 1]);
+                comment.showUserData = this.showUserData(comment, this.comments[index - 1]);
+                comment.showTail = this.showTail(comment, this.comments[index + 1]);
+            });
 
             this.canDeleteComments = this.addDeleteCommentsAvailable &&
                 (this.hasOffline || this.comments.some((comment) => !!comment.delete));
@@ -179,6 +187,10 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             this.commentsLoaded = true;
             this.refreshIcon = CoreConstants.ICON_REFRESH;
             this.syncIcon = CoreConstants.ICON_SYNC;
+
+            if (this.page == 0) {
+                this.scrollToBottom();
+            }
         }
 
     }
@@ -189,7 +201,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
      * @return Resolved when done.
      */
-    loadMore(infiniteComplete?: () => void): Promise<void> {
+    loadPrevious(infiniteComplete?: () => void): Promise<void> {
         this.page++;
         this.canLoadMore = false;
 
@@ -262,48 +274,64 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Add a new comment to the list.
+     * Send the comment or store it offline.
      *
-     * @param e Event.
+     * @param text Comment text to add.
      */
-    async addComment(e: Event): Promise<void> {
-        e.preventDefault();
-        e.stopPropagation();
+    async addComment(text: string): Promise<void> {
+        CoreApp.closeKeyboard();
+        const loadingModal = await CoreDomUtils.showModalLoading('core.sending', true);
+        // Freeze the add comment button.
+        this.sending = true;
+        try {
+            const commentsResponse = await CoreComments.addComment(
+                text,
+                this.contextLevel,
+                this.instanceId,
+                this.componentName,
+                this.itemId,
+                this.area,
+            );
 
-        const params: Params = {
-            contextLevel: this.contextLevel,
-            instanceId: this.instanceId,
-            componentName: this.componentName,
-            itemId: this.itemId,
-            area: this.area,
-            content: this.offlineComment ? this.offlineComment!.content : '',
-        };
+            CoreDomUtils.showToast(
+                commentsResponse ? 'core.comments.eventcommentcreated' : 'core.datastoredoffline',
+                true,
+                3000,
+            );
 
-        const comment = await CoreDomUtils.openModal<CoreCommentsDataWithUser>({
-            component: CoreCommentsAddComponent,
-            componentProps: params,
-        });
+            if (commentsResponse) {
+                this.invalidateComments();
 
-        if (comment) {
-            this.invalidateComments();
+                const addedComments = await this.loadCommentProfile(commentsResponse);
+                addedComments.showDate = this.showDate(addedComments, this.comments[this.comments.length - 1]);
+                addedComments.showUserData = this.showUserData(addedComments, this.comments[this.comments.length - 1]);
+                addedComments.showTail = this.showTail(addedComments, this.comments[this.comments.length + 1]);
 
-            const addedComments = await this.loadCommentProfile(comment);
-            // Add the comment to the top.
-            this.comments = [addedComments].concat(this.comments);
-            this.canDeleteComments = this.addDeleteCommentsAvailable;
+                // Add the comment to the top.
+                this.comments = this.comments.concat([addedComments]);
+                this.canDeleteComments = this.addDeleteCommentsAvailable;
 
-            CoreEvents.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
-                contextLevel: this.contextLevel,
-                instanceId: this.instanceId,
-                component: this.componentName,
-                itemId: this.itemId,
-                area: this.area,
-                countChange: 1,
-            }, CoreSites.getCurrentSiteId());
+                CoreEvents.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
+                    contextLevel: this.contextLevel,
+                    instanceId: this.instanceId,
+                    component: this.componentName,
+                    itemId: this.itemId,
+                    area: this.area,
+                    countChange: 1,
+                }, CoreSites.getCurrentSiteId());
 
-        } else if (comment === false) {
-            // Comments added in offline mode.
-            return this.loadOfflineData();
+            } else if (commentsResponse === false) {
+                // Comments added in offline mode.
+                await this.loadOfflineData();
+            }
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        } finally {
+            loadingModal.dismiss();
+            this.sending = false;
+
+            // New comments.
+            this.scrollToBottom();
         }
     }
 
@@ -313,7 +341,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * @param e Click event.
      * @param comment Comment to delete.
      */
-    async deleteComment(e: Event, comment: CoreCommentsDataWithUser | CoreCommentsOfflineWithUser): Promise<void> {
+    async deleteComment(e: Event, comment: CoreCommentsDataToDisplay | CoreCommentsOfflineWithUser): Promise<void> {
         e.preventDefault();
         e.stopPropagation();
 
@@ -397,7 +425,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * @param comment Comment object.
      * @return Promise resolved with modified comment when done.
      */
-    protected async loadCommentProfile(comment: CoreCommentsDataWithUser): Promise<CoreCommentsDataWithUser> {
+    protected async loadCommentProfile(comment: CoreCommentsDataToDisplay): Promise<CoreCommentsDataToDisplay> {
         // Get the user profile image.
         try {
             const user = await CoreUser.getProfile(comment.userid!, undefined, true);
@@ -409,6 +437,54 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
 
         return comment;
 
+    }
+
+    /**
+     * Check if the user info should be displayed for the current message.
+     * User data is only displayed if the previous message was from another user.
+     *
+     * @param comment Comment object.
+     * @param prevComment Previous comment object.
+     * @return Whether user data should be shown.
+     */
+    protected showUserData(
+        comment: CoreCommentsDataToDisplay,
+        prevComment?: CoreCommentsDataToDisplay,
+    ): boolean {
+        return comment.userid != this.currentUserId && (!prevComment || prevComment.userid != comment.userid || !!comment.showDate);
+    }
+
+    /**
+     * Check if a css tail should be shown.
+     *
+     * @param comment Comment object.
+     * @param nextComment Previous comment object.
+     * @return Whether user data should be shown.
+     */
+    protected showTail(
+        comment: CoreCommentsDataToDisplay,
+        nextComment?: CoreCommentsDataToDisplay,
+    ): boolean {
+        return !nextComment || nextComment.userid != comment.userid || !!nextComment.showDate;
+    }
+
+    /**
+     * Check if the date should be displayed between messages (when the day changes at midnight for example).
+     *
+     * @param comment Comment object.
+     * @param prevComment Previous comment object.
+     * @return True if messages are from diferent days, false othetwise.
+     */
+    protected showDate(
+        comment: CoreCommentsDataToDisplay,
+        prevComment?: CoreCommentsDataToDisplay,
+    ): boolean {
+        if (!prevComment) {
+            return true;
+        }
+
+        // Check if day has changed.
+        return !moment(comment.timecreated * 1000).isSame(prevComment.timecreated * 1000, 'day');
     }
 
     /**
@@ -434,14 +510,10 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 return;
             }
 
-            if (!this.currentUser) {
-                this.currentUser = await CoreUser.getProfile(this.currentUserId, undefined, true);
+            if (this.newComment == '') {
+                this.newComment = this.offlineComment!.content;
             }
 
-            if (this.currentUser) {
-                this.offlineComment!.profileimageurl = this.currentUser.profileimageurl;
-                this.offlineComment!.fullname = this.currentUser.fullname;
-            }
             this.offlineComment!.userid = this.currentUserId;
 
             return;
@@ -481,7 +553,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * @param e Click event.
      * @param comment Comment to delete.
      */
-    async undoDeleteComment(e: Event, comment: CoreCommentsDataWithUser): Promise<void> {
+    async undoDeleteComment(e: Event, comment: CoreCommentsDataToDisplay): Promise<void> {
         e.preventDefault();
         e.stopPropagation();
 
@@ -489,6 +561,18 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
 
         comment.deleted = false;
         this.showDelete = false;
+    }
+
+    /**
+     * Scroll bottom when render has finished.
+     */
+    protected scrollToBottom(): void {
+        // Need a timeout to leave time to the view to be rendered.
+        setTimeout(() => {
+            if (!this.viewDestroyed) {
+                this.content?.scrollToBottom();
+            }
+        }, 100);
     }
 
     /**
@@ -502,15 +586,19 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * Page destroyed.
      */
     ngOnDestroy(): void {
-        this.syncObserver && this.syncObserver.off();
+        this.syncObserver?.off();
+        this.viewDestroyed = true;
     }
 
 }
 
-export type CoreCommentsDataWithUser = CoreCommentsData & {
+export type CoreCommentsDataToDisplay = CoreCommentsData & {
     profileimageurl?: string;
     fullname?: string;
     deleted?: boolean;
+    showDate?: boolean;
+    showTail?: boolean;
+    showUserData?: boolean;
 };
 
 export type CoreCommentsOfflineWithUser = CoreCommentsDBRecord & {

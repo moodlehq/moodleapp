@@ -14,20 +14,17 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
-import { CoreCommentsAddComponent } from './add/add-modal';
 import { CoreCommentsCommentsComponent } from './comments/comments';
 
 @NgModule({
     declarations: [
         CoreCommentsCommentsComponent,
-        CoreCommentsAddComponent,
     ],
     imports: [
         CoreSharedModule,
     ],
     exports: [
         CoreCommentsCommentsComponent,
-        CoreCommentsAddComponent,
     ],
 })
 export class CoreCommentsComponentsModule {}
