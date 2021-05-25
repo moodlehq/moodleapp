@@ -89,8 +89,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         this.courseId = this.courseId || this.module.course;
         this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname) || '';
         this.showLegacyCompletion = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
-        this.showManualCompletion =
-            this.showCompletionConditions || CoreCourseModuleDelegate.manualCompletionAlwaysShown(this.module);
+        this.checkShowManualCompletion();
 
         if (!this.module.handlerData) {
             return;
@@ -126,6 +125,14 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
                 }
             }, CoreSites.getCurrentSiteId());
         }
+    }
+
+    /**
+     * Check whether manual completion should be shown.
+     */
+    protected async checkShowManualCompletion(): Promise<void> {
+        this.showManualCompletion = this.showCompletionConditions ||
+            await CoreCourseModuleDelegate.manualCompletionAlwaysShown(this.module);
     }
 
     /**

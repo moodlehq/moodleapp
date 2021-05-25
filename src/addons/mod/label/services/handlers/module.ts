@@ -74,7 +74,7 @@ export class AddonModLabelModuleHandlerService implements CoreCourseModuleHandle
     /**
      * @inheritdoc
      */
-    manualCompletionAlwaysShown(): boolean {
+    async manualCompletionAlwaysShown(): Promise<boolean> {
         return true;
     }
 

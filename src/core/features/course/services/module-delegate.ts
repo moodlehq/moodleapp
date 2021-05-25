@@ -98,9 +98,9 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * Returns false by default.
      *
      * @param module Module.
-     * @return Whether the manual completion should always be displayed.
+     * @return Promise resolved with boolean: whether the manual completion should always be displayed.
      */
-    manualCompletionAlwaysShown?(module: CoreCourseModule): boolean;
+    manualCompletionAlwaysShown?(module: CoreCourseModule): Promise<boolean>;
 }
 
 /**
@@ -380,10 +380,12 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * Returns false by default.
      *
      * @param module Module.
-     * @return Whether the manual completion should always be displayed.
+     * @return Promise resolved with boolean: whether the manual completion should always be displayed.
      */
-    manualCompletionAlwaysShown(module: CoreCourseModule): boolean {
-        return !!this.executeFunctionOnEnabled<boolean>(module.modname, 'manualCompletionAlwaysShown', [module]);
+    async manualCompletionAlwaysShown(module: CoreCourseModule): Promise<boolean> {
+        const result = await this.executeFunctionOnEnabled<boolean>(module.modname, 'manualCompletionAlwaysShown', [module]);
+
+        return !!result;
     }
 
 }
