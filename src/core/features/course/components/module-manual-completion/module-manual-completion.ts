@@ -25,7 +25,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 @Component({
     selector: 'core-course-module-manual-completion',
     templateUrl: 'core-course-module-manual-completion.html',
-    styleUrls: ['module-manual-completion.scss'],
 })
 export class CoreCourseModuleManualCompletionComponent implements OnInit, OnChanges, OnDestroy {
 

@@ -85,39 +85,11 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
             title: module.name,
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
-            async action(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+            action: async (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
                 const modal = await CoreDomUtils.showModalLoading();
 
-                // First of all, make sure module contents are loaded.
                 try {
-                    await CoreCourse.loadModuleContents(
-                        module,
-                        courseId,
-                        undefined,
-                        false,
-                        false,
-                        undefined,
-                        this.modName,
-                    );
-
-                    // Check if the URL can be handled by the app. If so, always open it directly.
-                    const canHandle =
-                        await CoreContentLinksHelper.canHandleLink(module.contents[0].fileurl, courseId, undefined, true);
-
-                    let shouldOpen = false;
-                    if (canHandle) {
-                        // URL handled by the app, open it directly.
-                        shouldOpen = true;
-                    } else if (AddonModUrl.isGetUrlWSAvailable()) {
-                        // Not handled by the app, check the display type.
-                        const url = await CoreUtils.ignoreErrors(AddonModUrl.getUrl(courseId, module.id));
-                        const displayType = AddonModUrl.getFinalDisplayType(url);
-
-                        shouldOpen = displayType == CoreConstants.RESOURCELIB_DISPLAY_OPEN ||
-                            displayType == CoreConstants.RESOURCELIB_DISPLAY_POPUP;
-                    } else {
-                        shouldOpen = false;
-                    }
+                    const shouldOpen = this.shouldOpenLink(module, courseId);
 
                     if (shouldOpen) {
                         openUrl(module, courseId);
@@ -183,6 +155,46 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
      */
     async getMainComponent(): Promise<Type<unknown> | undefined> {
         return AddonModUrlIndexComponent;
+    }
+
+    /**
+     * Check whether the link should be opened directly.
+     *
+     * @param module Module.
+     * @param courseId Course ID.
+     * @return Promise resolved with boolean.
+     */
+    protected async shouldOpenLink(module: CoreCourseModule, courseId: number): Promise<boolean> {
+        try {
+            // First of all, make sure module contents are loaded.
+            await CoreCourse.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
+
+            // Check if the URL can be handled by the app. If so, always open it directly.
+            const canHandle = await CoreContentLinksHelper.canHandleLink(module.contents[0].fileurl, courseId, undefined, true);
+
+            if (canHandle) {
+                // URL handled by the app, open it directly.
+                return true;
+            } else if (AddonModUrl.isGetUrlWSAvailable()) {
+                // Not handled by the app, check the display type.
+                const url = await CoreUtils.ignoreErrors(AddonModUrl.getUrl(courseId, module.id));
+                const displayType = AddonModUrl.getFinalDisplayType(url);
+
+                return displayType == CoreConstants.RESOURCELIB_DISPLAY_OPEN ||
+                    displayType == CoreConstants.RESOURCELIB_DISPLAY_POPUP;
+            }
+
+            return false;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    manualCompletionAlwaysShown(module: CoreCourseModule): Promise<boolean> {
+        return this.shouldOpenLink(module, module.course!);
     }
 
 }

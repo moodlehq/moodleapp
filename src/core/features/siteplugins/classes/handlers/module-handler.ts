@@ -192,7 +192,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
     /**
      * @inheritdoc
      */
-    manualCompletionAlwaysShown(module: CoreCourseModule): boolean {
+    async manualCompletionAlwaysShown(module: CoreCourseModule): Promise<boolean> {
         if (this.handlerSchema.manualcompletionalwaysshown !== undefined) {
             return this.handlerSchema.manualcompletionalwaysshown;
         }
