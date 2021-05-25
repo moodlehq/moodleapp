@@ -28,7 +28,7 @@ import { AddonModChatFormattedSessionMessage, AddonModChatHelper } from '../../s
 @Component({
     selector: 'page-addon-mod-chat-session-messages',
     templateUrl: 'session-messages.html',
-    styleUrls: ['session-messages.scss', '../../../../messages/pages/discussion/discussion.scss'],
+    styleUrls: ['session-messages.scss'],
 })
 export class AddonModChatSessionMessagesPage implements OnInit {
 

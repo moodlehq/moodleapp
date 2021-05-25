@@ -36,7 +36,7 @@ import { AddonModChatFormattedMessage, AddonModChatHelper } from '../../services
     selector: 'page-addon-mod-chat-chat',
     templateUrl: 'chat.html',
     animations: [CoreAnimations.SLIDE_IN_OUT],
-    styleUrls: ['chat.scss', '../../../../messages/pages/discussion/discussion.scss'],
+    styleUrls: ['chat.scss'],
 })
 export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
 
@@ -54,7 +54,6 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     courseId!: number;
     cmId!: number;
 
-    protected logger;
     protected chatId!: number;
     protected sessionId?: string;
     protected lastTime = 0;

@@ -86,11 +86,10 @@
                     [@coreSlideInOut]="message.userid == currentUserId ? '' : 'fromLeft'">
                     <ion-label>
                         <!-- User data. -->
-                        <h2 class="addon-message-user">
-                            <core-user-avatar slot="start" [user]="message" [linkProfile]="false" *ngIf="message.showUserData">
+                        <h2 class="addon-message-user" *ngIf="message.showUserData">
+                            <core-user-avatar slot="start" [user]="message" [linkProfile]="false">
                             </core-user-avatar>
-                            <div *ngIf="message.showUserData">{{ message.userfullname }}</div>
-                            <ion-note>{{ message.timestamp * 1000 | coreFormatDate: "strftimetime" }}</ion-note>
+                            <div>{{ message.userfullname }}</div>
                         </h2>
 
                         <p class="addon-message-text">
@@ -99,6 +98,7 @@
                             </core-format-text>
                         </p>
                     </ion-label>
+                    <ion-note>{{ message.timestamp * 1000 | coreFormatDate: "strftimetime" }}</ion-note>
                     <div class="tail" *ngIf="message.showTail"></div>
                 </ion-item>
             </ng-container>
