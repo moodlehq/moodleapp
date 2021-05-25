@@ -1,4 +1,4 @@
-$core-login-page-background-color: #000 !default;
+$core-login-page-background-color:transparent !default;
 $core-login-page-text-color: #fff; //$text-color !default;
 $core-login-button-outline: false !default;
 $core-login-loading-color: false !default;
@@ -16,6 +16,14 @@ $core-dark-input-login-item-text-color: $core-dark-login-page-text-color !defaul
 ion-app.app-root page-core-login-credentials,
 ion-app.app-root page-core-login-reconnect,
 ion-app.app-root page-core-login-site {
+
+    .login-backgroundimage { 
+        background-image: url("#{$assets-path}/img/login_backgroundimage.png");
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 145% 100%;
+    }
+
     .scroll-content {
         background: $core-login-page-background-color;
         color: $core-login-page-text-color;
@@ -157,4 +165,5 @@ ion-app.app-root page-core-login-site {
         background-color: #E48E00;
        
     }
+ 
 }

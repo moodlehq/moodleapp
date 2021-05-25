@@ -136,10 +136,10 @@ $subdued-text-color:         $gray-darker !default;
 
 $list-background-color:      $white !default;
 
-$tabs-background:            $gray-darker !default;
+$tabs-background:            #ffffff !default; //$gray-darker !default;
 $tabs-border-color:          #b2b2b2 !default;
-$tabs-tab-color-active:      $core-color !default;
-$tabs-tab-color-inactive:    $white !default;
+$tabs-tab-color-active:      #93b827 !default; //$core-color !default;
+$tabs-tab-color-inactive:    $gray-darker !default;
 $ion-tabs-badge-color:       $tabs-tab-color-active !default;
 
 $text-input-highlight-color-valid: $green !default;
