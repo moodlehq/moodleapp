@@ -52,6 +52,7 @@ import { CoreArray } from '../singletons/array';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreNavigationOptions } from './navigator';
 import { CoreSitesFactory } from './sites-factory';
+import { CoreText } from '@singletons/text';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 
@@ -1635,10 +1636,10 @@ export class CoreSitesProvider {
         // If more than one site is returned it usually means there are different users stored. Use any of them.
         const site = await this.getSite(siteIds[0]);
 
-        const siteUrl = CoreTextUtils.removeEndingSlash(
+        const siteUrl = CoreText.removeEndingSlash(
             CoreUrlUtils.removeProtocolAndWWW(site.getURL()),
         );
-        const treatedUrl = CoreTextUtils.removeEndingSlash(CoreUrlUtils.removeProtocolAndWWW(url));
+        const treatedUrl = CoreText.removeEndingSlash(CoreUrlUtils.removeProtocolAndWWW(url));
 
         if (siteUrl == treatedUrl) {
             result.site = site;
