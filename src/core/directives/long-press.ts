@@ -27,6 +27,7 @@ export class CoreLongPressDirective implements OnInit, OnDestroy {
 
     element: HTMLElement;
     pressGesture?: Gesture;
+    protected moved = false;
 
     @Output() longPress = new EventEmitter();
 
@@ -42,8 +43,11 @@ export class CoreLongPressDirective implements OnInit, OnDestroy {
         this.pressGesture = GestureController.create({
             el: this.element,
             threshold: 0,
+            disableScroll: true,
             gestureName: 'longpress',
-            onEnd: ev => this.longPress.emit(ev.event),
+            onStart: () => this.moved = false,
+            onMove: () => this.moved = true,
+            onEnd: ev => !this.moved && this.longPress.emit(ev.event),
         }, true);
 
         this.pressGesture.enable();
