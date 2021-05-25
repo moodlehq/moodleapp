@@ -18,6 +18,7 @@ import { CoreCourse, CoreCourseAnyModuleData, CoreCourseModuleContentFile } from
 import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { CoreFileHelper } from '@services/file-helper';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
@@ -71,6 +72,7 @@ export class AddonModResourceModuleHandlerService implements CoreCourseModuleHan
             handlerData.buttons![0].hidden = status !== CoreConstants.DOWNLOADED ||
                 AddonModResourceHelper.isDisplayedInIframe(module);
         };
+        const openWithPicker = CoreFileHelper.defaultIsOpenWithPicker();
 
         const handlerData: CoreCourseModuleHandlerData = {
             icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
@@ -88,8 +90,8 @@ export class AddonModResourceModuleHandlerService implements CoreCourseModuleHan
             updateStatus: updateStatus.bind(this),
             buttons: [{
                 hidden: true,
-                icon: 'document',
-                label: 'addon.mod_resource.openthefile',
+                icon: openWithPicker ? 'fas-share-square' : 'fas-file',
+                label: module.name + ': ' + Translate.instant(openWithPicker ? 'core.openwith' : 'addon.mod_resource.openthefile'),
                 action: async (event: Event, module: CoreCourseModule, courseId: number): Promise<void> => {
                     const hide = await this.hideOpenButton(module, courseId);
                     if (!hide) {

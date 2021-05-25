@@ -23,8 +23,9 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
 import { CoreForms } from '@singletons/form';
+import { CoreApp } from '@services/app';
 
 /**
  * Component to handle a local file. Only files inside the app folder can be managed.
@@ -55,6 +56,11 @@ export class CoreLocalFileComponent implements OnInit {
     newFileName = '';
     editMode = false;
     relativePath?: string;
+    isIOS = false;
+    openButtonIcon = '';
+    openButtonLabel = '';
+
+    protected defaultIsOpenWithPicker = false;
 
     /**
      * Component being initialized.
@@ -76,6 +82,10 @@ export class CoreLocalFileComponent implements OnInit {
 
         this.timemodified = CoreTimeUtils.userDate(metadata.modificationTime.getTime(), 'core.strftimedatetimeshort');
 
+        this.isIOS = CoreApp.isIOS();
+        this.defaultIsOpenWithPicker = CoreFileHelper.defaultIsOpenWithPicker();
+        this.openButtonIcon = this.defaultIsOpenWithPicker ? 'fas-file' : 'fas-share-square';
+        this.openButtonLabel = this.defaultIsOpenWithPicker ? 'core.openfile' : 'core.openwith';
     }
 
     /**
@@ -95,11 +105,12 @@ export class CoreLocalFileComponent implements OnInit {
     }
 
     /**
-     * File clicked.
+     * Open file.
      *
      * @param e Click event.
+     * @param isOpenButton Whether the open button was clicked.
      */
-    async fileClicked(e: Event): Promise<void> {
+    async openFile(e: Event, isOpenButton = false): Promise<void> {
         if (this.editMode) {
             return;
         }
@@ -107,7 +118,7 @@ export class CoreLocalFileComponent implements OnInit {
         e.preventDefault();
         e.stopPropagation();
 
-        if (CoreUtils.isTrueOrOne(this.overrideClick) && this.onClick.observers.length) {
+        if (!isOpenButton && CoreUtils.isTrueOrOne(this.overrideClick) && this.onClick.observers.length) {
             this.onClick.emit();
 
             return;
@@ -121,7 +132,13 @@ export class CoreLocalFileComponent implements OnInit {
             }
         }
 
-        CoreUtils.openFile(this.file!.toURL());
+        const options: CoreUtilsOpenFileOptions = {};
+        if (isOpenButton) {
+            // Use the non-default method.
+            options.useIOSPicker = !this.defaultIsOpenWithPicker;
+        }
+
+        CoreUtils.openFile(this.file!.toURL(), options);
     }
 
     /**

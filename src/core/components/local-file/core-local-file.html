@@ -1,5 +1,5 @@
 <form (ngSubmit)="changeName(newFileName, $event)" #nameForm>
-    <ion-item class="ion-text-wrap item-file" (click)="fileClicked($event)" button> <!-- [class.item-input]="editMode" -->
+    <ion-item class="ion-text-wrap item-file" (click)="openFile($event)" button detail="false">
         <ion-thumbnail slot="start">
             <img [src]="fileIcon" [alt]="fileExtension" role="presentation" />
         </ion-thumbnail>
@@ -18,18 +18,25 @@
         </ion-input>
 
         <div class="buttons" slot="end" *ngIf="manage">
-            <ion-button *ngIf="!editMode" fill="clear" [core-suppress-events] (onClick)="activateEdit($event)"
-                [attr.aria-label]="'core.edit' | translate" color="dark">
-                <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true"></ion-icon>
+            <ion-button fill="clear" *ngIf="isIOS" (click)="openFile($event, true)"
+                [attr.aria-label]="openButtonLabel | translate">
+                <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true"></ion-icon>
             </ion-button>
 
-            <ion-button *ngIf="editMode" fill="clear" [attr.aria-label]="'core.save' | translate" color="success" type="submit">
-                <ion-icon name="fas-check" slot="icon-only" aria-hidden="true"></ion-icon>
-            </ion-button>
+            <ng-container *ngIf="manage">
+                <ion-button *ngIf="!editMode" fill="clear" [core-suppress-events] (onClick)="activateEdit($event)"
+                    [attr.aria-label]="'core.edit' | translate" color="dark">
+                    <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
 
-            <ion-button fill="clear" (click)="deleteFile($event)" [attr.aria-label]="'core.delete' | translate" color="danger">
-                <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
-            </ion-button>
+                <ion-button *ngIf="editMode" fill="clear" [attr.aria-label]="'core.save' | translate" color="success" type="submit">
+                    <ion-icon name="fas-check" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+
+                <ion-button fill="clear" (click)="deleteFile($event)" [attr.aria-label]="'core.delete' | translate" color="danger">
+                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </ng-container>
         </div>
     </ion-item>
 </form>

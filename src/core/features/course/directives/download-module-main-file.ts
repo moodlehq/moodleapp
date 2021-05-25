@@ -17,6 +17,7 @@ import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse, CoreCourseModuleContentFile, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
 
 /**
  * Directive to allow downloading and open the main file of a module.
@@ -36,6 +37,7 @@ export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
     @Input() component?: string; // Component to link the file to.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component. If not defined, use moduleId.
     @Input() files?: CoreCourseModuleContentFile[]; // List of files of the module. If not provided, use module.contents.
+    @Input() options?: CoreUtilsOpenFileOptions = {};
 
     protected element: HTMLElement;
 
@@ -73,6 +75,8 @@ export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
                     this.component,
                     componentId,
                     this.files,
+                    undefined,
+                    this.options,
                 );
             } catch (error) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);

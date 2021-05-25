@@ -20,6 +20,7 @@ import {
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
@@ -49,6 +50,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     contentText = '';
     displayDescription = true;
     warning = '';
+    isIOS = false;
 
     constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
         super('AddonModResourceIndexComponent', courseContentsPage);
@@ -61,6 +63,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         super.ngOnInit();
 
         this.canGetResource = AddonModResource.isGetResourceWSAvailable();
+        this.isIOS = CoreApp.isIOS();
 
         await this.loadContent();
         try {
@@ -155,9 +158,10 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     /**
      * Opens a file.
      *
+     * @param useIOSPicker Whether to use the picker in iOS.
      * @return Promise resolved when done.
      */
-    async open(): Promise<void> {
+    async open(useIOSPicker?: boolean): Promise<void> {
         let downloadable = await CoreCourseModulePrefetchDelegate.isModuleDownloadable(this.module, this.courseId);
 
         if (downloadable) {
@@ -166,7 +170,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             downloadable = await AddonModResourceHelper.isMainFileDownloadable(this.module);
 
             if (downloadable) {
-                return AddonModResourceHelper.openModuleFile(this.module, this.courseId);
+                return AddonModResourceHelper.openModuleFile(this.module, this.courseId, { useIOSPicker });
             }
         }
 

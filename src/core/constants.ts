@@ -173,6 +173,7 @@ export interface EnvironmentConfig {
     displayqroncredentialscreen?: boolean;
     displayqronsitescreen?: boolean;
     forceOpenLinksIn: 'app' | 'browser';
+    iosopenfilepicker?: boolean;
 };
 
 export interface EnvironmentBuild {

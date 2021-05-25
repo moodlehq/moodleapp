@@ -2,6 +2,6 @@
     "errorwhileloadingthecontent": "Error while loading the content.",
     "modifieddate": "Modified {{$a}}",
     "modulenameplural": "Files",
-    "openthefile": "Open the file",
+    "openthefile": "Open",
     "uploadeddate": "Uploaded {{$a}}"
 }

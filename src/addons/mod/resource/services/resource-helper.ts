@@ -25,6 +25,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModResource, AddonModResourceProvider } from './resource';
 
@@ -171,9 +172,10 @@ export class AddonModResourceHelperProvider {
      *
      * @param module Module where to get the contents.
      * @param courseId Course Id, used for completion purposes.
+     * @param options Options to open the file.
      * @return Resolved when done.
      */
-    async openModuleFile(module: CoreCourseWSModule, courseId: number): Promise<void> {
+    async openModuleFile(module: CoreCourseWSModule, courseId: number, options: CoreUtilsOpenFileOptions = {}): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
@@ -184,6 +186,8 @@ export class AddonModResourceHelperProvider {
                 AddonModResourceProvider.COMPONENT,
                 module.id,
                 module.contents,
+                undefined,
+                options,
             );
 
             try {

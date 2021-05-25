@@ -1984,6 +1984,7 @@
   "core.openmodinbrowser": "local_moodlemobileapp",
   "core.opensecurityquestion": "local_moodlemobileapp",
   "core.opensettings": "local_moodlemobileapp",
+  "core.openwith": "local_moodlemobileapp",
   "core.othergroups": "group",
   "core.pagea": "moodle",
   "core.parentlanguage": "langconfig",

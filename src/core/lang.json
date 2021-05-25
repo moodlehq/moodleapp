@@ -217,6 +217,7 @@
     "openmodinbrowser": "Open {{$a}} in browser",
     "opensecurityquestion": "Open security question",
     "opensettings": "Open settings",
+    "openwith": "Open with...",
     "othergroups": "Other groups",
     "pagea": "Page {{$a}}",
     "parentlanguage": "",

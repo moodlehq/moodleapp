@@ -31,7 +31,7 @@ import { CoreLogger } from '@singletons/logger';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
 import {
     CoreCourseAnyCourseData,
     CoreCourseBasicData,
@@ -656,6 +656,7 @@ export class CoreCourseHelperProvider {
      * @param componentId An ID to use in conjunction with the component.
      * @param files List of files of the module. If not provided, use module.contents.
      * @param siteId The site ID. If not defined, current site.
+     * @param options Options to open the file.
      * @return Resolved on success.
      */
     async downloadModuleAndOpenFile(
@@ -665,6 +666,7 @@ export class CoreCourseHelperProvider {
         componentId?: string | number,
         files?: CoreCourseModuleContentFile[],
         siteId?: string,
+        options: CoreUtilsOpenFileOptions = {},
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -696,7 +698,7 @@ export class CoreCourseHelperProvider {
         const result = await this.downloadModuleWithMainFileIfNeeded(module, courseId, component || '', componentId, files, siteId);
 
         if (CoreUrlUtils.isLocalFileUrl(result.path)) {
-            return CoreUtils.openFile(result.path);
+            return CoreUtils.openFile(result.path, options);
         }
 
         /* In iOS, if we use the same URL in embedded browser and background download then the download only
@@ -724,7 +726,7 @@ export class CoreCourseHelperProvider {
                 path = await CoreFilepool.getInternalUrlByUrl(siteId, mainFile.fileurl);
             }
 
-            await CoreUtils.openFile(path);
+            await CoreUtils.openFile(path, options);
         }
     }
 
