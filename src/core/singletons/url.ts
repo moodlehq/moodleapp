@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from './text';
 
 /**
  * Parts contained within a url.
@@ -196,8 +196,11 @@ export class CoreUrl {
         const partsA = CoreUrl.parse(urlA);
         const partsB = CoreUrl.parse(urlB);
 
-        return partsA?.domain == partsB?.domain &&
-            CoreTextUtils.removeEndingSlash(partsA?.path) == CoreTextUtils.removeEndingSlash(partsB?.path);
+        partsA && Object.entries(partsA).forEach(([part, value]) => partsA[part] = value?.toLowerCase());
+        partsB && Object.entries(partsB).forEach(([part, value]) => partsB[part] = value?.toLowerCase());
+
+        return partsA?.domain === partsB?.domain
+            && CoreText.removeEndingSlash(partsA?.path) === CoreText.removeEndingSlash(partsB?.path);
     }
 
 }

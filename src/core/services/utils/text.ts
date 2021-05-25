@@ -25,6 +25,7 @@ import { Locutus } from '@singletons/locutus';
 import { CoreViewerTextComponent } from '@features/viewer/components/text/text';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreDomUtils } from './dom';
+import { CoreText } from '@singletons/text';
 
 /**
  * Different type of errors the app can treat.
@@ -710,21 +711,10 @@ export class CoreTextUtilsProvider {
     }
 
     /**
-     * Remove ending slash from a path or URL.
-     *
-     * @param text Text to treat.
-     * @return Treated text.
+     * @deprecated Use CoreText instead.
      */
     removeEndingSlash(text?: string): string {
-        if (!text) {
-            return '';
-        }
-
-        if (text.slice(-1) == '/') {
-            return text.substr(0, text.length - 1);
-        }
-
-        return text;
+        return CoreText.removeEndingSlash(text);
     }
 
     /**

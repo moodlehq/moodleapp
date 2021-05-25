@@ -43,4 +43,17 @@ describe('CoreUrl singleton', () => {
         });
     });
 
+    it('compares domains and paths', () => {
+        expect(CoreUrl.sameDomainAndPath('https://school.edu', 'https://school.edu')).toBe(true);
+        expect(CoreUrl.sameDomainAndPath('https://school.edu', 'HTTPS://SCHOOL.EDU')).toBe(true);
+        expect(CoreUrl.sameDomainAndPath('https://school.edu/moodle', 'https://school.edu/moodle')).toBe(true);
+        expect(CoreUrl.sameDomainAndPath('https://school.edu/moodle', 'https://school.edu/moodle/')).toBe(true);
+        expect(CoreUrl.sameDomainAndPath('https://school.edu/moodle', 'https://school.edu/moodle#about')).toBe(true);
+        expect(CoreUrl.sameDomainAndPath('https://school.edu/moodle', 'HTTPS://SCHOOL.EDU/MOODLE')).toBe(true);
+        expect(CoreUrl.sameDomainAndPath('https://school.edu/moodle', 'HTTPS://SCHOOL.EDU/MOODLE/')).toBe(true);
+        expect(CoreUrl.sameDomainAndPath('https://school.edu/moodle', 'HTTPS://SCHOOL.EDU/MOODLE#ABOUT')).toBe(true);
+
+        expect(CoreUrl.sameDomainAndPath('https://school.edu/moodle', 'https://school.edu/moodle/about')).toBe(false);
+    });
+
 });
