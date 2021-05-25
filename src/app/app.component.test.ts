@@ -22,6 +22,7 @@ import { Network, Platform, NgZone } from '@singletons';
 
 import { mockSingleton, renderComponent } from '@/testing/utils';
 import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
+import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 
 describe('AppComponent', () => {
 
@@ -33,6 +34,7 @@ describe('AppComponent', () => {
         mockSingleton(Network, { onChange: () => new Observable() });
         mockSingleton(Platform, { ready: () => Promise.resolve(), resume: new Subject<void>() });
         mockSingleton(NgZone, { run: jest.fn() });
+        mockSingleton(CoreSitePlugins, { hasSitePluginsLoaded: false });
 
         navigator = mockSingleton(CoreNavigator, ['navigate']);
         langProvider = mockSingleton(CoreLang, ['clearCustomStrings']);
