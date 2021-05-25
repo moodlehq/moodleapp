@@ -1,0 +1,185 @@
+@import "~theme/globals.scss";
+
+:host {
+    ion-content {
+        --background: var(--background-alternative);
+
+        &::part(scroll) {
+            padding-bottom: 0 !important;
+        }
+    }
+
+    .addon-messages-discussion-container {
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 15px;
+        background: var(--background-alternative);
+    }
+
+    .addon-messages-date {
+        font-weight: normal;
+        font-size: 0.9rem;
+    }
+
+    // Message item.
+    ion-item.addon-message {
+        border: 0;
+        border-radius: 4px;
+        padding: 0 8px 0 8px;
+        margin: 10px 8px 0 8px;
+        --background: var(--addon-messages-message-bg);
+        background: var(--background);
+        align-self: flex-start;
+        width: 90%;
+        max-width: 90%;
+        --min-height: var(--a11y-min-target-size);
+        position: relative;
+        @include core-transition(width);
+        // This is needed to display bubble tails.
+        overflow: visible;
+
+        &::part(native) {
+            --inner-border-width: 0;
+            --inner-padding-end: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        core-format-text > p:only-child {
+            display: inline;
+        }
+
+        .addon-message-user {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: .5rem;
+            margin-top: 0;
+            color: var(--ion-text-color);
+
+            core-user-avatar {
+                display: block;
+                --core-avatar-size: var(--addon-messages-avatar-size);
+                margin: 0;
+            }
+
+            div {
+                font-weight: 500;
+                flex-grow: 1;
+                @include padding-horizontal(.5rem);
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+
+        ion-note {
+            color: var(--addon-messages-message-note-text);
+            font-size: var(--addon-messages-message-note-font-size);
+            margin: 0;
+            padding: 0 0 8px 0;
+            align-self: flex-end;
+        }
+
+        &[tappable]:active {
+            --background: var(--addon-messages-message-activated-bg);
+        }
+
+        ion-label {
+            margin: 0;
+            padding: 8px 0;
+        }
+
+        .addon-message-text {
+            display: inline-flex;
+            * {
+                color: var(--ion-text-color);
+            }
+        }
+
+        .tail {
+            content: '';
+            width: 0;
+            height: 0;
+            border: 0.5rem solid transparent;
+            position: absolute;
+            touch-action: none;
+            bottom: 0;
+        }
+
+        // Defines when an item-message is the user's.
+        &.addon-message-mine {
+            --background: var(--addon-messages-message-mine-bg);
+            align-self: flex-end;
+
+            &[tappable]:active {
+                --background: var(--addon-messages-message-mine-activated-bg);
+            }
+
+            .spinner {
+                @include float(end);
+                @include margin(2px, -3px, -2px, 5px);
+
+                svg {
+                    width: 16px;
+                    height: 16px;
+                }
+            }
+
+            .tail {
+                @include position(null, -8px, null, null);
+                @include margin-horizontal(null, -0.5rem);
+                border-bottom-color: var(--addon-messages-message-mine-bg);
+            }
+
+            &[tappable]:active .tail {
+                border-bottom-color: var(--addon-messages-message-mine-activated-bg);
+            }
+        }
+
+        &.addon-message-not-mine .tail {
+            border-bottom-color: var(--addon-messages-message-bg);
+            @include position(null, null, null, -8px);
+            @include margin-horizontal(-0.5rem, null);
+        }
+
+        &[tappable].addon-message-not-mine.activated .tail {
+            border-bottom-color: var(--addon-messages-message-activated-bg);
+        }
+
+        .addon-messages-delete-button {
+            min-height: initial;
+            line-height: initial;
+            @include margin(0, null, 0, null);
+            height: var(--a11y-min-target-size) !important;
+            align-self: flex-end;
+
+            ion-icon {
+                font-size: 1.4em;
+                line-height: initial;
+                color: var(--ion-color-danger);
+            }
+        }
+
+        &.addon-message-no-user {
+            margin-top: 8px;
+        }
+    }
+
+    ion-item.addon-message.addon-message-mine + ion-item.addon-message.addon-message-no-user.addon-message-mine,
+    ion-item.addon-message.addon-message-not-mine + ion-item.addon-message.addon-message-no-user.addon-message-not-mine {
+        .item-heading {
+            margin-bottom: 0;
+        }
+        padding-top: 0;
+    }
+
+}
+
+:host-context(.ios) {
+    ion-footer .toolbar:last-child {
+        padding-bottom: 4px;
+        min-height: 0;
+    }
+}

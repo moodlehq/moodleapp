@@ -85,11 +85,11 @@ export class CoreCommentsProvider {
         itemId: number,
         area: string = '',
         siteId?: string,
-    ): Promise<CoreCommentsData | boolean> {
+    ): Promise<CoreCommentsData | false> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Convenience function to store a comment to be synchronized later.
-        const storeOffline = async (): Promise<boolean> => {
+        const storeOffline = async (): Promise<false> => {
             await CoreCommentsOffline.saveComment(content, contextLevel, instanceId, component, itemId, area, siteId);
 
             return false;

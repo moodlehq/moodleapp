@@ -11,7 +11,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded" class="safe-area-page">
-        <ion-list class="addon-messages-discussion-container" aria-live="polite">
+        <ion-list class="addon-messages-discussion-container">
             <ng-container *ngFor="let message of messages; index as index;">
 
                 <div class="ion-text-center addon-messages-date" *ngIf="message.showDate">
@@ -83,7 +83,6 @@
                             <core-user-avatar slot="start" [user]="message" [linkProfile]="false" *ngIf="message.showUserData">
                             </core-user-avatar>
                             <div *ngIf="message.showUserData">{{ message.userfullname }}</div>
-                            <ion-note>{{ message.timestamp * 1000 | coreFormatDate: "strftimetime" }}</ion-note>
                         </h2>
 
                         <p class="addon-message-text">
@@ -91,6 +90,7 @@
                                 [courseId]="courseId">
                             </core-format-text>
                         </p>
+                        <ion-note>{{ message.timestamp * 1000 | coreFormatDate: "strftimetime" }}</ion-note>
                     </ion-label>
                     <div class="tail" *ngIf="message.showTail"></div>
                 </ion-item>

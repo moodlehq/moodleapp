@@ -104,12 +104,33 @@ export class CoreSendMessageFormComponent implements OnInit {
     }
 
     /**
+     * A11y key functionality that prevents keyDown events.
+     *
+     * @param e Event.
+     */
+    enterKeyDown(e: KeyboardEvent, other?: string): void {
+        if (this.sendDisabled) {
+            return;
+        }
+
+        if (this.sendOnEnter && !other) {
+            // Enter clicked, send the message.
+            e.preventDefault();
+            e.stopPropagation();
+        } else if (!this.sendOnEnter && !CoreApp.isMobile() && other == 'control') {
+            // Cmd+Enter or Ctrl+Enter, send message.
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }
+
+    /**
      * Enter key clicked.
      *
      * @param e Event.
      * @param other The name of the other key that was clicked, undefined if no other key.
      */
-    enterClicked(e: Event, other?: string): void {
+    enterKeyUp(e: Event, other?: string): void {
         if (this.sendDisabled) {
             return;
         }
