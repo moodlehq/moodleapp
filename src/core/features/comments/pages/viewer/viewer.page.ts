@@ -153,7 +153,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
 
             let comments = commentsResponse.comments.sort((a, b) => b.timecreated - a.timecreated);
             if (typeof commentsResponse.count != 'undefined') {
-                this.canLoadMore = (this.comments.length + comments.length) > commentsResponse.count;
+                this.canLoadMore = (this.comments.length + comments.length) < commentsResponse.count;
             } else {
                 // Old style.
                 this.canLoadMore = commentsResponse.comments.length > 0 &&
@@ -349,8 +349,9 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             const deletedOnline = await CoreComments.deleteComment(deleteComment);
             this.showDelete = false;
 
-            if (deletedOnline) {
-                const index = this.comments.findIndex((comment) => comment.id == comment.id);
+            if (deletedOnline && 'id' in comment) {
+                const index = this.comments.findIndex((commentinList) => commentinList.id == comment.id);
+
                 if (index >= 0) {
                     this.comments.splice(index, 1);
 
