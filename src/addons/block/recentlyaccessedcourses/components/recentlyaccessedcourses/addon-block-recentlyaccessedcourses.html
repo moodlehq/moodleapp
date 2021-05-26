@@ -2,7 +2,7 @@
     <ion-label>
         <h2>{{ 'addon.block_recentlyaccessedcourses.pluginname' | translate }}</h2>
     </ion-label>
-    <div slot="end">
+    <div slot="end" class="flex-row">
         <div *ngIf="downloadCoursesEnabled && downloadEnabled && courses && courses.length > 1" class="core-button-spinner">
             <ion-button *ngIf="prefetchCoursesData.icon && !prefetchCoursesData.loading" fill="clear" color="dark"
                 (click)="prefetchCourses()" [attr.aria-label]="'core.courses.downloadcourses' | translate">

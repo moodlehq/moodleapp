@@ -28,6 +28,7 @@ import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-
 @Component({
     selector: 'core-site-plugins-course-format',
     templateUrl: 'core-siteplugins-course-format.html',
+    styles: [':host { display: contents; }'],
 })
 export class CoreSitePluginsCourseFormatComponent implements OnChanges {
 

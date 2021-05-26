@@ -25,6 +25,7 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
 @Component({
     selector: 'core-site-plugins-question',
     templateUrl: 'core-siteplugins-question.html',
+    styles: [':host { display: contents; }'],
 })
 export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 

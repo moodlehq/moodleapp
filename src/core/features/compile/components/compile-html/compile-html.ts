@@ -56,6 +56,7 @@ import { CoreUtils } from '@services/utils/utils';
 @Component({
     selector: 'core-compile-html',
     template: '<core-loading [hideUntil]="loaded"><ng-container #dynamicComponent></ng-container></core-loading>',
+    styles: [':host { display: contents; }'],
 })
 // eslint-disable-next-line @angular-eslint/no-conflicting-lifecycle
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {

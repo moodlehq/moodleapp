@@ -25,6 +25,7 @@ import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-
 @Component({
     selector: 'core-site-plugins-block',
     templateUrl: 'core-siteplugins-block.html',
+    styles: [':host { display: contents; }'],
 })
 export class CoreSitePluginsBlockComponent extends CoreBlockBaseComponent implements OnChanges {
 

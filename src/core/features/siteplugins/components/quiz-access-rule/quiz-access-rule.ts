@@ -25,6 +25,7 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
 @Component({
     selector: 'core-site-plugins-quiz-access-rule',
     templateUrl: 'core-siteplugins-quiz-access-rule.html',
+    styles: [':host { display: contents; }'],
 })
 export class CoreSitePluginsQuizAccessRuleComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 

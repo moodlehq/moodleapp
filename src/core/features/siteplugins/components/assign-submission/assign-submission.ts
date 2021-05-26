@@ -24,6 +24,7 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
 @Component({
     selector: 'core-site-plugins-assign-submission',
     templateUrl: 'core-siteplugins-assign-submission.html',
+    styles: [':host { display: contents; }'],
 })
 export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 
