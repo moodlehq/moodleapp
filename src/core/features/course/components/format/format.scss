@@ -58,4 +58,16 @@
         }
     }
 
+    .core-course-section-nav-buttons {
+        display: flex;
+        justify-content: flex-end;
+
+        core-format-text {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            text-transform: none;
+        }
+    }
+
 }

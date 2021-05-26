@@ -24,6 +24,7 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
 @Component({
     selector: 'core-siteplugins-workshop-assessment-strategy',
     templateUrl: 'core-siteplugins-workshop-assessment-strategy.html',
+    styles: [':host { display: contents; }'],
 })
 export class CoreSitePluginsWorkshopAssessmentStrategyComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 

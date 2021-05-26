@@ -40,6 +40,7 @@ import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-
 @Component({
     selector: 'core-site-plugins-module-index',
     templateUrl: 'core-siteplugins-module-index.html',
+    styles: [':host { display: contents; }'],
 })
 export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
 

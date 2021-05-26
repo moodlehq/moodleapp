@@ -24,6 +24,7 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
 @Component({
     selector: 'core-site-plugins-assign-feedback',
     templateUrl: 'core-siteplugins-assign-feedback.html',
+    styles: [':host { display: contents; }'],
 })
 export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 

@@ -15,6 +15,7 @@
 // Based on http://roblouie.com/article/198/using-gestures-in-the-ionic-2-beta/
 
 import { Directive, ElementRef, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { CoreLogger } from '@singletons/logger';
 
 /**
  * Directive to suppress all events on an element. This is useful to prevent keyboard closing when clicking this element.
@@ -28,6 +29,8 @@ import { Directive, ElementRef, OnInit, Input, Output, EventEmitter } from '@ang
  *
  * If you only want to suppress a single event just pass the name of the event. If you want to suppress a set of events,
  * pass an array with the names of the events to suppress.
+ *
+ * Usage of onClick instead of click is mandatory to make this directive work.
  *
  * Example usage:
  *
@@ -51,6 +54,13 @@ export class CoreSupressEventsDirective implements OnInit {
      * Initialize event listeners.
      */
     ngOnInit(): void {
+        if (this.onClick.observers.length == 0) {
+            CoreLogger.getInstance('CoreSupressEventsDirective')
+                .error('No onClick output was defined causing this directive to fail', this.element);
+
+            return;
+        }
+
         let events: string[];
 
         if (this.suppressEvents == 'all' || typeof this.suppressEvents == 'undefined' || this.suppressEvents === null) {

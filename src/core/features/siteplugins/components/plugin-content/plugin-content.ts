@@ -28,6 +28,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 @Component({
     selector: 'core-site-plugins-plugin-content',
     templateUrl: 'core-siteplugins-plugin-content.html',
+    styles: [':host { display: contents; }'],
 })
 export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
 
