@@ -730,3 +730,10 @@ ion-content.disable-scroll-y::part(scroll) {
     z-index: auto;
     will-change: auto;
 }
+
+iframe {
+    border: 0;
+    display: block;
+    max-width: 100%;
+    background-color: var(--ion-background-color);
+}
