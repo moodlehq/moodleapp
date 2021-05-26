@@ -89,7 +89,7 @@
             "",
             "}",
             "",
-            "export class ${1:${TM_FILENAME_BASE}} extends makeSingleton(${1:${TM_FILENAME_BASE}}Service) {}",
+            "export const ${1:${TM_FILENAME_BASE}} = makeSingleton(${1:${TM_FILENAME_BASE}}Service);",
             ""
         ],
         "description": "[Moodle] Create a Service Singleton"
