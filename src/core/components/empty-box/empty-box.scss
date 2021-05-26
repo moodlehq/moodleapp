@@ -1,4 +1,6 @@
 :host {
+    display: contents;
+
     .core-empty-box {
         position: absolute;
         top: 0;
@@ -47,7 +49,7 @@
         z-index: 0;
     }
 
-    @media (max-width: 350px) {
+    @media (max-height: 550px) {
         .core-empty-box {
             position: relative;
             height: auto;
@@ -73,4 +75,3 @@
 :host-context(core-block-course-blocks) .core-empty-box {
     position: relative;
 }
-
