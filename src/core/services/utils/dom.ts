@@ -30,15 +30,7 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { CoreSilentError } from '@classes/errors/silenterror';
-import {
-    makeSingleton,
-    Translate,
-    AlertController,
-    LoadingController,
-    ToastController,
-    PopoverController,
-    ModalController,
-} from '@singletons';
+import { makeSingleton, Translate, AlertController, ToastController, PopoverController, ModalController } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreNetworkError } from '@classes/errors/network-error';
@@ -66,6 +58,7 @@ export class CoreDomUtilsProvider {
     protected lastInstanceId = 0;
     protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
     protected displayedAlerts: Record<string, HTMLIonAlertElement> = {}; // To prevent duplicated alerts.
+    protected activeLoadingModals: CoreIonLoadingElement[] = [];
     protected logger: CoreLogger;
 
     constructor(protected domSanitizer: DomSanitizer) {
@@ -1216,6 +1209,10 @@ export class CoreDomUtilsProvider {
 
         const alert = await AlertController.create(options);
 
+        if (Object.keys(this.displayedAlerts).length === 0) {
+            await Promise.all(this.activeLoadingModals.slice(0).reverse().map(modal => modal.pause()));
+        }
+
         // eslint-disable-next-line promise/catch-or-return
         alert.present().then(() => {
             if (hasHTMLTags) {
@@ -1231,9 +1228,14 @@ export class CoreDomUtilsProvider {
         this.displayedAlerts[alertId] = alert;
 
         // Set the callbacks to trigger an observable event.
-        // eslint-disable-next-line promise/catch-or-return, promise/always-return
-        alert.onDidDismiss().then(() => {
+        // eslint-disable-next-line promise/catch-or-return
+        alert.onDidDismiss().then(async () => {
             delete this.displayedAlerts[alertId];
+
+            // eslint-disable-next-line promise/always-return
+            if (Object.keys(this.displayedAlerts).length === 0) {
+                await Promise.all(this.activeLoadingModals.map(modal => modal.resume()));
+            }
         });
 
         if (autocloseTime && autocloseTime > 0) {
@@ -1447,11 +1449,17 @@ export class CoreDomUtilsProvider {
             text = Translate.instant(text);
         }
 
-        const loadingElement = await LoadingController.create({
-            message: text,
+        const loading = new CoreIonLoadingElement(text);
+
+        loading.onDismiss(() => {
+            const index = this.activeLoadingModals.indexOf(loading);
+
+            if (index !== -1) {
+                this.activeLoadingModals.splice(index, 1);
+            }
         });
 
-        const loading = new CoreIonLoadingElement(loadingElement);
+        this.activeLoadingModals.push(loading);
 
         await loading.present();
 
@@ -1480,12 +1488,10 @@ export class CoreDomUtilsProvider {
             });
         }
 
-        const alert = await AlertController.create({
+        const alert = await this.showAlertWithOptions({
             message: message,
             buttons: buttons,
         });
-
-        await alert.present();
 
         const isDevice = CoreApp.isAndroid() || CoreApp.isIOS();
         if (!isDevice) {
@@ -1493,6 +1499,8 @@ export class CoreDomUtilsProvider {
             const alertMessageEl: HTMLElement | null = alert.querySelector('.alert-message');
             alertMessageEl && this.treatAnchors(alertMessageEl);
         }
+
+        await alert.onDidDismiss();
     }
 
     /**
