@@ -40,7 +40,6 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
     coursesLoaded = false;
     prefetchCoursesData: any = {};
     downloadAllCoursesEnabled: boolean;
-
     protected prefetchIconInitialized = false;
     protected myCoursesObserver;
     protected siteUpdatedObserver;
@@ -115,7 +114,6 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
                 this.courses = courses;
                 this.filteredCourses = this.courses;
                 this.filter = '';
-
                 this.initPrefetchCoursesIcon();
             });
         }).catch((error) => {

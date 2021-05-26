@@ -1,8 +1,8 @@
 {
     "allday": "All day",
     "calendar": "Calendar",
-    "calendarevent": "Calendar event",
-    "calendarevents": "Calendar events",
+    "calendarevent": "E-Learning",
+    "calendarevents": "E-Learning",
     "calendarreminders": "Calendar reminders",
     "categoryevents": "Category events",
     "confirmeventdelete": "Are you sure you want to delete the \"{{$a}}\" event?",

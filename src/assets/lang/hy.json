@@ -1445,6 +1445,7 @@
     "core.login.firsttime": "Առաջին անգա՞մ եք կայքում։",
     "core.login.forcepasswordchangenotice": "Առաջ անցնելու համար Ձեզ անհրաժեշտ է փոխել Ձեր գաղտնաբառը։",
     "core.login.forgotten": "Մոռացե՞լ եք Ձեր մուտքաբառը կամ գաղտնաբառը։",
+    "core.login.forgotusername": "User Name",
     "core.login.help": "Օգնություն",
     "core.login.instructions": "Հրահանգներ",
     "core.login.invaliddate": "Անվավեր ամսաթիվ",

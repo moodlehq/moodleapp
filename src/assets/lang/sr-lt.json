@@ -1617,6 +1617,7 @@
     "core.login.firsttime": "Da li ste ovde prvi put?",
     "core.login.forcepasswordchangenotice": "Morate promeniti svoju lozinku da biste nastavili",
     "core.login.forgotten": "Zaboravili ste svoje korisničko ime ili lozinku?",
+    "core.login.forgotusername": "User Name",
     "core.login.help": "Pomoć",
     "core.login.helpmelogin": "<p>Postoji više hiljada Moodle sajtova širom sveta. Ova aplikacija može da se poveže samo sa Moodle sajtovima koji su eksplicitno omogućili pristup mobilnoj aplikaciji.</p><p>Ako ne možete da se povežete sa Moodle sajtom, kontaktirajte administratora vašeg sajta i zatražite da pročita <a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a></p><p>Da biste testirali aplikaciju na Moodle demo sajtu upišite <i>teacher</i> ili <i>student</i> u polje <i>Adresa sajta</i> i kliknite dugme <b>Povežite se!</b>.</p>",
     "core.login.instructions": "Uputstva",

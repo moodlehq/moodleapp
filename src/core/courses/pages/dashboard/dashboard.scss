@@ -24,5 +24,8 @@ ion-app.app-root page-core-courses-dashboard {
         @include float(start);
         @include margin(12px, 12px, null, 12px);
     }
+    .tabs-md .tabbar {
+        background: #ffffff;
+    }
 }
 

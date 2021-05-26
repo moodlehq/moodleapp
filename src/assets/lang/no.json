@@ -1494,6 +1494,7 @@
     "core.login.firsttime": "Er det første gang du er her?",
     "core.login.forcepasswordchangenotice": "Du må endre passordet for å fortsette",
     "core.login.forgotten": "Har du glemt brukernavn eller passord?",
+    "core.login.forgotusername": "User Name",
     "core.login.help": "Hjelp",
     "core.login.instructions": "Instruksjoner",
     "core.login.invaliddate": "Ugyldig dato",

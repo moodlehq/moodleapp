@@ -1538,6 +1538,7 @@
     "core.login.firsttime": "Jos sinulla ei ole vielä tunnusta:",
     "core.login.forcepasswordchangenotice": "Sinun pitää vaihtaa salasanasi ennen kuin voit jatkaa.",
     "core.login.forgotten": "Unohditko käyttäjätunnuksesi tai salasanasi?",
+    "core.login.forgotusername": "User Name",
     "core.login.help": "Ohje",
     "core.login.instructions": "Ohjeet",
     "core.login.invalidaccount": "Ole hyvä ja tarkista kirjautumistietosi, jos ne ovat oikein pyydä järjestelmän pääkäyttäjää tarkistamaan, että palvelu toimii oikein.",
