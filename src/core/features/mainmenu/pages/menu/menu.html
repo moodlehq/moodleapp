@@ -1,6 +1,6 @@
 <ion-tabs #mainTabs [hidden]="!showTabs" [class]="'placement-' + tabsPlacement" [class.tabshidden]="hidden"
     (ionTabsDidChange)="tabChanged($event)">
-    <ion-tab-bar slot="bottom" [hidden]="hidden">
+    <ion-tab-bar slot="bottom" [hidden]="hidden" class="mainmenu-tabs">
         <ion-spinner *ngIf="!loaded"></ion-spinner>
 
         <ion-tab-button

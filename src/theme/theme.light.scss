@@ -89,7 +89,7 @@
     --core-bottom-tabs-color-selected: #{$bottom-tabs-color-selected};
     --core-bottom-tabs-badge-color: #{$bottom-tabs-badge-color};
     --core-bottom-tabs-badge-text-color: #{$bottom-tabs-badge-text-color};
-    ion-tab-bar {
+    ion-tab-bar.mainmenu-tabs {
         --background: var(--core-bottom-tabs-background);
         --color: var(--core-bottom-tabs-color);
         --color-selected: var(--core-bottom-tabs-color-selected);

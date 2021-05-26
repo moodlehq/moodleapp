@@ -32,7 +32,6 @@ import { IonRefresher } from '@ionic/angular';
     selector: 'page-addon-messages-contacts',
     templateUrl: 'contacts.html',
     styleUrls: [
-        'tabs.scss',
         '../../messages-common.scss',
     ],
 })
