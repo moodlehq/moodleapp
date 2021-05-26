@@ -654,6 +654,31 @@ class behat_app extends behat_base {
     }
 
     /**
+     * Check that the app opened a new browser tab.
+     *
+     * @Given /^the app should(?P<not_boolean> not)? have opened a browser tab$/
+     * @param string $not
+     */
+    public function the_app_should_have_opened_a_browser_tab($not = '') {
+        $not = !empty($not);
+
+        $this->spin(function() use ($not) {
+            $openedbrowsertab = count($this->getSession()->getWindowNames()) === 2;
+
+            if ($not === $openedbrowsertab) {
+                throw new ExpectationException(
+                    $not
+                        ? 'Did not expect the app to have opened a browser tab'
+                        : 'Expected the app to have opened a browser tab',
+                    $this->getSession()->getDriver()
+                );
+            }
+
+            return true;
+        });
+    }
+
+    /**
      * Switches to a newly-opened browser tab.
      *
      * This assumes the app opened a new tab.
