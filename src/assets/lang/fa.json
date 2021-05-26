@@ -1266,6 +1266,7 @@
     "core.login.firsttime": "برای اولین بار به این صفحه آمده‌اید؟",
     "core.login.forcepasswordchangenotice": "برای پیش‌روی باید رمز ورود خود را تغییر دهید.",
     "core.login.forgotten": "نام کاربری و یا رمز ورود خود را فراموش کرده‌اید؟",
+    "core.login.forgotusername": "User Name",
     "core.login.help": "راهنمایی",
     "core.login.helpmelogin": "<p>چندین هزار سایت مودل در دنیا وجود دارد. این برنامه فقط می‌تواند به آن مودل‌هایی متصل شود که صراحتا دسترسی «برنامه موبایل» را فعال کرده‌باشند.</p><p>اگر نمی‌توانید به سایت مودل خود وصل شوید، باید با مدیر مودل آن سایت تماس بگیرید و بخواهید که <a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a> را مطالعه کنند.</p>\n<p>برای آزمایش برنامه با استفاده از یک سایت آزمایشی، در قسمت مربوط به <i>آدرس سایت</i> عبارت <i>teacher</i> یا <i>student</i> را وارد کرده و بر روی دکمه <b>اتصال</b> کلیک کنید.</p>",
     "core.login.instructions": "دستورالعمل",

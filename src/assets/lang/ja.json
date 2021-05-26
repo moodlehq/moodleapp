@@ -1614,6 +1614,7 @@
     "core.login.firsttime": "はじめての方ですか?",
     "core.login.forcepasswordchangenotice": "続けるにはパスワードを変更してください。",
     "core.login.forgotten": "あなたのユーザ名またはパスワードを忘れましたか?",
+    "core.login.forgotusername": "User Name",
     "core.login.help": "ヘルプ",
     "core.login.helpmelogin": "<p>世界中に無数のMoodleサイトが存在しますが、本アプリはモバイルアプリからのアクセスを有効にした特別なMoodleサイトでなければ接続できません。</p><p>あなたのMoodleサイトにアプリから接続できず、それをできるようにしてもらいたいときには、Moodleサイトの管理ユーザに<a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a>を読むよう依頼してみてください。</p><p>Moodleでもサイトでアプリをテストするには、<em>サイトURL</em>の欄に<i>teacher</i>あるいは<i>student</i>を入力し、<b>追加</b>ボタンを押してください。</p>",
     "core.login.instructions": "説明",

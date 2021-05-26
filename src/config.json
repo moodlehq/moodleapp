@@ -65,12 +65,12 @@
     "wsextservice": "local_mobile",
     "demo_sites": {
         "student": {
-            "url": "http://test-elp.gyanmatrix.com/",
+            "url": "http://dev-elp.gyanmatrix.com/",
             "username": "student",
             "password": "moodle"
         },
         "teacher": {
-            "url": "http://test-elp.gyanmatrix.com/",
+            "url": "http://dev-elp.gyanmatrix.com/",
             "username": "admin",
             "password": "Admin99@"
         }
@@ -81,7 +81,7 @@
         93.75
     ],
     "customurlscheme": "elpmobiile",
-    "siteurl": "http://test-elp.gyanmatrix.com/",
+    "siteurl": "http://dev-elp.gyanmatrix.com/",
     "sitename": "E-Learning",
     "multisitesdisplay": "",
     "sitefindersettings": {},

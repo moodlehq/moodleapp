@@ -375,6 +375,7 @@
     "core.login.siteurl": "ತಾಣದ URL",
     "core.login.siteurlrequired": "ತಾಣದ URL ಹೀಗೆ ಬೇಕಿದೆ. <i>http://www.yourmoodlesite.org</i>",
     "core.login.stillcantconnect": "ಇನ್ನು ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಿಲ್ಲವೇ?",
+    "core.login.submit": "Submit",
     "core.login.username": "ಬಳಕೆದಾರ",
     "core.login.usernamerequired": "ಸದಸ್ಯನಾಮ ಬೇಕಾಗಿದೆ",
     "core.login.visitchangepassword": "ನೀವು ಗುಪ್ತಪದವನ್ನು ಬದಲಿಸಲು ತಾಣಕ್ಕೆ ಭೇಟಿ ನೀಡಲು ಬಯಸುವಿರೆ?",

@@ -1317,6 +1317,7 @@
     "core.login.firsttime": "האם זהו הביקור הראשון שלך באתר זה?",
     "core.login.forcepasswordchangenotice": "יש לשנות סיסמה כדי להמשיך",
     "core.login.forgotten": "שכחת את שם המשתמש או את הסיסמה שלך?",
+    "core.login.forgotusername": "User Name",
     "core.login.help": "עזרה",
     "core.login.helpmelogin": "<p>קיימים אלפים רבים של אתרי מוודל ברחבי העולם. אפליקציה זו יכולה להתחבר רק לאתרים בהם .הופעלה גישה לאפליקצית מובייל</p><p>אם אין באפרותך להתחבר לאתר המוודל שלך, עליך לפנות למנהל האתר הדרוש ולבקש מהם לקרוא <a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a></p><p>בכדי לבדוק את האפליקציה באתר דמו של מוודל, יש להזין <i>teacher</i> או <i>student</i> בשדה <i>כתובת אתר</i> וללחוץ על <b>כפתור הוסף</b>.</p>",
     "core.login.instructions": "הוראות",

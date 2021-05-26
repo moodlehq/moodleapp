@@ -1293,6 +1293,7 @@
     "core.login.firsttime": "Este prima oară când accesaţi această pagină?",
     "core.login.forcepasswordchangenotice": "Trebui să vă schimbaţi parola pentru a putea continua.",
     "core.login.forgotten": "Aţi uitat numele de utilizator sau parola?",
+    "core.login.forgotusername": "User Name",
     "core.login.help": "Ajutor",
     "core.login.helpmelogin": "<p> Există mii de siteuri Moodle în întreaga lume. Această aplicație vă poate conecta doar la acele siteuri ce oferă accesul pentru aplicațiile mobile.</p><p> Dacă nu vă puteți conecta la siteul Moodle va trebui să contactați un administrator al acelui site și să îi indicați să citească <a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a></p><p> Pentru a testa aplicația pe un site Moodle demonstrativ introduceți <i>teacher</i> sau <i>student</i> în câmpurile din siteul<i> URL site</i> și apăsați butonul <b>Adaugă</b>.</p>",
     "core.login.instructions": "Instrucţiuni",

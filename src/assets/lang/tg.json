@@ -978,6 +978,7 @@
     "core.login.firsttime": "Шумо бори аввал дар сомонаи мо ҳастед?",
     "core.login.forcepasswordchangenotice": "Шумо бояд калимаи раҳкушои худро иваз намоед.",
     "core.login.forgotten": "Номи корбар ё ниҳонвожаро фаромӯш кардед?",
+    "core.login.forgotusername": "User Name",
     "core.login.help": "Маълумотнома",
     "core.login.instructions": "Дастурҳо",
     "core.login.invaliddate": "Таърихи нодурусти рӯз",

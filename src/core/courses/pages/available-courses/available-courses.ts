@@ -51,7 +51,6 @@ export class CoreCoursesAvailableCoursesPage {
         const frontpageCourseId = this.sitesProvider.getCurrentSite().getSiteHomeId();
 
         return this.coursesProvider.getCoursesByField().then((courses) => {
-            console.log("Shunmugaraj-Available-courses:",courses)
             this.courses = courses.filter((course) => {
                 return course.id != frontpageCourseId;
             });

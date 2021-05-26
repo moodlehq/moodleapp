@@ -1667,6 +1667,7 @@
     "core.login.firsttime": "È la prima volta che accedi qui?",
     "core.login.forcepasswordchangenotice": "È necessario cambiare la password per proseguire.",
     "core.login.forgotten": "Hai dimenticato lo username o la password?",
+    "core.login.forgotusername": "User Name",
     "core.login.help": "Aiuto",
     "core.login.helpmelogin": "<p>Esistono diverse migliaia di siti Moodle al mondo. Queta app può collegarsi solamente in quei siti dove è stato configurato l'accesso Mobile app.</p><p>Se non riesci a collegarti al sito Moodle desiderato devi contattare l'amministratore di quel sito e chiedergli di documentarsi su <a href=\"http://docs.moodle.org/en/Mobile_app\" target=\"_blank\">http://docs.moodle.org/en/Mobile_app</a></p><p>Per provare l'applicazione su un sito Moodle demo inserire <i>teacher</i> oppure <i>student</i> nel campo <i>Username</i> e fare click sul pulsante <b>Aggiungi</b>.</p>",
     "core.login.instructions": "Istruzioni",

@@ -637,7 +637,7 @@ export class CoreSite {
     request(method: string, data: any, preSets: CoreSiteWSPreSets, retrying?: boolean): Promise<any> {
         const initialToken = this.token;
         data = data || {};
-
+    
         if (!this.appProvider.isOnline() && this.offlineDisabled) {
             return Promise.reject(this.wsProvider.createFakeWSError('core.errorofflinedisabled', true));
         }

@@ -55,7 +55,7 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     downloadEnabledIcon = 'square-outline'; // Disabled by default.
     downloadCourseEnabled: boolean;
     downloadCoursesEnabled: boolean;
-
+ 
     protected isDestroyed;
     protected updateSiteObserver;
 
@@ -65,7 +65,7 @@ export class CoreCoursesDashboardPage implements OnDestroy {
             private domUtils: CoreDomUtilsProvider, private blockDelegate: CoreBlockDelegate) {
         this.loadSiteName();
     }
-
+    
     /**
      * View loaded.
      */
@@ -155,7 +155,6 @@ export class CoreCoursesDashboardPage implements OnDestroy {
 
                 return this.dashboardProvider.getDashboardBlocks().then((blocks) => {
                     this.blocks = blocks;
-                    console.log("Shunmugaraj:",this.blocks)
                 }).catch((error) => {
                     this.domUtils.showErrorModal(error);
 

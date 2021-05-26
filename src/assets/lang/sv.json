@@ -1511,6 +1511,7 @@
     "core.login.firsttime": "Är det första gången Du är här?",
     "core.login.forcepasswordchangenotice": "Du måste använda Ditt lösenord för att kunna fortsätta.",
     "core.login.forgotten": "Har Du glömt Ditt användarnamn och lösenord?",
+    "core.login.forgotusername": "User Name",
     "core.login.help": "Hjälp",
     "core.login.helpmelogin": "<p> För att logga in måste du kontrollera att: </ p> 1. Moodle webbplats är version 2.4 eller högre <br /> 2. Moodle administratören har aktiverat Mobil åtkomst <br... /> <br /> <p> För att testa appen på en Moodle demo site skriv <i> lärare </ i> eller <i> elev </ i> i <i>  i fält för Användarnamn </ i>och klicka på <b> Lägg till knapp </ b>. </ p> <a href='http://docs.moodle.org/en/Mobile_app' target='_blank'> Besök Moodle webbplats för mer detaljerad Moodle information och hjälp. </ a> </ p>",
     "core.login.instructions": "Instruktioner",

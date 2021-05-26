@@ -64,7 +64,7 @@
                 <ion-content>
                     <ion-refresher [enabled]="mcComponent && mcComponent.coursesLoaded" (ionRefresh)="refreshMyCourses($event)">
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
-                    </ion-refresher>
+                    </ion-refresher> 
                     <core-courses-my-courses></core-courses-my-courses>
                 </ion-content>
             </ng-template>

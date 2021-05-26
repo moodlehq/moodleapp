@@ -54,7 +54,7 @@ export class CoreCoursesProvider {
     protected ROOT_CACHE_KEY = 'mmCourses:';
     protected logger;
     protected userCoursesIds: {[id: number]: boolean}; // Use an object to make it faster to search.
-
+    
     constructor(logger: CoreLoggerProvider, private sitesProvider: CoreSitesProvider, private eventsProvider: CoreEventsProvider) {
         this.logger = logger.getInstance('CoreCoursesProvider');
     }
@@ -777,7 +777,6 @@ export class CoreCoursesProvider {
 
         return this.getUserCourses(preferCache, siteId).then((courses) => {
             let course;
-            console.log("Shunmugaraj-courses:",courses)
             for (const i in courses) {
                 if (courses[i].id == id) {
                     course = courses[i];
