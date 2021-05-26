@@ -61,11 +61,11 @@
                 <div class="core-module-buttons-more">
                     <core-download-refresh [status]="downloadStatus" [enabled]="downloadEnabled"
                         [canTrustDownload]="canCheckUpdates" [loading]="spinner || module.handlerData.spinner"
-                        (action)="download($event)">
+                        (action)="download($event)" size="small">
                     </core-download-refresh>
 
                     <!-- Buttons defined by the module handler. -->
-                    <ion-button fill="clear" *ngFor="let button of module.handlerData.buttons" color="dark"
+                    <ion-button fill="clear" *ngFor="let button of module.handlerData.buttons" color="dark" size="small"
                         [hidden]="button.hidden || spinner || module.handlerData.spinner" class="core-animate-show-hide"
                         (click)="buttonClicked($event, button)"
                         [attr.aria-label]="button.label | translate:{$a: module.handlerData.title}">
