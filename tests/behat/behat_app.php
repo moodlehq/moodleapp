@@ -46,6 +46,9 @@ class behat_app extends behat_base {
     /** @var string URL for running Ionic server */
     protected $ionicurl = '';
 
+    /** @var bool Checks whether the app is runing a legacy version (ionic 3) */
+    protected $islegacy;
+
     /**
      * Checks if the current OS is Windows, from the point of view of task-executing-and-killing.
      *
@@ -67,9 +70,7 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Opens the Moodle app in the browser.
-     *
-     * Requires JavaScript.
+     * Opens the Moodle app in the browser and introduces the enters the site.
      *
      * @Given /^I enter the app$/
      * @throws DriverException Issue with configuration or feature file
@@ -77,28 +78,35 @@ class behat_app extends behat_base {
      * @throws ExpectationException Problem with resizing window
      */
     public function i_enter_the_app() {
+        $this->i_launch_the_app();
+        $this->enter_site();
+    }
+
+    /**
+     * Opens the Moodle app in the browser.
+     *
+     * @Given /^I launch the app$/
+     * @throws DriverException Issue with configuration or feature file
+     * @throws dml_exception Problem with Moodle setup
+     * @throws ExpectationException Problem with resizing window
+     */
+    public function i_launch_the_app() {
         // Check the app tag was set.
         if (!$this->has_tag('app')) {
             throw new DriverException('Requires @app tag on scenario or feature.');
         }
 
-        // Restart the browser and set its size.
-        $this->getSession()->restart();
-        $this->resize_window('360x720', true);
-
-        if (empty($this->ionicurl)) {
-            $this->ionicurl = $this->start_or_reuse_ionic();
-        }
-
         // Go to page and prepare browser for app.
-        $this->prepare_browser($this->ionicurl);
+        $this->prepare_browser();
     }
 
     /**
      * Finds elements in the app.
      *
      * @Then /^I should(?P<not_boolean> not)? find "(?P<text_string>(?:[^"]|\\")*)"(?: near "(?P<near_string>(?:[^"]|\\")*)")? in the app$/
+     * @param string $not
      * @param string $text
+     * @param string $near
      */
     public function i_find_in_the_app($not, $text='', $near='') {
         $not = !empty($not);
@@ -341,72 +349,89 @@ class behat_app extends behat_base {
      * @param string $url App URL
      * @throws DriverException If the app fails to load properly
      */
-    protected function prepare_browser(string $url) {
-        global $CFG;
+    protected function prepare_browser() {
+        // Restart the browser and set its size.
+        $this->getSession()->restart();
+        $this->resize_window('360x720', true);
+
+        if (empty($this->ionicurl)) {
+            $this->ionicurl = $this->start_or_reuse_ionic();
+        }
 
         // Check whether the app is running a legacy version.
-        $json = @file_get_contents("$url/assets/env.json") ?: @file_get_contents("$url/config.json");
+        $json = @file_get_contents("{$this->ionicurl}/assets/env.json") ?: @file_get_contents("{$this->ionicurl}/config.json");
         $data = json_decode($json);
         $appversion = $data->build->version ?? str_replace('-dev', '', $data->versionname);
-        $islegacy = version_compare($appversion, '3.9.5', '<');
+
+        $this->islegacy = version_compare($appversion, '3.9.5', '<');
 
         // Visit the Ionic URL and wait for it to load.
-        $this->getSession()->visit($url);
-        $this->spin(
-                function($context) use ($islegacy) {
-                    $title = $context->getSession()->getPage()->find('xpath', '//title');
-                    if ($title) {
-                        $text = $title->getHtml();
-                        if (
-                            ($islegacy && $text === 'Moodle Desktop') ||
-                            (!$islegacy && $text === 'Moodle App')
-                        ) {
-                            return true;
-                        }
-                    }
-                    throw new DriverException('Moodle app not found in browser');
-                }, false, 60);
+        $this->getSession()->visit($this->ionicurl);
+        $this->spin(function($context) {
+            $title = $context->getSession()->getPage()->find('xpath', '//title');
+
+            if ($title) {
+                $text = $title->getHtml();
+
+                if (
+                    ($this->islegacy && $text === 'Moodle Desktop') ||
+                    (!$this->islegacy && $text === 'Moodle App')
+                ) {
+                    return true;
+                }
+            }
+
+            throw new DriverException('Moodle app not found in browser');
+        }, false, 60);
 
         // Run the scripts to install Moodle 'pending' checks.
-        $islegacyboolean = $islegacy ? 'true' : 'false';
+        $islegacyboolean = $this->islegacy ? 'true' : 'false';
         $this->execute_script("window.BehatMoodleAppLegacy = $islegacyboolean;");
         $this->execute_script(file_get_contents(__DIR__ . '/app_behat_runtime.js'));
 
-        // Wait until the site login field appears OR the main page.
-        $situation = $this->spin(
-                function($context) use ($islegacy) {
-                    $page = $context->getSession()->getPage();
+        // Assert initial page.
+        $this->spin(function($context) {
+            $page = $context->getSession()->getPage();
+            $element = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
 
-                    $element = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
-                    if ($element) {
-                        // Wait for the onboarding modal to open, if any.
-                        $this->wait_for_pending_js();
-                        $element = $islegacy
-                            ? $page->find('xpath', '//page-core-login-site-onboarding')
-                            : $page->find('xpath', '//core-login-site-onboarding');
-                        if ($element) {
-                            $this->i_press_in_the_app('Skip');
-                            $this->wait_for_pending_js();
-                        }
+            if ($element) {
+                // Wait for the onboarding modal to open, if any.
+                $this->wait_for_pending_js();
 
-                        return 'login';
-                    }
+                $element = $this->islegacy
+                    ? $page->find('xpath', '//page-core-login-site-onboarding')
+                    : $page->find('xpath', '//core-login-site-onboarding');
 
-                    $element = $page->find('xpath', '//page-core-mainmenu');
-                    if ($element) {
-                        return 'mainpage';
-                    }
-                    throw new DriverException('Moodle app login URL prompt not found');
-                }, behat_base::get_extended_timeout(), 60);
+                if ($element) {
+                    $this->i_press_in_the_app('Skip');
+                }
 
-        // If it's the login page, we automatically fill in the URL and leave it on the user/pass
-        // page. If it's the main page, we just leave it there.
-        if ($situation === 'login') {
-            $this->i_set_the_field_in_the_app($islegacy ? 'campus.example.edu' : 'Your site', $CFG->wwwroot);
-            $this->i_press_in_the_app($islegacy ? 'Connect!' : 'Connect to your site');
-        }
+                // Login screen found.
+                return true;
+            }
+
+            if ($page->find('xpath', '//page-core-mainmenu')) {
+                // Main menu found.
+                return true;
+            }
+
+            throw new DriverException('Moodle app not launched properly');
+        }, false, 60);
 
         // Continue only after JS finishes.
+        $this->wait_for_pending_js();
+    }
+
+    protected function enter_site() {
+        if (!$this->is_in_login_page()) {
+            // Already in the site.
+            return;
+        }
+
+        global $CFG;
+
+        $this->i_set_the_field_in_the_app($this->islegacy ? 'campus.example.edu' : 'Your site', $CFG->wwwroot);
+        $this->i_press_in_the_app($this->islegacy ? 'Connect!' : 'Connect to your site');
         $this->wait_for_pending_js();
     }
 
@@ -534,6 +559,16 @@ class behat_app extends behat_base {
     public function i_select_in_the_app($text, $near='') {
         $this->getSession()->wait(100);
         $this->press($text, $near);
+    }
+
+    /**
+     * Check whether the current page is the login form.
+     */
+    protected function is_in_login_page(): bool {
+        $page = $this->getSession()->getPage();
+        $logininput = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
+
+        return !is_null($logininput);
     }
 
     /**
