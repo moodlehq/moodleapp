@@ -21,7 +21,7 @@
                     <p slot="end" class="ion-text-end">{{ totalSize | coreBytesToSize }}</p>
                     <ion-button slot="end" (click)="deleteForCourse()" [disabled]="totalSize == 0">
                         <ion-icon name="fas-trash" slot="icon-only"
-                            ariaLabel="{{ 'addon.storagemanager.deletecourse' | translate }}">
+                            [attr.aria-label]="'addon.storagemanager.deletecourse' | translate">
                         </ion-icon>
                     </ion-button>
                 </ion-item>
@@ -37,7 +37,7 @@
                         <p slot="end" class="ion-text-end">{{ section.totalSize | coreBytesToSize }}</p>
                         <ion-button slot="end" (click)="deleteForSection(section)">
                             <ion-icon name="fas-trash" slot="icon-only"
-                                ariaLabel="{{ 'addon.storagemanager.deletedatafrom' | translate: { name: section.name } }}">
+                                [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: section.name }">
                             </ion-icon>
                         </ion-button>
                     </ion-item>
@@ -55,7 +55,7 @@
                             <p slot="end" class="ion-text-end">{{ module.totalSize | coreBytesToSize }}</p>
                             <ion-button fill="clear" slot="end" (click)="deleteForModule(module)">
                                 <ion-icon name="fas-trash" slot="icon-only"
-                                    ariaLabel="{{ 'addon.storagemanager.deletedatafrom' | translate: { name: module.name } }}">
+                                    [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: module.name }">
                                 </ion-icon>
                             </ion-button>
                         </ion-item>

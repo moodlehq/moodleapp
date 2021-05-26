@@ -2,11 +2,11 @@
 <core-navbar-buttons slot="end">
     <ion-button *ngIf="glossary && glossary.browsemodes && glossary.browsemodes.length > 1" (click)="openModePicker($event)"
         [attr.aria-label]="'addon.mod_glossary.browsemode' | translate">
-        <ion-icon name="fas-sort" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-sort" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 
     <ion-button *ngIf="glossary" (click)="toggleSearch()" [attr.aria-label]="'addon.mod_glossary.bysearch' | translate">
-        <ion-icon name="fas-search" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 
     <core-context-menu>
