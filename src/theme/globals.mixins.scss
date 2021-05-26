@@ -213,16 +213,16 @@
     display: block;
 
     ion-card {
-      height: calc(100% - 20px);
-      width: calc(100% - 20px);
-      margin-top: 10px;
-      margin-bottom: 10px;
+        --vertical-margin: 10px;
+        --horizontal-margin: 10px;
 
-      @media (max-width: 360px) {
-        margin-left: 6px;
-        margin-right: 6px;
-        width: calc(100% - 12px);
-      }
+        width: calc(100% - var(--vertical-margin) - var(--vertical-margin));
+        height: calc(100% - var(--vertical-margin) - var(--vertical-margin));
+        margin: var(--vertical-margin) var(--horizontal-margin);
+
+        @media (max-width: 360px) {
+            --horizontal-margin: 6px;
+        }
     }
 
     .ion-text-wrap ion-label {
