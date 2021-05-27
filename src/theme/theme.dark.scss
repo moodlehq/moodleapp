@@ -79,10 +79,9 @@
     --core-tab-border-color: #{$core-tab-border-color-dark};
     --core-tab-color-active: #{$core-tab-color-active-dark};
     --core-tab-border-color-active: #{$core-tab-border-color-active-dark};
-    core-progress-bar {
-        --color: #{$core-progressbar-color-dark};
-        --text-color: #{$core-progressbar-text-color-dark};
-    }
+
+    --core-progressbar-color: #{$core-progressbar-color-dark};
+    --core-progressbar-text-color: #{$core-progressbar-text-color-dark};
 
     --ion-item-background: #{$ion-item-background-dark};
     --ion-item-detail-icon-color: var(--white);

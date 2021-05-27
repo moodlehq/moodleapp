@@ -121,6 +121,13 @@
         }
     }
 
+    ion-searchbar {
+        --background: var(--ion-item-background);
+        .searchbar-input {
+            height: var(--a11y-min-target-size);
+        }
+    }
+
     ion-action-sheet {
         --button-color-selected: #{$action-sheet-selected};
         --title-border-color: var(--gray);
@@ -161,11 +168,15 @@
         --color: var(--ion-color-primary);
     }
 
+    --core-progressbar-height: #{$core-progressbar-height};
+    --core-progressbar-color: #{$core-progressbar-color};
+    --core-progressbar-text-color: #{$core-progressbar-text-color};
+    --core-progressbar-background: #{$core-progressbar-background};
     core-progress-bar {
-        --height: #{$core-progressbar-height};
-        --color: #{$core-progressbar-color};
-        --text-color: #{$core-progressbar-text-color};
-        --background: #{$core-progressbar-background};
+        --height: var(--core-progressbar-height);
+        --color: var(--core-progressbar-color);
+        --text-color: var(--core-progressbar-text-color);
+        --background: var(--core-progressbar-background);
     }
 
     core-block-course-blocks {
