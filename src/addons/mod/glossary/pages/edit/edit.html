@@ -41,7 +41,7 @@
                 <ion-label position="stacked" id="addon-mod-glossary-aliases-label">
                     {{ 'addon.mod_glossary.aliases' | translate }}
                 </ion-label>
-                <ion-textarea [(ngModel)]="options.aliases" rows="1" core-auto-rows
+                <ion-textarea [(ngModel)]="options.aliases" rows="1" [core-auto-rows]="options.aliases"
                     aria-labelledby="addon-mod-glossary-aliases-label" name="aliases">
                 </ion-textarea>
             </ion-item>

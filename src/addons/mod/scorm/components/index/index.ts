@@ -19,6 +19,7 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
@@ -584,9 +585,17 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Performs the sync of the activity.
      *
+     * @param retries Number of retries done.
      * @return Promise resolved when done.
      */
-    protected async sync(): Promise<AddonModScormSyncResult> {
+    protected async sync(retries = 0): Promise<AddonModScormSyncResult> {
+        if (CoreSync.isBlocked(AddonModScormProvider.COMPONENT, this.scorm!.id) && retries < 5) {
+            // Sync is currently blocked, this can happen when SCORM player is left. Retry in a bit.
+            await CoreUtils.wait(400);
+
+            return this.sync(retries + 1);
+        }
+
         const result = await AddonModScormSync.syncScorm(this.scorm!);
 
         if (!result.updated && this.dataSent) {

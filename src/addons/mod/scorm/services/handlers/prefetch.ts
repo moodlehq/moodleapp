@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
-import { CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
+import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
@@ -316,8 +316,13 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
      * @param siteId Site ID.
      * @returns Promise resolved with the SCORM.
      */
-    protected getScorm(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModScormScorm> {
-        const moduleUrl = 'url' in module ? module.url : undefined;
+    protected async getScorm(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModScormScorm> {
+        let moduleUrl = 'url' in module ? module.url : undefined;
+        if (!moduleUrl) {
+            module = await CoreCourse.getModule(module.id, module.course, undefined, true, false, siteId);
+
+            moduleUrl = module.url;
+        }
 
         return AddonModScorm.getScorm(courseId, module.id, { moduleUrl, siteId });
     }

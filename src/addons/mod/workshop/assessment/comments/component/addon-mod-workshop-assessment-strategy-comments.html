@@ -14,7 +14,8 @@
                     {{ 'addon.mod_workshop_assessment_comments.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}
                 </span>
             </ion-label>
-            <ion-textarea [(ngModel)]="selectedValues[n].peercomment" core-auto-rows></ion-textarea>
+            <ion-textarea [(ngModel)]="selectedValues[n].peercomment" [core-auto-rows]="selectedValues[n].peercomment">
+            </ion-textarea>
             <core-input-errors *ngIf="fieldErrors['peercomment_' + n]" [errorText]="fieldErrors['peercomment_' + n]">
             </core-input-errors>
         </ion-item>

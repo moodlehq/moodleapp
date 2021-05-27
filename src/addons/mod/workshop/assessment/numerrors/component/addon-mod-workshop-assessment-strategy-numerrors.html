@@ -36,7 +36,7 @@
                 {{ 'addon.mod_workshop_assessment_numerrors.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}
             </ion-label>
             <ion-textarea [(ngModel)]="selectedValues[n].peercomment" [name]="'peercomment_' + n"
-                core-auto-rows>
+                [core-auto-rows]="selectedValues[n].peercomment">
             </ion-textarea>
         </ion-item>
         <ion-item *ngIf="!edit" class="ion-text-wrap">

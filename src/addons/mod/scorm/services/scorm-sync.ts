@@ -198,7 +198,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         if (updated) {
             try {
                 // Update downloaded data.
-                const module = await CoreCourse.getModuleBasicInfoByInstance(scorm.id, 'scorm', siteId);
+                const module = await CoreCourse.getModule(scorm.coursemodule, scorm.course, undefined, false, false, siteId);
 
                 await this.prefetchAfterUpdate(AddonModScormPrefetchHandler.instance, module, scorm.course, undefined, siteId);
             } catch {
