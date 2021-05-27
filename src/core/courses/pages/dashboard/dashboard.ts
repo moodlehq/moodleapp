@@ -25,6 +25,9 @@ import { CoreSiteHomeIndexComponent } from '@core/sitehome/components/index/inde
 import { CoreCoursesProvider } from '../../providers/courses';
 import { CoreCoursesDashboardProvider } from '../../providers/dashboard';
 import { CoreCoursesMyCoursesComponent } from '../../components/my-courses/my-courses';
+import { HttpClient } from '@angular/common/http';
+import { CoreWSProvider } from '@providers/ws';
+import { TranslateService } from '@ngx-translate/core';
 
 /**
  * Page that displays the dashboard.
@@ -50,20 +53,58 @@ export class CoreCoursesDashboardPage implements OnDestroy {
     dashboardEnabled = false;
     userId: number;
     dashboardLoaded = false;
-
     downloadEnabled: boolean;
     downloadEnabledIcon = 'square-outline'; // Disabled by default.
     downloadCourseEnabled: boolean;
     downloadCoursesEnabled: boolean;
- 
+    userCategory: any[];
+    protected categoryIds = '';
+
     protected isDestroyed;
     protected updateSiteObserver;
 
-    constructor(private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
+    constructor(public httpClient: HttpClient,private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
             private sitesProvider: CoreSitesProvider, private siteHomeProvider: CoreSiteHomeProvider,
             private eventsProvider: CoreEventsProvider, private dashboardProvider: CoreCoursesDashboardProvider,
-            private domUtils: CoreDomUtilsProvider, private blockDelegate: CoreBlockDelegate) {
+            private domUtils: CoreDomUtilsProvider, private blockDelegate: CoreBlockDelegate,protected wsProvider: CoreWSProvider,protected translate: TranslateService) {
         this.loadSiteName();
+    }
+
+
+    ngOnInit(): void {
+        this.fetchUserCategory()
+    }
+    
+    fetchUserCategory() {
+        let siteInfo = this.sitesProvider.getCurrentSite()
+        this.userId = this.sitesProvider.getCurrentSiteUserId();
+
+        const params = {
+            wstoken: siteInfo.token,
+            wsfunction:"local_sms_get_subcategory",
+            moodlewsrestformat:"json",
+            userid:this.userId
+        },
+        userCategoryUrl = siteInfo.siteUrl +'/webservice/rest/server.php?',
+        promise = this.httpClient.post(userCategoryUrl, params).timeout(this.wsProvider.getRequestTimeout()).toPromise();
+
+        return promise.then((data: any): any => {
+            if (typeof data == 'undefined') {
+                return Promise.reject(this.translate.instant('core.cannotconnecttrouble'));
+            } else {
+                this.userCategory = data.category;
+                console.log("Shunmugaraj-Cat-post",data.category)
+                return data;
+            }
+        }, () => {
+            return Promise.reject(this.translate.instant('core.cannotconnecttrouble'));
+        });
+
+    }
+
+    openCourse(userCategoryId,categoryName): void {
+       
+        this.navCtrl.push('CoreCoursesMyCoursesPage', {cateId:userCategoryId,catName:categoryName});
     }
     
     /**
@@ -87,9 +128,9 @@ export class CoreCoursesDashboardPage implements OnDestroy {
 
         const promises = [];
 
-        promises.push(this.siteHomeProvider.isAvailable().then((enabled) => {
-            this.siteHomeEnabled = enabled;
-        }));
+        // promises.push(this.siteHomeProvider.isAvailable().then((enabled) => {
+        //     this.siteHomeEnabled = enabled;
+        // }));
 
         promises.push(this.loadDashboardContent());
 
@@ -170,8 +211,8 @@ export class CoreCoursesDashboardPage implements OnDestroy {
             }
 
         }).finally(() => {
-            this.dashboardEnabled = this.blockDelegate.hasSupportedBlock(this.blocks);
-            this.dashboardLoaded = true;
+            //this.dashboardEnabled = this.blockDelegate.hasSupportedBlock(this.blocks);
+            //this.dashboardLoaded = true;
         });
     }
 

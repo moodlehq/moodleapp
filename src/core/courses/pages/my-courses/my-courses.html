@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar core-back-button>
-        <ion-title>{{ 'core.courses.mycourses' | translate }}</ion-title>
+        <ion-title>{{userCategoryName}}</ion-title>
 
         <ion-buttons end>
             <button *ngIf="mcComponent && mcComponent.searchEnabled" ion-button icon-only (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
@@ -17,6 +17,5 @@
     <ion-refresher [enabled]="mcComponent && mcComponent.coursesLoaded" (ionRefresh)="mcComponent.refreshCourses($event)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    
     <core-courses-my-courses></core-courses-my-courses>
 </ion-content>

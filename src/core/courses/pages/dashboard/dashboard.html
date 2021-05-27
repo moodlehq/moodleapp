@@ -65,7 +65,24 @@
                     <ion-refresher [enabled]="mcComponent && mcComponent.coursesLoaded" (ionRefresh)="refreshMyCourses($event)">
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
                     </ion-refresher> 
-                    <core-courses-my-courses></core-courses-my-courses>
+                    <ion-grid no-padding class="safe-area-page">
+                        <ion-row no-padding>
+                            <ion-col *ngFor="let usercategory of userCategory" no-padding col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 align-self-stretch >
+                                <ion-card>
+                                    <img src="../../../../assets/img/dashboard.png"/>
+                                    <ion-item tappable text-wrap detail-none (click)="openCourse(usercategory.catid,usercategory.name)" class="core-course-link">
+                                        <h2>
+                                            <core-format-text [text]="usercategory.name" contextLevel="usercategory" [contextInstanceId]="usercategory.catid"></core-format-text>
+                                        </h2>
+                                        <button ion-button clear item-end>
+                                            <ion-icon name="arrow-forward"></ion-icon>
+                                        </button>
+                                    </ion-item>
+                                </ion-card>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                    <!-- <core-courses-my-courses></core-courses-my-courses>  -->
                 </ion-content>
             </ng-template>
         </core-tab>
