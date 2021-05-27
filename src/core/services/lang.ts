@@ -19,7 +19,7 @@ import { LangChangeEvent } from '@ngx-translate/core';
 import { CoreAppProvider } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreSubscriptions } from '@singletons/subscriptions';
-import { makeSingleton, Translate, Platform } from '@singletons';
+import { makeSingleton, Translate, Platform, Http } from '@singletons';
 
 import * as moment from 'moment';
 import { CoreSite } from '../classes/site';
@@ -142,24 +142,24 @@ export class CoreLangProvider {
 
         // Change the language, resolving the promise when we receive the first value.
         promises.push(new Promise((resolve, reject) => {
-            CoreSubscriptions.once(Translate.use(language), data => {
-                // It's a language override, load the original one first.
+            CoreSubscriptions.once(Translate.use(language), async data => {
+                // Check if it has a parent language.
                 const fallbackLang = this.getParentLanguage(language);
 
                 if (fallbackLang) {
-                    CoreSubscriptions.once(
-                        Translate.use(fallbackLang),
-                        fallbackData => {
-                            data = Object.assign(fallbackData, data);
+                    try {
+                        // Merge parent translations with the child ones.
+                        const parentTranslations = Translate.translations[fallbackLang] ?? await this.readLangFile(fallbackLang);
 
-                            resolve(data);
-                        },
-                        // Resolve with the original language.
-                        () => resolve(data),
-                    );
-                } else {
-                    resolve(data);
+                        const mergedData = Object.assign(parentTranslations, data);
+
+                        Object.assign(data, mergedData);
+                    } catch {
+                        // Ignore errors.
+                    }
                 }
+
+                resolve(data);
             }, reject);
         }));
 
@@ -472,6 +472,20 @@ export class CoreLangProvider {
                 applied: false,
             };
         }
+    }
+
+    /**
+     * Read a language file.
+     *
+     * @param lang Language code.
+     * @return Promise resolved with the file contents.
+     */
+    async readLangFile(lang: string): Promise<Record<string, string>> {
+        const observable = Http.get(`assets/lang/${lang}.json`, {
+            responseType: 'json',
+        });
+
+        return <Record<string, string>> await observable.toPromise();
     }
 
     /**
