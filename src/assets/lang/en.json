@@ -2110,6 +2110,7 @@
     "core.strftimetime": "%I:%M %p",
     "core.strftimetime12": "%I:%M %p",
     "core.strftimetime24": "%H:%M",
+    "core.submit": "Submit",
     "core.success": "Success",
     "core.tablet": "Tablet",
     "core.tag.defautltagcoll": "Default collection",

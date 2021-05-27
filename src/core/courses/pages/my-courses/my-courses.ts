@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { CoreCoursesMyCoursesComponent } from '../../components/my-courses/my-courses';
+
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -26,8 +27,11 @@ import { CoreCoursesMyCoursesComponent } from '../../components/my-courses/my-co
 })
 export class CoreCoursesMyCoursesPage {
     @ViewChild(CoreCoursesMyCoursesComponent) mcComponent: CoreCoursesMyCoursesComponent;
+    userCategoryName = '';
 
-    constructor(private navCtrl: NavController) { }
+    constructor(private navCtrl: NavController,navParams: NavParams) {
+        this.userCategoryName = navParams.get('cateName') || "E-Learning";
+     }
 
     /**
      * Go to search courses.

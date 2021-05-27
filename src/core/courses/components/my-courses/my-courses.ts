@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Searchbar } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -21,7 +22,9 @@ import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData } from '../..
 import { CoreCoursesHelperProvider } from '../../providers/helper';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
-
+import { HttpClient } from '@angular/common/http';
+import { CoreWSProvider } from '@providers/ws';
+import { TranslateService } from '@ngx-translate/core';
 /**
  * Component that displays the list of courses the user is enrolled in.
  */
@@ -33,6 +36,7 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
     @ViewChild('searchbar') searchbar: Searchbar;
 
     courses: any[];
+    userCategoryCourses:any[];
     filteredCourses: any[];
     searchEnabled: boolean;
     filter = '';
@@ -45,11 +49,17 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
     protected siteUpdatedObserver;
     protected isDestroyed = false;
     protected courseIds = '';
+    userId: number;
+    userCategoryId = 0;
+    
 
-    constructor(private coursesProvider: CoreCoursesProvider,
+    constructor(private navCtrl: NavController, navParams: NavParams,private coursesProvider: CoreCoursesProvider,
             private domUtils: CoreDomUtilsProvider, private eventsProvider: CoreEventsProvider,
             private sitesProvider: CoreSitesProvider, private courseHelper: CoreCourseHelperProvider,
-            private courseOptionsDelegate: CoreCourseOptionsDelegate, private coursesHelper: CoreCoursesHelperProvider) { }
+            private courseOptionsDelegate: CoreCourseOptionsDelegate, private coursesHelper: CoreCoursesHelperProvider,
+            public httpClient: HttpClient,protected wsProvider: CoreWSProvider,protected translate: TranslateService) { 
+                this.userCategoryId = navParams.get('cateId') || 0;
+            }
 
     /**
      * Component being initialized.
@@ -58,7 +68,7 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
         this.searchEnabled = !this.coursesProvider.isSearchCoursesDisabledInSite();
         this.downloadAllCoursesEnabled = !this.coursesProvider.isDownloadCoursesDisabledInSite();
 
-        this.fetchCourses().finally(() => {
+        this.fetchUserCategoryCourses().finally(() => {
             this.coursesLoaded = true;
         });
 
@@ -67,7 +77,7 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
                 (data: CoreCoursesMyCoursesUpdatedEventData) => {
 
             if (data.action == CoreCoursesProvider.ACTION_ENROL) {
-                this.fetchCourses();
+                this.fetchUserCategoryCourses();
             }
         }, this.sitesProvider.getCurrentSiteId());
 
@@ -98,7 +108,6 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
             });
 
             this.courseIds = courseIds.join(',');
-
             promises.push(this.coursesHelper.loadCoursesExtraInfo(courses));
 
             if (this.coursesProvider.canGetAdminAndNavOptions()) {
@@ -121,6 +130,50 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
         });
     }
 
+    fetchUserCategoryCourses(): Promise<any>{
+        let siteInfo = this.sitesProvider.getCurrentSite()
+        this.userId = this.sitesProvider.getCurrentSiteUserId();
+
+        const params = {
+            wstoken: siteInfo.token,
+            wsfunction:"local_sms_get_subcategorywise_courses",
+            moodlewsrestformat:"json",
+            userid:this.userId,
+            catid:this.userCategoryId
+        },
+        userCategoryCoursesUrl = siteInfo.siteUrl +'/webservice/rest/server.php?',
+        promise = this.httpClient.post(userCategoryCoursesUrl, params).timeout(this.wsProvider.getRequestTimeout()).toPromise();
+
+        return promise.then((data: any): any => {
+            if (typeof data == 'undefined') {
+                return Promise.reject(this.translate.instant('core.cannotconnecttrouble'));
+            } else {
+                let courses = data.courses;
+                const promises = [],courseIds = courses.map((course) => {
+                    return course.id;
+                });
+                this.courseIds = courseIds.join(',');
+                if (this.coursesProvider.canGetAdminAndNavOptions()) {
+                    promises.push(this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
+                        courses.forEach((course) => {
+                            course.navOptions = options.navOptions[course.id];
+                            course.admOptions = options.admOptions[course.id];
+                        });
+                    }));
+                }
+                this.courses = courses;
+                this.filteredCourses = this.courses;
+                this.filter = '';
+                this.initPrefetchCoursesIcon();
+                return courses;
+            }
+        }).catch((error) => { 
+            this.domUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
+            return Promise.reject(this.translate.instant('core.cannotconnecttrouble'));
+        });
+
+    } 
+
     /**
      * Refresh the courses.
      *
@@ -138,7 +191,7 @@ export class CoreCoursesMyCoursesComponent implements OnInit, OnDestroy {
         Promise.all(promises).finally(() => {
 
             this.prefetchIconInitialized = false;
-            this.fetchCourses().finally(() => {
+            this.fetchUserCategoryCourses().finally(() => {
                 refresher.complete();
             });
         });
