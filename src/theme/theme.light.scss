@@ -107,7 +107,7 @@
     --core-header-toolbar-button-image-size: #{$toolbar-button-image-size};
     --core-header-toolbar-background: #{$toolbar-background};
     --core-header-toolbar-color: #{$toolbar-color};
-    ion-toolbar {
+    ion-header ion-toolbar {
         --color: var(--core-header-toolbar-color);
         --background: var(--core-header-toolbar-background);
         ion-button {
