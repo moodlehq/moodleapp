@@ -46,12 +46,12 @@
     </div>
 
     <ng-container *ngIf="mode == 'external'">
-        <ion-button expand="block" class="ion-margin" (click)="open(false)">
+        <ion-button expand="block" class="ion-margin" (click)="open(openFileAction.OPEN)">
             <ion-icon name="far-file" slot="start" aria-hidden="true"></ion-icon>
             {{ 'addon.mod_resource.openthefile' | translate }}
         </ion-button>
 
-        <ion-button *ngIf="isIOS" expand="block" class="ion-margin" (click)="open(true)">
+        <ion-button *ngIf="isIOS" expand="block" class="ion-margin" (click)="open(openFileAction.OPEN_WITH)">
             <ion-icon name="far-share-square" slot="start" aria-hidden="true"></ion-icon>
             {{ 'core.openwith' | translate }}
         </ion-button>

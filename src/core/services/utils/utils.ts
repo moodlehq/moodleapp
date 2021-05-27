@@ -933,8 +933,8 @@ export class CoreUtilsProvider {
         }
 
         try {
-            const useIOSPicker = options.useIOSPicker ?? CoreConstants.CONFIG.iosopenfilepicker;
-            if (useIOSPicker && CoreApp.isIOS()) {
+            const openFileAction = options.iOSOpenFileAction ?? CoreConstants.CONFIG.iOSDefaultOpenFileAction;
+            if (CoreApp.isIOS() && openFileAction == OpenFileAction.OPEN_WITH) {
                 await FileOpener.showOpenWithDialog(path, mimetype || '');
             } else {
                 await FileOpener.open(path, mimetype || '');
@@ -1715,5 +1715,13 @@ export type CoreMenuItem<T = number> = {
  * Options for opening a file.
  */
 export type CoreUtilsOpenFileOptions = {
-    useIOSPicker?: boolean; // Whether to let user choose app to open the file in iOS. Defaults to false (preview).
+    iOSOpenFileAction?: OpenFileAction; // Action to do when opening a file.
 };
+
+/**
+ * Possible default picker actions.
+ */
+export enum OpenFileAction {
+    OPEN = 'open',
+    OPEN_WITH = 'open-with',
+}

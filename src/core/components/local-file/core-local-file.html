@@ -17,7 +17,7 @@
             (click)="$event.stopPropagation()" core-auto-focus [(ngModel)]="newFileName" *ngIf="editMode">
         </ion-input>
 
-        <div class="buttons" slot="end" *ngIf="manage">
+        <div class="buttons" slot="end">
             <ion-button fill="clear" *ngIf="isIOS" (click)="openFile($event, true)"
                 [attr.aria-label]="openButtonLabel | translate">
                 <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true"></ion-icon>

@@ -22,7 +22,7 @@ import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
-import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
+import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
@@ -40,7 +40,7 @@ export class CoreFileHelperProvider {
      * @return Boolean.
      */
     defaultIsOpenWithPicker(): boolean {
-        return CoreApp.isIOS() && !!CoreConstants.CONFIG.iosopenfilepicker;
+        return CoreApp.isIOS() && CoreConstants.CONFIG.iOSDefaultOpenFileAction === OpenFileAction.OPEN_WITH;
     }
 
     /**
