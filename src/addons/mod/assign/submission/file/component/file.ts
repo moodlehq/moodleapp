@@ -44,12 +44,6 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        // Get the offline data.
-        const filesData = await CoreUtils.ignoreErrors(
-            AddonModAssignOffline.getSubmission(this.assign.id),
-            undefined,
-        );
-
         this.acceptedTypes = this.configs?.filetypeslist;
         this.maxSize = this.configs?.maxsubmissionsizebytes
             ? parseInt(this.configs.maxsubmissionsizebytes, 10)
@@ -57,6 +51,12 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
         this.maxSubmissions = this.configs?.maxfilesubmissions
             ? parseInt(this.configs.maxfilesubmissions, 10)
             : undefined;
+
+        // Get the offline data.
+        const filesData = await CoreUtils.ignoreErrors(
+            AddonModAssignOffline.getSubmission(this.assign.id),
+            undefined,
+        );
 
         try {
             if (filesData && filesData.plugindata && filesData.plugindata.files_filemanager) {
