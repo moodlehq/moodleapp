@@ -331,7 +331,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
             // Sometimes the list of enrolled courses takes a while to be updated. Wait for it.
             await this.waitForEnrolled(true);
 
-            this.refreshData().finally(() => {
+            await this.refreshData().finally(() => {
                 // My courses have been updated, trigger event.
                 CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
                     courseId: this.course!.id,
@@ -339,6 +339,8 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
                     action: CoreCoursesProvider.ACTION_ENROL,
                 }, CoreSites.getCurrentSiteId());
             });
+
+            this.openCourse();
 
             modal?.dismiss();
         } catch (error) {
@@ -422,7 +424,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
         }
 
         try {
-            CoreCourses.getUserCourse(this.course!.id);
+            await CoreCourses.getUserCourse(this.course!.id);
         } catch {
             // Not enrolled, wait a bit and try again.
             if (this.pageDestroyed || (Date.now() - this.waitStart > 60000)) {
