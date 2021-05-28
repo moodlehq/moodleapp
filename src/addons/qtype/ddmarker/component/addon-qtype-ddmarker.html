@@ -1,4 +1,4 @@
-<ion-list *ngIf="ddQuestion && (ddQuestion.text || ddQuestion.text === '')" class="addon-qtype-ddmarker-container">
+<div *ngIf="ddQuestion && (ddQuestion.text || ddQuestion.text === '')" class="addon-qtype-ddmarker-container">
     <!-- Content is outside the core-loading to let the script calculate drag items position -->
     <core-loading [hideUntil]="ddQuestion.loaded"></core-loading>
 
@@ -14,9 +14,13 @@
                 [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"
                 (afterRender)="textRendered()">
             </core-format-text>
+        </ion-label>
+    </ion-item>
+    <ion-item class="ion-text-wrap" [hidden]="!ddQuestion.loaded">
+        <ion-label>
             <core-format-text *ngIf="ddQuestion.ddArea" [adaptImg]="false" [component]="component" [componentId]="componentId"
                 [text]="ddQuestion.ddArea" [filter]="false" (afterRender)="ddAreaRendered()">
             </core-format-text>
         </ion-label>
     </ion-item>
-</ion-list>
+</div>
