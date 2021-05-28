@@ -26,7 +26,7 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="loaded" class="core-loading-center">
+<core-loading [hideUntil]="loaded">
     <core-tabs [hideUntil]="loaded" [selectedIndex]="selectedTab">
         <!-- Index/Preview tab. -->
         <core-tab [title]="'addon.mod_lesson.preview' | translate" (ionSelect)="indexSelected()">

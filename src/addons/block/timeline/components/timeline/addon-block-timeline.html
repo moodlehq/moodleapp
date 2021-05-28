@@ -9,7 +9,7 @@
         </core-context-menu-item>
     </core-context-menu>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" class="core-loading-center">
+<core-loading [hideUntil]="loaded" [fullscreen]="false">
     <div class="safe-padding-horizontal">
         <core-combobox [selection]="filter" (onChange)="switchFilter($event)">
             <ion-select-option class="ion-text-wrap" value="all">
@@ -35,12 +35,12 @@
             </ion-select-option>
         </core-combobox>
     </div>
-    <core-loading [hideUntil]="timeline.loaded" [hidden]="sort != 'sortbydates'" class="core-loading-center">
+    <core-loading [hideUntil]="timeline.loaded" [hidden]="sort != 'sortbydates'" [fullscreen]="false">
         <addon-block-timeline-events [events]="timeline.events" showCourse="true" [canLoadMore]="timeline.canLoadMore"
             (loadMore)="loadMoreTimeline()" [from]="dataFrom" [to]="dataTo"></addon-block-timeline-events>
     </core-loading>
     <core-loading [hideUntil]="timelineCourses.loaded" [hidden]="sort != 'sortbycourses'"
-        class="core-loading-center safe-area-page">
+        [fullscreen]="false" class="safe-area-page">
         <ion-grid class="ion-no-padding">
             <ion-row class="ion-no-padding">
                 <ion-col *ngFor="let course of timelineCourses.courses" class="ion-no-padding" size="12" size-md="6">

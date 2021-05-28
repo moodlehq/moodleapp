@@ -29,7 +29,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="notesLoaded" class="core-loading-center">
+    <core-loading [hideUntil]="notesLoaded">
         <ion-item class="ion-text-wrap" *ngIf="user">
             <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false"></core-user-avatar>
             <ion-label><h2>{{user!.fullname}}</h2></ion-label>

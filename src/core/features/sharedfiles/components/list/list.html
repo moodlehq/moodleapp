@@ -6,7 +6,7 @@
 <core-site-picker *ngIf="showSitePicker" [hidden]="!filesLoaded" [initialSite]="siteId" (siteSelected)="changeSite($event)">
 </core-site-picker>
 
-<core-loading [hideUntil]="filesLoaded" class="core-loading-center">
+<core-loading [hideUntil]="filesLoaded" [fullscreen]="false">
     <ion-list *ngIf="files && files.length > 0">
         <ng-container *ngFor="let file of files; let idx = index">
             <core-local-file *ngIf="file.isFile" [file]="file" [manage]="manage" [overrideClick]="pick"
