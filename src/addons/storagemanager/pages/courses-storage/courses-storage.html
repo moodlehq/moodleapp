@@ -39,7 +39,7 @@
                         <p slot="end" class="ion-text-end">{{ course.totalSize | coreBytesToSize }}</p>
                         <ion-button slot="end" (click)="deleteCourse(course)" [disabled]="course.isDownloading">
                             <ion-icon name="fas-trash" slot="icon-only"
-                                ariaLabel="{{ 'addon.storagemanager.deletedatafrom' | translate: { name: course.displayname } }}">
+                                [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: course.displayname }">
                             </ion-icon>
                         </ion-button>
                     </ion-item>

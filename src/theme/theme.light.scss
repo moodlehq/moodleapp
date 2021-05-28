@@ -107,7 +107,7 @@
     --core-header-toolbar-button-image-size: #{$toolbar-button-image-size};
     --core-header-toolbar-background: #{$toolbar-background};
     --core-header-toolbar-color: #{$toolbar-color};
-    ion-toolbar {
+    ion-header ion-toolbar {
         --color: var(--core-header-toolbar-color);
         --background: var(--core-header-toolbar-background);
         ion-button {
@@ -118,6 +118,13 @@
         ion-spinner {
             --ion-color-base: var(--core-header-toolbar-color);
             --color: var(--core-header-toolbar-color);
+        }
+    }
+
+    ion-searchbar {
+        --background: var(--ion-item-background);
+        .searchbar-input {
+            height: var(--a11y-min-target-size);
         }
     }
 
@@ -161,11 +168,15 @@
         --color: var(--ion-color-primary);
     }
 
+    --core-progressbar-height: #{$core-progressbar-height};
+    --core-progressbar-color: #{$core-progressbar-color};
+    --core-progressbar-text-color: #{$core-progressbar-text-color};
+    --core-progressbar-background: #{$core-progressbar-background};
     core-progress-bar {
-        --height: #{$core-progressbar-height};
-        --color: #{$core-progressbar-color};
-        --text-color: #{$core-progressbar-text-color};
-        --background: #{$core-progressbar-background};
+        --height: var(--core-progressbar-height);
+        --color: var(--core-progressbar-color);
+        --text-color: var(--core-progressbar-text-color);
+        --background: var(--core-progressbar-background);
     }
 
     core-block-course-blocks {

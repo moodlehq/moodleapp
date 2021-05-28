@@ -1,6 +1,7 @@
 :host {
     position: relative;
-    display: block;
+    display: flex;
+    flex-direction: column;
     background: var(--background);
 
     ion-item-divider {

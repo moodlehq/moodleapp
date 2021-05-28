@@ -38,7 +38,6 @@
 
     .core-loading-content {
         display: contents;
-        padding-bottom: 1px; /* This makes height be real */
     }
 
     &.core-loading-noheight .core-loading-content {
@@ -55,10 +54,6 @@
         .core-loading-container {
             padding-top: 20px;
             position: relative;
-        }
-
-        .core-loading-content {
-            display: block;
         }
     }
 }

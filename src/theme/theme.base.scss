@@ -153,7 +153,7 @@ ion-item.ion-text-wrap ion-label {
     }
 }
 
-// Ionic toolbar.
+// Ionic toolbar on header.
 ion-app.md ion-toolbar {
     --min-height: #{$toolbar-height-md};
 }
@@ -162,29 +162,31 @@ ion-app.ios ion-toolbar {
     --min-height: #{$toolbar-height-ios};
 }
 
-ion-toolbar ion-back-button,
-ion-toolbar .in-toolbar.button-clear {
-    --color: var(--core-header-toolbar-color);
-    --ion-toolbar-color: var(--core-header-toolbar-color);
-}
+ion-header ion-toolbar {
+    ion-back-button,
+    .in-toolbar.button-clear {
+        --color: var(--core-header-toolbar-color);
+        --ion-toolbar-color: var(--core-header-toolbar-color);
+    }
 
-ion-header ion-toolbar .button.button-clear,
-ion-header ion-toolbar .button.button-solid {
-    --background: transparent;
-    --color: var(--core-header-toolbar-color);
-    --ion-color-primary: var(--core-header-toolbar-color);
-}
+    .button.button-clear,
+    .button.button-solid {
+        --background: transparent;
+        --color: var(--core-header-toolbar-color);
+        --ion-color-primary: var(--core-header-toolbar-color);
+    }
 
-ion-header ion-toolbar .button.button-clear.button-has-icon-only,
-ion-header ion-toolbar .button.button-solid.button-has-icon-only {
-    --border-radius: 50%;
-    width: 48px;
-    height: 48px;
-}
+    .button.button-clear.button-has-icon-only,
+    .button.button-solid.button-has-icon-only {
+        --border-radius: 50%;
+        width: 48px;
+        height: 48px;
+    }
 
 
-ion-toolbar .core-navbar-button-hidden {
-    display: none !important;
+    .core-navbar-button-hidden {
+        display: none !important;
+    }
 }
 
 // Ionic icon.
@@ -475,6 +477,10 @@ ion-card ion-item img.core-module-icon[slot="start"] {
     margin-left: 32px;
 }
 
+.core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation * {
+    display: inline !important;
+}
+
 ion-toolbar h1 img.core-bar-button-image,
 ion-toolbar h1 .core-bar-button-image img {
     padding: 0;
@@ -506,6 +512,15 @@ ion-toolbar h1 .core-bar-button-image img {
 // Select.
 ion-select::part(text) {
     white-space: normal;
+}
+
+ion-searchbar {
+    .searchbar-search-icon.ios {
+        top: 4px;
+    }
+    .searchbar-search-icon.md {
+        top: 12px;
+    }
 }
 
 // File uploader.
@@ -602,7 +617,6 @@ ion-content > ion-fab[core-fab] {
 ion-back-button.md::part(text) {
     display: none;
 }
-
 
 .core-media-adapt-width {
     max-width: 100%;
@@ -729,4 +743,11 @@ ion-content.disable-scroll-y::part(scroll) {
     overscroll-behavior-y: auto;
     z-index: auto;
     will-change: auto;
+}
+
+iframe {
+    border: 0;
+    display: block;
+    max-width: 100%;
+    background-color: var(--ion-background-color);
 }

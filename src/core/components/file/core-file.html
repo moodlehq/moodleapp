@@ -9,11 +9,11 @@
     </ion-label>
     <div slot="end">
         <core-download-refresh [status]="state" [enabled]="canDownload" [loading]="isDownloading"
-            [canTrustDownload]="!alwaysDownload" (action)="download()">
+            [canTrustDownload]="!alwaysDownload" (action)="download()" size="small">
         </core-download-refresh>
 
         <ion-button fill="clear" *ngIf="!isDownloading && canDelete" (click)="delete($event)"
-            [attr.aria-label]="'core.delete' | translate" color="danger">
+            [attr.aria-label]="'core.delete' | translate" color="danger" size="small">
             <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true"></ion-icon>
         </ion-button>
     </div>
