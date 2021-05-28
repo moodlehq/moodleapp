@@ -518,6 +518,10 @@ ion-select::part(text) {
     white-space: normal;
 }
 
+ion-select::part(icon) {
+    opacity: 1;
+}
+
 ion-searchbar {
     .searchbar-search-icon.ios {
         top: 4px;

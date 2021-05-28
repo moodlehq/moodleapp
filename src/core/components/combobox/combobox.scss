@@ -52,6 +52,7 @@ ion-button {
 ion-select {
     &::part(icon) {
         margin: var(--icon-margin);
+        opacity: 1;
     }
 
     &::after {
@@ -115,7 +116,6 @@ ion-button {
         width: 19px;
         height: 19px;
         position: relative;
-        opacity: 0.33;
 
         .select-icon-inner {
             left: 5px;
