@@ -3,7 +3,8 @@
     --tabs-color: var(--core-tab-color);
     --height: 56px;
     height: 100%;
-    display: block;
+    display: flex;
+    flex-direction: column;
 
     ion-tabs {
         background: transparent;
@@ -82,7 +83,7 @@
             z-index: 1;
 
             &.selected {
-                display: block;
+                display: contents;
             }
 
             ion-header {
@@ -94,6 +95,11 @@
                 margin-bottom: 0 !important;
             }
         }
+    }
+
+    div.core-tabs-content-container {
+        flex-grow: 1;
+        position: relative;
     }
 }
 
