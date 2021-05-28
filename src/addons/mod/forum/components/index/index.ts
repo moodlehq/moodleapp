@@ -667,6 +667,9 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param discussion Discussion.
      */
     async showOptionsMenu(event: Event, discussion: AddonModForumDiscussion): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
         const popoverData = await CoreDomUtils.openPopover<{ action?: string; value: boolean }>({
             component: AddonModForumDiscussionOptionsMenuComponent,
             componentProps: {

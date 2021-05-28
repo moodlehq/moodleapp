@@ -306,8 +306,13 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     /**
      * Set this post as being replied to.
+     *
+     * @param event Click event.
      */
-    async showReplyForm(): Promise<void> {
+    async showReplyForm(event: Event): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
         if (this.replyData.isEditing) {
             // User is editing a post, data needs to be resetted. Ask confirm if there is unsaved data.
             try {
@@ -323,7 +328,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                         );
                     });
                 }
-            } catch (error) {
+            } catch {
                 // Cancelled.
             }
 
