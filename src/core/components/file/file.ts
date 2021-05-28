@@ -21,7 +21,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUrlUtils } from '@services/utils/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -48,16 +48,21 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     @Output() onDelete: EventEmitter<void>; // Will notify when the delete button is clicked.
 
     isDownloading?: boolean;
+    isDownloaded?: boolean;
     fileIcon?: string;
     fileName!: string;
     fileSizeReadable?: string;
     state?: string;
     timemodified!: number;
+    isIOS = false;
+    openButtonIcon = '';
+    openButtonLabel = '';
 
     protected fileUrl!: string;
     protected siteId?: string;
     protected fileSize?: number;
     protected observer?: CoreEventObserver;
+    protected defaultIsOpenWithPicker = false;
 
     constructor() {
         this.onDelete = new EventEmitter<void>();
@@ -80,6 +85,11 @@ export class CoreFileComponent implements OnInit, OnDestroy {
         this.siteId = CoreSites.getCurrentSiteId();
         this.fileSize = this.file.filesize;
         this.fileName = this.file.filename || '';
+
+        this.isIOS = CoreApp.isIOS();
+        this.defaultIsOpenWithPicker = CoreFileHelper.defaultIsOpenWithPicker();
+        this.openButtonIcon = this.defaultIsOpenWithPicker ? 'fas-file' : 'fas-share-square';
+        this.openButtonLabel = this.defaultIsOpenWithPicker ? 'core.openfile' : 'core.openwith';
 
         if (CoreUtils.isTrueOrOne(this.showSize) && this.fileSize && this.fileSize >= 0) {
             this.fileSizeReadable = CoreTextUtils.bytesToSize(this.fileSize, 2);
@@ -128,20 +138,28 @@ export class CoreFileComponent implements OnInit, OnDestroy {
 
         this.state = state;
         this.isDownloading = this.canDownload && state === CoreConstants.DOWNLOADING;
+        this.isDownloaded = this.canDownload && CoreFileHelper.isStateDownloaded(state);
     }
 
     /**
      * Convenience function to open a file, downloading it if needed.
      *
+     * @param isOpenButton Whether the open button was clicked.
      * @return Promise resolved when file is opened.
      */
-    protected openFile(): Promise<void> {
+    openFile(isOpenButton = false): Promise<void> {
+        const options: CoreUtilsOpenFileOptions = {};
+        if (isOpenButton) {
+            // Use the non-default method.
+            options.iOSOpenFileAction = this.defaultIsOpenWithPicker ? OpenFileAction.OPEN : OpenFileAction.OPEN_WITH;
+        }
+
         return CoreFileHelper.downloadAndOpenFile(this.file!, this.component, this.componentId, this.state, (event) => {
             if (event && 'calculating' in event && event.calculating) {
                 // The process is calculating some data required for the download, show the spinner.
                 this.isDownloading = true;
             }
-        }).catch((error) => {
+        }, undefined, options).catch((error) => {
             CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
         });
     }
@@ -152,7 +170,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
      * @param e Click event.
      * @param openAfterDownload Whether the file should be opened after download.
      */
-    async download(e?: Event, openAfterDownload: boolean = false): Promise<void> {
+    async download(e?: Event, openAfterDownload = false): Promise<void> {
         e && e.preventDefault();
         e && e.stopPropagation();
 

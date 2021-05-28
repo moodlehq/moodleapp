@@ -22,7 +22,7 @@ import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
@@ -35,6 +35,15 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 export class CoreFileHelperProvider {
 
     /**
+     * Check if the default behaviour of the app is open file with picker.
+     *
+     * @return Boolean.
+     */
+    defaultIsOpenWithPicker(): boolean {
+        return CoreApp.isIOS() && CoreConstants.CONFIG.iOSDefaultOpenFileAction === OpenFileAction.OPEN_WITH;
+    }
+
+    /**
      * Convenience function to open a file, downloading it if needed.
      *
      * @param file The file to download.
@@ -43,6 +52,7 @@ export class CoreFileHelperProvider {
      * @param state The file's state. If not provided, it will be calculated.
      * @param onProgress Function to call on progress.
      * @param siteId The site ID. If not defined, current site.
+     * @param options Options to open the file.
      * @return Resolved on success.
      */
     async downloadAndOpenFile(
@@ -52,6 +62,7 @@ export class CoreFileHelperProvider {
         state?: string,
         onProgress?: CoreFileHelperOnProgress,
         siteId?: string,
+        options: CoreUtilsOpenFileOptions = {},
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -102,7 +113,7 @@ export class CoreFileHelperProvider {
             }
         }
 
-        return CoreUtils.openFile(url);
+        return CoreUtils.openFile(url, options);
     }
 
     /**

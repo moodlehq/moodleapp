@@ -32,6 +32,7 @@ import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreViewerQRScannerComponent } from '@features/viewer/components/qr-scanner/qr-scanner';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreFileEntry } from '@services/file-helper';
+import { CoreConstants } from '@/core/constants';
 
 type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -907,9 +908,10 @@ export class CoreUtilsProvider {
      * Open a file using platform specific method.
      *
      * @param path The local path of the file to be open.
+     * @param options Options.
      * @return Promise resolved when done.
      */
-    async openFile(path: string): Promise<void> {
+    async openFile(path: string, options: CoreUtilsOpenFileOptions = {}): Promise<void> {
         // Convert the path to a native path if needed.
         path = CoreFile.unconvertFileSrc(path);
 
@@ -931,7 +933,12 @@ export class CoreUtilsProvider {
         }
 
         try {
-            await FileOpener.open(path, mimetype || '');
+            const openFileAction = options.iOSOpenFileAction ?? CoreConstants.CONFIG.iOSDefaultOpenFileAction;
+            if (CoreApp.isIOS() && openFileAction == OpenFileAction.OPEN_WITH) {
+                await FileOpener.showOpenWithDialog(path, mimetype || '');
+            } else {
+                await FileOpener.open(path, mimetype || '');
+            }
         } catch (error) {
             this.logger.error('Error opening file ' + path + ' with mimetype ' + mimetype);
             this.logger.error('Error: ', JSON.stringify(error));
@@ -1703,3 +1710,18 @@ export type CoreMenuItem<T = number> = {
     label: string;
     value: T | number;
 };
+
+/**
+ * Options for opening a file.
+ */
+export type CoreUtilsOpenFileOptions = {
+    iOSOpenFileAction?: OpenFileAction; // Action to do when opening a file.
+};
+
+/**
+ * Possible default picker actions.
+ */
+export enum OpenFileAction {
+    OPEN = 'open',
+    OPEN_WITH = 'open-with',
+}

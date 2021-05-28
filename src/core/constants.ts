@@ -17,6 +17,7 @@
 import { CoreColorScheme, CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CoreSitesDemoSiteData } from '@services/sites';
 import envJson from '@/assets/env.json';
+import { OpenFileAction } from '@services/utils/utils';
 
 /**
  * Context levels enumeration.
@@ -173,6 +174,7 @@ export interface EnvironmentConfig {
     displayqroncredentialscreen?: boolean;
     displayqronsitescreen?: boolean;
     forceOpenLinksIn: 'app' | 'browser';
+    iOSDefaultOpenFileAction?: OpenFileAction;
 };
 
 export interface EnvironmentBuild {

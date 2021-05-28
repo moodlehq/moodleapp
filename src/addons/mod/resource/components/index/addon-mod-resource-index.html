@@ -45,11 +45,16 @@
         <core-format-text [text]="contentText" [filter]="false"></core-format-text>
     </div>
 
-    <div class="ion-padding" *ngIf="mode == 'external'">
-        <ion-button expand="block" (click)="open()">
+    <ng-container *ngIf="mode == 'external'">
+        <ion-button expand="block" class="ion-margin" (click)="open(openFileAction.OPEN)">
             <ion-icon name="far-file" slot="start" aria-hidden="true"></ion-icon>
             {{ 'addon.mod_resource.openthefile' | translate }}
         </ion-button>
-    </div>
+
+        <ion-button *ngIf="isIOS" expand="block" class="ion-margin" (click)="open(openFileAction.OPEN_WITH)">
+            <ion-icon name="far-share-square" slot="start" aria-hidden="true"></ion-icon>
+            {{ 'core.openwith' | translate }}
+        </ion-button>
+    </ng-container>
 
 </core-loading>
