@@ -1,6 +1,6 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
-    <ion-button (click)="showToc()" aria-haspopup="true" [attr.aria-label]="'addon.mod_imscp.toc' | translate">
+    <ion-button *ngIf="loaded" (click)="showToc()" aria-haspopup="true" [attr.aria-label]="'addon.mod_imscp.toc' | translate">
         <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
     <core-context-menu>

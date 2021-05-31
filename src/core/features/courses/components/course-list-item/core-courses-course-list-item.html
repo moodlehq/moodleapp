@@ -1,5 +1,5 @@
 <ion-item class="ion-text-wrap" (click)="openCourse()" [class.item-disabled]="course.visible == 0"
-[attr.aria-label]="course.displayname || course.fullname" detail="true" button>
+    [attr.aria-label]="course.displayname || course.fullname" detail="true" button>
     <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" class="course-icon"
         [attr.course-color]="course.color ? null : course.colorNumber" [style.color]="course.color"></ion-icon>
     <ion-avatar *ngIf="course.courseImage" slot="start">

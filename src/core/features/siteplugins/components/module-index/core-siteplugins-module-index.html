@@ -20,7 +20,7 @@
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!displaySize || !size || (
             content?.compileComponent?.componentInstance?.displaySize === false)" [priority]="500"
-            [content]="'core.clearstoreddata' | translate:{$a: size}" [iconDescription]="'cube'" (action)="removeFiles()"
+            [content]="'core.clearstoreddata' | translate:{$a: size}" [iconDescription]="'fas-archive'" (action)="removeFiles()"
             iconAction="fas-trash" [closeOnClick]="false">
         </core-context-menu-item>
     </core-context-menu>

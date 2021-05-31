@@ -296,7 +296,7 @@
                         </ion-card-header>
 
                         <ion-item class="ion-text-wrap" *ngFor="let student of overview.students" button
-                            (click)="openRetake(student.id)">
+                            (click)="openRetake(student.id)" detail="true">
                             <core-user-avatar [user]="student" slot="start" [userId]="student.id" [courseId]="courseId">
                             </core-user-avatar>
                             <ion-label>

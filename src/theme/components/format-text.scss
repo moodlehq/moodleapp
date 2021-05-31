@@ -78,6 +78,8 @@ core-format-text {
         }
 
         &.core-expand-in-fullview {
+            cursor: pointer;
+
             .core-show-more {
                 @include push-arrow-color(626262, true);
                 @include padding-horizontal(null, 5px);

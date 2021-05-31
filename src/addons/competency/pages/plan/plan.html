@@ -23,37 +23,35 @@
             <ion-list>
                 <ion-item class="ion-text-wrap" *ngIf="plan.plan.description" lines="none">
                     <ion-label>
-                        <core-format-text [text]="plan.plan.description" contextLevel="user"
-                            [contextInstanceId]="plan.plan.userid">
-                        </core-format-text>
+                        <p>
+                            <core-format-text [text]="plan.plan.description" contextLevel="user"
+                                [contextInstanceId]="plan.plan.userid">
+                            </core-format-text>
+                        </p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" lines="none">
                     <ion-label>
-                        <p>
-                            <strong>{{ 'addon.competency.status' | translate }}</strong>: {{ plan.plan.statusname }}
-                        </p>
+                        <p class="item-heading">{{ 'addon.competency.status' | translate }}</p>
+                        <p>{{ plan.plan.statusname }}</p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="plan.plan.duedate > 0" lines="none">
                     <ion-label>
-                        <p>
-                            <strong>{{ 'addon.competency.duedate' | translate }}</strong>:
-                            {{ plan.plan.duedate * 1000 | coreFormatDate }}
-                        </p>
+                        <p class="item-heading">{{ 'addon.competency.duedate' | translate }}</p>
+                        <p>{{ plan.plan.duedate * 1000 | coreFormatDate }}</p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="plan.plan.template" lines="none">
                     <ion-label>
-                        <p>
-                            <strong>{{ 'addon.competency.template' | translate }}</strong>: {{ plan.plan.template.shortname }}
-                        </p>
+                        <p class="item-heading">{{ 'addon.competency.template' | translate }}</p>
+                        <p>{{ plan.plan.template.shortname }}</p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" lines="none">
-                    <ion-label>
-                        <p id="addon-competency-plan-{{plan.plan.id}}-progress">
-                            <strong>{{ 'addon.competency.progress' | translate }}</strong>:
+                    <ion-label id="addon-competency-plan-{{plan.plan.id}}-progress">
+                        <p class="item-heading">{{ 'addon.competency.progress' | translate }}</p>
+                        <p>
                             {{ 'addon.competency.xcompetenciesproficientoutofy' | translate:
                                 {$a: {x: plan.proficientcompetencycount, y: plan.competencycount} } }}
                         </p>

@@ -8,10 +8,9 @@
                 alt="" onError="this.src='assets/img/group-avatar.png'" core-external-content role="presentation"
                 [siteId]="siteId || null">
             <core-user-avatar *ngIf="loaded && otherMember" class="core-bar-button-image" [user]="otherMember"
-                [linkProfile]="false" [checkOnline]="otherMember.showonlinestatus" (click)="showInfo && viewInfo()">
+                [linkProfile]="false" [checkOnline]="otherMember.showonlinestatus">
             </core-user-avatar>
-            <core-format-text [text]="title" contextLevel="system" [contextInstanceId]="0"
-                (click)="showInfo && !isGroup && viewInfo()"></core-format-text>
+            <core-format-text [text]="title" contextLevel="system" [contextInstanceId]="0"></core-format-text>
             <ion-icon *ngIf="conversation && conversation.isfavourite" name="fas-star"
                 [attr.aria-label]="'core.favourites' | translate">
             </ion-icon>

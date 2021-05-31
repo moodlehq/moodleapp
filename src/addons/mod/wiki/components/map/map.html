@@ -12,7 +12,7 @@
     <nav>
         <ion-list>
             <!-- Go to "home". -->
-            <ion-item class="ion-text-wrap" *ngIf="homeView" (click)="goToWikiHome()" button>
+            <ion-item class="ion-text-wrap" *ngIf="homeView" (click)="goToWikiHome()" button detail="true">
                 <ion-icon name="fas-home" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'addon.mod_wiki.gowikihome' | translate }}</ion-label>
             </ion-item>
@@ -21,7 +21,7 @@
                     <ion-label><h2>{{ letter.label }}</h2></ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngFor="let page of letter.pages" (click)="goToPage(page)"
-                    [attr.aria-current]="selectedTitle == page.title ? 'page' : 'false'" button>
+                    [attr.aria-current]="selectedTitle == page.title ? 'page' : 'false'" button detail="false">
                     <ion-icon name="fas-home" slot="start" *ngIf="page.firstpage" aria-hidden="true"></ion-icon>
                     <ion-label>
                         <core-format-text [text]="page.title" contextLevel="module" [contextInstanceId]="moduleId"

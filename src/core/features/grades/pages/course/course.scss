@@ -4,13 +4,28 @@
     --header-background: var(--white);
     --odd-cell-background: var(--gray-lighter);
     --even-cell-background: var(--white);
+    --odd-cell-hover: var(--gray-light);
+    --even-cell-hover: var(--gray-lighter);
     --icon-color: #999999;
+
+    .odd {
+        --cell-background: var(--odd-cell-background);
+        --cell-hover: var(--odd-cell-hover);
+    }
+
+    .even {
+        --cell-background: var(--even-cell-background);
+        --cell-hover: var(--even-cell-hover);
+    }
+
 }
 
 :host-context(body.dark) {
     --header-background: var(--black);
     --odd-cell-background: var(--gray-darker);
     --even-cell-background: var(--black);
+    --odd-cell-hover: var(--gray-dark);
+    --even-cell-hover: var(--gray-darker);
     --icon-color: #eeeeee;
 }
 
@@ -91,21 +106,19 @@
         opacity: .7;
     }
 
-    .odd {
+    .odd, .even {
         td, th, th[aria-current="page"] {
-            background-color: var(--odd-cell-background);
-        }
-
-    }
-
-    .even {
-        td, th, th[aria-current="page"] {
-            background-color: var(--even-cell-background);
+            background-color: var(--cell-background);
         }
     }
 
     .core-grades-grade-clickable {
         cursor: pointer;
+        &:hover {
+            td, th, th[aria-current="page"] {
+                background-color: var(--cell-hover);
+            }
+        }
     }
 
 }

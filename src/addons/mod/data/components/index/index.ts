@@ -48,6 +48,8 @@ import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch';
 import { AddonModDataComponentsCompileModule } from '../components-compile.module';
 import { AddonModDataSearchComponent } from '../search/search';
 
+const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
+
 /**
  * Component that displays a data index page.
  */
@@ -318,11 +320,21 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         if (!this.isEmpty) {
             this.entries = (entries.offlineEntries || []).concat(entries.entries);
 
-            let entriesHTML = AddonModDataHelper.getTemplate(
+            let headerAndFooter = AddonModDataHelper.getTemplate(
                 this.database!,
                 AddonModDataTemplateType.LIST_HEADER,
                 this.fieldsArray,
             );
+
+            headerAndFooter += contentToken;
+
+            headerAndFooter += AddonModDataHelper.getTemplate(
+                this.database!,
+                AddonModDataTemplateType.LIST_FOOTER,
+                this.fieldsArray,
+            );
+
+            headerAndFooter = CoreDomUtils.fixHtml(headerAndFooter);
 
             // Get first entry from the whole list.
             if (!this.search.searching || !this.firstEntry) {
@@ -330,6 +342,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             const template = AddonModDataHelper.getTemplate(this.database!, AddonModDataTemplateType.LIST, this.fieldsArray);
+
+            let entriesHTML = '';
 
             const entriesById: Record<number, AddonModDataEntry> = {};
             this.entries.forEach((entry, index) => {
@@ -349,9 +363,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                     actions,
                 );
             });
-            entriesHTML += AddonModDataHelper.getTemplate(this.database!, AddonModDataTemplateType.LIST_FOOTER, this.fieldsArray);
 
-            this.entriesRendered = CoreDomUtils.fixHtml(entriesHTML);
+            this.entriesRendered = headerAndFooter.replace(contentToken, entriesHTML);
 
             // Pass the input data to the component.
             this.jsData = {

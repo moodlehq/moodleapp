@@ -23,7 +23,7 @@
             (action)="prefetch($event)">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="size"
-            iconDescription="cube" iconAction="trash"
+            iconDescription="fas-archive" iconAction="trash"
             [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}" [closeOnClick]="false"
             (action)="removeFiles($event)">
         </core-context-menu-item>

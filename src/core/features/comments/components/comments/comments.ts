@@ -29,7 +29,6 @@ import { ContextLevel } from '@/core/constants';
 @Component({
     selector: 'core-comments',
     templateUrl: 'core-comments.html',
-    styleUrls: ['comments.scss'],
 })
 export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -39,9 +38,9 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
     @Input() itemId!: number;
     @Input() area = '';
     @Input() title?: string;
-    @Input() displaySpinner = true; // Whether to display the loading spinner.
-    @Output() onLoading: EventEmitter<boolean>; // Eevent that indicates whether the component is loading data.
+    @Output() onLoading: EventEmitter<boolean>; // Event that indicates whether the component is loading data.
     @Input() courseId?: number; // Course ID the comments belong to. It can be used to improve performance with filters.
+    @Input() showItem = false; // Show button as an item.
 
     commentsLoaded = false;
     commentsCount = '';

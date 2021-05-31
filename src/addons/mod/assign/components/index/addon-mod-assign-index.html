@@ -40,7 +40,8 @@
         <ion-item class="ion-text-wrap">
             <ion-label>
                 <core-format-text [text]="description" [component]="component" [componentId]="componentId" maxHeight="120"
-                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" (click)="expandDescription($event)">
+                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"
+                    (onClick)="expandDescription($event)">
                 </core-format-text>
             </ion-label>
         </ion-item>

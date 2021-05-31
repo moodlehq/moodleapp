@@ -25,7 +25,7 @@
             <ion-label><ion-spinner></ion-spinner></ion-label>
         </ion-item>
         <ion-item button *ngFor="let handler of handlers" [ngClass]="['core-moremenu-handler', handler.class || '']"
-            (click)="openHandler(handler)" [attr.aria-label]="handler.title | translate" detail="true" detail="true">
+            (click)="openHandler(handler)" [attr.aria-label]="handler.title | translate" detail="true">
             <ion-icon [name]="handler.icon" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <p class="item-heading">{{ handler.title | translate}}</p>

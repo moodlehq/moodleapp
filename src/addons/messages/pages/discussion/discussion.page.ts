@@ -1302,7 +1302,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     async viewInfo(): Promise<void> {
         if (this.isGroup) {
             // Display the group information.
-            const userId = await CoreDomUtils.openModal<number>({
+            const userId = await CoreDomUtils.openSideModal<number>({
                 component: AddonMessagesConversationInfoComponent,
                 componentProps: {
                     conversationId: this.conversationId,

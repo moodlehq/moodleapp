@@ -1,5 +1,11 @@
-:host {
-    ion-list {
-        padding: 0;
-    }
+@import "~theme/globals";
+
+ion-list {
+    padding: 0;
+}
+
+ion-icon[slot=start] {
+    @include margin-horizontal(0, 10px);
+    width: 0.8em;
+    height: 0.8em;
 }

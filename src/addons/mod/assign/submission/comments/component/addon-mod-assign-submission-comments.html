@@ -1,4 +1,4 @@
-<ion-item *ngIf="commentsEnabled" class="ion-text-wrap" (click)="showComments($event)" detail="false" button>
+<ion-item *ngIf="commentsEnabled" class="ion-text-wrap" (click)="showComments($event)" detail="true" button>
     <ion-label>
         <h2>{{plugin.name}}</h2>
         <core-comments contextLevel="module" [instanceId]="assign.cmid" component="assignsubmission_comments"

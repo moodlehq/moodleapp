@@ -27,7 +27,7 @@
 
             <ion-item button class="ion-text-wrap {{question.stateClass}}" *ngFor="let question of navigation"
                 [attr.aria-current]="!summaryShown && currentPage == question.page ? 'page' : 'false'"
-                (click)="loadPage(question.page, question.slot)" detail="true">
+                (click)="loadPage(question.page, question.slot)" detail="false">
 
                 <ion-label>
                     <span *ngIf="question.number">{{ 'core.question.questionno' | translate:{$a: question.number} }}</span>

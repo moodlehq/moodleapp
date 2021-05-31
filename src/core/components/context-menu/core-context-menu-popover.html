@@ -7,7 +7,9 @@
         [detail]="(item.href && !item.iconAction) || null" role="menuitem" [button]="(item.href && !item.iconAction)">
         <ion-icon *ngIf="item.iconDescription" [name]="item.iconDescription" [attr.aria-label]="item.ariaDescription" slot="start">
         </ion-icon>
-        <ion-label><core-format-text [clean]="true" [text]="item.content" [filter]="false"></core-format-text></ion-label>
+        <ion-label>
+            <p class="item-heading"><core-format-text [clean]="true" [text]="item.content" [filter]="false"></core-format-text></p>
+        </ion-label>
         <ion-icon *ngIf="(item.href || item.action) && item.iconAction && item.iconAction != 'spinner'" [name]="item.iconAction"
             [class.icon-slash]="item.iconSlash" slot="end">
         </ion-icon>
