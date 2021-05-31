@@ -327,6 +327,32 @@
     };
 
     /**
+     * Given a list of elements, get the top ancestors among all of them.
+     *
+     * This will remote duplicates and drop any elements nested within each other.
+     *
+     * @param {Array} elements Elements list.
+     * @return {Array} Top ancestors.
+     */
+    var getTopAncestors = function(elements) {
+        const uniqueElements = new Set(elements);
+
+        for (const element of uniqueElements) {
+            for (otherElement of uniqueElements) {
+                if (otherElement === element) {
+                    continue;
+                }
+
+                if (element.contains(otherElement)) {
+                    uniqueElements.delete(otherElement);
+                }
+            }
+        }
+
+        return [...uniqueElements];
+    };
+
+    /**
      * Function to find elements based on their text or Aria label.
      *
      * @param {string} text Text (full or partial)
@@ -343,10 +369,16 @@
             if (nearElements.length === 0) {
                 throw new Error('There was no match for near text')
             } else if (nearElements.length > 1) {
-                throw new Error('Too many matches for near text');
-            }
+                const nearElementsAncestors = getTopAncestors(nearElements);
 
-            container = nearElements[0].parentElement;
+                if (nearElementsAncestors.length > 1) {
+                    throw new Error('Too many matches for near text');
+                }
+
+                container = nearElementsAncestors[0].parentElement;
+            } else {
+                container = nearElements[0].parentElement;
+            }
         }
 
         do {

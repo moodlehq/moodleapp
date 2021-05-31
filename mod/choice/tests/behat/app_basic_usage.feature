@@ -1,4 +1,4 @@
-@mod @mod_choice @app @app_upto3.9.4 @javascript
+@mod @mod_choice @app @javascript
 Feature: Test basic usage of choice activity in app
   In order to participate in the choice while using the mobile app
   As a student
@@ -17,7 +17,6 @@ Feature: Test basic usage of choice activity in app
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
 
-  @app @3.8.0
   Scenario: Answer a choice (multi or single, update answer) & View results
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
@@ -26,24 +25,23 @@ Feature: Test basic usage of choice activity in app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test single choice name" in the app
-    And I press "Option 1" in the app
-    And I press "Option 2" in the app
+    And I select "Option 1" in the app
+    And I select "Option 2" in the app
     And I press "Save my choice" in the app
-    Then I should see "Are you sure"
+    Then I should find "Are you sure" in the app
 
     When I press "OK" in the app
-    Then I should see "Option 1: 0"
-    And I should see "Option 2: 1"
-    And I should see "Option 3: 0"
-    But I should not see "Remove my choice"
+    Then I should find "Option 1: 0" in the app
+    And I should find "Option 2: 1" in the app
+    And I should find "Option 3: 0" in the app
+    But I should not find "Remove my choice" in the app
 
     When I press the back button in the app
     And I press "Test single choice name" in the app
-    Then I should see "Option 1: 0"
-    And I should see "Option 2: 1"
-    And I should see "Option 3: 0"
+    Then I should find "Option 1: 0" in the app
+    And I should find "Option 2: 1" in the app
+    And I should find "Option 3: 0" in the app
 
-  @app @3.8.0
   Scenario: Answer a choice (multi or single, update answer) & View results & Delete choice
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
@@ -52,29 +50,28 @@ Feature: Test basic usage of choice activity in app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test multi choice name" in the app
-    And I press "Option 1" in the app
-    And I press "Option 2" in the app
+    And I select "Option 1" in the app
+    And I select "Option 2" in the app
     And I press "Save my choice" in the app
-    Then I should see "Option 1: 1"
-    And I should see "Option 2: 1"
-    And I should see "Option 3: 0"
-    And I should see "Remove my choice"
+    Then I should find "Option 1: 1" in the app
+    And I should find "Option 2: 1" in the app
+    And I should find "Option 3: 0" in the app
+    And I should find "Remove my choice" in the app
 
-    When I press "Option 1" in the app
-    And I press "Option 3" in the app
+    When I select "Option 1" in the app
+    And I select "Option 3" in the app
     And I press "Save my choice" in the app
-    Then I should see "Option 1: 0"
-    And I should see "Option 2: 1"
-    And I should see "Option 3: 1"
+    Then I should find "Option 1: 0" in the app
+    And I should find "Option 2: 1" in the app
+    And I should find "Option 3: 1" in the app
 
     When I press "Remove my choice" in the app
-    Then I should see "Are you sure"
+    Then I should find "Are you sure" in the app
 
     When I press "Delete" in the app
-    Then I should see "The results are not currently viewable"
-    But I should not see "Remove my choice"
+    Then I should find "The results are not currently viewable" in the app
+    But I should not find "Remove my choice" in the app
 
-  @app @3.8.0
   Scenario: Answer and change answer offline & Sync choice
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
@@ -83,31 +80,32 @@ Feature: Test basic usage of choice activity in app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test single choice name" in the app
-    And I press "Option 1" in the app
+    And I select "Option 1" in the app
     And I switch offline mode to "true"
-    And I press "Option 2" in the app
+    And I select "Option 2" in the app
     And I press "Save my choice" in the app
-    Then I should see "Are you sure"
+    Then I should find "Are you sure" in the app
 
     When I press "OK" in the app
     And I press the back button in the app
     And I press "Test single choice name" in the app
-    Then I should see "This Choice has offline data to be synchronised."
-    But I should not see "Option 1: 0"
-    And I should not see "Option 2: 1"
-    And I should not see "Option 3: 0"
+    Then I should find "This Choice has offline data to be synchronised." in the app
+    But I should not find "Option 1: 0" in the app
+    And I should not find "Option 2: 1" in the app
+    And I should not find "Option 3: 0" in the app
 
     When I switch offline mode to "false"
     And I press the back button in the app
     And I press "Test single choice name" in the app
-    And I press "Display options" in the app
-    And I press "Refresh" in the app
-    Then I should see "Option 1: 0"
-    And I should see "Option 2: 1"
-    And I should see "Option 3: 0"
-    But I should not see "This Choice has offline data to be synchronised."
+    Then I should find "Test single choice description" in the app
 
-  @app @3.8.0
+    When I press "Display options" in the app
+    And I press "Refresh" in the app
+    Then I should find "Option 1: 0" in the app
+    And I should find "Option 2: 1" in the app
+    And I should find "Option 3: 0" in the app
+    But I should not find "This Choice has offline data to be synchronised." in the app
+
   Scenario: Answer and change answer offline & Auto-sync choice
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
@@ -120,23 +118,22 @@ Feature: Test basic usage of choice activity in app
     And I switch offline mode to "true"
     And I press "Option 2" in the app
     And I press "Save my choice" in the app
-    Then I should see "Are you sure"
+    Then I should find "Are you sure" in the app
 
     When I press "OK" in the app
-    And I switch offline mode to "false"
-    Then I should see "This Choice has offline data to be synchronised."
-    But I should not see "Option 1: 0"
-    And I should not see "Option 2: 1"
-    And I should not see "Option 3: 0"
+    Then I should find "This Choice has offline data to be synchronised." in the app
+    But I should not find "Option 1: 0" in the app
+    And I should not find "Option 2: 1" in the app
+    And I should not find "Option 3: 0" in the app
 
-    When I run cron tasks in the app
+    When I switch offline mode to "false"
+    And I run cron tasks in the app
     And I wait loading to finish in the app
-    Then I should see "Option 1: 0"
-    And I should see "Option 2: 1"
-    And I should see "Option 3: 0"
-    But I should not see "This Choice has offline data to be synchronised."
+    Then I should find "Option 1: 0" in the app
+    And I should find "Option 2: 1" in the app
+    And I should find "Option 3: 0" in the app
+    But I should not find "This Choice has offline data to be synchronised." in the app
 
-  @app @3.8.0
   Scenario: Prefetch
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
@@ -147,35 +144,36 @@ Feature: Test basic usage of choice activity in app
     And I press "Course 1" near "Course overview" in the app
     And I press "Display options" in the app
     And I press "Show download options" in the app
-    And I press "cloud download" near "Test single choice name" in the app
-    And I switch offline mode to "true"
+    And I press "Download" near "Test single choice name" in the app
+    Then I should find "Downloaded" near "Test single choice name" in the app
+
+    When I switch offline mode to "true"
     And I press "Test multi choice name" in the app
-    Then I should see "There was a problem connecting to the site. Please check your connection and try again."
+    Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
 
     When I press "OK" in the app
     And I press the back button in the app
     And I press "Test single choice name" in the app
     And I press "Option 2" in the app
     And I press "Save my choice" in the app
-    Then I should see "Are you sure"
+    Then I should find "Are you sure" in the app
 
     When I press "OK" in the app
     And I press the back button in the app
     And I press "Test single choice name" in the app
-    Then I should see "This Choice has offline data to be synchronised."
-    But I should not see "Option 1: 0"
-    And I should not see "Option 2: 1"
-    And I should not see "Option 3: 0"
+    Then I should find "This Choice has offline data to be synchronised." in the app
+    But I should not find "Option 1: 0" in the app
+    And I should not find "Option 2: 1" in the app
+    And I should not find "Option 3: 0" in the app
 
     When I switch offline mode to "false"
     And I press the back button in the app
     And I press "Test single choice name" in the app
-    Then I should see "Option 1: 0"
-    And I should see "Option 2: 1"
-    And I should see "Option 3: 0"
-    But I should not see "This Choice has offline data to be synchronised."
+    Then I should find "Option 1: 0" in the app
+    And I should find "Option 2: 1" in the app
+    And I should find "Option 3: 0" in the app
+    But I should not find "This Choice has offline data to be synchronised." in the app
 
-  @app @3.8.0
   Scenario: Download students choice in text format
     # Submit answer as student
     Given the following "activities" exist:
@@ -194,10 +192,13 @@ Feature: Test basic usage of choice activity in app
     And I log in as "teacher1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Choice name" in the app
-    And I press "Display options" in the app
+    Then I should find "Test choice description" in the app
+
+    When I press "Display options" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
     And I press "Actions menu"
     And I follow "View 1 responses"
     And I press "Download in text format"
+    # TODO Then I should find "..." in the downloads folder
