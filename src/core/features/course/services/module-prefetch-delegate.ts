@@ -735,7 +735,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
                     return;
                 }
 
-                result.status = CoreFilepool.determinePackagesStatus(status, modStatus);
+                result.status = CoreFilepool.determinePackagesStatus(result.status, modStatus);
                 result[modStatus].push(module);
                 result.total++;
             } catch (error) {
@@ -749,7 +749,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
                     return;
                 }
 
-                result.status = CoreFilepool.determinePackagesStatus(status, cacheStatus);
+                result.status = CoreFilepool.determinePackagesStatus(result.status, cacheStatus);
                 result[cacheStatus].push(module);
                 result.total++;
             }
