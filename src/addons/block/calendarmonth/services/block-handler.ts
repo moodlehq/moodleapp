@@ -47,6 +47,9 @@ export class AddonBlockCalendarMonthHandlerService extends CoreBlockBaseHandler 
             component: CoreBlockOnlyTitleComponent,
             link: AddonCalendar.getMainCalendarPagePath(),
             linkParams: linkParams,
+            navOptions: {
+                preferCurrentTab: false,
+            },
         };
     }
 

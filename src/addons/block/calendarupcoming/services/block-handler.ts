@@ -47,6 +47,9 @@ export class AddonBlockCalendarUpcomingHandlerService extends CoreBlockBaseHandl
             component: CoreBlockOnlyTitleComponent,
             link: AddonCalendar.getMainCalendarPagePath(),
             linkParams: linkParams,
+            navOptions: {
+                preferCurrentTab: false,
+            },
         };
     }
 

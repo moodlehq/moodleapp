@@ -39,8 +39,11 @@ export class AddonBlockPrivateFilesHandlerService extends CoreBlockBaseHandler {
             title: 'addon.block_privatefiles.pluginname',
             class: 'addon-block-private-files',
             component: CoreBlockOnlyTitleComponent,
-            link: '/main/' + AddonPrivateFilesMainMenuHandlerService.PAGE_NAME,
+            link: AddonPrivateFilesMainMenuHandlerService.PAGE_NAME,
             linkParams: { root: 'my' },
+            navOptions: {
+                preferCurrentTab: false,
+            },
         };
     }
 
