@@ -73,7 +73,7 @@ export class CoreFileUploaderVideoHandlerService implements CoreFileUploaderHand
         return {
             title: 'core.fileuploader.video',
             class: 'core-fileuploader-video-handler',
-            icon: 'videocam',
+            icon: 'videocam', // Cannot use font-awesome in action sheet.
             action: async (
                 maxSize?: number,
                 upload?: boolean,

@@ -58,7 +58,7 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
         const handler: CoreFileUploaderHandlerData = {
             title: 'core.fileuploader.file',
             class: 'core-fileuploader-file-handler',
-            icon: 'folder',
+            icon: 'folder', // Cannot use font-awesome in action sheet.
         };
 
         if (CoreApp.isMobile()) {

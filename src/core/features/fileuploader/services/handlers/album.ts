@@ -58,7 +58,7 @@ export class CoreFileUploaderAlbumHandlerService implements CoreFileUploaderHand
         return {
             title: 'core.fileuploader.photoalbums',
             class: 'core-fileuploader-album-handler',
-            icon: 'images',
+            icon: 'images', // Cannot use font-awesome in action sheet.
             action: async (
                 maxSize?: number,
                 upload?: boolean,
