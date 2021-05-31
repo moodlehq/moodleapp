@@ -21,6 +21,7 @@ import { CoreCourseBlock } from '../../course/services/course';
 import { IonRefresher } from '@ionic/angular';
 import { Params } from '@angular/router';
 import { ContextLevel } from '@/core/constants';
+import { CoreNavigationOptions } from '@services/navigator';
 
 /**
  * Template class to easily create components for blocks.
@@ -36,6 +37,7 @@ export abstract class CoreBlockBaseComponent implements OnInit {
     @Input() instanceId!: number; // The instance ID associated with the context level.
     @Input() link?: string; // Link to go when clicked.
     @Input() linkParams?: Params; // Link params to go when clicked.
+    @Input() navOptions?: CoreNavigationOptions; // Navigation options.
 
     loaded = false; // If the component has been loaded.
     protected fetchContentDefaultError = ''; // Default error to show when loading contents.

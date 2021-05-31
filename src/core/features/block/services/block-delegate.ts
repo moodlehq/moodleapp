@@ -21,6 +21,7 @@ import { CoreCourseBlock } from '@features/course/services/course';
 import { Params } from '@angular/router';
 import { makeSingleton } from '@singletons';
 import { CoreBlockDefaultHandler } from './handlers/default-block';
+import { CoreNavigationOptions } from '@services/navigator';
 
 /**
  * Interface that all blocks must implement.
@@ -80,6 +81,11 @@ export interface CoreBlockHandlerData {
      * Params of the link.
      */
     linkParams?: Params;
+
+    /**
+     * Navigation options.
+     */
+    navOptions?: CoreNavigationOptions;
 }
 
 /**
