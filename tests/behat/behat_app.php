@@ -551,14 +551,49 @@ class behat_app extends behat_base {
      * with JavaScript, and clicks may not work until they are initialized properly which may cause flaky tests due
      * to race conditions.
      *
-     * @Then /^I select "(?P<text_string>(?:[^"]|\\")*)"(?: near "(?P<near_string>(?:[^"]|\\")*)")? in the app$/
+     * @Then /^I (?P<select_string>unselect|select) "(?P<text_string>(?:[^"]|\\")*)"(?: near "(?P<near_string>(?:[^"]|\\")*)")? in the app$/
+     * @param string $selectedtext Select/unselect string
      * @param string $text Text identifying click target
      * @param string $near Text identifying a nearby unique piece of text
      * @throws DriverException If the press doesn't work
      */
-    public function i_select_in_the_app($text, $near='') {
-        $this->getSession()->wait(100);
-        $this->press($text, $near);
+    public function i_select_in_the_app(string $selectedtext, string $text, string $near = '') {
+        $selected = $selectedtext === 'select' ? 'YES' : 'NO';
+        $text = addslashes_js($text);
+        $near = addslashes_js($near);
+
+        $this->spin(function() use ($selectedtext, $selected, $text, $near) {
+            // Don't do anything if the item is already in the expected state.
+            $result = $this->evaluate_script("return window.behat.isSelected(\"$text\", \"$near\");");
+
+            if ($result === $selected) {
+                return true;
+            }
+
+            // Press item.
+            $result = $this->evaluate_script("return window.behat.press(\"$text\", \"$near\");");
+
+            if ($result !== 'OK') {
+                throw new DriverException('Error pressing item - ' . $result);
+            }
+
+            // Check that it worked as expected.
+            $result = $this->evaluate_script("return window.behat.isSelected(\"$text\", \"$near\");");
+
+            switch ($result) {
+                case 'YES':
+                case 'NO':
+                    if ($result !== $selected) {
+                        throw new ExpectationException("Item wasn't $selectedtext after pressing it", $this->getSession()->getDriver());
+                    }
+
+                    return true;
+                default:
+                    throw new DriverException('Error finding item - ' . $result);
+            }
+        });
+
+        $this->wait_for_pending_js();
     }
 
     /**
@@ -584,17 +619,16 @@ class behat_app extends behat_base {
      * @throws DriverException If the press doesn't work
      */
     protected function press(string $text, string $near = '') {
-        $this->spin(function($context, $args) use ($text, $near) {
-            if ($near !== '') {
-                $nearbit = ', "' . addslashes_js($near) . '"';
-            } else {
-                $nearbit = '';
-            }
-            $result = $this->evaluate_script('return window.behat.press("' .
-                    addslashes_js($text) . '"' . $nearbit .');');
+        $text = addslashes_js($text);
+        $near = addslashes_js($near);
+
+        $this->spin(function() use ($text, $near) {
+            $result = $this->evaluate_script("return window.behat.press(\"$text\", \"$near\");");
+
             if ($result !== 'OK') {
                 throw new DriverException('Error pressing item - ' . $result);
             }
+
             return true;
         });
         $this->wait_for_pending_js();

@@ -58,7 +58,7 @@ Feature: Test basic usage of choice activity in app
     And I should find "Option 3: 0" in the app
     And I should find "Remove my choice" in the app
 
-    When I select "Option 1" in the app
+    When I unselect "Option 1" in the app
     And I select "Option 3" in the app
     And I press "Save my choice" in the app
     Then I should find "Option 1: 0" in the app
@@ -114,9 +114,9 @@ Feature: Test basic usage of choice activity in app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test single choice name" in the app
-    And I press "Option 1" in the app
+    And I select "Option 1" in the app
     And I switch offline mode to "true"
-    And I press "Option 2" in the app
+    And I select "Option 2" in the app
     And I press "Save my choice" in the app
     Then I should find "Are you sure" in the app
 
@@ -154,7 +154,7 @@ Feature: Test basic usage of choice activity in app
     When I press "OK" in the app
     And I press the back button in the app
     And I press "Test single choice name" in the app
-    And I press "Option 2" in the app
+    And I select "Option 2" in the app
     And I press "Save my choice" in the app
     Then I should find "Are you sure" in the app
 
@@ -183,7 +183,7 @@ Feature: Test basic usage of choice activity in app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Choice name" in the app
-    And I press "Option 2" in the app
+    And I select "Option 2" in the app
     And I press "Save my choice" in the app
     And I press "OK" in the app
 
