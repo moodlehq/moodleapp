@@ -128,7 +128,7 @@
     <!-- Scroll bottom. -->
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="loaded && newMessages > 0">
         <ion-fab-button size="small" (click)="scrollToFirstUnreadMessage()" color="light"
-        [attr.aria-label]="'addon.messages.newmessages' | translate">
+            [attr.aria-label]="'addon.messages.newmessages' | translate">
             <ion-icon name="fas-arrow-down" aria-hidden="true"></ion-icon>
             <span class="core-discussion-messages-badge">{{ newMessages }}</span>
         </ion-fab-button>

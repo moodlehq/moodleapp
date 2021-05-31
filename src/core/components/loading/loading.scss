@@ -4,35 +4,44 @@
     --loading-background: var(--ion-background-color);
     --loading-spinner: var(--ion-color-primary);
     --loading-text-color: var(--ion-text-color);
+    --loading-inline-margin: 0;
+    --loading-inline-min-height: 28px;
 
     position: static;
     color: var(--loading-text-color);
+
+    &.margin {
+        --loading-inline-margin: 10px;
+    }
+
+    &.core-loading-loaded {
+        --loading-inline-margin: 0;
+        --loading-inline-min-height: 0;
+    }
 
     ion-spinner {
         --color: var(--loading-spinner);
         color: var(--color);
     }
 
-    > .core-loading-container {
+    .core-loading-container {
         position: absolute;
         @include position(0, 0, 0, 0);
-        display: table;
+        display: flex;
         height: 100%;
         width: 100%;
-        text-align: center;
-        clear: both;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
         z-index: 3;
         margin: 0;
-        padding: 10px 0 0 0;
+        padding: 0;
         background-color: var(--loading-background);
-        -webkit-transition: all 200ms ease-in-out;
-        transition: all 200ms ease-in-out;
+        @include core-transition(all, 200ms);
+    }
 
-        .core-loading-spinner {
-            display: table-cell;
-            text-align: center;
-            vertical-align: middle;
-        }
+    .core-loading-message {
+        @include margin(10px, 0, 0, 0);
     }
 
     .core-loading-content {
@@ -48,21 +57,26 @@
     }
 
     &.core-loading-inline {
+        --loading-background: transparent;
+        position: relative;
         display: block;
+        min-height: var(--loading-inline-min-height);
+        margin-top: var(--loading-inline-margin);
+        margin-bottom: var(--loading-inline-margin);
+
+        .core-loading-message {
+            @include margin(0, 0, 0, 10px);
+        }
 
         .core-loading-container {
-            padding-top: 20px;
-            position: relative;
+            flex-direction: row;
         }
     }
+}
 
-    &.core-loading-loaded.core-loading-inline {
-        position: relative;
-        min-height: 102px;
-
-        .core-loading-container {
-            padding-top: 10px;
-            position: absolute;
-        }
+:host-context(ion-item) {
+    &.core-loading-inline {
+        position: static;
+        display: block;
     }
 }
