@@ -33,7 +33,7 @@
         <!-- List of files. -->
         <ion-list *ngIf="files && files.length > 0">
             <ng-container *ngFor="let file of files">
-                <ion-item button *ngIf="file.isdir" class="item-file" (click)="openFolder(file)">
+                <ion-item button *ngIf="file.isdir" class="item-file" (click)="openFolder(file)" detail="true">
                     <ion-thumbnail slot="start">
                         <img [src]="file.imgPath" alt="" role="presentation">
                     </ion-thumbnail>
