@@ -873,10 +873,7 @@ export class CoreFileUploaderHelperProvider {
             return;
         }
 
-        const contentElement = modal.loading?.querySelector('.loading-content');
-        if (contentElement) {
-            contentElement.innerHTML = Translate.instant(stringKey, { $a: perc.toFixed(1) });
-        }
+        modal.updateText(Translate.instant(stringKey, { $a: perc.toFixed(1) }));
     }
 
 }

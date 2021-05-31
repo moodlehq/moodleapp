@@ -13,43 +13,155 @@
 // limitations under the License.
 
 import { CoreUtils } from '@services/utils/utils';
+import { LoadingController } from '@singletons';
+
+/**
+ * Dismiss listener.
+ */
+export type CoreIonLoadingElementDismissListener = () => unknown;
 
 /**
  * Class to improve the behaviour of HTMLIonLoadingElement.
- * It's not a subclass of HTMLIonLoadingElement because we cannot override the dismiss function.
+ *
+ * In addition to present/dismiss, this loader can also be paused/resumed in order to allow stacking
+ * modals in top of one another without interfering. Conceptually, a paused loader is still
+ * active but will not be shown in the UI.
  */
 export class CoreIonLoadingElement {
 
-    protected isPresented = false;
-    protected isDismissed = false;
+    protected scheduled = false;
+    protected paused = false;
+    protected listeners: CoreIonLoadingElementDismissListener[] = [];
+    protected asyncLoadingElement?: Promise<HTMLIonLoadingElement>;
 
-    constructor(public loading: HTMLIonLoadingElement) { }
+    constructor(protected text?: string) { }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async dismiss(data?: any, role?: string): Promise<boolean> {
-        if (!this.isPresented || this.isDismissed) {
-            this.isDismissed = true;
+    /**
+     * Dismiss the loading element.
+     *
+     * @param data Dismiss data.
+     * @param role Dismiss role.
+     */
+    async dismiss(data?: unknown, role?: string): Promise<void> {
+        if (this.paused) {
+            this.paused = false;
+            this.listeners.forEach(listener => listener());
 
-            return true;
+            return;
         }
 
-        this.isDismissed = true;
+        if (!this.asyncLoadingElement) {
+            if (this.scheduled) {
+                this.scheduled = false;
+                this.listeners.forEach(listener => listener());
+            }
 
-        return this.loading.dismiss(data, role);
+            return;
+        }
+
+        const asyncLoadingElement = this.asyncLoadingElement;
+        delete this.asyncLoadingElement;
+
+        const loadingElement = await asyncLoadingElement;
+        await loadingElement.dismiss(data, role);
+
+        this.listeners.forEach(listener => listener());
     }
 
     /**
-     * Present the loading.
+     * Register dismiss listener.
+     *
+     * @param listener Listener.
+     */
+    onDismiss(listener: CoreIonLoadingElementDismissListener): void {
+        this.listeners.push(listener);
+    }
+
+    /**
+     * Hide the loading element.
+     */
+    async pause(): Promise<void> {
+        if (!this.asyncLoadingElement) {
+            return;
+        }
+
+        this.paused = true;
+
+        const asyncLoadingElement = this.asyncLoadingElement;
+        delete this.asyncLoadingElement;
+
+        const loadingElement = await asyncLoadingElement;
+        loadingElement.dismiss();
+    }
+
+    /**
+     * Present the loading element.
      */
     async present(): Promise<void> {
+        if (this.paused || this.scheduled || this.asyncLoadingElement) {
+            return;
+        }
+
         // Wait a bit before presenting the modal, to prevent it being displayed if dismiss is called fast.
+        this.scheduled = true;
+
         await CoreUtils.wait(40);
 
-        if (!this.isDismissed) {
-            this.isPresented = true;
-
-            await this.loading.present();
+        if (!this.scheduled) {
+            return;
         }
+
+        // Present modal.
+        this.scheduled = false;
+
+        await this.presentLoadingElement();
+    }
+
+    /**
+     * Show loading element.
+     */
+    async resume(): Promise<void> {
+        if (!this.paused) {
+            return;
+        }
+
+        this.paused = false;
+
+        await this.presentLoadingElement();
+    }
+
+    /**
+     * Update text in the loading element.
+     *
+     * @param text Text.
+     */
+    async updateText(text: string): Promise<void> {
+        this.text = text;
+
+        if (!this.asyncLoadingElement) {
+            return;
+        }
+
+        const loadingElement = await this.asyncLoadingElement;
+        const contentElement = loadingElement.querySelector('.loading-content');
+
+        if (contentElement) {
+            contentElement.innerHTML = text;
+        }
+    }
+
+    /**
+     * Create and present the loading element.
+     */
+    private async presentLoadingElement(): Promise<void> {
+        let resolveLoadingElement!: ((loadingElement: HTMLIonLoadingElement) => void);
+        this.asyncLoadingElement = new Promise(resolve => resolveLoadingElement = resolve);
+
+        const loadingElement = await LoadingController.create({ message: this.text });
+
+        await loadingElement.present();
+
+        resolveLoadingElement(loadingElement);
     }
 
 }
