@@ -1,7 +1,7 @@
 @import "~theme/globals";
 
 :host .addon-mod_forum-post {
-    background-color: var(--white);
+    background-color: var(--ion-item-background);
     border-bottom: 1px solid var(--addon-forum-border-color);
 
     .addon-forum-star {
@@ -21,6 +21,7 @@
                 margin-top: 8px;
                 margin-bottom: 8px;
                 font-weight: bold;
+                flex-grow: 1;
 
                 ion-icon {
                     @include margin(0, 6px, 0, 0);

@@ -3,7 +3,7 @@
         <h2>{{ 'addon.block_sitemainmenu.pluginname' | translate }}</h2>
     </ion-label>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" class="core-loading-center">
+<core-loading [hideUntil]="loaded" [fullscreen]="false">
     <ng-container *ngIf="mainMenuBlock">
         <ion-item class="ion-text-wrap" *ngIf="mainMenuBlock.summary">
             <ion-label>

@@ -7,7 +7,7 @@
         </h2>
     </ion-label>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" class="core-loading-center">
+<core-loading [hideUntil]="loaded" [fullscreen]="false">
     <ion-item *ngIf="block.contents?.content" class="ion-text-wrap core-block-content">
         <ion-label>
             <core-format-text [text]="block.contents?.content" contextLevel="block" [contextInstanceId]="block.instanceid"

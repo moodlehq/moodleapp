@@ -104,6 +104,10 @@ ion-header h2 {
     white-space: nowrap;
     overflow: hidden;
     pointer-events: auto;
+
+    .filter_mathjaxloader_equation div {
+        display: inline !important;
+    }
 }
 
 ion-app.md ion-header h1,
@@ -477,7 +481,7 @@ ion-card ion-item img.core-module-icon[slot="start"] {
     margin-left: 32px;
 }
 
-.core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation * {
+.core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation div {
     display: inline !important;
 }
 
@@ -512,6 +516,10 @@ ion-toolbar h1 .core-bar-button-image img {
 // Select.
 ion-select::part(text) {
     white-space: normal;
+}
+
+ion-select::part(icon) {
+    opacity: 1;
 }
 
 ion-searchbar {

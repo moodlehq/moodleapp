@@ -12,13 +12,6 @@
                 margin-top: 0;
                 margin-bottom: 0;
             }
-
-            progress {
-                .progress-bar-fallback,
-                &[value]::-webkit-progress-bar {
-                    background-color: var(--white);
-                }
-            }
         }
     }
 
@@ -30,7 +23,7 @@
         cursor: pointer;
         pointer-events: auto;
         position: relative;
-        background: white;
+        background: var(--ion-item-background);
 
         img {
             position: absolute;

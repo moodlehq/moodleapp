@@ -1,4 +1,4 @@
-<core-loading [hideUntil]="loaded" class="core-loading-center">
+<core-loading [hideUntil]="loaded" [fullscreen]="false">
     <ion-item class="ion-text-wrap" (click)="editPost()" *ngIf="offlinePost || (canEdit && isOnline)">
         <ion-icon name="fas-pen" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>

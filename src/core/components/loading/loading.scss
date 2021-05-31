@@ -6,7 +6,6 @@
     --loading-text-color: var(--ion-text-color);
 
     position: static;
-    @include core-transition(height, 200ms);
     color: var(--loading-text-color);
 
     ion-spinner {
@@ -48,12 +47,22 @@
         position: unset;
     }
 
-    &.core-loading-center {
+    &.core-loading-inline {
         display: block;
 
         .core-loading-container {
             padding-top: 20px;
             position: relative;
+        }
+    }
+
+    &.core-loading-loaded.core-loading-inline {
+        position: relative;
+        min-height: 102px;
+
+        .core-loading-container {
+            padding-top: 10px;
+            position: absolute;
         }
     }
 }

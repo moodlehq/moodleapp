@@ -49,6 +49,8 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
 
     @Input() hideUntil: unknown; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
+    @Input() protected fullscreen = true; // Use the whole screen.
+
     @ViewChild('content') content?: ElementRef;
 
     uniqueId: string;
@@ -69,6 +71,8 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
             // Default loading message.
             this.message = Translate.instant('core.loading');
         }
+
+        this.element.classList.toggle('core-loading-inline', !this.fullscreen);
     }
 
     /**
@@ -78,11 +82,9 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
         // Add class if loaded on init.
         if (this.hideUntil) {
             this.element.classList.add('core-loading-loaded');
-            this.content?.nativeElement.classList.add('core-loading-content');
-        } else {
-            this.content?.nativeElement.classList.remove('core-loading-content');
-            this.content?.nativeElement.classList.add('core-loading-content-loading');
         }
+
+        this.content?.nativeElement.classList.toggle('core-loading-content', !!this.hideUntil);
     }
 
     /**
@@ -99,12 +101,10 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
                     // Change CSS to force calculate height.
                     // Removed 500ms timeout to avoid reallocating html.
                     this.content?.nativeElement.classList.add('core-loading-content');
-                    this.content?.nativeElement.classList.remove('core-loading-content-loading');
                 });
             } else {
                 this.element.classList.remove('core-loading-loaded');
                 this.content?.nativeElement.classList.remove('core-loading-content');
-                this.content?.nativeElement.classList.add('core-loading-content-loading');
             }
 
             // Trigger the event after a timeout since the elements inside ngIf haven't been added to DOM yet.

@@ -41,7 +41,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="discussions.loaded" class="core-loading-center">
+    <core-loading [hideUntil]="discussions.loaded">
         <!-- Activity info. -->
         <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
             (completionChanged)="onCompletionChange()">

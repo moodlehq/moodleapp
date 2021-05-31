@@ -275,6 +275,8 @@
     --core-question-feedback-background-color: var(--yellow-light);
 
     --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-dark);
+    --core-dd-question-radius: 10px;
+    --core-dd-question-border: var(--gray-darker);
 
     @if ($core-more-icon) {
         --core-more-icon: #{$core-more-icon};

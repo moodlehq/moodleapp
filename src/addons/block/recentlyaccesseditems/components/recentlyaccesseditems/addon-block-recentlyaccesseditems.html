@@ -5,7 +5,7 @@
         </core-horizontal-scroll-controls>
     </div>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" class="core-loading-center safe-area-page">
+<core-loading [hideUntil]="loaded" [fullscreen]="false" class="safe-area-page">
     <div
         [id]="scrollElementId"
         [hidden]="!items || items.length === 0"

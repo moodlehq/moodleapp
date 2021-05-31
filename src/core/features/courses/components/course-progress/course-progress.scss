@@ -30,7 +30,7 @@
             transition: all 50ms ease-in-out;
 
             &.core-course-color-img {
-                background: white;
+                background: var(--ion-item-background);
             }
 
             img {

@@ -93,9 +93,9 @@
                 <ion-button fill="clear" size="small"
                     [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId"
                     [attr.aria-expanded]="replyData.replyingTo === post.id"
-                    (click)="showReplyForm()">
-                    <ion-icon name="fa-reply" slot="start" aria-hidden="true">
-                    </ion-icon> {{ 'addon.mod_forum.reply' | translate }}
+                    (click)="showReplyForm($event)">
+                    <ion-icon name="fa-reply" slot="start" aria-hidden="true"></ion-icon>
+                    {{ 'addon.mod_forum.reply' | translate }}
                 </ion-button>
             </ion-label>
         </ion-item>
