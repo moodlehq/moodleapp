@@ -250,6 +250,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                     this.title = user.fullname;
                 }
                 this.conversationImage = user.profileimageurl;
+                this.members[user.id] = <AddonMessagesConversationMember>user;
 
                 return;
             }).catch(() => {

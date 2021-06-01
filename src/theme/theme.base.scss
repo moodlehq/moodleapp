@@ -185,6 +185,8 @@ ion-header ion-toolbar {
 
 // Ionic icon.
 ion-icon {
+    position: relative;
+
     &.icon-slash::after,
     &.icon-backslash::after {
         content: " ";

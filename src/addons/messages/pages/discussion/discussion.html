@@ -92,12 +92,16 @@
                     [@coreSlideInOut]="message.useridfrom == currentUserId ? '' : 'fromLeft'">
                     <ion-label>
                         <!-- User data. -->
-                        <div class="item-heading addon-message-user" [attr.aria-label]="message.useridfrom == currentUserId ?
-                            ('addon.messages.you' | translate) : members[message.useridfrom].fullname">
+                        <div *ngIf="message.showUserData" class="item-heading addon-message-user">
                             <core-user-avatar slot="start" [user]="members[message.useridfrom]" [linkProfile]="false"
-                                *ngIf="message.showUserData"></core-user-avatar>
-
-                            <div *ngIf="message.showUserData">{{ members[message.useridfrom].fullname }}</div>
+                                aria-hidden="true">
+                            </core-user-avatar>
+                            {{ members[message.useridfrom].fullname }}
+                        </div>
+                        <div *ngIf="!message.showUserData" class="sr-only">
+                            {{ message.useridfrom == currentUserId
+                            ? ('addon.messages.you' | translate)
+                            : members[message.useridfrom].fullname }}
                         </div>
 
                         <!-- Some messages have <p> and some others don't. Add a <p> so they all have same styles. -->
