@@ -18,7 +18,7 @@
 
             <ion-list *ngIf="!badges.empty" class="ion-no-margin">
                 <ion-item button class="ion-text-wrap" *ngFor="let badge of badges.items" [attr.aria-label]="badge.name"
-                    (click)="badges.select(badge)" [attr.aria-current]="badges.getItemAriaCurrent(badge)">
+                    (click)="badges.select(badge)" [attr.aria-current]="badges.getItemAriaCurrent(badge)" detail="true">
                     <ion-avatar slot="start">
                         <img [src]="badge.badgeurl" [alt]="badge.name" core-external-content>
                     </ion-avatar>

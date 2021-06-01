@@ -57,34 +57,62 @@ export class CoreLinkDirective implements OnInit {
     ngOnInit(): void {
         this.inApp = typeof this.inApp == 'undefined' ? this.inApp : CoreUtils.isTrueOrOne(this.inApp);
 
+        if (this.element.tagName != 'BUTTON' && this.element.tagName != 'A') {
+            this.element.setAttribute('tabindex', '0');
+            this.element.setAttribute('role', 'button');
+        }
+
         this.element.addEventListener('click', async (event) => {
-            if (event.defaultPrevented) {
-                return; // Link already treated, stop.
-            }
+            this.performAction(event);
+        });
 
-            let href = this.href || this.element.getAttribute('href') || this.element.getAttribute('xlink:href');
-
-            if (!href || CoreUrlUtils.getUrlScheme(href) == 'javascript') {
-                return;
-            }
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            const openIn = this.element.getAttribute('data-open-in');
-
-            if (CoreUtils.isTrueOrOne(this.capture)) {
-                href = CoreTextUtils.decodeURI(href);
-
-                const treated = await CoreContentLinksHelper.handleLink(href, undefined, true, true);
-
-                if (!treated) {
-                    this.navigate(href, openIn);
-                }
-            } else {
-                this.navigate(href, openIn);
+        this.element.addEventListener('keydown', (event: KeyboardEvent) => {
+            if ((event.key == ' ' || event.key == 'Enter')) {
+                event.preventDefault();
+                event.stopPropagation();
             }
         });
+
+        this.element.addEventListener('keyup', (event: KeyboardEvent) => {
+            if ((event.key == ' ' || event.key == 'Enter')) {
+                this.performAction(event);
+            }
+        });
+    }
+
+    /**
+     * Perform "click" action.
+     *
+     * @param event Event.
+     * @returns Resolved when done.
+     */
+    protected async performAction(event: Event): Promise<void> {
+        if (event.defaultPrevented) {
+            return; // Link already treated, stop.
+        }
+
+        let href = this.href || this.element.getAttribute('href') || this.element.getAttribute('xlink:href');
+
+        if (!href || CoreUrlUtils.getUrlScheme(href) == 'javascript') {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const openIn = this.element.getAttribute('data-open-in');
+
+        if (CoreUtils.isTrueOrOne(this.capture)) {
+            href = CoreTextUtils.decodeURI(href);
+
+            const treated = await CoreContentLinksHelper.handleLink(href, undefined, true, true);
+
+            if (!treated) {
+                this.navigate(href, openIn);
+            }
+        } else {
+            this.navigate(href, openIn);
+        }
     }
 
     /**

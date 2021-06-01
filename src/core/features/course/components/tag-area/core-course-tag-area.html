@@ -1,5 +1,5 @@
 <ion-item class="ion-text-wrap" *ngFor="let item of items" (click)="openCourse(item.courseId)" [attr.aria-label]="item.courseName"
-    button>
+    button detail="true">
     <ion-icon name="fas-graduation-cap" slot="start" aria-hidden="true"></ion-icon>
     <ion-label>
         <p class="item-heading">{{ item.courseName }}</p>

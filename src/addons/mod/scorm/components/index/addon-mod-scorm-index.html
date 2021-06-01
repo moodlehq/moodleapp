@@ -158,11 +158,11 @@
                                 <ion-icon *ngIf="sco.icon" [name]="sco.icon.icon" [attr.aria-label]="sco.icon.description"
                                     slot="start">
                                 </ion-icon>
-                                <a *ngIf="sco.prereq && sco.launch" (click)="open($event, false, sco.id)" tappable="true">
+                                <button class="as-link" *ngIf="sco.prereq && sco.launch" (click)="open($event, false, sco.id)">
                                     <core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id"
                                         [courseId]="courseId">
                                     </core-format-text>
-                                </a>
+                                </button>
                                 <span *ngIf="!sco.prereq || !sco.launch">
                                     <core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id"
                                         [courseId]="courseId">

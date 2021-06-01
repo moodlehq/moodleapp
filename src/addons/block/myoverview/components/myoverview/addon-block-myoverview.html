@@ -36,7 +36,7 @@
         </core-context-menu-item>
     </core-context-menu>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" [fullscreen]="false">
+<core-loading [hideUntil]="loaded" [fullscreen]="false" class="margin">
     <div class="safe-padding-horizontal" [hidden]="showFilter || !showSelectorFilter">
         <!-- "Time" selector. -->
         <core-combobox [label]="'core.show' | translate" [selection]="selectedFilter" (onChange)="selectedChanged($event)">

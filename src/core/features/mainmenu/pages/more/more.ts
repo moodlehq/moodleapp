@@ -50,6 +50,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
     docsUrl?: string;
     customItems?: CoreMainMenuCustomItem[];
     siteUrl?: string;
+    loggedOut = false;
 
     protected subscription!: Subscription;
     protected langObserver: CoreEventObserver;
@@ -203,6 +204,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * Logout the user.
      */
     logout(): void {
+        this.loggedOut = true;
         CoreSites.logout();
     }
 

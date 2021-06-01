@@ -15,7 +15,7 @@
             <ion-list>
                 <ion-item class="ion-text-wrap" *ngFor="let competency of competencies.items"
                     [attr.aria-label]="competency.competency.shortname" (click)="competencies.select(competency)"
-                    [attr.aria-current]="competencies.getItemAriaCurrent(competency)" button>
+                    [attr.aria-current]="competencies.getItemAriaCurrent(competency)" button detail="true">
                     <ion-label>
                         <p class="item-heading">{{ competency.competency.shortname }} <em>{{competency.competency.idnumber}}</em></p>
                     </ion-label>

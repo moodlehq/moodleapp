@@ -12,6 +12,10 @@ $grid-column-paddings: (
   xl: var(--ion-grid-column-padding-xl, $grid-column-padding)
 ) !default;
 
+:host {
+    --border-color: var(--gray);
+}
+
 .addon-data-contents {
     overflow: visible;
     white-space: normal;
@@ -19,9 +23,7 @@ $grid-column-paddings: (
     padding: 16px;
 
     background-color: var(--ion-item-background);
-    border-width: 1px 0;
-    border-style: solid;
-    border-color: var(--gray-dark);
+    border-bottom: 1px solid var(--border-color);
 
     ::ng-deep {
         table, tbody {

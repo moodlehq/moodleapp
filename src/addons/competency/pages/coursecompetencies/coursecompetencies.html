@@ -34,11 +34,11 @@
             <ion-item class="ion-text-wrap"
                 *ngIf="competencies.statistics.canmanagecoursecompetencies && competencies.statistics.leastproficientcount > 0">
                 <ion-label>
-                    <strong>{{ 'addon.competency.competenciesmostoftennotproficientincourse' | translate }}</strong>:
+                    <p class="item-heading">{{ 'addon.competency.competenciesmostoftennotproficientincourse' | translate }}</p>
                     <p *ngFor="let comp of competencies.statistics.leastproficient">
-                        <a (click)="openCompetencySummary(comp.id)">
+                        <button class="as-link" (click)="openCompetencySummary(comp.id)">
                             {{ comp.shortname }} - {{ comp.idnumber }}
-                        </a>
+                        </button>
                     </p>
                 </ion-label>
             </ion-item>
@@ -63,7 +63,7 @@
                     [attr.aria-label]="competency.competency.shortname" detail="true" button>
                     <ion-label>
                         <p class="item-heading">
-                            <strong>{{competency.competency.shortname}} <em>{{competency.competency.idnumber}}</em></strong>
+                            {{competency.competency.shortname}} <em>{{competency.competency.idnumber}}</em>
                         </p>
                     </ion-label>
                     <ion-badge slot="end" *ngIf="competency.usercompetencycourse && competency.usercompetencycourse.gradename"
@@ -79,33 +79,36 @@
                             </core-format-text>
                         </p>
                         <div>
-                            <strong>{{ 'addon.competency.path' | translate }}</strong>
-                            <a *ngIf="competency.comppath.showlinks"
-                                [href]="competency.comppath.pluginbaseurl + '/competencies.php?competencyframeworkid=' +
-                                competency.comppath.framework.id + '&pagecontextid=' + competency.comppath.pagecontextid"
-                                core-link [title]="competency.comppath.framework.name">
-                                {{ competency.comppath.framework.name }}
-                            </a>
-                            <ng-container *ngIf="!competency.comppath.showlinks">
-                                {{ competency.comppath.framework.name }}
-                            </ng-container>
-                            &nbsp;/&nbsp;
-                            <span *ngFor="let ancestor of competency.comppath.ancestors">
-                                <a *ngIf="competency.comppath.showlinks" (click)="openCompetencySummary(ancestor.id)">
-                                    {{ ancestor.name }}
+                            <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
+                            <p>
+                                <a *ngIf="competency.comppath.showlinks"
+                                    [href]="competency.comppath.pluginbaseurl + '/competencies.php?competencyframeworkid=' +
+                                    competency.comppath.framework.id + '&pagecontextid=' + competency.comppath.pagecontextid"
+                                    core-link [title]="competency.comppath.framework.name">
+                                    {{ competency.comppath.framework.name }}
                                 </a>
-                                <ng-container *ngIf="!competency.comppath.showlinks">{{ ancestor.name }}</ng-container>
-                                <ng-container *ngIf="!ancestor.last">&nbsp;/&nbsp;</ng-container>
-                            </span>
+                                <ng-container *ngIf="!competency.comppath.showlinks">
+                                    {{ competency.comppath.framework.name }}
+                                </ng-container>
+                                &nbsp;/&nbsp;
+                                <ng-container *ngFor="let ancestor of competency.comppath.ancestors">
+                                    <button class="as-link" *ngIf="competency.comppath.showlinks"
+                                        (click)="openCompetencySummary(ancestor.id)">
+                                        {{ ancestor.name }}
+                                    </button>
+                                    <ng-container *ngIf="!competency.comppath.showlinks">{{ ancestor.name }}</ng-container>
+                                    <ng-container *ngIf="!ancestor.last">&nbsp;/&nbsp;</ng-container>
+                                </ng-container>
+                            </p>
                         </div>
                         <div *ngIf="competencies.statistics.canmanagecoursecompetencies">
-                            <strong>{{ 'addon.competency.uponcoursecompletion' | translate }}</strong>
+                            <p class="item-heading">{{ 'addon.competency.uponcoursecompletion' | translate }}</p>
                              <ng-container *ngFor="let ruleoutcome of competency.ruleoutcomeoptions">
                                 <span *ngIf="ruleoutcome.selected">{{ ruleoutcome.text }}</span>
                             </ng-container>
                         </div>
                         <div>
-                            <strong>{{ 'addon.competency.activities' | translate }}</strong>
+                            <p class="item-heading">{{ 'addon.competency.activities' | translate }}</p>
                             <p *ngIf="competency.coursemodules.length == 0">
                                 {{ 'addon.competency.noactivities' | translate }}
                             </p>
@@ -121,7 +124,7 @@
                             </ion-item>
                         </div>
                         <div *ngIf="competency.plans">
-                            <strong>{{ 'addon.competency.userplans' | translate }}</strong>
+                            <p class="item-heading">{{ 'addon.competency.userplans' | translate }}</p>
                             <p *ngIf="competency.plans.length == 0">
                                 {{ 'addon.competency.nouserplanswithcompetency' | translate }}
                             </p>

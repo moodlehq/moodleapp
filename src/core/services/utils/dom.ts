@@ -37,6 +37,7 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
 import { CoreViewerImageComponent } from '@features/viewer/components/image/image';
 import { CoreFormFields, CoreForms } from '../../singletons/form';
+import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -1721,8 +1722,8 @@ export class CoreDomUtilsProvider {
             cssClass: 'core-modal-lateral',
             showBackdrop: true,
             backdropDismiss: true,
-            // @todo enterAnimation: 'core-modal-lateral-transition',
-            // @todo leaveAnimation: 'core-modal-lateral-transition',
+            enterAnimation: CoreModalLateralTransitionEnter,
+            leaveAnimation: CoreModalLateralTransitionLeave,
         });
 
         return await this.openModal<T>(modalOptions);

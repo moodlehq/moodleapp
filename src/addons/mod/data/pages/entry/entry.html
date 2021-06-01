@@ -37,7 +37,7 @@
             </ion-select>
         </ion-item>
 
-        <div class="addon-data-contents addon-data-entries-{{database.id}}" *ngIf="database && entry">
+        <div class="addon-data-contents addon-data-entry addon-data-entries-{{database.id}}" *ngIf="database && entry">
             <core-style [css]="database.csstemplate" prefix=".addon-data-entries-{{database.id}}"></core-style>
 
             <core-compile-html [text]="entryHtml" [jsData]="jsData" [extraImports]="extraImports"
@@ -54,13 +54,10 @@
             [scaleId]="database.scale">
         </core-rating-aggregate>
 
-        <ion-item *ngIf="database && database.comments && entry && entry.id > 0 && commentsEnabled">
-            <ion-label>
-                <core-comments contextLevel="module" [instanceId]="database.coursemodule" component="mod_data" [itemId]="entry.id"
-                    area="database_entry" [displaySpinner]="false" [courseId]="courseId" (onLoading)="setLoadingComments($event)">
-                </core-comments>
-            </ion-label>
-        </ion-item>
+        <core-comments *ngIf="database && database.comments && entry && entry.id > 0 && commentsEnabled"
+            contextLevel="module" [instanceId]="database.coursemodule" component="mod_data" [itemId]="entry.id"
+            area="database_entry" [courseId]="courseId" (onLoading)="setLoadingComments($event)" [showItem]="true">
+        </core-comments>
 
         <ion-grid *ngIf="hasPrevious || hasNext">
             <ion-row class="ion-align-items-center">

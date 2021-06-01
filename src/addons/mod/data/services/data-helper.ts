@@ -658,7 +658,7 @@ export class AddonModDataHelperProvider {
         // Add core-link directive to links.
         template = template.replace(
             /<a ([^>]*href="[^>]*)>/ig,
-            (match, attributes) => '<a core-link capture="true" ' + attributes + '>',
+            (match, attributes) => '<button class="as-link" core-link capture="true" ' + attributes + '>',
         );
 
         return template;

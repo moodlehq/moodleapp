@@ -12,7 +12,7 @@
                     <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
                 <ion-button [hidden]="!downloadAllCoursesEnabled || !courses || courses.length < 2 || downloadAllCoursesLoading"
-                (click)="prefetchCourses()" [attr.aria-label]="'core.courses.downloadcourses' | translate">
+                    (click)="prefetchCourses()" [attr.aria-label]="'core.courses.downloadcourses' | translate">
                     <ion-icon [name]="downloadAllCoursesIcon" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
                 <ion-spinner [hidden]="!downloadAllCoursesEnabled || !courses || courses.length < 2 ||

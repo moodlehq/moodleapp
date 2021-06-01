@@ -19,7 +19,7 @@
 </ion-header>
 <ion-content>
     <ion-list>
-        <ion-item button (click)="login(site.id)" *ngFor="let site of sites">
+        <ion-item button (click)="login(site.id)" *ngFor="let site of sites" detail="true">
             <ion-avatar slot="start">
                 <img [src]="site.avatar" core-external-content [siteId]="site.id"
                     alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}" onError="this.src='assets/img/user-avatar.png'">

@@ -3,7 +3,7 @@
 </div>
 
 <div *ngIf="blocks && blocks.length > 0 && !hideBlocks" [class.core-hide-blocks]="hideBottomBlocks" class="core-course-blocks-side">
-    <core-loading [hideUntil]="dataLoaded" [fullscreen]="false">
+    <core-loading [hideUntil]="dataLoaded" [fullscreen]="false" class="margin">
         <ion-list>
             <!-- Course expand="block"s. -->
             <ng-container *ngFor="let block of blocks">

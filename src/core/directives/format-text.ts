@@ -80,6 +80,7 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() maxHeight?: number;
 
     @Output() afterRender: EventEmitter<void>; // Called when the data is rendered.
+    @Output() onClick: EventEmitter<void> = new EventEmitter(); // Called when clicked.
 
     protected element: HTMLElement;
     protected showMoreDisplayed = false;
@@ -286,6 +287,13 @@ export class CoreFormatTextDirective implements OnChanges {
             // Ignore it if the event was prevented by some other listener.
             return;
         }
+
+        if (this.onClick.observers.length > 0) {
+            this.onClick.emit();
+
+            return;
+        }
+
         if (!this.text) {
             return;
         }

@@ -137,16 +137,6 @@ ion-item.ion-text-wrap ion-label {
     white-space: normal !important;
 }
 
-// It fixes the click on links where ion-ripple-effect is present.
-.ion-activatable ion-label,
-.item-multiple-items ion-label {
-    z-index: 3;
-    pointer-events: none;
-    ion-anchor, ion-button, a, button {
-        pointer-events: visible;
-    }
-}
-
 @each $color-name, $value in $colors {
     $value: map-get($colors, $color-name);
     $base: map-get($value, base);
@@ -195,6 +185,8 @@ ion-header ion-toolbar {
 
 // Ionic icon.
 ion-icon {
+    position: relative;
+
     &.icon-slash::after,
     &.icon-backslash::after {
         content: " ";
@@ -238,7 +230,8 @@ button,
     min-width: var(--a11y-min-target-size);
 }
 
-[role="button"] {
+[role="button"],
+.clickable {
     cursor: pointer;
 
     [disabled],
@@ -255,6 +248,21 @@ ion-button.core-button-as-link {
     letter-spacing: normal;
     white-space: break-spaces;
 }
+
+button.as-link {
+    display: inline;
+    min-height: auto;
+    min-width: auto;
+    color: var(--core-link-color);
+    background: none;
+    border: 0;
+    line-height: inherit;
+    margin: 0;
+    padding: 0;
+    text-align: start;
+    font-size: inherit;
+}
+
 
 // Ionic alert.
 ion-alert.core-alert-network-error .alert-head,
@@ -658,8 +666,11 @@ audio.core-media-adapt-width {
     }
 }
 
+
+// It fixes the click on links where ion-ripple-effect is present.
 // Make links clickable when inside radio or checkbox items. Pointer and cursor part.
-ion-item.item-multiple-inputs {
+ion-item.item-multiple-inputs:not(.only-links),
+ion-item.ion-activatable:not(.only-links) {
     cursor: pointer;
     ion-label {
         z-index: 3;
@@ -674,6 +685,12 @@ ion-item.item-multiple-inputs {
 
     ion-checkbox, ion-datetime, ion-radio, ion-select{
         position: static;
+    }
+}
+
+ion-item.item-multiple-inputs.only-links {
+    a {
+        cursor: pointer;
     }
 }
 

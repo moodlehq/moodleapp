@@ -138,4 +138,11 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginCo
         }
     }
 
+    /**
+     * Navigate to the entry.
+     */
+    navigateEntry(): void {
+        this.gotoEntry.emit(this.entryId);
+    }
+
 }

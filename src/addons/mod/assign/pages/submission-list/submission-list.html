@@ -40,7 +40,7 @@
                 <!-- List of submissions. -->
                 <ng-container *ngFor="let submission of submissions.items">
                     <ion-item class="ion-text-wrap" (click)="submissions.select(submission)" button
-                        [attr.aria-current]="submissions.getItemAriaCurrent(submission)">
+                        [attr.aria-current]="submissions.getItemAriaCurrent(submission)" detail="true">
                         <core-user-avatar [user]="submission" [linkProfile]="false" slot="start"></core-user-avatar>
                         <ion-label>
                             <p class="item-heading" *ngIf="submission.userfullname">{{submission.userfullname}}</p>

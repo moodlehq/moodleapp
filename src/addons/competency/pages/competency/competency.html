@@ -28,47 +28,50 @@
                     </core-format-text>
                 </ion-label>
             </ion-item>
-            <ion-item class="ion-text-wrap">
+            <ion-item class="ion-text-wrap only-links">
                 <ion-label>
-                    <strong>{{ 'addon.competency.path' | translate }}</strong>
-                    <a *ngIf="competency.competency.comppath.showlinks"
-                        [href]="competency.competency.comppath.pluginbaseurl + '/competencies.php?competencyframeworkid=' +
-                        competency.competency.comppath.framework.id + '&pagecontextid=' +
-                        competency.competency.comppath.pagecontextid"
-                        core-link [title]="competency.competency.comppath.framework.name">
-                        {{ competency.competency.comppath.framework.name }}
-                    </a>
-                    <ng-container *ngIf="!competency.competency.comppath.showlinks">
-                        {{ competency.competency.comppath.framework.name }}
-                    </ng-container>
-                    &nbsp;/&nbsp;
-                    <span *ngFor="let ancestor of competency.competency.comppath.ancestors">
-                        <a *ngIf="competency.competency.comppath.showlinks" (click)="openCompetencySummary(ancestor.id)">
-                            {{ ancestor.name }}
+                    <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
+                    <p>
+                        <a *ngIf="competency.competency.comppath.showlinks"
+                            [href]="competency.competency.comppath.pluginbaseurl + '/competencies.php?competencyframeworkid=' +
+                            competency.competency.comppath.framework.id + '&pagecontextid=' +
+                            competency.competency.comppath.pagecontextid"
+                            core-link>
+                            {{ competency.competency.comppath.framework.name }}
                         </a>
-                        <ng-container *ngIf="!competency.competency.comppath.showlinks">{{ ancestor.name }}</ng-container>
-                        <ng-container *ngIf="!ancestor.last">&nbsp;/&nbsp;</ng-container>
-                    </span>
+                        <ng-container *ngIf="!competency.competency.comppath.showlinks">
+                            {{ competency.competency.comppath.framework.name }}
+                        </ng-container>
+                        &nbsp;/&nbsp;
+                        <ng-container *ngFor="let ancestor of competency.competency.comppath.ancestors">
+                            <button *ngIf="competency.competency.comppath.showlinks" (click)="openCompetencySummary(ancestor.id)"
+                                class="as-link">
+                                {{ ancestor.name }}
+                            </button>
+                            <ng-container *ngIf="!competency.competency.comppath.showlinks">{{ ancestor.name }}</ng-container>
+                            <ng-container *ngIf="!ancestor.last">&nbsp;/&nbsp;</ng-container>
+                        </ng-container>
+                    </p>
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <strong>{{ 'addon.competency.crossreferencedcompetencies' | translate }}</strong>:
-                    <div *ngIf="!competency.competency.hasrelatedcompetencies">
+                    <p class="item-heading">{{ 'addon.competency.crossreferencedcompetencies' | translate }}</p>
+                    <p *ngIf="!competency.competency.hasrelatedcompetencies">
                         {{ 'addon.competency.nocrossreferencedcompetencies' | translate }}
-                    </div>
-                    <div *ngIf="competency.competency.hasrelatedcompetencies">
+                    </p>
+                    <ng-container *ngIf="competency.competency.hasrelatedcompetencies">
                         <p *ngFor="let relatedcomp of competency.competency.relatedcompetencies">
-                            <a (click)="openCompetencySummary(relatedcomp.id)">
+                            <button (click)="openCompetencySummary(relatedcomp.id)" class="as-link">
                                 {{ relatedcomp.shortname }} - {{ relatedcomp.idnumber }}
-                            </a>
+                            </button>
                         </p>
-                    </div>
+                    </ng-container>
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="coursemodules">
                 <ion-label>
-                    <strong>{{ 'addon.competency.activities' | translate }}</strong>
+                    <p class="item-heading">{{ 'addon.competency.activities' | translate }}</p>
                     <p *ngIf="coursemodules.length == 0">
                         {{ 'addon.competency.noactivities' | translate }}
                     </p>
@@ -87,13 +90,13 @@
             <ng-container *ngIf="userCompetency">
                 <ion-item class="ion-text-wrap" *ngIf="competency.usercompetency && competency.usercompetency!.status">
                     <ion-label>
-                        <strong>{{ 'addon.competency.reviewstatus' | translate }}</strong>
-                        {{ competency.usercompetency!.statusname }}
+                        <p class="item-heading">{{ 'addon.competency.reviewstatus' | translate }}</p>
+                        <p>{{ competency.usercompetency!.statusname }}</p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <strong>{{ 'addon.competency.proficient' | translate }}</strong>
+                        <p class="item-heading">{{ 'addon.competency.proficient' | translate }}</p>
                     </ion-label>
                     <ion-badge slot="end" color="success" *ngIf="userCompetency.proficiency">
                         {{ 'core.yes' | translate }}
@@ -104,7 +107,7 @@
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <strong>{{ 'addon.competency.rating' | translate }}</strong>
+                        <p class="item-heading">{{ 'addon.competency.rating' | translate }}</p>
                     </ion-label>
                     <ion-badge color="dark" slot="end">{{ userCompetency.gradename }}</ion-badge>
                 </ion-item>

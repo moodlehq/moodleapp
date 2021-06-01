@@ -2,7 +2,7 @@
     <ion-tab-bar slot="top" class="core-tabs-bar" [hidden]="!tabs || numTabsShown <= 1" #tabBar>
         <ion-spinner *ngIf="!hideUntil"></ion-spinner>
         <ion-row *ngIf="hideUntil">
-            <ion-col class="col-with-arrow ion-no-padding" (click)="slidePrev()" size="1">
+            <ion-col class="col-with-arrow ion-no-padding" (click)="slidePrev()" size="1" [class.clickable]="showPrevButton">
                 <ion-icon *ngIf="showPrevButton" name="fas-chevron-left" [attr.aria-label]="'core.previous' | translate"></ion-icon>
             </ion-col>
             <ion-col class="ion-no-padding" size="10">
@@ -41,7 +41,7 @@
                     </ng-container>
                 </ion-slides>
             </ion-col>
-            <ion-col class="col-with-arrow ion-no-padding" (click)="slideNext()" size="1">
+            <ion-col class="col-with-arrow ion-no-padding" (click)="slideNext()" size="1" [class.clickable]="showNextButton">
                 <ion-icon *ngIf="showNextButton" name="fas-chevron-right" [attr.aria-label]="'core.next' | translate"></ion-icon>
             </ion-col>
         </ion-row>

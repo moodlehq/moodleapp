@@ -32,7 +32,9 @@
                     <tbody>
                         <tr
                             *ngFor="let row of grades.rows"
-                            (click)="row.itemtype != 'category' && grades.select(row)"
+                            role="button row"
+                            [attr.tabindex]="row.itemtype != 'category' ? 0 : null"
+                            (ariaButtonClick)="row.itemtype != 'category' && grades.select(row)"
                             [class]="row.rowclass"
                             [ngClass]='{"core-grades-grade-clickable": row.itemtype != "category"}'
                         >
