@@ -39,11 +39,6 @@ export const CORE_COURSES_SERVICES: Type<unknown>[] = [
 
 const mainMenuHomeChildrenRoutes: Routes = [
     {
-        path: '',
-        pathMatch: 'full',
-        redirectTo: CoreDashboardHomeHandlerService.PAGE_NAME,
-    },
-    {
         path: CoreDashboardHomeHandlerService.PAGE_NAME,
         loadChildren: () => import('./pages/dashboard/dashboard.module').then(m => m.CoreCoursesDashboardPageModule),
     },
