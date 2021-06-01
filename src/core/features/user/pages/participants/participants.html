@@ -18,11 +18,11 @@
         </core-search-box>
 
         <core-loading [hideUntil]="participants.loaded">
-            <core-empty-box *ngIf="participants.empty && !searchInProgress && !searchQuery" icon="person"
+            <core-empty-box *ngIf="participants.empty && !searchInProgress && !searchQuery" icon="far-user"
                 [message]="'core.user.noparticipants' | translate">
             </core-empty-box>
 
-            <core-empty-box *ngIf="participants.empty && !searchInProgress && searchQuery" icon="search"
+            <core-empty-box *ngIf="participants.empty && !searchInProgress && searchQuery" icon="fas-search"
                 [message]="'core.noresults' | translate">
             </core-empty-box>
 

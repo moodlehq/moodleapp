@@ -174,10 +174,10 @@
                     </ion-item>
 
                     <!-- No lesson retakes. -->
-                    <core-empty-box *ngIf="!overview && selectedGroupName" icon="stats-chart"
+                    <core-empty-box *ngIf="!overview && selectedGroupName" icon="fas-chart-bar"
                         [message]="'addon.mod_lesson.nolessonattemptsgroup' | translate:{$a: selectedGroupName}">
                     </core-empty-box>
-                    <core-empty-box *ngIf="!overview && !selectedGroupName" icon="stats-chart"
+                    <core-empty-box *ngIf="!overview && !selectedGroupName" icon="fas-chart-bar"
                         [message]="'addon.mod_lesson.nolessonattempts' | translate">
                     </core-empty-box>
 

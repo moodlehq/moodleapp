@@ -11,7 +11,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <core-empty-box *ngIf="!sections || !sections.length" icon="qr-scanner"
+        <core-empty-box *ngIf="!sections || !sections.length" icon="fas-box-open"
             [message]="'core.course.nocontentavailable' | translate">
         </core-empty-box>
 
