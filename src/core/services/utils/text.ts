@@ -732,6 +732,28 @@ export class CoreTextUtilsProvider {
     }
 
     /**
+     * Replace {{ARGUMENT}} arguments in the text.
+     *
+     * @param text Text to treat.
+     * @param replacements Argument values.
+     * @param encoding Encoding to use in values.
+     * @returns Treated text.
+     */
+    replaceArguments(text: string, replacements: Record<string, string> = {}, encoding?: 'uri'): string {
+        let match;
+
+        while ((match = text.match(/\{\{([^}]+)\}\}/))) {
+            const argument = match[1].trim();
+            const value = replacements[argument] ?? '';
+            const encodedValue = encoding ? encodeURIComponent(value) : value;
+
+            text = text.replace(`{{${argument}}}`, encodedValue);
+        }
+
+        return text;
+    }
+
+    /**
      * Replace all the new lines on a certain text.
      *
      * @param text The text to be treated.

@@ -480,7 +480,7 @@ export class CoreLangProvider {
      * @param lang Language code.
      * @return Promise resolved with the file contents.
      */
-    async readLangFile(lang: string): Promise<Record<string, string>> {
+    async readLangFile(lang: CoreLangLanguage): Promise<Record<string, string>> {
         const observable = Http.get(`assets/lang/${lang}.json`, {
             responseType: 'json',
         });
@@ -518,6 +518,11 @@ export class CoreLangProvider {
 }
 
 export const CoreLang = makeSingleton(CoreLangProvider);
+
+/**
+ * Language code. E.g. 'au', 'es', etc.
+ */
+export type CoreLangLanguage = string;
 
 /**
  * Language object has two leves, first per language and second per string key.
