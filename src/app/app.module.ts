@@ -21,7 +21,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { IonicModule, IonicRouteStrategy, iosTransitionAnimation } from '@ionic/angular';
 
 import { CoreModule } from '@/core/core.module';
 import { AddonsModule } from '@/addons/addons.module';
@@ -42,7 +42,11 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
-        IonicModule.forRoot(),
+        IonicModule.forRoot(
+            {
+                navAnimation: iosTransitionAnimation,
+            },
+        ),
         HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
         TranslateModule.forRoot({
             loader: {
