@@ -59,7 +59,7 @@ export class CoreSharedFilesUploadHandlerService implements CoreFileUploaderHand
         return {
             title: 'core.sharedfiles.sharedfiles',
             class: 'core-sharedfiles-fileuploader-handler',
-            icon: 'fas-folder',
+            icon: 'folder', // Cannot use font-awesome in action sheet.
             action: (
                 maxSize?: number,
                 upload?: boolean,

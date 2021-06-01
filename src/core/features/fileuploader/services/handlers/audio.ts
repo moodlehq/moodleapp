@@ -73,7 +73,7 @@ export class CoreFileUploaderAudioHandlerService implements CoreFileUploaderHand
         return {
             title: 'core.fileuploader.audio',
             class: 'core-fileuploader-audio-handler',
-            icon: 'mic',
+            icon: 'mic', // Cannot use font-awesome in action sheet.
             action: async (
                 maxSize?: number,
                 upload?: boolean,

@@ -127,10 +127,6 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
                 this.showCompletion ? CoreCourse.invalidateModule(this.module.id) : undefined,
             ]));
 
-            if (this.showCompletion) {
-                this.module = await CoreCourse.getModule(this.module.id, this.courseId);
-            }
-
             await this.loadContent(true, sync, showErrors);
         } finally {
             this.refreshIcon = CoreConstants.ICON_REFRESH;
@@ -205,6 +201,14 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         }
 
         try {
+            if (refresh && this.showCompletion) {
+                try {
+                    this.module = await CoreCourse.getModule(this.module.id, this.courseId);
+                } catch {
+                    // Ignore errors.
+                }
+            }
+
             await this.fetchContent(refresh, sync, showErrors);
         } catch (error) {
             if (!refresh) {

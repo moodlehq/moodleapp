@@ -58,7 +58,7 @@ export class CoreFileUploaderCameraHandlerService implements CoreFileUploaderHan
         return {
             title: 'core.fileuploader.camera',
             class: 'core-fileuploader-camera-handler',
-            icon: 'camera',
+            icon: 'camera', // Cannot use font-awesome in action sheet.
             action: async (
                 maxSize?: number,
                 upload?: boolean,
