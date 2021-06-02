@@ -206,9 +206,8 @@
 
     --spacer-background: #{$core-spacer-background};
     core-spacer {
-    --item-divider-background: var(--spacer-background);
+        --item-divider-background: var(--spacer-background);
     }
-
 
     --core-combobox-background: var(--ion-item-background);
     --core-combobox-color: #{$core-combobox-color};

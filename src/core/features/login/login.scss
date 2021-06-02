@@ -12,7 +12,7 @@
         --color: var(--core-login-text-color);
 
         p, h2, h3, .core-oauth-icon {
-            color: var(--core-login-text-color);
+            color: var(--color);
         }
     }
     ion-button.core-button-as-link {
@@ -29,13 +29,17 @@
         margin-bottom: 16px;
     }
 
-    form .item {
+    form .item,
+    form .item ion-label {
         --background: var(--core-login-input-background);
         --color: var(--core-login-input-color);
     }
 
     form .core-username.item p {
         font-size: 16px;
+    }
+
+    form .core-username.item.md p {
         @include padding-horizontal(8px, null);
     }
 
@@ -62,8 +66,9 @@
         text-decoration: underline;
     }
 
-    .core-login-reconnect-warning {
+    .core-login-reconnect-warning ion-item {
         font-size: 0.9em;
+        --background: var(--core-login-input-background);
     }
 
     @if ($core-fixed-url) {
