@@ -19,11 +19,10 @@
             </ion-select>
         </ion-item>
         <ion-item>
-            <ion-label>
-                <ion-textarea placeholder="{{ 'addon.notes.note' | translate }}" rows="5" [(ngModel)]="text" name="text"
-                    required="required">
-                </ion-textarea>
-            </ion-label>
+            <ion-label></ion-label>
+            <ion-textarea placeholder="{{ 'addon.notes.note' | translate }}" rows="5" [(ngModel)]="text" name="text"
+                required="required">
+            </ion-textarea>
         </ion-item>
         <div class="ion-padding">
             <ion-button expand="block" type="submit" [disabled]="processing || text.length < 2">
