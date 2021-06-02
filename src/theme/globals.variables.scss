@@ -64,16 +64,19 @@ $yellow-light:    mix($yellow, white, 40%) !default;
 $yellow-dark:     mix($yellow, black, 40%) !default;
 
 $brand-color:          $orange !default;
-$brand-color-light:    lighten($brand-color, 10%) !default;
-$brand-color-dark:     darken($brand-color, 10%) !default;
 
 $text-color:               $black !default;
 $text-color-dark:          $white !default;
+
+$brand-contrast-color: $text-color !default; // Used in radio and other controls where brand color needs contrast.
+$brand-contrast-color-dark: $text-color-dark !default; // Used in radio and other controls where brand color needs contrast
+
 $link-color:               $blue !default;
 $link-color-dark:          $blue-light !default;
 $background-color:         $gray-light !default;
 $background-color-dark:    $shade-90 !default;
 $subdued-text-color:       $gray-darker !default;
+$subdued-text-color-dark:  $gray-lighter !default;
 
 $ion-item-background:      $white !default;
 $ion-item-background-dark: $shade-80 !default;
@@ -86,8 +89,8 @@ $core-spacer-background-dark: $shade-100 !default;
 
 $core-online-color: #5cb85c !default;
 
-$primary:    $blue !default;
-$secondary:  $brand-color !default;
+$primary:    $brand-color !default;
+$secondary:  $blue !default;
 $tertiary:   $turquoise !default;
 $danger:     $red !default;
 $warning:    $yellow !default;
@@ -160,8 +163,8 @@ $colors:  (
     )
 ) !default;
 
-$primary-dark:    $blue-light !default;
-$secondary-dark:  $brand-color !default;
+$primary-dark:    $brand-color !default;
+$secondary-dark:  $blue-light !default;
 $tertiary-dark:   $turquoise-light !default;
 $danger-dark:     $red-light !default;
 $warning-dark:    $yellow-light !default;
@@ -268,42 +271,44 @@ $z-index-overlay: 1001;
 $z-index-overlay-wrapper: 10;
 
 // Top header bar.
-$toolbar-background: $brand-color !default;
+$toolbar-background: $white !default;
+$toolbar-background-dark: $black !default;
+$toolbar-border-color: $brand-color !default;
+$toolbar-border-color-dark: $toolbar-border-color !default;
 $toolbar-color: get_contrast_color($toolbar-background) !default;
+$toolbar-color-dark: get_contrast_color($toolbar-background-dark) !default;
+$toolbar-border-width: 3px !default;
 $toolbar-button-image-size: 44px !default;
 $toolbar-height-md: 56px !default;
 $toolbar-height-ios: 54px !default;
 
 // Bottom tab bar.
-$bottom-tabs-background: $white !default;
-$bottom-tabs-background-dark: $shade-85 !default;
-$bottom-tabs-color: $gray-darker !default;
-$bottom-tabs-color-dark: $white !default;
+$bottom-tabs-background: $black !default;
+$bottom-tabs-background-dark: $black !default;
+$bottom-tabs-color: $gray-lighter !default;
+$bottom-tabs-color-dark: $gray-lighter !default;
 $bottom-tabs-color-selected: $primary !default;
-$bottom-tabs-color-selected-dark: $primary-dark !default;
+$bottom-tabs-color-selected-dark: $primary !default;
 $bottom-tabs-badge-color: $primary !default;
 $bottom-tabs-badge-text-color: get_contrast_color($bottom-tabs-badge-color) !default;
-$bottom-tabs-badge-color-dark: $primary-dark !default;
+$bottom-tabs-badge-color-dark: $primary !default;
 $bottom-tabs-badge-text-color-dark: get_contrast_color($bottom-tabs-badge-color-dark) !default;
 
 $core-text-hightlight-background-color: lighten($blue, 40%) !default;
 
-$action-sheet-title-color: $primary !default;
-$action-sheet-selected: $primary !default;
-
 $core-tabs-background: $white !default;
 $core-tab-background: $core-tabs-background !default;
 $core-tab-color: $gray-dark !default;
+$core-tab-color-active: $dark !default;
 $core-tab-border-color: $gray !default;
-$core-tab-color-active: $primary !default;
-$core-tab-color-active-dark: $primary-dark !default;
+$core-tab-border-color-active: $primary !default;
 
 $core-tabs-background-dark: $shade-75 !default;
 $core-tab-background-dark: $core-tabs-background-dark !default;
 $core-tab-color-dark: $white !default;
+$core-tab-color-active-dark: $dark-dark !default;
 $core-tab-border-color-dark: $gray-light !default;
-$core-tab-border-color-active: $core-tab-color-active !default;
-$core-tab-border-color-active-dark: $core-tab-color-active-dark !default;
+$core-tab-border-color-active-dark: $core-tab-border-color-active !default;
 
 $core-progressbar-color: $primary !default;
 $core-progressbar-color-dark: $primary !default;
@@ -312,13 +317,15 @@ $core-progressbar-text-color-dark: $gray-lighter !default;
 $core-progressbar-background: $gray-lighter !default;
 $core-progressbar-height: 8px !default;
 
-
 $core-side-blocks-max-width: 30% !default;
 $core-side-blocks-min-width: 280px !default;
 
-////
-$core-combobox-color: $primary !default;
-$core-combobox-color-dark: $primary-dark !default;
+$core-combobox-color: $black !default;
+$core-combobox-color-dark: $white !default;
+$core-combobox-border-color: $primary !default;
+$core-combobox-border-color-dark: $primary-dark !default;
+$core-combobox-border-width: 3px !default;
+
 
 $core-selected-item-color: $primary !default;
 $core-selected-item-color-dark: $primary-dark !default;
@@ -351,7 +358,7 @@ $addon-calendar-event-course-color: $red !default;
 $addon-calendar-event-group-color: $yellow !default;
 $addon-calendar-event-user-color: $blue !default;
 $addon-calendar-event-site-color: $green !default;
-$addon-calendar-today-bgcolor: $primary !default;
+$addon-calendar-today-border-color: $primary !default;
 $addon-calendar-today-color: $white !default;
 $addon-calendar-border-color: $gray !default;
 

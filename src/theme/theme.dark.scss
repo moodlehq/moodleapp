@@ -11,6 +11,7 @@
 
     --ion-text-color: #{$text-color-dark};
     --ion-text-color-rgb: #{color-to-rgb-list($text-color-dark)};
+    --subdued-text-color: #{$subdued-text-color-dark};
 
     // Enlighten the ionic shades.
     --ion-color-step-50: #1e1e1e;
@@ -33,6 +34,8 @@
     --ion-color-step-900: #e7e7e7;
     --ion-color-step-950: #f3f3f3;
 
+    --brand-contrast-color: #{$brand-contrast-color-dark};
+
     --primary: #{$primary-dark};
     --secondary: #{$secondary-dark};
     --tertiary: #{$tertiary-dark};
@@ -53,10 +56,11 @@
     --ion-card-color: #{$text-color-dark};
     --ion-card-background: #{$ion-item-background-dark};
 
+    --contrast-background: black;
+
     ion-content {
         --background: var(--ion-background-color);
         --background-alternative: var(--black);
-        --contrast-background: var(--ion-background-color);
     }
 
     --core-bottom-tabs-background: #{$bottom-tabs-background-dark};
@@ -72,6 +76,10 @@
     }
 
     --core-link-color: #{$link-color-dark};
+
+    --core-header-toolbar-background: #{$toolbar-background-dark};
+    --core-header-toolbar-border-color: #{$toolbar-border-color-dark};
+    --core-header-toolbar-color: #{$toolbar-color-dark};
 
     --core-tabs-background: #{$core-tabs-background-dark};
     --core-tab-background: #{$core-tab-background-dark};

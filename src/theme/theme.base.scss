@@ -12,9 +12,10 @@
         clear: both;
     }
 }
- .core-bold {
+
+.core-bold {
     font-weight: bold;
-  }
+}
 
 .img-responsive {
     display: block;
@@ -51,12 +52,23 @@
 
 // Headings.
 // Some styles taken from ion-label
-ion-label .item-heading {
+.md ion-label .item-heading,
+.ios ion-label .item-heading {
     text-overflow: inherit;
     overflow: inherit;
     --color: initial;
     color: var(--color);
     line-height: 20px;
+
+    &.item-heading-secondary {
+        --color: var(--subdued-text-color);
+    }
+}
+
+.ios ion-label > p,
+.md ion-label > p {
+    --color: var(--subdued-text-color);
+    color: var(--color);
 }
 
 .md ion-label .item-heading {
@@ -230,6 +242,11 @@ button,
     min-width: var(--a11y-min-target-size);
 }
 
+// Clear buttons will be black.
+ion-button.button-clear {
+    --ion-color-primary: var(--brand-contrast-color);
+}
+
 [role="button"],
 .clickable {
     cursor: pointer;
@@ -284,11 +301,13 @@ div.core-iframe-network-error {
         mask: url("/assets/fonts/font-awesome/solid/exclamation-triangle.svg") no-repeat 50% 50%;
     }
 }
+
 [dir=rtl] ion-alert.core-alert-network-error .alert-head::after,
 [dir=rtl] div.core-iframe-network-error::after {
     right: unset;
     left: -15%;
 }
+
 ion-alert.core-nohead {
     .alert-head {
         padding-bottom: 0;
@@ -297,6 +316,10 @@ ion-alert.core-nohead {
 
 ion-alert .alert-message {
     user-select: text;
+}
+
+ion-alert .alert-wrapper button.alert-button {
+    color: var(--brand-contrast-color);
 }
 
 // Ionic list.
@@ -520,6 +543,21 @@ ion-toolbar h1 .core-bar-button-image img {
         font-size: 16px;
     }
 }
+
+// Radio.
+ion-radio {
+    --color: var(--brand-contrast-color);
+    --color-checked: var(--color);
+}
+
+// Checkbox.
+ion-checkbox {
+    --border-radius: 2px;
+    --border-color-checked: var(--brand-contrast-color);
+    --background-checked: var(--brand-contrast-color);
+    --checkmark-color: var(--contrast-background);
+}
+
 
 // Select.
 ion-select::part(text) {
@@ -755,10 +793,6 @@ ion-input .native-input {
         box-shadow: none;
         outline: none;
     }
-}
-
-ion-checkbox {
-    --border-radius: 2px;
 }
 
 // Disable scroll on parent ion contents to enabled PTR on the ones inside the splitview. See split-view component for more info.
