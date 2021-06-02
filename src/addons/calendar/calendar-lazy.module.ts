@@ -18,7 +18,7 @@ import { Route, RouterModule, ROUTES, Routes } from '@angular/router';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 
 export const AddonCalendarEditRoute: Route = {
-    path: 'edit',
+    path: 'edit/:eventId',
     loadChildren: () =>
         import('@/addons/calendar/pages/edit-event/edit-event.module').then(m => m.AddonCalendarEditEventPageModule),
 };

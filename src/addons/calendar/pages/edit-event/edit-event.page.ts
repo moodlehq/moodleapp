@@ -132,7 +132,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.eventId = CoreNavigator.getRouteNumberParam('eventId');
+        this.eventId = CoreNavigator.getRouteNumberParam('eventId') || undefined;
         this.courseId = CoreNavigator.getRouteNumberParam('courseId') || 0;
         this.title = this.eventId ? 'addon.calendar.editevent' : 'addon.calendar.newevent';
 

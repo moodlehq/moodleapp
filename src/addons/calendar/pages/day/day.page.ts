@@ -553,10 +553,9 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     openEdit(eventId?: number): void {
         const params: Params = {};
 
-        if (eventId) {
-            params.eventId = eventId;
-        } else {
+        if (!eventId) {
             // It's a new event, set the time.
+            eventId = 0;
             params.timestamp = moment().year(this.year).month(this.month - 1).date(this.day).unix() * 1000;
         }
 
@@ -564,7 +563,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             params.courseId = this.filter.courseId;
         }
 
-        CoreNavigator.navigateToSitePath('/calendar/edit', { params });
+        CoreNavigator.navigateToSitePath(`/calendar/edit/${eventId}`, { params });
     }
 
     /**

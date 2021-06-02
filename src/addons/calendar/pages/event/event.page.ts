@@ -424,7 +424,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * Open the page to edit the event.
      */
     openEdit(): void {
-        CoreNavigator.navigateToSitePath('/calendar/edit', { params: { eventId: this.eventId } });
+        CoreNavigator.navigateToSitePath(`/calendar/edit/${this.eventId}`);
     }
 
     /**
