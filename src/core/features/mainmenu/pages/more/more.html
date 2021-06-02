@@ -41,7 +41,8 @@
             </ion-item>
             <ng-container *ngFor="let item of customItems">
                 <ion-item button *ngIf="item.type != 'embedded'" [href]="item.url" [attr.aria-label]="item.label" core-link
-                    [capture]="item.type == 'app'" [inApp]="item.type == 'inappbrowser'" class="core-moremenu-customitem" detail="true">
+                    [capture]="item.type == 'app'" [inApp]="item.type == 'inappbrowser'" class="core-moremenu-customitem" detail="true"
+                    [detailIcon]="item.type == 'browser' ? 'open-outline' : null">
                     <ion-icon [name]="item.icon" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>
                         <p class="item-heading">{{item.label}}</p>
@@ -62,14 +63,14 @@
                 </ion-label>
             </ion-item>
             <ion-item button *ngIf="showWeb && siteInfo" [href]="siteInfo.siteurl" core-link autoLogin="yes"
-                [attr.aria-label]="'core.mainmenu.website' | translate" detail="true">
+                [attr.aria-label]="'core.mainmenu.website' | translate" detail="true" detailIcon="open-outline">
                 <ion-icon name="fas-globe" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p class="item-heading">{{ 'core.mainmenu.website' | translate }}</p>
                 </ion-label>
             </ion-item>
             <ion-item button *ngIf="showHelp" [href]="docsUrl" core-link autoLogin="no"
-                [attr.aria-label]="'core.mainmenu.help' | translate" detail="true">
+                [attr.aria-label]="'core.mainmenu.help' | translate" detail="true" detailIcon="open-outline">
                 <ion-icon name="far-life-ring" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p class="item-heading">{{ 'core.mainmenu.help' | translate }}</p>

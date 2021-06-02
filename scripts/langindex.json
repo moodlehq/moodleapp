@@ -2096,6 +2096,7 @@
   "core.settings.fontsizecharacter": "block_accessibility/char",
   "core.settings.forcedsetting": "local_moodlemobileapp",
   "core.settings.general": "moodle",
+  "core.settings.helpusimprove": "local_moodlemobileapp",
   "core.settings.ioscookies": "local_moodlemobileapp",
   "core.settings.ioscookiesdescription": "local_moodlemobileapp",
   "core.settings.language": "moodle",
