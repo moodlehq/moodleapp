@@ -86,10 +86,10 @@
             </ion-item>
         </ion-list>
 
-        <core-empty-box *ngIf="!user && !isDeleted && isEnrolled" icon="fa-user"
+        <core-empty-box *ngIf="!user && !isDeleted && isEnrolled" icon="far-user"
             [message]=" 'core.user.detailsnotavailable' | translate">
         </core-empty-box>
-        <core-empty-box *ngIf="isDeleted" icon="fa-user" [message]="'core.userdeleted' | translate"></core-empty-box>
-        <core-empty-box *ngIf="!isEnrolled" icon="fa-user" [message]="'core.notenrolledprofile' | translate"></core-empty-box>
+        <core-empty-box *ngIf="isDeleted" icon="far-user" [message]="'core.userdeleted' | translate"></core-empty-box>
+        <core-empty-box *ngIf="!isEnrolled" icon="far-user" [message]="'core.notenrolledprofile' | translate"></core-empty-box>
     </core-loading>
 </ion-content>

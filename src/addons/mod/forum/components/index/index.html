@@ -2,7 +2,7 @@
 <core-navbar-buttons slot="end">
     <core-context-menu>
         <core-context-menu-item *ngIf="externalUrl"
-            [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" iconAction="open">
+            [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" iconAction="fas-external-link-alt">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="description"
             [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'">
@@ -23,7 +23,7 @@
             (action)="prefetch($event)">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="size"
-            iconDescription="fas-archive" iconAction="trash"
+            iconDescription="fas-archive" iconAction="fas-trash"
             [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}" [closeOnClick]="false"
             (action)="removeFiles($event)">
         </core-context-menu-item>
@@ -69,7 +69,8 @@
         </ion-card>
 
         <ng-container *ngIf="forum">
-            <core-empty-box *ngIf="discussions.empty" icon="chatbubbles" [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
+            <core-empty-box *ngIf="discussions.empty" icon="far-comments"
+                [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
             </core-empty-box>
 
             <div *ngIf="!discussions.empty && sortingAvailable && selectedSortOrder" class="ion-text-wrap">

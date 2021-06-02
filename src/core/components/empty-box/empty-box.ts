@@ -20,7 +20,7 @@ import { Component, Input } from '@angular/core';
  * Use class="core-empty-box-clickable" if you want to add some clickable elements to the box.
  *
  * Usage:
- * <core-empty-box *ngIf="empty" icon="bell" [message]="'core.emptymessage' | translate"></core-empty-box>
+ * <core-empty-box *ngIf="empty" icon="far-bell" [message]="'core.emptymessage' | translate"></core-empty-box>
  */
 @Component({
     selector: 'core-empty-box',
