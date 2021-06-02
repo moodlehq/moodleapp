@@ -93,4 +93,19 @@ describe('CoreTextUtilsProvider', () => {
         expect(textUtils.matchesGlob('/foo/bar/baz', '/foo/ba?/ba?')).toBe(true);
     });
 
+    it('replaces arguments', () => {
+        // Arrange
+        const url = 'http://campus.edu?device={{device}}&version={{version}}';
+        const replacements = {
+            device: 'iPhone or iPad',
+            version: '1.2.3',
+        };
+
+        // Act
+        const replaced = textUtils.replaceArguments(url, replacements, 'uri');
+
+        // Assert
+        expect(replaced).toEqual('http://campus.edu?device=iPhone%20or%20iPad&version=1.2.3');
+    });
+
 });

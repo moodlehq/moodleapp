@@ -15,11 +15,13 @@
 import { Injectable } from '@angular/core';
 
 import { CoreApp } from '@services/app';
-import { CoreLang } from '@services/lang';
+import { CoreLang, CoreLangLanguage } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreConstants } from '@/core/constants';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from './mainmenu-delegate';
-import { makeSingleton } from '@singletons';
+import { Device, makeSingleton } from '@singletons';
+import { CoreArray } from '@singletons/array';
+import { CoreTextUtils } from '@services/utils/text';
 
 /**
  * Service that provides some features regarding Main Menu.
@@ -49,12 +51,27 @@ export class CoreMainMenuProvider {
     }
 
     /**
+     * Get a list of custom menu items.
+     *
+     * @param siteId Site to get custom items from.
+     * @return List of custom menu items.
+     */
+    async getCustomMenuItems(siteId?: string): Promise<CoreMainMenuCustomItem[]> {
+        const customItems = await Promise.all([
+            this.getCustomMenuItemsFromSite(siteId),
+            this.getCustomItemsFromConfig(),
+        ]);
+
+        return CoreArray.flatten(customItems);
+    }
+
+    /**
      * Get a list of custom menu items for a certain site.
      *
      * @param siteId Site ID. If not defined, current site.
      * @return List of custom menu items.
      */
-    async getCustomMenuItems(siteId?: string): Promise<CoreMainMenuCustomItem[]> {
+    protected async getCustomMenuItemsFromSite(siteId?: string): Promise<CoreMainMenuCustomItem[]> {
         const site = await CoreSites.getSite(siteId);
 
         const itemsString = site.getStoredConfig('tool_mobile_custommenuitems');
@@ -146,6 +163,45 @@ export class CoreMainMenuProvider {
 
         // Remove undefined values.
         return result.filter((entry) => typeof entry != 'undefined');
+    }
+
+    /**
+     * Get a list of custom menu items from config.
+     *
+     * @return List of custom menu items.
+     */
+    protected async getCustomItemsFromConfig(): Promise<CoreMainMenuCustomItem[]> {
+        const items = CoreConstants.CONFIG.customMainMenuItems;
+
+        if (!items) {
+            return [];
+        }
+
+        const currentLang = await CoreLang.getCurrentLanguage();
+
+        const fallbackLang = CoreConstants.CONFIG.default_lang || 'en';
+        const replacements = {
+            devicetype: '',
+            osversion: Device.version,
+        };
+
+        if (CoreApp.isAndroid()) {
+            replacements.devicetype = 'Android';
+        } else if (CoreApp.isIOS()) {
+            replacements.devicetype = 'iPhone or iPad';
+        } else {
+            replacements.devicetype = 'Other';
+        }
+
+        return items
+            .filter(item => typeof item.label === 'string' || currentLang in item.label || fallbackLang in item.label)
+            .map(item => ({
+                ...item,
+                url: CoreTextUtils.replaceArguments(item.url, replacements, 'uri'),
+                label: typeof item.label === 'string'
+                    ? item.label
+                    : item.label[currentLang] ?? item.label[fallbackLang],
+            }));
     }
 
     /**
@@ -263,6 +319,13 @@ export interface CoreMainMenuCustomItem {
      */
     icon: string;
 }
+
+/**
+ * Custom main menu item with localized text.
+ */
+export type CoreMainMenuLocalizedCustomItem = Omit<CoreMainMenuCustomItem, 'label'> & {
+    label: string | Record<CoreLangLanguage, string>;
+};
 
 /**
  * Map of custom menu items.

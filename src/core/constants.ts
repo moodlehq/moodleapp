@@ -15,6 +15,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { CoreColorScheme, CoreZoomLevel } from '@features/settings/services/settings-helper';
+import { CoreMainMenuLocalizedCustomItem } from '@features/mainmenu/services/mainmenu';
 import { CoreSitesDemoSiteData } from '@services/sites';
 import envJson from '@/assets/env.json';
 import { OpenFileAction } from '@services/utils/utils';
@@ -175,6 +176,7 @@ export interface EnvironmentConfig {
     displayqronsitescreen?: boolean;
     forceOpenLinksIn: 'app' | 'browser';
     iOSDefaultOpenFileAction?: OpenFileAction;
+    customMainMenuItems?: CoreMainMenuLocalizedCustomItem[];
 };
 
 export interface EnvironmentBuild {
