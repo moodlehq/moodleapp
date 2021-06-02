@@ -378,9 +378,14 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         }
 
         this.maxSlides = 3;
-        const width = this.slidesSwiper.width;
+        let width = this.slidesSwiper.width;
         if (!width) {
-            return;
+            this.slidesSwiper.updateSize();
+            width = this.slidesSwiper.width;
+
+            if (!width) {
+                return;
+            }
         }
 
         const zoomLevel = await CoreSettingsHelper.getZoom();
