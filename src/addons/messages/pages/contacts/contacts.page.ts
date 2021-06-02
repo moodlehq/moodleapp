@@ -37,16 +37,18 @@ import { IonRefresher } from '@ionic/angular';
 })
 export class AddonMessagesContactsPage implements OnInit, OnDestroy {
 
-    selected = 'confirmed';
+    selected: 'confirmed' | 'requests' = 'confirmed';
     requestsBadge = '';
     selectedUserId?: number; // User id of the conversation opened in the split view.
 
     confirmedLoaded = false;
+    confirmedInitialising = false;
     confirmedCanLoadMore = false;
     confirmedLoadMoreError = false;
     confirmedContacts: AddonMessagesConversationMember[] = [];
 
     requestsLoaded = false;
+    requestsInitialising = false;
     requestsCanLoadMore = false;
     requestsLoadMoreError = false;
     requests: AddonMessagesConversationMember[] = [];
@@ -83,7 +85,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
                         this.confirmedContacts.splice(index, 1);
                     }
                 } else if (data.contactRequestConfirmed) {
-                    this.refreshData();
+                    this.confirmedFetchData(true);
                 }
 
                 if (data.contactRequestConfirmed || data.contactRequestDeclined) {
@@ -104,25 +106,52 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         AddonMessages.getContactRequestsCount(this.siteId); // Badge already updated by the observer.
 
-        if (this.selected == 'confirmed') {
-            try {
+        this.selected === 'confirmed'
+            ? await this.initConfirmed()
+            : await this.initRequests();
+    }
 
-                await this.confirmedFetchData();
-                if (this.confirmedContacts.length && CoreScreen.isTablet) {
-                    this.selectUser(this.confirmedContacts[0].id, true);
-                }
-            } finally {
-                this.confirmedLoaded = true;
+    /**
+     * Initialise confirmed contacts.
+     */
+    async initConfirmed(): Promise<void> {
+        if (this.confirmedInitialising) {
+            return;
+        }
+
+        try {
+            this.confirmedInitialising = true;
+
+            await this.confirmedFetchData();
+
+            if (this.confirmedContacts.length && CoreScreen.isTablet) {
+                this.selectUser(this.confirmedContacts[0].id, true);
             }
-        } else {
-            try {
-                await this.requestsFetchData();
-                if (this.requests.length && CoreScreen.isTablet) {
-                    this.selectUser(this.requests[0].id, true);
-                }
-            } finally {
-                this.requestsLoaded = true;
+        } finally {
+            this.confirmedInitialising = false;
+            this.confirmedLoaded = true;
+        }
+    }
+
+    /**
+     * Initialise contact requests.
+     */
+    async initRequests(): Promise<void> {
+        if (this.requestsInitialising) {
+            return;
+        }
+
+        try {
+            this.requestsInitialising = true;
+
+            await this.requestsFetchData();
+
+            if (this.requests.length && CoreScreen.isTablet) {
+                this.selectUser(this.requests[0].id, true);
             }
+        } finally {
+            this.requestsInitialising = false;
+            this.requestsLoaded = true;
         }
     }
 
@@ -228,10 +257,18 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
     }
 
     selectTab(selected: string): void {
+        if (selected !== 'confirmed' && selected !== 'requests') {
+            return;
+        }
+
         this.selected = selected;
 
-        if ((this.selected == 'confirmed' && !this.confirmedLoaded) || (this.selected != 'confirmed' && !this.requestsLoaded)) {
-            this.ngOnInit();
+        if (this.selected == 'confirmed' && !this.confirmedLoaded) {
+            this.initConfirmed();
+        }
+
+        if (this.selected == 'requests' && !this.requestsLoaded) {
+            this.initRequests();
         }
     }
 
