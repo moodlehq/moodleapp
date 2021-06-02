@@ -7,6 +7,12 @@
         box-shadow: 0px -3px 3px rgba(var(--drop-shadow));
     }
 
+    @if ($core-always-show-main-menu) {
+        ion-tab-bar[hidden] {
+            display: flex !important;
+        }
+    }
+
     ion-tab-button ion-icon {
         text-overflow: unset;
         overflow: visible;
