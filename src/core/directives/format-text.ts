@@ -377,6 +377,7 @@ export class CoreFormatTextDirective implements OnChanges {
 
             // Calculate the height now.
             this.calculateHeight();
+            setTimeout(() => this.calculateHeight(), 200); // Try again, sometimes the first calculation is wrong.
 
             // Add magnifying glasses to images.
             this.addMagnifyingGlasses();
@@ -388,6 +389,7 @@ export class CoreFormatTextDirective implements OnChanges {
                         if (data.loaded && CoreDomUtils.closest(this.element.parentElement, '#' + data.uniqueId)) {
                             // The format-text is inside the loading, re-calculate the height.
                             this.calculateHeight();
+                            setTimeout(() => this.calculateHeight(), 200);
                         }
                     });
             }

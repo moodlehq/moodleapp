@@ -363,16 +363,6 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Page will leave.
-     */
-    ionViewWillLeave(): void {
-        CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'scorm' });
-
-        // Empty src when leaving the state so unload event is triggered in the iframe.
-        this.src = '';
-    }
-
-    /**
      * Load a SCO.
      *
      * @param sco The SCO to load.
@@ -547,6 +537,10 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * Component being destroyed.
      */
     ngOnDestroy(): void {
+        // Empty src when leaving the state so unload event is triggered in the iframe.
+        this.src = '';
+        CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'scorm' });
+
         // Stop listening for events.
         this.tocObserver?.off();
         this.launchNextObserver?.off();

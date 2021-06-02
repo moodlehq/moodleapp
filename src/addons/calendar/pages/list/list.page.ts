@@ -29,7 +29,6 @@ import { CoreSites } from '@services/sites';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreApp } from '@services/app';
-import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import moment from 'moment';
 import { CoreConstants } from '@/core/constants';
 import { AddonCalendarFilterPopoverComponent } from '../../components/filter/filter';
@@ -51,7 +50,6 @@ import { CoreNavigator } from '@services/navigator';
 export class AddonCalendarListPage implements OnInit, OnDestroy {
 
     @ViewChild(IonContent) content?: IonContent;
-    @ViewChild(CoreSplitViewComponent) splitviewCtrl?: CoreSplitViewComponent;
 
     protected initialTime = 0;
     protected daysLoaded = 0;
@@ -117,26 +115,12 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
         this.newEventObserver = CoreEvents.on(AddonCalendarProvider.NEW_EVENT_EVENT, (data) => {
             if (data && data.eventId) {
                 this.eventsLoaded = false;
-                this.refreshEvents(true, false).finally(() => {
-
-                    // In tablet mode try to open the event (only if it's an online event).
-                    if (this.splitviewCtrl?.outletActivated && data.eventId > 0) {
-                        this.gotoEvent(data.eventId);
-                    } else if (this.splitviewCtrl?.outletActivated) {
-                        // Discussion added, clear details page.
-                        this.emptySplitView();
-                    }
-                });
+                this.refreshEvents(true, false);
             }
         }, this.currentSiteId);
 
         // Listen for new event discarded event. When it does, reload the data.
         this.discardedObserver = CoreEvents.on(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, () => {
-            if (this.splitviewCtrl?.outletActivated) {
-                // Discussion added, clear details page.
-                this.emptySplitView();
-            }
-
             this.eventsLoaded = false;
             this.refreshEvents(true, false);
         }, this.currentSiteId);
@@ -150,15 +134,9 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
         }, this.currentSiteId);
 
         // Refresh data if calendar events are synchronized automatically.
-        this.syncObserver = CoreEvents.on(AddonCalendarSyncProvider.AUTO_SYNCED, (data) => {
+        this.syncObserver = CoreEvents.on(AddonCalendarSyncProvider.AUTO_SYNCED, () => {
             this.eventsLoaded = false;
             this.refreshEvents();
-
-            if (this.splitviewCtrl?.outletActivated &&
-                this.eventId && data && data.deleted && data.deleted.indexOf(this.eventId) != -1) {
-                // Current selected event was deleted. Clear details.
-                this.emptySplitView();
-            }
         }, this.currentSiteId);
 
         // Refresh data if calendar events are synchronized manually but not by this page.
@@ -166,12 +144,6 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
             if (data && data.source != 'list') {
                 this.eventsLoaded = false;
                 this.refreshEvents();
-            }
-
-            if (this.splitviewCtrl?.outletActivated &&
-                this.eventId && data && data.deleted && data.deleted.indexOf(this.eventId) != -1) {
-                // Current selected event was deleted. Clear details.
-                this.emptySplitView();
             }
         }, this.currentSiteId);
 
@@ -185,11 +157,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
                     this.deletedEvents.push(data.eventId);
                     this.hasOffline = true;
                 } else {
-                    // Event deleted, clear the details if needed and refresh the view.
-                    if (this.splitviewCtrl?.outletActivated) {
-                        this.emptySplitView();
-                    }
-
+                    // Event deleted, refresh the view.
                     this.eventsLoaded = false;
                     this.refreshEvents();
                 }
@@ -248,27 +216,6 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
         this.syncIcon = CoreConstants.ICON_LOADING;
 
         await this.fetchData(false, true, false);
-
-        if (!this.eventId && this.splitviewCtrl?.outletActivated && this.events.length > 0) {
-            // Take first online event and load it. If no online event, load the first offline.
-            if (this.onlineEvents[0]) {
-                this.gotoEvent(this.onlineEvents[0].id);
-            } else {
-                this.gotoEvent(this.offlineEvents[0].id);
-            }
-        }
-    }
-
-    /**
-     * Convenience function to clear detail view of the split view.
-     */
-    protected emptySplitView(): void {
-        // Empty details.
-        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/calendar/list/event') ||
-            CoreNavigator.isCurrentPathInTablet('**/calendar/list/edit');
-        if (splitViewLoaded) {
-            CoreNavigator.navigate('../');
-        }
     }
 
     /**
@@ -633,20 +580,15 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
      */
     openEdit(eventId?: number): void {
         this.eventId = undefined;
+        eventId = eventId || 0;
 
         const params: Params = {};
 
-        if (eventId) {
-            params.eventId = eventId;
-        }
         if (this.filter.courseId) {
             params.courseId = this.filter.courseId;
         }
 
-        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/calendar/list/event') ||
-            CoreNavigator.isCurrentPathInTablet('**/calendar/list/edit');
-        const path = (splitViewLoaded ? '../' : '') + 'edit';
-        CoreNavigator.navigate(path, { params });
+        CoreNavigator.navigateToSitePath(`calendar/edit/${eventId}`, { params });
     }
 
     /**
@@ -664,16 +606,11 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
     gotoEvent(eventId: number): void {
         this.eventId = eventId;
 
-        if (eventId < 0) {
+        if (eventId <= 0) {
             // It's an offline event, go to the edit page.
             this.openEdit(eventId);
         } else {
-            const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/calendar/list/event') ||
-                CoreNavigator.isCurrentPathInTablet('**/calendar/list/edit');
-            const path = (splitViewLoaded ? '../' : '') + 'event';
-            CoreNavigator.navigate(path, { params: {
-                id: eventId,
-            } });
+            CoreNavigator.navigateToSitePath(`/calendar/event/${eventId}`);
         }
     }
 

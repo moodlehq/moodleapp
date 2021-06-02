@@ -77,9 +77,6 @@ export class CoreSitePluginsProvider {
 
         const lang = await CoreLang.getCurrentLanguage();
 
-        // Clone the object so the original one isn't modified.
-        // const argsToSend = CoreUtils.clone(args);
-
         const defaultArgs: CoreSitePluginsDefaultArgs = {
             userid: <number> args.userid ?? site?.getUserId(),
             appid: CoreConstants.CONFIG.app_id,

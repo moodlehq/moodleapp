@@ -512,7 +512,7 @@ type NewEntryForm = { newEntry: true };
 /**
  * Type of items that can be held by the entries manager.
  */
- type EntryItem = AddonModGlossaryEntry | AddonModGlossaryOfflineEntry | NewEntryForm;
+type EntryItem = AddonModGlossaryEntry | AddonModGlossaryOfflineEntry | NewEntryForm;
 
 /**
  * Entries manager.

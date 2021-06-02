@@ -351,15 +351,13 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      */
     openEdit(eventId?: number): void {
         const params: Params = {};
+        eventId = eventId || 0;
 
-        if (eventId) {
-            params.eventId = eventId;
-        }
         if (this.filter.courseId) {
             params.courseId = this.filter.courseId;
         }
 
-        CoreNavigator.navigateToSitePath('/calendar/edit', { params });
+        CoreNavigator.navigateToSitePath(`/calendar/edit/${eventId}`, { params });
     }
 
     /**
