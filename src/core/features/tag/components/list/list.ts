@@ -40,7 +40,7 @@ export class CoreTagListComponent {
             fromContextId: tag.taginstancecontextid,
         };
 
-        CoreNavigator.navigateToSitePath('/tag/index', { params, preferCurrentTab: false });
+        CoreNavigator.navigateToSitePath('/tag/index', { params });
     }
 
 }
