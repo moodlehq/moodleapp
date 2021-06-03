@@ -95,6 +95,23 @@ core-format-text {
         }
     }
 
+    @if ($core-format-text-never-shorten) {
+        &[maxHeight],
+        &[ng-reflect-max-height] {
+            &.core-text-formatted.core-shortened {
+                max-height: none !important;
+
+                .core-show-more {
+                    display: none !important;
+                }
+
+                &:before {
+                    display: none !important;
+                }
+            }
+        }
+    }
+
     .core-adapted-img-container {
         position: relative;
         display: inline-block;
