@@ -24,28 +24,28 @@ import { makeSingleton } from '@singletons';
  * @see https://ionicframework.com/docs/layout/grid#default-breakpoints
  */
 enum Breakpoint {
-    ExtraSmall = 'xs',
-    Small = 'sm',
-    Medium = 'md',
-    Large = 'lg',
-    ExtraLarge = 'xl',
+    EXTRA_SMALL = 'xs',
+    SMALL = 'sm',
+    MEDIUM = 'md',
+    LARGE = 'lg',
+    EXTRA_LARGE = 'xl',
 }
 
 const BREAKPOINT_NAMES = Object.values(Breakpoint);
 const BREAKPOINT_WIDTHS: Record<Breakpoint, number> = {
-    [Breakpoint.ExtraSmall]: 0,
-    [Breakpoint.Small]: 576,
-    [Breakpoint.Medium]: 768,
-    [Breakpoint.Large]: 992,
-    [Breakpoint.ExtraLarge]: 1200,
+    [Breakpoint.EXTRA_SMALL]: 0,
+    [Breakpoint.SMALL]: 576,
+    [Breakpoint.MEDIUM]: 768,
+    [Breakpoint.LARGE]: 992,
+    [Breakpoint.EXTRA_LARGE]: 1200,
 };
 
 /**
  * Screen layouts.
  */
 export enum CoreScreenLayout {
-    Mobile = 'mobile',
-    Tablet = 'tablet',
+    MOBILE = 'mobile',
+    TABLET = 'tablet',
 }
 
 /**
@@ -86,11 +86,11 @@ export class CoreScreenService {
     }
 
     get isMobile(): boolean {
-        return this.layout === CoreScreenLayout.Mobile;
+        return this.layout === CoreScreenLayout.MOBILE;
     }
 
     get isTablet(): boolean {
-        return this.layout === CoreScreenLayout.Tablet;
+        return this.layout === CoreScreenLayout.TABLET;
     }
 
     /**
@@ -131,11 +131,11 @@ export class CoreScreenService {
      * @return Active layout.
      */
     protected calculateLayout(breakpoints: Record<Breakpoint, boolean>): CoreScreenLayout {
-        if (breakpoints[Breakpoint.Large]) {
-            return CoreScreenLayout.Tablet;
+        if (breakpoints[Breakpoint.LARGE]) {
+            return CoreScreenLayout.TABLET;
         }
 
-        return CoreScreenLayout.Mobile;
+        return CoreScreenLayout.MOBILE;
     }
 
 }

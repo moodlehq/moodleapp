@@ -215,11 +215,11 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             // Get the possible jumps now.
             this.jumps = await AddonModLesson.getPagesPossibleJumps(this.lesson!.id, {
                 cmId: this.cmId,
-                readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
             });
 
             // Call the function again with offline mode and the new jumps.
-            options.readingStrategy = CoreSitesReadingStrategy.PreferCache;
+            options.readingStrategy = CoreSitesReadingStrategy.PREFER_CACHE;
             options.jumps = this.jumps;
             options.offline = true;
 
@@ -280,7 +280,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
             const options = {
                 cmId: this.cmId,
-                readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
             };
             this.accessInfo = await this.callFunction<AddonModLessonGetAccessInformationWSResponse>(
                 AddonModLesson.getAccessInformation.bind(AddonModLesson.instance, this.lesson.id, options),
@@ -311,7 +311,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
                 const options = {
                     password: this.password,
                     cmId: this.cmId,
-                    readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+                    readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
                 };
                 promises.push(this.callFunction<AddonModLessonLessonWSData>(
                     AddonModLesson.getLessonWithPassword.bind(AddonModLesson.instance, this.lesson.id, options),
@@ -327,7 +327,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
                 // Offline mode, get the list of possible jumps to allow navigation.
                 promises.push(AddonModLesson.getPagesPossibleJumps(this.lesson.id, {
                     cmId: this.cmId,
-                    readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                    readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
                 }).then((jumpList) => {
                     this.jumps = jumpList;
 
@@ -490,7 +490,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             // Get the last lesson timer.
             const timers = await AddonModLesson.getTimers(this.lesson!.id, {
                 cmId: this.cmId,
-                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             });
 
             this.endTime = timers[timers.length - 1].starttime + this.lesson!.timelimit;
@@ -515,7 +515,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             const options = {
                 password: this.password,
                 cmId: this.cmId,
-                readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
             };
 
             const pages = await this.callFunction<AddonModLessonGetPagesPageWSData[]>(
@@ -548,7 +548,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             review: this.review,
             includeContents: true,
             cmId: this.cmId,
-            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
             accessInfo: this.accessInfo,
             jumps: this.jumps,
             includeOfflineData: true,
@@ -643,7 +643,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
                 const retake = this.accessInfo!.attemptscount;
                 const options = {
                     cmId: this.cmId,
-                    readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                    readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 };
 
                 // Update in background the list of content pages viewed or question attempts.

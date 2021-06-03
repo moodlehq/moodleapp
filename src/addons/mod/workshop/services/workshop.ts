@@ -1419,7 +1419,7 @@ export class AddonModWorkshopProvider {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const workshop = await this.getWorkshop(courseId, moduleId, {
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
             siteId,
         });
 

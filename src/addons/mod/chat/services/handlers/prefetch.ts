@@ -78,7 +78,7 @@ export class AddonModChatPrefetchHandlerService extends CoreCourseActivityPrefet
     protected async prefetchChat(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         const siteId = CoreSites.getCurrentSiteId();
         const options = {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
         const modOptions = {

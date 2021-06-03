@@ -292,7 +292,7 @@ export class AddonModLessonProvider {
             const pages = await this.getPages(lessonId, {
                 cmId: options.cmId,
                 password: options.password,
-                readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
                 siteId: options.siteId,
             });
 
@@ -1600,7 +1600,7 @@ export class AddonModLessonProvider {
         const data = await this.getPageData(lesson, pageId, {
             includeContents: true,
             ...options, // Include all options.
-            readingStrategy: options.readingStrategy || CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: options.readingStrategy || CoreSitesReadingStrategy.PREFER_CACHE,
             includeOfflineData: false,
         });
 
@@ -2854,7 +2854,7 @@ export class AddonModLessonProvider {
             const pages = await this.getPages(lesson.id, {
                 password: options.password,
                 cmId: lesson.coursemodule,
-                readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
                 siteId: options.siteId,
             });
 
@@ -3038,7 +3038,7 @@ export class AddonModLessonProvider {
         const pages = await this.getPages(lesson.id, {
             cmId: lesson.coursemodule,
             password: options.password,
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
             siteId: options.siteId,
         });
 

@@ -19,9 +19,9 @@ import { CoreScreen } from '@services/screen';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 export enum CoreSplitViewMode {
-    MenuOnly = 'menu-only', // Hides content.
-    ContentOnly = 'content-only', // Hides menu.
-    MenuAndContent = 'menu-and-content', // Shows both menu and content.
+    MENU_ONLY = 'menu-only', // Hides content.
+    CONTENT_ONLY = 'content-only', // Hides menu.
+    MENU_AND_CONTENT = 'menu-and-content', // Shows both menu and content.
 }
 
 const disabledScrollClass = 'disable-scroll-y';
@@ -118,16 +118,16 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
         }
 
         if (this.isNested) {
-            return CoreSplitViewMode.MenuOnly;
+            return CoreSplitViewMode.MENU_ONLY;
         }
 
         if (CoreScreen.isMobile) {
             return this.contentOutlet.isActivated
-                ? CoreSplitViewMode.ContentOnly
-                : CoreSplitViewMode.MenuOnly;
+                ? CoreSplitViewMode.CONTENT_ONLY
+                : CoreSplitViewMode.MENU_ONLY;
         }
 
-        return CoreSplitViewMode.MenuAndContent;
+        return CoreSplitViewMode.MENU_AND_CONTENT;
     }
 
     /**

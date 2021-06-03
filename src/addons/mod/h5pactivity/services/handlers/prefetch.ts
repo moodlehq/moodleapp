@@ -96,7 +96,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const h5pActivity = await AddonModH5PActivity.getH5PActivity(courseId, module.id, {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         });
 
@@ -145,7 +145,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
 
         const accessInfo = await AddonModH5PActivity.getAccessInformation(h5pActivity.id, {
             cmId: h5pActivity.coursemodule,
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
             siteId,
         });
 
@@ -155,7 +155,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
 
             const options = {
                 cmId: h5pActivity.coursemodule,
-                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 siteId: siteId,
             };
 

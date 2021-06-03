@@ -683,7 +683,7 @@ export class AddonModWikiProvider {
                 // We have wiki ID, check if there's already an online page with this title and subwiki.
                 const used = await CoreUtils.ignoreErrors(this.isTitleUsed(options.wikiId, options.subwikiId, title, {
                     cmId: options.cmId,
-                    readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                    readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
                     siteId: options.siteId,
                 }));
 

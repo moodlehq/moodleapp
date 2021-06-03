@@ -81,7 +81,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
 
         // Get the lesson password if it's needed.
         const passwordData = await this.getLessonPassword(lesson.id, {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             askPassword: single,
             siteId,
         });
@@ -188,7 +188,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         const siteId = CoreSites.getCurrentSiteId();
 
         const lesson = await AddonModLesson.getLesson(courseId, module.id, {
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
             siteId,
         });
 
@@ -257,7 +257,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         courseId = courseId || module.course || CoreSites.getCurrentSiteHomeId();
 
         const commonOptions = {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
         const modOptions = {
@@ -269,7 +269,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
 
         // Get the lesson password if it's needed.
         const passwordData = await this.getLessonPassword(lesson.id, {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             askPassword: single,
             siteId,
         });

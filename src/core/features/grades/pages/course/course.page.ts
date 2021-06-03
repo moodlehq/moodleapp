@@ -51,7 +51,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         const useSplitView = route.snapshot.data.useSplitView ?? true;
         const outsideGradesTab = route.snapshot.data.outsideGradesTab ?? false;
 
-        this.splitViewMode = useSplitView ? undefined : CoreSplitViewMode.MenuOnly;
+        this.splitViewMode = useSplitView ? undefined : CoreSplitViewMode.MENU_ONLY;
         this.grades = new CoreGradesCourseManager(CoreGradesCoursePage, courseId, userId, outsideGradesTab);
     }
 

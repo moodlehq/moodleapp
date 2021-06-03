@@ -85,7 +85,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
             const attempts = await AddonModQuiz.getUserAttempts(quiz.id, {
                 cmId: module.id,
-                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             });
 
             const attemptFiles = await this.getAttemptsFeedbackFiles(quiz, attempts);
@@ -126,7 +126,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
             const feedback = await AddonModQuiz.getFeedbackForGrade(quiz.id, Number(attemptGrade), {
                 cmId: quiz.coursemodule,
-                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 siteId,
             });
 
@@ -305,7 +305,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         canStart: boolean,
     ): Promise<void> {
         const commonOptions = {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
         const modOptions = {
@@ -417,7 +417,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
         const modOptions: CoreCourseCommonModWSOptions = {
             cmId: quiz.coursemodule,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 
@@ -546,7 +546,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
         const modOptions = {
             cmId: quiz.coursemodule,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 
@@ -575,7 +575,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         await this.setStatusAfterPrefetch(quiz, {
             cmId: quiz.coursemodule,
             attempts,
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
             siteId,
         });
     }

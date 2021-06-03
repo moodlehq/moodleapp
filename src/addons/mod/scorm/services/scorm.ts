@@ -1699,7 +1699,7 @@ export class AddonModScormProvider {
 
         await this.getScormUserDataOnline(scormId, attempt, {
             cmId: options.cmId,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId: options.siteId,
         });
     }

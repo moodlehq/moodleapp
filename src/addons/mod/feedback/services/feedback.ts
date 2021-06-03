@@ -823,7 +823,7 @@ export class AddonModFeedbackProvider {
 
         const response = await this.getPageItemsWithValues(feedbackId, page, {
             cmId: options.cmId,
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
             siteId: options.siteId,
         });
 
@@ -1173,7 +1173,7 @@ export class AddonModFeedbackProvider {
 
             const pageItems = await this.getPageItemsWithValues(feedbackId, page, {
                 cmId: options.cmId,
-                readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
                 siteId: options.siteId,
             });
 

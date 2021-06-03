@@ -201,7 +201,7 @@ export class AddonModChatProvider {
      */
     async getChatUsers(sessionId: string, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModChatGetChatUsersWSResponse> {
         // By default, always try to get the latest data.
-        options.readingStrategy = options.readingStrategy || CoreSitesReadingStrategy.PreferNetwork;
+        options.readingStrategy = options.readingStrategy || CoreSitesReadingStrategy.PREFER_NETWORK;
 
         const site = await CoreSites.getSite(options.siteId);
 

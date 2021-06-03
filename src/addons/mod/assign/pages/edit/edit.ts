@@ -138,7 +138,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 isBlind: this.isBlind,
                 cmId: this.assign.cmid,
                 filter: false,
-                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             };
 
             let submissionStatus: AddonModAssignGetSubmissionStatusWSResponse;
@@ -149,7 +149,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             } catch (error) {
                 // Cannot connect. Get cached data.
                 options.filter = true;
-                options.readingStrategy = CoreSitesReadingStrategy.PreferCache;
+                options.readingStrategy = CoreSitesReadingStrategy.PREFER_CACHE;
 
                 submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, options);
                 this.userSubmission =

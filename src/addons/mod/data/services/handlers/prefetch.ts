@@ -182,7 +182,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
      */
     async isDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
         const database = await AddonModData.getDatabase(courseId, module.id, {
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
         });
 
         const accessData = await AddonModData.getDatabaseAccessInformation(database.id, { cmId: module.id });
@@ -229,7 +229,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
 
         const options = {
             cmId: module.id,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 

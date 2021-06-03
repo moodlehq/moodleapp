@@ -41,7 +41,7 @@ export class CoreGeolocationProvider {
             return result.coords;
         } catch (error) {
             if (this.isCordovaPermissionDeniedError(error)) {
-                throw new CoreGeolocationError(CoreGeolocationErrorReason.PermissionDenied);
+                throw new CoreGeolocationError(CoreGeolocationErrorReason.PERMISSION_DENIED);
             }
 
             throw error;
@@ -78,7 +78,7 @@ export class CoreGeolocationProvider {
         }
 
         if (!locationEnabled) {
-            throw new CoreGeolocationError(CoreGeolocationErrorReason.LocationNotEnabled);
+            throw new CoreGeolocationError(CoreGeolocationErrorReason.LOCATION_NOT_ENABLED);
         }
     }
 
@@ -93,7 +93,7 @@ export class CoreGeolocationProvider {
         switch (authorizationStatus) {
             case Diagnostic.permissionStatus.DENIED_ONCE:
                 if (failOnDeniedOnce) {
-                    throw new CoreGeolocationError(CoreGeolocationErrorReason.PermissionDenied);
+                    throw new CoreGeolocationError(CoreGeolocationErrorReason.PERMISSION_DENIED);
                 }
             // Fall through.
             case Diagnostic.permissionStatus.NOT_REQUESTED:
@@ -107,7 +107,7 @@ export class CoreGeolocationProvider {
                 // Location is authorized.
                 return;
             default:
-                throw new CoreGeolocationError(CoreGeolocationErrorReason.PermissionDenied);
+                throw new CoreGeolocationError(CoreGeolocationErrorReason.PERMISSION_DENIED);
         }
     }
 
@@ -138,8 +138,8 @@ export class CoreGeolocationProvider {
 export const CoreGeolocation = makeSingleton(CoreGeolocationProvider);
 
 export enum CoreGeolocationErrorReason {
-    PermissionDenied = 'permission-denied',
-    LocationNotEnabled = 'location-not-enabled',
+    PERMISSION_DENIED = 'permission-denied',
+    LOCATION_NOT_ENABLED = 'location-not-enabled',
 }
 
 export class CoreGeolocationError extends CoreError {

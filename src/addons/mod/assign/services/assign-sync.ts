@@ -313,7 +313,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
         const options: AddonModAssignSubmissionStatusOptions = {
             userId,
             cmId: assign.cmid,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 
@@ -427,7 +427,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
         const options: AddonModAssignSubmissionStatusOptions = {
             userId,
             cmId: assign.cmid,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 

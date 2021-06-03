@@ -157,9 +157,9 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
     protected getGeolocationErrorMessage(error: CoreGeolocationError): string {
         // tslint:disable-next-line: switch-default
         switch (error.reason) {
-            case CoreGeolocationErrorReason.PermissionDenied:
+            case CoreGeolocationErrorReason.PERMISSION_DENIED:
                 return 'addon.mod_data.locationpermissiondenied';
-            case CoreGeolocationErrorReason.LocationNotEnabled:
+            case CoreGeolocationErrorReason.LOCATION_NOT_ENABLED:
                 return 'addon.mod_data.locationnotenabled';
         }
     }

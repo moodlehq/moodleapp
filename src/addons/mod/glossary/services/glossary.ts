@@ -644,7 +644,7 @@ export class AddonModGlossaryProvider {
         // Get the entries from this "page" and check if the entry we're looking for is in it.
         const result = await this.getEntriesByLetter(glossaryId, 'ALL', {
             from: from,
-            readingStrategy: CoreSitesReadingStrategy.OnlyCache,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_CACHE,
             cmId: options.cmId,
             siteId: options.siteId,
         });
@@ -763,7 +763,7 @@ export class AddonModGlossaryProvider {
         if (!onlyEntriesList) {
             promises.push(this.fetchAllEntries(this.getEntriesByLetter.bind(this, glossary.id, 'ALL'), {
                 cmId: glossary.coursemodule,
-                readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
                 siteId,
             }).then((entries) => this.invalidateEntries(entries, siteId)));
         }
@@ -995,7 +995,7 @@ export class AddonModGlossaryProvider {
             // Get entries from the cache.
             const entries = await this.fetchAllEntries(this.getEntriesByLetter.bind(glossaryId, 'ALL'), {
                 cmId: options.cmId,
-                readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
                 siteId: options.siteId,
             });
 

@@ -94,7 +94,7 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
      */
     async isDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
         const feedback = await AddonModFeedback.getFeedback(courseId, module.id, {
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
         });
 
         const now = CoreTimeUtils.timestamp();
@@ -136,7 +136,7 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
     protected async prefetchFeedback(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         const siteId = CoreSites.getCurrentSiteId();
         const commonOptions = {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
         const modOptions = {

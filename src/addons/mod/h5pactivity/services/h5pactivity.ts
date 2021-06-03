@@ -239,7 +239,7 @@ export class AddonModH5PActivityProvider {
             // Check if the full list of results is cached. If so, get the results from there.
             const cacheOptions: AddonModH5PActivityGetAttemptResultsOptions = {
                 ...options, // Include all the original options.
-                readingStrategy: CoreSitesReadingStrategy.OnlyCache,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_CACHE,
             };
 
             const attemptsResults = await AddonModH5PActivity.getAllAttemptsResults(id, cacheOptions);

@@ -199,7 +199,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
         siteId: string,
     ): Promise<void> {
         const commonOptions = {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
         const modOptions = {
