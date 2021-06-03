@@ -1,3 +1,5 @@
+@import "~theme/globals";
+
 ion-item {
 	--border-color: var(--core-more-item-border,
         var(--ion-item-border-color,
@@ -13,5 +15,23 @@ ion-item {
 :host-context(ion-app.ios) {
     ion-item ion-icon {
         color: var(--core-more-icon, inherit);
+    }
+}
+
+@if ($core-more-hide-siteinfo) {
+    .core-moremenu-siteinfo {
+        display: none;
+    }
+}
+
+@if ($core-more-hide-sitename) {
+    .core-moremenu-sitename {
+        display: none;
+    }
+}
+
+@if ($core-more-hide-siteurl) {
+    .core-moremenu-siteurl {
+        display: none;
     }
 }
