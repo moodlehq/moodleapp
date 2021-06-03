@@ -41,6 +41,18 @@
             }
         }
 
+        @if ($core-course-hide-thumb-on-cards) {
+            .core-course-thumb {
+                display: none;
+            }
+        }
+
+        @if ($core-course-thumb-on-cards-background) {
+            .core-course-thumb {
+                background: $core-course-thumb-on-cards-background !important;
+            }
+        }
+
         .core-course-additional-info {
             margin-bottom: 8px;
         }
@@ -84,6 +96,12 @@
             .item-button[icon-only] {
                 min-width: 50px;
                 width: 50px;
+            }
+        }
+
+        @if ($core-course-hide-progress-on-cards) {
+            .core-course-progress {
+                display: none;
             }
         }
     }

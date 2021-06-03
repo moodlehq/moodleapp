@@ -26,6 +26,7 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'core-course-section-selector',
     templateUrl: 'section-selector.html',
+    styleUrls: ['section-selector.scss'],
 })
 export class CoreCourseSectionSelectorComponent implements OnInit {
 

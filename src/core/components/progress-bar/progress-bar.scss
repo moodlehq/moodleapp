@@ -2,8 +2,11 @@
     display: flex;
     width: 100%;
 
+    --line-height: 40px;
+    --bar-margin: 16px 0;
+
     .core-progress-text {
-        line-height: 40px;
+        line-height: var(--line-height);
         font-size: 1rem;
         color: var(--text-color);
         width: 55px;
@@ -14,7 +17,7 @@
         -webkit-appearance: none;
         appearance: none;
         height: var(--height);
-        margin: 16px 0;
+        margin: var(--bar-margin);
         padding: 0;
         display: block;
         width: 100%;

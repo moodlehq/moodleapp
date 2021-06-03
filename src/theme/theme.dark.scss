@@ -97,7 +97,7 @@
     --item-divider-color: #{$ion-item-divider-color-dark};
     --spacer-background: #{$core-spacer-background-dark};
 
-    --core-combobox-background: var(--ion-item-background);
+    --core-combobox-background: #{$core-combobox-background-dark};
     --core-combobox-color: #{$core-combobox-color-dark};
 
     --selected-item-color: #{$core-selected-item-color-dark};
