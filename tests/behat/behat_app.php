@@ -103,18 +103,15 @@ class behat_app extends behat_base {
     /**
      * Finds elements in the app.
      *
-     * @Then /^I should(?P<not_boolean> not)? find "(?P<text_string>(?:[^"]|\\")*)"(?: near "(?P<near_string>(?:[^"]|\\")*)")? in the app$/
-     * @param string $not
-     * @param string $text
-     * @param string $near
+     * @Then /^I should( not)? find (".+") in the app$/
+     * @param bool $not
+     * @param object $locator
      */
-    public function i_find_in_the_app($not, $text='', $near='') {
-        $not = !empty($not);
-        $text = addslashes_js($text);
-        $near = addslashes_js($near);
+    public function i_find_in_the_app(bool $not, object $locator) {
+        $locatorjson = json_encode($locator);
 
-        $this->spin(function() use ($not, $text, $near) {
-            $result = $this->evaluate_script("return window.behat.find(\"$text\", \"$near\");");
+        $this->spin(function() use ($not, $locatorjson) {
+            $result = $this->evaluate_script("return window.behat.find($locatorjson);");
 
             if ($not && $result === 'OK') {
                 throw new DriverException('Error, found an item that should not be found');
@@ -126,22 +123,22 @@ class behat_app extends behat_base {
 
             return true;
         });
+
         $this->wait_for_pending_js();
     }
 
     /**
      * Check if elements are selected in the app.
      *
-     * @Then /^"(?P<text_string>(?:[^"]|\\")*)"(?: near "(?P<near_string>(?:[^"]|\\")*)")? should(?P<not_boolean> not)? be selected in the app$/
-     * @param string $text
+     * @Then /^(".+") should( not)? be selected in the app$/
+     * @param object $locator
+     * @param bool $not
      */
-    public function be_selected_in_the_app($text, $near='', $not='') {
-        $not = !empty($not);
-        $text = addslashes_js($text);
-        $near = addslashes_js($near);
+    public function be_selected_in_the_app(object $locator, bool $not = false) {
+        $locatorjson = json_encode($locator);
 
-        $this->spin(function() use ($not, $text, $near) {
-            $result = $this->evaluate_script("return window.behat.isSelected(\"$text\", \"$near\");");
+        $this->spin(function() use ($locatorjson, $not) {
+            $result = $this->evaluate_script("return window.behat.isSelected($locatorjson);");
 
             switch ($result) {
                 case 'YES':
@@ -160,6 +157,7 @@ class behat_app extends behat_base {
 
             return true;
         });
+
         $this->wait_for_pending_js();
     }
 
@@ -403,7 +401,7 @@ class behat_app extends behat_base {
                     : $page->find('xpath', '//core-login-site-onboarding');
 
                 if ($element) {
-                    $this->i_press_in_the_app('Skip');
+                    $this->i_press_in_the_app($this->parse_element_locator('"Skip"'));
                 }
 
                 // Login screen found.
@@ -431,7 +429,7 @@ class behat_app extends behat_base {
         global $CFG;
 
         $this->i_set_the_field_in_the_app($this->islegacy ? 'campus.example.edu' : 'Your site', $CFG->wwwroot);
-        $this->i_press_in_the_app($this->islegacy ? 'Connect!' : 'Connect to your site');
+        $this->i_press_in_the_app($this->parse_element_locator($this->islegacy ? '"Connect!"' : '"Connect to your site"'));
         $this->wait_for_pending_js();
     }
 
@@ -448,7 +446,7 @@ class behat_app extends behat_base {
 
         // Note there are two 'Log in' texts visible (the title and the button) so we have to use
         // a 'near' value here.
-        $this->i_press_in_the_app('Log in', 'Forgotten');
+        $this->i_press_in_the_app($this->parse_element_locator('"Log in" near "Forgotten"'));
 
         // Wait until the main page appears.
         $this->spin(
@@ -467,18 +465,21 @@ class behat_app extends behat_base {
     /**
      * Presses standard buttons in the app.
      *
-     * @Given /^I press the (?P<button_name>back|main menu|page menu) button in the app$/
+     * @Given /^I press the (back|main menu|page menu) button in the app$/
      * @param string $button Button type
      * @throws DriverException If the button push doesn't work
      */
     public function i_press_the_standard_button_in_the_app(string $button) {
-        $this->spin(function($context, $args) use ($button) {
-            $result = $this->evaluate_script("return window.behat.pressStandard('{$button}');");
+        $this->spin(function() use ($button) {
+            $result = $this->evaluate_script("return window.behat.pressStandard('$button');");
+
             if ($result !== 'OK') {
                 throw new DriverException('Error pressing standard button - ' . $result);
             }
+
             return true;
         });
+
         $this->wait_for_pending_js();
     }
 
@@ -519,13 +520,16 @@ class behat_app extends behat_base {
      * @throws DriverException If there isn't a popup to close
      */
     public function i_close_the_popup_in_the_app() {
-        $this->spin(function($context, $args)  {
+        $this->spin(function()  {
             $result = $this->evaluate_script("return window.behat.closePopup();");
+
             if ($result !== 'OK') {
                 throw new DriverException('Error closing popup - ' . $result);
             }
+
             return true;
         });
+
         $this->wait_for_pending_js();
     }
 
@@ -535,13 +539,24 @@ class behat_app extends behat_base {
      * Note it is difficult to use the standard 'click on' or 'press' steps because those do not
      * distinguish visible items and the app always has many non-visible items in the DOM.
      *
-     * @Then /^I press "(?P<text_string>(?:[^"]|\\")*)"(?: near "(?P<near_string>(?:[^"]|\\")*)")? in the app$/
-     * @param string $text Text identifying click target
-     * @param string $near Text identifying a nearby unique piece of text
+     * @Then /^I press (".+") in the app$/
+     * @param object $locator Element locator
      * @throws DriverException If the press doesn't work
      */
-    public function i_press_in_the_app($text, $near='') {
-        $this->press($text, $near);
+    public function i_press_in_the_app(object $locator) {
+        $locatorjson = json_encode($locator);
+
+        $this->spin(function() use ($locatorjson) {
+            $result = $this->evaluate_script("return window.behat.press($locatorjson);");
+
+            if ($result !== 'OK') {
+                throw new DriverException('Error pressing item - ' . $result);
+            }
+
+            return true;
+        });
+
+        $this->wait_for_pending_js();
     }
 
     /**
@@ -551,34 +566,32 @@ class behat_app extends behat_base {
      * with JavaScript, and clicks may not work until they are initialized properly which may cause flaky tests due
      * to race conditions.
      *
-     * @Then /^I (?P<select_string>unselect|select) "(?P<text_string>(?:[^"]|\\")*)"(?: near "(?P<near_string>(?:[^"]|\\")*)")? in the app$/
-     * @param string $selectedtext Select/unselect string
-     * @param string $text Text identifying click target
-     * @param string $near Text identifying a nearby unique piece of text
+     * @Then /^I (unselect|select) (".+") in the app$/
+     * @param string $selectedtext
+     * @param object $locator
      * @throws DriverException If the press doesn't work
      */
-    public function i_select_in_the_app(string $selectedtext, string $text, string $near = '') {
+    public function i_select_in_the_app(string $selectedtext, object $locator) {
         $selected = $selectedtext === 'select' ? 'YES' : 'NO';
-        $text = addslashes_js($text);
-        $near = addslashes_js($near);
+        $locatorjson = json_encode($locator);
 
-        $this->spin(function() use ($selectedtext, $selected, $text, $near) {
+        $this->spin(function() use ($selectedtext, $selected, $locatorjson) {
             // Don't do anything if the item is already in the expected state.
-            $result = $this->evaluate_script("return window.behat.isSelected(\"$text\", \"$near\");");
+            $result = $this->evaluate_script("return window.behat.isSelected($locatorjson);");
 
             if ($result === $selected) {
                 return true;
             }
 
             // Press item.
-            $result = $this->evaluate_script("return window.behat.press(\"$text\", \"$near\");");
+            $result = $this->evaluate_script("return window.behat.press($locatorjson);");
 
             if ($result !== 'OK') {
                 throw new DriverException('Error pressing item - ' . $result);
             }
 
             // Check that it worked as expected.
-            $result = $this->evaluate_script("return window.behat.isSelected(\"$text\", \"$near\");");
+            $result = $this->evaluate_script("return window.behat.isSelected($locatorjson);");
 
             switch ($result) {
                 case 'YES':
@@ -607,53 +620,30 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Clicks on / touches something that is visible in the app, near some other text.
-     *
-     * If the $near is specified then when there are multiple matches, it picks the one
-     * nearest (in DOM terms) $near. $near should be an exact match, or a partial match that only
-     * has one result.
-     *
-     * @param behat_base $base Behat context
-     * @param string $text Text identifying click target
-     * @param string $near Text identifying a nearby unique piece of text
-     * @throws DriverException If the press doesn't work
-     */
-    protected function press(string $text, string $near = '') {
-        $text = addslashes_js($text);
-        $near = addslashes_js($near);
-
-        $this->spin(function() use ($text, $near) {
-            $result = $this->evaluate_script("return window.behat.press(\"$text\", \"$near\");");
-
-            if ($result !== 'OK') {
-                throw new DriverException('Error pressing item - ' . $result);
-            }
-
-            return true;
-        });
-        $this->wait_for_pending_js();
-    }
-
-    /**
      * Sets a field to the given text value in the app.
      *
      * Currently this only works for input fields which must be identified using a partial or
      * exact match on the placeholder text.
      *
-     * @Given /^I set the field "(?P<field_name>(?:[^"]|\\")*)" to "(?P<text_string>(?:[^"]|\\")*)" in the app$/
+     * @Given /^I set the field "((?:[^"]|\\")+)" to "((?:[^"]|\\")+)" in the app$/
      * @param string $field Text identifying field
      * @param string $value Value for field
      * @throws DriverException If the field set doesn't work
      */
     public function i_set_the_field_in_the_app(string $field, string $value) {
-        $this->spin(function($context, $args) use ($field, $value) {
-            $result = $this->evaluate_script('return window.behat.setField("' .
-                    addslashes_js($field) . '", "' . addslashes_js($value) . '");');
+        $field = addslashes_js($field);
+        $value = addslashes_js($value);
+
+        $this->spin(function() use ($field, $value) {
+            $result = $this->evaluate_script("return window.behat.setField(\"$field\", \"$value\");");
+
             if ($result !== 'OK') {
                 throw new DriverException('Error setting field - ' . $result);
             }
+
             return true;
         });
+
         $this->wait_for_pending_js();
     }
 
@@ -662,7 +652,7 @@ class behat_app extends behat_base {
      *
      * This can be used to see if the app went to the expected page.
      *
-     * @Then /^the header should be "(?P<text_string>(?:[^"]|\\")*)" in the app$/
+     * @Then /^the header should be "((?:[^"]|\\")+)" in the app$/
      * @param string $text Expected header text
      * @throws DriverException If the header can't be retrieved
      * @throws ExpectationException If the header text is different to the expected value
@@ -690,12 +680,10 @@ class behat_app extends behat_base {
     /**
      * Check that the app opened a new browser tab.
      *
-     * @Given /^the app should(?P<not_boolean> not)? have opened a browser tab$/
-     * @param string $not
+     * @Given /^the app should( not)? have opened a browser tab$/
+     * @param bool $not
      */
-    public function the_app_should_have_opened_a_browser_tab($not = '') {
-        $not = !empty($not);
-
+    public function the_app_should_have_opened_a_browser_tab(bool $not) {
         $this->spin(function() use ($not) {
             $openedbrowsertab = count($this->getSession()->getWindowNames()) === 2;
 
@@ -748,11 +736,48 @@ class behat_app extends behat_base {
     /**
      * Switch navigator online mode.
      *
-     * @Given /^I switch offline mode to "(?P<offline_string>(?:[^"]|\\")*)"$/
+     * @Given /^I switch offline mode to "(true|false)"$/
      * @param string $offline New value for navigator online mode
      * @throws DriverException If the navigator.online mode is not available
      */
     public function i_switch_offline_mode(string $offline) {
-        $this->execute_script('appProvider.setForceOffline(' . $offline . ');');
+        $this->execute_script("appProvider.setForceOffline($offline);");
     }
+
+    /**
+     * Parse an element locator string.
+     *
+     * @Transform /^".+"$/
+     * @param string $text Element locator string.
+     * @return object
+     */
+    public function parse_element_locator($text): object {
+        preg_match('/^"((?:[^"]|\\")+?)"(?: "([^"]+?)")?(?: near "((?:[^"]|\\")+?)"(?: "([^"]+?)")?)?$/', $text, $matches);
+
+        $locator = [
+            'text' => str_replace('\\"', '"', $matches[1]),
+            'selector' => $matches[2] ?? null,
+        ];
+
+        if (!empty($matches[3])) {
+            $locator['near'] = (object) [
+                'text' => str_replace('\\"', '"', $matches[3]),
+                'selector' => $matches[4] ?? null,
+            ];
+        }
+
+        return (object) $locator;
+    }
+
+    /**
+     * Parse a negation string.
+     *
+     * @Transform /^not $/
+     * @param string $not Negation string.
+     * @return bool
+     */
+    public function parse_negation(string $not): bool {
+        return !empty($not);
+    }
+
 }
