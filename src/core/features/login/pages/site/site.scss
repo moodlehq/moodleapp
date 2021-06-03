@@ -1,3 +1,5 @@
+@import "~theme/globals";
+
 .item-input:last-child {
     margin-bottom: 20px;
 }
@@ -10,6 +12,12 @@
         .item-inner {
             border-bottom: 0;
         }
+    }
+}
+
+@if ($core-login-hide-need-help) {
+    .core-login-need-help {
+        display: none;
     }
 }
 

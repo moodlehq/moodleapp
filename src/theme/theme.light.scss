@@ -41,8 +41,7 @@
     --purple:          #{$purple};
 
     --brand-color:      #{$brand-color};
-    --brand-color-light: #{$brand-color-light};
-    --brand-color-dark:  #{$brand-color-dark};
+    --brand-contrast-color: #{$brand-contrast-color};
 
     --core-online-color: #{$core-online-color};
 
@@ -72,8 +71,12 @@
     --ion-background-color: #{$background-color};
     --ion-background-color-rgb: #{color-to-rgb-list($background-color)};
 
+    --contrast-background: white;
+
     --ion-text-color: #{$text-color};
-    --ion-text-color-rgb: 58,58,58;
+    --ion-text-color-rgb: #{color-to-rgb-list($text-color)};
+    --subdued-text-color: #{$subdued-text-color};
+
     --ion-card-color: var(--ion-text-color);
 
     --text-hightlight-background-color: #{$core-text-hightlight-background-color};
@@ -81,7 +84,6 @@
     ion-content {
         --background: var(--ion-background-color);
         --background-alternative: var(--gray-lighter);
-        --contrast-background: var(--white);
     }
 
     --core-bottom-tabs-background: #{$bottom-tabs-background};
@@ -106,10 +108,16 @@
 
     --core-header-toolbar-button-image-size: #{$toolbar-button-image-size};
     --core-header-toolbar-background: #{$toolbar-background};
+    --core-header-toolbar-border-width: #{$toolbar-border-width};
+    --core-header-toolbar-border-color: #{$toolbar-border-color};
     --core-header-toolbar-color: #{$toolbar-color};
-    ion-header ion-toolbar {
+    ion-header ion-toolbar,
+    ion-header.header-ios ion-toolbar:last-of-type {
         --color: var(--core-header-toolbar-color);
         --background: var(--core-header-toolbar-background);
+        --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
+        --border-color: var(--core-header-toolbar-border-color);
+
         ion-button {
             --ion-toolbar-color: transparent;
             --color: var(--core-header-toolbar-color);
@@ -129,11 +137,12 @@
     }
 
     ion-action-sheet {
-        --button-color-selected: #{$action-sheet-selected};
+        --button-color: var(--ion-text-color);
+        --button-color-selected: var(--ion-text-color);
         --title-border-color: var(--gray);
 
         .action-sheet-title {
-            --color: #{$action-sheet-title-color};
+            --color: var(--ion-text-color);
         }
 
         @media (min-height: 500px) {
@@ -152,6 +161,7 @@
     --core-tab-border-color: #{$core-tab-border-color};
     --core-tab-color-active: #{$core-tab-color-active};
     --core-tab-border-color-active: #{$core-tab-border-color-active};
+    --core-tab-font-weight-active: #{$core-tab-font-weight-active};
 
     core-tabs, core-tabs-outlet {
         ion-slide {
@@ -160,6 +170,7 @@
             --border-color: var(--core-tab-border-color);
             --color-active: var(--core-tab-color-active);
             --border-color-active: var(--core-tab-border-color-active);
+            --font-weight-active: var(--core-tab-font-weight-active);
         }
     }
 
@@ -206,12 +217,14 @@
 
     --spacer-background: #{$core-spacer-background};
     core-spacer {
-    --item-divider-background: var(--spacer-background);
+        --item-divider-background: var(--spacer-background);
     }
-
 
     --core-combobox-background: var(--ion-item-background);
     --core-combobox-color: #{$core-combobox-color};
+    --core-combobox-background: #{$core-combobox-background};
+    --core-combobox-border-color: #{$core-combobox-border-color};
+    --core-combobox-border-width: #{$core-combobox-border-width};
 
     --selected-item-color: #{$core-selected-item-color};
     --selected-item-border-width: #{$core-selected-item-border-width};
@@ -234,7 +247,7 @@
     --addon-calendar-event-group-color: #{$addon-calendar-event-group-color};
     --addon-calendar-event-user-color: #{$addon-calendar-event-user-color};
     --addon-calendar-event-site-color: #{$addon-calendar-event-site-color};
-    --addon-calendar-today-bgcolor: #{$addon-calendar-today-bgcolor};
+    --addon-calendar-today-border-color: #{$addon-calendar-today-border-color};
     --addon-calendar-today-color: #{$addon-calendar-today-color};
     --addon-calendar-border-color: #{$addon-calendar-border-color};
 
@@ -278,8 +291,8 @@
     --core-dd-question-radius: 10px;
     --core-dd-question-border: var(--gray-darker);
 
-    @if ($core-more-icon) {
-        --core-more-icon: #{$core-more-icon};
+    @if ($core-more-icon-color) {
+        --core-more-icon: #{$core-more-icon-color};
     }
 
     @if ($core-more-item-border) {

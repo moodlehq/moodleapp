@@ -135,9 +135,9 @@
                 <ion-item-divider><ion-label><h2>{{ 'core.settings.general' | translate }}</h2></ion-label></ion-item-divider>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <h2>{{ 'addon.messages.useentertosend' | translate }}</h2>
+                        <p class="item-heading">{{ 'addon.messages.useentertosend' | translate }}</p>
                     </ion-label>
-                    <ion-toggle [(ngModel)]="sendOnEnter" (ngModelChange)="sendOnEnterChanged()"></ion-toggle>
+                    <ion-toggle [(ngModel)]="sendOnEnter" (ngModelChange)="sendOnEnterChanged()" slot="end"></ion-toggle>
                 </ion-item>
             </ion-list>
         </ion-card>

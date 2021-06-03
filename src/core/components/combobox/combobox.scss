@@ -12,6 +12,9 @@
 
         --color: var(--core-combobox-color);
         --color-activated: var(--core-combobox-color);
+        --border-color: var(--core-combobox-border-color);
+        --border-width: 0 0 var(--core-combobox-border-width) 0;
+        --border-style: solid;
         --color-focused: currentcolor;
         --color-hover: currentcolor;
 
@@ -50,6 +53,10 @@ ion-button {
 }
 
 ion-select {
+    border-color: var(--border-color);
+    border-width: var(--border-width);
+    border-style: var(--border-style);
+
     &::part(icon) {
         margin: var(--icon-margin);
         opacity: 1;

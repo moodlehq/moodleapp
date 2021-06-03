@@ -1,17 +1,15 @@
-:host {
-    core-progress-bar {
-        .core-progress-text {
-            line-height: 24px;
-            position: absolute;
-            top: -8px;
-            right: 10px;
-        }
-        progress {
-            margin: 8px 0 4px 0;
-        }
-    }
+@import '~theme/globals.scss';
+core-progress-bar {
+    --bar-margin: 8px 0 4px 0;
+    --line-height: 20px;
+}
 
-    ion-badge {
-        text-align: start;
+@if ($core-hide-progress-on-section-selector) {
+    core-progress-bar {
+        display: none;
     }
+}
+
+ion-badge {
+    text-align: start;
 }

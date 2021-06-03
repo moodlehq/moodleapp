@@ -55,9 +55,8 @@
         }
 
         &.today .addon-calendar-day-number span {
-            background-color: var(--addon-calendar-today-bgcolor);
-            color: var(--addon-calendar-today-color);
-
+            border: 2px solid var(--addon-calendar-today-border-color);
+            line-height: 20px;;
             border-radius: 50%;
         }
         &.dayblank {

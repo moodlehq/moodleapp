@@ -13,12 +13,12 @@
             <ion-item button *ngIf="siteInfo" class="ion-text-wrap" core-user-link [userId]="siteInfo.userid">
                 <core-user-avatar [user]="siteInfo" slot="start"></core-user-avatar>
                 <ion-label>
-                    <h2>{{siteInfo.fullname}}</h2>
-                    <p>
+                    <p class="item-heading">{{siteInfo.fullname}}</p>
+                    <p class="core-moremenu-siteinfo core-moremenu-sitename">
                         <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true">
                         </core-format-text>
                     </p>
-                    <p>{{ siteUrl }}</p>
+                    <p class="core-moremenu-siteinfo core-moremenu-siteurl">{{ siteUrl }}</p>
                 </ion-label>
             </ion-item>
             <core-spacer></core-spacer>

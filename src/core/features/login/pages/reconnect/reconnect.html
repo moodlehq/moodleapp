@@ -24,12 +24,12 @@
         </p>
         <p class="core-siteurl">{{siteUrl}}</p>
 
-        <ion-item *ngIf="!isLoggedOut" class="ion-text-center core-login-reconnect-warning" lines="none">
-            <ion-label color="danger" class="ion-text-wrap">
+        <ion-card *ngIf="!isLoggedOut" class="core-danger-card core-login-reconnect-warning">
+            <ion-item>
                 <ion-icon name="fas-exclamation-circle" slot="start" aria-hidden="true"></ion-icon>
-                {{ 'core.login.reconnectdescription' | translate }}
-            </ion-label>
-        </ion-item>
+                <ion-label color="danger">{{ 'core.login.reconnectdescription' | translate }}</ion-label>
+            </ion-item>
+        </ion-card>
     </div>
     <form *ngIf="!isOAuth" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
         <ion-item class="ion-text-wrap core-username item-interactive">

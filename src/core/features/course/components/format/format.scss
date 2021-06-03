@@ -17,13 +17,14 @@
 
     .core-course-thumb {
         display: none;
-        height: 150px;
+        height: #{$core-courseimage-on-course-height};
         width: 100%;
         overflow: hidden;
         cursor: pointer;
         pointer-events: auto;
         position: relative;
         background: var(--ion-item-background);
+        border-bottom: 1px solid var(--gray);
 
         img {
             position: absolute;
@@ -33,6 +34,19 @@
             width: 100%;
         }
     }
+
+    @if ($core-show-courseimage-on-course) {
+        .core-course-thumb {
+            display: block;
+        }
+    }
+
+    @if ($core-hide-progress-on-course) {
+        .core-course-progress {
+            display: none;
+        }
+    }
+
 
     .core-button-selector-row {
         display: flex;
