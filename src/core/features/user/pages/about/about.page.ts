@@ -75,7 +75,7 @@ export class CoreUserAboutPage implements OnInit {
 
             if (user.address) {
                 this.formattedAddress = CoreUserHelper.formatAddress(user.address, user.city, user.country);
-                this.encodedAddress = CoreTextUtils.buildAddressURL(user.address);
+                this.encodedAddress = CoreTextUtils.buildAddressURL(this.formattedAddress);
             }
 
             this.hasContact = !!(user.email || user.phone1 || user.phone2 || user.city || user.country || user.address);

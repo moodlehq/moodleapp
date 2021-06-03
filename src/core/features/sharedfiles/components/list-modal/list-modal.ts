@@ -32,7 +32,7 @@ export class CoreSharedFilesListModalComponent implements OnInit {
     @Input() manage?: boolean;
     @Input() pick?: boolean; // To pick a file you MUST use a modal.
     @Input() path?: string;
-    @Input() showSitePicker?: boolean;
+    @Input() hideSitePicker?: boolean;
 
     title?: string;
 

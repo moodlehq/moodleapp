@@ -24,7 +24,7 @@ export function buildTabMainRoutes(injector: Injector, mainRoute: Route): Routes
 
     mainRoute.path = mainRoute.path || '';
     mainRoute.children = mainRoute.children || [];
-    mainRoute.children.concat(routes.children);
+    mainRoute.children = mainRoute.children.concat(routes.children);
 
     return [
         mainRoute,

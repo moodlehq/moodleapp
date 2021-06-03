@@ -48,13 +48,13 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
         try {
             const forum = await AddonModForum.getForum(courseId, module.id);
 
-            const files = this.getIntroFilesFromInstance(module, forum);
+            let files = this.getIntroFilesFromInstance(module, forum);
 
             // Get posts.
             const posts = await this.getPostsForPrefetch(forum, { cmId: module.id });
 
             // Add posts attachments and embedded files.
-            files.concat(this.getPostsFiles(posts));
+            files = files.concat(this.getPostsFiles(posts));
 
             return files;
         } catch (error) {

@@ -38,21 +38,21 @@
                         </a></p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.address">
+                <ion-item class="ion-text-wrap" *ngIf="formattedAddress">
                     <ion-label>
                         <h2>{{ 'core.user.address' | translate}}</h2>
                         <p><a class="core-anchor" [href]="encodedAddress" core-link auto-login="no">
-                            {{ user.address }}
+                            {{ formattedAddress }}
                         </a></p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.city && !user.address">
+                <ion-item class="ion-text-wrap" *ngIf="user.city && !formattedAddress">
                     <ion-label>
                         <h2>{{ 'core.user.city' | translate}}</h2>
                         <p>{{ user.city }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.country && !user.address">
+                <ion-item class="ion-text-wrap" *ngIf="user.country && !formattedAddress">
                     <ion-label>
                         <h2>{{ 'core.user.country' | translate}}</h2>
                         <p>{{ user.country }}</p>

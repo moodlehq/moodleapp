@@ -573,7 +573,6 @@ class AddonModGlossaryEntriesManager extends CorePageItemsListManager<EntryItem>
      */
     setOnlineEntries(onlineEntries: AddonModGlossaryEntry[], hasMoreItems: boolean = false): void {
         this.setItems((<EntryItem[]> this.offlineEntries).concat(onlineEntries), hasMoreItems);
-        this.onlineEntries.concat(onlineEntries);
     }
 
     /**
@@ -583,7 +582,6 @@ class AddonModGlossaryEntriesManager extends CorePageItemsListManager<EntryItem>
      */
     setOfflineEntries(offlineEntries: AddonModGlossaryOfflineEntry[]): void {
         this.setItems((<EntryItem[]> offlineEntries).concat(this.onlineEntries), this.hasMoreItems);
-        this.offlineEntries = offlineEntries;
     }
 
     /**

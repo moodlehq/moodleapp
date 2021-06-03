@@ -546,12 +546,12 @@ export class AddonCalendarHelperProvider {
         const site = await CoreSites.getSite(siteId);
         const fetchTimestarts: number[] = [];
         const invalidateTimestarts: number[] = [];
-        const promises: Promise<unknown>[] = [];
+        let promises: Promise<unknown>[] = [];
 
         // Always fetch upcoming events.
         promises.push(AddonCalendar.getUpcomingEvents(undefined, undefined, true, site.id));
 
-        promises.concat(events.map(async (eventData) => {
+        promises = promises.concat(events.map(async (eventData) => {
 
             if (eventData.repeated <= 1) {
                 // Not repeated.

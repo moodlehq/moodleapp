@@ -62,12 +62,10 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
         ]);
 
         // Get all the courses to be synced.
-        const courseIds: number[] = [];
+        let courseIds: number[] = [];
         notesArray.forEach((notes: (AddonNotesDeletedDBRecord | AddonNotesDBRecord)[]) => {
-            const courseIds = notes.map((note) => note.courseid);
-
-            courseIds.concat(courseIds);
-        }, []);
+            courseIds = courseIds.concat(notes.map((note) => note.courseid));
+        });
 
         CoreUtils.uniqueArray(courseIds);
 

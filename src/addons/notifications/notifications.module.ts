@@ -64,6 +64,8 @@ const preferencesRoutes: Routes = [
                 CoreCronDelegate.register(AddonNotificationsCronHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonNotificationsPushClickHandler.instance);
                 CoreSettingsDelegate.registerHandler(AddonNotificationsSettingsHandler.instance);
+
+                AddonNotificationsMainMenuHandler.initialize();
             },
         },
     ],
