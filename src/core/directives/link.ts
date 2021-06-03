@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
+import { Directive, Input, OnInit, ElementRef, Optional, SecurityContext } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { IonContent } from '@ionic/angular';
 
 import { CoreFileHelper } from '@services/file-helper';
@@ -33,7 +34,7 @@ import { CoreCustomURLSchemes } from '@services/urlschemes';
 })
 export class CoreLinkDirective implements OnInit {
 
-    @Input() href?: string; // Link URL.
+    @Input() href?: string | SafeUrl; // Link URL.
     @Input() capture?: boolean | string; // If the link needs to be captured by the app.
     @Input() inApp?: boolean | string; // True to open in embedded browser, false to open in system browser.
     /* Whether the link should be opened with auto-login. Accepts the following values:
@@ -47,6 +48,7 @@ export class CoreLinkDirective implements OnInit {
     constructor(
         element: ElementRef,
         @Optional() protected content: IonContent,
+        protected sanitizer: DomSanitizer,
     ) {
         this.element = element.nativeElement;
     }
@@ -91,7 +93,13 @@ export class CoreLinkDirective implements OnInit {
             return; // Link already treated, stop.
         }
 
-        let href = this.href || this.element.getAttribute('href') || this.element.getAttribute('xlink:href');
+        let href: string | null = null;
+        if (this.href) {
+            // Convert the URL back to string if needed.
+            href = typeof this.href === 'string' ? this.href : this.sanitizer.sanitize(SecurityContext.URL, this.href);
+        }
+
+        href = href || this.element.getAttribute('href') || this.element.getAttribute('xlink:href');
 
         if (!href || CoreUrlUtils.getUrlScheme(href) == 'javascript') {
             return;
