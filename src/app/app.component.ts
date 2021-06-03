@@ -132,16 +132,21 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         // Check InAppBrowser closed.
         CoreEvents.on(CoreEvents.IAB_EXIT, () => {
-            CoreLoginHelper.setWaitingForBrowser(false);
             this.lastInAppUrl = '';
-            CoreLoginHelper.checkLogout();
+
+            if (CoreLoginHelper.isWaitingForBrowser()) {
+                CoreLoginHelper.setWaitingForBrowser(false);
+                CoreLoginHelper.checkLogout();
+            }
         });
 
         Platform.resume.subscribe(() => {
             // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
             setTimeout(() => {
-                CoreLoginHelper.setWaitingForBrowser(false);
-                CoreLoginHelper.checkLogout();
+                if (CoreLoginHelper.isWaitingForBrowser()) {
+                    CoreLoginHelper.setWaitingForBrowser(false);
+                    CoreLoginHelper.checkLogout();
+                }
             }, 1000);
         });
 
