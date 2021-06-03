@@ -1,7 +1,9 @@
+@import "~theme/globals";
+
 :host {
     --tabs-background: var(--core-tabs-background);
     --tabs-color: var(--core-tab-color);
-    --height: 56px;
+    --height: #{$core-tabs-height};
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -54,6 +56,9 @@
                 border-bottom-color: var(--border-color-active);
                 ion-tab-button {
                     color: var(--color-active);
+                    ion-label {
+                        font-weight: var(--font-weight-active);
+                    }
                 }
             }
         }

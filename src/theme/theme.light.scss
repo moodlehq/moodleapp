@@ -161,6 +161,7 @@
     --core-tab-border-color: #{$core-tab-border-color};
     --core-tab-color-active: #{$core-tab-color-active};
     --core-tab-border-color-active: #{$core-tab-border-color-active};
+    --core-tab-font-weight-active: #{$core-tab-font-weight-active};
 
     core-tabs, core-tabs-outlet {
         ion-slide {
@@ -169,6 +170,7 @@
             --border-color: var(--core-tab-border-color);
             --color-active: var(--core-tab-color-active);
             --border-color-active: var(--core-tab-border-color-active);
+            --font-weight-active: var(--core-tab-font-weight-active);
         }
     }
 
@@ -288,8 +290,8 @@
     --core-dd-question-radius: 10px;
     --core-dd-question-border: var(--gray-darker);
 
-    @if ($core-more-icon) {
-        --core-more-icon: #{$core-more-icon};
+    @if ($core-more-icon-color) {
+        --core-more-icon: #{$core-more-icon-color};
     }
 
     @if ($core-more-item-border) {
