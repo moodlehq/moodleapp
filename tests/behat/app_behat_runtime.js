@@ -407,6 +407,57 @@
     };
 
     /**
+     * Press an element.
+     *
+     * @param {HTMLElement} element Element to press.
+     */
+    var pressElement = function(element) {
+        if (window.BehatMoodleAppLegacy) {
+            var mainContent = getNavCtrl().getActive().contentRef().nativeElement;
+            var rect = element.getBoundingClientRect();
+
+            // Scroll the item into view.
+            mainContent.scrollTo(rect.x, rect.y);
+
+            // Simulate a mouse click on the button.
+            var eventOptions = {
+                clientX: rect.left + rect.width / 2,
+                clientY: rect.top + rect.height / 2,
+                bubbles: true,
+                view: window,
+                cancelable: true,
+            };
+            setTimeout(() => element.dispatchEvent(new MouseEvent('mousedown', eventOptions)), 0);
+            setTimeout(() => element.dispatchEvent(new MouseEvent('mouseup', eventOptions)), 0);
+            setTimeout(() => element.dispatchEvent(new MouseEvent('click', eventOptions)), 0);
+        } else {
+            // Scroll the item into view.
+            element.scrollIntoView();
+
+            // Events don't bubble up across Shadow DOM boundaries, and some buttons
+            // may not work without doing this.
+            const parentElement = getParentElement(element);
+
+            if (parentElement?.matches('ion-button, ion-back-button')) {
+                element = parentElement;
+            }
+
+            // There are some buttons in the app that don't respond to click events, for example
+            // buttons using the core-supress-events directive. That's why we need to send both
+            // click and mouse events.
+            element.dispatchEvent(new MouseEvent('mousedown', eventOptions));
+
+            setTimeout(() => {
+                element.dispatchEvent(new MouseEvent('mouseup', eventOptions));
+                element.click();
+            }, 300);
+        }
+
+        // Mark busy until the button click finishes processing.
+        addPendingDelay();
+    };
+
+    /**
      * Function to find and click an app standard button.
      *
      * @param {string} button Type of button to press
@@ -472,10 +523,7 @@
         }
 
         // Click button
-        foundButton.click();
-
-        // Mark busy until the button click finishes processing.
-        addPendingDelay();
+        pressElement(foundButton);
 
         return 'OK';
     };
@@ -591,32 +639,7 @@
             return 'ERROR: ' + error.message;
         }
 
-        if (window.BehatMoodleAppLegacy) {
-            var mainContent = getNavCtrl().getActive().contentRef().nativeElement;
-            var rect = found.getBoundingClientRect();
-
-            // Scroll the item into view.
-            mainContent.scrollTo(rect.x, rect.y);
-
-            // Simulate a mouse click on the button.
-            var eventOptions = {clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2,
-                    bubbles: true, view: window, cancelable: true};
-            setTimeout(function() {
-                found.dispatchEvent(new MouseEvent('mousedown', eventOptions));
-            }, 0);
-            setTimeout(function() {
-                found.dispatchEvent(new MouseEvent('mouseup', eventOptions));
-            }, 0);
-            setTimeout(function() {
-                found.dispatchEvent(new MouseEvent('click', eventOptions));
-            }, 0);
-        } else {
-            found.scrollIntoView();
-            setTimeout(() => found.click(), 300);
-        }
-
-        // Mark busy until the button click finishes processing.
-        addPendingDelay();
+        pressElement(found);
 
         return 'OK';
     };
