@@ -191,8 +191,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             this.displaySectionSelector = CoreCourseFormatDelegate.displaySectionSelector(this.course);
             this.displayBlocks = CoreCourseFormatDelegate.displayBlocks(this.course);
-            this.progress = 'progress' in this.course && typeof this.course.progress == 'number' &&
-                this.course.progress >= 0 && this.course.completionusertracked !== false ? this.course.progress : undefined;
+            this.updateProgress();
+
             if ('overviewfiles' in this.course) {
                 this.imageThumb = this.course.overviewfiles?.[0]?.fileurl;
             }
@@ -641,6 +641,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         } else {
             this.course.progress = Math.max(0, this.course.progress - moduleProgressPercent);
         }
+
+        this.updateProgress();
     }
 
     /**
@@ -652,6 +654,25 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         CoreCourseHelper.calculateSectionsStatus(this.sections, this.course.id, false, false);
+    }
+
+    /**
+     * Update course progress.
+     */
+    protected updateProgress(): void {
+        if (
+            !this.course ||
+            !('progress' in this.course) ||
+            typeof this.course.progress !== 'number' ||
+            this.course.progress < 0 ||
+            this.course.completionusertracked === false
+        ) {
+            this.progress = undefined;
+
+            return;
+        }
+
+        this.progress = this.course.progress;
     }
 
 }
