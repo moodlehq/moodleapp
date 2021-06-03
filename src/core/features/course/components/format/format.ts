@@ -414,6 +414,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 CoreCourse.logView(this.course!.id, newSection.section, undefined, this.course!.fullname),
             );
         }
+
+        this.invalidateSectionButtons();
     }
 
     /**
@@ -504,6 +506,25 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         refresher?.complete();
         done?.();
+    }
+
+    /**
+     * Invalidate section buttons so that they are rendered again. This is necessary in order to update
+     * some attributes that are not reactive, for example aria-label.
+     *
+     * @see https://github.com/ionic-team/ionic-framework/issues/21534
+     */
+    protected async invalidateSectionButtons(): Promise<void> {
+        const previousSection = this.previousSection;
+        const nextSection = this.nextSection;
+
+        this.previousSection = undefined;
+        this.nextSection = undefined;
+
+        await CoreUtils.nextTick();
+
+        this.previousSection = previousSection;
+        this.nextSection = nextSection;
     }
 
     /**
