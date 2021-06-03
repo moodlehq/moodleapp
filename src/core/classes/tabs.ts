@@ -247,7 +247,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
 
         await this.calculateMaxSlides();
 
-        this.updateSlides();
+        await this.updateSlides();
     }
 
     /**
@@ -624,7 +624,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     protected windowResized(): void {
         setTimeout(() => {
             this.calculateSlides();
-        });
+        }, 200);
     }
 
     /**
