@@ -139,7 +139,7 @@ ion-app.ios ion-header h2 {
     text-align: center;
     font-size: 17px;
     font-weight: 600;
-    line-height: #{$toolbar-height-ios};
+    line-height: #{$toolbar-ios-height};
     box-sizing: border-box;
     pointer-events: none;
 }
@@ -161,11 +161,11 @@ ion-item.ion-text-wrap ion-label {
 
 // Ionic toolbar on header.
 ion-app.md ion-toolbar {
-    --min-height: #{$toolbar-height-md};
+    --min-height: #{$toolbar-md-height};
 }
 
 ion-app.ios ion-toolbar {
-    --min-height: #{$toolbar-height-ios};
+    --min-height: #{$toolbar-ios-height};
 }
 
 ion-header ion-toolbar {

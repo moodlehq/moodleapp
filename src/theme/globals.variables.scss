@@ -279,8 +279,8 @@ $toolbar-color: get_contrast_color($toolbar-background) !default;
 $toolbar-color-dark: get_contrast_color($toolbar-background-dark) !default;
 $toolbar-border-width: 3px !default;
 $toolbar-button-image-size: 44px !default;
-$toolbar-height-md: 56px !default;
-$toolbar-height-ios: 54px !default;
+$toolbar-md-height: 56px !default;
+$toolbar-ios-height: 54px !default;
 
 // Bottom tab bar.
 $bottom-tabs-background: $black !default;
