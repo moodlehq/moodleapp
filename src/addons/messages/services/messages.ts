@@ -31,6 +31,7 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { AddonMessagesSyncEvents, AddonMessagesSyncProvider } from './messages-sync';
+import { CoreWSError } from '@classes/errors/wserror';
 
 const ROOT_CACHE_KEY = 'mmaMessages:';
 
@@ -191,7 +192,14 @@ export class AddonMessagesProvider {
                 requesteduserid: userId,
             };
 
-            await site.write('core_message_create_contact_request', params);
+            const result = await site.write<AddonMessagesCreateContactRequestWSResponse>(
+                'core_message_create_contact_request',
+                params,
+            );
+
+            if (result.warnings?.length) {
+                throw new CoreWSError(result.warnings[0]);
+            }
         }
 
         await this.invalidateAllMemberInfo(userId, site).finally(() => {
@@ -3482,6 +3490,19 @@ type AddonMessagesConfirmContactRequestWSParams = {
  * Params of core_message_create_contact_request WS.
  */
 type AddonMessagesCreateContactRequestWSParams = AddonMessagesConfirmContactRequestWSParams;
+
+/**
+ * Data returned by core_message_create_contact_request WS.
+ */
+export type AddonMessagesCreateContactRequestWSResponse = {
+    request?: {
+        id: number; // Message id.
+        userid: number; // User from id.
+        requesteduserid: number; // User to id.
+        timecreated: number; // Time created.
+    }; // Request record.
+    warnings?: CoreWSExternalWarning[];
+};
 
 /**
  * Params of core_message_decline_contact_request WS.
