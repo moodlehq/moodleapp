@@ -66,6 +66,12 @@
         text-decoration: underline;
     }
 
+    @if ($core-login-hide-forgot-password) {
+        .core-login-forgotten-password {
+            display: none;
+        }
+    }
+
     .core-login-reconnect-warning ion-item {
         font-size: 0.9em;
         --background: var(--core-login-input-background);
@@ -91,8 +97,6 @@
             --loading-spinner: #{$core-login-loading-color};
         }
     }
-
-
 }
 
 :host-context(body.dark) {
