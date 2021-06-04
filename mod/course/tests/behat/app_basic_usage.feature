@@ -1,4 +1,4 @@
-@mod @mod_course @app @app_upto3.9.4 @javascript
+@mod @mod_course @app @javascript
 Feature: Test basic usage of one course in app
   In order to participate in one course while using the mobile app
   As a student
@@ -71,26 +71,25 @@ Feature: Test basic usage of one course in app
       | activity      | name                  | intro             | course | idnumber       | groupmode | section |
       | workshop      | Test workshop name    | Test workshop     | C1     | workshop       | 0         | 3       |
 
-  @app @3.8.0
   Scenario: View course contents
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Recently accessed courses" in the app
     Then the header should be "Course 1" in the app
-    And I should see "Choice course 1"
-    And I should see "assignment"
-    And I should see "Test forum name"
-    And I should see "Test chat name"
-    And I should see "Web links"
-    And I should see "Test external name"
-    And I should see "Test feedback name"
-    And I should see "Test glossary"
-    And I should see "Quiz 1"
-    And I should see "Test survey name"
-    And I should see "Test wiki name"
-    And I should see "Test lesson name"
-    And I should see "Test scorm name"
-    And I should see "Test workshop name"
+    And I should find "Choice course 1" in the app
+    And I should find "assignment" in the app
+    And I should find "Test forum name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Web links" in the app
+    And I should find "Test external name" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test glossary" in the app
+    And I should find "Quiz 1" in the app
+    And I should find "Test survey name" in the app
+    And I should find "Test wiki name" in the app
+    And I should find "Test lesson name" in the app
+    And I should find "Test scorm name" in the app
+    And I should find "Test workshop name" in the app
 
     When I press "Choice course 1" in the app
     Then the header should be "Choice course 1" in the app
@@ -149,43 +148,42 @@ Feature: Test basic usage of one course in app
     And I press "Test workshop name" in the app
     Then the header should be "Test workshop name" in the app
 
-  @app @3.8.0
   Scenario: View section contents
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Recently accessed courses" in the app
     Then the header should be "Course 1" in the app
-    And I should see "Choice course 1"
-    And I should see "assignment"
-    And I should see "Test forum name"
-    And I should see "Test chat name"
-    And I should see "Web links"
-    And I should see "Test external name"
-    And I should see "Test feedback name"
-    And I should see "Test glossary"
-    And I should see "Quiz 1"
-    And I should see "Test survey name"
-    And I should see "Test wiki name"
-    And I should see "Test lesson name"
-    And I should see "Test scorm name"
-    And I should see "Test workshop name"
+    And I should find "Choice course 1" in the app
+    And I should find "assignment" in the app
+    And I should find "Test forum name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Web links" in the app
+    And I should find "Test external name" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test glossary" in the app
+    And I should find "Quiz 1" in the app
+    And I should find "Test survey name" in the app
+    And I should find "Test wiki name" in the app
+    And I should find "Test lesson name" in the app
+    And I should find "Test scorm name" in the app
+    And I should find "Test workshop name" in the app
 
-    When I press "arrow dropdown" in the app
-    And I press "General" near "Sections" in the app
-    Then I should see "Test forum name"
-    And I should see "Test wiki name"
-    But I should not see "Choice course 1"
-    And I should not see "assignment"
-    And I should not see "Test chat name"
-    And I should not see "Web links"
-    And I should not see "Test external name"
-    And I should not see "Test feedback name"
-    And I should not see "Test glossary"
-    And I should not see "Quiz 1"
-    And I should not see "Test survey name"
-    And I should not see "Test lesson name"
-    And I should not see "Test scorm name"
-    And I should not see "Test workshop name"
+    When I press "Section:" in the app
+    And I press "General" near "Sections" "h2" in the app
+    Then I should find "Test forum name" in the app
+    And I should find "Test wiki name" in the app
+    But I should not find "Choice course 1" in the app
+    And I should not find "assignment" in the app
+    And I should not find "Test chat name" in the app
+    And I should not find "Web links" in the app
+    And I should not find "Test external name" in the app
+    And I should not find "Test feedback name" in the app
+    And I should not find "Test glossary" in the app
+    And I should not find "Quiz 1" in the app
+    And I should not find "Test survey name" in the app
+    And I should not find "Test lesson name" in the app
+    And I should not find "Test scorm name" in the app
+    And I should not find "Test workshop name" in the app
 
     When I press "Test forum name" in the app
     Then the header should be "Test forum name" in the app
@@ -196,22 +194,22 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test wiki name" in the app
 
     When I press the back button in the app
-    And I press "arrow dropdown" in the app
-    And I press "Topic 1" near "Sections" in the app
-    Then I should see "Choice course 1"
-    And I should see "assignment"
-    And I should see "Test external name"
-    And I should see "Test survey name"
-    But I should not see "Test forum name"
-    And I should not see "Test chat name"
-    And I should not see "Web links"
-    And I should not see "Test feedback name"
-    And I should not see "Test glossary"
-    And I should not see "Quiz 1"
-    And I should not see "Test wiki name"
-    And I should not see "Test lesson name"
-    And I should not see "Test scorm name"
-    And I should not see "Test workshop name"
+    And I press "Section:" in the app
+    And I press "Topic 1" near "Sections" "h2" in the app
+    Then I should find "Choice course 1" in the app
+    And I should find "assignment" in the app
+    And I should find "Test external name" in the app
+    And I should find "Test survey name" in the app
+    But I should not find "Test forum name" in the app
+    And I should not find "Test chat name" in the app
+    And I should not find "Web links" in the app
+    And I should not find "Test feedback name" in the app
+    And I should not find "Test glossary" in the app
+    And I should not find "Quiz 1" in the app
+    And I should not find "Test wiki name" in the app
+    And I should not find "Test lesson name" in the app
+    And I should not find "Test scorm name" in the app
+    And I should not find "Test workshop name" in the app
 
     When I press "Choice course 1" in the app
     Then the header should be "Choice course 1" in the app
@@ -229,22 +227,22 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test survey name" in the app
 
     When I press the back button in the app
-    And I press "arrow dropdown" in the app
-    And I press "Topic 2" near "Sections" in the app
-    Then I should see "Quiz 1"
-    And I should see "Test chat name"
-    And I should see "Test scorm name"
-    But I should not see "Choice course 1"
-    And I should not see "assignment"
-    And I should not see "Test forum name"
-    And I should not see "Web links"
-    And I should not see "Test external name"
-    And I should not see "Test feedback name"
-    And I should not see "Test glossary"
-    And I should not see "Test survey name"
-    And I should not see "Test wiki name"
-    And I should not see "Test lesson name"
-    And I should not see "Test workshop name"
+    And I press "Section:" in the app
+    And I press "Topic 2" near "Sections" "h2" in the app
+    Then I should find "Quiz 1" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Test scorm name" in the app
+    But I should not find "Choice course 1" in the app
+    And I should not find "assignment" in the app
+    And I should not find "Test forum name" in the app
+    And I should not find "Web links" in the app
+    And I should not find "Test external name" in the app
+    And I should not find "Test feedback name" in the app
+    And I should not find "Test glossary" in the app
+    And I should not find "Test survey name" in the app
+    And I should not find "Test wiki name" in the app
+    And I should not find "Test lesson name" in the app
+    And I should not find "Test workshop name" in the app
 
     When I press "Test chat name" in the app
     Then the header should be "Test chat name" in the app
@@ -258,22 +256,22 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test scorm name" in the app
 
     When I press the back button in the app
-    And I press "arrow dropdown" in the app
-    And I press "Topic 3" near "Sections" in the app
-    Then I should see "Test feedback name"
-    And I should see "Test lesson name"
-    And I should see "Test workshop name"
-    But I should not see "Choice course 1"
-    And I should not see "assignment"
-    And I should not see "Test forum name"
-    And I should not see "Test chat name"
-    And I should not see "Web links"
-    And I should not see "Test external name"
-    And I should not see "Test glossary"
-    And I should not see "Quiz 1"
-    And I should not see "Test survey name"
-    And I should not see "Test wiki name"
-    And I should not see "Test scorm name"
+    And I press "Section:" in the app
+    And I press "Topic 3" near "Sections" "h2" in the app
+    Then I should find "Test feedback name" in the app
+    And I should find "Test lesson name" in the app
+    And I should find "Test workshop name" in the app
+    But I should not find "Choice course 1" in the app
+    And I should not find "assignment" in the app
+    And I should not find "Test forum name" in the app
+    And I should not find "Test chat name" in the app
+    And I should not find "Web links" in the app
+    And I should not find "Test external name" in the app
+    And I should not find "Test glossary" in the app
+    And I should not find "Quiz 1" in the app
+    And I should not find "Test survey name" in the app
+    And I should not find "Test wiki name" in the app
+    And I should not find "Test scorm name" in the app
 
     When I press "Test feedback name" in the app
     And I press "OK" in the app
@@ -288,126 +286,126 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test workshop name" in the app
 
     When I press the back button in the app
-    And I press "arrow dropdown" in the app
-    And I press "Topic 4" near "Sections" in the app
-    Then I should see "Web links"
-    But I should not see "Choice course 1"
-    And I should not see "assignment"
-    And I should not see "Test forum name"
-    And I should not see "Test chat name"
-    And I should not see "Test external name"
-    And I should not see "Test feedback name"
-    And I should not see "Test glossary"
-    And I should not see "Quiz 1"
-    And I should not see "Test survey name"
-    And I should not see "Test wiki name"
-    And I should not see "Test lesson name"
-    And I should not see "Test scorm name"
-    And I should not see "Test workshop name"
+    And I press "Section:" in the app
+    And I press "Topic 4" near "Sections" "h2" in the app
+    Then I should find "Web links" in the app
+    But I should not find "Choice course 1" in the app
+    And I should not find "assignment" in the app
+    And I should not find "Test forum name" in the app
+    And I should not find "Test chat name" in the app
+    And I should not find "Test external name" in the app
+    And I should not find "Test feedback name" in the app
+    And I should not find "Test glossary" in the app
+    And I should not find "Quiz 1" in the app
+    And I should not find "Test survey name" in the app
+    And I should not find "Test wiki name" in the app
+    And I should not find "Test lesson name" in the app
+    And I should not find "Test scorm name" in the app
+    And I should not find "Test workshop name" in the app
 
     When I press "Web links" in the app
     Then the header should be "Web links" in the app
 
     When I press the back button in the app
-    And I press "arrow dropdown" in the app
-    And I press "Topic 5" near "Sections" in the app
-    Then I should see "Test glossary"
-    But I should not see "Choice course 1"
-    And I should not see "assignment"
-    And I should not see "Test forum name"
-    And I should not see "Test chat name"
-    And I should not see "Web links"
-    And I should not see "Test external name"
-    And I should not see "Test feedback name"
-    And I should not see "Quiz 1"
-    And I should not see "Test survey name"
-    And I should not see "Test wiki name"
-    And I should not see "Test lesson name"
-    And I should not see "Test scorm name"
-    And I should not see "Test workshop name"
+    And I press "Section:" in the app
+    And I press "Topic 5" near "Sections" "h2" in the app
+    Then I should find "Test glossary" in the app
+    But I should not find "Choice course 1" in the app
+    And I should not find "assignment" in the app
+    And I should not find "Test forum name" in the app
+    And I should not find "Test chat name" in the app
+    And I should not find "Web links" in the app
+    And I should not find "Test external name" in the app
+    And I should not find "Test feedback name" in the app
+    And I should not find "Quiz 1" in the app
+    And I should not find "Test survey name" in the app
+    And I should not find "Test wiki name" in the app
+    And I should not find "Test lesson name" in the app
+    And I should not find "Test scorm name" in the app
+    And I should not find "Test workshop name" in the app
 
     When I press "Test glossary" in the app
     Then the header should be "Test glossary" in the app
 
-  @app @3.8.0
   Scenario: Navigation between sections using the bottom arrows
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Recently accessed courses" in the app
     Then the header should be "Course 1" in the app
-    And I should see "Choice course 1"
-    And I should see "assignment"
-    And I should see "Test forum name"
-    And I should see "Test chat name"
-    And I should see "Web links"
-    And I should see "Test external name"
-    And I should see "Test feedback name"
-    And I should see "Test glossary"
-    And I should see "Quiz 1"
-    And I should see "Test survey name"
-    And I should see "Test wiki name"
-    And I should see "Test lesson name"
-    And I should see "Test scorm name"
-    And I should see "Test workshop name"
+    And I should find "Choice course 1" in the app
+    And I should find "assignment" in the app
+    And I should find "Test forum name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Web links" in the app
+    And I should find "Test external name" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test glossary" in the app
+    And I should find "Quiz 1" in the app
+    And I should find "Test survey name" in the app
+    And I should find "Test wiki name" in the app
+    And I should find "Test lesson name" in the app
+    And I should find "Test scorm name" in the app
+    And I should find "Test workshop name" in the app
 
-    When I press "arrow dropdown" in the app
-    And I press "General" near "Sections" in the app
-    Then I should see "General"
-    But I should not see "Topic 1"
-    And I should not see "Topic 2"
-    And I should not see "Topic 3"
-    And I should not see "Topic 4"
-    And I should not see "Topic 5"
+    When I press "Section:" in the app
+    And I press "General" near "Sections" "h2" in the app
+    Then I should find "General" in the app
+    And I should find "Next: Topic 1" in the app
+    But I should not find "Topic 2" in the app
+    And I should not find "Topic 3" in the app
+    And I should not find "Topic 4" in the app
+    And I should not find "Topic 5" in the app
+    And I should not find "Previous:" in the app
 
-    When I press "arrow forward" near "Test wiki name" in the app
-    Then I should see "Topic 1"
-    But I should not see "General"
-    And I should not see "Topic 2"
-    And I should not see "Topic 3"
-    And I should not see "Topic 4"
-    And I should not see "Topic 5"
+    When I press "Next:" in the app
+    Then I should find "Topic 1" in the app
+    And I should find "Previous: General" in the app
+    And I should find "Next: Topic 2" in the app
+    But I should not find "Topic 3" in the app
+    And I should not find "Topic 4" in the app
+    And I should not find "Topic 5" in the app
 
-    When I press "arrow forward" near "Test survey name" in the app
-    Then I should see "Topic 2"
-    But I should not see "General"
-    And I should not see "Topic 1"
-    And I should not see "Topic 3"
-    And I should not see "Topic 4"
-    And I should not see "Topic 5"
+    When I press "Next:" in the app
+    Then I should find "Topic 2" in the app
+    And I should find "Previous: Topic 1" in the app
+    And I should find "Next: Topic 3" in the app
+    But I should not find "General" in the app
+    And I should not find "Topic 4" in the app
+    And I should not find "Topic 5" in the app
 
-    When I press "arrow forward" near "Test scorm name" in the app
-    Then I should see "Topic 3"
-    But I should not see "General"
-    And I should not see "Topic 1"
-    And I should not see "Topic 2"
-    And I should not see "Topic 4"
-    And I should not see "Topic 5"
+    When I press "Next:" in the app
+    Then I should find "Topic 3" in the app
+    And I should find "Previous: Topic 2" in the app
+    And I should find "Next: Topic 4" in the app
+    But I should not find "General" in the app
+    And I should not find "Topic 1" in the app
+    And I should not find "Topic 5" in the app
 
-    When I press "arrow forward" near "Test workshop name" in the app
-    Then I should see "Topic 4"
-    But I should not see "General"
-    And I should not see "Topic 1"
-    And I should not see "Topic 2"
-    And I should not see "Topic 3"
-    And I should not see "Topic 5"
+    When I press "Next:" in the app
+    Then I should find "Topic 4" in the app
+    And I should find "Previous: Topic 3" in the app
+    And I should find "Next: Topic 5" in the app
+    But I should not find "General" in the app
+    And I should not find "Topic 1" in the app
+    And I should not find "Topic 2" in the app
 
-    When I press "arrow forward" near "Web links" in the app
-    Then I should see "Topic 5"
-    But I should not see "General"
-    And I should not see "Topic 1"
-    And I should not see "Topic 2"
-    And I should not see "Topic 3"
-    And I should not see "Topic 4"
+    When I press "Next:" in the app
+    Then I should find "Topic 5" in the app
+    And I should find "Previous: Topic 4" in the app
+    But I should not find "General" in the app
+    And I should not find "Topic 1" in the app
+    And I should not find "Topic 2" in the app
+    And I should not find "Topic 3" in the app
+    And I should not find "Next:" in the app
 
-    When I press "arrow back" near "Test glossary" in the app
-    Then I should see "Topic 4"
-    But I should not see "General"
-    And I should not see "Topic 1"
-    And I should not see "Topic 2"
-    And I should not see "Topic 3"
-    And I should not see "Topic 5"
+    When I press "Previous:" in the app
+    Then I should find "Topic 4" in the app
+    And I should find "Previous: Topic 3" in the app
+    And I should find "Next: Topic 5" in the app
+    But I should not find "General" in the app
+    And I should not find "Topic 1" in the app
+    And I should not find "Topic 2" in the app
 
-  @app @3.8.0
   Scenario: Self enrol
     Given I enter the app
     And I log in as "teacher1"
@@ -433,22 +431,21 @@ Feature: Test basic usage of one course in app
     And I wait loading to finish in the app
     And I press "Contents" in the app
     Then the header should be "Course 1" in the app
-    And I should see "Choice course 1"
-    And I should see "assignment"
-    And I should see "Test forum name"
-    And I should see "Test chat name"
-    And I should see "Web links"
-    And I should see "Test external name"
-    And I should see "Test feedback name"
-    And I should see "Test glossary"
-    And I should see "Quiz 1"
-    And I should see "Test survey name"
-    And I should see "Test wiki name"
-    And I should see "Test lesson name"
-    And I should see "Test scorm name"
-    And I should see "Test workshop name"
+    And I should find "Choice course 1" in the app
+    And I should find "assignment" in the app
+    And I should find "Test forum name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Web links" in the app
+    And I should find "Test external name" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test glossary" in the app
+    And I should find "Quiz 1" in the app
+    And I should find "Test survey name" in the app
+    And I should find "Test wiki name" in the app
+    And I should find "Test lesson name" in the app
+    And I should find "Test scorm name" in the app
+    And I should find "Test workshop name" in the app
 
-  @app @3.8.0
   Scenario: Guest access
     Given I enter the app
     And I log in as "teacher1"
@@ -469,26 +466,25 @@ Feature: Test basic usage of one course in app
     And I press "Site home" in the app
     And I press "Available courses" in the app
     And I press "Course 1" in the app
-    Then I should see "Download course"
-    And I should see "Contents"
+    Then I should find "Download course" in the app
+    And I should find "Contents" in the app
 
     When I press "Contents" in the app
     Then the header should be "Course 1" in the app
-    And I should see "Choice course 1"
-    And I should see "assignment"
-    And I should see "Test forum name"
-    And I should see "Test chat name"
-    And I should see "Web links"
-    And I should see "Test feedback name"
-    And I should see "Test glossary"
-    And I should see "Quiz 1"
-    And I should see "Test survey name"
-    And I should see "Test wiki name"
-    And I should see "Test lesson name"
-    And I should see "Test scorm name"
-    And I should see "Test workshop name"
+    And I should find "Choice course 1" in the app
+    And I should find "assignment" in the app
+    And I should find "Test forum name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Web links" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test glossary" in the app
+    And I should find "Quiz 1" in the app
+    And I should find "Test survey name" in the app
+    And I should find "Test wiki name" in the app
+    And I should find "Test lesson name" in the app
+    And I should find "Test scorm name" in the app
+    And I should find "Test workshop name" in the app
 
-  @app @3.8.0
   Scenario: View blocks bellow/beside contents also when All sections selected
     Given I enter the app
     And I log in as "teacher1"
@@ -515,20 +511,20 @@ Feature: Test basic usage of one course in app
     And I log in as "student1"
     And I press "Course 1" near "Recently accessed courses" in the app
     Then the header should be "Course 1" in the app
-    And I should see "Choice course 1"
-    And I should see "assignment"
-    And I should see "Test forum name"
-    And I should see "Test chat name"
-    And I should see "Web links"
-    And I should see "Test external name"
-    And I should see "Test feedback name"
-    And I should see "Test glossary"
-    And I should see "Quiz 1"
-    And I should see "Test survey name"
-    And I should see "Test wiki name"
-    And I should see "Test lesson name"
-    And I should see "Test scorm name"
-    And I should see "Test workshop name"
-    And I should see "HTML title test"
-    And I should see "body test"
-    And I should see "Activities"
+    And I should find "Choice course 1" in the app
+    And I should find "assignment" in the app
+    And I should find "Test forum name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Web links" in the app
+    And I should find "Test external name" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test glossary" in the app
+    And I should find "Quiz 1" in the app
+    And I should find "Test survey name" in the app
+    And I should find "Test wiki name" in the app
+    And I should find "Test lesson name" in the app
+    And I should find "Test scorm name" in the app
+    And I should find "Test workshop name" in the app
+    And I should find "HTML title test" in the app
+    And I should find "body test" in the app
+    And I should find "Activities" in the app

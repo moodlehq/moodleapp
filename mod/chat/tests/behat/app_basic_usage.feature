@@ -1,4 +1,4 @@
-@mod @mod_chat @app @app_upto3.9.4 @javascript
+@mod @mod_chat @app @javascript
 Feature: Test basic usage of chat in app
   As a student
   I need basic chat functionality to work
@@ -19,23 +19,24 @@ Feature: Test basic usage of chat in app
       | activity   | name            | intro       | course | idnumber | groupmode |
       | chat       | Test chat name  | Test chat   | C1     | chat     | 0         |
 
-  @app @3.8.0
   Scenario: Receive and send messages & See connected users, beep and talk to
     # Send messages as student1
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test chat name" in the app
-    Then I should see "Click here to enter the chat now"
-    And I should see "View past chat sessions"
+    Then I should find "Click here to enter the chat now" in the app
+    And I should find "View past chat sessions" in the app
 
     When I press "Click here to enter the chat now" in the app
-    And I set the field "New message" to "Hi!"
+    And I set the field "New message" to "Hi!" in the app
     And I press "Send" in the app
-    And I set the field "New message" to "I am David"
+    Then I should find "Hi!" in the app
+
+    When I set the field "New message" to "I am David" in the app
     And I press "Send" in the app
-    Then I should see "Hi!"
-    And I should see "I am David"
+    Then I should find "Hi!" in the app
+    And I should find "I am David" in the app
 
     # Read messages, view connected users, send beep and reply as student2
     When I enter the app
@@ -43,20 +44,19 @@ Feature: Test basic usage of chat in app
     And I press "Course 1" near "Course overview" in the app
     And I press "Test chat name" in the app
     And I press "Click here to enter the chat now" in the app
-    Then I should see "Hi!"
-    And I should see "I am David"
+    Then I should find "Hi!" in the app
+    And I should find "I am David" in the app
 
-    When I press "people" in the app
-    Then I should see "david student"
+    When I press "Users" in the app
+    Then I should find "david student" in the app
 
     When I press "Beep" in the app
-    Then I should see "You beeped david student"
+    Then I should find "You beeped david student" in the app
 
-    When I set the field "New message" to "Hi David, I am Pau."
+    When I set the field "New message" to "Hi David, I am Pau." in the app
     And I press "Send" in the app
-    Then I should see "Hi David, I am Pau."
+    Then I should find "Hi David, I am Pau." in the app
 
-  @app @3.8.0
   Scenario: Past sessions shown for >=3.5
     # Send messages as student1
     Given I enter the app
@@ -64,10 +64,13 @@ Feature: Test basic usage of chat in app
     And I press "Course 1" near "Course overview" in the app
     And I press "Test chat name" in the app
     And I press "Click here to enter the chat now" in the app
-    And I set the field "New message" to "Hi!"
+    And I set the field "New message" to "Hi!" in the app
     And I press "Send" in the app
-    And I set the field "New message" to "I am David"
+    Then I should find "Hi!" in the app
+
+    When I set the field "New message" to "I am David" in the app
     And I press "Send" in the app
+    Then I should find "I am David" in the app
 
     # Read messages from past sessions as student2
     When I enter the app
@@ -76,6 +79,6 @@ Feature: Test basic usage of chat in app
     And I press "Test chat name" in the app
     And I press "View past chat sessions" in the app
     And I press "Show incomplete sessions" in the app
-    And I press "david student (2)" in the app
-    Then I should see "Hi!"
-    And I should see "I am David"
+    And I press "david student" near "(2)" in the app
+    Then I should find "Hi!" in the app
+    And I should find "I am David" in the app

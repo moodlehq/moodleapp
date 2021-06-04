@@ -11,13 +11,13 @@
      *
      * @param {string} text Information to log
      */
-    var log = function(text) {
+    var log = function() {
         var now = new Date();
         var nowFormatted = String(now.getHours()).padStart(2, '0') + ':' +
                 String(now.getMinutes()).padStart(2, '0') + ':' +
                 String(now.getSeconds()).padStart(2, '0') + '.' +
                 String(now.getMilliseconds()).padStart(2, '0');
-        console.log('BEHAT: ' + nowFormatted + ' ' + text); // eslint-disable-line no-console
+        console.log('BEHAT: ' + nowFormatted, ...arguments); // eslint-disable-line no-console
     };
 
     /**
@@ -185,13 +185,14 @@
         if (element.getAttribute('aria-hidden') === 'true' || getComputedStyle(element).display === 'none')
             return false;
 
-        if (element.parentElement === container)
+        const parentElement = getParentElement(element);
+        if (parentElement === container)
             return true;
 
-        if (!element.parentElement)
+        if (!parentElement)
             return false;
 
-        return isElementVisible(element.parentElement, container);
+        return isElementVisible(parentElement, container);
     };
 
     /**
@@ -210,10 +211,11 @@
         )
             return true;
 
-        if (!element.parentElement || element.parentElement === container)
+        const parentElement = getParentElement(element);
+        if (!parentElement || parentElement === container)
             return false;
 
-        return isElementSelected(element.parentElement, container);
+        return isElementSelected(parentElement, container);
     };
 
     /**
@@ -353,18 +355,27 @@
     };
 
     /**
+     * Get parent element, including Shadow DOM parents.
+     *
+     * @param {HTMLElement} element Element.
+     * @return {HTMLElement} Parent element.
+     */
+    var getParentElement = function(element) {
+        return element.parentElement ?? element.getRootNode()?.host ?? null;
+    };
+
+    /**
      * Function to find elements based on their text or Aria label.
      *
-     * @param {string} text Text (full or partial)
-     * @param {string} [near] Optional 'near' text - if specified, must have a single match on page
+     * @param {object} locator Element locator.
      * @return {HTMLElement} Found elements
      */
-    var findElementsBasedOnText = function(text, near) {
+    var findElementsBasedOnText = function(locator) {
         const topContainer = document.querySelector('ion-alert, ion-popover, ion-action-sheet, core-ion-tab.show-tab ion-page.show-page, ion-page.show-page, html');
         let container = topContainer;
 
-        if (topContainer && near) {
-            const nearElements = findElementsBasedOnText(near);
+        if (topContainer && locator.near) {
+            const nearElements = findElementsBasedOnText(locator.near);
 
             if (nearElements.length === 0) {
                 throw new Error('There was no match for near text')
@@ -375,21 +386,75 @@
                     throw new Error('Too many matches for near text');
                 }
 
-                container = nearElementsAncestors[0].parentElement;
+                container = getParentElement(nearElementsAncestors[0]);
             } else {
-                container = nearElements[0].parentElement;
+                container = getParentElement(nearElements[0]);
             }
         }
 
         do {
-            const elements = findElementsBasedOnTextWithin(container, text);
+            const elements = findElementsBasedOnTextWithin(container, locator.text);
+            const filteredElements = locator.selector
+                ? elements.filter(element => element.matches(locator.selector))
+                : elements;
 
-            if (elements.length > 0) {
-                return elements;
+            if (filteredElements.length > 0) {
+                return filteredElements;
             }
-        } while ((container = container.parentElement) && container !== topContainer);
+        } while ((container = getParentElement(container)) && container !== topContainer);
 
         return [];
+    };
+
+    /**
+     * Press an element.
+     *
+     * @param {HTMLElement} element Element to press.
+     */
+    var pressElement = function(element) {
+        if (window.BehatMoodleAppLegacy) {
+            var mainContent = getNavCtrl().getActive().contentRef().nativeElement;
+            var rect = element.getBoundingClientRect();
+
+            // Scroll the item into view.
+            mainContent.scrollTo(rect.x, rect.y);
+
+            // Simulate a mouse click on the button.
+            var eventOptions = {
+                clientX: rect.left + rect.width / 2,
+                clientY: rect.top + rect.height / 2,
+                bubbles: true,
+                view: window,
+                cancelable: true,
+            };
+            setTimeout(() => element.dispatchEvent(new MouseEvent('mousedown', eventOptions)), 0);
+            setTimeout(() => element.dispatchEvent(new MouseEvent('mouseup', eventOptions)), 0);
+            setTimeout(() => element.dispatchEvent(new MouseEvent('click', eventOptions)), 0);
+        } else {
+            // Scroll the item into view.
+            element.scrollIntoView();
+
+            // Events don't bubble up across Shadow DOM boundaries, and some buttons
+            // may not work without doing this.
+            const parentElement = getParentElement(element);
+
+            if (parentElement?.matches('ion-button, ion-back-button')) {
+                element = parentElement;
+            }
+
+            // There are some buttons in the app that don't respond to click events, for example
+            // buttons using the core-supress-events directive. That's why we need to send both
+            // click and mouse events.
+            element.dispatchEvent(new MouseEvent('mousedown', eventOptions));
+
+            setTimeout(() => {
+                element.dispatchEvent(new MouseEvent('mouseup', eventOptions));
+                element.click();
+            }, 300);
+        }
+
+        // Mark busy until the button click finishes processing.
+        addPendingDelay();
     };
 
     /**
@@ -444,10 +509,13 @@
         } else {
             switch (button) {
                 case 'back':
-                    foundButton = findElementsBasedOnText('Back')[0];
+                    foundButton = findElementsBasedOnText({ text: 'Back' })[0];
                     break;
                 case 'main menu':
-                    foundButton = findElementsBasedOnText('more', 'Notifications')[0];
+                    foundButton = findElementsBasedOnText({
+                        text: 'more',
+                        near: { text: 'Notifications' },
+                    })[0];
                     break;
                 default:
                     return 'ERROR: Unsupported standard button type';
@@ -455,10 +523,7 @@
         }
 
         // Click button
-        foundButton.click();
-
-        // Mark busy until the button click finishes processing.
-        addPendingDelay();
+        pressElement(foundButton);
 
         return 'OK';
     };
@@ -500,15 +565,14 @@
     /**
      * Function to find an arbitrary item based on its text or aria label.
      *
-     * @param {string} text Text (full or partial)
-     * @param {string} [near] Optional 'near' text
+     * @param {object} locator Element locator.
      * @return {string} OK if successful, or ERROR: followed by message
      */
-    var behatFind = function(text, near) {
-        log(`Action - Find ${text}`);
+    var behatFind = function(locator) {
+        log('Action - Find', locator);
 
         try {
-            const element = findElementsBasedOnText(text, near)[0];
+            const element = findElementsBasedOnText(locator)[0];
 
             if (!element) {
                 return 'ERROR: No matches for text';
@@ -540,15 +604,14 @@
     /**
      * Check whether an item is selected or not.
      *
-     * @param {string} text Text (full or partial)
-     * @param {string} near Optional 'near' text
+     * @param {object} locator Element locator.
      * @return {string} YES or NO if successful, or ERROR: followed by message
      */
-    var behatIsSelected = function(text, near) {
-        log(`Action - Is Selected: "${text}"${near ? ` near "${near}"`: ''}`);
+    var behatIsSelected = function(locator) {
+        log('Action - Is Selected', locator);
 
         try {
-            const element = findElementsBasedOnText(text, near)[0];
+            const element = findElementsBasedOnText(locator)[0];
 
             return isElementSelected(element, document.body) ? 'YES' : 'NO';
         } catch (error) {
@@ -559,16 +622,15 @@
     /**
      * Function to press arbitrary item based on its text or Aria label.
      *
-     * @param {string} text Text (full or partial)
-     * @param {string} near Optional 'near' text
+     * @param {object} locator Element locator.
      * @return {string} OK if successful, or ERROR: followed by message
      */
-    var behatPress = function(text, near) {
-        log('Action - Press ' + text + (near === undefined ? '' : ' - near ' + near));
+    var behatPress = function(locator) {
+        log('Action - Press', locator);
 
         var found;
         try {
-            found = findElementsBasedOnText(text, near)[0];
+            found = findElementsBasedOnText(locator)[0];
 
             if (!found) {
                 return 'ERROR: No matches for text';
@@ -577,32 +639,7 @@
             return 'ERROR: ' + error.message;
         }
 
-        if (window.BehatMoodleAppLegacy) {
-            var mainContent = getNavCtrl().getActive().contentRef().nativeElement;
-            var rect = found.getBoundingClientRect();
-
-            // Scroll the item into view.
-            mainContent.scrollTo(rect.x, rect.y);
-
-            // Simulate a mouse click on the button.
-            var eventOptions = {clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2,
-                    bubbles: true, view: window, cancelable: true};
-            setTimeout(function() {
-                found.dispatchEvent(new MouseEvent('mousedown', eventOptions));
-            }, 0);
-            setTimeout(function() {
-                found.dispatchEvent(new MouseEvent('mouseup', eventOptions));
-            }, 0);
-            setTimeout(function() {
-                found.dispatchEvent(new MouseEvent('click', eventOptions));
-            }, 0);
-        } else {
-            found.scrollIntoView();
-            setTimeout(() => found.click(), 300);
-        }
-
-        // Mark busy until the button click finishes processing.
-        addPendingDelay();
+        pressElement(found);
 
         return 'OK';
     };
@@ -697,8 +734,7 @@
                 return 'ERROR: No matches for text';
             }
         } else {
-            const elements = findElementsBasedOnText(field);
-            var found = elements.filter(element => element.matches('input, textarea'))[0];
+            found = findElementsBasedOnText({ text: field, selector: 'input, textarea' })[0];
 
             if (!found) {
                 return 'ERROR: No matches for text';

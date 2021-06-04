@@ -1,4 +1,4 @@
-@core @core_course @app @app_upto3.9.4 @javascript
+@core @core_course @app @javascript
 Feature: Check course completion feature.
   In order to track the progress of the course on mobile device
   As a student
@@ -24,13 +24,13 @@ Feature: Check course completion feature.
     And I log in as "student1"
     And I press "Course 1" near "Recently accessed courses" in the app
     # Set activities as completed.
-    And I should see "0%"
-    And I press "Not completed: First forum. Select to mark as complete." in the app
-    And I should see "50%"
-    And I press "Not completed: Second forum. Select to mark as complete." in the app
-    And I should see "100%"
+    And I should find "0%" in the app
+    And I press "Mark First forum as done" in the app
+    And I should find "50%" in the app
+    And I press "Mark Second forum as done" in the app
+    And I should find "100%" in the app
     # Set activities as not completed.
-    And I press "Completed: First forum. Select to mark as not complete." in the app
-    And I should see "50%"
-    And I press "Completed: Second forum. Select to mark as not complete." in the app
-    And I should see "0%"
+    And I press "First forum is marked as done. Press to undo." in the app
+    And I should find "50%" in the app
+    And I press "Second forum is marked as done. Press to undo." in the app
+    And I should find "0%" in the app
