@@ -233,8 +233,8 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
      *
      * @return Promise resolved when done.
      */
-    protected async sync(): Promise<void> {
-        await AddonModSurveySync.syncSurvey(this.survey!.id, this.currentUserId);
+    protected sync(): Promise<AddonModSurveySyncResult> {
+        return AddonModSurveySync.syncSurvey(this.survey!.id, this.currentUserId);
     }
 
     /**

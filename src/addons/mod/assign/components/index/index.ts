@@ -407,8 +407,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      *
      * @return Promise resolved when done.
      */
-    protected async sync(): Promise<void> {
-        await AddonModAssignSync.syncAssign(this.assign!.id);
+    protected sync(): Promise<AddonModAssignSyncResult> {
+        return AddonModAssignSync.syncAssign(this.assign!.id);
     }
 
     /**
