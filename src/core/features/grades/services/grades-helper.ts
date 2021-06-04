@@ -221,7 +221,7 @@ export class CoreGradesHelperProvider {
         let coursesWereMissing = false;
 
         try {
-            const courses = await CoreCourses.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.OnlyCache);
+            const courses = await CoreCourses.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.ONLY_CACHE);
             const coursesMap = CoreUtils.arrayToObject(courses, 'id');
 
             coursesWereMissing = this.addCourseData(grades, coursesMap);
@@ -233,7 +233,7 @@ export class CoreGradesHelperProvider {
         if (coursesWereMissing) {
             const coursesPromise = CoreCourses.isGetCoursesByFieldAvailable()
                 ? CoreCourses.getCoursesByField('ids', grades.map((grade) => grade.courseid).join(','))
-                : CoreCourses.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.PreferNetwork);
+                : CoreCourses.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.PREFER_NETWORK);
 
             const courses = await coursesPromise;
             const coursesMap =

@@ -153,7 +153,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
             this.offline = !CoreApp.isOnline();
             const options = {
                 cmId: this.cmId,
-                readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
                 siteId: this.currentSite.getId(),
             };
 
@@ -198,7 +198,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
             // If it fails, go offline.
             this.offline = true;
-            options.readingStrategy = CoreSitesReadingStrategy.PreferCache;
+            options.readingStrategy = CoreSitesReadingStrategy.PREFER_CACHE;
 
             this.access = await AddonModFeedback.getFeedbackAccessInformation(this.feedback!.id, options);
         }
@@ -221,7 +221,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
             // Go offline.
             this.offline = true;
-            options.readingStrategy = CoreSitesReadingStrategy.PreferCache;
+            options.readingStrategy = CoreSitesReadingStrategy.PREFER_CACHE;
 
             return AddonModFeedback.getResumePage(this.feedback!.id, options);
         }
@@ -256,7 +256,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
     protected async fetchPageItems(page: number): Promise<AddonModFeedbackPageItems> {
         const options = {
             cmId: this.cmId,
-            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId: this.currentSite.getId(),
         };
 
@@ -284,7 +284,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
             // Go offline.
             this.offline = true;
-            options.readingStrategy = CoreSitesReadingStrategy.PreferCache;
+            options.readingStrategy = CoreSitesReadingStrategy.PREFER_CACHE;
 
             response = await AddonModFeedback.getPageItemsWithValues(this.feedback!.id, page, options);
         }
@@ -344,7 +344,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
                 await this.fetchAccessData({
                     cmId: this.cmId,
-                    readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+                    readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
                     siteId: this.currentSite.getId(),
                 });
             } else if (typeof response.jumpto != 'number' || response.jumpto == this.currentPage) {

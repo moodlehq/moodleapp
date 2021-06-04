@@ -349,7 +349,7 @@ export class AddonModQuizHelperProvider {
         const rules = accessInfo.activerulenames;
         const modOptions = {
             cmId: quiz.coursemodule,
-            readingStrategy: offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 

@@ -169,7 +169,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         // Prefetch finished or not needed, set the right status.
         await AddonModQuizPrefetchHandler.setStatusAfterPrefetch(quiz, {
             cmId: module.id,
-            readingStrategy: shouldDownload ? CoreSitesReadingStrategy.PreferCache : undefined,
+            readingStrategy: shouldDownload ? CoreSitesReadingStrategy.PREFER_CACHE : undefined,
             siteId,
         });
     }
@@ -293,7 +293,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         const courseId = quiz.course;
         const modOptions = {
             cmId: quiz.coursemodule,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 
@@ -368,7 +368,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         // Now get the online questions data.
         const onlineQuestions = await AddonModQuiz.getAllQuestionsData(quiz, onlineAttempt, preflightData, {
             pages: AddonModQuiz.getPagesFromLayoutAndQuestions(onlineAttempt.layout || '', offlineQuestions),
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         });
 

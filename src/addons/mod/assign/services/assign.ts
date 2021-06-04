@@ -576,7 +576,7 @@ export class AddonModAssignProvider {
         // Try again, ignoring cache.
         const newOptions = {
             ...options,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
         };
 
         try {

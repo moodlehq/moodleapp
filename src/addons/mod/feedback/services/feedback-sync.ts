@@ -205,7 +205,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         }
 
         const timemodified = await AddonModFeedback.getCurrentCompletedTimeModified(feedbackId, {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         });
         // Sort by page.

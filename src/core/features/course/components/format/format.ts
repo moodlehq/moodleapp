@@ -191,8 +191,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             this.displaySectionSelector = CoreCourseFormatDelegate.displaySectionSelector(this.course);
             this.displayBlocks = CoreCourseFormatDelegate.displayBlocks(this.course);
-            this.progress = 'progress' in this.course && typeof this.course.progress == 'number' &&
-                this.course.progress >= 0 && this.course.completionusertracked !== false ? this.course.progress : undefined;
+            this.updateProgress();
+
             if ('overviewfiles' in this.course) {
                 this.imageThumb = this.course.overviewfiles?.[0]?.fileurl;
             }
@@ -414,6 +414,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 CoreCourse.logView(this.course!.id, newSection.section, undefined, this.course!.fullname),
             );
         }
+
+        this.invalidateSectionButtons();
     }
 
     /**
@@ -504,6 +506,25 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         refresher?.complete();
         done?.();
+    }
+
+    /**
+     * Invalidate section buttons so that they are rendered again. This is necessary in order to update
+     * some attributes that are not reactive, for example aria-label.
+     *
+     * @see https://github.com/ionic-team/ionic-framework/issues/21534
+     */
+    protected async invalidateSectionButtons(): Promise<void> {
+        const previousSection = this.previousSection;
+        const nextSection = this.nextSection;
+
+        this.previousSection = undefined;
+        this.nextSection = undefined;
+
+        await CoreUtils.nextTick();
+
+        this.previousSection = previousSection;
+        this.nextSection = nextSection;
     }
 
     /**
@@ -620,6 +641,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         } else {
             this.course.progress = Math.max(0, this.course.progress - moduleProgressPercent);
         }
+
+        this.updateProgress();
     }
 
     /**
@@ -631,6 +654,25 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         CoreCourseHelper.calculateSectionsStatus(this.sections, this.course.id, false, false);
+    }
+
+    /**
+     * Update course progress.
+     */
+    protected updateProgress(): void {
+        if (
+            !this.course ||
+            !('progress' in this.course) ||
+            typeof this.course.progress !== 'number' ||
+            this.course.progress < 0 ||
+            this.course.completionusertracked === false
+        ) {
+            this.progress = undefined;
+
+            return;
+        }
+
+        this.progress = this.course.progress;
     }
 
 }

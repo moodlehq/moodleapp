@@ -81,7 +81,7 @@ export class AddonModSurveyPrefetchHandlerService extends CoreCourseActivityPref
      */
     protected async prefetchSurvey(module: CoreCourseAnyModuleData, courseId: number, siteId: string): Promise<void> {
         const survey = await AddonModSurvey.getSurvey(courseId, module.id, {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         });
 
@@ -95,7 +95,7 @@ export class AddonModSurveyPrefetchHandlerService extends CoreCourseActivityPref
         if (!survey.surveydone) {
             promises.push(AddonModSurvey.getQuestions(survey.id, {
                 cmId: module.id,
-                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 siteId,
             }));
         }

@@ -191,7 +191,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
      */
     async isDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
         const workshop = await AddonModWorkshop.getWorkshop(courseId, module.id, {
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
         });
 
         const accessData = await AddonModWorkshop.getWorkshopAccessInformation(workshop.id, { cmId: module.id });
@@ -263,7 +263,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
 
         const userIds: number[] = [];
         const commonOptions = {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
         const modOptions = {

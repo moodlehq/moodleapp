@@ -349,13 +349,13 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             // Get access information for the quiz.
             this.quizAccessInfo = await AddonModQuiz.getQuizAccessInformation(this.quiz.id, {
                 cmId: this.quiz.coursemodule,
-                readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
             });
 
             // Get user attempts to determine last attempt.
             const attempts = await AddonModQuiz.getUserAttempts(this.quiz.id, {
                 cmId: this.quiz.coursemodule,
-                readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
             });
 
             if (!attempts.length) {
@@ -428,7 +428,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         // Get current page data again to get the latest sequencechecks.
         const data = await AddonModQuiz.getAttemptData(this.attempt!.id, this.attempt!.currentpage!, this.preflightData, {
             cmId: this.quiz!.coursemodule,
-            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
         });
 
         const newSequenceChecks: Record<number, { name: string; value: string }> = {};
@@ -486,7 +486,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     protected async loadPage(page: number): Promise<void> {
         const data = await AddonModQuiz.getAttemptData(this.attempt!.id, page, this.preflightData, {
             cmId: this.quiz!.coursemodule,
-            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
         });
 
         // Update attempt, status could change during the execution.
@@ -531,7 +531,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         this.summaryQuestions = await AddonModQuiz.getAttemptSummary(this.attempt!.id, this.preflightData, {
             cmId: this.quiz!.coursemodule,
             loadLocal: this.offline,
-            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
         });
 
         this.showSummary = true;
@@ -556,7 +556,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         this.navigation = await AddonModQuiz.getAttemptSummary(this.attempt!.id, this.preflightData, {
             cmId: this.quiz!.coursemodule,
             loadLocal: this.offline,
-            readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
         });
 
         this.navigation.forEach((question) => {
@@ -737,7 +737,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).
             this.attemptAccessInfo = await AddonModQuiz.getAttemptAccessInformation(this.quiz!.id, attempt.id, {
                 cmId: this.quiz!.coursemodule,
-                readingStrategy: this.offline ? CoreSitesReadingStrategy.PreferCache : CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
             });
 
             this.attempt = attempt;

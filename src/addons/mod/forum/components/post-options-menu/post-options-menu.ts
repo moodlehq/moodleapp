@@ -75,7 +75,7 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit, OnDestroy 
                     this.post =
                         await AddonModForum.getDiscussionPost(this.forumId, this.post.discussionid, this.post.id, {
                             cmId: this.cmId,
-                            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                         });
                 } catch (error) {
                     CoreDomUtils.showErrorModalDefault(error, 'Error getting discussion post.');

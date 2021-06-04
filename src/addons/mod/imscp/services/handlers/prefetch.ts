@@ -48,7 +48,7 @@ export class AddonModImscpPrefetchHandlerService extends CoreCourseResourcePrefe
 
         promises.push(super.downloadOrPrefetch(module, courseId, prefetch, dirPath));
         promises.push(AddonModImscp.getImscp(courseId, module.id, {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         }));
 

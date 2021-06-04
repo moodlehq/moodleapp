@@ -16,10 +16,10 @@ import { Component, Input } from '@angular/core';
 import { Platform } from '@singletons';
 
 const enum ScrollPosition {
-    Start = 'start',
-    End = 'end',
-    Middle = 'middle',
-    Hidden = 'hidden',
+    START = 'start',
+    END = 'end',
+    MIDDLE = 'middle',
+    HIDDEN = 'hidden',
 }
 
 @Component({
@@ -32,7 +32,7 @@ export class CoreHorizontalScrollControlsComponent {
     // eslint-disable-next-line @angular-eslint/no-input-rename
     @Input('aria-controls') targetId?: string;
 
-    scrollPosition: ScrollPosition = ScrollPosition.Hidden;
+    scrollPosition: ScrollPosition = ScrollPosition.HIDDEN;
 
     /**
      * Get target element.
@@ -85,22 +85,22 @@ export class CoreHorizontalScrollControlsComponent {
         scrollLeft = scrollLeft ?? this.target?.scrollLeft ?? 0;
 
         if (!this.target || this.target.scrollWidth <= this.target.clientWidth) {
-            return ScrollPosition.Hidden;
+            return ScrollPosition.HIDDEN;
         }
 
         if (scrollLeft === 0) {
-            return Platform.isRTL ? ScrollPosition.End : ScrollPosition.Start;
+            return Platform.isRTL ? ScrollPosition.END : ScrollPosition.START;
         }
 
         if (!Platform.isRTL && this.target.scrollWidth - scrollLeft === this.target.clientWidth) {
-            return ScrollPosition.End;
+            return ScrollPosition.END;
         }
 
         if (Platform.isRTL && this.target.scrollWidth + scrollLeft === this.target.clientWidth) {
-            return ScrollPosition.Start;
+            return ScrollPosition.START;
         }
 
-        return ScrollPosition.Middle;
+        return ScrollPosition.MIDDLE;
     }
 
 }

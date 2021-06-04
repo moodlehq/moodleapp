@@ -114,7 +114,7 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
 
         const options = {
             cmId: module.id,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 

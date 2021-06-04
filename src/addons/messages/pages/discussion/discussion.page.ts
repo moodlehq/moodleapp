@@ -288,7 +288,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                             this.conversationImage = this.otherMember.profileimageurl;
                             this.title = this.otherMember.fullname;
                         }
-                        this.blockIcon = this.otherMember.isblocked ? 'fas-user-lock' : 'fas-user-check';
+                        this.blockIcon = this.otherMember.isblocked ? 'fas-user-check' : 'fas-user-lock';
 
                         return;
                     }));
@@ -317,7 +317,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                         };
                         this.otherMember.isblocked = await AddonMessages.isBlocked(this.userId!);
                         this.otherMember.iscontact = await AddonMessages.isContact(this.userId!);
-                        this.blockIcon = this.otherMember.isblocked ? 'fas-user-lock' : 'fas-user-check';
+                        this.blockIcon = this.otherMember.isblocked ? 'fas-user-check' : 'fas-user-lock';
 
                         return;
                     }));
@@ -1466,7 +1466,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             } catch (error) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
             } finally {
-                this.blockIcon = this.otherMember.isblocked ? 'fas-user-lock' : 'fas-user-check';
+                this.blockIcon = this.otherMember.isblocked ? 'fas-user-check' : 'fas-user-lock';
             }
         } catch {
             // User cancelled.
@@ -1548,7 +1548,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             } catch (error) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
             } finally {
-                this.blockIcon = this.otherMember.isblocked ? 'fas-user-lock' : 'fas-user-check';
+                this.blockIcon = this.otherMember.isblocked ? 'fas-user-check' : 'fas-user-lock';
             }
         } catch {
             // User cancelled.

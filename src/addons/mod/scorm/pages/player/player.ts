@@ -131,7 +131,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         // Get the SCORM instance.
         this.scorm = await AddonModScorm.getScorm(this.courseId, this.cmId, {
             moduleUrl: this.moduleUrl,
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
         });
 
         // Block the SCORM so it cannot be synchronized.
@@ -248,7 +248,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
                     // Last attempt was online, verify that we can create a new online attempt. We ignore cache.
                     await AddonModScorm.getScormUserData(this.scorm.id, result.attempt, {
                         cmId: this.cmId,
-                        readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                        readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                     });
                 } catch {
                     // Cannot communicate with the server, create an offline attempt.
@@ -529,7 +529,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         // New online attempt created, update cached data about online attempts.
         await CoreUtils.ignoreErrors(AddonModScorm.getAttemptCount(this.scorm.id, {
             cmId: this.cmId,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
         }));
     }
 

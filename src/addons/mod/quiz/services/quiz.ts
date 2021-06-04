@@ -1265,7 +1265,7 @@ export class AddonModQuizProvider {
 
         // Get required data to call the invalidate functions.
         const quiz = await this.getQuiz(courseId, moduleId, {
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
             siteId,
         });
 
@@ -1753,7 +1753,7 @@ export class AddonModQuizProvider {
         const questionsArray = await this.getAttemptSummary(attempt.id, preflightData, {
             cmId: quiz.coursemodule,
             loadLocal: true,
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
             siteId,
         });
 

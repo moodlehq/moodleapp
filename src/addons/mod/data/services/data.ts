@@ -1003,7 +1003,7 @@ export class AddonModDataProvider {
         options.order || options.order || 'DESC';
         options.page = options.page || 0;
         options.perPage = options.perPage || AddonModDataProvider.PER_PAGE;
-        options.readingStrategy = options.readingStrategy || CoreSitesReadingStrategy.PreferNetwork;
+        options.readingStrategy = options.readingStrategy || CoreSitesReadingStrategy.PREFER_NETWORK;
 
         const params: AddonModDataSearchEntriesWSParams = {
             databaseid: dataId,

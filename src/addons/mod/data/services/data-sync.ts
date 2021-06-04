@@ -281,7 +281,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         const options: CoreCourseCommonModWSOptions = {
             cmId: database.coursemodule,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 

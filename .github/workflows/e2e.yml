@@ -24,12 +24,20 @@ jobs:
         git clone --branch MOBILE-3738 --depth 1 git://github.com/NoelDeMartin/moodle-docker $GITHUB_WORKSPACE/moodle-docker
     - name: Setup docker machine
       run: |
+        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
+        export MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE
         cp $GITHUB_WORKSPACE/moodle-docker/config.docker-template.php $GITHUB_WORKSPACE/moodle/config.php
-        MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
-        MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose up -d
-        MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-db
-        MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-app
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose up -d
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-db
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-app
     - name: Init behat
-      run: MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/init.php"
+      run: |
+        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
+        export MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/init.php"
     - name: Run tests
-      run: MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --tags="@app" --auto-rerun"
+      run: |
+        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
+        export MOODLE_DOCKER_APP_PATH=$GITHUB_WORKSPACE
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --tags="@app" --auto-rerun"

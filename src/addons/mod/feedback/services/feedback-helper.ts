@@ -190,7 +190,7 @@ export class AddonModFeedbackHelperProvider {
 
             const attempt = await AddonModFeedback.getAttempt(module.instance, Number(params.showcompleted), {
                 cmId: module.id,
-                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 siteId,
             });
 

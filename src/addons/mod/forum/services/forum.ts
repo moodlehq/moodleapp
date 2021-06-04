@@ -778,7 +778,7 @@ export class AddonModForumProvider {
                 sortby: 'timemodified',
                 sortdirection: 'DESC',
             };
-            Object.assign(preSets, CoreSites.getReadingStrategyPreSets(CoreSitesReadingStrategy.PreferCache));
+            Object.assign(preSets, CoreSites.getReadingStrategyPreSets(CoreSitesReadingStrategy.PREFER_CACHE));
 
             response = await site.read<AddonModForumGetForumDiscussionsPaginatedWSResponse>(
                 'mod_forum_get_forum_discussions_paginated',
@@ -889,7 +889,7 @@ export class AddonModForumProvider {
                     .getDiscussionsInPages(forum.id, {
                         cmId: forum.cmid,
                         sortOrder: sortOrder.value,
-                        readingStrategy: CoreSitesReadingStrategy.PreferCache,
+                        readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
                     })
                     .then((response) => {
                         // Now invalidate the WS calls.

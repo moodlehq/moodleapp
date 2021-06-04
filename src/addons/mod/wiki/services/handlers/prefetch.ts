@@ -73,7 +73,7 @@ export class AddonModWikiPrefetchHandlerService extends CoreCourseActivityPrefet
             CorePluginFileDelegate.getFilesDownloadSize(files)));
 
         promises.push(this.getAllPages(module, courseId, {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         }).then((pages) => {
             let size = 0;
@@ -161,7 +161,7 @@ export class AddonModWikiPrefetchHandlerService extends CoreCourseActivityPrefet
         const userId = CoreSites.getCurrentSiteUserId();
 
         const commonOptions = {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
         const modOptions = {

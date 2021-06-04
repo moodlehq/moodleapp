@@ -60,7 +60,7 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const commonOptions = {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
         const modOptions = {

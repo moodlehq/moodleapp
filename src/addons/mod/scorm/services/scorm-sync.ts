@@ -125,7 +125,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
 
         const siteData = await AddonModScorm.getScormUserData(scormId, attempt, {
             cmId,
-            readingStrategy: refresh ? CoreSitesReadingStrategy.OnlyNetwork : undefined,
+            readingStrategy: refresh ? CoreSitesReadingStrategy.ONLY_NETWORK : undefined,
             siteId,
         });
 
@@ -222,7 +222,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
             // Last online attempt wasn't finished, let's check if it is now.
             const incomplete = await AddonModScorm.isAttemptIncomplete(scorm.id, lastOnline, {
                 cmId: scorm.coursemodule,
-                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 siteId,
             });
 
@@ -365,7 +365,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         try {
             userData = await AddonModScorm.getScormUserData(scormId, attempt, {
                 cmId,
-                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 siteId,
             });
         } catch {
@@ -616,7 +616,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         // Get attempts data. We ignore cache for online attempts, so this call will fail if offline or server down.
         const attemptsData = await AddonModScorm.getAttemptCount(scorm.id, {
             cmId: scorm.coursemodule,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         });
 
@@ -641,7 +641,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
             false :
             await AddonModScorm.isAttemptIncomplete(scorm.id, lastOnline, {
                 cmId: scorm.coursemodule,
-                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 siteId,
             });
 
@@ -799,7 +799,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
 
                 const userData = await AddonModScorm.getScormUserData(scormId, attempt, {
                     cmId,
-                    readingStrategy: refresh ? CoreSitesReadingStrategy.OnlyNetwork : undefined,
+                    readingStrategy: refresh ? CoreSitesReadingStrategy.ONLY_NETWORK : undefined,
                     siteId,
                 });
 

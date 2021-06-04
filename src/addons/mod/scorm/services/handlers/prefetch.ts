@@ -212,7 +212,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
 
         const modOptions: CoreCourseCommonModWSOptions = {
             cmId: scorm.coursemodule,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 

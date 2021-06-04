@@ -1675,20 +1675,20 @@ export class CoreSitesProvider {
      */
     getReadingStrategyPreSets(strategy?: CoreSitesReadingStrategy): CoreSiteWSPreSets {
         switch (strategy) {
-            case CoreSitesReadingStrategy.PreferCache:
+            case CoreSitesReadingStrategy.PREFER_CACHE:
                 return {
                     omitExpires: true,
                 };
-            case CoreSitesReadingStrategy.OnlyCache:
+            case CoreSitesReadingStrategy.ONLY_CACHE:
                 return {
                     omitExpires: true,
                     forceOffline: true,
                 };
-            case CoreSitesReadingStrategy.PreferNetwork:
+            case CoreSitesReadingStrategy.PREFER_NETWORK:
                 return {
                     getFromCache: false,
                 };
-            case CoreSitesReadingStrategy.OnlyNetwork:
+            case CoreSitesReadingStrategy.ONLY_NETWORK:
                 return {
                     getFromCache: false,
                     emergencyCache: false,
@@ -1889,10 +1889,10 @@ export type CoreRegisteredSiteSchema = CoreSiteSchema & {
  * Possible reading strategies (for cache).
  */
 export const enum CoreSitesReadingStrategy {
-    OnlyCache,
-    PreferCache,
-    OnlyNetwork,
-    PreferNetwork,
+    ONLY_CACHE,
+    PREFER_CACHE,
+    ONLY_NETWORK,
+    PREFER_NETWORK,
 }
 
 /**

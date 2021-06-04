@@ -1,6 +1,7 @@
 <form #messageForm>
     <textarea
         class="core-send-message-input"
+        [attr.aria-label]="placeholder"
         [core-auto-focus]="showKeyboard"
         [placeholder]="placeholder"
         rows="1"

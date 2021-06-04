@@ -287,7 +287,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         const lesson = await AddonModLesson.getLessonById(result.courseId, lessonId, { siteId });
 
         const passwordData = await AddonModLessonPrefetchHandler.getLessonPassword(lessonId, {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             askPassword,
             siteId,
         });
@@ -431,7 +431,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             // Retrieve the needed data.
             const lesson = await AddonModLesson.getLessonById(result.courseId!, lessonId, { siteId });
             passwordData = await AddonModLessonPrefetchHandler.getLessonPassword(lessonId, {
-                readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 askPassword,
                 siteId,
             });

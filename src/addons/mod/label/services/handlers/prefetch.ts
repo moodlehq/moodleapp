@@ -41,7 +41,7 @@ export class AddonModLabelPrefetchHandlerService extends CoreCourseResourcePrefe
 
         if (AddonModLabel.isGetLabelAvailableForSite()) {
             label = await AddonModLabel.getLabel(courseId, module.id, {
-                readingStrategy: ignoreCache ? CoreSitesReadingStrategy.OnlyNetwork : undefined,
+                readingStrategy: ignoreCache ? CoreSitesReadingStrategy.ONLY_NETWORK : undefined,
             });
         }
 

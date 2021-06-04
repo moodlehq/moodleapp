@@ -234,7 +234,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         const siteId = CoreSites.getCurrentSiteId();
 
         const options: CoreSitesCommonWSOptions = {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 
@@ -287,7 +287,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
     ): Promise<void> {
         const modOptions: CoreCourseCommonModWSOptions = {
             cmId: moduleId,
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 
@@ -313,7 +313,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                 moduleId,
                 {
                     userId,
-                    readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                    readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                     siteId,
                 },
                 true,
@@ -334,7 +334,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
     ): Promise<void> {
 
         const options: CoreSitesCommonWSOptions = {
-            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
         };
 
@@ -364,7 +364,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                             userId: submission.submitid,
                             groupId: group.id,
                             isBlind: !!submission.blindid,
-                            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                             siteId,
                         };
 
@@ -381,7 +381,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                         const submissionOptions = {
                             userId,
                             groupId: group.id,
-                            readingStrategy: CoreSitesReadingStrategy.OnlyNetwork,
+                            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                             siteId,
                         };
 

@@ -60,7 +60,7 @@ export class AddonModWikiCreateLinkHandlerService extends CoreContentLinksHandle
 
         const options = {
             cmId: params.cmId,
-            readingStrategy: CoreSitesReadingStrategy.PreferCache,
+            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
             siteId,
         };
 
