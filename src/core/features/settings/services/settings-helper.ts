@@ -473,6 +473,8 @@ export class CoreSettingsHelperProvider {
      */
     protected toggleDarkMode(enable: boolean = false): void {
         document.body.classList.toggle('dark', enable);
+
+        CoreApp.setStatusBarColor();
     }
 
 }

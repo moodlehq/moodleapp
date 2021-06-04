@@ -392,6 +392,8 @@ export class AddonRemoteThemesProvider {
 
         this.initSiteStyleElement(TMP_SITE_ID, false);
         this.stylesEls[TMP_SITE_ID].element.innerHTML = text;
+
+        CoreApp.setStatusBarColor();
     }
 
     /**
@@ -440,6 +442,8 @@ export class AddonRemoteThemesProvider {
         if (siteId && this.stylesEls[siteId]) {
             document.head.removeChild(this.stylesEls[siteId].element);
             delete this.stylesEls[siteId];
+
+            CoreApp.setStatusBarColor();
         }
     }
 
