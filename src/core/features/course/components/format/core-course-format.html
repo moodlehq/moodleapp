@@ -142,7 +142,10 @@
         </ion-item-divider>
 
         <ion-item class="ion-text-wrap" *ngIf="section.summary">
-            <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
+            <ion-label>
+                <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="course?.id">
+                </core-format-text>
+            </ion-label>
         </ion-item>
 
         <ng-container *ngFor="let module of section.modules">

@@ -2,21 +2,24 @@
 
 :host {
     --loading-background: var(--ion-background-color);
+    --loading-background-inline: var(--ion-background-color-rgb);
     --loading-spinner: var(--ion-color-primary);
     --loading-text-color: var(--ion-text-color);
     --loading-inline-margin: 0;
     --loading-inline-min-height: 28px;
+    --internal-loading-inline-min-height: var(--loading-inline-min-height);
 
     position: static;
     color: var(--loading-text-color);
+    @include core-transition(all, 200ms);
 
     &.margin {
         --loading-inline-margin: 10px;
+        --internal-loading-inline-min-height: calc(var(--loading-inline-min-height) + var(--loading-inline-margin) + var(--loading-inline-margin));
     }
 
     &.core-loading-loaded {
-        --loading-inline-margin: 0;
-        --loading-inline-min-height: 0;
+        --internal-loading-inline-min-height: 0;
     }
 
     ion-spinner {
@@ -27,17 +30,17 @@
     .core-loading-container {
         position: absolute;
         @include position(0, 0, 0, 0);
-        display: flex;
         height: 100%;
         width: 100%;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
         z-index: 3;
         margin: 0;
         padding: 0;
         background-color: var(--loading-background);
         @include core-transition(all, 200ms);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
     }
 
     .core-loading-message {
@@ -54,15 +57,14 @@
 
     &.core-loading-loaded {
         position: unset;
+        display: contents;
     }
 
     &.core-loading-inline {
-        --loading-background: transparent;
+        --loading-background: rgba(var(--loading-background-inline), 0.5);
         position: relative;
         display: block;
-        min-height: var(--loading-inline-min-height);
-        margin-top: var(--loading-inline-margin);
-        margin-bottom: var(--loading-inline-margin);
+        min-height: var(--internal-loading-inline-min-height);
 
         .core-loading-message {
             @include margin(0, 0, 0, 10px);

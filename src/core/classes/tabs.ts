@@ -144,15 +144,36 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
 
         this.tabBarHeight = this.tabBarElement.offsetHeight;
 
-        if (this.tabsShown) {
-            // Smooth translation.
-            this.tabBarElement.style.top = - this.lastScroll + 'px';
-            this.tabBarElement.style.height = 'calc(100% + ' + scroll + 'px';
-        } else {
-            this.tabBarElement.classList.add('tabs-hidden');
-            this.tabBarElement.style.top = '0';
-            this.tabBarElement.style.height = '';
+        this.applyScroll(this.tabsShown, this.lastScroll);
+    }
+
+    /**
+     * Apply scroll to hiding tabs.
+     *
+     * @param showTabs Show or completely hide tabs.
+     * @param scroll Scroll position.
+     */
+    protected applyScroll(showTabs: boolean, scroll?: number): void {
+        if (!this.tabBarElement || !this.tabBarHeight) {
+
+            return;
         }
+
+        if (showTabs) {
+            // Smooth translation.
+            this.tabBarElement!.classList.remove('tabs-hidden');
+            if (scroll === 0) {
+                this.tabBarElement!.style.height = '';
+                this.lastScroll = 0;
+            } else if (scroll !== undefined) {
+                this.tabBarElement!.style.height = (this.tabBarHeight - scroll) + 'px';
+            }
+        } else {
+            this.tabBarElement!.classList.add('tabs-hidden');
+            this.tabBarElement!.style.height = '';
+        }
+
+        this.tabsShown = showTabs;
     }
 
     /**
@@ -478,11 +499,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
 
         if (scrollTop <= 0) {
             // Ensure tabbar is shown.
-            this.tabsElement.style.top = '0';
-            this.tabsElement.style.height = '';
-            this.tabBarElement.classList.remove('tabs-hidden');
-            this.tabsShown = true;
-            this.lastScroll = 0;
+            this.applyScroll(true, 0);
 
             return;
         }
@@ -493,22 +510,17 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         }
 
         if (this.tabsShown && scrollTop > this.tabBarHeight) {
-            this.tabsShown = false;
-
             // Hide tabs.
-            this.tabBarElement.classList.add('tabs-hidden');
-            this.tabsElement.style.top = '0';
-            this.tabsElement.style.height = '';
+            this.applyScroll(false);
         } else if (!this.tabsShown && scrollTop <= this.tabBarHeight) {
-            this.tabsShown = true;
-            this.tabBarElement.classList.remove('tabs-hidden');
+            this.applyScroll(true);
         }
 
         if (this.tabsShown && scrollElement.scrollHeight > scrollElement.clientHeight + (this.tabBarHeight - scrollTop)) {
             // Smooth translation.
-            this.tabsElement.style.top = - scrollTop + 'px';
-            this.tabsElement.style.height = 'calc(100% + ' + scrollTop + 'px';
+            this.applyScroll(true, scrollTop);
         }
+
         // Use lastScroll after moving the tabs to avoid flickering.
         this.lastScroll = scrollTop;
     }

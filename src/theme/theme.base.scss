@@ -685,7 +685,7 @@ audio.core-media-adapt-width {
 }
 
 // Make links clickable when inside radio or checkbox items. Style part.
-@media (any-hover: hover) {
+@media (hover: hover) {
     ion-item.item-multiple-inputs:hover::part(native) {
         color: var(--color-hover);
 

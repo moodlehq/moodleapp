@@ -96,7 +96,7 @@
                             <core-user-avatar slot="start" [user]="members[message.useridfrom]" [linkProfile]="false"
                                 aria-hidden="true">
                             </core-user-avatar>
-                            {{ members[message.useridfrom].fullname }}
+                            <div>{{ members[message.useridfrom].fullname }}</div>
                         </div>
                         <div *ngIf="!message.showUserData" class="sr-only">
                             {{ message.useridfrom == currentUserId

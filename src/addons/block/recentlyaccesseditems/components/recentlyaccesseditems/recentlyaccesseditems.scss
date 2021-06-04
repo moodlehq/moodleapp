@@ -8,4 +8,7 @@
     .core-course-module-handler {
         --inner-border-width: 0;
     }
+    core-loading {
+        --loading-inline-min-height: 102px;
+    }
 }

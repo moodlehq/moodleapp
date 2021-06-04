@@ -72,6 +72,7 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() wsNotFiltered?: boolean | string; // If true it means the WS didn't filter the text for some reason.
     @Input() captureLinks?: boolean; // Whether links should tried to be opened inside the app. Defaults to true.
     @Input() openLinksInApp?: boolean; // Whether links should be opened in InAppBrowser.
+    @Input() hideIfEmpty = false; // If true, the tag will contain nothing if text is empty.
 
     /**
      * Max height in pixels to render the content box. It should be 50 at least to make sense.
@@ -86,6 +87,8 @@ export class CoreFormatTextDirective implements OnChanges {
     protected element: HTMLElement;
     protected showMoreDisplayed = false;
     protected loadingChangedListener?: CoreEventObserver;
+    protected emptyText = '';
+    protected contentSpan: HTMLElement;
 
     constructor(
         element: ElementRef,
@@ -93,9 +96,20 @@ export class CoreFormatTextDirective implements OnChanges {
         protected viewContainerRef: ViewContainerRef,
         protected sanitizer: DomSanitizer,
     ) {
-
         this.element = element.nativeElement;
-        this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
+        this.element.classList.add('core-format-text-loading'); // Hide contents until they're treated.
+
+        const placeholder = document.createElement('span');
+        placeholder.classList.add('core-format-text-loader');
+        this.element.appendChild(placeholder);
+
+        this.contentSpan = document.createElement('span');
+        this.contentSpan.classList.add('core-format-text-content');
+        this.element.appendChild(this.contentSpan);
+
+        this.emptyText = this.hideIfEmpty ? '' : '&nbsp;';
+        this.contentSpan.innerHTML = this.emptyText;
+
         this.afterRender = new EventEmitter<void>();
 
         this.element.addEventListener('click', this.elementClicked.bind(this));
@@ -183,7 +197,7 @@ export class CoreFormatTextDirective implements OnChanges {
      * Add magnifying glass icons to view adapted images at full size.
      */
     addMagnifyingGlasses(): void {
-        const imgs = Array.from(this.element.querySelectorAll('.core-adapted-img-container > img'));
+        const imgs = Array.from(this.contentSpan.querySelectorAll('.core-adapted-img-container > img'));
         if (!imgs.length) {
             return;
         }
@@ -339,7 +353,7 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     protected finishRender(): void {
         // Show the element again.
-        this.element.classList.remove('opacity-hide');
+        this.element.classList.remove('core-format-text-loading');
         // Emit the afterRender output.
         this.afterRender.emit();
     }
@@ -349,7 +363,7 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     protected async formatAndRenderContents(): Promise<void> {
         if (!this.text) {
-            this.element.innerHTML = ''; // Remove current contents.
+            this.contentSpan.innerHTML = this.emptyText; // Remove current contents.
             this.finishRender();
 
             return;
@@ -370,12 +384,12 @@ export class CoreFormatTextDirective implements OnChanges {
         // Disable media adapt to correctly calculate the height.
         this.element.classList.add('core-disable-media-adapt');
 
-        this.element.innerHTML = ''; // Remove current contents.
+        this.contentSpan.innerHTML = ''; // Remove current contents.
         if (this.maxHeight && result.div.innerHTML != '' &&
                 (this.fullOnClick || (window.innerWidth < 576 || window.innerHeight < 576))) { // Don't collapse in big screens.
 
             // Move the children to the current element to be able to calculate the height.
-            CoreDomUtils.moveChildren(result.div, this.element);
+            CoreDomUtils.moveChildren(result.div, this.contentSpan);
 
             // Calculate the height now.
             this.calculateHeight();
@@ -396,7 +410,7 @@ export class CoreFormatTextDirective implements OnChanges {
                     });
             }
         } else {
-            CoreDomUtils.moveChildren(result.div, this.element);
+            CoreDomUtils.moveChildren(result.div, this.contentSpan);
 
             // Add magnifying glasses to images.
             this.addMagnifyingGlasses();
@@ -405,7 +419,7 @@ export class CoreFormatTextDirective implements OnChanges {
         if (result.options.filter) {
             // Let filters handle HTML. We do it here because we don't want them to block the render of the text.
             CoreFilterDelegate.handleHtml(
-                this.element,
+                this.contentSpan,
                 result.filters,
                 this.viewContainerRef,
                 result.options,

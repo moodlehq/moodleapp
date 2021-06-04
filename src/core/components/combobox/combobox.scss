@@ -13,7 +13,6 @@
         --color: var(--core-combobox-color);
         --color-activated: var(--core-combobox-color);
         --border-color: var(--core-combobox-border-color);
-        --border-width: 0 0 var(--core-combobox-border-width) 0;
         --border-style: solid;
         --color-focused: currentcolor;
         --color-hover: currentcolor;
@@ -53,9 +52,7 @@ ion-button {
 }
 
 ion-select {
-    border-color: var(--border-color);
-    border-width: var(--border-width);
-    border-style: var(--border-style);
+    border-bottom: var(--core-combobox-border-width) var(--border-style) var(--border-color);
 
     &::part(icon) {
         margin: var(--icon-margin);
@@ -84,6 +81,8 @@ ion-select {
 
 ion-button {
     --border-radius: 0;
+    --border-width: 0 0 var(--core-combobox-border-width) 0;
+
     flex: 1;
     min-height: 45px;
 
