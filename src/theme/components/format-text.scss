@@ -2,22 +2,70 @@
 /** Styles of elements inside the directive should be placed in format-text.scss */
 @import "~theme/globals";
 
-:root {
-    --background: var(--background, #{$ion-item-background});
-    --background-gradient-rgb: var(--background-rgb, #{color-to-rgb-list($ion-item-background)});
-    --viewer-icon-background: rgba(255, 255, 255, .5);
+core-format-text {
+    --core-format-text-background: var(--background, #{$ion-item-background});
+    --core-format-text-background-gradient-rgb: var(--background-rgb, #{color-to-rgb-list($ion-item-background)});
+    --core-format-text-viewer-icon-background: rgba(255, 255, 255, .5);
+    --core-format-text-loader-shine: 251,251,251;
 }
 
-:root body.dark {
-    --background: var(--background, #{$ion-item-background-dark});
-    --background-gradient-rgb: var(--background-rgb, #{color-to-rgb-list($ion-item-background-dark)});
-    --viewer-icon-background: rgba(0, 0, 0, .5);
+body.dark core-format-text {
+    --core-format-text-background: var(--background, #{$ion-item-background-dark});
+    --core-format-text-background-gradient-rgb: var(--background-rgb, #{color-to-rgb-list($ion-item-background-dark)});
+    --core-format-text-viewer-icon-background: rgba(0, 0, 0, .5);
+    --core-format-text-loader-shine: 90,90,90;
 }
 
 core-format-text {
-    user-select: text;
-    word-break: break-word;
-    word-wrap: break-word;
+    display: contents;
+
+    .core-format-text-loader {
+        opacity: 0;
+        @include core-transition(opacity, 200ms);
+        display: contents;
+    }
+
+    &.core-format-text-loading {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        opacity: 1;
+        background-color: rgba(0,0,0,.1);
+        overflow: hidden;
+        border-radius: 5px;
+        display: block;
+
+        .core-format-text-loader {
+            position: absolute;
+            left: -45%;
+            height: 100%;
+            width: 45%;
+            background-image: -webkit-linear-gradient(to left, rgba(var(--core-format-text-loader-shine), .05), rgba(var(--core-format-text-loader-shine), .3), rgba(var(--core-format-text-loader-shine), .6), rgba(var(--core-format-text-loader-shine), .3), rgba(var(--core-format-text-loader-shine), .05));
+            background-image: linear-gradient(to left, rgba(var(--core-format-text-loader-shine), .05), rgba(var(--core-format-text-loader-shine), .3), rgba(var(--core-format-text-loader-shine), .6), rgba(var(--core-format-text-loader-shine), .3), rgba(var(--core-format-text-loader-shine), .05));
+            animation: loading 1s infinite;
+            opacity: 1;
+            display: inline;
+        }
+
+        .core-format-text-content {
+            opacity: 0;
+            display: inline;
+        }
+
+        .core-show-more {
+            display: none !important;
+        }
+    }
+
+    .core-format-text-content {
+        opacity: 1;
+        @include core-transition(opacity, 200ms);
+
+        display: contents;
+        user-select: text;
+        word-break: break-word;
+        word-wrap: break-word;
+    }
 
     &[maxHeight],
     &[ng-reflect-max-height] {
@@ -57,7 +105,7 @@ core-format-text {
                     position: absolute;
                     @include position(null, 0, 0, null);
                     z-index: 7;
-                    background-color: var(--background);
+                    background-color: var(--core-format-text-background);
                     color: var(--text-color);
                     @include padding(null, null, null, 10px);
                     margin: 0;
@@ -68,10 +116,8 @@ core-format-text {
                     height: 100%;
                     position: absolute;
                     @include position(null, 0, 0, 0);
-                    background: -moz-linear-gradient(top, rgba(var(--background-gradient-rgb), 0) calc(100% - 50px), rgba(var(--background-gradient-rgb), 1) calc(100% - 15px));
-                    background: -webkit-gradient(left top, left bottom, color-stop(calc(100% - 50px), rgba(var(--background-gradient-rgb), 0)), color-stop(calc(100% - 15px), rgba(var(--background-gradient-rgb), 1)));
-                    background: -webkit-linear-gradient(top, rgba(var(--background-gradient-rgb), 0) calc(100% - 50px), rgba(var(--background-gradient-rgb), 1) calc(100% - 15px));
-                    background: linear-gradient(to bottom, rgba(var(--background-gradient-rgb), 0) calc(100% - 50px), rgba(var(--background-gradient-rgb), 1) calc(100% - 15px));
+                    background: -webkit-linear-gradient(top, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 50px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 15px));
+                    background: linear-gradient(to bottom, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 50px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 15px));
                     z-index: 6;
                 }
             }
@@ -115,15 +161,15 @@ core-format-text {
     .core-adapted-img-container {
         position: relative;
         display: inline-block;
-        width: 100%;
+        max-width: 100%;
     }
 
     .core-image-viewer-icon {
         position: absolute;
         @include position(null, 10px, 10px, null);
-        color: var(--black);
+        color: var(--ion-text-color);
         border-radius: 5px;
-        background-color: var(--viewer-icon-background);
+        background-color: var(--core-format-text-viewer-icon-background);
         display: flex;
 
         width: var(--a11y-min-target-size);
@@ -139,5 +185,15 @@ core-format-text {
         &:hover {
             opacity: .7;
         }
+    }
+}
+
+
+@keyframes loading {
+    0% {
+        left: -45%;
+    }
+    100% {
+        left: 100%;
     }
 }
