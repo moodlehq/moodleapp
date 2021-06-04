@@ -1446,6 +1446,12 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             throw new CoreError('No member selected to be blocked.');
         }
 
+        if (this.otherMember.canmessageevenifblocked) {
+            CoreDomUtils.showErrorModal(Translate.instant('addon.messages.cantblockuser', { $a: this.otherMember.fullname }));
+
+            return;
+        }
+
         const template = Translate.instant('addon.messages.blockuserconfirm', { $a: this.otherMember.fullname });
         const okText = Translate.instant('addon.messages.blockuser');
 

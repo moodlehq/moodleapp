@@ -237,6 +237,7 @@
   "addon.messages.blocknoncontacts": "message",
   "addon.messages.blockuser": "message",
   "addon.messages.blockuserconfirm": "message",
+  "addon.messages.cantblockuser": "message",
   "addon.messages.contactableprivacy": "message",
   "addon.messages.contactableprivacy_coursemember": "message",
   "addon.messages.contactableprivacy_onlycontacts": "message",
