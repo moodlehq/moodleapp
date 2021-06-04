@@ -14,6 +14,8 @@
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
@@ -36,7 +38,7 @@ import { CoreForms } from '@singletons/form';
 })
 export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
-    @ViewChild('credentialsForm') formElement?: ElementRef;
+    @ViewChild('credentialsForm') formElement?: ElementRef<HTMLFormElement>;
 
     credForm!: FormGroup;
     siteUrl!: string;
@@ -57,6 +59,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     protected viewLeft = false;
     protected siteId?: string;
     protected urlToOpen?: string;
+    protected valueChangeSubscription?: Subscription;
 
     constructor(
         protected fb: FormBuilder,
@@ -95,6 +98,28 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         } else {
             this.siteChecked = true;
             this.pageLoaded = true;
+        }
+
+        if (CoreApp.isIOS()) {
+            // Make iOS auto-fill work. The field that isn't focused doesn't get updated, do it manually.
+            // Debounce it to prevent triggering this function too often when the user is typing.
+            this.valueChangeSubscription = this.credForm.valueChanges.pipe(debounceTime(1000)).subscribe((changes) => {
+                if (!this.formElement || !this.formElement.nativeElement) {
+                    return;
+                }
+
+                const usernameInput = this.formElement.nativeElement.querySelector<HTMLInputElement>('input[name="username"]');
+                const passwordInput = this.formElement.nativeElement.querySelector<HTMLInputElement>('input[name="password"]');
+                const usernameValue = usernameInput?.value;
+                const passwordValue = passwordInput?.value;
+
+                if (usernameValue !== undefined && usernameValue !== changes.username) {
+                    this.credForm.get('username')?.setValue(usernameValue);
+                }
+                if (passwordValue !== undefined && passwordValue !== changes.password) {
+                    this.credForm.get('password')?.setValue(passwordValue);
+                }
+            });
         }
     }
 
@@ -307,6 +332,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.viewLeft = true;
         CoreEvents.trigger(CoreEvents.LOGIN_SITE_UNCHECKED, { config: this.siteConfig }, this.siteId);
+        this.valueChangeSubscription?.unsubscribe();
     }
 
 }
