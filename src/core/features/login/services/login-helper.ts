@@ -661,9 +661,7 @@ export class CoreLoginHelperProvider {
 
         // Always open it in browser because the user might have the session stored in there.
         CoreUtils.openInBrowser(loginUrl);
-
-        const nav = <any> window.navigator; // eslint-disable-line @typescript-eslint/no-explicit-any
-        nav.app?.exitApp();
+        CoreApp.closeApp();
 
         return true;
     }
@@ -695,9 +693,7 @@ export class CoreLoginHelperProvider {
             });
         } else {
             CoreUtils.openInBrowser(loginUrl);
-
-            const nav = <any> window.navigator; // eslint-disable-line @typescript-eslint/no-explicit-any
-            nav.app?.exitApp();
+            CoreApp.closeApp();
         }
     }
 

@@ -563,6 +563,14 @@ export class CoreAppProvider {
     }
 
     /**
+     * Close the app.
+     */
+    closeApp(): void {
+        const nav = <any> window.navigator; // eslint-disable-line @typescript-eslint/no-explicit-any
+        nav.app?.exitApp();
+    }
+
+    /**
      * Forget redirect data.
      */
     forgetRedirect(): void {

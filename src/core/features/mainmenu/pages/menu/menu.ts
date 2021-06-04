@@ -226,16 +226,10 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         // Use a priority lower than 0 (navigation).
         event.detail.register(-10, async (processNextHandler: () => void) => {
             // This callback can be called at the same time as Ionic's back navigation callback.
-            // Check if the path changes due to the back navigation handler, to know if we're at root level of the tab.
-            // Ionic doc recommends IonRouterOutlet.canGoBack, but there's no easy way to get the current outlet from here.
-            const initialPath = CoreNavigator.getCurrentPath();
-
-            // The path seems to change immediately (0 ms timeout), but use 50ms just in case.
-            await CoreUtils.wait(50);
-
-            if (CoreNavigator.getCurrentPath() != initialPath) {
-                // Ionic has navigated back, nothing else to do.
-                return;
+            // Check if user is already at the root of a tab.
+            const mainMenuRootRoute = CoreNavigator.getCurrentRoute({ routeData: { isMainMenuRoot: true } });
+            if (!mainMenuRootRoute) {
+                return; // Not at root level, let Ionic handle the navigation.
             }
 
             // No back navigation, already at root level. Check if we should change tab.

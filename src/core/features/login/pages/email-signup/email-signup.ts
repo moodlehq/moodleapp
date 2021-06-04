@@ -33,6 +33,7 @@ import {
 } from '@features/login/services/login-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
+import { CoreRecaptchaComponent } from '@components/recaptcha/recaptcha';
 
 /**
  * Page to signup using email.
@@ -45,6 +46,7 @@ import { CoreForms } from '@singletons/form';
 export class CoreLoginEmailSignupPage implements OnInit {
 
     @ViewChild(IonContent) content?: IonContent;
+    @ViewChild(CoreRecaptchaComponent) recaptchaComponent?: CoreRecaptchaComponent;
     @ViewChild('ageForm') ageFormElement?: ElementRef;
     @ViewChild('signupFormEl') signupFormElement?: ElementRef;
 
@@ -341,9 +343,12 @@ export class CoreLoginEmailSignupPage implements OnInit {
                 CoreDomUtils.showAlert(Translate.instant('core.success'), message);
                 CoreNavigator.back();
             } else {
-                if (result.warnings && result.warnings.length) {
-                    let error = result.warnings[0].message;
-                    if (error == 'incorrect-captcha-sol') {
+                this.recaptchaComponent?.expireRecaptchaAnswer();
+
+                const warning = result.warnings?.[0];
+                if (warning) {
+                    let error = warning.message;
+                    if (error == 'incorrect-captcha-sol' || (!error && warning.item == 'recaptcharesponse')) {
                         error = Translate.instant('core.login.recaptchaincorrect');
                     }
 

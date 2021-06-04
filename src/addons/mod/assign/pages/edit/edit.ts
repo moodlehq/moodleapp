@@ -235,12 +235,12 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
      * @param inputData The input data.
      * @return Promise resolved with the data to submit.
      */
-    protected prepareSubmissionData(inputData: CoreFormFields): Promise<AddonModAssignSavePluginData> {
+    protected async prepareSubmissionData(inputData: CoreFormFields): Promise<AddonModAssignSavePluginData> {
         // If there's offline data, always save it in offline.
         this.saveOffline = this.hasOffline;
 
         try {
-            return AddonModAssignHelper.prepareSubmissionPluginData(
+            return await AddonModAssignHelper.prepareSubmissionPluginData(
                 this.assign!,
                 this.userSubmission,
                 inputData,
@@ -251,7 +251,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 // Cannot submit in online, prepare for offline usage.
                 this.saveOffline = true;
 
-                return AddonModAssignHelper.prepareSubmissionPluginData(
+                return await AddonModAssignHelper.prepareSubmissionPluginData(
                     this.assign!,
                     this.userSubmission,
                     inputData,

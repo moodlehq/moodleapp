@@ -514,8 +514,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      *
      * @return Promise resolved when done.
      */
-    protected async sync(): Promise<void> {
-        await AddonModDataPrefetchHandler.sync(this.module, this.courseId);
+    protected sync(): Promise<AddonModDataSyncResult> {
+        return AddonModDataPrefetchHandler.sync(this.module, this.courseId);
     }
 
     /**

@@ -7,6 +7,7 @@
     "blocknoncontacts": "Prevent non-contacts from messaging me",
     "blockuser": "Block user",
     "blockuserconfirm": "Are you sure you want to block {{$a}}?",
+    "cantblockuser": "You can't block {{$a}} because they have a role with permission to message all users.",
     "contactableprivacy": "Accept messages from:",
     "contactableprivacy_coursemember": "My contacts and anyone in my courses",
     "contactableprivacy_onlycontacts": "My contacts only",

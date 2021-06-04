@@ -224,11 +224,17 @@ export class AppComponent implements OnInit, AfterViewInit {
         document.addEventListener('ionBackButton', (event: BackButtonEvent) => {
             // This callback should have the lowest priority in the app.
             event.detail.register(-100, async () => {
+                const initialPath = CoreNavigator.getCurrentPath();
+                if (initialPath.startsWith('/main/')) {
+                    // Main menu has its own callback to handle back. If this callback is called it means we should exit app.
+                    CoreApp.closeApp();
+
+                    return;
+                }
+
                 // This callback can be called at the same time as Ionic's back navigation callback.
                 // Check if the path changes due to the back navigation handler, to know if we're at root level.
                 // Ionic doc recommends IonRouterOutlet.canGoBack, but there's no easy way to get the current outlet from here.
-                const initialPath = CoreNavigator.getCurrentPath();
-
                 // The path seems to change immediately (0 ms timeout), but use 50ms just in case.
                 await CoreUtils.wait(50);
 
@@ -238,8 +244,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 }
 
                 // Quit the app.
-                const nav = <any> window.navigator; // eslint-disable-line @typescript-eslint/no-explicit-any
-                nav.app?.exitApp();
+                CoreApp.closeApp();
             });
         });
     }

@@ -87,8 +87,7 @@ export class CoreRecaptchaComponent implements OnInit {
             }
 
             if (event.data.action == 'expired') {
-                this.expired = true;
-                this.model![this.modelValueName] = '';
+                this.expireRecaptchaAnswer();
             } else if (event.data.action == 'callback') {
                 this.expired = false;
                 this.model![this.modelValueName] = event.data.value;
@@ -99,6 +98,14 @@ export class CoreRecaptchaComponent implements OnInit {
                 loadStopSubscription.unsubscribe();
             }
         });
+    }
+
+    /**
+     * Expire the recaptcha answer.
+     */
+    expireRecaptchaAnswer(): void {
+        this.expired = true;
+        this.model![this.modelValueName] = '';
     }
 
 }
