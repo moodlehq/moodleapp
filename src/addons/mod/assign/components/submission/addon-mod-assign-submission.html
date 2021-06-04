@@ -8,7 +8,6 @@
             <h2>{{ user!.fullname }}</h2>
             <ng-container *ngTemplateOutlet="submissionStatus"></ng-container>
         </ion-label>
-        <ng-container *ngTemplateOutlet="submissionStatusBadges"></ng-container>
     </ion-item>
 
     <!-- Status of the submission if user is blinded. -->
@@ -17,7 +16,6 @@
             <h2>{{ 'addon.mod_assign.hiddenuser' | translate }} {{blindId}}</h2>
             <ng-container *ngTemplateOutlet="submissionStatus"></ng-container>
         </ion-label>
-        <ng-container *ngTemplateOutlet="submissionStatusBadges"></ng-container>
     </ion-item>
 
     <!-- Status of the submission in the rest of cases. -->
@@ -26,7 +24,6 @@
             <h2>{{ 'addon.mod_assign.submissionstatus' | translate }}</h2>
             <ng-container *ngTemplateOutlet="submissionStatus"></ng-container>
         </ion-label>
-        <ng-container *ngTemplateOutlet="submissionStatusBadges"></ng-container>
     </ion-item>
 
     <!-- Tabs: see the submission or grade it. -->
@@ -385,12 +382,12 @@
             {{ 'addon.mod_assign.defaultteam' | translate }}
         </p>
     </ng-container>
-</ng-template>
-<ng-template #submissionStatusBadges>
-    <ion-badge slot="end" *ngIf="statusTranslated" [color]="statusColor">
-        {{ statusTranslated }}
-    </ion-badge>
-    <ion-badge slot="end" *ngIf="gradingStatusTranslationId" [color]="gradingColor">
-        {{ gradingStatusTranslationId | translate }}
-    </ion-badge>
+    <p>
+        <ion-badge *ngIf="statusTranslated" [color]="statusColor">
+            {{ statusTranslated }}
+        </ion-badge>
+        <ion-badge class="ion-margin-start" *ngIf="gradingStatusTranslationId" [color]="gradingColor">
+            {{ gradingStatusTranslationId | translate }}
+        </ion-badge>
+    </p>
 </ng-template>

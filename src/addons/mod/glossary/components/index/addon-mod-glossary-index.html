@@ -49,7 +49,7 @@
         [autoFocus]="true" [lengthCheck]="2" (onClear)="toggleSearch()" searchArea="AddonModGlossary-{{module.id}}">
     </core-search-box>
 
-    <core-loading [hideUntil]="entries.loaded">
+    <core-loading [hideUntil]="loaded">
         <!-- Activity info. -->
         <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
             (completionChanged)="onCompletionChange()">
