@@ -30,6 +30,9 @@ import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.modu
             deps: [Injector],
             useFactory: (injector: Injector) => buildTabMainRoutes(injector, {
                 component: CoreMainMenuMorePage,
+                data: {
+                    isMainMenuRoot: true,
+                },
             }),
         },
     ],
