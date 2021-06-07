@@ -5,6 +5,7 @@
         class="core-rte-editor"
         role="textbox"
         contenteditable="true"
+        [attr.aria-labelledby]="ariaLabelledBy"
         [attr.data-placeholder-text]="placeholder"
         (focus)="showToolbar($event)"
         (blur)="hideToolbar($event)"
