@@ -122,7 +122,8 @@ export class CoreRatingProvider {
 
         try {
             await CoreRatingOffline.deleteRating(component, ratingArea, contextLevel, instanceId, itemId, siteId);
-            this.addRatingOnline(
+
+            const response = await this.addRatingOnline(
                 component,
                 ratingArea,
                 contextLevel,
@@ -134,6 +135,8 @@ export class CoreRatingProvider {
                 aggregateMethod,
                 siteId,
             );
+
+            return response;
         } catch (error) {
             if (CoreUtils.isWebServiceError(error)) {
                 // The WebService has thrown an error or offline not supported, reject.
