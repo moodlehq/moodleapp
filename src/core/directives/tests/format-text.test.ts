@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DomSanitizer } from '@angular/platform-browser';
 import { IonContent } from '@ionic/angular';
 import { NgZone } from '@angular/core';
 import Faker from 'faker';
@@ -39,7 +38,7 @@ describe('CoreFormatTextDirective', () => {
         mockSingleton(Platform, { ready: () => Promise.resolve() });
         mockSingleton(CoreConfig, { get: (_, defaultValue) => defaultValue });
 
-        CoreDomUtils.setInstance(new CoreDomUtilsProvider(mock<DomSanitizer>()));
+        CoreDomUtils.setInstance(new CoreDomUtilsProvider());
         CoreUrlUtils.setInstance(new CoreUrlUtilsProvider());
         CoreUtils.setInstance(new CoreUtilsProvider(mock<NgZone>()));
 

@@ -23,7 +23,6 @@ import {
     Optional,
     ViewContainerRef,
 } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { IonContent } from '@ionic/angular';
 
 import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -94,7 +93,6 @@ export class CoreFormatTextDirective implements OnChanges {
         element: ElementRef,
         @Optional() protected content: IonContent,
         protected viewContainerRef: ViewContainerRef,
-        protected sanitizer: DomSanitizer,
     ) {
         this.element = element.nativeElement;
         this.element.classList.add('core-format-text-loading'); // Hide contents until they're treated.
@@ -520,7 +518,7 @@ export class CoreFormatTextDirective implements OnChanges {
         // Important: We need to look for links first because in 'img' we add new links without core-link.
         anchors.forEach((anchor) => {
             // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
-            const linkDir = new CoreLinkDirective(new ElementRef(anchor), this.content, this.sanitizer);
+            const linkDir = new CoreLinkDirective(new ElementRef(anchor), this.content);
             linkDir.capture = this.captureLinks ?? true;
             linkDir.inApp = this.openLinksInApp;
             linkDir.ngOnInit();

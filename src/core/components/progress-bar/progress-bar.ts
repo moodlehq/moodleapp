@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy } from '@angular/core';
-import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
-import { Translate } from '@singletons';
+import { SafeStyle } from '@angular/platform-browser';
+import { DomSanitizer, Translate } from '@singletons';
 
 /**
  * Component to show a progress bar and its value.
@@ -39,8 +39,6 @@ export class CoreProgressBarComponent implements OnChanges {
     progressBarValueText?: string;
 
     protected textSupplied = false;
-
-    constructor(private sanitizer: DomSanitizer) { }
 
     /**
      * Detect changes on input properties.
@@ -69,7 +67,7 @@ export class CoreProgressBarComponent implements OnChanges {
                     this.text = String(this.progress);
                 }
 
-                this.width = this.sanitizer.bypassSecurityTrustStyle(this.progress + '%');
+                this.width = DomSanitizer.bypassSecurityTrustStyle(this.progress + '%');
             }
         }
 

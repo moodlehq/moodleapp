@@ -15,7 +15,7 @@
 import {
     Component, Input, Output, ViewChild, ElementRef, EventEmitter, OnChanges, SimpleChange,
 } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { SafeResourceUrl } from '@angular/platform-browser';
 
 import { CoreFile } from '@services/file';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -23,6 +23,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreIframeUtils } from '@services/utils/iframe';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLogger } from '@singletons/logger';
+import { DomSanitizer } from '@singletons';
 
 @Component({
     selector: 'core-iframe',
@@ -46,10 +47,7 @@ export class CoreIframeComponent implements OnChanges {
     protected logger: CoreLogger;
     protected initialized = false;
 
-    constructor(
-        protected sanitizer: DomSanitizer,
-    ) {
-
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreIframe');
         this.loaded = new EventEmitter<HTMLIFrameElement>();
     }
@@ -105,7 +103,7 @@ export class CoreIframeComponent implements OnChanges {
 
             await CoreIframeUtils.fixIframeCookies(url);
 
-            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url));
+            this.safeUrl = DomSanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url));
 
             // Now that the URL has been set, initialize the iframe. Wait for the iframe to the added to the DOM.
             setTimeout(() => {

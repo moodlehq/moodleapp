@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 
 import { CoreConstants } from '@/core/constants';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
@@ -24,7 +23,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { makeSingleton } from '@singletons';
+import { DomSanitizer, makeSingleton } from '@singletons';
 import { AddonModLtiHelper } from '../lti-helper';
 import { AddonModLti, AddonModLtiProvider } from '../lti';
 import { AddonModLtiIndexComponent } from '../../components/index';
@@ -50,8 +49,6 @@ export class AddonModLtiModuleHandlerService implements CoreCourseModuleHandler 
         [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
         [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
     };
-
-    constructor(protected sanitizer: DomSanitizer) {}
 
     /**
      * @inheritdoc
@@ -124,11 +121,11 @@ export class AddonModLtiModuleHandlerService implements CoreCourseModuleHandler 
             // Get the internal URL.
             const url = await CoreFilepool.getSrcByUrl(siteId, icon, AddonModLtiProvider.COMPONENT, module.id);
 
-            handlerData.icon = this.sanitizer.bypassSecurityTrustUrl(url);
+            handlerData.icon = DomSanitizer.bypassSecurityTrustUrl(url);
         } catch {
             // Error downloading. If we're online we'll set the online url.
             if (CoreApp.isOnline()) {
-                handlerData.icon = this.sanitizer.bypassSecurityTrustUrl(icon);
+                handlerData.icon = DomSanitizer.bypassSecurityTrustUrl(icon);
             }
         }
     }

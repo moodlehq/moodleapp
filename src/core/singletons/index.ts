@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ApplicationRef, ApplicationInitStatus, Injector, NgZone as NgZoneService, Type } from '@angular/core';
+import { AbstractType, ApplicationInitStatus, ApplicationRef, Injector, NgZone as NgZoneService, Type } from '@angular/core';
 import { Router as RouterService } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { DomSanitizer as DomSanitizerService } from '@angular/platform-browser';
 
 import {
     Platform as PlatformService,
@@ -109,7 +110,7 @@ export function setCreateSingletonMethodProxy(method: typeof createSingletonMeth
  * @return Singleton proxy.
  */
 export function makeSingleton<Service extends object = object>( // eslint-disable-line @typescript-eslint/ban-types
-    injectionToken: Type<Service> | Type<unknown> | string,
+    injectionToken: Type<Service> | AbstractType<Service> | Type<unknown> | string,
 ): CoreSingletonProxy<Service> {
     const singleton = {
         setInstance(instance: Service) {
@@ -199,6 +200,7 @@ export const ApplicationInit = makeSingleton(ApplicationInitStatus);
 export const Application = makeSingleton(ApplicationRef);
 export const NavController = makeSingleton(NavControllerService);
 export const Router = makeSingleton(RouterService);
+export const DomSanitizer = makeSingleton(DomSanitizerService);
 
 // Convert external libraries injectables.
 export const Translate = makeSingleton(TranslateService);

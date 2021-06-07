@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Directive, Input, OnInit, ElementRef, Optional, SecurityContext } from '@angular/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { SafeUrl } from '@angular/platform-browser';
 import { IonContent } from '@ionic/angular';
 
 import { CoreFileHelper } from '@services/file-helper';
@@ -25,6 +25,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { DomSanitizer } from '@singletons';
 
 /**
  * Directive to open a link in external browser or in the app.
@@ -48,7 +49,6 @@ export class CoreLinkDirective implements OnInit {
     constructor(
         element: ElementRef,
         @Optional() protected content: IonContent,
-        protected sanitizer: DomSanitizer,
     ) {
         this.element = element.nativeElement;
     }
@@ -96,7 +96,7 @@ export class CoreLinkDirective implements OnInit {
         let href: string | null = null;
         if (this.href) {
             // Convert the URL back to string if needed.
-            href = typeof this.href === 'string' ? this.href : this.sanitizer.sanitize(SecurityContext.URL, this.href);
+            href = typeof this.href === 'string' ? this.href : DomSanitizer.sanitize(SecurityContext.URL, this.href);
         }
 
         href = href || this.element.getAttribute('href') || this.element.getAttribute('xlink:href');

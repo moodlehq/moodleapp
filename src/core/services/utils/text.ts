@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { SafeUrl } from '@angular/platform-browser';
 import { ModalOptions } from '@ionic/core';
 
 import { CoreApp } from '@services/app';
 import { CoreLang } from '@services/lang';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
-import { makeSingleton, Translate } from '@singletons';
+import { DomSanitizer, makeSingleton, Translate } from '@singletons';
 import { CoreWSFile } from '@services/ws';
 import { Locutus } from '@singletons/locutus';
 import { CoreViewerTextComponent } from '@features/viewer/components/text/text';
@@ -94,8 +94,6 @@ export class CoreTextUtilsProvider {
 
     protected template: HTMLTemplateElement = document.createElement('template'); // A template element to convert HTML to element.
 
-    constructor(private sanitizer: DomSanitizer) { }
-
     /**
      * Add ending slash from a path or URL.
      *
@@ -156,7 +154,7 @@ export class CoreTextUtilsProvider {
      * @return URL to view the address.
      */
     buildAddressURL(address: string): SafeUrl {
-        return this.sanitizer.bypassSecurityTrustUrl((CoreApp.isAndroid() ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
+        return DomSanitizer.bypassSecurityTrustUrl((CoreApp.isAndroid() ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
                 encodeURIComponent(address));
     }
 

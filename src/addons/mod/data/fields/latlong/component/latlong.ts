@@ -16,11 +16,12 @@ import { AddonModDataFieldPluginComponent } from '@addons/mod/data/classes/field
 import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { SafeUrl } from '@angular/platform-browser';
 import { CoreAnyError } from '@classes/errors/error';
 import { CoreApp } from '@services/app';
 import { CoreGeolocation, CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
 import { CoreDomUtils } from '@services/utils/dom';
+import { DomSanitizer } from '@singletons';
 
 /**
  * Component to render data latlong field.
@@ -35,10 +36,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
     east?: number;
     locationServicesEnabled = false;
 
-    constructor(
-        fb: FormBuilder,
-        protected sanitizer: DomSanitizer,
-    ) {
+    constructor(fb: FormBuilder) {
         super(fb);
     }
 
@@ -82,7 +80,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
             }
         }
 
-        return this.sanitizer.bypassSecurityTrustUrl(url);
+        return DomSanitizer.bypassSecurityTrustUrl(url);
     }
 
     /**
