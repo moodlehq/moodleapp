@@ -259,6 +259,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                 forum: this.forum,
             },
             backdropDismiss: false,
+            cssClass: 'core-modal-fullscreen',
         });
 
         if (!modalData) {
