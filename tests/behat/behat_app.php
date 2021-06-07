@@ -717,6 +717,66 @@ class behat_app extends behat_base {
     }
 
     /**
+     * Force cron tasks instead of waiting for the next scheduled execution.
+     *
+     * @When /^I run cron tasks in the app$/
+     */
+    public function i_run_cron_tasks_in_the_app() {
+        $session = $this->getSession();
+
+        // Force cron tasks execution and wait until they are completed.
+        $operationid = random_string();
+
+        $session->executeScript(
+            "cronProvider.forceSyncExecution().then(() => { window['behat_{$operationid}_completed'] = true; });"
+        );
+        $this->spin(
+            function() use ($session, $operationid) {
+                return $session->evaluateScript("window['behat_{$operationid}_completed'] || false");
+            },
+            false,
+            60,
+            new ExpectationException('Forced cron tasks in the app took too long to complete', $session)
+        );
+
+        // Trigger Angular change detection multiple times in case some changes have
+        // side-effects that result in further pending operations.
+        for ($ticks = 5; $ticks > 0; $ticks--) {
+            $session->executeScript($this->islegacy ? 'appRef.tick();' : 'changeDetector.detectChanges();');
+        }
+    }
+
+    /**
+     * Wait until loading has finished.
+     *
+     * @When /^I wait loading to finish in the app$/
+     */
+    public function i_wait_loading_to_finish_in_the_app() {
+        $session = $this->getSession();
+
+        $this->spin(
+            function() use ($session) {
+                $session->executeScript($this->islegacy ? 'appRef.tick();' : 'changeDetector.detectChanges();');
+
+                $nodes = $this->find_all('css', 'core-loading ion-spinner');
+
+                foreach ($nodes as $node) {
+                    if (!$node->isVisible()) {
+                        continue;
+                    }
+
+                    return false;
+                }
+
+                return true;
+            },
+            false,
+            60,
+            new ExpectationException('"Loading took too long to complete', $session)
+        );
+    }
+
+    /**
      * Closes the current browser tab.
      *
      * This assumes it was opened by the app and you will now get back to the app.
@@ -778,6 +838,19 @@ class behat_app extends behat_base {
      */
     public function parse_negation(string $not): bool {
         return !empty($not);
+    }
+
+    /**
+     * Replaces $WWWROOT for the url of the Moodle site.
+     *
+     * @Transform /^(.*\$WWWROOT.*)$/
+     * @param string $text Text.
+     * @return string
+     */
+    public function replace_wwwroot($text) {
+        global $CFG;
+
+        return str_replace('$WWWROOT', $CFG->behat_wwwroot, $text);
     }
 
 }
