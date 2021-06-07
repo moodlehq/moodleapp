@@ -1,4 +1,4 @@
-@mod @mod_forum @app @app_upto3.9.4 @javascript
+@mod @mod_forum @app @javascript
 Feature: Test basic usage of forum activity in app
   In order to participate in the forum while using the mobile app
   As a student
@@ -24,7 +24,6 @@ Feature: Test basic usage of forum activity in app
       | activity   | name            | intro       | course | idnumber | groupmode | assessed | scale |
       | forum      | Test forum name | Test forum  | C1     | forum    | 0         | 1        | 1     |
 
-  @app @3.8.0
   Scenario: Create new discussion
     When I enter the app
     And I log in as "student1"
@@ -34,12 +33,11 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Subject" to "My happy subject" in the app
     And I set the field "Message" to "An awesome message" in the app
     And I press "Post to forum" in the app
-    Then I should see "My happy subject"
+    Then I should find "My happy subject" in the app
 
     When I press "My happy subject" in the app
-    Then I should see "An awesome message"
+    Then I should find "An awesome message" in the app
 
-  @app_from3.7
   Scenario: Reply a post
     When I enter the app
     And I log in as "student1"
@@ -50,15 +48,14 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
     And I press "DiscussionSubject" in the app
-    Then I should see "Reply"
+    Then I should find "Reply" in the app
 
     When I press "Reply" in the app
-    And I set the field "Write your reply" to "ReplyMessage" in the app
+    And I set the field "Message" to "ReplyMessage" in the app
     And I press "Post to forum" in the app
-    Then I should see "DiscussionMessage"
-    And I should see "ReplyMessage"
+    Then I should find "DiscussionMessage" in the app
+    And I should find "ReplyMessage" in the app
 
-  @app @3.8.0
   Scenario: Star and pin discussions (student)
     When I enter the app
     And I log in as "student1"
@@ -73,29 +70,28 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "normal message" in the app
     And I press "Post to forum" in the app
     And I press "starred subject" in the app
-    Then I should see "starred message"
+    Then I should find "starred message" in the app
 
     When I press the back button in the app
     And I press "Display options" near "starred subject" in the app
     And I press "Star this discussion" in the app
     And I press "starred subject" in the app
-    Then I should see "starred message"
+    Then I should find "starred message" in the app
 
     When I press the back button in the app
     And I press "normal subject" in the app
-    Then I should see "normal message"
+    Then I should find "normal message" in the app
 
     When I press the back button in the app
     And I press "Display options" near "starred subject" in the app
     And I press "Unstar this discussion" in the app
     And I press "starred subject" in the app
-    Then I should see "starred message"
+    Then I should find "starred message" in the app
 
     When I press the back button in the app
     And I press "normal subject" in the app
-    Then I should see "normal message"
+    Then I should find "normal message" in the app
 
-  @app @3.8.0
   Scenario: Star and pin discussions (teacher)
     When I enter the app
     And I log in as "teacher1"
@@ -117,35 +113,17 @@ Feature: Test basic usage of forum activity in app
     And I press "Star this discussion" in the app
     And I press "Display options" near "Auto-test pin" in the app
     And I press "Pin this discussion" in the app
-    Then I should see "Auto-test pin"
-    And I should see "Auto-test star"
-    And I should see "Auto-test plain"
+    Then I should find "Auto-test pin" in the app
+    And I should find "Auto-test star" in the app
+    And I should find "Auto-test plain" in the app
 
     When I press "Display options" near "Auto-test pin" in the app
     And I press "Unpin this discussion" in the app
     And I press "Display options" near "Auto-test star" in the app
     And I press "Unstar this discussion" in the app
-    Then I should see "Auto-test star"
-    And I should see "Auto-test pin"
+    Then I should find "Auto-test star" in the app
+    And I should find "Auto-test pin" in the app
 
-  @app_upto3.6.0
-  Scenario: Star and pin discussions (teacher in 3.6)
-    When I enter the app
-    And I log in as "teacher1"
-    And I press "Course 1" near "Course overview" in the app
-    And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
-    And I set the field "Subject" to "Auto-test" in the app
-    And I set the field "Message" to "Auto-test message" in the app
-    And I press "Post to forum" in the app
-    And I press "Auto-test" in the app
-    Then I should see "Reply"
-
-    When I press "Information" in the app
-    Then I should not see "Star this discussion"
-    And I should not see "Pin this discussion"
-
-  @app @3.8.0
   Scenario: Edit a not sent reply offline
     When I enter the app
     And I log in as "student1"
@@ -156,32 +134,31 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
     And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
-    And I should see "Reply"
+    And I should find "Reply" in the app
 
     When I press the back button in the app
     And I switch offline mode to "true"
     And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
-    Then I should see "Reply"
+    Then I should find "Reply" in the app
 
     When I press "Reply" in the app
-    And I set the field "Write your reply..." to "not sent reply" in the app
+    And I set the field "Message" to "not sent reply" in the app
     And I press "Post to forum" in the app
     And I press "Display options" near "not sent reply" in the app
-    Then I should see "Edit"
+    Then I should find "Edit" in the app
 
     When I press "Edit" in the app
-    And I set the field "Write your reply..." to "not sent reply edited" in the app
+    And I set the field "Message" to "not sent reply edited" in the app
     And I press "Post to forum" in the app
-    Then I should see "Not sent"
-    And I should see "This Discussion has offline data to be synchronised"
+    Then I should find "Not sent" in the app
+    And I should find "This Discussion has offline data to be synchronised" in the app
 
     When I switch offline mode to "false"
     And I press the back button in the app
     And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
-    Then I should not see "Not sent"
-    And I should not see "This Discussion has offline data to be synchronised"
+    Then I should not find "Not sent" in the app
+    And I should not find "This Discussion has offline data to be synchronised" in the app
 
-  @app @3.8.0
   Scenario: Edit a not sent new discussion offline
     When I enter the app
     And I log in as "student1"
@@ -195,19 +172,18 @@ Feature: Test basic usage of forum activity in app
     And I press "Auto-test" in the app
     And I set the field "Message" to "Auto-test message edited" in the app
     And I press "Post to forum" in the app
-    Then I should see "This Forum has offline data to be synchronised."
+    Then I should find "This Forum has offline data to be synchronised." in the app
 
     When I switch offline mode to "false"
     And I press "Auto-test" in the app
-    Then I should see "Post to forum"
+    Then I should find "Post to forum" in the app
 
     When I press "Post to forum" in the app
-    Then I should not see "This Forum has offline data to be synchronised."
+    Then I should not find "This Forum has offline data to be synchronised." in the app
 
     When I press "Auto-test" near "Sort by last post creation date in descending order" in the app
-    And I should see "Auto-test message edited"
+    And I should find "Auto-test message edited" in the app
 
-  @app @3.8.0
   Scenario: Edit a forum post (only online)
     When I enter the app
     And I log in as "student1"
@@ -217,26 +193,25 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
-    Then I should see "Auto-test"
+    Then I should find "Auto-test" in the app
 
     When I press the back button in the app
     And I press "Display options" in the app
     And I press "Show download options" in the app
-    And I press "cloud download" near "Test forum name" in the app
+    And I press "Download" near "Test forum name" in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
-    Then I should see "Reply"
+    Then I should find "Reply" in the app
 
     When I press "Display options" near "Reply" in the app
-    Then I should see "Edit"
+    Then I should find "Edit" in the app
 
     When I press "Edit" in the app
     And I switch offline mode to "true"
-    And I set the field "Write your reply..." to "Auto-test message edited" in the app
+    And I set the field "Message" to "Auto-test message edited" in the app
     And I press "Save changes" in the app
-    Then I should see "There was a problem connecting to the site. Please check your connection and try again."
+    Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
 
-  @app @3.8.0
   Scenario: Delete a forum post (only online)
     When I enter the app
     And I log in as "student1"
@@ -246,32 +221,31 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
-    Then I should see "Auto-test"
+    Then I should find "Auto-test" in the app
 
     When I press the back button in the app
     And I press "Display options" in the app
     And I press "Show download options" in the app
-    And I press "cloud download" near "Test forum name" in the app
+    And I press "Download" near "Test forum name" in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
-    Then I should see "Reply"
+    Then I should find "Reply" in the app
 
     When I press "Display options" near "Reply" in the app
-    Then I should see "Delete"
+    Then I should find "Delete" in the app
 
     When I press "Delete" in the app
     And I press "Cancel" in the app
     And I switch offline mode to "true"
     And I press "Display options" near "Reply" in the app
-    Then I should not see "Delete"
+    Then I should not find "Delete" in the app
 
     When I switch offline mode to "false"
     And I press "Display options" near "Reply" in the app
     And I press "Delete" in the app
     And I press "Delete" in the app
-    Then I should not see "Auto-test"
+    Then I should not find "Auto-test" in the app
 
-  @app @3.8.0
   Scenario: Add/view ratings
     Given I enter the app
     And I log in as "student1"
@@ -282,50 +256,49 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
     And I press "Auto-test" in the app
-    Then I should see "Reply"
+    Then I should find "Reply" in the app
 
     When I press "Reply" in the app
-    And I set the field "Write your reply..." to "test2" in the app
+    And I set the field "Message" to "test2" in the app
     And I press "Post to forum" in the app
     When I enter the app
     And I log in as "teacher1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" in the app
-    Then I should see "Reply"
+    Then I should find "Reply" in the app
 
     When I press "None" near "Auto-test message" in the app
     And I press "1" near "Cancel" in the app
     And I switch offline mode to "true"
     And I press "None" near "test2" in the app
     And I press "0" near "Cancel" in the app
-    Then I should see "Data stored in the device because it couldn't be sent. It will be sent automatically later."
-    And I should see "Average of ratings: -"
-    And I should see "Average of ratings: 1"
+    Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
+    And I should find "Average of ratings: -" in the app
+    And I should find "Average of ratings: 1" in the app
 
     When I switch offline mode to "false"
     And I press the back button in the app
-    Then I should see "This Forum has offline data to be synchronised."
+    Then I should find "This Forum has offline data to be synchronised." in the app
 
     When I press "Display options" near "Test forum name" in the app
     And I press "Synchronise now" in the app
-    Then I should not see "This Forum has offline data to be synchronised."
+    Then I should not find "This Forum has offline data to be synchronised." in the app
 
     When I press "Auto-test" in the app
-    Then I should see "Average of ratings: 1"
-    And I should see "Average of ratings: 0"
-    But I should not see "Average of ratings: -"
+    Then I should find "Average of ratings: 1" in the app
+    And I should find "Average of ratings: 0" in the app
+    But I should not find "Average of ratings: -" in the app
 
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" in the app
-    Then I should see "Average of ratings: 1"
-    And I should see "Average of ratings: 0"
-    But I should not see "Average of ratings: -"
+    Then I should find "Average of ratings: 1" in the app
+    And I should find "Average of ratings: 0" in the app
+    But I should not find "Average of ratings: -" in the app
 
-  @app @3.8.0
   Scenario: Reply a post offline
     When I enter the app
     And I log in as "student1"
@@ -338,27 +311,26 @@ Feature: Test basic usage of forum activity in app
     And I press the back button in the app
     And I press "Display options" in the app
     And I press "Show download options" in the app
-    And I press "cloud download" near "Test forum name" in the app
+    And I press "Download" near "Test forum name" in the app
     And I press "Test forum name" in the app
     And I press "DiscussionSubject" in the app
     And I switch offline mode to "true"
-    Then I should see "Reply"
+    Then I should find "Reply" in the app
 
     When I press "Reply" in the app
-    And I set the field "Write your reply" to "ReplyMessage" in the app
+    And I set the field "Message" to "ReplyMessage" in the app
     And I press "Post to forum" in the app
-    Then I should see "DiscussionMessage"
-    And I should see "ReplyMessage"
-    And I should see "Not sent"
+    Then I should find "DiscussionMessage" in the app
+    And I should find "ReplyMessage" in the app
+    And I should find "Not sent" in the app
 
     When I press the back button in the app
     And I switch offline mode to "false"
     And I press "DiscussionSubject" in the app
-    Then I should see "DiscussionMessage"
-    And I should see "ReplyMessage"
-    But I should not see "Not sent"
+    Then I should find "DiscussionMessage" in the app
+    And I should find "ReplyMessage" in the app
+    But I should not find "Not sent" in the app
 
-  @app @3.8.0
   Scenario: New discussion offline & Sync Forum
     When I enter the app
     And I log in as "student1"
@@ -369,9 +341,9 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Subject" to "DiscussionSubject" in the app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
-    Then I should see "DiscussionSubject"
-    And I should see "Not sent"
-    And I should see "This Forum has offline data to be synchronised."
+    Then I should find "DiscussionSubject" in the app
+    And I should find "Not sent" in the app
+    And I should find "This Forum has offline data to be synchronised." in the app
 
     When I switch offline mode to "false"
     And I press the back button in the app
@@ -379,12 +351,11 @@ Feature: Test basic usage of forum activity in app
     And I press "Display options" near "Test forum name" in the app
     And I press "Refresh discussions" in the app
     And I press "DiscussionSubject" near "Sort by last post creation date in descending order" in the app
-    Then I should see "DiscussionSubject"
-    And I should see "DiscussionMessage"
-    But I should not see "Not sent"
-    And I should not see "This Forum has offline data to be synchronised."
+    Then I should find "DiscussionSubject" in the app
+    And I should find "DiscussionMessage" in the app
+    But I should not find "Not sent" in the app
+    And I should not find "This Forum has offline data to be synchronised." in the app
 
-  @app @3.8.0
   Scenario: New discussion offline & Auto-sync forum
     When I enter the app
     And I log in as "student1"
@@ -395,22 +366,21 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Subject" to "DiscussionSubject" in the app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
-    Then I should see "DiscussionSubject"
-    And I should see "Not sent"
-    And I should see "This Forum has offline data to be synchronised."
+    Then I should find "DiscussionSubject" in the app
+    And I should find "Not sent" in the app
+    And I should find "This Forum has offline data to be synchronised." in the app
 
     When I switch offline mode to "false"
     And I run cron tasks in the app
     And I wait loading to finish in the app
-    Then I should not see "Not sent"
+    Then I should not find "Not sent" in the app
 
     When I press "DiscussionSubject" near "Sort by last post creation date in descending order" in the app
-    Then I should see "DiscussionSubject"
-    And I should see "DiscussionMessage"
-    But I should not see "Not sent"
-    And I should not see "This Forum has offline data to be synchronised."
+    Then I should find "DiscussionSubject" in the app
+    And I should find "DiscussionMessage" in the app
+    But I should not find "Not sent" in the app
+    And I should not find "This Forum has offline data to be synchronised." in the app
 
-  @app @3.8.0
   Scenario: Prefetch
     When I enter the app
     And I log in as "student1"
@@ -420,29 +390,31 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Subject" to "DiscussionSubject 1" in the app
     And I set the field "Message" to "DiscussionMessage 1" in the app
     And I press "Post to forum" in the app
-    Then I should see "DiscussionSubject 1"
+    Then I should find "DiscussionSubject 1" in the app
 
     When I press the back button in the app
     And I press "Display options" in the app
     And I press "Show download options" in the app
-    And I press "cloud download" near "Test forum name" in the app
-    And I press "Test forum name" in the app
+    And I press "Download" near "Test forum name" in the app
+    Then I should find "Downloaded" near "Test forum name" in the app
+
+    When I press "Test forum name" in the app
     And I press "Add a new discussion topic" in the app
     And I set the field "Subject" to "DiscussionSubject 2" in the app
     And I set the field "Message" to "DiscussionMessage 2" in the app
     And I press "Post to forum" in the app
-    Then I should see "DiscussionSubject 1"
-    And I should see "DiscussionSubject 2"
+    Then I should find "DiscussionSubject 1" in the app
+    And I should find "DiscussionSubject 2" in the app
 
     When I press the back button in the app
     And I switch offline mode to "true"
     And I press "Test forum name" in the app
     And I press "DiscussionSubject 2" in the app
-    Then I should see "There was a problem connecting to the site. Please check your connection and try again."
+    Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
 
     When I press "OK" in the app
     And I press the back button in the app
     And I press "DiscussionSubject 1" in the app
-    Then I should see "DiscussionSubject 1"
-    And I should see "DiscussionMessage 1"
-    But I should not see "There was a problem connecting to the site. Please check your connection and try again."
+    Then I should find "DiscussionSubject 1" in the app
+    And I should find "DiscussionMessage 1" in the app
+    But I should not find "There was a problem connecting to the site. Please check your connection and try again." in the app
