@@ -734,7 +734,7 @@
                 return 'ERROR: No matches for text';
             }
         } else {
-            found = findElementsBasedOnText({ text: field, selector: 'input, textarea' })[0];
+            found = findElementsBasedOnText({ text: field, selector: 'input, textarea, [contenteditable="true"]' })[0];
 
             if (!found) {
                 return 'ERROR: No matches for text';
