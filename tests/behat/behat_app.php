@@ -683,7 +683,7 @@ class behat_app extends behat_base {
      * @Given /^the app should( not)? have opened a browser tab$/
      * @param bool $not
      */
-    public function the_app_should_have_opened_a_browser_tab(bool $not) {
+    public function the_app_should_have_opened_a_browser_tab(bool $not = false) {
         $this->spin(function() use ($not) {
             $openedbrowsertab = count($this->getSession()->getWindowNames()) === 2;
 
