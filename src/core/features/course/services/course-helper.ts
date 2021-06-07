@@ -681,13 +681,13 @@ export class CoreCourseHelperProvider {
             throw new CoreError(Translate.instant('core.filenotfound'));
         }
 
-        if (!CoreFileHelper.isOpenableInApp(module.contents[0])) {
+        const mainFile = files[0];
+
+        if (!CoreFileHelper.isOpenableInApp(mainFile)) {
             await CoreFileHelper.showConfirmOpenUnsupportedFile();
         }
 
         const site = await CoreSites.getSite(siteId);
-
-        const mainFile = files[0];
 
         // Check if the file should be opened in browser.
         if (CoreFileHelper.shouldOpenInBrowser(mainFile)) {

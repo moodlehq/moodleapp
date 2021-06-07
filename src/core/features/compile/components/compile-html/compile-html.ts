@@ -117,7 +117,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     // eslint-disable-next-line @angular-eslint/no-conflicting-lifecycle
     async ngOnChanges(changes: Record<string, SimpleChange>): Promise<void> {
         // Only compile if text/javascript has changed or the forceCompile flag has been set to true.
-        if (this.text && (changes.text || changes.javascript ||
+        if (this.text !== undefined && (changes.text || changes.javascript ||
                 (changes.forceCompile && CoreUtils.isTrueOrOne(this.forceCompile)))) {
 
             // Create a new component and a new module.

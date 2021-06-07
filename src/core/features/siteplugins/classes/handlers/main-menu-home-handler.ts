@@ -46,7 +46,7 @@ export class CoreSitePluginsMainMenuHomeHandler extends CoreSitePluginsBaseHandl
         return {
             title: this.title,
             class: this.handlerSchema.displaydata?.class,
-            page: `siteplugins/${this.plugin.component}/${this.handlerSchema.method}/0`,
+            page: `siteplugins/homecontent/${this.plugin.component}/${this.handlerSchema.method}`,
             pageParams: {
                 title: this.title,
                 initResult: this.initResult,
