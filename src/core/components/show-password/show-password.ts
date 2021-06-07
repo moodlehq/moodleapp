@@ -105,7 +105,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
      */
     protected setData(): void {
         this.label = this.shown ? 'core.hide' : 'core.show';
-        this.iconName = this.shown ? 'eye-off' : 'eye';
+        this.iconName = this.shown ? 'fas-eye-slash' : 'fas-eye';
         if (this.input) {
             this.input.type = this.shown ? 'text' : 'password';
         }

@@ -642,9 +642,12 @@ export class CoreAppProvider {
             color = CoreColors.getColorHex(color);
         }
 
-        // Make darker on Android.
+        // Make darker on Android, except white.
         if (this.isAndroid()) {
-            color = CoreColors.darker(color);
+            const rgb = CoreColors.hexToRGB(color);
+            if (rgb.red != 255 || rgb.green != 255 || rgb.blue != 255) {
+                color = CoreColors.darker(color);
+            }
         }
 
         this.logger.debug(`Set status bar color ${color}`);

@@ -434,12 +434,14 @@ export class CoreSettingsHelperProvider {
     setColorScheme(colorScheme: CoreColorScheme): void {
         if (colorScheme == CoreColorScheme.SYSTEM && this.prefersDark) {
             // Listen for changes to the prefers-color-scheme media query.
-            this.prefersDark.addEventListener('change', this.toggleDarkModeListener);
+            this.prefersDark.addEventListener &&
+                this.prefersDark.addEventListener('change', this.toggleDarkModeListener);
 
             this.toggleDarkMode(this.prefersDark.matches);
         } else {
             // Stop listening to changes.
-            this.prefersDark?.removeEventListener('change', this.toggleDarkModeListener);
+            this.prefersDark?.removeEventListener &&
+                this.prefersDark?.removeEventListener('change', this.toggleDarkModeListener);
 
             this.toggleDarkMode(colorScheme == CoreColorScheme.DARK);
         }
