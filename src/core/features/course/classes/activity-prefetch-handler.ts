@@ -136,7 +136,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
             await this.setDownloaded(module.id, siteId, extra);
         } catch (error) {
             // Error prefetching, go back to previous status and reject the promise.
-            return this.setPreviousStatus(module.id, siteId);
+            await this.setPreviousStatus(module.id, siteId);
 
             throw error;
         }

@@ -395,7 +395,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                             offlineReplies.push(reply);
 
                             // Disable reply of the parent. Reply in offline to the same post is not allowed, edit instead.
-                            posts[reply.parentid!].capabilities.reply = false;
+                            onlinePostsMap[reply.parentid!].capabilities.reply = false;
 
                             return;
                         }),
