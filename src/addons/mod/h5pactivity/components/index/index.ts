@@ -45,6 +45,8 @@ import {
 } from '../../services/h5pactivity-sync';
 import { CoreFileHelper } from '@services/file-helper';
 import { AddonModH5PActivityModuleHandlerService } from '../../services/handlers/module';
+import { CoreMainMenuPage } from '@features/mainmenu/pages/menu/menu';
+import { Platform } from '@singletons';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -83,8 +85,10 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     protected site: CoreSite;
     protected observer?: CoreEventObserver;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
+    protected resizeFunction: () => void;
 
     constructor(
+        protected mainMenuPage: CoreMainMenuPage,
         protected content?: IonContent,
         @Optional() courseContentsPage?: CoreCourseContentsPage,
     ) {
@@ -96,6 +100,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         // Listen for messages from the iframe.
         this.messageListenerFunction = this.onIframeMessage.bind(this);
         window.addEventListener('message', this.messageListenerFunction);
+        this.resizeFunction = this.contentResized.bind(this);
     }
 
     /**
@@ -366,6 +371,9 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         AddonModH5PActivity.logView(this.h5pActivity!.id, this.h5pActivity!.name, this.siteId);
 
         CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+
+        window.addEventListener('resize', this.contentResized.bind(this));
+        this.contentResized();
     }
 
     /**
@@ -481,6 +489,13 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     }
 
     /**
+     * On content resize, change visibility of the main menu: show on portrait and hide on landscape.
+     */
+    contentResized(): void {
+        this.mainMenuPage.changeVisibility(Platform.isPortrait());
+    }
+
+    /**
      * Component destroyed.
      */
     ngOnDestroy(): void {
@@ -488,6 +503,10 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
         this.observer?.off();
         window.removeEventListener('message', this.messageListenerFunction);
+
+        if (this.playing) {
+            window.removeEventListener('resize', this.resizeFunction);
+        }
     }
 
 }
