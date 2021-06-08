@@ -177,6 +177,7 @@ export interface EnvironmentConfig {
     forceOpenLinksIn: 'app' | 'browser';
     iOSDefaultOpenFileAction?: OpenFileAction;
     customMainMenuItems?: CoreMainMenuLocalizedCustomItem[];
+    feedbackFormUrl?: string | false;
 };
 
 export interface EnvironmentBuild {
