@@ -227,12 +227,6 @@ ion-button.button-small ion-icon.faicon[slot] {
     font-size: 1.5em !important;
 }
 
-[dir=rtl] ion-icon.icon-flip-rtl,
-[dir=rtl] ion-item::part(detail-icon),
-[dir=rtl] ion-icon.item-detail-icon {
-    transform: scaleX(-1);
-}
-
 // Buttons.
 ion-button,
 ion-fab-button,

@@ -102,7 +102,7 @@
 
             <!-- Advanced options. -->
             <ion-item button class="ion-text-wrap core-expandable divider" (click)="toggleAdvanced()" detail="false">
-                <ion-icon *ngIf="!advanced" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="!advanced" name="fas-caret-right" flip-rtl slot="start" aria-hidden="true"></ion-icon>
                 <ion-icon *ngIf="advanced" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <h2 *ngIf="!advanced">{{ 'core.showmore' | translate }}</h2>

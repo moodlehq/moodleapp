@@ -34,7 +34,7 @@
             aria-controls="addon-mod-forum-advanced"
             [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate"
         >
-            <ion-icon *ngIf="!advanced" name="fa-caret-right" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon *ngIf="!advanced" name="fa-caret-right" flip-rtl slot="start" aria-hidden="true"></ion-icon>
             <ion-icon *ngIf="advanced" name="fa-caret-down" slot="start" aria-hidden="true"></ion-icon>
             <ion-label><h2>{{ 'addon.mod_forum.advanced' | translate }}</h2></ion-label>
         </ion-item>
