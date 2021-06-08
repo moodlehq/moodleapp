@@ -63,6 +63,7 @@ import { CORE_SEARCH_SERVICES } from '@features/search/search.module';
 import { CORE_SETTINGS_SERVICES } from '@features/settings/settings.module';
 import { CORE_SITEHOME_SERVICES } from '@features/sitehome/sitehome.module';
 import { CORE_TAG_SERVICES } from '@features/tag/tag.module';
+import { CORE_STYLE_SERVICES } from '@features/styles/styles.module';
 import { CORE_USER_SERVICES } from '@features/user/user.module';
 import { CORE_XAPI_SERVICES } from '@features/xapi/xapi.module';
 import { CoreSitePluginsProvider } from '@features/siteplugins/services/siteplugins';
@@ -146,7 +147,6 @@ import { ADDON_MOD_WORKSHOP_SERVICES } from '@addons/mod/workshop/workshop.modul
 import { ADDON_NOTES_SERVICES } from '@addons/notes/notes.module';
 import { ADDON_NOTIFICATIONS_SERVICES } from '@addons/notifications/notifications.module';
 import { ADDON_PRIVATEFILES_SERVICES } from '@addons/privatefiles/privatefiles.module';
-import { ADDON_REMOTETHEMES_SERVICES } from '@addons/remotethemes/remotethemes.module';
 
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
 import { AddonModAssignComponentsModule } from '@addons/mod/assign/components/components.module';
@@ -277,6 +277,7 @@ export class CoreCompileProvider {
             ...CORE_SITEHOME_SERVICES,
             CoreSitePluginsProvider,
             ...CORE_TAG_SERVICES,
+            ...CORE_STYLE_SERVICES,
             ...CORE_USER_SERVICES,
             ...CORE_XAPI_SERVICES,
             ...IONIC_NATIVE_SERVICES,
@@ -311,7 +312,6 @@ export class CoreCompileProvider {
             ...ADDON_NOTES_SERVICES,
             ...ADDON_NOTIFICATIONS_SERVICES,
             ...ADDON_PRIVATEFILES_SERVICES,
-            ...ADDON_REMOTETHEMES_SERVICES,
         ];
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.

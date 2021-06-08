@@ -111,15 +111,14 @@
     --core-header-toolbar-border-width: #{$toolbar-border-width};
     --core-header-toolbar-border-color: #{$toolbar-border-color};
     --core-header-toolbar-color: #{$toolbar-color};
-    ion-header ion-toolbar,
-    ion-header.header-ios ion-toolbar:last-of-type {
+    ion-header ion-toolbar {
         --color: var(--core-header-toolbar-color);
         --background: var(--core-header-toolbar-background);
         --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
         --border-color: var(--core-header-toolbar-border-color);
 
         ion-button {
-            --ion-toolbar-color: transparent;
+            --ion-toolbar-color: var(--core-header-toolbar-color);
             --color: var(--core-header-toolbar-color);
         }
 
@@ -127,6 +126,10 @@
             --ion-color-base: var(--core-header-toolbar-color);
             --color: var(--core-header-toolbar-color);
         }
+    }
+
+    ion-header.header-ios ion-toolbar:last-of-type {
+        --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
     }
 
     ion-searchbar {

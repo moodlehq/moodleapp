@@ -35,6 +35,7 @@ import { CoreSettingsModule } from './settings/settings.module';
 import { CoreSharedFilesModule } from './sharedfiles/sharedfiles.module';
 import { CoreSiteHomeModule } from './sitehome/sitehome.module';
 import { CoreSitePluginsModule } from './siteplugins/siteplugins.module';
+import { CoreStylesModule } from './styles/styles.module';
 import { CoreTagModule } from './tag/tag.module';
 import { CoreUserModule } from './user/user.module';
 import { CoreViewerModule } from './viewer/viewer.module';
@@ -64,6 +65,7 @@ import { CoreXAPIModule } from './xapi/xapi.module';
         CoreSiteHomeModule,
         CoreSitePluginsModule,
         CoreTagModule,
+        CoreStylesModule,
         CoreUserModule,
         CoreViewerModule,
         CoreXAPIModule,

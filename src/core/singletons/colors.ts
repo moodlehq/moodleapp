@@ -93,7 +93,7 @@ export class CoreColors {
      * @param color Hexadec RGB Color.
      * @return RGB color components.
      */
-    protected static hexToRGB(color: string): ColorComponents {
+    static hexToRGB(color: string): ColorComponents {
         if (color.charAt(0) == '#') {
             color = color.substr(1);
         }
