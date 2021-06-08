@@ -30,6 +30,7 @@ export class CoreSettingsAboutPage {
     appName: string;
     versionName: string;
     privacyPolicy: string;
+    feedbackFormUrl = CoreConstants.CONFIG.feedbackFormUrl ?? 'https://feedback.moodle.org/mobileapp';
 
     constructor() {
         const currentSite = CoreSites.getCurrentSite();
