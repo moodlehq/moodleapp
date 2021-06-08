@@ -73,7 +73,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     moduleName = 'forum';
     descriptionNote?: string;
     forum?: AddonModForumData;
-    fetchMoreDiscussionsFailed = false;
     discussions: AddonModForumDiscussionsManager;
     canAddDiscussion = false;
     addDiscussionText!: string;
@@ -237,7 +236,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param showErrors Wether to show errors to the user or hide them.
      */
     protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        this.fetchMoreDiscussionsFailed = false;
+        this.discussions.fetchFailed = false;
 
         const promises: Promise<void>[] = [];
 
@@ -259,7 +258,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             if (refresh) {
                 CoreDomUtils.showErrorModalDefault(error, 'addon.mod_forum.errorgetforum', true);
 
-                this.fetchMoreDiscussionsFailed = true; // Set to prevent infinite calls with infinite-loading.
+                this.discussions.fetchFailed = true; // Set to prevent infinite calls with infinite-loading.
             } else {
                 // Get forum failed, retry without using cache since it might be a new activity.
                 await this.refreshContent(sync);
@@ -422,7 +421,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      */
     protected async fetchDiscussions(refresh: boolean): Promise<void> {
         const forum = this.forum!;
-        this.fetchMoreDiscussionsFailed = false;
+        this.discussions.fetchFailed = false;
 
         if (refresh) {
             this.page = 0;
@@ -497,7 +496,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_forum.errorgetforum', true);
 
-            this.fetchMoreDiscussionsFailed = true;
+            this.discussions.fetchFailed = true;
         } finally {
             complete();
         }
@@ -715,6 +714,7 @@ type DiscussionItem = AddonModForumDiscussion | AddonModForumOfflineDiscussion |
 class AddonModForumDiscussionsManager extends CorePageItemsListManager<DiscussionItem> {
 
     onlineLoaded = false;
+    fetchFailed = false;
 
     private discussionsPathPrefix: string;
     private component: AddonModForumIndexComponent;
@@ -724,6 +724,10 @@ class AddonModForumDiscussionsManager extends CorePageItemsListManager<Discussio
 
         this.component = component;
         this.discussionsPathPrefix = discussionsPathPrefix;
+    }
+
+    get loaded(): boolean {
+        return super.loaded && (this.onlineLoaded || this.fetchFailed);
     }
 
     get onlineDiscussions(): AddonModForumDiscussion[] {
@@ -782,6 +786,7 @@ class AddonModForumDiscussionsManager extends CorePageItemsListManager<Discussio
         const otherDiscussions = this.items.filter(discussion => !this.isOnlineDiscussion(discussion));
 
         this.setItems(otherDiscussions.concat(onlineDiscussions), hasMoreItems);
+        this.onlineLoaded = true;
     }
 
     /**
@@ -793,15 +798,6 @@ class AddonModForumDiscussionsManager extends CorePageItemsListManager<Discussio
         const otherDiscussions = this.items.filter(discussion => !this.isOfflineDiscussion(discussion));
 
         this.setItems((offlineDiscussions as DiscussionItem[]).concat(otherDiscussions), this.hasMoreItems);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    setItems(discussions: DiscussionItem[], hasMoreItems: boolean = false): void {
-        super.setItems(discussions, hasMoreItems);
-
-        this.onlineLoaded = this.onlineLoaded || discussions.some(discussion => this.isOnlineDiscussion(discussion));
     }
 
     /**
