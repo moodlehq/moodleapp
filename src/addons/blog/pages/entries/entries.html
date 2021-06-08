@@ -64,14 +64,12 @@
                         <ion-label>{{ 'addon.blog.linktooriginalentry' | translate }}</ion-label>
                     </ion-item>
                 </ion-card-content>
-                <ion-row class="ion-text-center" *ngIf="entry.lastmodified > entry.created">
-                    <ion-col>
-                        <ion-note>
-                            <ion-icon name="fas-clock"
-                                [attr.aria-label]="'core.lastmodified' | translate"></ion-icon> {{entry.lastmodified | coreTimeAgo}}
-                        </ion-note>
-                    </ion-col>
-                </ion-row>
+                <div class="ion-text-center ion-margin-bottom" *ngIf="entry.lastmodified > entry.created">
+                    <ion-note>
+                        <ion-icon name="fas-clock"
+                            [attr.aria-label]="'core.lastmodified' | translate"></ion-icon> {{entry.lastmodified | coreTimeAgo}}
+                    </ion-note>
+                </div>
             </ion-card>
         </ng-container>
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" [error]="loadMoreError"></core-infinite-loading>

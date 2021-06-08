@@ -145,9 +145,41 @@ ion-app.ios ion-header h2 {
 }
 
 // Correctly inherit ion-text-wrap onto labels.
+ion-item ion-label core-format-text .core-format-text-content > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 ion-item.ion-text-wrap ion-label {
     white-space: normal !important;
 }
+
+ion-button core-format-text .core-format-text-content {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+ion-button > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+ion-button.ion-text-wrap {
+    white-space: normal;
+    core-format-text .core-format-text-content {
+        white-space: normal;
+        display: contents;
+    }
+
+    & > * {
+        white-space: normal;
+    }
+}
+
 
 @each $color-name, $value in $colors {
     $value: map-get($colors, $color-name);
