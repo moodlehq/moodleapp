@@ -163,9 +163,16 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         this.showInfo = !backViewPage || !CoreTextUtils.matchesGlob(backViewPage, '**/user/profile');
 
         this.route.queryParams.subscribe(async (params) => {
-            this.loaded = false;
+            const oldConversationId = this.conversationId;
+            const oldUserId = this.userId;
             this.conversationId = CoreNavigator.getRouteNumberParam('conversationId', { params }) || undefined;
             this.userId = CoreNavigator.getRouteNumberParam('userId', { params }) || undefined;
+
+            if (oldConversationId != this.conversationId || oldUserId != this.userId) {
+                // Showing reload again can break animations.
+                this.loaded = false;
+            }
+
             this.showKeyboard = CoreNavigator.getRouteBooleanParam('showKeyboard', { params }) || false;
 
             await this.fetchData();
