@@ -20,19 +20,4 @@
     td {
         display: table-cell;
     }
-
-    input, select {
-        border-radius: 4px;
-        display: inline-block;
-        border: 1px solid var(--gray-dark);
-        padding: 6px 8px;
-        margin-left: 2px;
-        margin-right: 2px;
-        margin-bottom: 10px;
-    }
-
-    select {
-        height: 30px;
-        line-height: 30px;
-    }
 }

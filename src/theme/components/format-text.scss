@@ -333,6 +333,81 @@ core-rich-text-editor .core-rte-editor {
         margin-right: .5rem;
     }
 
+    // Form controls
+    // ------------------------
+    select,
+    input:not([type=checkbox]):not([type=radio]):not([type=hidden]) {
+        height: 30px;
+        line-height: 30px;
+        display: inline-block;
+        border: 1px solid var(--gray-dark);
+        background: var(--background-contrast);
+        padding: 6px 8px;
+        border-radius: 4px;
+        margin-left: 2px;
+        margin-right: 2px;
+        margin-bottom: 10px;
+    }
+
+    input[type=radio],
+    input[type=checkbox] {
+        position: relative;
+
+        --color: var(--brand-contrast-color);
+        --color-checked: var(--color);
+
+        width: var(--size);
+        height: var(--size);
+        border-radius: var(--border-radius);
+        border-width: var(--outer-border-width);
+        border-style: var(--border-style);
+        border-color: var(--color);
+        appearance: none;
+        display: inline-block;
+        margin-left: 2px;
+        margin-right: 2px;
+        margin-top: 2px;
+
+        &:checked {
+            background-color: var(--color-checked);
+        }
+
+        & + label {
+            line-height: var(--size);
+        }
+    }
+
+    input[type=radio]::after {
+        position: absolute;
+        content: ' ';
+        width: calc(50% + var(--outer-border-width));
+        height: calc(50% + var(--outer-border-width));
+        border-radius: var(--border-radius);
+        transform: scale3d(0, 0, 0) translate(-50%,-50%);
+        background: var(--contrast-background);
+        border: 0 !important;
+        top: 50%;
+        left: 50%;
+    }
+
+    input[type=radio]:checked::after {
+        transform: scale3d(1, 1, 1) translate(-50%,-50%);
+    }
+
+    input[type=checkbox]:checked::after {
+        position: absolute;
+        width: 33%;
+        height: 50%;
+        content: ' ';
+        transform: rotate(45deg);
+        border-width: 0px 2px 2px 0px;
+        border-style: solid;
+        border-color: var(--contrast-background);
+        left: 4px;
+        top: 2px;
+    }
+
+
     // Atto styles
     // -------------------------
     .atto_image_preview {
