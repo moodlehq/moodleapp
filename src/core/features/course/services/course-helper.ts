@@ -681,21 +681,29 @@ export class CoreCourseHelperProvider {
             throw new CoreError(Translate.instant('core.filenotfound'));
         }
 
-        if (!CoreFileHelper.isOpenableInApp(module.contents[0])) {
+        const mainFile = files[0];
+
+        if (!CoreFileHelper.isOpenableInApp(mainFile)) {
             await CoreFileHelper.showConfirmOpenUnsupportedFile();
         }
 
         const site = await CoreSites.getSite(siteId);
 
-        const mainFile = files[0];
-
         // Check if the file should be opened in browser.
         if (CoreFileHelper.shouldOpenInBrowser(mainFile)) {
-            return this.openModuleFileInBrowser(mainFile.fileurl, site, module, courseId, component, componentId, files);
+            return this.openModuleFileInBrowser(mainFile.fileurl, site, module, courseId, component, componentId, files, options);
         }
 
         // File shouldn't be opened in browser. Download the module if it needs to be downloaded.
-        const result = await this.downloadModuleWithMainFileIfNeeded(module, courseId, component || '', componentId, files, siteId);
+        const result = await this.downloadModuleWithMainFileIfNeeded(
+            module,
+            courseId,
+            component || '',
+            componentId,
+            files,
+            siteId,
+            options,
+        );
 
         if (CoreUrlUtils.isLocalFileUrl(result.path)) {
             return CoreUtils.openFile(result.path, options);
@@ -740,6 +748,7 @@ export class CoreCourseHelperProvider {
      * @param component The component to link the files to.
      * @param componentId An ID to use in conjunction with the component.
      * @param files List of files of the module. If not provided, use module.contents.
+     * @param options Options to open the file. Only used if not opened in browser.
      * @return Resolved on success.
      */
     protected async openModuleFileInBrowser(
@@ -750,6 +759,7 @@ export class CoreCourseHelperProvider {
         component?: string,
         componentId?: string | number,
         files?: CoreCourseModuleContentFile[],
+        options: CoreUtilsOpenFileOptions = {},
     ): Promise<void> {
         if (!CoreApp.isOnline()) {
             // Not online, get the offline file. It will fail if not found.
@@ -760,7 +770,7 @@ export class CoreCourseHelperProvider {
                 throw new CoreNetworkError();
             }
 
-            return CoreUtils.openFile(path);
+            return CoreUtils.openFile(path, options);
         }
 
         // Open in browser.
@@ -791,6 +801,7 @@ export class CoreCourseHelperProvider {
      * @param componentId An ID to use in conjunction with the component.
      * @param files List of files of the module. If not provided, use module.contents.
      * @param siteId The site ID. If not defined, current site.
+     * @param options Options to open the file.
      * @return Promise resolved when done.
      */
     async downloadModuleWithMainFileIfNeeded(
@@ -800,6 +811,7 @@ export class CoreCourseHelperProvider {
         componentId?: string | number,
         files?: CoreCourseModuleContentFile[],
         siteId?: string,
+        options: CoreUtilsOpenFileOptions = {},
     ): Promise<{ fixedUrl: string; path: string; status?: string }> {
 
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -840,7 +852,17 @@ export class CoreCourseHelperProvider {
         }
 
         if (!path) {
-            path = await this.downloadModuleWithMainFile(module, courseId, fixedUrl, files, status, component, componentId, siteId);
+            path = await this.downloadModuleWithMainFile(
+                module,
+                courseId,
+                fixedUrl,
+                files,
+                status,
+                component,
+                componentId,
+                siteId,
+                options,
+            );
         }
 
         return {
@@ -862,6 +884,7 @@ export class CoreCourseHelperProvider {
      * @param component The component to link the files to.
      * @param componentId An ID to use in conjunction with the component.
      * @param siteId The site ID. If not defined, current site.
+     * @param options Options to open the file.
      * @return Promise resolved when done.
      */
     protected async downloadModuleWithMainFile(
@@ -873,6 +896,7 @@ export class CoreCourseHelperProvider {
         component?: string,
         componentId?: string | number,
         siteId?: string,
+        options: CoreUtilsOpenFileOptions = {},
     ): Promise<string> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -885,7 +909,7 @@ export class CoreCourseHelperProvider {
             throw new CoreNetworkError();
         }
 
-        const shouldDownloadFirst = await CoreFilepool.shouldDownloadFileBeforeOpen(fixedUrl, mainFile.filesize);
+        const shouldDownloadFirst = await CoreFilepool.shouldDownloadFileBeforeOpen(fixedUrl, mainFile.filesize, options);
 
         if (shouldDownloadFirst) {
             // Download and then return the local URL.

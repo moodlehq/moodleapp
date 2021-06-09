@@ -144,10 +144,14 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     /**
      * Convenience function to open a file, downloading it if needed.
      *
+     * @param ev Click event (if any).
      * @param isOpenButton Whether the open button was clicked.
      * @return Promise resolved when file is opened.
      */
-    openFile(isOpenButton = false): Promise<void> {
+    openFile(ev?: Event, isOpenButton = false): Promise<void> {
+        ev?.preventDefault();
+        ev?.stopPropagation();
+
         const options: CoreUtilsOpenFileOptions = {};
         if (isOpenButton) {
             // Use the non-default method.

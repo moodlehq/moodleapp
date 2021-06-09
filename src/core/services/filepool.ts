@@ -26,7 +26,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils } from '@services/utils/url';
-import { CoreUtils, PromiseDefer } from '@services/utils/utils';
+import { CoreUtils, CoreUtilsOpenFileOptions, PromiseDefer } from '@services/utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
@@ -2781,7 +2781,7 @@ export class CoreFilepoolProvider {
 
         const mimetype = await CoreUtils.getMimeTypeFromUrl(url);
         // If the file is streaming (audio or video) we reject.
-        if (mimetype.indexOf('video') != -1 || mimetype.indexOf('audio') != -1) {
+        if (CoreMimetypeUtils.isStreamedMimetype(mimetype)) {
             throw new CoreError('File is audio or video.');
         }
     }
@@ -2791,6 +2791,7 @@ export class CoreFilepoolProvider {
      *
      * @param url File online URL.
      * @param size File size.
+     * @param options Options.
      * @return Promise resolved with boolean: whether file should be downloaded before opening it.
      * @description
      * Convenience function to check if a file should be downloaded before opening it.
@@ -2800,16 +2801,21 @@ export class CoreFilepoolProvider {
      *     - The file cannot be streamed.
      * If the file is big and can be streamed, the promise returned by this function will be rejected.
      */
-    async shouldDownloadFileBeforeOpen(url: string, size: number): Promise<boolean> {
+    async shouldDownloadFileBeforeOpen(url: string, size: number, options: CoreUtilsOpenFileOptions = {}): Promise<boolean> {
         if (size >= 0 && size <= CoreFilepoolProvider.DOWNLOAD_THRESHOLD) {
             // The file is small, download it.
+            return true;
+        }
+
+        if (CoreUtils.shouldOpenWithDialog(options)) {
+            // Open with dialog needs a local file.
             return true;
         }
 
         const mimetype = await CoreUtils.getMimeTypeFromUrl(url);
 
         // If the file is streaming (audio or video), return false.
-        return mimetype.indexOf('video') == -1 && mimetype.indexOf('audio') == -1;
+        return !CoreMimetypeUtils.isStreamedMimetype(mimetype);
     }
 
     /**

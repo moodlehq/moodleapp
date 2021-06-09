@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import {
     CoreCourseModuleMainResourceComponent,
@@ -21,10 +21,13 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreApp } from '@services/app';
+import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
+import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils, OpenFileAction } from '@services/utils/utils';
-import { Translate } from '@singletons';
+import { Network, NgZone, Translate } from '@singletons';
+import { Subscription } from 'rxjs';
 import {
     AddonModResource,
     AddonModResourceCustomData,
@@ -40,7 +43,7 @@ import { AddonModResourceHelper } from '../../services/resource-helper';
     selector: 'addon-mod-resource-index',
     templateUrl: 'addon-mod-resource-index.html',
 })
-export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
+export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 
     component = AddonModResourceProvider.COMPONENT;
 
@@ -52,19 +55,35 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     warning = '';
     isIOS = false;
     openFileAction = OpenFileAction;
+    isOnline = false;
+    isStreamedFile = false;
+    shouldOpenInBrowser = false;
+
+    protected onlineObserver?: Subscription;
 
     constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
         super('AddonModResourceIndexComponent', courseContentsPage);
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
         this.canGetResource = AddonModResource.isGetResourceWSAvailable();
         this.isIOS = CoreApp.isIOS();
+        this.isOnline = CoreApp.isOnline();
+
+        if (this.isIOS) {
+            // Refresh online status when changes.
+            this.onlineObserver = Network.onChange().subscribe(() => {
+                // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                NgZone.run(() => {
+                    this.isOnline = CoreApp.isOnline();
+                });
+            });
+        }
 
         await this.loadContent();
         try {
@@ -76,19 +95,14 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     }
 
     /**
-     * Perform the invalidate content function.
-     *
-     * @return Resolved when done.
+     * @inheritdoc
      */
     protected async invalidateContent(): Promise<void> {
         return AddonModResource.invalidateContent(this.module.id, this.courseId);
     }
 
     /**
-     * Download resource contents.
-     *
-     * @param refresh Whether we're refreshing data.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
     protected async fetchContent(refresh?: boolean): Promise<void> {
         // Load module contents if needed. Passing refresh is needed to force reloading contents.
@@ -150,6 +164,14 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             } else {
                 this.mode = 'external';
                 this.warning = '';
+
+                if (this.isIOS) {
+                    this.shouldOpenInBrowser = CoreFileHelper.shouldOpenInBrowser(this.module.contents[0]);
+                }
+
+                const mimetype = await CoreUtils.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(this.module.contents[0]));
+
+                this.isStreamedFile = CoreMimetypeUtils.isStreamedMimetype(mimetype);
             }
         } finally {
             this.fillContextMenu(refresh);
@@ -177,6 +199,14 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
         // The resource cannot be downloaded, open the activity in browser.
         await CoreSites.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(this.module.url!);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        super.ngOnDestroy();
+        this.onlineObserver?.unsubscribe();
     }
 
 }

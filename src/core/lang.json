@@ -225,6 +225,7 @@
     "percentagenumber": "{{$a}}%",
     "phone": "Phone",
     "pictureof": "Picture of {{$a}}",
+    "play": "Play",
     "previous": "Previous",
     "proceed": "Proceed",
     "pulltorefresh": "Pull to refresh",

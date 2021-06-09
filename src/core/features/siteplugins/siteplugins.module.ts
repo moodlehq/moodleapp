@@ -28,6 +28,13 @@ const routes: Routes = [
     },
 ];
 
+const homeRoutes: Routes = [
+    {
+        path: 'siteplugins/homecontent/:component/:method',
+        loadChildren: () => import('./pages/plugin-page/plugin-page.module').then( m => m.CoreSitePluginsPluginPageModule),
+    },
+];
+
 const courseIndexRoutes: Routes = [
     {
         path: 'siteplugins/:handlerUniqueName',
@@ -47,7 +54,7 @@ const moduleRoutes: Routes = [
     imports: [
         CoreMainMenuTabRoutingModule.forChild(moduleRoutes.concat(routes)),
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
-        CoreMainMenuHomeRoutingModule.forChild({ children: routes }),
+        CoreMainMenuHomeRoutingModule.forChild({ children: homeRoutes }),
         CoreSitePluginsComponentsModule,
     ],
     providers: [

@@ -1993,6 +1993,7 @@
   "core.percentagenumber": "local_moodlemobileapp",
   "core.phone": "moodle",
   "core.pictureof": "moodle",
+  "core.play": "local_moodlemobileapp",
   "core.previous": "moodle",
   "core.proceed": "moodle",
   "core.pulltorefresh": "local_moodlemobileapp",

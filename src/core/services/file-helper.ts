@@ -73,7 +73,17 @@ export class CoreFileHelperProvider {
             await this.showConfirmOpenUnsupportedFile();
         }
 
-        let url = await this.downloadFileIfNeeded(file, fileUrl, component, componentId, timemodified, state, onProgress, siteId);
+        let url = await this.downloadFileIfNeeded(
+            file,
+            fileUrl,
+            component,
+            componentId,
+            timemodified,
+            state,
+            onProgress,
+            siteId,
+            options,
+        );
 
         if (!url) {
             return;
@@ -127,6 +137,7 @@ export class CoreFileHelperProvider {
      * @param state The file's state. If not provided, it will be calculated.
      * @param onProgress Function to call on progress.
      * @param siteId The site ID. If not defined, current site.
+     * @param options Options to open the file.
      * @return Resolved with the URL to use on success.
      */
     protected async downloadFileIfNeeded(
@@ -138,6 +149,7 @@ export class CoreFileHelperProvider {
         state?: string,
         onProgress?: CoreFileHelperOnProgress,
         siteId?: string,
+        options: CoreUtilsOpenFileOptions = {},
     ): Promise<string> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -172,7 +184,7 @@ export class CoreFileHelperProvider {
                 onProgress({ calculating: true });
             }
 
-            const shouldDownloadFirst = await CoreFilepool.shouldDownloadFileBeforeOpen(fixedUrl, file.filesize || 0);
+            const shouldDownloadFirst = await CoreFilepool.shouldDownloadFileBeforeOpen(fixedUrl, file.filesize || 0, options);
             if (shouldDownloadFirst) {
                 // Download the file first.
                 if (state == CoreConstants.DOWNLOADING) {

@@ -40,6 +40,8 @@ export class AddonModFolderIndexPage extends CoreCourseModuleMainActivityPage<Ad
         super.ngOnInit();
         this.folderInstance = CoreNavigator.getRouteParam<AddonModFolderFolder>('folderInstance');
         this.subfolder = CoreNavigator.getRouteParam<AddonModFolderFolderFormattedData>('subfolder');
+
+        this.title = this.subfolder?.filename || this.module.name;
     }
 
 }
