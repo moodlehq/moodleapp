@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CoreError } from '@classes/errors/error';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
@@ -106,29 +105,27 @@ export class AddonModWikiCreateLinkHandlerService extends CoreContentLinksHandle
                     const route = CoreNavigator.getCurrentRoute({ pageComponent: AddonModWikiIndexPage });
                     const subwikiId = parseInt(params.swid, 10);
                     const wikiId = parseInt(params.wid, 10);
-                    let moduleId: number;
+                    let path = AddonModWikiModuleHandlerService.PAGE_NAME;
 
                     // Check if the link is inside the same wiki.
                     const isSameWiki = await this.currentStateIsSameWiki(route, subwikiId, siteId);
 
                     if (isSameWiki) {
                         // User is seeing the wiki, we can get the module from the wiki params.
-                        moduleId = route!.snapshot.params.cmId;
-                        courseId = route!.snapshot.params.courseId;
+                        path = path + `/${route!.snapshot.params.courseId}/${route!.snapshot.params.cmId}/edit`;
                     } else if (wikiId) {
                         // The URL specifies which wiki it belongs to. Get the module.
                         const module = await CoreCourse.getModuleBasicInfoByInstance(wikiId, 'wiki', siteId);
 
-                        moduleId = module.id;
-                        courseId = module.course;
+                        path = path + `/${module.course}/${module.id}/edit`;
                     } else {
-                        // Not enough data.
-                        throw new CoreError();
+                        // Cannot get module ID.
+                        path = path + `/${courseId || 0}/0/edit`;
                     }
 
                     // Open the page.
                     CoreNavigator.navigateToSitePath(
-                        AddonModWikiModuleHandlerService.PAGE_NAME + `/${courseId}/${moduleId}/edit`,
+                        path,
                         {
                             params: {
                                 pageTitle: params.title,
