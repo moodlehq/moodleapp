@@ -933,8 +933,7 @@ export class CoreUtilsProvider {
         }
 
         try {
-            const openFileAction = options.iOSOpenFileAction ?? CoreConstants.CONFIG.iOSDefaultOpenFileAction;
-            if (CoreApp.isIOS() && openFileAction == OpenFileAction.OPEN_WITH) {
+            if (this.shouldOpenWithDialog(options)) {
                 await FileOpener.showOpenWithDialog(path, mimetype || '');
             } else {
                 await FileOpener.open(path, mimetype || '');
@@ -1650,6 +1649,18 @@ export class CoreUtilsProvider {
      */
     nextTick(): Promise<void> {
         return this.wait(0);
+    }
+
+    /**
+     * Given some options, check if a file should be opened with showOpenWithDialog.
+     *
+     * @param options Options.
+     * @return Boolean.
+     */
+    shouldOpenWithDialog(options: CoreUtilsOpenFileOptions = {}): boolean {
+        const openFileAction = options.iOSOpenFileAction ?? CoreConstants.CONFIG.iOSDefaultOpenFileAction;
+
+        return CoreApp.isIOS() && openFileAction == OpenFileAction.OPEN_WITH;
     }
 
 }

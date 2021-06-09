@@ -563,6 +563,16 @@ export class CoreMimetypeUtilsProvider {
     }
 
     /**
+     * Check if a mimetype belongs to a file that can be streamed (audio, video).
+     *
+     * @param mimetype Mimetype.
+     * @return Boolean.
+     */
+    isStreamedMimetype(mimetype: string): boolean {
+        return mimetype.indexOf('video') != -1 || mimetype.indexOf('audio') != -1;
+    }
+
+    /**
      * Remove the extension from a path (if any).
      *
      * @param path Path.
