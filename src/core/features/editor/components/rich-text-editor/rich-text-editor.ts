@@ -23,6 +23,7 @@ import {
     AfterContentInit,
     OnDestroy,
     Optional,
+    AfterViewInit,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { IonTextarea, IonContent, IonSlides } from '@ionic/angular';
@@ -51,7 +52,7 @@ import { CoreEditorOffline } from '../../services/editor-offline';
     templateUrl: 'core-editor-rich-text-editor.html',
     styleUrls: ['rich-text-editor.scss'],
 })
-export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentInit, OnDestroy {
+export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentInit, AfterViewInit, OnDestroy {
 
     // Based on: https://github.com/judgewest2000/Ionic3RichText/
     // @todo: Anchor button, fullscreen...
@@ -87,6 +88,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     protected valueChangeSubscription?: Subscription;
     protected keyboardObserver?: CoreEventObserver;
     protected resetObserver?: CoreEventObserver;
+    protected labelObserver?: MutationObserver;
     protected initHeightInterval?: number;
     protected isCurrentView = true;
     protected toolbarButtonWidth = 44;
@@ -109,6 +111,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     toolbarPrevHidden = true;
     toolbarNextHidden = false;
     canScanQR = false;
+    ariaLabelledBy?: string;
     infoMessage?: string;
     direction = 'ltr';
     toolbarStyles = {
@@ -207,6 +210,20 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
             this.deleteDraftOnSubmitOrCancel();
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async ngAfterViewInit(): Promise<void> {
+        const label = this.element.closest('ion-item')?.querySelector('ion-label');
+
+        if (!label) {
+            return;
+        }
+
+        this.labelObserver = new MutationObserver(() => this.ariaLabelledBy = label.getAttribute('id') ?? undefined);
+        this.labelObserver.observe(label, { attributes: true, attributeFilter: ['id'] });
     }
 
     /**
@@ -1118,6 +1135,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         this.resizeObserver?.disconnect();
         this.resetObserver?.off();
         this.keyboardObserver?.off();
+        this.labelObserver?.disconnect();
     }
 
 }

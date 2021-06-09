@@ -566,14 +566,14 @@ export class AddonCalendarProvider {
      */
     async getCalendarLookAhead(siteId?: string): Promise<number> {
         const site = await CoreSites.getSite(siteId);
-        let value: string | undefined;
+        let value: string | undefined | null;
         try {
             value = await CoreUser.getUserPreference('calendar_lookahead');
         } catch {
             // Ignore errors.
         }
 
-        if (typeof value == 'undefined') {
+        if (typeof value == 'undefined' || value === null) {
             value = site.getStoredConfig('calendar_lookahead');
         }
 
@@ -588,7 +588,7 @@ export class AddonCalendarProvider {
      */
     async getCalendarTimeFormat(siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
-        let format: string | undefined;
+        let format: string | undefined | null;
 
         try {
             format = await CoreUser.getUserPreference('calendar_timeformat');

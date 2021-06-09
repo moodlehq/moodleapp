@@ -47,7 +47,7 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
     disabled = false;
     labelKey = '';
 
-    protected aggregateObserver: CoreEventObserver;
+    protected aggregateObserver?: CoreEventObserver;
     protected updateSiteObserver: CoreEventObserver;
 
     constructor() {
@@ -57,27 +57,14 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.disabled = CoreRating.isRatingDisabledInSite();
         }, CoreSites.getCurrentSiteId());
-
-        // Update aggrgate when the user adds or edits a rating.
-        this.aggregateObserver =
-            CoreEvents.on(CoreRatingProvider.AGGREGATE_CHANGED_EVENT, (data) => {
-                if (this.item &&
-                    data.contextLevel == this.contextLevel &&
-                    data.instanceId == this.instanceId &&
-                    data.component == this.ratingInfo.component &&
-                    data.ratingArea == this.ratingInfo.ratingarea &&
-                    data.itemId == this.itemId) {
-                    this.item.aggregatestr = data.aggregate;
-                    this.item.count = data.count;
-                }
-            });
     }
 
     /**
      * Detect changes on input properties.
      */
     ngOnChanges(): void {
-        this.aggregateObserver && this.aggregateObserver.off();
+        this.aggregateObserver?.off();
+        delete this.aggregateObserver;
 
         this.item = (this.ratingInfo.ratings || []).find((rating) => rating.itemid == this.itemId);
         if (!this.item) {
@@ -107,6 +94,20 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
         }
 
         this.showCount = (this.aggregateMethod != CoreRatingProvider.AGGREGATE_COUNT);
+
+        // Update aggrgate when the user adds or edits a rating.
+        this.aggregateObserver =
+            CoreEvents.on(CoreRatingProvider.AGGREGATE_CHANGED_EVENT, (data) => {
+                if (this.item &&
+                    data.contextLevel == this.contextLevel &&
+                    data.instanceId == this.instanceId &&
+                    data.component == this.ratingInfo.component &&
+                    data.ratingArea == this.ratingInfo.ratingarea &&
+                    data.itemId == this.itemId) {
+                    this.item.aggregatestr = data.aggregate;
+                    this.item.count = data.count;
+                }
+            });
     }
 
     /**
@@ -135,7 +136,7 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
      * Component being destroyed.
      */
     ngOnDestroy(): void {
-        this.aggregateObserver.off();
+        this.aggregateObserver?.off();
         this.updateSiteObserver.off();
     }
 

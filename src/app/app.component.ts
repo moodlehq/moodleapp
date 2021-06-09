@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { IonRouterOutlet } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 
@@ -20,7 +20,7 @@ import { CoreLang } from '@services/lang';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreEvents } from '@singletons/events';
 import { Network, NgZone, Platform, SplashScreen } from '@singletons';
-import { CoreApp } from '@services/app';
+import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSubscriptions } from '@singletons/subscriptions';
@@ -34,6 +34,10 @@ import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
 
+type AutomatedTestsWindow = Window & {
+    changeDetector?: ChangeDetectorRef;
+};
+
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
@@ -45,6 +49,12 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     protected lastUrls: Record<string, number> = {};
     protected lastInAppUrl?: string;
+
+    constructor(changeDetector: ChangeDetectorRef) {
+        if (CoreAppProvider.isAutomated()) {
+            (window as AutomatedTestsWindow).changeDetector = changeDetector;
+        }
+    }
 
     /**
      * Component being initialized.

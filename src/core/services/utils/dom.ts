@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable, SimpleChange, ElementRef, KeyValueChanges } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { IonContent } from '@ionic/angular';
 import { ModalOptions, PopoverOptions, AlertOptions, AlertButton, TextFieldTypes } from '@ionic/core';
 import { Md5 } from 'ts-md5';
@@ -62,7 +61,7 @@ export class CoreDomUtilsProvider {
     protected activeLoadingModals: CoreIonLoadingElement[] = [];
     protected logger: CoreLogger;
 
-    constructor(protected domSanitizer: DomSanitizer) {
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreDomUtilsProvider');
 
         this.init();

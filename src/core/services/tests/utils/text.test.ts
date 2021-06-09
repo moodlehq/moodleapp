@@ -12,24 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DomSanitizer } from '@angular/platform-browser';
-
 import { CoreApp } from '@services/app';
 import { CoreTextUtilsProvider } from '@services/utils/text';
+import { DomSanitizer } from '@singletons';
 
-import { mock, mockSingleton } from '@/testing/utils';
+import { mockSingleton } from '@/testing/utils';
 
 describe('CoreTextUtilsProvider', () => {
 
     const config = { platform: 'android' };
-    let sanitizer: DomSanitizer;
     let textUtils: CoreTextUtilsProvider;
 
     beforeEach(() => {
         mockSingleton(CoreApp, [], { isAndroid: () => config.platform === 'android' });
+        mockSingleton(DomSanitizer, [], { bypassSecurityTrustUrl: url => url });
 
-        sanitizer = mock<DomSanitizer>([], { bypassSecurityTrustUrl: url => url });
-        textUtils = new CoreTextUtilsProvider(sanitizer);
+        textUtils = new CoreTextUtilsProvider();
     });
 
     it('adds ending slashes', () => {
@@ -58,7 +56,7 @@ describe('CoreTextUtilsProvider', () => {
         // Assert
         expect(url).toEqual('geo:0,0?q=Moodle%20Spain%20HQ');
 
-        expect(sanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
+        expect(DomSanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
         expect(CoreApp.isAndroid).toHaveBeenCalled();
     });
 
@@ -74,7 +72,7 @@ describe('CoreTextUtilsProvider', () => {
         // Assert
         expect(url).toEqual('http://maps.google.com?q=Moodle%20Spain%20HQ');
 
-        expect(sanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
+        expect(DomSanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
         expect(CoreApp.isAndroid).toHaveBeenCalled();
     });
 

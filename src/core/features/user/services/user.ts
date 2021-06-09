@@ -391,7 +391,7 @@ export class CoreUserProvider {
      * @param siteId Site Id. If not defined, use current site.
      * @return Preference value or null if preference not set.
      */
-    async getUserPreference(name: string, siteId?: string): Promise<string> {
+    async getUserPreference(name: string, siteId?: string): Promise<string | null> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const preference = await CoreUtils.ignoreErrors(CoreUserOffline.getPreference(name, siteId));
@@ -403,18 +403,13 @@ export class CoreUserProvider {
 
         const wsValue = await this.getUserPreferenceOnline(name, siteId);
 
-        if (!wsValue) {
-            if (preference) {
-                // Return the local value.
-                return preference.value;
-            }
-
-            throw new CoreError('Preference not found');
-        }
-
         if (preference && preference.value != preference.onlinevalue && preference.onlinevalue == wsValue) {
             // Sync is pending for this preference, return stored value.
             return preference.value;
+        }
+
+        if (!wsValue) {
+            return null;
         }
 
         await CoreUserOffline.setPreference(name, wsValue, wsValue);

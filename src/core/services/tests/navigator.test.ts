@@ -44,7 +44,7 @@ describe('CoreNavigator', () => {
         mockSingleton(Router, router);
         mockSingleton(CoreUtils, new CoreUtilsProvider(mock()));
         mockSingleton(CoreUrlUtils, new CoreUrlUtilsProvider());
-        mockSingleton(CoreTextUtils, new CoreTextUtilsProvider(mock()));
+        mockSingleton(CoreTextUtils, new CoreTextUtilsProvider());
         mockSingleton(CoreSites, { getCurrentSiteId: () => 42, isLoggedIn: () => true });
         mockSingleton(CoreMainMenu, { isMainMenuTab: path => Promise.resolve(currentMainMenuHandlers.includes(path)) });
     });
