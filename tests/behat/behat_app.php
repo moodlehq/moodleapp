@@ -812,7 +812,7 @@ class behat_app extends behat_base {
      * @return object
      */
     public function parse_element_locator($text): object {
-        preg_match('/^"((?:[^"]|\\")+?)"(?: "([^"]+?)")?(?: near "((?:[^"]|\\")+?)"(?: "([^"]+?)")?)?$/', $text, $matches);
+        preg_match('/^"((?:[^"]|\\")*?)"(?: "([^"]*?)")?(?: near "((?:[^"]|\\")*?)"(?: "([^"]*?)")?)?$/', $text, $matches);
 
         $locator = [
             'text' => str_replace('\\"', '"', $matches[1]),

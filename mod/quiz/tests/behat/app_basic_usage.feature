@@ -1,4 +1,4 @@
-@mod @mod_quiz @app @app_upto3.9.4 @javascript
+@mod @mod_quiz @app @javascript
 Feature: Attempt a quiz in app
   As a student
   In order to demonstrate what I know
@@ -42,7 +42,7 @@ Feature: Attempt a quiz in app
       | Test questions   | shortanswer      | TF4   | Text of the second question |
       | Test questions   | numerical        | TF5   | Text of the third question  |
       | Test questions   | essay            | TF6   | Text of the fourth question |
-      | Test questions   | ddwtos           | TF7   | Text of the fifth question  |
+      | Test questions   | ddwtos           | TF7   | The [[1]] brown [[2]] jumped over the [[3]] dog. |
       | Test questions   | truefalse        | TF8   | Text of the sixth question  |
       | Test questions   | match            | TF9   | Text of the seventh question  |
     And quiz "Quiz 2" contains the following questions:
@@ -55,60 +55,58 @@ Feature: Attempt a quiz in app
       | TF8      | 6    |
       | TF9      | 7    |
 
-  @app @3.8.0
   Scenario: View a quiz entry page (attempts, status, etc.)
     When I enter the app
     And I log in as "student1"
     And I press "Course 1" near "Course overview" in the app
     And I press "Quiz 1" in the app
     And I press "Attempt quiz now" in the app
-    Then I should see "Text of the first question"
-    But I should not see "Text of the second question"
+    Then I should find "Text of the first question" in the app
+    But I should not find "Text of the second question" in the app
 
     When I press "Next" near "Question 1" in the app
-    Then I should see "Text of the second question"
-    But I should not see "Text of the first question"
+    Then I should find "Text of the second question" in the app
+    But I should not find "Text of the first question" in the app
 
     When I press "Previous" near "Question 2" in the app
-    Then I should see "Text of the first question"
-    But I should not see "Text of the second question"
+    Then I should find "Text of the first question" in the app
+    But I should not find "Text of the second question" in the app
 
     When I press "Next" near "Quiz 1" in the app
-    Then I should see "Text of the second question"
-    But I should not see "Text of the first question"
+    Then I should find "Text of the second question" in the app
+    But I should not find "Text of the first question" in the app
 
     When I press "Previous" near "Quiz 1" in the app
-    Then I should see "Text of the first question"
-    But I should not see "Text of the second question"
+    Then I should find "Text of the first question" in the app
+    But I should not find "Text of the second question" in the app
 
     When I press "Next" near "Question 1" in the app
     And I press "Next" near "Quiz 1" in the app
-    Then I should see "Summary of attempt"
+    Then I should find "Summary of attempt" in the app
 
     When I press "Return to attempt" in the app
-    Then I should see "Text of the second question"
-    But I should not see "Text of the first question"
+    Then I should find "Text of the second question" in the app
+    But I should not find "Text of the first question" in the app
 
     When I press "Next" in the app
     And I press "Submit all and finish" in the app
-    Then I should see "Once you submit"
+    Then I should find "Once you submit" in the app
 
     When I press "Cancel" near "Once you submit" in the app
-    Then I should see "Summary of attempt"
+    Then I should find "Summary of attempt" in the app
 
     When I press "Submit all and finish" in the app
     And I press "OK" near "Once you submit" in the app
-    Then I should see "Review of attempt 1"
-    And I should see "Started on"
-    And I should see "State"
-    And I should see "Completed on"
-    And I should see "Time taken"
-    And I should see "Marks"
-    And I should see "Grade"
-    And I should see "Question 1"
-    And I should see "Question 2"
+    Then I should find "Review of attempt 1" in the app
+    And I should find "Started on" in the app
+    And I should find "State" in the app
+    And I should find "Completed on" in the app
+    And I should find "Time taken" in the app
+    And I should find "Marks" in the app
+    And I should find "Grade" in the app
+    And I should find "Question 1" in the app
+    And I should find "Question 2" in the app
 
-  @app @3.8.0
   Scenario: Attempt a quiz (all question types)
     When I enter the app
     And I log in as "student1"
@@ -117,31 +115,37 @@ Feature: Attempt a quiz in app
     And I press "Attempt quiz now" in the app
     And I press "Four" in the app
     And I press "Three" in the app
-    And I press "Next" near "Question 1" in the app
+    And I press "Next" "ion-button" near "Quiz 2" in the app
     And I set the field "Answer" to "testing" in the app
-    And I press "Next" near "Question 2" in the app
+    And I press "Next" "ion-button" near "Question 2" in the app
     And I set the field "Answer" to "5" in the app
-    And I press "Next" near "Question 3" in the app
+    And I press "Next" "ion-button" near "Question 3" in the app
     And I set the field "Answer" to "Testing an essay" in the app
-    And I press "Next" near "Question 4" in the app
-    And I press "lazy" in the app
-    And I press "Next" near "Question 5" in the app
+    And I press "Next" "ion-button" near "Question 4" in the app
+    And I press "quick" ".drag" in the app
+    And I press "" ".place1.drop" in the app
+    And I press "fox" ".drag" in the app
+    And I press "" ".place2.drop" in the app
+    And I press "lazy" ".drag" in the app
+    And I press "" ".place3.drop" in the app
+    And I press "Next" "ion-button" near "Question 5" in the app
     And I press "True" in the app
-    And I press "Next" near "Question 6" in the app
-    And I press "Choose..." near "frog" in the app
+    And I press "Next" "ion-button" near "Question 6" in the app
+    And I press "Choose... , frog" in the app
     And I press "amphibian" in the app
-    And I press "Choose..." near "newt" in the app
+    And I press "Choose... , newt" in the app
     And I press "insect" in the app
-    And I press "Choose..." near "cat" in the app
+    And I press "Choose... , cat" in the app
     And I press "mammal" in the app
-    And I press "Next" near "Question 7" in the app
-    And I press "Submit all and finish" in the app
-    And I press "OK" in the app
-    Then I should see "Review of attempt 1"
-    And I should see "Finished"
-    And I should see "Not yet graded"
+    And I press "Next" "ion-button" near "Question 7" in the app
+    Then I should not find "Not yet answered" in the app
 
-  @app @3.8.0
+    When I press "Submit all and finish" in the app
+    And I press "OK" in the app
+    Then I should find "Review of attempt 1" in the app
+    And I should find "Finished" in the app
+    And I should find "Not yet graded" in the app
+
   Scenario: Submit a quiz & Review a quiz attempt
     When I enter the app
     And I log in as "student1"
@@ -154,7 +158,7 @@ Feature: Attempt a quiz in app
     And I press "Next" near "Question 2" in the app
     And I press "Submit all and finish" in the app
     And I press "OK" in the app
-    Then I should see "Review of attempt 1"
+    Then I should find "Review of attempt 1" in the app
 
     When I enter the app
     And I log in as "teacher1"

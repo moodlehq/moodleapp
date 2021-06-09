@@ -1,4 +1,4 @@
-@mod @mod_quiz @app @app_upto3.9.4 @javascript
+@mod @mod_quiz @app @javascript
 Feature: Attempt a quiz in app
   As a student
   In order to demonstrate what I know
@@ -29,81 +29,42 @@ Feature: Attempt a quiz in app
       | TF1      | 1    |
       | TF2      | 2    |
 
-  @app_upto3.7.0
-  Scenario: Next and previous navigation in the 3.6 app
+  Scenario: Next and previous navigation
     Given I enter the app
     And I log in as "student1"
     When I press "Course 1" near "Course overview" in the app
     And I press "Quiz 1" in the app
     And I press "Attempt quiz now" in the app
-    Then I should see "Text of the first question"
-    And I should not see "Text of the second question"
+    Then I should find "Text of the first question" in the app
+    And I should not find "Text of the second question" in the app
     And I press "Next" near "Question 1" in the app
-    And I should see "Text of the second question"
-    And I should not see "Text of the first question"
+    And I should find "Text of the second question" in the app
+    And I should not find "Text of the first question" in the app
     And I press "Previous" near "Question 2" in the app
-    And I should not see "Text of the second question"
-    And I should see "Text of the first question"
+    And I should not find "Text of the second question" in the app
+    And I should find "Text of the first question" in the app
     And I press "Next" near "Quiz 1" in the app
-    And I should see "Text of the second question"
-    And I should not see "Text of the first question"
+    And I should find "Text of the second question" in the app
+    And I should not find "Text of the first question" in the app
     And I press "Previous" near "Quiz 1" in the app
-    And I should not see "Text of the second question"
-    And I should see "Text of the first question"
+    And I should not find "Text of the second question" in the app
+    And I should find "Text of the first question" in the app
     And I press "Next" near "Question 1" in the app
     And I press "Next" near "Quiz 1" in the app
-    And I should see "Summary of attempt"
+    And I should find "Summary of attempt" in the app
     And I press "Return to attempt" in the app
-    And I should see "Text of the second question"
-    And I should not see "Text of the first question"
+    And I should find "Text of the second question" in the app
+    And I should not find "Text of the first question" in the app
     And I press "Next" in the app
     And I press "Submit all and finish" in the app
-    And I should see "Once you submit"
+    And I should find "Once you submit" in the app
     And I press "Cancel" near "Once you submit" in the app
-    And I should see "Summary of attempt"
+    And I should find "Summary of attempt" in the app
     And I press "Submit all and finish" in the app
     And I press "OK" near "Once you submit" in the app
-    And I should see "Review"
-    And I press "home" in the app
-    And I should see "Acceptance test site"
-
-  @app_from3.7.1
-  Scenario: Next and previous navigation in the 3.7 app
-    Given I enter the app
-    And I log in as "student1"
-    When I press "Course 1" near "Course overview" in the app
-    And I press "Quiz 1" in the app
-    And I press "Attempt quiz now" in the app
-    Then I should see "Text of the first question"
-    And I should not see "Text of the second question"
-    And I press "Next" near "Question 1" in the app
-    And I should see "Text of the second question"
-    And I should not see "Text of the first question"
-    And I press "Previous" near "Question 2" in the app
-    And I should not see "Text of the second question"
-    And I should see "Text of the first question"
-    And I press "Next" near "Quiz 1" in the app
-    And I should see "Text of the second question"
-    And I should not see "Text of the first question"
-    And I press "Previous" near "Quiz 1" in the app
-    And I should not see "Text of the second question"
-    And I should see "Text of the first question"
-    And I press "Next" near "Question 1" in the app
-    And I press "Next" near "Quiz 1" in the app
-    And I should see "Summary of attempt"
-    And I press "Return to attempt" in the app
-    And I should see "Text of the second question"
-    And I should not see "Text of the first question"
-    And I press "Next" in the app
-    And I press "Submit all and finish" in the app
-    And I should see "Once you submit"
-    And I press "Cancel" near "Once you submit" in the app
-    And I should see "Summary of attempt"
-    And I press "Submit all and finish" in the app
-    And I press "OK" near "Once you submit" in the app
-    And I should see "Review"
-    And I press "home" in the app
-    And I should see "Are you sure"
-    And I should see "OK"
+    And I should find "Review" in the app
+    And I press "Home" in the app
+    And I should find "Are you sure" in the app
+    And I should find "OK" in the app
     And I press "OK" in the app
-    And I should see "Acceptance test site"
+    And I should find "Acceptance test site" in the app
