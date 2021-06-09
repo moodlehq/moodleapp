@@ -588,6 +588,45 @@ ion-radio {
     --color-checked: var(--color);
 }
 
+.ios ion-radio {
+    --border-width: 1px;
+    --border-style: solid;
+    --border-radius: 50%;
+    --inner-border-radius: 50%;
+
+    width: 20px;
+    height: 20px;
+
+    &::part(container) {
+        margin: 0px;
+        border-radius: var(--border-radius);
+        border-width: var(--border-width);
+        border-style: var(--border-style);
+        border-color: var(--color);
+    }
+
+    &::part(mark) {
+        border-radius: var(--inner-border-radius);
+        width: calc(50% + var(--border-width));
+        height: calc(50% + var(--border-width));
+        transform: scale3d(0, 0, 0);
+        transition: transform 280ms cubic-bezier(.4, 0, .2, 1);
+        background: var(--contrast-background);
+        border: 0 !important;
+    }
+
+    &.radio-checked {
+        &::part(container) {
+            border-color: var(--color-checked);
+            background: var(--color-checked);
+        }
+
+        &::part(mark) {
+            transform: scale3d(1, 1, 1);
+        }
+    }
+}
+
 // Checkbox.
 ion-checkbox {
     --border-radius: 2px;
