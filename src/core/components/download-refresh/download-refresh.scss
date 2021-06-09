@@ -7,4 +7,9 @@
     align-content: center;
     min-height: var(--a11y-min-target-size);
     min-width: var(--a11y-min-target-size);
+    position: relative;
+
+    > * {
+        position: absolute;
+    }
 }
