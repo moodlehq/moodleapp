@@ -799,13 +799,12 @@ export class CoreFormatTextDirective implements OnChanges {
     protected addIframeHelp(iframe: HTMLIFrameElement): void {
         const helpDiv = document.createElement('div');
 
-        helpDiv.classList.add('ion-text-center');
-        helpDiv.classList.add('ion-text-wrap');
-        helpDiv.classList.add('core-iframe-help');
+        helpDiv.classList.add('ion-text-center', 'ion-text-wrap');
 
         const button = document.createElement('ion-button');
         button.setAttribute('fill', 'clear');
         button.setAttribute('aria-haspopup', 'dialog');
+        button.classList.add('core-iframe-help', 'core-button-as-link');
         button.innerHTML = Translate.instant('core.iframehelp');
 
         button.addEventListener('click', () => {

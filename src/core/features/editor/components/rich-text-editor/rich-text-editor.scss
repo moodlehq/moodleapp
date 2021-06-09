@@ -168,3 +168,7 @@
 :host-context(.keyboard-is-open) {
     min-height: 200px;
 }
+
+:host-context(.item-label-stacked) {
+    margin-top: 10px;
+}

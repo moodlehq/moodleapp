@@ -145,9 +145,41 @@ ion-app.ios ion-header h2 {
 }
 
 // Correctly inherit ion-text-wrap onto labels.
+ion-item ion-label core-format-text .core-format-text-content > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 ion-item.ion-text-wrap ion-label {
     white-space: normal !important;
 }
+
+ion-button core-format-text .core-format-text-content {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+ion-button > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+ion-button.ion-text-wrap {
+    white-space: normal;
+    core-format-text .core-format-text-content {
+        white-space: normal;
+        display: contents;
+    }
+
+    & > * {
+        white-space: normal;
+    }
+}
+
 
 @each $color-name, $value in $colors {
     $value: map-get($colors, $color-name);
@@ -227,12 +259,6 @@ ion-button.button-small ion-icon.faicon[slot] {
     font-size: 1.5em !important;
 }
 
-[dir=rtl] ion-icon.icon-flip-rtl,
-[dir=rtl] ion-item::part(detail-icon),
-[dir=rtl] ion-icon.item-detail-icon {
-    transform: scaleX(-1);
-}
-
 // Buttons.
 ion-button,
 ion-fab-button,
@@ -251,10 +277,19 @@ ion-button.button-clear {
 .clickable {
     cursor: pointer;
 
+
     [disabled],
     [aria-disabled="true"] {
-        cursor: auto;
+        cursor: default;
+        opacity: .4;
+        pointer-events: none;
     }
+}
+
+button[disabled] {
+    cursor: default;
+    opacity: .4;
+    pointer-events: none;
 }
 
 ion-button.core-button-as-link {

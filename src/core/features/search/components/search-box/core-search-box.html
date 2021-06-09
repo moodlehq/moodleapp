@@ -13,7 +13,7 @@
             <ion-button *ngIf="showClear" slot="end" fill="clear"
                 [attr.aria-label]="'core.clearsearch' | translate" [disabled]="searched == '' || disabled"
                 (click)="clearForm()">
-                <ion-icon name="fas-backspace" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-backspace" slot="icon-only" aria-hidden="true" flip-rtl></ion-icon>
             </ion-button>
         </ion-item>
         <ion-list class="core-search-history" [hidden]="!historyShown">

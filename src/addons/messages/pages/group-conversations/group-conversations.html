@@ -45,7 +45,8 @@
                     role="heading"
                     detail="false"
                 >
-                    <ion-icon *ngIf="!favourites.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon *ngIf="!favourites.expanded" name="fas-caret-right" flip-rtl slot="start" aria-hidden="true">
+                    </ion-icon>
                     <ion-icon *ngIf="favourites.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label><h2>{{ 'core.favourites' | translate }} ({{ favourites.count }})</h2></ion-label>
                     <ion-badge slot="end" *ngIf="favourites.unread" aria-hidden="true">{{ favourites.unread }}</ion-badge>
@@ -80,7 +81,7 @@
                     role="heading"
                     detail="false"
                 >
-                    <ion-icon *ngIf="!group.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon *ngIf="!group.expanded" name="fas-caret-right" flip-rtl slot="start" aria-hidden="true"></ion-icon>
                     <ion-icon *ngIf="group.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label><h2>{{ 'addon.messages.groupconversations' | translate }} ({{ group.count }})</h2></ion-label>
                     <ion-badge slot="end" *ngIf="group.unread" aria-hidden="true">{{ group.unread }}</ion-badge>
@@ -114,7 +115,8 @@
                     role="heading"
                     detail="false"
                 >
-                    <ion-icon *ngIf="!individual.expanded" name="fas-caret-right" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon *ngIf="!individual.expanded" name="fas-caret-right" flip-rtl slot="start" aria-hidden="true">
+                    </ion-icon>
                     <ion-icon *ngIf="individual.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>
                         <h2>{{ 'addon.messages.individualconversations' | translate }} ({{ individual.count }})</h2>

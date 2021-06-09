@@ -47,10 +47,6 @@
         @include margin(10px, 0, 0, 0);
     }
 
-    .core-loading-content {
-        display: contents;
-    }
-
     &.core-loading-noheight .core-loading-content {
         height: auto;
     }

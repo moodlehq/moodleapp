@@ -48,7 +48,7 @@
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.em" [title]=" 'core.editor.italic' | translate"
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.em" [title]="'core.editor.italic' | translate"
                 (click)="buttonAction($event, 'italic', 'em')" (keyup)="buttonAction($event, 'italic', 'em')"
                 (mousedown)="downAction($event)" (keydown)="downAction($event)">
                 <ion-icon name="fas-italic" aria-hidden="true"></ion-icon>
@@ -129,14 +129,14 @@
             </button>
         </ion-slide>
         <ion-slide>
-            <button [attr.aria-pressed]="!rteEnabled" [title]=" 'core.editor.toggle' | translate"
+            <button [attr.aria-pressed]="!rteEnabled" [title]="'core.editor.toggle' | translate"
                 (click)="toggleEditor($event)" (keyup)="toggleEditor($event)"
                 (mousedown)="downAction($event)" (keydown)="downAction($event)">
                 <ion-icon name="fas-code" aria-hidden="true"></ion-icon>
             </button>
         </ion-slide>
         <ion-slide *ngIf="isPhone">
-            <button [title]=" 'core.editor.hidetoolbar' | translate"
+            <button [title]="'core.editor.hidetoolbar' | translate"
                 (click)="hideToolbar($event)" (keyup)="hideToolbar($event)"
                 (mousedown)="downAction($event)" (keydown)="downAction($event)">
                 <ion-icon name="fas-times" aria-hidden="true"></ion-icon>
