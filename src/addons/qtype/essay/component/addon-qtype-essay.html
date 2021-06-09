@@ -12,7 +12,7 @@
     <ng-container *ngIf="!review">
         <!-- Textarea. -->
         <ion-item *ngIf="essayQuestion.textarea && (!essayQuestion.hasDraftFiles || uploadFilesSupported)">
-            <ion-label></ion-label>
+            <ion-label class="sr-only">{{ 'core.question.answer' | translate }}</ion-label>
             <!-- "Format" and draftid hidden inputs -->
             <input *ngIf="essayQuestion.formatInput" type="hidden" [name]="essayQuestion.formatInput.name"
                 [value]="essayQuestion.formatInput.value" >

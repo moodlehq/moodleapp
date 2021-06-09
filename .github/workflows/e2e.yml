@@ -1,6 +1,8 @@
 name: E2E
 
-on: [push, pull_request]
+on:
+  schedule:
+    - cron: '0 0 * * *'  # every day at midnight
 
 jobs:
   e2e:

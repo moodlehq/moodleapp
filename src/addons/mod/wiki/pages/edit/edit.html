@@ -19,14 +19,14 @@
     <core-loading [hideUntil]="loaded">
         <form [formGroup]="pageForm" #editPageForm *ngIf="loaded">
             <ion-item class="ion-text-wrap" *ngIf="canEditTitle">
-                <ion-label></ion-label>
+                <ion-label class="sr-only">{{ 'addon.mod_wiki.newpagetitle' | translate }}</ion-label>
                 <ion-input name="title" type="text" [placeholder]="'addon.mod_wiki.newpagetitle' | translate"
                     formControlName="title">
                 </ion-input>
             </ion-item>
 
             <ion-item>
-                <ion-label></ion-label>
+                <ion-label class="sr-only">{{ 'core.content' | translate }}</ion-label>
                 <core-rich-text-editor [control]="contentControl" [placeholder]="'core.content' | translate"
                     name="wiki_page_content" [component]="component" [componentId]="cmId" [autoSave]="true" contextLevel="module"
                     [contextInstanceId]="cmId" elementId="newcontent_editor" [draftExtraParams]="editorExtraParams">

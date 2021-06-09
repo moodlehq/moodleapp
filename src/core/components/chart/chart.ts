@@ -57,6 +57,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
     @ViewChild('canvas') canvas?: ElementRef<HTMLCanvasElement>;
 
     chart?: ChartWithLegend;
+    legendItems: ChartLegendLabelItem[] = [];
 
     /**
      * @inheritdoc
@@ -105,6 +106,8 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
             },
             options: { legend },
         });
+
+        this.updateLegendItems();
     }
 
     /**
@@ -126,6 +129,8 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
         };
         this.chart.data.labels = this.labels;
         this.chart.update();
+
+        this.updateLegendItems();
     }
 
     /**
@@ -177,6 +182,13 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
             this.chart.destroy();
             this.chart = undefined;
         }
+    }
+
+    /**
+     * Recompute legendItems property.
+     */
+    protected updateLegendItems(): void {
+        this.legendItems = (this.chart?.legend?.legendItems ?? []).filter(item => !!item);
     }
 
 }
