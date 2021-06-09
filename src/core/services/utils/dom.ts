@@ -1409,7 +1409,11 @@ export class CoreDomUtilsProvider {
             errorMessage = CoreTextUtils.getErrorMessageFromError(error);
         }
 
-        return this.showErrorModal(typeof errorMessage == 'string' ? error! : defaultError, needsTranslate, autocloseTime);
+        return this.showErrorModal(
+            typeof errorMessage == 'string' && errorMessage ? error! : defaultError,
+            needsTranslate,
+            autocloseTime,
+        );
     }
 
     /**

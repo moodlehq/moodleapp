@@ -89,7 +89,7 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
                 const modal = await CoreDomUtils.showModalLoading();
 
                 try {
-                    const shouldOpen = this.shouldOpenLink(module, courseId);
+                    const shouldOpen = await this.shouldOpenLink(module, courseId);
 
                     if (shouldOpen) {
                         openUrl(module, courseId);

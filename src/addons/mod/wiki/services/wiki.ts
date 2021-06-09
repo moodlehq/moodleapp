@@ -1216,8 +1216,8 @@ export type AddonModWikiPageCreatedData = {
  * Data about a page that was just edited.
  */
 export type AddonModWikiEditedPageData = {
-    cmId: number;
-    courseId: number;
+    cmId?: number;
+    courseId?: number;
     wikiId: number;
     pageTitle: string;
     subwikiId?: number;

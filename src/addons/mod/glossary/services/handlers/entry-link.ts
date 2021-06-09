@@ -52,8 +52,12 @@ export class AddonModGlossaryEntryLinkHandlerService extends CoreContentLinksHan
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        AddonModGlossaryModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/entry/${entryId}`,
+                        AddonModGlossaryModuleHandlerService.PAGE_NAME + `/entry/${entryId}`,
                         {
+                            params: {
+                                courseId: module.course,
+                                cmId: module.id,
+                            },
                             siteId,
                         },
                     );

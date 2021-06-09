@@ -42,8 +42,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild('editPageForm') formElement?: ElementRef;
 
-    cmId!: number; // Course module ID.
-    courseId!: number; // Course the wiki belongs to.
+    cmId?: number; // Course module ID.
+    courseId?: number; // Course the wiki belongs to.
     title?: string; // Title to display.
     pageForm?: FormGroup; // The form group.
     contentControl?: FormControl; // The FormControl for the page content.
@@ -77,8 +77,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
+        this.cmId = CoreNavigator.getRouteNumberParam('cmId') || undefined;
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId') || undefined;
         this.subwikiId = CoreNavigator.getRouteNumberParam('subwikiId');
         this.wikiId = CoreNavigator.getRouteNumberParam('wikiId');
         this.pageId = CoreNavigator.getRouteNumberParam('pageId');
@@ -162,6 +162,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
                 this.userId = pageContents.userid;
                 canEdit = pageContents.caneditpage;
 
+                await this.fetchModuleAndCourseId();
+
                 // Get subwiki files, needed to replace URLs for rich text editor.
                 this.subwikiFiles = await AddonModWiki.getSubwikiFiles(this.wikiId, {
                     groupId: this.groupId,
@@ -190,8 +192,10 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
                 this.editing = false;
                 canEdit = !!this.blockId; // If no blockId, the user cannot edit the page.
 
-                // Make sure we have the wiki ID.
-                if (!this.wikiId) {
+                await this.fetchModuleAndCourseId();
+
+                // Try to get wikiId.
+                if (!this.wikiId && this.cmId && this.courseId) {
                     const module = await CoreCourse.getModule(this.cmId, this.courseId, undefined, true);
 
                     this.wikiId = module.instance;
@@ -246,6 +250,22 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
                 this.forceLeavePage();
             }
         }
+    }
+
+    /**
+     * Load cmId and courseId if they aren't set.
+     *
+     * @return Promise.
+     */
+    protected async fetchModuleAndCourseId(): Promise<void> {
+        if (!this.wikiId || (this.cmId && this.courseId)) {
+            return;
+        }
+
+        const module = await CoreCourse.getModuleBasicInfoByInstance(this.wikiId, 'wiki');
+
+        this.cmId = module.id;
+        this.courseId = module.course;
     }
 
     /**

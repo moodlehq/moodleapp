@@ -70,6 +70,7 @@ export class AddonModWikiPageOrMapLinkHandlerService extends CoreContentLinksHan
                         AddonModWikiModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/page/${hash}`,
                         {
                             params: {
+                                module,
                                 pageId: page.id,
                                 pageTitle: page.title,
                                 subwikiId: page.subwikiid,
