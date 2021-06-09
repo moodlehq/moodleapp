@@ -47,8 +47,12 @@ export class AddonModGlossaryEditLinkHandlerService extends CoreContentLinksHand
                     const module = await CoreCourse.getModuleBasicInfo(cmId, siteId);
 
                     await CoreNavigator.navigateToSitePath(
-                        AddonModGlossaryModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/edit/0`,
+                        AddonModGlossaryModuleHandlerService.PAGE_NAME + '/edit/0',
                         {
+                            params: {
+                                courseId: module.course,
+                                cmId: module.id,
+                            },
                             siteId,
                         },
                     );
