@@ -197,3 +197,417 @@ core-format-text {
         left: 100%;
     }
 }
+
+
+/** Styles to match web platform */
+
+// Those styles are omitted on RTE
+core-format-text {
+    ul {
+        padding-left: 1rem;
+    }
+    ul, ol {
+        -webkit-padding-start: 15px;
+    }
+
+    .atto_image_button_text-top,
+    .atto_image_button_middle,
+    .atto_image_button_text-bottom,
+    .atto_image_button_left,
+    .atto_image_button_right {
+        height: auto;
+        width: auto;
+
+        &.img-responsive {
+            height: auto;
+            width: auto;
+        }
+    }
+
+    // Embed video responsive classes.
+    // Taken from https://github.com/twbs/bootstrap/blob/v4-dev/scss/utilities/_embed.scss
+    .embed-responsive {
+        position: relative;
+        display: block;
+        width: 100%;
+        padding: 0;
+        overflow: hidden;
+
+        &::before {
+            display: block;
+            content: "";
+        }
+
+        .embed-responsive-item,
+        iframe,
+        embed,
+        object,
+        video {
+            position: absolute;
+            @include position(0, null, 0, 0);
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        iframe iframe {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    .embed-responsive-21by9 {
+        &::before {
+            padding-top: percentage(9 / 21);
+        }
+    }
+
+    .embed-responsive-16by9 {
+        &::before {
+            padding-top: percentage(9 / 16);
+        }
+    }
+
+    .embed-responsive-4by3 {
+        &::before {
+            padding-top: percentage(3 / 4);
+        }
+    }
+
+    .embed-responsive-1by1 {
+        &::before {
+            padding-top: percentage(1 / 1);
+        }
+    }
+
+}
+
+core-format-text,
+core-rich-text-editor .core-rte-editor {
+    @include core-headings();
+
+    p {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+
+    .no-overflow {
+        overflow: auto;
+    }
+
+    // Fix lists styles in core-format-text.
+    ol {
+        list-style-type: decimal;
+    }
+
+    ul, ol {
+        ol {
+            list-style-type: lower-latin;
+        }
+        ul, ol {
+            @include margin(null, null, null, 15px);
+        }
+    }
+
+    .badge {
+        position: initial !important;
+    }
+
+    .core-disable-media-adapt,
+    .core-disable-media-adapt .core-media-adapt-width {
+        max-width: none !important;
+        max-height: none !important;
+        width: initial !important;
+        height: initial !important;
+        display: inline-block !important;
+    }
+
+    img.icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        padding: 0;
+        -webkit-box-sizing: content-box;
+        box-sizing: content-box;
+        margin-right: .5rem;
+    }
+
+    // Atto styles
+    // -------------------------
+    .atto_image_preview {
+        width: 100%;
+        height: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .atto_image_preview_box {
+        max-height: 200px;
+        margin-bottom: 1em;
+        overflow: auto;
+    }
+
+    .editor_atto_content img {
+        cursor: pointer;
+    }
+
+    .atto_image_size {
+        display: inline-block;
+    }
+
+    .atto_image_size input[type=checkbox] {
+        @include margin(null, 1em, null, 1em);
+    }
+
+    .atto_image_size input[type=text] {
+        width: 3em;
+    }
+
+    .atto_image_size label {
+        display: inline-block;
+    }
+
+    .atto_image_button_text-top,
+    .atto_image_button_middle,
+    .atto_image_button_text-bottom,
+    .atto_image_button_left,
+    .atto_image_button_right {
+        vertical-align: middle;
+        max-width: 100%;
+        display: inline-block;
+        margin: 0 0.5em;
+
+        &.img-responsive {
+            /* If the image is display: block then linking the image to URLs won't work. */
+            /*display: inline-block;*/
+            max-width: 100%;
+        }
+    }
+
+    .atto_image_button_text-top {
+        vertical-align: text-top;
+    }
+
+    .atto_image_button_middle {
+        vertical-align: middle;
+    }
+
+    .atto_image_button_text-bottom {
+        vertical-align: text-bottom;
+    }
+
+    .atto_image_button_left {
+        @include float(start);
+        @include margin(0, 0.5em, 0, 0);
+    }
+
+    .atto_image_button_right {
+        @include float(end);
+        @include margin(0, 0, 0, 0.5em);
+    }
+
+    // Bootstrap 4 Styles
+    // -------------------------
+
+    // _media.scss
+    .media {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .media-body {
+        flex: 1;
+    }
+
+    // _alert.scss
+    .alert {
+        position: relative;
+        padding: .75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 0 solid transparent;
+    }
+
+    // Headings for larger alerts
+    .alert-heading {
+        // Specified to prevent conflicts of changing $headings-color
+        color: inherit;
+    }
+
+    // Provide class for links that match alerts
+    .alert-link {
+        font-weight: 400;
+    }
+
+    @each $color-name, $value in $colors {
+        $base: map-get($value, base);
+
+        .alert-#{$color-name} {
+            color: $base;
+            border-color: $base;
+            background-color: mix($base, white, 20%);
+
+            .alert-link {
+                color: darken($base, 10%);
+            }
+        }
+        .alert-#{$color-name} p {
+            color: $base;
+        }
+    }
+
+    // utilities/_align.scss
+    .align-baseline    { vertical-align: baseline !important; } // Browser default
+    .align-top         { vertical-align: top !important; }
+    .align-middle      { vertical-align: middle !important; }
+    .align-bottom      { vertical-align: bottom !important; }
+    .align-text-bottom { vertical-align: text-bottom !important; }
+    .align-text-top    { vertical-align: text-top !important; }
+
+    // utilities/_border.scss
+    .border         { border: 1px solid $gray-dark !important; }
+    .border-top     { border-top: 1px solid $gray-dark !important; }
+    .border-right   { border-right: 1px solid $gray-dark !important; }
+    .border-bottom  { border-bottom: 1px solid $gray-dark !important; }
+    .border-left    { border-left: 1px solid $gray-dark !important; }
+
+    .border-0        { border: 0 !important; }
+    .border-top-0    { border-top: 0 !important; }
+    .border-right-0  { border-right: 0 !important; }
+    .border-bottom-0 { border-bottom: 0 !important; }
+    .border-left-0   { border-left: 0 !important; }
+
+    @each $color-name, $value in $colors {
+        $base: map-get($value, base);
+
+        .border-#{$color-name} {
+            border-color: $base !important;
+        }
+    }
+
+    .border-white {
+        border-color: var(--white) !important;
+    }
+
+    // utilities/_flex.scss
+    .flex-row            { flex-direction: row !important; }
+    .flex-column         { flex-direction: column !important; }
+    .flex-row-reverse    { flex-direction: row-reverse !important; }
+    .flex-column-reverse { flex-direction: column-reverse !important; }
+
+    .flex-wrap         { flex-wrap: wrap !important; }
+    .flex-nowrap       { flex-wrap: nowrap !important; }
+    .flex-wrap-reverse { flex-wrap: wrap-reverse !important; }
+    .flex-fill         { flex: 1 1 auto !important; }
+    .flex-grow-0       { flex-grow: 0 !important; }
+    .flex-grow-1       { flex-grow: 1 !important; }
+    .flex-shrink-0     { flex-shrink: 0 !important; }
+    .flex-shrink-1     { flex-shrink: 1 !important; }
+
+    .justify-content-start   { justify-content: flex-start !important; }
+    .justify-content-end     { justify-content: flex-end !important; }
+    .justify-content-center  { justify-content: center !important; }
+    .justify-content-between { justify-content: space-between !important; }
+    .justify-content-around  { justify-content: space-around !important; }
+
+    .align-items-start    { align-items: flex-start !important; }
+    .align-items-end      { align-items: flex-end !important; }
+    .align-items-center   { align-items: center !important; }
+    .align-items-baseline { align-items: baseline !important; }
+    .align-items-stretch  { align-items: stretch !important; }
+
+    .align-content-start   { align-content: flex-start !important; }
+    .align-content-end     { align-content: flex-end !important; }
+    .align-content-center  { align-content: center !important; }
+    .align-content-between { align-content: space-between !important; }
+    .align-content-around  { align-content: space-around !important; }
+    .align-content-stretch { align-content: stretch !important; }
+
+    .align-self-auto     { align-self: auto !important; }
+    .align-self-start    { align-self: flex-start !important; }
+    .align-self-end      { align-self: flex-end !important; }
+    .align-self-center   { align-self: center !important; }
+    .align-self-baseline { align-self: baseline !important; }
+    .align-self-stretch  { align-self: stretch !important; }
+
+    // utilities/_visibility.scss
+    .visible {
+        visibility: visible !important;
+    }
+
+    .invisible {
+        visibility: hidden !important;
+    }
+
+    // utilities/_text.scss
+    .text-monospace { font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important; }
+    .text-justify  { text-align: justify !important; }
+    .text-wrap     { white-space: normal !important; }
+    .text-nowrap   { white-space: nowrap !important; }
+    .text-truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+     }
+    .text-left   { text-align: left !important; }
+    .text-right  { text-align: right !important; }
+    .text-center { text-align: center !important; }
+    .text-lowercase  { text-transform: lowercase !important; }
+    .text-uppercase  { text-transform: uppercase !important; }
+    .text-capitalize { text-transform: capitalize !important; }
+    .font-weight-light   { font-weight: 300 !important; }
+    .font-weight-lighter { font-weight: lighter !important; }
+    .font-weight-normal  { font-weight: 400 !important; }
+    .font-weight-bold    { font-weight: 700 !important; }
+    .font-weight-bolder  { font-weight: bolder !important; }
+    .font-italic         { font-style: italic !important; }
+    .text-white { color: var(--white) !important; }
+
+    @each $color-name, $value in $colors {
+        $base: map-get($value, base);
+        $contrast: map-get($value, contrast);
+        .text-#{$color-name} {
+            color: $base;
+        }
+    }
+
+    .text-body { color: var(--ion-text-color) !important; }
+    .text-muted { color: var(--subdued-text-color) !important; }
+    .text-black-50 { color: rgba($black, .5) !important; }
+    .text-white-50 { color: rgba($white, .5) !important; }
+    .text-decoration-none { text-decoration: none !important; }
+    .text-break {
+        word-break: break-word !important; // Deprecated, but avoids issues with flex containers
+        word-wrap: break-word !important; // Used instead of `overflow-wrap` for IE & Edge Legacy
+    }
+    .text-reset { color: inherit !important; }
+
+    .label {
+        display: inline-block;
+        padding: .25em .4em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        color: var(--white);
+        background-color: var(--gray-darker);
+    }
+
+    .label-important {
+        color: var(--ion-color-danger-contrast);
+        background-color: var(--ion-color-danger);
+    }
+
+    @each $color-name, $value in $colors {
+        $base: map-get($value, base);
+        $contrast: map-get($value, contrast);
+
+        .label-#{$color-name} {
+            color: $contrast;
+            background-color: $base;
+        }
+    }
+}

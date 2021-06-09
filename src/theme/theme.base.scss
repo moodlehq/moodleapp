@@ -151,6 +151,10 @@ ion-item ion-label core-format-text .core-format-text-content > * {
     text-overflow: ellipsis;
 }
 
+ion-item.ion-text-wrap ion-label core-format-text .core-format-text-content > * {
+    white-space: normal;
+}
+
 ion-item.ion-text-wrap ion-label {
     white-space: normal !important;
 }
@@ -179,7 +183,6 @@ ion-button.ion-text-wrap {
         white-space: normal;
     }
 }
-
 
 @each $color-name, $value in $colors {
     $value: map-get($colors, $color-name);
@@ -593,7 +596,6 @@ ion-checkbox {
     --checkmark-color: var(--contrast-background);
 }
 
-
 // Select.
 ion-select::part(text) {
     white-space: normal;
@@ -685,6 +687,11 @@ core-block ion-item-divider .core-button-spinner {
     .core-padding-#{$i} {
         @include padding(null, null, null, 15px * $i + 16px);
     }
+}
+
+details summary {
+    pointer-events: auto;
+    cursor: pointer;
 }
 
 textarea {
