@@ -144,14 +144,19 @@ ion-app.ios ion-header h2 {
     pointer-events: none;
 }
 
+
 // Correctly inherit ion-text-wrap onto labels.
-ion-item ion-label core-format-text .core-format-text-content > * {
+.item ion-label core-format-text .core-format-text-content > * {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-ion-item.ion-text-wrap ion-label {
+.item.ion-text-wrap ion-label core-format-text .core-format-text-content > * {
+    white-space: normal;
+}
+
+.item.ion-text-wrap ion-label {
     white-space: normal !important;
 }
 
@@ -179,7 +184,6 @@ ion-button.ion-text-wrap {
         white-space: normal;
     }
 }
-
 
 @each $color-name, $value in $colors {
     $value: map-get($colors, $color-name);
@@ -580,19 +584,74 @@ ion-toolbar h1 .core-bar-button-image img {
 }
 
 // Radio.
-ion-radio {
+ion-radio,
+input[type=radio] {
     --color: var(--brand-contrast-color);
     --color-checked: var(--color);
+    --border-radius: 50%;
+    --border-width: 2px;
+    --outer-border-width: 2px;
+    --border-style: solid;
+    --inner-border-radius: 50%;
+    --size: 20px;
+}
+
+.ios ion-radio,
+.ios input[type=radio] {
+    --border-width: 1px;
+    --outer-border-width: 1px;
+}
+
+.ios ion-radio {
+    width: var(--size);
+    height: var(--size);
+
+    &::part(container) {
+        margin: 0px;
+        border-radius: var(--border-radius);
+        border-width: var(--outer-border-width);
+        border-style: var(--border-style);
+        border-color: var(--color);
+    }
+
+    &::part(mark) {
+        border-radius: var(--inner-border-radius);
+        width: calc(50% + var(--outer-border-width));
+        height: calc(50% + var(--outer-border-width));
+        transform: scale3d(0, 0, 0);
+        transition: transform 280ms cubic-bezier(.4, 0, .2, 1);
+        background: var(--contrast-background);
+        border: 0 !important;
+    }
+
+    &.radio-checked {
+        &::part(container) {
+            border-color: var(--color-checked);
+            background: var(--color-checked);
+        }
+
+        &::part(mark) {
+            transform: scale3d(1, 1, 1);
+        }
+    }
 }
 
 // Checkbox.
-ion-checkbox {
+ion-checkbox,
+input[type=checkbox] {
     --border-radius: 2px;
     --border-color-checked: var(--brand-contrast-color);
     --background-checked: var(--brand-contrast-color);
     --checkmark-color: var(--contrast-background);
+    --border-width: 2px;
+    --outer-border-width: 2px;
+    --border-style: solid;
+    --size: 20px;
 }
 
+.ios input[type=checkbox] {
+    --outer-border-width: 1px;
+}
 
 // Select.
 ion-select::part(text) {
@@ -687,6 +746,11 @@ core-block ion-item-divider .core-button-spinner {
     }
 }
 
+details summary {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
 textarea {
     min-height: var(--a11y-min-target-size);
 }
@@ -751,7 +815,7 @@ ion-item.ion-activatable:not(.only-links) {
 
         ion-anchor, a,
         ion-button, button,
-        audio, video {
+        audio, video, select, input {
             pointer-events: visible;
         }
     }

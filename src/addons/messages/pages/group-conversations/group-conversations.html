@@ -17,7 +17,7 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content class="core-expand-max">
+<ion-content>
     <core-split-view>
         <ion-refresher slot="fixed" [disabled]="!loaded || !currentListEl" (ionRefresh)="refreshData($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
@@ -36,7 +36,7 @@
                 <!-- Favourite conversations. -->
                 <ion-item
                     button
-                    class="ion-text-wrap core-expandable divider"
+                    class="ion-text-wrap divider"
                     (click)="toggle(favourites)"
                     sticky="true"
                     [attr.aria-label]="(favourites.expanded ? 'core.collapse' : 'core.expand') | translate"
@@ -72,7 +72,7 @@
                 <!-- Group conversations. -->
                 <ion-item
                     button
-                    class="divider ion-text-wrap core-expandable"
+                    class="divider ion-text-wrap"
                     (click)="toggle(group)"
                     sticky="true"
                     [attr.aria-label]="(group.expanded ? 'core.collapse' : 'core.expand') | translate"
@@ -106,7 +106,7 @@
 
                 <ion-item
                     button
-                    class="divider ion-text-wrap core-expandable"
+                    class="divider ion-text-wrap"
                     (click)="toggle(individual)"
                     sticky="true"
                     [attr.aria-label]="(individual.expanded ? 'core.collapse' : 'core.expand') | translate"
