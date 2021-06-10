@@ -180,6 +180,11 @@ core-format-text {
         ion-icon {
             flex: 1;
             align-self: center;
+            /** Fix iOS icon size */
+            margin: 0 auto;
+            position: absolute;
+            left: 0;
+            right: 0;
         }
 
         &:hover {

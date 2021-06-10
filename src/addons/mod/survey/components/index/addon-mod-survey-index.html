@@ -79,7 +79,7 @@
 
                 <!-- Subquestion -->
                 <ion-radio-group [(ngModel)]="answers[question.name]" [required]="question.required" [name]="question.name">
-                    <ion-row *ngIf="question.parent !== 0" class="ion-align-items-center ion-padding" [class.even]="isEven">
+                    <ion-row *ngIf="question.parent !== 0" class="ion-align-items-center ion-padding-horizontal" [class.even]="isEven">
 
                         <ion-col size="7">
                             <ion-label id="addon-mod_survey-{{question.id}}">
@@ -91,9 +91,10 @@
 
                         <!-- Tablet view: radio buttons -->
                         <ion-col class="ion-hide-md-down ion-text-center" size="1"
-                            *ngFor="let option of question.optionsArray; let value=index;">
+                            *ngFor="let option of question.optionsArray; let value=index;"
+                            >
                             <!-- Empty slot to avoid errors on migration tslint checks -->
-                            <ion-radio [value]="value + 1" [attr.aria-labelledby]="'addon-mod_survey-'+question.id" slot="">
+                            <ion-radio [value]="value + 1" [attr.aria-label]="question.num + '. '+question.text + ': ' + option">
                             </ion-radio>
                         </ion-col>
                         <ion-col class="ion-hide-md-up" size="5">
