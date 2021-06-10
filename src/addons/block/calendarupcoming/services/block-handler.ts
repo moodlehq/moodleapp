@@ -40,6 +40,7 @@ export class AddonBlockCalendarUpcomingHandlerService extends CoreBlockBaseHandl
      */
     getDisplayData(block: CoreCourseBlock, contextLevel: string, instanceId: number): CoreBlockHandlerData {
         const linkParams: Params = contextLevel == 'course' ? { courseId: instanceId } : {};
+        linkParams.upcoming = true;
 
         return {
             title: 'addon.block_calendarupcoming.pluginname',
