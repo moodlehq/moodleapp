@@ -199,8 +199,6 @@ export class CoreNavigatorService {
         const siteId = options.siteId ?? CoreSites.getCurrentSiteId();
         const navigationOptions: CoreNavigationOptions = CoreObject.without(options, ['siteId']);
 
-        // @todo: When this function was in ContentLinksHelper, this code was inside NgZone. Check if it's needed.
-
         // If the path doesn't belong to a site, call standard navigation.
         if (siteId === CoreConstants.NO_SITE_ID) {
             return this.navigate(path, {
@@ -408,10 +406,6 @@ export class CoreNavigatorService {
      * @return Whether navigation suceeded.
      */
     protected async navigateToMainMenuPath(path: string, options: CoreNavigationOptions = {}): Promise<boolean> {
-        // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
-        // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
-        // @todo this.location.replaceState('');
-
         options = {
             preferCurrentTab: true,
             ...options,
@@ -441,7 +435,6 @@ export class CoreNavigatorService {
         }
 
         // Open the path within the default main tab.
-        // @todo test that this is working as expected
         return this.navigate(`/main/${DEFAULT_MAIN_MENU_TAB}`, {
             ...options,
             params: {

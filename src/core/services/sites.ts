@@ -752,7 +752,6 @@ export class CoreSitesProvider {
             };
 
             const siteId = this.getCurrentSiteId();
-
             const downloadUrl = CoreApp.getAppStoreUrl(storesConfig);
 
             if (downloadUrl != null) {
@@ -773,10 +772,8 @@ export class CoreSitesProvider {
             }
 
             if (siteId) {
-                // Logout if it's the currentSite.
-                if (siteId == this.getCurrentSiteId()) {
-                    await this.logout();
-                }
+                // Logout the currentSite.
+                await this.logout();
 
                 // Always expire the token.
                 await this.setSiteLoggedOut(siteId, true);
