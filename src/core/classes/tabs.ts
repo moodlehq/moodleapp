@@ -61,7 +61,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     numTabsShown = 0;
     direction = 'ltr';
     description = '';
-    lastScroll = 0;
     slidesOpts = {
         initialSlide: 0,
         slidesPerView: 3,
@@ -89,6 +88,8 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     protected slidesSwiper: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     protected slidesSwiperLoaded = false;
     protected scrollElements: Record<string | number, HTMLElement> = {}; // Scroll elements for each loaded tab.
+    protected lastScroll = 0;
+    protected previousLastScroll = 0;
 
     tabAction: CoreTabsRoleTab<T>;
 
@@ -164,6 +165,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             this.tabBarElement!.classList.remove('tabs-hidden');
             if (scroll === 0) {
                 this.tabBarElement!.style.height = '';
+                this.previousLastScroll = this.lastScroll;
                 this.lastScroll = 0;
             } else if (scroll !== undefined) {
                 this.tabBarElement!.style.height = (this.tabBarHeight - scroll) + 'px';
@@ -253,17 +255,13 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             return;
         }
 
-        if (!this.tabsShown) {
-            if (window.innerHeight >= CoreTabsBaseComponent.MAX_HEIGHT_TO_HIDE_TABS) {
-                // Ensure tabbar is shown.
-                this.tabsShown = true;
-                this.tabBarElement?.classList.remove('tabs-hidden');
-                this.lastScroll = 0;
-                this.calculateTabBarHeight();
-            } else {
-                // Don't recalculate.
-                return;
-            }
+        if (window.innerHeight >= CoreTabsBaseComponent.MAX_HEIGHT_TO_HIDE_TABS) {
+            // Ensure tabbar is shown.
+            this.applyScroll(true, 0);
+            this.calculateTabBarHeight();
+        } else if (!this.tabsShown) {
+            // Don't recalculate.
+            return;
         }
 
         await this.calculateMaxSlides();
@@ -504,7 +502,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             return;
         }
 
-        if (scrollTop == this.lastScroll) {
+        if (scrollTop == this.lastScroll || scrollTop == this.previousLastScroll) {
             // Ensure scroll has been modified to avoid flicks.
             return;
         }
@@ -522,6 +520,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         }
 
         // Use lastScroll after moving the tabs to avoid flickering.
+        this.previousLastScroll = this.lastScroll;
         this.lastScroll = scrollTop;
     }
 
