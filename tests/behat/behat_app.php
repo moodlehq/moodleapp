@@ -484,12 +484,12 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Receives push notifications for forum events.
+     * Receives push notifications.
      *
-     * @Given /^I receive a forum push notification for:$/
+     * @Given /^I receive a push notification in the app for:$/
      * @param TableNode $data
      */
-    public function i_receive_a_forum_push_notification(TableNode $data) {
+    public function i_receive_a_push_notification(TableNode $data) {
         global $DB, $CFG;
 
         $data = (object) $data->getColumnsHash()[0];
@@ -510,6 +510,23 @@ class behat_app extends behat_base {
         ]);
 
         $this->evaluate_script("return window.pushNotifications.notificationClicked($notification)");
+        $this->wait_for_pending_js();
+    }
+
+    /**
+     * Opens a custom link.
+     *
+     * @Given /^I open a custom link in the app for:$/
+     */
+    public function i_open_a_custom_link(TableNode $data) {
+        global $DB, $CFG;
+
+        $data = (object) $data->getColumnsHash()[0];
+        $discussion = $DB->get_record('forum_discussions', ['name' => $data->discussion]);
+        $pageurl = "{$CFG->behat_wwwroot}/mod/forum/discuss.php?d={$discussion->id}";
+        $url = "moodlemobile://link=" . urlencode($pageurl);
+
+        $this->evaluate_script("return window.urlSchemes.handleCustomURL('$url')");
         $this->wait_for_pending_js();
     }
 

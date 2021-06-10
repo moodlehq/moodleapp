@@ -1,5 +1,5 @@
 @app @javascript
-Feature: It navigates properly after receiving push notifications.
+Feature: It navigates properly using deep links.
 
   Background:
     Given the following "users" exist:
@@ -22,7 +22,7 @@ Feature: It navigates properly after receiving push notifications.
     And the following config values are set as admin:
       | forcelogout | 1 | tool_mobile |
 
-  Scenario: Open a forum push notification
+  Scenario: Receive a push notification
     When I enter the app
     And I log in as "student2"
     And I press the main menu button in the app
@@ -31,12 +31,33 @@ Feature: It navigates properly after receiving push notifications.
     And I set the field "Your site" to "$WWWROOT" in the app
     And I press "Connect to your site" in the app
     And I log in as "student1"
-    And I receive a forum push notification for:
-      | username | course | module | discussion  |
-      | student2 | C1     | forum  | Forum topic |
+    And I receive a push notification in the app for:
+      | username | module | discussion  |
+      | student2 | forum  | Forum topic |
     Then I should find "Reconnect" in the app
 
     When I set the field "Password" to "student2" in the app
     And I press "Log in" in the app
     Then I should find "Forum topic" in the app
     And I should find "Forum message" in the app
+    But I should not find "Site home" in the app
+
+    When I press the back button in the app
+    Then I should find "Site home" in the app
+    But I should not find "Forum topic" in the app
+    And I should not find "Forum message" in the app
+
+  Scenario: Open a link with a custom URL
+    When I launch the app
+    And I open a custom link in the app for:
+      | discussion  |
+      | Forum topic |
+    And I log in as "student1"
+    Then I should find "Forum topic" in the app
+    And I should find "Forum message" in the app
+    But I should not find "Site home" in the app
+
+    When I press the back button in the app
+    Then I should find "Site home" in the app
+    But I should not find "Forum topic" in the app
+    And I should not find "Forum message" in the app
