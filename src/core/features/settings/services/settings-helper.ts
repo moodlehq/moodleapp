@@ -63,8 +63,11 @@ export class CoreSettingsHelperProvider {
     protected syncPromises: { [s: string]: Promise<void> } = {};
     protected prefersDark?: MediaQueryList;
     protected colorSchemes: CoreColorScheme[] = [];
+    protected currentColorScheme = CoreColorScheme.LIGHT;
 
     constructor() {
+        this.prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
         if (!CoreConstants.CONFIG.forceColorScheme) {
             // Update color scheme when a user enters or leaves a site, or when the site info is updated.
             const applySiteScheme = (): void => {
@@ -72,7 +75,6 @@ export class CoreSettingsHelperProvider {
                     // Dark mode is disabled, force light mode.
                     this.setColorScheme(CoreColorScheme.LIGHT);
                 } else {
-                    this.prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
                     // Reset color scheme settings.
                     this.initColorScheme();
                 }
@@ -86,7 +88,12 @@ export class CoreSettingsHelperProvider {
                 // Reset color scheme settings.
                 this.initColorScheme();
             });
+        } else {
+            this.initColorScheme();
         }
+
+        // Listen for changes to the prefers-color-scheme media query.
+        this.prefersDark.addEventListener && this.prefersDark.addEventListener('change', this.toggleDarkModeListener.bind(this));
     }
 
     /**
@@ -432,17 +439,10 @@ export class CoreSettingsHelperProvider {
      * @param colorScheme Name of the color scheme.
      */
     setColorScheme(colorScheme: CoreColorScheme): void {
+        this.currentColorScheme = colorScheme;
         if (colorScheme == CoreColorScheme.SYSTEM && this.prefersDark) {
-            // Listen for changes to the prefers-color-scheme media query.
-            this.prefersDark.addEventListener &&
-                this.prefersDark.addEventListener('change', this.toggleDarkModeListener);
-
             this.toggleDarkMode(this.prefersDark.matches);
         } else {
-            // Stop listening to changes.
-            this.prefersDark?.removeEventListener &&
-                this.prefersDark?.removeEventListener('change', this.toggleDarkModeListener);
-
             this.toggleDarkMode(colorScheme == CoreColorScheme.DARK);
         }
     }
@@ -460,11 +460,9 @@ export class CoreSettingsHelperProvider {
 
     /**
      * Listener function to toggle dark mode.
-     *
-     * @param e Event object.
      */
-    protected toggleDarkModeListener = (e: MediaQueryListEvent): void => {
-        document.body.classList.toggle('dark', e.matches);
+    protected toggleDarkModeListener(): void {
+        this.setColorScheme(this.currentColorScheme);
     };
 
     /**
