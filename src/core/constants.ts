@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
-import { CoreColorScheme, CoreZoomLevel } from '@features/settings/services/settings-helper';
-import { CoreMainMenuLocalizedCustomItem } from '@features/mainmenu/services/mainmenu';
-import { CoreSitesDemoSiteData } from '@services/sites';
 import envJson from '@/assets/env.json';
-import { OpenFileAction } from '@services/utils/utils';
+import { EnvironmentConfig } from '@/types/config';
 
 /**
  * Context levels enumeration.
@@ -141,46 +136,7 @@ export class CoreConstants {
 
 }
 
-export interface EnvironmentConfig {
-    app_id: string;
-    appname: string;
-    versioncode: number;
-    versionname: string;
-    cache_update_frequency_usually: number;
-    cache_update_frequency_often: number;
-    cache_update_frequency_sometimes: number;
-    cache_update_frequency_rarely: number;
-    default_lang: string;
-    languages: Record<string, string>;
-    wsservice: string;
-    wsextservice: string;
-    demo_sites: Record<string, CoreSitesDemoSiteData>;
-    zoomlevels: Record<CoreZoomLevel, number>;
-    customurlscheme: string;
-    siteurl: string;
-    sitename: string;
-    multisitesdisplay: string;
-    sitefindersettings: Record<string, unknown>;
-    onlyallowlistedsites: boolean;
-    skipssoconfirmation: boolean;
-    forcedefaultlanguage: boolean;
-    privacypolicy: string;
-    notificoncolor: string;
-    enableanalytics: boolean;
-    enableonboarding: boolean;
-    forceColorScheme: CoreColorScheme;
-    forceLoginLogo: boolean;
-    ioswebviewscheme: string;
-    appstores: Record<string, string>;
-    displayqroncredentialscreen?: boolean;
-    displayqronsitescreen?: boolean;
-    forceOpenLinksIn: 'app' | 'browser';
-    iOSDefaultOpenFileAction?: OpenFileAction;
-    customMainMenuItems?: CoreMainMenuLocalizedCustomItem[];
-    feedbackFormUrl?: string | false;
-};
-
-export interface EnvironmentBuild {
+interface EnvironmentBuild {
     version: string;
     isProduction: boolean;
     isTesting: boolean;
