@@ -21,6 +21,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuHomePage } from './home';
 import { MAIN_MENU_HOME_ROUTES } from './home-routing.module';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 
 function buildRoutes(injector: Injector): Routes {
     const routes = resolveModuleRoutes(injector, MAIN_MENU_HOME_ROUTES);
@@ -29,7 +30,7 @@ function buildRoutes(injector: Injector): Routes {
         ...buildTabMainRoutes(injector, {
             path: '',
             data: {
-                isMainMenuRoot: true,
+                mainMenuTabRoot: CoreMainMenuHomeHandlerService.PAGE_NAME,
             },
             component: CoreMainMenuHomePage,
             children: routes.children,

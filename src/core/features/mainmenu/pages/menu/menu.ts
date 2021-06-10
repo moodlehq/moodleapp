@@ -176,12 +176,12 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         e.stopImmediatePropagation();
 
         // Current tab was clicked. Check if user is already at root level.
-        const mainMenuRootRoute = CoreNavigator.getCurrentRoute({ routeData: { isMainMenuRoot: true } });
-        if (mainMenuRootRoute) {
+        const isMainMenuRoot = await this.currentRouteIsMainMenuRoot();
+        if (isMainMenuRoot) {
             return; // Already at root level, nothing to do.
         }
 
-        // Current route doesn't define isMainMenuRoot. Check if the current path is the tab one.
+        // Maybe the route isn't defined as it should. Check if the current path is the tab one.
         const currentPath = CoreNavigator.getCurrentPath();
         if (currentPath == `/main/${page}`) {
             return; // Already at root level, nothing to do.
@@ -227,8 +227,8 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         event.detail.register(-10, async (processNextHandler: () => void) => {
             // This callback can be called at the same time as Ionic's back navigation callback.
             // Check if user is already at the root of a tab.
-            const mainMenuRootRoute = CoreNavigator.getCurrentRoute({ routeData: { isMainMenuRoot: true } });
-            if (!mainMenuRootRoute) {
+            const isMainMenuRoot = await this.currentRouteIsMainMenuRoot();
+            if (!isMainMenuRoot) {
                 return; // Not at root level, let Ionic handle the navigation.
             }
 
@@ -255,6 +255,16 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
             processNextHandler();
         });
+    }
+
+    /**
+     * Check if current route is the root of the current main menu tab.
+     *
+     * @return Promise.
+     */
+    protected async currentRouteIsMainMenuRoot(): Promise<boolean> {
+        // Check if the current route is the root of the current main menu tab.
+        return !!CoreNavigator.getCurrentRoute({ routeData: { mainMenuTabRoot: CoreNavigator.getCurrentMainMenuTab() } });
     }
 
 }

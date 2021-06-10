@@ -16,6 +16,7 @@ import { Injector, NgModule } from '@angular/core';
 import { Route, RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreTagMainMenuHandlerService } from './services/handlers/mainmenu';
 
 export const CoreTagIndexAreaRoute: Route = {
     path: 'index-area',
@@ -32,7 +33,7 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: 'search',
             data: {
-                isMainMenuRoot: true,
+                mainMenuTabRoot: CoreTagMainMenuHandlerService.PAGE_NAME,
             },
             loadChildren: () => import('@features/tag//pages/search/search.page.module').then(m => m.CoreTagSearchPageModule),
         },

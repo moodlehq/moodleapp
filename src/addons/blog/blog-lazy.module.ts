@@ -21,10 +21,14 @@ import { CoreCommentsComponentsModule } from '@features/comments/components/comp
 
 import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { AddonBlogMainMenuHandlerService } from './services/handlers/mainmenu';
 
 function buildRoutes(injector: Injector): Routes {
     return [
         ...buildTabMainRoutes(injector, {
+            data: {
+                mainMenuTabRoot: AddonBlogMainMenuHandlerService.PAGE_NAME,
+            },
             component: AddonBlogEntriesPage,
         }),
     ];

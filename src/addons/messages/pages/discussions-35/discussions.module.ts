@@ -22,12 +22,13 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 import { AddonMessagesDiscussions35Page } from './discussions.page';
+import { AddonMessagesMainMenuHandlerService } from '@addons/messages/services/handlers/mainmenu';
 
 const mobileRoutes: Routes = [
     {
         path: '',
         data: {
-            isMainMenuRoot: true,
+            mainMenuTabRoot: AddonMessagesMainMenuHandlerService.PAGE_NAME,
         },
         component: AddonMessagesDiscussions35Page,
     },
@@ -38,7 +39,7 @@ const tabletRoutes: Routes = [
     {
         path: '',
         data: {
-            isMainMenuRoot: true,
+            mainMenuTabRoot: AddonMessagesMainMenuHandlerService.PAGE_NAME,
         },
         component: AddonMessagesDiscussions35Page,
         children: [
