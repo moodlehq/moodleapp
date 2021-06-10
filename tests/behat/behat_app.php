@@ -101,6 +101,19 @@ class behat_app extends behat_base {
     }
 
     /**
+     * @Then /^I wait the app to restart$/
+     */
+    public function i_wait_the_app_to_restart() {
+        // Wait window to reload.
+        $this->spin(function() {
+            return $this->evaluate_script("return !window.behat;");
+        });
+
+        // Prepare testing runtime again.
+        $this->prepare_browser(false);
+    }
+
+    /**
      * Finds elements in the app.
      *
      * @Then /^I should( not)? find (".+") in the app$/
@@ -347,24 +360,28 @@ class behat_app extends behat_base {
      * @param string $url App URL
      * @throws DriverException If the app fails to load properly
      */
-    protected function prepare_browser() {
-        // Restart the browser and set its size.
-        $this->getSession()->restart();
-        $this->resize_window('360x720', true);
+    protected function prepare_browser(bool $restart = true) {
+        if ($restart) {
+            // Restart the browser and set its size.
+            $this->getSession()->restart();
+            $this->resize_window('360x720', true);
 
-        if (empty($this->ionicurl)) {
-            $this->ionicurl = $this->start_or_reuse_ionic();
+            if (empty($this->ionicurl)) {
+                $this->ionicurl = $this->start_or_reuse_ionic();
+            }
+
+            // Check whether the app is running a legacy version.
+            $json = @file_get_contents("{$this->ionicurl}/assets/env.json") ?: @file_get_contents("{$this->ionicurl}/config.json");
+            $data = json_decode($json);
+            $appversion = $data->build->version ?? str_replace('-dev', '', $data->versionname);
+
+            $this->islegacy = version_compare($appversion, '3.9.5', '<');
+
+            // Visit the Ionic URL.
+            $this->getSession()->visit($this->ionicurl);
         }
 
-        // Check whether the app is running a legacy version.
-        $json = @file_get_contents("{$this->ionicurl}/assets/env.json") ?: @file_get_contents("{$this->ionicurl}/config.json");
-        $data = json_decode($json);
-        $appversion = $data->build->version ?? str_replace('-dev', '', $data->versionname);
-
-        $this->islegacy = version_compare($appversion, '3.9.5', '<');
-
-        // Visit the Ionic URL and wait for it to load.
-        $this->getSession()->visit($this->ionicurl);
+        // Wait the application to load.
         $this->spin(function($context) {
             $title = $context->getSession()->getPage()->find('xpath', '//title');
 
@@ -387,34 +404,36 @@ class behat_app extends behat_base {
         $this->execute_script("window.BehatMoodleAppLegacy = $islegacyboolean;");
         $this->execute_script(file_get_contents(__DIR__ . '/app_behat_runtime.js'));
 
-        // Assert initial page.
-        $this->spin(function($context) {
-            $page = $context->getSession()->getPage();
-            $element = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
-
-            if ($element) {
-                // Wait for the onboarding modal to open, if any.
-                $this->wait_for_pending_js();
-
-                $element = $this->islegacy
-                    ? $page->find('xpath', '//page-core-login-site-onboarding')
-                    : $page->find('xpath', '//core-login-site-onboarding');
+        if ($restart) {
+            // Assert initial page.
+            $this->spin(function($context) {
+                $page = $context->getSession()->getPage();
+                $element = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
 
                 if ($element) {
-                    $this->i_press_in_the_app($this->parse_element_locator('"Skip"'));
+                    // Wait for the onboarding modal to open, if any.
+                    $this->wait_for_pending_js();
+
+                    $element = $this->islegacy
+                        ? $page->find('xpath', '//page-core-login-site-onboarding')
+                        : $page->find('xpath', '//core-login-site-onboarding');
+
+                    if ($element) {
+                        $this->i_press_in_the_app($this->parse_element_locator('"Skip"'));
+                    }
+
+                    // Login screen found.
+                    return true;
                 }
 
-                // Login screen found.
-                return true;
-            }
+                if ($page->find('xpath', '//page-core-mainmenu')) {
+                    // Main menu found.
+                    return true;
+                }
 
-            if ($page->find('xpath', '//page-core-mainmenu')) {
-                // Main menu found.
-                return true;
-            }
-
-            throw new DriverException('Moodle app not launched properly');
-        }, false, 60);
+                throw new DriverException('Moodle app not launched properly');
+            }, false, 60);
+        }
 
         // Continue only after JS finishes.
         $this->wait_for_pending_js();
