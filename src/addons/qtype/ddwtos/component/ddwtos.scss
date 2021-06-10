@@ -3,6 +3,7 @@
 // Style ddwtos content a bit. Almost all these styles are copied from Moodle.
 .addon-qtype-ddwtos-container {
     min-height: 80px; // To display the loading.
+    position: relative;
 }
 
 core-format-text ::ng-deep, .drags ::ng-deep {
