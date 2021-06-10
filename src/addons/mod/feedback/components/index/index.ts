@@ -361,6 +361,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
             {
                 params: {
                     preview,
+                    fromIndex: true,
                 },
             },
         );

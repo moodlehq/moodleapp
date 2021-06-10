@@ -61,6 +61,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
     title?: string;
     preview = false;
+    fromIndex = false;
     cmId!: number;
     courseId!: number;
     feedback?: AddonModFeedbackWSFeedback;
@@ -96,6 +97,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
         this.currentPage = CoreNavigator.getRouteNumberParam('page');
         this.title = CoreNavigator.getRouteParam('title');
         this.preview = !!CoreNavigator.getRouteBooleanParam('preview');
+        this.fromIndex = !!CoreNavigator.getRouteBooleanParam('fromIndex');
 
         await this.fetchData();
 
@@ -373,10 +375,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
      * Function to link implemented features.
      */
     showAnalysis(): void {
-        const indexPath = AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.cmId}`;
-        const previousPath = CoreNavigator.getPreviousPath();
-
-        if (previousPath.match(new RegExp(indexPath + '$'))) {
+        if (this.fromIndex) {
             // Previous page is the index page, go back.
             CoreEvents.trigger(AddonModFeedbackProvider.FORM_SUBMITTED, {
                 feedbackId: this.feedback!.id,
@@ -389,7 +388,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        CoreNavigator.navigateToSitePath(indexPath, {
+        CoreNavigator.navigateToSitePath(AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.cmId}`, {
             params: {
                 module: this.module,
                 tab: 'analysis',
