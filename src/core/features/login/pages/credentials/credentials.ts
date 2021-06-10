@@ -261,7 +261,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
             this.siteId = id;
 
-            // @todo test that this is working properly.
             await CoreNavigator.navigateToSiteHome({ params: { urlToOpen: this.urlToOpen } });
         } catch (error) {
             CoreLoginHelper.treatUserTokenError(siteUrl, error, username, password);

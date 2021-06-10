@@ -455,7 +455,6 @@ export class CoreSettingsHelperProvider {
      */
     canIUsePrefersColorScheme(): boolean {
         // The following check will check browser support but system may differ from that.
-        // @todo Detect SO support to watch media query.
         return window.matchMedia('(prefers-color-scheme)').media !== 'not all';
     }
 

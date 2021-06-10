@@ -16,6 +16,7 @@ import { ApplicationRef } from '@angular/core';
 import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
+import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
 import { Application } from '@singletons';
 
 type AutomatedTestsWindow = Window & {
@@ -23,6 +24,7 @@ type AutomatedTestsWindow = Window & {
     appProvider?: CoreAppProvider;
     cronProvider?: CoreCronDelegateService;
     pushNotifications?: CorePushNotificationsProvider;
+    urlSchemes?: CoreCustomURLSchemesProvider;
 };
 
 function initializeAutomatedTestsWindow(window: AutomatedTestsWindow) {
@@ -30,6 +32,7 @@ function initializeAutomatedTestsWindow(window: AutomatedTestsWindow) {
     window.appProvider = CoreApp.instance;
     window.cronProvider = CoreCronDelegate.instance;
     window.pushNotifications = CorePushNotifications.instance;
+    window.urlSchemes = CoreCustomURLSchemes.instance;
 }
 
 export default function(): void {

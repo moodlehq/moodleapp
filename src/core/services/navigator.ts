@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, NavigationStart, Params, Router as RouterService } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 
 import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 
@@ -28,7 +28,6 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, NavController, Router } from '@singletons';
 import { CoreScreen } from './screen';
-import { filter } from 'rxjs/operators';
 import { CoreApp } from './app';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 
@@ -75,17 +74,6 @@ export class CoreNavigatorService {
 
     protected storedParams: Record<number, unknown> = {};
     protected lastParamId = 0;
-    protected currentPath?: string;
-    protected previousPath?: string;
-
-    // @todo Param router is an optional param to let the mocking work.
-    constructor(router?: RouterService) {
-        router?.events.pipe(filter(event => event instanceof NavigationStart)).subscribe((routerEvent: NavigationStart) => {
-            // Using NavigationStart instead of NavigationEnd so it can be check on ngOnInit.
-            this.previousPath = this.currentPath;
-            this.currentPath = routerEvent.url;
-        });
-    }
 
     /**
      * Check whether the active route is using the given path.
@@ -211,8 +199,6 @@ export class CoreNavigatorService {
         const siteId = options.siteId ?? CoreSites.getCurrentSiteId();
         const navigationOptions: CoreNavigationOptions = CoreObject.without(options, ['siteId']);
 
-        // @todo: When this function was in ContentLinksHelper, this code was inside NgZone. Check if it's needed.
-
         // If the path doesn't belong to a site, call standard navigation.
         if (siteId === CoreConstants.NO_SITE_ID) {
             return this.navigate(path, {
@@ -265,17 +251,6 @@ export class CoreNavigatorService {
      */
     getCurrentPath(): string {
         return CoreUrlUtils.removeUrlParams(Router.url);
-    }
-
-    /**
-     * Get the previous navigation route path.
-     *
-     * @return Previous path.
-     */
-    getPreviousPath(): string {
-        // @todo: Remove this method and the used attributes.
-        // This is a quick workarround to avoid loops. Ie, in messages we can navigate to user profile and there to messages.
-        return CoreUrlUtils.removeUrlParams(this.previousPath || '');
     }
 
     /**
@@ -431,10 +406,6 @@ export class CoreNavigatorService {
      * @return Whether navigation suceeded.
      */
     protected async navigateToMainMenuPath(path: string, options: CoreNavigationOptions = {}): Promise<boolean> {
-        // Due to DeepLinker, we need to remove the path from the URL before going to main menu.
-        // IonTabs checks the URL to determine which path to load for deep linking, so we clear the URL.
-        // @todo this.location.replaceState('');
-
         options = {
             preferCurrentTab: true,
             ...options,
@@ -464,7 +435,6 @@ export class CoreNavigatorService {
         }
 
         // Open the path within the default main tab.
-        // @todo test that this is working as expected
         return this.navigate(`/main/${DEFAULT_MAIN_MENU_TAB}`, {
             ...options,
             params: {

@@ -59,7 +59,7 @@ export class CoreMainMenuHomePage implements OnInit {
      */
     ngOnInit(): void {
         this.route.queryParams.subscribe((params: Partial<CoreRedirectPayload> & { urlToOpen?: string }) => {
-            this.urlToOpen = params.urlToOpen;
+            this.urlToOpen = params.urlToOpen ?? this.urlToOpen;
 
             if (params.redirectPath) {
                 this.pendingRedirect = {
