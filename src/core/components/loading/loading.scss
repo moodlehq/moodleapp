@@ -43,6 +43,10 @@
         flex-direction: column;
     }
 
+    .core-loading-content {
+        @include core-transition(opacity, 200ms);
+    }
+
     .core-loading-message {
         @include margin(10px, 0, 0, 0);
     }

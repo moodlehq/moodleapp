@@ -55,6 +55,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
 
     uniqueId: string;
     protected element: HTMLElement; // Current element.
+    loaded = false; // Only comes true once.
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
@@ -83,6 +84,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
         if (this.hideUntil) {
             this.element.classList.add('core-loading-loaded');
         }
+        this.loaded = !!this.hideUntil;
 
         this.content?.nativeElement.classList.toggle('core-loading-content', !!this.hideUntil);
     }
@@ -94,6 +96,10 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.hideUntil) {
+            if (!this.loaded) {
+                this.loaded = !!this.hideUntil; // Only comes true once.
+            }
+
             if (this.hideUntil) {
                 setTimeout(() => {
                     // Content is loaded so, center the spinner on the content itself.
