@@ -17,7 +17,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/
 import { CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
-import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
@@ -122,7 +122,7 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
     /**
      * @inheritdoc
      */
-    prefetch(module: CoreCourseAnyModuleData, courseId?: number): Promise<void> {
+    prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         return this.prefetchPackage(module, courseId, this.prefetchFeedback.bind(this, module, courseId));
     }
 
@@ -131,10 +131,10 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
+     * @param siteId Site ID.
      * @return Promise resolved when done.
      */
-    protected async prefetchFeedback(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        const siteId = CoreSites.getCurrentSiteId();
+    protected async prefetchFeedback(module: CoreCourseAnyModuleData, courseId: number, siteId: string): Promise<void> {
         const commonOptions = {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,
