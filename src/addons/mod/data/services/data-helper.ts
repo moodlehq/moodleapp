@@ -802,12 +802,12 @@ export class AddonModDataHelperProvider {
         offline: boolean,
         siteId?: string,
     ): Promise<number | CoreFileUploaderStoreFilesResult> {
-        if (!files.length) {
-            return 0;
-        }
-
         if (offline) {
             return this.storeFiles(dataId, entryId, fieldId, files, siteId);
+        }
+
+        if (!files.length) {
+            return 0;
         }
 
         return CoreFileUploader.uploadOrReuploadFiles(files, AddonModDataProvider.COMPONENT, itemId, siteId);

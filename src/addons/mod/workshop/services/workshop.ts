@@ -17,7 +17,6 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
 import { CoreApp } from '@services/app';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
@@ -718,7 +717,7 @@ export class AddonModWorkshopProvider {
         courseId: number,
         title: string,
         content: string,
-        attachmentsId?: number | CoreFileUploaderStoreFilesResult,
+        attachmentsId?: number,
         siteId?: string,
         allowOffline: boolean = false,
     ): Promise<number | false> {
@@ -731,7 +730,7 @@ export class AddonModWorkshopProvider {
                 courseId,
                 title,
                 content,
-                attachmentsId as CoreFileUploaderStoreFilesResult,
+                undefined,
                 undefined,
                 AddonModWorkshopAction.ADD,
                 siteId,
@@ -814,7 +813,7 @@ export class AddonModWorkshopProvider {
         courseId: number,
         title: string,
         content: string,
-        attachmentsId?: CoreFileUploaderStoreFilesResult | number | undefined,
+        attachmentsId?: number | undefined,
         siteId?: string,
         allowOffline: boolean = false,
     ): Promise<number | false> {
@@ -827,7 +826,7 @@ export class AddonModWorkshopProvider {
                 courseId,
                 title,
                 content,
-                attachmentsId as CoreFileUploaderStoreFilesResult,
+                undefined,
                 submissionId,
                 AddonModWorkshopAction.UPDATE,
                 siteId,
