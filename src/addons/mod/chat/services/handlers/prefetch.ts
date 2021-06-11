@@ -17,7 +17,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGroups } from '@services/groups';
-import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModChat, AddonModChatProvider, AddonModChatSession } from '../chat';
@@ -64,7 +64,7 @@ export class AddonModChatPrefetchHandlerService extends CoreCourseActivityPrefet
     /**
      * @inheritdoc
      */
-    prefetch(module: CoreCourseAnyModuleData, courseId?: number): Promise<void> {
+    prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         return this.prefetchPackage(module, courseId, this.prefetchChat.bind(this, module, courseId));
     }
 
@@ -73,10 +73,10 @@ export class AddonModChatPrefetchHandlerService extends CoreCourseActivityPrefet
      *
      * @param module The module object returned by WS.
      * @param courseId Course ID the module belongs to.
+     * @param siteId Site ID.
      * @return Promise resolved when done.
      */
-    protected async prefetchChat(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        const siteId = CoreSites.getCurrentSiteId();
+    protected async prefetchChat(module: CoreCourseAnyModuleData, courseId: number, siteId: string): Promise<void> {
         const options = {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,

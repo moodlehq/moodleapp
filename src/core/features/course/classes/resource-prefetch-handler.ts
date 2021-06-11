@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreError } from '@classes/errors/error';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreApp } from '@services/app';
@@ -191,12 +190,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @param dirPath Path of the directory where to store all the content files.
      * @return Promise resolved when done.
      */
-    prefetch(module: CoreCourseWSModule, courseId?: number, single?: boolean, dirPath?: string): Promise<void> {
-        courseId = courseId || module.course;
-        if (!courseId) {
-            throw new CoreError('Course ID not supplied.');
-        }
-
+    prefetch(module: CoreCourseWSModule, courseId: number, single?: boolean, dirPath?: string): Promise<void> {
         return this.downloadOrPrefetch(module, courseId, true, dirPath);
     }
 

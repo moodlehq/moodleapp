@@ -222,14 +222,11 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseActivityPref
     /**
      * @inheritdoc
      */
-    prefetch(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean, dirPath?: string): Promise<void> {
-        const siteId = CoreSites.getCurrentSiteId();
-
+    prefetch(module: CoreCourseAnyModuleData, courseId: number, single?: boolean, dirPath?: string): Promise<void> {
         return this.prefetchPackage(
             module,
             courseId,
-            this.downloadPrefetchPlugin.bind(this, module, courseId, true, dirPath, siteId),
-            siteId,
+            this.downloadPrefetchPlugin.bind(this, module, courseId, true, dirPath),
         );
     }
 

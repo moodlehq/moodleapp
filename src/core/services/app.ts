@@ -629,6 +629,10 @@ export class CoreAppProvider {
      * @param color RGB color to use as status bar background. If not set the css variable will be read.
      */
     setStatusBarColor(color?: string): void {
+        if (!this.isMobile()) {
+            return;
+        }
+
         if (!color) {
             // Get the default color to change it.
             const element = document.querySelector('ion-header ion-toolbar');

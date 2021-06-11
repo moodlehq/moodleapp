@@ -47,12 +47,10 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
         dirPath?: string,
         onProgress?: AddonModScormProgressCallback,
     ): Promise<void> {
-        const siteId = CoreSites.getCurrentSiteId();
-
         return this.prefetchPackage(
             module,
             courseId,
-            this.downloadOrPrefetchScorm.bind(this, module, courseId, true, siteId, false, onProgress),
+            this.downloadOrPrefetchScorm.bind(this, module, courseId, true, false, onProgress),
         );
     }
 
@@ -62,18 +60,18 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
      * @param module Module.
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
-     * @param siteId Site ID.
      * @param prefetch True to prefetch, false to download right away.
      * @param onProgress Function to call on progress.
+     * @param siteId Site ID.
      * @return Promise resolved with the "extra" data to store: the hash of the file.
      */
     protected async downloadOrPrefetchScorm(
         module: CoreCourseAnyModuleData,
         courseId: number,
         single: boolean,
-        siteId: string,
         prefetch: boolean,
-        onProgress?: AddonModScormProgressCallback,
+        onProgress: AddonModScormProgressCallback | undefined,
+        siteId: string,
     ): Promise<string> {
 
         const scorm = await this.getScorm(module, courseId, siteId);
@@ -370,12 +368,10 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
         dirPath?: string,
         onProgress?: AddonModScormProgressCallback,
     ): Promise<void> {
-        const siteId = CoreSites.getCurrentSiteId();
-
         return this.prefetchPackage(
             module,
             courseId,
-            this.downloadOrPrefetchScorm.bind(this, module, courseId, single, siteId, true, onProgress),
+            this.downloadOrPrefetchScorm.bind(this, module, courseId, single, true, onProgress),
         );
     }
 

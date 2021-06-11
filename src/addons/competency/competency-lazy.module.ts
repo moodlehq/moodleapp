@@ -25,11 +25,15 @@ import { AddonCompetencyCompetencyPage } from './pages/competency/competency';
 import { AddonCompetencyCompetencySummaryPage } from './pages/competencysummary/competencysummary';
 import { AddonCompetencyCourseCompetenciesPage } from './pages/coursecompetencies/coursecompetencies.page';
 import { AddonCompetencyCourseCompetenciesPageModule } from './pages/coursecompetencies/coursecompetencies.module';
+import { AddonCompetencyMainMenuHandlerService } from './services/handlers/mainmenu';
 
 const mobileRoutes: Routes = [
     {
         path: '',
         pathMatch: 'full',
+        data: {
+            mainMenuTabRoot: AddonCompetencyMainMenuHandlerService.PAGE_NAME,
+        },
         component: AddonCompetencyPlanListPage,
     },
     {
@@ -75,6 +79,9 @@ const tabletRoutes: Routes = [
     },
     {
         path: '',
+        data: {
+            mainMenuTabRoot: AddonCompetencyMainMenuHandlerService.PAGE_NAME,
+        },
         component: AddonCompetencyPlanListPage,
         children: [
             {

@@ -16,13 +16,14 @@ import { Injector, NgModule } from '@angular/core';
 import { RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { AddonNotificationsMainMenuHandlerService } from './services/handlers/mainmenu';
 
 function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: 'list',
             data: {
-                isMainMenuRoot: true,
+                mainMenuTabRoot: AddonNotificationsMainMenuHandlerService.PAGE_NAME,
             },
             loadChildren: () => import('./pages/list/list.module').then(m => m.AddonNotificationsListPageModule),
         },

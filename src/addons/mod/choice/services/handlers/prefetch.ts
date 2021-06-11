@@ -17,7 +17,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/
 import { CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreUser } from '@features/user/services/user';
 import { CoreFilepool } from '@services/filepool';
-import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -38,7 +38,7 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
     /**
      * @inheritdoc
      */
-    prefetch(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean): Promise<void> {
+    prefetch(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<void> {
         return this.prefetchPackage(module, courseId, this.prefetchChoice.bind(this, module, courseId, !!single));
     }
 
@@ -55,10 +55,8 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
         module: CoreCourseAnyModuleData,
         courseId: number,
         single: boolean,
-        siteId?: string,
+        siteId: string,
     ): Promise<void> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
         const commonOptions = {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,

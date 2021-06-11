@@ -76,7 +76,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
     /**
      * @inheritdoc
      */
-    prefetch(module: CoreCourseAnyModuleData, courseId?: number): Promise<void> {
+    prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         return this.prefetchPackage(module, courseId, this.prefetchActivity.bind(this, module, courseId));
     }
 
@@ -91,10 +91,8 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
     protected async prefetchActivity(
         module: CoreCourseAnyModuleData,
         courseId: number,
-        siteId?: string,
+        siteId: string,
     ): Promise<void> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
         const h5pActivity = await AddonModH5PActivity.getH5PActivity(courseId, module.id, {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,

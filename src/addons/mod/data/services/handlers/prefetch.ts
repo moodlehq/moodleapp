@@ -212,7 +212,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
     /**
      * @inheritdoc
      */
-    prefetch(module: CoreCourseAnyModuleData, courseId?: number): Promise<void> {
+    prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         return this.prefetchPackage(module, courseId, this.prefetchDatabase.bind(this, module, courseId));
     }
 
@@ -221,12 +221,10 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
+     * @param siteId Site ID.
      * @return Promise resolved when done.
      */
-    protected async prefetchDatabase(module: CoreCourseAnyModuleData, courseId?: number): Promise<void> {
-        const siteId = CoreSites.getCurrentSiteId();
-        courseId = courseId || module.course || CoreSites.getCurrentSiteHomeId();
-
+    protected async prefetchDatabase(module: CoreCourseAnyModuleData, courseId: number, siteId: string): Promise<void> {
         const options = {
             cmId: module.id,
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,

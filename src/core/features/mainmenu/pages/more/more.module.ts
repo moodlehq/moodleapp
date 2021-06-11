@@ -18,6 +18,7 @@ import { RouterModule, ROUTES } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuMorePage } from './more';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
 
 @NgModule({
     imports: [
@@ -31,7 +32,7 @@ import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.modu
             useFactory: (injector: Injector) => buildTabMainRoutes(injector, {
                 component: CoreMainMenuMorePage,
                 data: {
-                    isMainMenuRoot: true,
+                    mainMenuTabRoot: CoreMainMenuProvider.MORE_PAGE_NAME,
                 },
             }),
         },

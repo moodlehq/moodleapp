@@ -130,7 +130,7 @@ export class AddonModWikiPrefetchHandlerService extends CoreCourseActivityPrefet
     /**
      * @inheritdoc
      */
-    async prefetch(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean): Promise<void> {
+    async prefetch(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<void> {
         // Get the download time of the package before starting the download (otherwise we'd always get current time).
         const siteId = CoreSites.getCurrentSiteId();
 
@@ -138,7 +138,12 @@ export class AddonModWikiPrefetchHandlerService extends CoreCourseActivityPrefet
 
         const downloadTime = data?.downloadTime || 0;
 
-        return this.prefetchPackage(module, courseId, this.prefetchWiki.bind(this, module, courseId, single, downloadTime, siteId));
+        return this.prefetchPackage(
+            module,
+            courseId,
+            this.prefetchWiki.bind(this, module, courseId, !!single, downloadTime),
+            siteId,
+        );
     }
 
     /**

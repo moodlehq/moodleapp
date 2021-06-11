@@ -269,7 +269,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      */
     async prefetch(
         module: SyncedModule,
-        courseId?: number,
+        courseId: number,
         single?: boolean,
         dirPath?: string,
         canStart: boolean = true,
@@ -282,9 +282,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             return;
         }
 
-        const siteId = CoreSites.getCurrentSiteId();
-
-        return this.prefetchPackage(module, courseId, this.prefetchQuiz.bind(this, module, courseId, single, siteId, canStart));
+        return this.prefetchPackage(module, courseId, this.prefetchQuiz.bind(this, module, courseId, !!single, canStart));
     }
 
     /**
@@ -293,16 +291,16 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param module Module.
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
-     * @param siteId Site ID.
      * @param canStart If true, start a new attempt if needed.
+     * @param siteId Site ID.
      * @return Promise resolved when done.
      */
     protected async prefetchQuiz(
         module: CoreCourseAnyModuleData,
         courseId: number,
         single: boolean,
-        siteId: string,
         canStart: boolean,
+        siteId: string,
     ): Promise<void> {
         const commonOptions = {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,

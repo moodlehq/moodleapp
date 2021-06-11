@@ -97,7 +97,7 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
     /**
      * @inheritdoc
      */
-    prefetch(module: CoreCourseAnyModuleData, courseId?: number): Promise<void> {
+    prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         return this.prefetchPackage(module, courseId, this.prefetchGlossary.bind(this, module, courseId));
     }
 
@@ -110,8 +110,6 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
      * @return Promise resolved when done.
      */
     protected async prefetchGlossary(module: CoreCourseAnyModuleData, courseId: number, siteId: string): Promise<void> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
         const options = {
             cmId: module.id,
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,

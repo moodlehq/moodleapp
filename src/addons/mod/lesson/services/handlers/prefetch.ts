@@ -231,17 +231,10 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
     }
 
     /**
-     * Prefetch a module.
-     *
-     * @param module Module.
-     * @param courseId Course ID the module belongs to.
-     * @param single True if we're downloading a single module, false if we're downloading a whole section.
-     * @param dirPath Path of the directory where to store all the content files.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    prefetch(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean, dirPath?: string): Promise<void> {
-        return this.prefetchPackage(module, courseId, this.prefetchLesson.bind(this, module, courseId, single));
+    prefetch(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<void> {
+        return this.prefetchPackage(module, courseId, this.prefetchLesson.bind(this, module, courseId, !!single));
     }
 
     /**
@@ -250,12 +243,15 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @param module Module.
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
+     * @param siteId Site ID.
      * @return Promise resolved when done.
      */
-    protected async prefetchLesson(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean): Promise<void> {
-        const siteId = CoreSites.getCurrentSiteId();
-        courseId = courseId || module.course || CoreSites.getCurrentSiteHomeId();
-
+    protected async prefetchLesson(
+        module: CoreCourseAnyModuleData,
+        courseId: number,
+        single: boolean,
+        siteId: string,
+    ): Promise<void> {
         const commonOptions = {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId,

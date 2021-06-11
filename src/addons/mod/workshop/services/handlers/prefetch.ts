@@ -210,7 +210,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
     /**
      * @inheritdoc
      */
-    prefetch(module: CoreCourseAnyModuleData, courseId?: number): Promise<void> {
+    prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         return this.prefetchPackage(module, courseId, this.prefetchWorkshop.bind(this, module, courseId));
     }
 
@@ -258,9 +258,6 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
      * @return Promise resolved when done.
      */
     protected async prefetchWorkshop(module: CoreCourseAnyModuleData, courseId: number, siteId: string): Promise<void> {
-
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
         const userIds: number[] = [];
         const commonOptions = {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,

@@ -78,8 +78,8 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      */
     async prefetchPackage(
         module: CoreCourseAnyModuleData,
-        courseId: number | undefined,
-        downloadFunction: () => Promise<string>,
+        courseId: number,
+        downloadFunction: (siteId: string) => Promise<string>,
         siteId?: string,
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -111,8 +111,8 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
     protected async changeStatusAndPrefetch(
         module: CoreCourseAnyModuleData,
         courseId: number | undefined,
-        downloadFunction: () => Promise<string>,
-        siteId?: string,
+        downloadFunction: (siteId: string) => Promise<string>,
+        siteId: string,
     ): Promise<void> {
         try {
             await this.setDownloading(module.id, siteId);
@@ -125,7 +125,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
             ]);
 
             // Call the download function.
-            let extra = await downloadFunction();
+            let extra = await downloadFunction(siteId);
 
             // Only accept string types.
             if (typeof extra != 'string') {

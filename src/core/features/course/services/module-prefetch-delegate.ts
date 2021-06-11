@@ -182,7 +182,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             if (!CoreFilepool.getPackageDownloadPromise(siteId, handler.component, module.id)) {
                 // Not handled, the app was probably restarted or something weird happened.
                 // Re-start download (files already on queue or already downloaded will be skipped).
-                handler.prefetch(module);
+                handler.prefetch(module, module.course!);
             }
         } else if (handler.determineStatus) {
             // The handler implements a determineStatus function. Apply it.
@@ -1403,7 +1403,7 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      * @param dirPath Path of the directory where to store all the content files.
      * @return Promise resolved when done.
      */
-    prefetch(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean, dirPath?: string): Promise<void>;
+    prefetch(module: CoreCourseAnyModuleData, courseId: number, single?: boolean, dirPath?: string): Promise<void>;
 
     /**
      * Download the module.

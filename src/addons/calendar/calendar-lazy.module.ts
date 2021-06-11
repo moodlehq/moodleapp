@@ -16,6 +16,7 @@ import { Injector, NgModule } from '@angular/core';
 import { Route, RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { AddonCalendarMainMenuHandlerService } from './services/handlers/mainmenu';
 
 export const AddonCalendarEditRoute: Route = {
     path: 'edit/:eventId',
@@ -33,14 +34,14 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: 'index',
             data: {
-                isMainMenuRoot: true,
+                mainMenuTabRoot: AddonCalendarMainMenuHandlerService.PAGE_NAME,
             },
             loadChildren: () => import('@/addons/calendar/pages/index/index.module').then(m => m.AddonCalendarIndexPageModule),
         },
         {
             path: 'list',
             data: {
-                isMainMenuRoot: true,
+                mainMenuTabRoot: AddonCalendarMainMenuHandlerService.PAGE_NAME,
             },
             loadChildren: () => import('@/addons/calendar/pages/list/list.module').then(m => m.AddonCalendarListPageModule),
         },

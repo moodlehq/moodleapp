@@ -21,12 +21,13 @@ import { CoreScreen } from '@services/screen';
 import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonMessagesGroupConversationsPage } from './group-conversations.page';
+import { AddonMessagesMainMenuHandlerService } from '@addons/messages/services/handlers/mainmenu';
 
 const mobileRoutes: Routes = [
     {
         path: '',
         data: {
-            isMainMenuRoot: true,
+            mainMenuTabRoot: AddonMessagesMainMenuHandlerService.PAGE_NAME,
         },
         component: AddonMessagesGroupConversationsPage,
     },
@@ -37,7 +38,7 @@ const tabletRoutes: Routes = [
     {
         path: '',
         data: {
-            isMainMenuRoot: true,
+            mainMenuTabRoot: AddonMessagesMainMenuHandlerService.PAGE_NAME,
         },
         component: AddonMessagesGroupConversationsPage,
         children: [

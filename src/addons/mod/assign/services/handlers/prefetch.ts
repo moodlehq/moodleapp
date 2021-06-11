@@ -211,13 +211,9 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
     }
 
     /**
-     * Prefetch a module.
-     *
-     * @param module Module.
-     * @param courseId Course ID the module belongs to.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    prefetch(module: CoreCourseAnyModuleData, courseId?: number): Promise<void> {
+    prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         return this.prefetchPackage(module, courseId, this.prefetchAssign.bind(this, module, courseId));
     }
 
@@ -226,12 +222,11 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
+     * @param siteId Site ID.
      * @return Promise resolved when done.
      */
-    protected async prefetchAssign(module: CoreCourseAnyModuleData, courseId?: number): Promise<void> {
+    protected async prefetchAssign(module: CoreCourseAnyModuleData, courseId: number, siteId: string): Promise<void> {
         const userId = CoreSites.getCurrentSiteUserId();
-        courseId = courseId || module.course || CoreSites.getCurrentSiteHomeId();
-        const siteId = CoreSites.getCurrentSiteId();
 
         const options: CoreSitesCommonWSOptions = {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,

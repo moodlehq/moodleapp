@@ -171,15 +171,9 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
     }
 
     /**
-     * Prefetch a module.
-     *
-     * @param module Module.
-     * @param courseId Course ID the module belongs to.
-     * @param single True if we're downloading a single module, false if we're downloading a whole section.
-     * @param dirPath Path of the directory where to store all the content files.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    prefetch(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean): Promise<void> {
+    prefetch(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<void> {
         return this.prefetchPackage(module, courseId, this.prefetchForum.bind(this, module, courseId, single));
     }
 
