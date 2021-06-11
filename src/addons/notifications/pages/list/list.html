@@ -12,13 +12,12 @@
     </ion-refresher>
     <core-loading [hideUntil]="notificationsLoaded">
         <div class="ion-padding" *ngIf="canMarkAllNotificationsAsRead">
-            <ion-button *ngIf="!loadingMarkAllNotificationsAsRead" expand="block" (click)="markAllNotificationsAsRead()"
+            <ion-button [disabled]="loadingMarkAllNotificationsAsRead" expand="block" (click)="markAllNotificationsAsRead()"
                 color="light">
-                <ion-icon slot="start" name="fas-check" aria-hidden="true"></ion-icon>
+                <ion-icon slot="start" name="fas-check" aria-hidden="true" *ngIf="!loadingMarkAllNotificationsAsRead"></ion-icon>
+                <ion-spinner slot="start" [attr.aria-label]="'core.loading' | translate" *ngIf="loadingMarkAllNotificationsAsRead">
+                </ion-spinner>
                 {{ 'addon.notifications.markallread' | translate }}
-            </ion-button>
-            <ion-button *ngIf="loadingMarkAllNotificationsAsRead" expand="block" color="light">
-                <ion-spinner></ion-spinner>
             </ion-button>
         </div>
 

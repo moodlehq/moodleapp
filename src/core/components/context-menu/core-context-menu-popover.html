@@ -13,7 +13,8 @@
         <ion-icon *ngIf="(item.href || item.action) && item.iconAction && item.iconAction != 'spinner'" [name]="item.iconAction"
             [class.icon-slash]="item.iconSlash" slot="end" aria-hidden="true">
         </ion-icon>
-        <ion-spinner *ngIf="(item.href || item.action) && item.iconAction == 'spinner'" slot="end"></ion-spinner>
+        <ion-spinner *ngIf="(item.href || item.action) && item.iconAction == 'spinner'" slot="end"
+            [attr.aria-label]="'core.loading' | translate"></ion-spinner>
         <ion-badge class="{{item.badgeClass}}" slot="end" *ngIf="item.badge">
             <span [attr.ara-hidden]="!!item.badgeA11yText">{{item.badge}}</span>
             <span class="sr-only" *ngIf="item.badgeA11yText">

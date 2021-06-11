@@ -66,7 +66,7 @@
                     </ion-item>
                 </div>
                 <ion-item class="ion-text-center" *ngIf="favourites.loading">
-                    <ion-label><ion-spinner></ion-spinner></ion-label>
+                    <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
                 </ion-item>
 
                 <!-- Group conversations. -->
@@ -101,7 +101,7 @@
                     </ion-item>
                 </div>
                 <ion-item class="ion-text-center" *ngIf="group.loading">
-                    <ion-label><ion-spinner></ion-spinner></ion-label>
+                    <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
                 </ion-item>
 
                 <ion-item
@@ -138,7 +138,7 @@
                     </ion-item>
                 </div>
                 <ion-item class="ion-text-center" *ngIf="individual.loading">
-                    <ion-label><ion-spinner></ion-spinner></ion-label>
+                    <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
                 </ion-item>
 
             </ion-list>

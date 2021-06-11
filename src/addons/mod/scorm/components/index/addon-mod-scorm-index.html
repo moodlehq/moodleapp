@@ -143,7 +143,7 @@
                 </ion-item>
                 <ion-item class="ion-text-center" *ngIf="scorm.displaycoursestructure && loadingToc">
                     <ion-label>
-                        <ion-spinner></ion-spinner>
+                        <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="scorm.displaycoursestructure && !loadingToc">
@@ -240,7 +240,7 @@
                 <!-- Download progress. -->
                 <ion-item class="ion-text-center" *ngIf="downloading">
                     <ion-label>
-                        <ion-spinner></ion-spinner>
+                        <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
                         <h2 *ngIf="progressMessage">{{ progressMessage | translate }}</h2>
                         <core-progress-bar *ngIf="showPercentage" [progress]="percentage" [a11yText]="progressMessage">
                         </core-progress-bar>

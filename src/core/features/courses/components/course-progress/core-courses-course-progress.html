@@ -46,7 +46,8 @@
 
         <div class="core-button-spinner" *ngIf="courseOptionMenuEnabled" slot="end">
             <!-- Download course spinner. -->
-            <ion-spinner *ngIf="(downloadCourseEnabled && prefetchCourseData.icon == 'spinner') || showSpinner"></ion-spinner>
+            <ion-spinner *ngIf="(downloadCourseEnabled && prefetchCourseData.icon == 'spinner') || showSpinner"
+                [attr.aria-label]="'core.loading' | translate"></ion-spinner>
 
             <!-- Options menu. -->
             <ion-button fill="clear" color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner"

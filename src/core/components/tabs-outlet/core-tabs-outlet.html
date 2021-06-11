@@ -1,6 +1,6 @@
 <ion-tabs class="hide-header">
     <ion-tab-bar slot="top" class="core-tabs-bar" [hidden]="!tabs || numTabsShown <= 1" #tabBar>
-        <ion-spinner *ngIf="!hideUntil"></ion-spinner>
+        <ion-spinner *ngIf="!hideUntil" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
         <ion-row *ngIf="hideUntil">
             <ion-col class="col-with-arrow ion-no-padding" (click)="slidePrev()" size="1" [class.clickable]="showPrevButton">
                 <ion-icon *ngIf="showPrevButton" name="fas-chevron-left" [attr.aria-label]="'core.previous' | translate"></ion-icon>

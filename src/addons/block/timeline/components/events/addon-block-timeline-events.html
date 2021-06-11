@@ -54,7 +54,7 @@
     <ion-button expand="block" (click)="loadMoreEvents()" color="light" *ngIf="!loadingMore">
         {{ 'core.loadmore' | translate }}
     </ion-button>
-    <ion-spinner *ngIf="loadingMore"></ion-spinner>
+    <ion-spinner *ngIf="loadingMore" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
 </div>
 
 <core-empty-box *ngIf="empty" image="assets/img/icons/activities.svg" [message]="'addon.block_timeline.noevents' | translate"

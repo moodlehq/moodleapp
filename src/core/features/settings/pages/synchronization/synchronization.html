@@ -38,11 +38,12 @@
                 <p>{{ site.fullName }}</p>
                 <p>{{ site.siteUrl }}</p>
             </ion-label>
-            <ion-button fill="clear" slot="end" *ngIf="!isSynchronizing(site.id)" (click)="synchronize(site.id)"
-                [title]="site.siteName" [attr.aria-label]="'core.settings.synchronizenow' | translate">
-                <ion-icon name="fas-sync-alt" slot="icon-only" aria-hidden="true"></ion-icon>
-            </ion-button>
-            <ion-spinner slot="end" *ngIf="isSynchronizing(site.id)"></ion-spinner>
+            <core-button-with-spinner [loading]="isSynchronizing(site.id)" slot="end">
+                <ion-button fill="clear"  (click)="synchronize(site.id)"
+                    [title]="site.siteName" [attr.aria-label]="'core.settings.synchronizenow' | translate">
+                    <ion-icon name="fas-sync-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </core-button-with-spinner>
         </ion-item>
     </core-loading>
 </ion-content>

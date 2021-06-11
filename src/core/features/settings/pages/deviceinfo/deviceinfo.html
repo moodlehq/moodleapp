@@ -123,7 +123,7 @@
     </ion-item>
     <ion-item *ngIf="deviceInfo.uuid" (longPress)="copyItemInfo($event)">
         <ion-label class="ion-text-wrap">
-            <h2>{{ 'core.settings.cordovadeviceuuid'}}</h2>
+            <h2>{{ 'core.settings.cordovadeviceuuid' | translate}}</h2>
             <p>{{ deviceInfo.uuid }}</p>
         </ion-label>
     </ion-item>

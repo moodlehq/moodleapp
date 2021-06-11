@@ -106,7 +106,9 @@
                 </ion-item>
                 <!-- Loading groups. -->
                 <ion-item class="ion-text-wrap" *ngIf="loadingGroups">
-                    <ion-label><ion-spinner *ngIf="loadingGroups"></ion-spinner></ion-label>
+                    <ion-label>
+                        <ion-spinner *ngIf="loadingGroups" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                    </ion-label>
                 </ion-item>
             </ng-container>
 

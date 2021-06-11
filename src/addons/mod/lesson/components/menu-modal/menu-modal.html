@@ -28,7 +28,7 @@
                     <ion-label><h2>{{ 'addon.mod_lesson.lessonmenu' | translate }}</h2></ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-center" *ngIf="pageInstance.loadingMenu">
-                    <ion-label><ion-spinner></ion-spinner></ion-label>
+                    <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
                 </ion-item>
                 <div *ngIf="!pageInstance.loadingMenu">
                     <ng-container *ngFor="let page of pageInstance.lessonPages">

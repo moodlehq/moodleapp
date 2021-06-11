@@ -47,7 +47,7 @@
                         {{ 'core.loadmore' | translate }}
                     </ion-button>
                     <ion-item *ngIf="responses.responses.canLoadMore && loadingMore" class="ion-text-center">
-                        <ion-label><ion-spinner></ion-spinner></ion-label>
+                        <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
                     </ion-item>
                 </ng-container>
 
@@ -70,7 +70,7 @@
                         {{ 'core.loadmore' | translate }}
                     </ion-button>
                     <ion-item *ngIf="responses.anonResponses.canLoadMore && loadingMore" class="ion-text-center">
-                        <ion-label><ion-spinner></ion-spinner></ion-label>
+                        <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
                     </ion-item>
                 </ng-container>
             </ion-list>

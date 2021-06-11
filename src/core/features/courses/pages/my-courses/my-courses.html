@@ -17,7 +17,7 @@
                 </ion-button>
                 <ion-spinner [hidden]="!downloadAllCoursesEnabled || !courses || courses.length < 2 ||
                     downloadAllCoursesBadge != '' || !downloadAllCoursesLoading"
-                [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                    [attr.aria-label]="'core.loading' | translate"></ion-spinner>
                 <ion-badge [hidden]="!downloadAllCoursesEnabled || !courses || courses.length < 2 || !downloadAllCoursesLoading ||
                     downloadAllCoursesBadge == '' || !downloadAllCoursesLoading"
                     role="progressbar" [attr.aria-valuemax]="downloadAllCoursesTotal"
