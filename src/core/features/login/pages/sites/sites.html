@@ -34,7 +34,7 @@
                 <span class="sr-only">{{ 'core.login.sitebadgedescription' | translate:{ count: site.badge } }}</span>
             </ion-badge>
             <ion-button *ngIf="showDelete" slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
-                [attr.aria-label]="'core.delete' | translate">
+                [attr.aria-label]="'core.delete' | translate" [@coreSlideInOut]="'fromRight'">
                 <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-item>

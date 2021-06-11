@@ -17,6 +17,12 @@
     .even {
         background-color: var(--even-background);
     }
+
+    ion-radio {
+        height: var(--a11y-min-target-size);
+        width: var(--a11y-min-target-size);
+        padding: 12px;
+    }
 }
 
 :host-context(body.dark) {

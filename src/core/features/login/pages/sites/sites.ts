@@ -22,6 +22,7 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreFilter } from '@features/filter/services/filter';
+import { CoreAnimations } from '@components/animations';
 
 /**
  * Page that displays a "splash screen" while the app is being initialized.
@@ -29,6 +30,7 @@ import { CoreFilter } from '@features/filter/services/filter';
 @Component({
     selector: 'page-core-login-sites',
     templateUrl: 'sites.html',
+    animations: [CoreAnimations.SLIDE_IN_OUT],
 })
 export class CoreLoginSitesPage implements OnInit {
 

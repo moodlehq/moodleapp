@@ -180,6 +180,11 @@ core-format-text {
         ion-icon {
             flex: 1;
             align-self: center;
+            /** Fix iOS icon size */
+            margin: 0 auto;
+            position: absolute;
+            left: 0;
+            right: 0;
         }
 
         &:hover {
@@ -338,7 +343,6 @@ core-rich-text-editor .core-rte-editor {
     select,
     input:not([type=checkbox]):not([type=radio]):not([type=hidden]) {
         height: 30px;
-        line-height: 30px;
         display: inline-block;
         border: 1px solid var(--gray-dark);
         background: var(--background-contrast);

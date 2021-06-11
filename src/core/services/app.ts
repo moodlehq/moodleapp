@@ -654,10 +654,17 @@ export class CoreAppProvider {
 
         const useLightText = CoreColors.isWhiteContrastingBetter(color);
         const statusBar = StatusBar.instance;
-        statusBar.backgroundColorByHexString(color);
-        useLightText ? statusBar.styleLightContent() : statusBar.styleDefault();
 
         this.isIOS() && statusBar.overlaysWebView(false);
+
+        // styleDefault will use white text on iOS when darkmode is on. Force the background to black.
+        if (this.isIOS() && !useLightText && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            statusBar.backgroundColorByHexString('#000000');
+            statusBar.styleLightContent();
+        } else {
+            statusBar.backgroundColorByHexString(color);
+            useLightText ? statusBar.styleLightContent() : statusBar.styleDefault();
+        }
     }
 
     /**
