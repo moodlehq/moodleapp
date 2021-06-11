@@ -20,7 +20,6 @@ import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fi
 import { CanLeave } from '@guards/can-leave';
 import { CoreFile } from '@services/file';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
-import { CoreFileSession } from '@services/file-session';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
@@ -67,6 +66,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
     textRequired = false;
     fileAvailable = false;
     fileRequired = false;
+    attachments: CoreFileEntry[] = [];
 
     protected workshopId!: number;
     protected submissionId = 0;
@@ -211,13 +211,8 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
 
                 this.editForm.controls['title'].setValue(this.submission.title);
                 this.editForm.controls['content'].setValue(this.submission.content);
+                this.attachments = this.submission.attachmentfiles || [];
             }
-
-            CoreFileSession.setFiles(
-                this.component,
-                this.getFilesComponentId(),
-                this.submission?.attachmentfiles || [],
-            );
 
             this.loaded = true;
         } catch (error) {
@@ -254,7 +249,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
         }
 
         if (this.fileAvailable) {
-            values.attachmentfiles = CoreFileSession.getFiles(this.component, this.getFilesComponentId()) || [];
+            values.attachmentfiles = this.attachments;
         }
 
         return values;
