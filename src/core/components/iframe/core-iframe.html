@@ -16,6 +16,6 @@
     </ion-button>
 
     <span class="core-loading-spinner">
-        <ion-spinner *ngIf="loading"></ion-spinner>
+        <ion-spinner *ngIf="loading" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
     </span>
 </div>

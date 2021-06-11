@@ -16,7 +16,8 @@
             [attr.aria-valuetext]="prefetchCoursesData[selectedFilter].badgeA11yText">
             {{prefetchCoursesData[selectedFilter].badge}}
         </ion-badge>
-        <ion-spinner *ngIf="prefetchCoursesData[selectedFilter].loading" aria-hidden="true"></ion-spinner>
+        <ion-spinner *ngIf="prefetchCoursesData[selectedFilter].loading" [attr.aria-label]="'core.loading' | translate">
+        </ion-spinner>
     </div>
     <core-context-menu slot="end">
         <core-context-menu-item *ngIf="loaded && showFilterSwitchButton()" [priority]="1000"

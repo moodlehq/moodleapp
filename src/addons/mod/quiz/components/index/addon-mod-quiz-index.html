@@ -218,7 +218,7 @@
 
             <!-- Spinner shown while downloading or calculating. -->
             <ion-item class="ion-text-center" *ngIf="showStatusSpinner">
-                <ion-label><ion-spinner></ion-spinner></ion-label>
+                <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
             </ion-item>
         </ion-list>
     </ion-card>

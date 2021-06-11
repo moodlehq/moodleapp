@@ -25,5 +25,5 @@
 </ng-container>
 
 <div *ngIf="loadingMore" class="ion-padding ion-text-center" #spinnercontainer>
-    <ion-spinner></ion-spinner>
+    <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
 </div>

@@ -17,10 +17,13 @@
                     {{ device.name }} {{ device.model }} {{ device.platform }} {{ device.version }}
                     <span *ngIf="device.current">({{ 'core.currentdevice' | translate }})</span>
                 </ion-label>
-                <ion-spinner *ngIf="device.updating" slot="end"></ion-spinner>
-                <ion-toggle [disabled]="device.updating" [(ngModel)]="device.enable"
-                    (ngModelChange)="enableDevice(device, device.enable)">
-                </ion-toggle>
+                <core-button-with-spinner [loading]="device.updating" slot="end">
+                    <ion-toggle
+                        [(ngModel)]="device.enable"
+                        (ngModelChange)="enableDevice(device, device.enable)"
+                    >
+                    </ion-toggle>
+                </core-button-with-spinner>
             </ion-item>
         </ion-list>
     </core-loading>

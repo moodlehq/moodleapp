@@ -57,11 +57,13 @@ import { CoreUserAvatarComponent } from './user-avatar/user-avatar';
 import { CoreComboboxComponent } from './combobox/combobox';
 import { CoreSpacerComponent } from './spacer/spacer';
 import { CoreHorizontalScrollControlsComponent } from './horizontal-scroll-controls/horizontal-scroll-controls';
+import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-with-spinner';
 
 @NgModule({
     declarations: [
         CoreAttachmentsComponent,
         CoreBSTooltipComponent,
+        CoreButtonWithSpinnerComponent,
         CoreChartComponent,
         CoreChronoComponent,
         CoreContextMenuComponent,
@@ -108,6 +110,7 @@ import { CoreHorizontalScrollControlsComponent } from './horizontal-scroll-contr
     exports: [
         CoreAttachmentsComponent,
         CoreBSTooltipComponent,
+        CoreButtonWithSpinnerComponent,
         CoreChartComponent,
         CoreChronoComponent,
         CoreContextMenuComponent,

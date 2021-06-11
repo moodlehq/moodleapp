@@ -59,7 +59,7 @@
 
                 <div class="core-login-site-list-found" [class.hidden]="!hasSites" [class.dimmed]="loadingSites">
                     <div *ngIf="loadingSites" class="core-login-site-list-loading">
-                        <ion-spinner></ion-spinner>
+                        <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
                     </div>
                     <ng-container *ngFor="let site of sites">
                         <ng-container *ngTemplateOutlet="sitelisting; context: {site: site}"></ng-container>
@@ -68,7 +68,7 @@
             </ion-list>
 
             <div *ngIf="!hasSites && loadingSites" class="core-login-site-nolist-loading">
-                <ion-spinner></ion-spinner>
+                <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
             </div>
         </ng-container>
 

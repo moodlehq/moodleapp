@@ -59,11 +59,12 @@
                         <ion-button fill="clear" [attr.aria-label]="'core.info' | translate" (click)="showSyncInfo()" slot="end">
                             <ion-icon name="fas-info-circle" color="info" slot="icon-only"></ion-icon>
                         </ion-button>
-                        <ion-button fill="clear" slot="end" *ngIf="!isSynchronizing()" (click)="synchronize()"
-                            [attr.aria-label]="'core.settings.synchronizenow' | translate">
-                            <ion-icon name="fas-sync-alt" slot="icon-only" aria-hidden="true"></ion-icon>
-                        </ion-button>
-                        <ion-spinner slot="end" *ngIf="isSynchronizing()"></ion-spinner>
+                        <core-button-with-spinner [loading]="isSynchronizing()" slot="end">
+                            <ion-button fill="clear" (click)="synchronize()"
+                                [attr.aria-label]="'core.settings.synchronizenow' | translate">
+                                <ion-icon name="fas-sync-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+                            </ion-button>
+                        </core-button-with-spinner>
                     </ion-item>
                 </ion-card>
             </ion-list>

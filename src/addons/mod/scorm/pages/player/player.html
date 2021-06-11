@@ -8,11 +8,12 @@
             </core-format-text>
         </h1>
         <ion-buttons slot="end">
-            <ion-button fill="clear" *ngIf="showToc && !loadingToc && toc.length" (click)="openToc()"
-                [attr.aria-label]="'addon.mod_scorm.toc' | translate" aria-haspopup="true">
-                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
-            </ion-button>
-            <ion-spinner *ngIf="showToc && loadingToc"></ion-spinner>
+            <core-button-with-spinner *ngIf="showToc" [loading]="loadingToc">
+                <ion-button fill="clear" *ngIf="toc.length" (click)="openToc()"
+                    [attr.aria-label]="'addon.mod_scorm.toc' | translate" aria-haspopup="true">
+                    <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </core-button-with-spinner>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>

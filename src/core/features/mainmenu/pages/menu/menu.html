@@ -1,7 +1,7 @@
 <ion-tabs #mainTabs [hidden]="!showTabs" [class]="'placement-' + tabsPlacement" [class.tabshidden]="hidden"
     (ionTabsDidChange)="tabChanged($event)">
     <ion-tab-bar slot="bottom" [hidden]="hidden" class="mainmenu-tabs">
-        <ion-spinner *ngIf="!loaded"></ion-spinner>
+        <ion-spinner *ngIf="!loaded" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
 
         <ion-tab-button
             *ngFor="let tab of tabs"

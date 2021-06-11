@@ -114,6 +114,6 @@
         [ngClass]="['core-course-module-handler', 'core-module-loading', module.handlerData.class]"
         detail="false"
     >
-        <ion-label><ion-spinner></ion-spinner></ion-label>
+        <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
     </ion-item>
 </ng-container>
