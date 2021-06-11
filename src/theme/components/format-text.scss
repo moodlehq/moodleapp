@@ -690,3 +690,15 @@ core-rich-text-editor .core-rte-editor {
         }
     }
 }
+
+// h1 is too big and ugly, reduce size when loading.
+ion-header.ios h1 core-format-text {
+    &.core-format-text-loading {
+        max-height: 30px;
+        margin-top: 10px;
+    }
+    &.core-format-text-content {
+        display: block;
+        margin-top: -10px;
+    }
+}
