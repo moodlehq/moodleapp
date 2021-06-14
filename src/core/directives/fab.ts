@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, OnDestroy } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
 /**
@@ -31,8 +31,10 @@ export class CoreFabDirective implements OnDestroy {
 
     protected scrollElement?: HTMLElement;
     protected done = false;
+    protected element: HTMLElement;
 
-    constructor(protected content: IonContent) {
+    constructor(el: ElementRef, protected content: IonContent) {
+        this.element = el.nativeElement;
         this.asyncInit();
     }
 
@@ -43,6 +45,13 @@ export class CoreFabDirective implements OnDestroy {
         if (this.content) {
             this.scrollElement = await this.content.getScrollElement();
             if (!this.done) {
+                // Move element to the nearest ion-content if it's not the parent
+                if (this.element.parentElement?.nodeName != 'ION-CONTENT') {
+                    const ionContent = this.element.closest('ion-content');
+                    ionContent?.appendChild(this.element);
+                }
+
+                // Add space at the bottom to let the user see the whole content.
                 const bottom = parseInt(this.scrollElement.style.paddingBottom, 10) || 0;
                 this.scrollElement.style.paddingBottom = (bottom + CoreFabDirective.PADDINGBOTTOM) + 'px';
                 this.done = true;
