@@ -146,13 +146,15 @@ ion-app.ios ion-header h2 {
 
 
 // Correctly inherit ion-text-wrap onto labels.
-.item ion-label core-format-text .core-format-text-content > * {
+.item ion-label core-format-text .core-format-text-content > *,
+.fake-ion-item core-format-text .core-format-text-content > * {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.item.ion-text-wrap ion-label core-format-text .core-format-text-content > * {
+.item.ion-text-wrap ion-label core-format-text .core-format-text-content > *,
+.fake-ion-item.ion-text-wrap core-format-text .core-format-text-content > * {
     white-space: normal;
 }
 
@@ -781,6 +783,98 @@ img.core-media-adapt-width {
 
 audio.core-media-adapt-width {
     width: 100%;
+}
+
+// Fake item.
+div.fake-ion-item {
+    position: relative;
+    align-items: center;
+    justify-content: space-between;
+    outline: none;
+    color: var(--ion-text-color);
+    background: var(--ion-item-background);
+    text-align: initial;
+    text-decoration: none;
+    overflow: hidden;
+    box-sizing: border-box;
+
+}
+
+html.md div.fake-ion-item {
+    font-size: 16px;
+    font-weight: normal;
+    text-transform: none;
+    @include padding(null, 16px, null, 16px);
+    @include margin(11px, null, 10px, null);
+
+    h1 {
+        @include margin(0, 0, 2px);
+        font-size: 24px;
+        font-weight: normal;
+    }
+
+    h2 {
+        @include margin(2px, 0);
+        font-size: 16px;
+        font-weight: normal;
+    }
+
+    h3,
+    h4,
+    h5,
+    h6 {
+        @include margin(2px, 0);
+
+        font-size: 14px;
+        font-weight: normal;
+
+        line-height: normal;
+    }
+
+    p {
+        @include margin(0, 0, 2px);
+        font-size: 14px;
+        line-height: 20px;
+        text-overflow: inherit;
+        overflow: inherit;
+    }
+}
+
+html.ios div.fake-ion-item {
+    font-size: 14px;
+    @include padding(null, 10px, null, 20px);
+    @include margin(10px, 8px, 10px, null);
+
+    h1 {
+        @include margin(3px, 0, 2px);
+        font-size: 22px;
+        font-weight: normal;
+    }
+
+    h2 {
+        @include margin(0, 0, 2px);
+        font-size: 17px;
+        font-weight: normal;
+    }
+
+    h3,
+    h4,
+    h5,
+    h6 {
+        @include margin(0, 0, 3px);
+        font-size: 14px;
+        font-weight: normal;
+        line-height: normal;
+    }
+
+    p {
+        @include margin(0, 0, 2px 0);
+        font-size: 14px;
+        line-height: normal;
+        text-overflow: inherit;
+        overflow: inherit;
+    }
+
 }
 
 // Make links clickable when inside radio or checkbox items. Style part.
