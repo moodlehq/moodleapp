@@ -32,7 +32,12 @@ import {
 } from '../../services/survey';
 import { AddonModSurveyHelper, AddonModSurveyQuestionFormatted } from '../../services/survey-helper';
 import { AddonModSurveyOffline } from '../../services/survey-offline';
-import { AddonModSurveyAutoSyncData, AddonModSurveySync, AddonModSurveySyncResult } from '../../services/survey-sync';
+import {
+    AddonModSurveyAutoSyncData,
+    AddonModSurveySync,
+    AddonModSurveySyncProvider,
+    AddonModSurveySyncResult,
+} from '../../services/survey-sync';
 
 /**
  * Component that displays a survey.
@@ -52,6 +57,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     answers: Record<string, string> = {};
 
     protected currentUserId?: number;
+    protected syncEventName = AddonModSurveySyncProvider.AUTO_SYNCED;
 
     constructor(
         protected content?: IonContent,
