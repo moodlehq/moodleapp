@@ -188,7 +188,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
         if (tagName == 'VIDEO' && targetAttr != 'poster') {
             const video = <HTMLVideoElement> this.element;
             if (video.textTracks) {
-                // It's a video with subtitles. In iOS, subtitles position is wrong so it needs to be fixed.
+                // It's a video with subtitles. Fix some issues with subtitles.
                 video.textTracks.onaddtrack = (event): void => {
                     const track = <TextTrack> event.track;
                     if (track) {
@@ -248,6 +248,11 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
                 true,
                 downloadUnknown,
             );
+        } else if (tagName === 'TRACK') {
+            // Download tracks right away. Using an online URL for tracks can give a CORS error in Android.
+            finalUrl = await CoreFilepool.downloadUrl(site.getId(), url, false, this.component, this.componentId);
+
+            finalUrl = CoreFile.convertFileSrc(finalUrl);
         } else {
             finalUrl = await CoreFilepool.getUrlByUrl(
                 site.getId(),
