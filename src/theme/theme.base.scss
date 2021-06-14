@@ -761,15 +761,12 @@ textarea:not([core-auto-rows]) {
     height: 200px;
 }
 
-ion-fab[core-fab] {
-    position: fixed;
-}
-
-ion-content > ion-fab[core-fab] {
-    position: absolute;
-}
-
 ion-back-button.md::part(text) {
+    display: none;
+}
+
+// Hide close button because when present is read on voice over.
+ion-fab[core-fab] ion-fab-button::part(close-icon) {
     display: none;
 }
 
