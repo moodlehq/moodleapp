@@ -246,7 +246,7 @@
             <true />
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="CFBundleShortVersionString">
-            <string>3.9.5-dev</string>
+            <string>3.9.5</string>
         </edit-config>
         <config-file parent="FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED" target="*-Info.plist">
             <string>YES</string>
