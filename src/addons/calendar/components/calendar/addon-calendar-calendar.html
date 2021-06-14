@@ -56,11 +56,11 @@
                         "duration_finish": day.haslastdayofevent
                     }'
                     [class.addon-calendar-event-past-day]="isPastMonth || day.ispast"
-                    role="button cell"
+                    role="cell"
                     tabindex="0"
                     (ariaButtonClick)="dayClicked(day.mday)"
                 >
-                    <p class="addon-calendar-day-number">
+                    <p class="addon-calendar-day-number" role="button">
                         <span aria-hidden="true">{{ day.mday }}</span>
                         <span class="sr-only">{{ day.periodName | translate }}</span>
                     </p>
