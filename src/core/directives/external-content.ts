@@ -277,6 +277,13 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
                 this.loaded = false;
                 this.waitForLoad();
             }
+
+            if (targetAttr == 'poster') {
+                // Setting the poster immediately doesn't display it in some cases. Set it to empty and then set the right one.
+                this.element.setAttribute(targetAttr, '');
+                await CoreUtils.nextTick();
+            }
+
             this.element.setAttribute(targetAttr, finalUrl);
             this.element.setAttribute('data-original-' + targetAttr, url);
         }
