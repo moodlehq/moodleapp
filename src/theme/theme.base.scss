@@ -874,6 +874,13 @@ html.ios div.fake-ion-item {
 
 }
 
+// Disabled items.
+ion-item.item-disabled,
+ion-item.item-interactive-disabled:not(.item-multiple-inputs) ion-label,
+ion-datetime.datetime-disabled {
+    opacity: .8 !important;
+}
+
 // Make links clickable when inside radio or checkbox items. Style part.
 @media (hover: hover) {
     ion-item.item-multiple-inputs:hover::part(native) {

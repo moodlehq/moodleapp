@@ -81,6 +81,8 @@
 
     --text-hightlight-background-color: #{$core-text-hightlight-background-color};
 
+    --ion-placeholder-color: #{$ion-placeholder-color};
+
     ion-content {
         --background: var(--ion-background-color);
         --background-alternative: var(--gray-lighter);
@@ -221,6 +223,10 @@
     --spacer-background: #{$core-spacer-background};
     core-spacer {
         --item-divider-background: var(--spacer-background);
+    }
+
+    ion-note {
+        --color: var(--subdued-text-color);
     }
 
     --core-combobox-background: var(--ion-item-background);

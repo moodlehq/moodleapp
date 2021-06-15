@@ -58,6 +58,8 @@
 
     --contrast-background: black;
 
+    --ion-placeholder-color: #{$ion-placeholder-color-dark};
+
     ion-content {
         --background: var(--ion-background-color);
         --background-alternative: var(--black);
@@ -126,6 +128,9 @@
 
     --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-light);
     --core-dd-question-border: var(--gray-light);
+
+    --core-send-message-input-background: #{$core-send-message-input-background-dark};
+    --core-send-message-input-color: #{$core-send-message-input-color-dark};
 
     --addon-messages-message-bg: #{$addon-messages-message-bg-dark};
     --addon-messages-message-activated-bg: #{$addon-messages-message-activated-bg-dark};

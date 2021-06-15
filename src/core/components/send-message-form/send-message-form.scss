@@ -21,4 +21,8 @@
         margin: 5px 10px;
         resize: vertical;
     }
+
+    .core-send-message-input::placeholder {
+        color: var(--ion-placeholder-color);
+    }
 }
