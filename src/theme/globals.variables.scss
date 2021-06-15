@@ -46,21 +46,21 @@ $orange:          #f98012 !default; // Accent (never text).
 $yellow:          #fbad1a !default; // Accent (never text).
 $purple:          #8e24aa !default; // Accent (never text).
 
-$blue-light:      mix($blue, white, 40%) !default; // Background.
+$blue-light:      mix($blue, white, 20%) !default; // Background.
 $blue-dark:       darken($blue, 10%) !default;
 
-$turquoise-light: mix($turquoise, white, 40%) !default; // Background.
+$turquoise-light: mix($turquoise, white, 20%) !default; // Background.
 $turquoise-dark:  darken($turquoise, 10%) !default;
 
-$green-light:     mix($green, white, 40%) !default;
+$green-light:     mix($green, white, 20%) !default;
 $green-dark:      darken($green, 10%) !default;
 
-$red-light:       mix($red, white, 40%) !default;
+$red-light:       mix($red, white, 20%) !default;
 $red-dark:        darken($red, 10%) !default;
 
 $orange-light:    lighten($orange, 10%) !default;
 
-$yellow-light:    mix($yellow, white, 40%) !default;
+$yellow-light:    mix($yellow, white, 20%) !default;
 $yellow-dark:     mix($yellow, black, 40%) !default;
 
 $brand-color:          $orange !default;
@@ -75,8 +75,8 @@ $link-color:               $blue !default;
 $link-color-dark:          $blue-light !default;
 $background-color:         $gray-light !default;
 $background-color-dark:    $shade-90 !default;
-$subdued-text-color:       $gray-darker !default;
-$subdued-text-color-dark:  $gray-lighter !default;
+$subdued-text-color:       #595959 !default;
+$subdued-text-color-dark:  #b4b4b4 !default;
 
 $ion-item-background:      $white !default;
 $ion-item-background-dark: $shade-80 !default;
@@ -87,6 +87,10 @@ $ion-item-divider-background-dark: $shade-75 !default;
 $ion-item-divider-color-dark: $text-color-dark !default;
 $core-spacer-background-dark: $shade-100 !default;
 
+$ion-placeholder-color: $subdued-text-color;
+$ion-placeholder-color-dark: $subdued-text-color-dark;
+$color: #d0c9b9;
+$color: #fcf5e3;
 $core-online-color: #5cb85c !default;
 
 $primary:    $brand-color !default;
@@ -164,12 +168,12 @@ $colors:  (
 ) !default;
 
 $primary-dark:    $brand-color !default;
-$secondary-dark:  $blue-light !default;
-$tertiary-dark:   $turquoise-light !default;
-$danger-dark:     $red-light !default;
-$warning-dark:    $yellow-light !default;
-$success-dark:    $green-light !default;
-$info-dark:       $blue-light !default;
+$secondary-dark:  mix($blue, white, 40%) !default;
+$tertiary-dark:   mix($turquoise, white, 40%) !default;
+$danger-dark:     mix($red, white, 40%) !default;
+$warning-dark:    mix($yellow, white, 40%) !default;
+$success-dark:    mix($green, white, 40%) !default;
+$info-dark:       mix($blue, white, 40%) !default;
 $light-dark:      $dark !default;
 $medium-dark:     $gray-light !default;
 $dark-dark:       $light !default;
@@ -299,7 +303,7 @@ $core-text-hightlight-background-color: lighten($blue, 40%) !default;
 
 $core-tabs-background: $white !default;
 $core-tab-background: $core-tabs-background !default;
-$core-tab-color: $gray-dark !default;
+$core-tab-color: $subdued-text-color !default;
 $core-tab-color-active: $dark !default;
 $core-tab-font-weight-active: normal !default;
 $core-tab-border-color: $gray !default;
@@ -308,7 +312,7 @@ $core-tabs-height: 56px !default;
 
 $core-tabs-background-dark: $shade-75 !default;
 $core-tab-background-dark: $core-tabs-background-dark !default;
-$core-tab-color-dark: $white !default;
+$core-tab-color-dark: $subdued-text-color-dark !default;
 $core-tab-color-active-dark: $dark-dark !default;
 $core-tab-border-color-dark: $gray-light !default;
 $core-tab-border-color-active-dark: $core-tab-border-color-active !default;
@@ -356,8 +360,10 @@ $core-star-color: $brand-color !default;
 $core-large-avatar-size:  90px !default;
 $core-avatar-size:  44px !default;
 
-$core-send-message-input-background: $gray !default;
+$core-send-message-input-background: $gray-light !default;
 $core-send-message-input-color: $black !default;
+$core-send-message-input-background-dark: $black !default;
+$core-send-message-input-color-dark: $white !default;
 
 $core-more-icon-color: null !default;
 $core-more-item-border: null !default;

@@ -1,6 +1,6 @@
 @import "~theme/globals";
 :host {
-    --placeholder-color: var(--gray-light);
+    --placeholder-color: var(--ion-placeholder-color);
     --toobar-background: var(--white);
     --button-color: var(--ion-text-color);
     --button-active-color: var(--gray);
@@ -12,7 +12,6 @@
     --color: var(--white);
     --button-color: var(--gray-light);
     --button-active-color: var(--gray-dark);
-    --placeholder-color: var(--gray);
     --toobar-background: var(--black);
 }
 
