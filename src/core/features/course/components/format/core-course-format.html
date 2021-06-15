@@ -19,8 +19,15 @@
                 <div *ngIf="displaySectionSelector && sections && hasSeveralSections"
                     class="ion-text-wrap ion-justify-content-between ion-align-items-center core-button-selector-row"
                     [class.core-section-download]="downloadEnabled">
-                    <core-combobox [modalOptions]="sectionSelectorModalOptions" interface="modal" listboxId="core-course-section-button"
-                        icon="fas-folder" [label]="'core.course.section' | translate" (onChange)="sectionChanged($event)">
+                    <core-combobox
+                        [modalOptions]="sectionSelectorModalOptions"
+                        interface="modal"
+                        listboxId="core-course-section-button"
+                        icon="fas-folder"
+                        [label]="'core.course.section' | translate"
+                        [selection]="selectedSection ? selectedSection.name : 'core.course.sections' | translate"
+                        (onChange)="sectionChanged($event)"
+                    >
                         <span slot="text">
                             <core-format-text *ngIf="selectedSection" [text]="selectedSection.name" contextLevel="course"
                                 [contextInstanceId]="course?.id" [clean]="true" [singleLine]="true">
