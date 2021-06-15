@@ -533,6 +533,24 @@ class behat_app extends behat_base {
     }
 
     /**
+     * Replace arguments from the content in the given activity field.
+     *
+     * @Given /^I replace the arguments in "([^"]+)" "([^"]+)"$/
+     */
+    public function i_replace_arguments_in_the_activity(string $idnumber, string $field) {
+        global $DB;
+
+        $coursemodule = $DB->get_record('course_modules', compact('idnumber'));
+        $module = $DB->get_record('modules', ['id' => $coursemodule->module]);
+        $activity = $DB->get_record($module->name, ['id' => $coursemodule->instance]);
+
+        $DB->update_record($module->name, [
+            'id' => $coursemodule->instance,
+            $field => $this->replace_arguments($activity->{$field}),
+        ]);
+    }
+
+    /**
      * Opens a custom link.
      *
      * @Given /^I open a custom link in the app for:$/
@@ -887,6 +905,33 @@ class behat_app extends behat_base {
         global $CFG;
 
         return str_replace('$WWWROOT', $CFG->behat_wwwroot, $text);
+    }
+
+    /**
+     * Replace arguments with the format "${activity:field}" from a string, where "activity" is
+     * the idnumber of an activity and "field" is the activity's field to get replacement from.
+     *
+     * At the moment, the only field supported is "cmid", the id of the course module for this activity.
+     *
+     * @param string $text Original text.
+     * @return string Text with arguments replaced.
+     */
+    protected function replace_arguments(string $text): string {
+        global $DB;
+
+        preg_match_all("/\\$\\{([^:}]+):([^}]+)\\}/", $text, $matches);
+
+        foreach ($matches[0] as $index => $match) {
+            switch ($matches[2][$index]) {
+                case 'cmid':
+                    $coursemodule = $DB->get_record('course_modules', ['idnumber' => $matches[1][$index]]);
+                    $text = str_replace($match, $coursemodule->id, $text);
+
+                    break;
+            }
+        }
+
+        return $text;
     }
 
 }
