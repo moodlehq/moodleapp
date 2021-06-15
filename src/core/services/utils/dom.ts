@@ -53,9 +53,7 @@ export class CoreDomUtilsProvider {
     protected template: HTMLTemplateElement = document.createElement('template'); // A template element to convert HTML to element.
 
     protected matchesFunctionName?: string; // Name of the "matches" function to use when simulating a closest call.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected instances: {[id: string]: any} = {}; // Store component/directive instances by id.
-    protected lastInstanceId = 0;
+    protected instances: WeakMap<Element, unknown> = new WeakMap(); // Store component/directive instances indexed by element.
     protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
     protected displayedAlerts: Record<string, HTMLIonAlertElement> = {}; // To prevent duplicated alerts.
     protected activeLoadingModals: CoreIonLoadingElement[] = [];
@@ -706,11 +704,8 @@ export class CoreDomUtilsProvider {
      * @param element The root element of the component/directive.
      * @return The instance, undefined if not found.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getInstanceByElement(element: Element): any {
-        const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
-
-        return id && this.instances[id];
+    getInstanceByElement<T = unknown>(element: Element): T | undefined {
+        return this.instances.get(element) as T;
     }
 
     /**
@@ -1629,16 +1624,9 @@ export class CoreDomUtilsProvider {
      *
      * @param element The root element of the component/directive.
      * @param instance The instance to store.
-     * @return ID to identify the instance.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    storeInstanceByElement(element: Element, instance: any): string {
-        const id = String(this.lastInstanceId++);
-
-        element.setAttribute(this.INSTANCE_ID_ATTR_NAME, id);
-        this.instances[id] = instance;
-
-        return id;
+    storeInstanceByElement(element: Element, instance: unknown): void {
+        this.instances.set(element, instance);
     }
 
     /**

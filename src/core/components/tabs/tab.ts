@@ -144,7 +144,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     protected showHideNavBarButtons(show: boolean): void {
         const elements = this.element.querySelectorAll('core-navbar-buttons');
         elements.forEach((element) => {
-            const instance: CoreNavBarButtonsComponent = CoreDomUtils.getInstanceByElement(element);
+            const instance = CoreDomUtils.getInstanceByElement<CoreNavBarButtonsComponent>(element);
 
             if (instance) {
                 instance.forceHide(!show);

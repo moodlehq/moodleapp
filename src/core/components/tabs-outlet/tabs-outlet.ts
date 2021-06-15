@@ -150,7 +150,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
         const elements = this.ionTabs!.outlet.nativeEl.querySelectorAll('core-navbar-buttons');
         const domUtils = CoreDomUtils.instance;
         elements.forEach((element) => {
-            const instance: CoreNavBarButtonsComponent = domUtils.getInstanceByElement(element);
+            const instance = domUtils.getInstanceByElement<CoreNavBarButtonsComponent>(element);
 
             if (instance) {
                 const pagetagName = element.closest('.ion-page')?.tagName;
