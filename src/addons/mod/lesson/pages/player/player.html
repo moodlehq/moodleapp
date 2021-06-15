@@ -186,13 +186,14 @@
             </ion-list>
 
             <!-- End of lesson reached. -->
+            <ion-card class="core-warning-card" *ngIf="eolData && !processData && eolData.offline?.value">
+                <ion-item>
+                    <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label>{{ 'addon.mod_lesson.finishretakeoffline' | translate }}</ion-label>
+                </ion-item>
+            </ion-card>
+
             <ion-card *ngIf="eolData && !processData">
-                <div class="core-warning-card" *ngIf="eolData.offline?.value">
-                    <ion-item>
-                        <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-                        <ion-label>{{ 'addon.mod_lesson.finishretakeoffline' | translate }}</ion-label>
-                    </ion-item>
-                </div>
 
                 <ion-card-header class="ion-text-wrap" *ngIf="eolData.gradelesson">
                     <ion-card-title>{{ 'addon.mod_lesson.congratulations' | translate }}</ion-card-title>
