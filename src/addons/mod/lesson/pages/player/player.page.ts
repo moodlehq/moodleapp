@@ -272,8 +272,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             // If lesson has offline data already, use offline mode.
             this.offline = await AddonModLessonOffline.hasOfflineData(this.lesson.id);
 
-            if (!this.offline && !CoreApp.isOnline() && AddonModLesson.isLessonOffline(this.lesson) &&
-                !this.review) {
+            if (!this.offline && !CoreApp.isOnline() && AddonModLesson.isLessonOffline(this.lesson) && !this.review) {
                 // Lesson doesn't have offline data, but it allows offline and the device is offline. Use offline mode.
                 this.offline = true;
             }
@@ -586,11 +585,12 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             this.originalData = undefined;
         }
 
-        if (data.displaymenu && !this.displayMenu) {
+        // Don't display the navigation menu in review mode, using them displays errors.
+        if (data.displaymenu && !this.displayMenu && !this.review) {
             // Load the menu.
             this.loadMenu();
         }
-        this.displayMenu = !!data.displaymenu;
+        this.displayMenu = !this.review && !!data.displaymenu;
 
         if (!this.firstPageLoaded) {
             this.firstPageLoaded = true;
