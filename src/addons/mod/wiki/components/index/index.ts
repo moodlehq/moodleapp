@@ -590,7 +590,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         if (modalData) {
             if (modalData.home) {
                 // Go back to the initial page of the wiki.
-                CoreNavigator.navigateToSitePath(modalData.home);
+                CoreNavigator.navigateToSitePath(modalData.home, { animationDirection: 'back' });
             } else if (modalData.page) {
                 this.goToPage(modalData.page);
             }

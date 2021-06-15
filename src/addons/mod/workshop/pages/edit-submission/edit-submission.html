@@ -37,7 +37,7 @@
                     elementId="content_editor" [draftExtraParams]="editorExtraParams"></core-rich-text-editor>
             </ion-item>
 
-            <core-attachments *ngIf="fileAvailable" [files]="submission?.attachmentfiles || []" [maxSize]="workshop.maxbytes"
+            <core-attachments *ngIf="fileAvailable" [files]="attachments" [maxSize]="workshop.maxbytes"
                 [maxSubmissions]="workshop.nattachments" [component]="component" [componentId]="workshop.coursemodule"
                 allowOffline="true" [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired">
             </core-attachments>

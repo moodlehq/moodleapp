@@ -44,8 +44,7 @@ export type CoreRedirectPayload = {
 /**
  * Navigation options.
  */
-export type CoreNavigationOptions = {
-    animated?: boolean;
+export type CoreNavigationOptions = Pick<NavigationOptions, 'animated'|'animation'|'animationDirection'> & {
     params?: Params;
     reset?: boolean;
     preferCurrentTab?: boolean; // Default true.
@@ -132,6 +131,8 @@ export class CoreNavigatorService {
         const url: string[] = [/^[./]/.test(path) ? path : `./${path}`];
         const navigationOptions: NavigationOptions = CoreObject.withoutEmpty({
             animated: options.animated,
+            animation: options.animation,
+            animationDirection: options.animationDirection,
             queryParams: CoreObject.isEmpty(options.params ?? {}) ? null : CoreObject.withoutEmpty(options.params),
             relativeTo: path.startsWith('/') ? null : this.getCurrentRoute(),
         });
