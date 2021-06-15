@@ -215,7 +215,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             // Reload the current page.
             const scrollElement = await this.content?.getScrollElement();
             const scrollTop = scrollElement?.scrollTop || -1;
-            const scrollLeft = scrollElement?.scrollLeft || -1;
 
             this.loaded = false;
             this.content?.scrollToTop(); // Scroll top so the spinner is seen.
@@ -224,8 +223,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
                 await this.loadPage(this.attempt!.currentpage!);
             } finally {
                 this.loaded = true;
-                if (scrollTop != -1 && scrollLeft != -1) {
-                    this.content?.scrollToPoint(scrollLeft, scrollTop);
+                if (scrollTop != -1) {
+                    // Wait for content to be rendered.
+                    setTimeout(() => {
+                        this.content?.scrollToPoint(0, scrollTop);
+                    }, 50);
                 }
             }
         } catch (error) {
