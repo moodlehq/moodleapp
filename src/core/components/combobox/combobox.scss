@@ -1,6 +1,8 @@
 @import "~theme/globals";
 
 :host {
+    max-width: 100%;
+
     ion-select,
     ion-button {
         --icon-margin: 0 8px;
