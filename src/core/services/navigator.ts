@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
 
 import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 
@@ -71,6 +71,7 @@ export type CoreNavigatorCurrentRouteOptions = Partial<{
 @Injectable({ providedIn: 'root' })
 export class CoreNavigatorService {
 
+    protected routesDepth: Record<string, number> = {};
     protected storedParams: Record<number, unknown> = {};
     protected lastParamId = 0;
 
@@ -398,6 +399,38 @@ export class CoreNavigatorService {
     }
 
     /**
+     * Increase the number of times a route is repeated on the navigation stack.
+     *
+     * @param path Absolute route path.
+     */
+    increaseRouteDepth(path: string): void {
+        this.routesDepth[path] = this.getRouteDepth(path) + 1;
+    }
+
+    /**
+     * Decrease the number of times a route is repeated on the navigation stack.
+     *
+     * @param path Absolute route path.
+     */
+    decreaseRouteDepth(path: string): void {
+        if (this.getRouteDepth(path) <= 1) {
+            delete this.routesDepth[path];
+        } else {
+            this.routesDepth[path]--;
+        }
+    }
+
+    /**
+     * Get the number of times a route is repeated on the navigation stack.
+     *
+     * @param path Absolute route path.
+     * @return Route depth.
+     */
+    getRouteDepth(path: string): number {
+        return this.routesDepth[path] ?? 0;
+    }
+
+    /**
      * Navigate to a path within the main menu.
      * If the path belongs to a visible tab, that tab will be selected.
      * If it doesn't, the current tab or the default tab will be used instead.
@@ -493,16 +526,16 @@ export class CoreNavigatorService {
     /**
      * Get the full path of a certain route, including parent routes paths.
      *
-     * @param route Route.
+     * @param route Route snapshot.
      * @return Path.
      */
-    getRouteFullPath(route: ActivatedRoute | null): string {
+    getRouteFullPath(route: ActivatedRouteSnapshot | null): string {
         if (!route) {
             return '';
         }
 
         const parentPath = this.getRouteFullPath(route.parent);
-        const routePath = route.snapshot.url.join('/');
+        const routePath = route.url.join('/');
 
         if (!parentPath && !routePath) {
             return '';

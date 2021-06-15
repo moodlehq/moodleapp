@@ -40,6 +40,7 @@ import { CoreCourseOptionsDelegateService } from './services/course-options-dele
 import { CoreCourseOfflineProvider } from './services/course-offline';
 import { CoreCourseSyncProvider } from './services/sync';
 import { COURSE_INDEX_PATH } from '@features/course/course-lazy.module';
+import { buildRegExpUrlMatcher } from '@/app/app-routing.module';
 
 export const CORE_COURSE_SERVICES: Type<unknown>[] = [
     CoreCourseProvider,
@@ -59,7 +60,7 @@ export const COURSE_CONTENTS_PATH = `${COURSE_PAGE_NAME}/${COURSE_INDEX_PATH}/${
 
 const routes: Routes = [
     {
-        path: COURSE_PAGE_NAME,
+        matcher: buildRegExpUrlMatcher(new RegExp(`^${COURSE_PAGE_NAME}(/deep)*`)),
         loadChildren: () => import('@features/course/course-lazy.module').then(m => m.CoreCourseLazyModule),
     },
 ];

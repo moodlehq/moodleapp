@@ -177,7 +177,11 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
         Object.assign(params, { course: course });
 
         // Don't return the .push promise, we don't want to display a loading modal during the page transition.
-        CoreNavigator.navigateToSitePath(`course/${course.id}`, { params });
+        const currentTab = CoreNavigator.getCurrentMainMenuTab();
+        const routeDepth = CoreNavigator.getRouteDepth(`/main/${currentTab}/course/${course.id}`);
+        const deepPath = '/deep'.repeat(routeDepth);
+
+        CoreNavigator.navigateToSitePath(`course${deepPath}/${course.id}`, { params });
     }
 
     /**
