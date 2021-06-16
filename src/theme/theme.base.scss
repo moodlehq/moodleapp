@@ -1,5 +1,9 @@
 @import "./globals.scss";
 
+body {
+    -webkit-text-size-adjust: auto;
+}
+
 // Common styles.
 .text-left           { text-align: left; }
 .text-right          { text-align: right; }
