@@ -62,13 +62,13 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
     protected forceHidden = false;
     protected logger: CoreLogger;
     protected movedChildren?: Node[];
-    protected instanceId: string;
     protected mergedContextMenu?: CoreContextMenuComponent;
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
         this.logger = CoreLogger.getInstance('CoreNavBarButtonsComponent');
-        this.instanceId = CoreDomUtils.storeInstanceByElement(this.element, this);
+
+        CoreDomUtils.storeInstanceByElement(this.element, this);
     }
 
     /**
@@ -138,9 +138,8 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
         }
 
         // Both containers have a context menu. Merge them to prevent having 2 menus at the same time.
-        const mainContextMenuInstance: CoreContextMenuComponent = CoreDomUtils.getInstanceByElement(mainContextMenu);
-        const secondaryContextMenuInstance: CoreContextMenuComponent =
-            CoreDomUtils.getInstanceByElement(secondaryContextMenu);
+        const mainContextMenuInstance = CoreDomUtils.getInstanceByElement<CoreContextMenuComponent>(mainContextMenu);
+        const secondaryContextMenuInstance = CoreDomUtils.getInstanceByElement<CoreContextMenuComponent>(secondaryContextMenu);
 
         // Check that both context menus belong to the same core-tab. We shouldn't merge menus from different tabs.
         if (mainContextMenuInstance && secondaryContextMenuInstance) {
@@ -247,8 +246,6 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      * Component destroyed.
      */
     ngOnDestroy(): void {
-        CoreDomUtils.removeInstanceById(this.instanceId);
-
         // This component was destroyed, remove all the buttons that were moved.
         // The buttons can be moved outside of the current page, that's why we need to manually destroy them.
         // There's no need to destroy context menu items that were merged because they weren't moved from their DOM position.

@@ -23,7 +23,7 @@ import {
     ElementRef,
     SimpleChange,
 } from '@angular/core';
-import { IonTabs } from '@ionic/angular';
+import { IonTabs, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreUtils } from '@services/utils/utils';
@@ -65,10 +65,11 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     @ViewChild(IonTabs) protected ionTabs?: IonTabs;
 
     protected stackEventsSubscription?: Subscription;
+    protected outletActivatedSubscription?: Subscription;
+    protected lastActiveComponent?: Partial<ViewDidLeave>;
+    protected existsInNavigationStack = false;
 
-    constructor(
-        element: ElementRef,
-    ) {
+    constructor(element: ElementRef) {
         super(element);
     }
 
@@ -110,6 +111,9 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
                 this.showHideTabs(scrollElement.scrollTop, scrollElement);
             }
         });
+        this.outletActivatedSubscription = this.ionTabs?.outlet.activateEvents.subscribe(() => {
+            this.lastActiveComponent = this.ionTabs?.outlet.component;
+        });
     }
 
     /**
@@ -125,6 +129,35 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
         }
 
         super.ngOnChanges(changes);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ionViewDidEnter(): void {
+        super.ionViewDidEnter();
+
+        // The `ionViewDidEnter` method is not called on nested outlets unless the parent page is leaving the navigation stack,
+        // that's why we need to call it manually if the page that is entering already existed in the stack (meaning that it is
+        // entering in response to a back navigation from the page on top).
+        if (this.existsInNavigationStack && this.ionTabs?.outlet.isActivated) {
+            (this.ionTabs?.outlet.component as Partial<ViewDidEnter>).ionViewDidEnter?.();
+        }
+
+        // After the view has entered for the first time, we can assume that it'll always be in the navigation stack
+        // until it's destroyed.
+        this.existsInNavigationStack = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ionViewDidLeave(): void {
+        super.ionViewDidLeave();
+
+        // The `ionViewDidLeave` method is not called on nested outlets unless the active view changes, that's why
+        // we need to call it manually if the page is leaving and the last active component was not notified.
+        this.lastActiveComponent?.ionViewDidLeave?.();
     }
 
     /**
@@ -150,7 +183,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
         const elements = this.ionTabs!.outlet.nativeEl.querySelectorAll('core-navbar-buttons');
         const domUtils = CoreDomUtils.instance;
         elements.forEach((element) => {
-            const instance: CoreNavBarButtonsComponent = domUtils.getInstanceByElement(element);
+            const instance = domUtils.getInstanceByElement<CoreNavBarButtonsComponent>(element);
 
             if (instance) {
                 const pagetagName = element.closest('.ion-page')?.tagName;
@@ -165,6 +198,8 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     ngOnDestroy(): void {
         super.ngOnDestroy();
         this.stackEventsSubscription?.unsubscribe();
+        this.outletActivatedSubscription?.unsubscribe();
+        this.existsInNavigationStack = false;
     }
 
 }

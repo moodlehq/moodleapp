@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, ViewChild, OnDestroy, OnInit } from '@angular/core';
-import { Params } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 
 import { CoreTabsOutletTab, CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
 import { CoreCourseFormatDelegate } from '../../services/format-delegate';
@@ -54,7 +54,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         pageParams: {},
     };
 
-    constructor() {
+    constructor(private route: ActivatedRoute) {
         this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
             if (!data.name) {
                 // If needed, set sectionId and sectionNumber. They'll only be used if the content tabs hasn't been loaded yet.
@@ -81,6 +81,11 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
+        // Increase route depth.
+        const path = CoreNavigator.getRouteFullPath(this.route.snapshot);
+
+        CoreNavigator.increaseRouteDepth(path.replace(/(\/deep)+/, ''));
+
         // Get params.
         this.course = CoreNavigator.getRouteParam('course');
         this.firstTabName = CoreNavigator.getRouteParam('selectedTab');
@@ -180,6 +185,9 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      * Page destroyed.
      */
     ngOnDestroy(): void {
+        const path = CoreNavigator.getRouteFullPath(this.route.snapshot);
+
+        CoreNavigator.decreaseRouteDepth(path.replace(/(\/deep)+/, ''));
         this.selectTabObserver?.off();
     }
 

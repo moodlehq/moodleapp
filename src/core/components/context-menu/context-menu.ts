@@ -40,13 +40,10 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     protected items: CoreContextMenuItemComponent[] = [];
     protected itemsMovedToParent: CoreContextMenuItemComponent[] = [];
     protected itemsChangedStream: Subject<void>; // Stream to update the hideMenu boolean when items change.
-    protected instanceId: string;
     protected parentContextMenu?: CoreContextMenuComponent;
     protected expanded = false;
 
-    constructor(
-        elementRef: ElementRef,
-    ) {
+    constructor(elementRef: ElementRef) {
         // Create the stream and subscribe to it. We ignore successive changes during 250ms.
         this.itemsChangedStream = new Subject<void>();
         this.itemsChangedStream.pipe(auditTime(250));
@@ -61,7 +58,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
         // Calculate the unique ID.
         this.uniqueId = 'core-context-menu-' + CoreUtils.getUniqueId('CoreContextMenuComponent');
 
-        this.instanceId = CoreDomUtils.storeInstanceByElement(elementRef.nativeElement, this);
+        CoreDomUtils.storeInstanceByElement(elementRef.nativeElement, this);
     }
 
     /**
@@ -202,7 +199,6 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      * Component destroyed.
      */
     ngOnDestroy(): void {
-        CoreDomUtils.removeInstanceById(this.instanceId);
         this.removeMergedItems();
     }
 

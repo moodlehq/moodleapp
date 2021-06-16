@@ -97,6 +97,33 @@ function buildConditionalUrlMatcher(pathOrMatcher: string | UrlMatcher, conditio
     };
 }
 
+export function buildRegExpUrlMatcher(regexp: RegExp): UrlMatcher {
+    return (segments: UrlSegment[]): UrlMatchResult | null => {
+        // Ignore empty paths.
+        if (segments.length === 0) {
+            return null;
+        }
+
+        const path = segments.map(segment => segment.path).join('/');
+        const match = regexp.exec(path)?.[0];
+
+        // Ignore paths that don't match the start of the url.
+        if (!match || !path.startsWith(match)) {
+            return null;
+        }
+
+        // Consume segments that match.
+        const [consumed] = segments.slice(1).reduce(([consumed, path], segment) => path === match
+            ? [consumed, path]
+            :[
+                consumed.concat(segment),
+                `${path}/${segment.path}`,
+            ], [[segments[0]] as UrlSegment[], segments[0].path]);
+
+        return { consumed };
+    };
+}
+
 export type ModuleRoutes = { children: Routes; siblings: Routes };
 export type ModuleRoutesConfig = Routes | Partial<ModuleRoutes>;
 
