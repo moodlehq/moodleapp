@@ -101,6 +101,19 @@ class behat_app extends behat_base {
     }
 
     /**
+     * @Then /^I wait the app to restart$/
+     */
+    public function i_wait_the_app_to_restart() {
+        // Wait window to reload.
+        $this->spin(function() {
+            return $this->evaluate_script("return !window.behat;");
+        });
+
+        // Prepare testing runtime again.
+        $this->prepare_browser(false);
+    }
+
+    /**
      * Finds elements in the app.
      *
      * @Then /^I should( not)? find (".+") in the app$/
@@ -347,24 +360,28 @@ class behat_app extends behat_base {
      * @param string $url App URL
      * @throws DriverException If the app fails to load properly
      */
-    protected function prepare_browser() {
-        // Restart the browser and set its size.
-        $this->getSession()->restart();
-        $this->resize_window('360x720', true);
+    protected function prepare_browser(bool $restart = true) {
+        if ($restart) {
+            // Restart the browser and set its size.
+            $this->getSession()->restart();
+            $this->resize_window('360x720', true);
 
-        if (empty($this->ionicurl)) {
-            $this->ionicurl = $this->start_or_reuse_ionic();
+            if (empty($this->ionicurl)) {
+                $this->ionicurl = $this->start_or_reuse_ionic();
+            }
+
+            // Check whether the app is running a legacy version.
+            $json = @file_get_contents("{$this->ionicurl}/assets/env.json") ?: @file_get_contents("{$this->ionicurl}/config.json");
+            $data = json_decode($json);
+            $appversion = $data->build->version ?? str_replace('-dev', '', $data->versionname);
+
+            $this->islegacy = version_compare($appversion, '3.9.5', '<');
+
+            // Visit the Ionic URL.
+            $this->getSession()->visit($this->ionicurl);
         }
 
-        // Check whether the app is running a legacy version.
-        $json = @file_get_contents("{$this->ionicurl}/assets/env.json") ?: @file_get_contents("{$this->ionicurl}/config.json");
-        $data = json_decode($json);
-        $appversion = $data->build->version ?? str_replace('-dev', '', $data->versionname);
-
-        $this->islegacy = version_compare($appversion, '3.9.5', '<');
-
-        // Visit the Ionic URL and wait for it to load.
-        $this->getSession()->visit($this->ionicurl);
+        // Wait the application to load.
         $this->spin(function($context) {
             $title = $context->getSession()->getPage()->find('xpath', '//title');
 
@@ -387,34 +404,36 @@ class behat_app extends behat_base {
         $this->execute_script("window.BehatMoodleAppLegacy = $islegacyboolean;");
         $this->execute_script(file_get_contents(__DIR__ . '/app_behat_runtime.js'));
 
-        // Assert initial page.
-        $this->spin(function($context) {
-            $page = $context->getSession()->getPage();
-            $element = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
-
-            if ($element) {
-                // Wait for the onboarding modal to open, if any.
-                $this->wait_for_pending_js();
-
-                $element = $this->islegacy
-                    ? $page->find('xpath', '//page-core-login-site-onboarding')
-                    : $page->find('xpath', '//core-login-site-onboarding');
+        if ($restart) {
+            // Assert initial page.
+            $this->spin(function($context) {
+                $page = $context->getSession()->getPage();
+                $element = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
 
                 if ($element) {
-                    $this->i_press_in_the_app($this->parse_element_locator('"Skip"'));
+                    // Wait for the onboarding modal to open, if any.
+                    $this->wait_for_pending_js();
+
+                    $element = $this->islegacy
+                        ? $page->find('xpath', '//page-core-login-site-onboarding')
+                        : $page->find('xpath', '//core-login-site-onboarding');
+
+                    if ($element) {
+                        $this->i_press_in_the_app($this->parse_element_locator('"Skip"'));
+                    }
+
+                    // Login screen found.
+                    return true;
                 }
 
-                // Login screen found.
-                return true;
-            }
+                if ($page->find('xpath', '//page-core-mainmenu')) {
+                    // Main menu found.
+                    return true;
+                }
 
-            if ($page->find('xpath', '//page-core-mainmenu')) {
-                // Main menu found.
-                return true;
-            }
-
-            throw new DriverException('Moodle app not launched properly');
-        }, false, 60);
+                throw new DriverException('Moodle app not launched properly');
+            }, false, 60);
+        }
 
         // Continue only after JS finishes.
         $this->wait_for_pending_js();
@@ -484,12 +503,12 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Receives push notifications for forum events.
+     * Receives push notifications.
      *
-     * @Given /^I receive a forum push notification for:$/
+     * @Given /^I receive a push notification in the app for:$/
      * @param TableNode $data
      */
-    public function i_receive_a_forum_push_notification(TableNode $data) {
+    public function i_receive_a_push_notification(TableNode $data) {
         global $DB, $CFG;
 
         $data = (object) $data->getColumnsHash()[0];
@@ -510,6 +529,41 @@ class behat_app extends behat_base {
         ]);
 
         $this->evaluate_script("return window.pushNotifications.notificationClicked($notification)");
+        $this->wait_for_pending_js();
+    }
+
+    /**
+     * Replace arguments from the content in the given activity field.
+     *
+     * @Given /^I replace the arguments in "([^"]+)" "([^"]+)"$/
+     */
+    public function i_replace_arguments_in_the_activity(string $idnumber, string $field) {
+        global $DB;
+
+        $coursemodule = $DB->get_record('course_modules', compact('idnumber'));
+        $module = $DB->get_record('modules', ['id' => $coursemodule->module]);
+        $activity = $DB->get_record($module->name, ['id' => $coursemodule->instance]);
+
+        $DB->update_record($module->name, [
+            'id' => $coursemodule->instance,
+            $field => $this->replace_arguments($activity->{$field}),
+        ]);
+    }
+
+    /**
+     * Opens a custom link.
+     *
+     * @Given /^I open a custom link in the app for:$/
+     */
+    public function i_open_a_custom_link(TableNode $data) {
+        global $DB, $CFG;
+
+        $data = (object) $data->getColumnsHash()[0];
+        $discussion = $DB->get_record('forum_discussions', ['name' => $data->discussion]);
+        $pageurl = "{$CFG->behat_wwwroot}/mod/forum/discuss.php?d={$discussion->id}";
+        $url = "moodlemobile://link=" . urlencode($pageurl);
+
+        $this->evaluate_script("return window.urlSchemes.handleCustomURL('$url')");
         $this->wait_for_pending_js();
     }
 
@@ -851,6 +905,33 @@ class behat_app extends behat_base {
         global $CFG;
 
         return str_replace('$WWWROOT', $CFG->behat_wwwroot, $text);
+    }
+
+    /**
+     * Replace arguments with the format "${activity:field}" from a string, where "activity" is
+     * the idnumber of an activity and "field" is the activity's field to get replacement from.
+     *
+     * At the moment, the only field supported is "cmid", the id of the course module for this activity.
+     *
+     * @param string $text Original text.
+     * @return string Text with arguments replaced.
+     */
+    protected function replace_arguments(string $text): string {
+        global $DB;
+
+        preg_match_all("/\\$\\{([^:}]+):([^}]+)\\}/", $text, $matches);
+
+        foreach ($matches[0] as $index => $match) {
+            switch ($matches[2][$index]) {
+                case 'cmid':
+                    $coursemodule = $DB->get_record('course_modules', ['idnumber' => $matches[1][$index]]);
+                    $text = str_replace($match, $coursemodule->id, $text);
+
+                    break;
+            }
+        }
+
+        return $text;
     }
 
 }
