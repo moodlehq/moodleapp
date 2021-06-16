@@ -80,8 +80,8 @@ core-format-text ::ng-deep, .drags ::ng-deep {
 
     @for $i from 0 to length($core-dd-question-colors) {
         .group#{$i + 1} {
-            background: nth($core-dd-question-colors, $i + 1);
-            color: get_contrast_color(nth($core-dd-question-colors, $i + 1));
+            background: var(--core-dd-question-color-#{$i + 1});
+            color: var(--core-dd-question-color-#{$i + 1}-contrast);
         }
     }
 

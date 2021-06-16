@@ -13,7 +13,7 @@
 
         @for $i from 0 to length($core-course-image-background) {
             &[course-color="#{$i}"] .core-course-thumb {
-                background: nth($core-course-image-background, $i + 1);
+                background: var(--core-course-color-#{$i});
             }
         }
 

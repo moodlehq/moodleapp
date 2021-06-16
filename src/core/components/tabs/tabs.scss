@@ -3,7 +3,7 @@
 :host {
     --tabs-background: var(--core-tabs-background);
     --tabs-color: var(--core-tab-color);
-    --height: #{$core-tabs-height};
+    --height: var(--core-tabs-height);
     height: 100%;
     display: flex;
     flex-direction: column;

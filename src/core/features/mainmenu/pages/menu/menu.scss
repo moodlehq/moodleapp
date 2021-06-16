@@ -1,7 +1,7 @@
 @import "~theme/globals";
 
 :host{
-    --menutabbar-size: #{$bottom-tabs-size};
+    --menutabbar-size: var(--bottom-tabs-size);
 
     ion-tab-bar {
         height: var(--menutabbar-size);

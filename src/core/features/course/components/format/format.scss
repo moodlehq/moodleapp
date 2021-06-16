@@ -17,7 +17,7 @@
 
     .core-course-thumb {
         display: none;
-        height: #{$core-courseimage-on-course-height};
+        height: var(--core-courseimage-on-course-height);
         width: 100%;
         overflow: hidden;
         cursor: pointer;

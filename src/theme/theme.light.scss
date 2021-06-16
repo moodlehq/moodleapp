@@ -9,20 +9,16 @@
 
     // Color palette
     --black:           #{$black}; // Headings, standard text.
-    --gray-darker:     #{$gray-darker};
-    --gray-dark:       #{$gray-dark};
+    --gray-darker:     #{$gray-darker}; // Text (emphasis-detail), placeholder, background.
+    --gray-dark:       #{$gray-dark}; // Borders (never text).
     --gray:            #{$gray};
-    --gray-light:      #{$gray-light};
+    --gray-light:      #{$gray-light}; // Background.
     --gray-lighter:    #{$gray-lighter};
-    --white:           #{$white};
+    --white:           #{$white}; // Background, reversed text.
 
     --blue:            #{$blue};
     --blue-light:      #{$blue-light};
     --blue-dark:       #{$blue-dark};
-
-    --turquoise:       #{$turquoise};
-    --turquoise-light: #{$turquoise-light};
-    --turquoise-dark:  #{$turquoise-dark};
 
     --green:           #{$green};
     --green-light:     #{$green-light};
@@ -32,30 +28,31 @@
     --red-light:       #{$red-light};
     --red-dark:        #{$red-dark};
 
-    --orange:          #{$orange};
-    --orange-light:    #{$orange-light};
-
     --yellow:          #{$yellow};
     --yellow-light:    #{$yellow-light};
     --yellow-dark:     #{$yellow-dark};
-    --purple:          #{$purple};
 
-    --brand-color:      #{$brand-color};
-    --brand-contrast-color: #{$brand-contrast-color};
+    --turquoise:       #007982; // Accent.
+    --purple:          #8e24aa;
 
-    --core-online-color: #{$core-online-color};
+    --text-color:       #{$text-color};
+    --background-color: #{$background-color};
+
+    --brand-color:          #{$brand-color};
+    --brand-color-contrast: var(--text-color);
+
+    --core-online-color: #5cb85c;
 
     // Named Color Variables
-    --primary: #{$primary};
-    --secondary: #{$secondary};
-    --tertiary: #{$tertiary};
-    --success: #{$success};
-    --danger: #{$danger};
-    --warning: #{$warning};
-    --info: #{$info};
-    --light: #{$light};
-    --dark: #{$dark};
-    --medium: #{$medium};
+    --primary:      var(--brand-color);
+    --secondary:    #{$secondary};
+    --success:      #{$success};
+    --danger:       #{$danger};
+    --warning:      #{$warning};
+    --info:         #{$info};
+    --light:        #{$light};
+    --dark:         #{$dark};
+    --medium:       #{$medium};
 
     @each $color-name, $value in $colors {
         @include generate-color($color-name, $colors);
@@ -68,31 +65,32 @@
 
     --module-icon-size: 24px;
 
-    --ion-background-color: #{$background-color};
-    --ion-background-color-rgb: #{color-to-rgb-list($background-color)};
+    --ion-background-color: var(--background-color);
+    --ion-background-color-rgb: #{$background-color-rgb};
 
     --contrast-background: white;
 
-    --ion-text-color: #{$text-color};
-    --ion-text-color-rgb: #{color-to-rgb-list($text-color)};
-    --subdued-text-color: #{$subdued-text-color};
+    --ion-text-color: var(--text-color);
+    --ion-text-color-rgb: #{$text-color-rgb};
+    --subdued-text-color: #595959;
 
-    --ion-card-color: var(--ion-text-color);
+    --ion-card-color: var(--text-color);
 
     --text-hightlight-background-color: #{$core-text-hightlight-background-color};
 
-    --ion-placeholder-color: #{$ion-placeholder-color};
+    --ion-placeholder-color: var(--subdued-text-color);
 
     ion-content {
         --background: var(--ion-background-color);
         --background-alternative: var(--gray-lighter);
     }
 
-    --core-bottom-tabs-background: #{$bottom-tabs-background};
-    --core-bottom-tabs-color: #{$bottom-tabs-color};
-    --core-bottom-tabs-color-selected: #{$bottom-tabs-color-selected};
-    --core-bottom-tabs-badge-color: #{$bottom-tabs-badge-color};
-    --core-bottom-tabs-badge-text-color: #{$bottom-tabs-badge-text-color};
+    --core-bottom-tabs-background: var(--black);
+    --core-bottom-tabs-color: var(--gray-lighter);
+    --core-bottom-tabs-color-selected: var(--brand-color);
+    --core-bottom-tabs-badge-color: var(--brand-color);
+    --core-bottom-tabs-badge-text-color: var(--brand-color-contrast);
+    --bottom-tabs-size: 56px;
     ion-tab-bar.mainmenu-tabs {
         --background: var(--core-bottom-tabs-background);
         --color: var(--core-bottom-tabs-color);
@@ -103,16 +101,21 @@
         }
     }
 
-    --core-link-color: #{$link-color};
+    --core-link-color: var(--blue);
     a {
         color: var(--core-link-color);
     }
 
-    --core-header-toolbar-button-image-size: #{$toolbar-button-image-size};
-    --core-header-toolbar-background: #{$toolbar-background};
-    --core-header-toolbar-border-width: #{$toolbar-border-width};
-    --core-header-toolbar-border-color: #{$toolbar-border-color};
-    --core-header-toolbar-color: #{$toolbar-color};
+    --core-header-toolbar-button-image-size: 44px;
+    --core-header-toolbar-background: var(--white);
+    --core-header-toolbar-border-width: 3px;
+    --core-header-toolbar-border-color: var(--brand-color);
+    --core-header-toolbar-color: var(--black);
+    --core-header-toolbar-height: 56px;
+    html.ios {
+        --core-header-toolbar-height: 54px;
+    }
+
     ion-header ion-toolbar {
         --color: var(--core-header-toolbar-color);
         --background: var(--core-header-toolbar-background);
@@ -160,14 +163,14 @@
         }
     }
 
-    --core-tabs-background: #{$core-tabs-background};
-    --core-tab-background: #{$core-tab-background};
-    --core-tab-color: #{$core-tab-color};
-    --core-tab-border-color: #{$core-tab-border-color};
-    --core-tab-color-active: #{$core-tab-color-active};
-    --core-tab-border-color-active: #{$core-tab-border-color-active};
-    --core-tab-font-weight-active: #{$core-tab-font-weight-active};
-
+    --core-tabs-background: var(--white);
+    --core-tab-background: var(--core-tabs-background);
+    --core-tab-color: var(--subdued-text-color);
+    --core-tab-border-color: var(--gray);
+    --core-tab-color-active: var(--dark);
+    --core-tab-border-color-active: var(--brand-color);
+    --core-tab-font-weight-active: normal;
+    --core-tabs-height: 56px;
     core-tabs, core-tabs-outlet {
         ion-slide {
             --background: var(--core-tab-background);
@@ -184,10 +187,10 @@
         --color: var(--ion-color-primary);
     }
 
-    --core-progressbar-height: #{$core-progressbar-height};
-    --core-progressbar-color: #{$core-progressbar-color};
-    --core-progressbar-text-color: #{$core-progressbar-text-color};
-    --core-progressbar-background: #{$core-progressbar-background};
+    --core-progressbar-height: 8px;
+    --core-progressbar-color: var(--brand-color);
+    --core-progressbar-text-color: var(--gray-darker);
+    --core-progressbar-background: var(--gray-lighter);
     core-progress-bar {
         --height: var(--core-progressbar-height);
         --color: var(--core-progressbar-color);
@@ -195,12 +198,14 @@
         --background: var(--core-progressbar-background);
     }
 
+    --core-side-blocks-max-width: 30%;
+    --core-side-blocks-min-width: 280px;
     core-block-course-blocks {
-        --side-blocks-max-width: #{$core-side-blocks-max-width};
-        --side-blocks-min-width: #{$core-side-blocks-min-width};
+        --side-blocks-max-width: var(--core-side-blocks-max-width);
+        --side-blocks-min-width: var(--core-side-blocks-min-width);
     }
 
-    --ion-item-background: #{$ion-item-background};
+    --ion-item-background:        #{$ion-item-background};
     --ion-item-detail-icon-color: var(--gray-darker);
     --ion-item-detail-icon-font-size: 20px;
     --ion-item-detail-icon-opacity: 1;
@@ -211,8 +216,8 @@
     }
 
     --item-divider-min-height: calc(var(--a11y-min-target-size) + 8px);
-    --item-divider-background: #{$ion-item-divider-background};
-    --item-divider-color: #{$ion-item-divider-color};
+    --item-divider-background: var(--gray-lighter);
+    --item-divider-color: var(--text-color);
     ion-item-divider, ion-item.divider {
         --background: var(--item-divider-background);
         --color: var(--item-divider-color);
@@ -220,7 +225,7 @@
         min-height: var(--min-height);
     }
 
-    --spacer-background: #{$core-spacer-background};
+    --spacer-background: var(--item-divider-background);
     core-spacer {
         --item-divider-background: var(--spacer-background);
     }
@@ -230,49 +235,50 @@
     }
 
     --core-combobox-background: var(--ion-item-background);
-    --core-combobox-color: #{$core-combobox-color};
-    --core-combobox-background: #{$core-combobox-background};
-    --core-combobox-border-color: #{$core-combobox-border-color};
-    --core-combobox-border-width: #{$core-combobox-border-width};
+    --core-combobox-color: var(--black);
+    --core-combobox-border-color: var(--primary);
+    --core-combobox-border-width: 3px;
 
-    --selected-item-color: #{$core-selected-item-color};
-    --selected-item-border-width: #{$core-selected-item-border-width};
+    --selected-item-color: var(--primary);
+    --selected-item-border-width: 5px;
 
-    --core-login-background: #{$core-login-background};
-    --core-login-text-color: #{$core-login-text-color};
-    --core-login-input-background: #{$core-login-input-background};
-    --core-login-input-color: #{$core-login-input-color};
+    --core-login-background: var(--white);
+    --core-login-text-color: var(--black);
+    --core-login-input-background: var(--white);
+    --core-login-input-color: var(--black);
 
-    --core-star-color: #{$core-star-color};
+    --core-star-color: var(--brand-color);
 
-    --core-large-avatar-size:  #{$core-large-avatar-size};
-    --core-avatar-size:  #{$core-avatar-size};
+    --core-large-avatar-size: 90px;
+    --core-avatar-size: 44px;
 
-    --core-send-message-input-background: #{$core-send-message-input-background};
-    --core-send-message-input-color: #{$core-send-message-input-color};
+    --core-send-message-input-background: var(--gray-light);
+    --core-send-message-input-color: var(--black);
 
-    --addon-calendar-event-category-color: #{$addon-calendar-event-category-color};
-    --addon-calendar-event-course-color: #{$addon-calendar-event-course-color};
-    --addon-calendar-event-group-color: #{$addon-calendar-event-group-color};
-    --addon-calendar-event-user-color: #{$addon-calendar-event-user-color};
-    --addon-calendar-event-site-color: #{$addon-calendar-event-site-color};
-    --addon-calendar-today-border-color: #{$addon-calendar-today-border-color};
-    --addon-calendar-today-color: #{$addon-calendar-today-color};
-    --addon-calendar-border-color: #{$addon-calendar-border-color};
+    --core-courseimage-on-course-height: 150px;
 
-    --addon-messages-message-bg: #{$addon-messages-message-bg};
-    --addon-messages-message-activated-bg: #{$addon-messages-message-activated-bg};
-    --addon-messages-message-note-text: #{$addon-messages-message-note-text};
-    --addon-messages-message-note-font-size: #{$addon-messages-message-note-font-size};
-    --addon-messages-message-mine-bg: #{$addon-messages-message-mine-bg};
-    --addon-messages-message-mine-activated-bg: #{$addon-messages-message-mine-activated-bg};
-    --addon-messages-avatar-size: #{$addon-messages-avatar-size};
-    --addon-messages-discussion-badge: #{$addon-messages-discussion-badge};
-    --addon-messages-discussion-badge-text: #{$addon-messages-discussion-badge-text};
+    --addon-calendar-event-category-color: var(--purple);
+    --addon-calendar-event-course-color: var(--red);
+    --addon-calendar-event-group-color: var(--yellow);
+    --addon-calendar-event-user-color: var(--blue);
+    --addon-calendar-event-site-color: var(--green);
+    --addon-calendar-today-border-color: var(--primary);
+    --addon-calendar-today-color: var(--white);
+    --addon-calendar-border-color: var(--gray);
 
-    --addon-forum-avatar-size: #{$addon-forum-avatar-size};
-    --addon-forum-border-color: #{$addon-forum-border-color};
-    --addon-forum-highlight-color: #{$addon-forum-highlight-color};
+    --addon-messages-message-bg: var(--white);
+    --addon-messages-message-activated-bg: var(--gray-light);
+    --addon-messages-message-note-text: var(--gray-dark);
+    --addon-messages-message-note-font-size: 75%;
+    --addon-messages-message-mine-bg: var(--gray-light);
+    --addon-messages-message-mine-activated-bg: var(--gray);
+    --addon-messages-avatar-size: 30px;
+    --addon-messages-discussion-badge: var(--primary);
+    --addon-messages-discussion-badge-text: var(--white);
+
+    --addon-forum-avatar-size: var(--core-avatar-size);
+    --addon-forum-border-color: var(--gray);
+    --addon-forum-highlight-color: var(--gray-lighter);
 
     --drop-shadow: 0, 0, 0, 0.18;
 
@@ -300,11 +306,12 @@
     --core-dd-question-radius: 10px;
     --core-dd-question-border: var(--gray-darker);
 
-    @if ($core-more-icon-color) {
-        --core-more-icon: #{$core-more-icon-color};
+    @for $i from 0 to length($core-course-image-background) {
+        --core-course-color-#{$i}: #{nth($core-course-image-background, $i + 1)};
     }
 
-    @if ($core-more-item-border) {
-        --core-more-item-border: #{$core-more-item-border};
+    @for $i from 0 to length($core-dd-question-colors) {
+        --core-dd-question-color-#{$i + 1}: #{nth($core-dd-question-colors, $i + 1)};
+        --core-dd-question-color-#{$i + 1}-contrast: #{get_contrast_color(nth($core-dd-question-colors, $i + 1))};
     }
 }
