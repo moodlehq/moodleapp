@@ -64,4 +64,18 @@ export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseMod
         this.activityComponent?.ionViewDidLeave();
     }
 
+    /**
+     * User will enter the page.
+     */
+    ionViewWillEnter(): void {
+        this.activityComponent?.ionViewWillEnter();
+    }
+
+    /**
+     * User will leave the page.
+     */
+    ionViewWillLeave(): void {
+        this.activityComponent?.ionViewWillLeave();
+    }
+
 }

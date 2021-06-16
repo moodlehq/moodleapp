@@ -80,6 +80,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     hasOffline = false;
     isOpeningPage = false;
 
+    protected listeningResize = false;
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
     protected syncEventName = AddonModH5PActivitySyncProvider.AUTO_SYNCED;
     protected site: CoreSite;
@@ -372,8 +373,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
         CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
 
-        window.addEventListener('resize', this.contentResized.bind(this));
-        this.contentResized();
+        this.setResizeListener();
     }
 
     /**
@@ -489,10 +489,42 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     }
 
     /**
+     * Set the resize listener if needed.
+     */
+    setResizeListener(): void {
+        if (!this.playing || this.listeningResize) {
+            return;
+        }
+
+        this.listeningResize = true;
+        window.addEventListener('resize', this.contentResized.bind(this));
+        this.contentResized();
+    }
+
+    /**
      * On content resize, change visibility of the main menu: show on portrait and hide on landscape.
      */
     contentResized(): void {
         this.mainMenuPage.changeVisibility(Platform.isPortrait());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ionViewDidEnter(): void {
+        this.setResizeListener();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ionViewWillLeave(): void {
+        this.mainMenuPage.changeVisibility(true);
+
+        if (this.listeningResize) {
+            this.listeningResize = false;
+            window.removeEventListener('resize', this.resizeFunction);
+        }
     }
 
     /**
@@ -503,10 +535,6 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
         this.observer?.off();
         window.removeEventListener('message', this.messageListenerFunction);
-
-        if (this.playing) {
-            window.removeEventListener('resize', this.resizeFunction);
-        }
     }
 
 }
