@@ -30,7 +30,7 @@ import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
-import { makeSingleton, Translate, FileTransfer, Http, Platform, NativeHttp } from '@singletons';
+import { makeSingleton, Translate, FileTransfer, Http, NativeHttp } from '@singletons';
 import { CoreArray } from '@singletons/array';
 import { CoreLogger } from '@singletons/logger';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -53,19 +53,6 @@ export class CoreWSProvider {
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreWSProvider');
-
-        this.init();
-    }
-
-    /**
-     * Initialize some data.
-     */
-    protected async init(): Promise<void> {
-        await Platform.ready();
-
-        if (CoreApp.isMobile()) {
-            NativeHttp.setHeader('*', 'User-Agent', navigator.userAgent);
-        }
     }
 
     /**
