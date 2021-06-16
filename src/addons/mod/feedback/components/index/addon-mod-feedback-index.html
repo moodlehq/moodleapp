@@ -74,7 +74,7 @@
             </ion-select>
         </ion-item>
         <ion-item class="ion-text-wrap" (click)="openRespondents()" [detail]="access.canviewreports && completedCount > 0"
-            button>
+            [button]="access.canviewreports && completedCount > 0">
             <ion-label>
                 <h2>{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</h2>
             </ion-label>
