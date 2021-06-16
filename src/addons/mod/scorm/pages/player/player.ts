@@ -534,6 +534,22 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     }
 
     /**
+     * @inheritdoc
+     */
+    ionViewDidEnter(): void {
+        if (this.scorm && this.scorm.popup) {
+            this.mainMenuPage.changeVisibility(false);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ionViewWillLeave(): void {
+        this.mainMenuPage.changeVisibility(true);
+    }
+
+    /**
      * Component being destroyed.
      */
     ngOnDestroy(): void {
@@ -548,8 +564,6 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         setTimeout(() => {
             this.goOfflineObserver?.off();
         }, 500);
-
-        this.mainMenuPage.changeVisibility(true);
 
         // Unblock the SCORM so it can be synced.
         CoreSync.unblockOperation(AddonModScormProvider.COMPONENT, this.scorm.id, 'player');

@@ -72,7 +72,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
         this.subscription = router.events
             .pipe(filter(event => event instanceof NavigationEnd))
             .subscribe((event: NavigationEnd) => {
-                if (!this.iframeLoadedOnce || event.urlAfterRedirects == this.currentPageRoute) {
+                if (!this.iframeLoadedOnce || event.urlAfterRedirects !== this.currentPageRoute) {
                     return;
                 }
 

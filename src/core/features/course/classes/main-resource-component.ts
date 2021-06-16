@@ -452,4 +452,18 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.isCurrentView = false;
     }
 
+    /**
+     * User will enter the page that contains the component. This function should be called by the page that contains the component.
+     */
+    ionViewWillEnter(): void {
+        // To be overridden.
+    }
+
+    /**
+     * User will leave the page that contains the component. This function should be called by the page that contains the component.
+     */
+    ionViewWillLeave(): void {
+        // To be overridden.
+    }
+
 }

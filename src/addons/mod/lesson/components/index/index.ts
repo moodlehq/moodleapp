@@ -470,13 +470,13 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Review the lesson.
      */
-    review(): void {
+    async review(): Promise<void> {
         if (!this.retakeToReview || !this.lesson) {
             // No retake to review, stop.
             return;
         }
 
-        CoreNavigator.navigateToSitePath(
+        await CoreNavigator.navigateToSitePath(
             `${AddonModLessonModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/player`,
             {
                 params: {
@@ -487,6 +487,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
                 },
             },
         );
+
+        this.retakeToReview = undefined;
     }
 
     /**

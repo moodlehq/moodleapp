@@ -154,8 +154,8 @@
             </ion-item>
         </ion-card>
 
-        <ion-card>
-            <ion-grid *ngIf="completed">
+        <ion-card *ngIf="completed">
+            <ion-grid>
                 <ion-row class="ion-align-items-center">
                     <ion-col *ngIf="access!.canviewanalysis">
                         <ion-button expand="block" fill="outline" (click)="showAnalysis()" class="ion-text-wrap">

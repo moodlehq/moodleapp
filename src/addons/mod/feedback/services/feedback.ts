@@ -172,11 +172,12 @@ export class AddonModFeedbackProvider {
             return array.concat(responses);
         }, <OfflineResponsesArray> []).map((valueEntry) => {
             const parts = valueEntry.id.split('_');
+            const item = (parts[1] || '').replace(/\[.*\]/, ''); // Remove [0] and similar.
 
             return {
                 ...valueEntry,
                 typ: parts[0],
-                item: Number(parts[1]),
+                item: Number(item),
             };
         });
 

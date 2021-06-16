@@ -345,6 +345,8 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
                             attachmentsId,
                             siteId,
                         );
+
+                        break;
                     case AddonModWorkshopAction.UPDATE:
                         await AddonModWorkshop.updateSubmissionOnline(
                             submissionId,
@@ -353,6 +355,8 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
                             attachmentsId,
                             siteId,
                         );
+
+                        break;
                     case AddonModWorkshopAction.DELETE:
                         await AddonModWorkshop.deleteSubmissionOnline(submissionId, siteId);
                 }
