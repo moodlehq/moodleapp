@@ -93,9 +93,7 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
      * @inheritdoc
      */
     async isDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
-        const feedback = await AddonModFeedback.getFeedback(courseId, module.id, {
-            readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
-        });
+        const feedback = await AddonModFeedback.getFeedback(courseId, module.id);
 
         const now = CoreTimeUtils.timestamp();
 
