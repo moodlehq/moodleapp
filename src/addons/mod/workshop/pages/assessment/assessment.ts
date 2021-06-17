@@ -73,7 +73,8 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
 
     weights: number[] = [];
     evaluateByProfile?: CoreUserProfile;
-    evaluationGrades: CoreGradesMenuItem[] =[];
+    evaluationGrades: CoreGradesMenuItem[] = [];
+    gradingGrade?: string | number;
 
     protected workshopId!: number;
     protected originalEvaluation: AddonModWorkshopAssessmentEvaluation = {
@@ -193,6 +194,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
             this.assessment = AddonModWorkshopHelper.realGradeValue(this.workshop, assessment);
             this.evaluate.text = this.assessment.feedbackreviewer || '';
             this.evaluate.weight = this.assessment.weight;
+            this.gradingGrade = this.assessment.gradinggrade ?? '-';
 
             if (this.evaluating) {
                 if (this.access.canallocate) {

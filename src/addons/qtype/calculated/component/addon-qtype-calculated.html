@@ -50,7 +50,7 @@
     </label>
     <ion-select id="{{calcQuestion!.select!.id}}" [name]="calcQuestion!.select!.name"
         [(ngModel)]="calcQuestion!.select!.selected" interface="action-sheet" [disabled]="calcQuestion!.select!.disabled"
-        [slot]="calcQuestion?.selectFirst ? 'start' : 'end'">
+        [slot]="calcQuestion?.selectFirst ? 'start' : 'end'" [interfaceOptions]="{header: 'addon.mod_quiz.unit' | translate}">
         <ion-select-option *ngFor="let option of calcQuestion!.select!.options" [value]="option.value">
             {{option.label}}
         </ion-select-option>

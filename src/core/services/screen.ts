@@ -131,7 +131,7 @@ export class CoreScreenService {
      * @return Active layout.
      */
     protected calculateLayout(breakpoints: Record<Breakpoint, boolean>): CoreScreenLayout {
-        if (breakpoints[Breakpoint.LARGE]) {
+        if (breakpoints[Breakpoint.MEDIUM]) {
             return CoreScreenLayout.TABLET;
         }
 

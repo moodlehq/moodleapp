@@ -244,7 +244,8 @@
                     <!-- Grade using a scale. -->
                     <ion-item class="ion-text-wrap" *ngIf="grade.method == 'simple' && grade.scale">
                         <ion-label><h2>{{ 'addon.mod_assign.grade' | translate }}</h2></ion-label>
-                        <ion-select [(ngModel)]="grade.grade" interface="action-sheet" [disabled]="grade.disabled">
+                        <ion-select [(ngModel)]="grade.grade" interface="action-sheet" [disabled]="grade.disabled"
+                            [interfaceOptions]="{header: 'addon.mod_assign.grade' | translate}">
                             <ion-select-option *ngFor="let grade of grade.scale" [value]="grade.value">
                                 {{grade.label}}
                             </ion-select-option>
@@ -255,7 +256,8 @@
                     <ion-item class="ion-text-wrap" *ngFor="let outcome of gradeInfo!.outcomes">
                         <ion-label><h2>{{ outcome.name }}</h2></ion-label>
                         <ion-select *ngIf="canSaveGrades && outcome.itemNumber" [(ngModel)]="outcome.selectedId"
-                            interface="action-sheet" [disabled]="gradeInfo!.disabled">
+                            interface="action-sheet" [disabled]="gradeInfo!.disabled"
+                            [interfaceOptions]="{header: outcome.name }">
                             <ion-select-option *ngFor="let grade of outcome.options" [value]="grade.value">
                                 {{grade.label}}
                             </ion-select-option>

@@ -53,7 +53,8 @@
                 <ion-item *ngIf="showGroups">
                     <ion-label id="addon-mod-forum-groupslabel">{{ 'addon.mod_forum.group' | translate }}</ion-label>
                     <ion-select [(ngModel)]="newDiscussion.groupId" [disabled]="newDiscussion.postToAllGroups"
-                        aria-labelledby="addon-mod-forum-groupslabel" interface="action-sheet" name="groupid">
+                        aria-labelledby="addon-mod-forum-groupslabel" interface="action-sheet" name="groupid"
+                        [interfaceOptions]="{header: 'addon.mod_forum.group' | translate}">
                         <ion-select-option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</ion-select-option>
                     </ion-select>
                 </ion-item>

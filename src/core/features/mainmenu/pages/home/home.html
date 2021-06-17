@@ -12,9 +12,7 @@
     </ion-toolbar>
 </ion-header>
 <core-loading [hideUntil]="loaded">
-    <ng-container *ngIf="tabs.length == 0">
-        <core-empty-box icon="fas-home" [message]="'core.courses.nocourses' | translate"></core-empty-box>
-    </ng-container>
+    <core-empty-box *ngIf="tabs.length == 0" icon="fas-home" [message]="'core.courses.nocourses' | translate"></core-empty-box>
 </core-loading>
 <core-tabs-outlet *ngIf="tabs.length > 0" [selectedIndex]="selectedTab" [hideUntil]="loaded" [tabs]="tabs"
     (ionChange)="tabSelected()">
