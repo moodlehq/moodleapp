@@ -92,10 +92,12 @@
                 {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}
             </p>
 
-            <ion-badge *ngIf="assessment && (showGrade(assessment.grade) || assessment.offline)" color="success">
+            <ion-badge *ngIf="assessment && (showGrade(assessment.grade) || assessment.offline)" color="success"
+                class="ion-text-wrap">
                 {{ 'addon.mod_workshop.assessedsubmission' | translate }}
             </ion-badge>
-            <ion-badge *ngIf="assessment && !showGrade(assessment.grade) && !assessment.offline" color="danger">
+            <ion-badge *ngIf="assessment && !showGrade(assessment.grade) && !assessment.offline" color="danger"
+                class="ion-text-wrap">
                 {{ 'addon.mod_workshop.notassessed' | translate }}
             </ion-badge>
 
