@@ -75,6 +75,7 @@
     "summaryofattempts": "Summary of your previous attempts",
     "timeleft": "Time left",
     "timetaken": "Time taken",
+    "unit": "Unit",
     "warningattemptfinished": "Offline attempt discarded as it was finished on the site or not found.",
     "warningdatadiscarded": "Some offline answers were discarded because the questions were modified online.",
     "warningdatadiscardedfromfinished": "Attempt unfinished because some offline answers were discarded. Please review your answers then resubmit the attempt.",

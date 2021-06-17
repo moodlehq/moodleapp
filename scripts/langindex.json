@@ -873,6 +873,7 @@
   "addon.mod_quiz.summaryofattempts": "quiz",
   "addon.mod_quiz.timeleft": "quiz",
   "addon.mod_quiz.timetaken": "quiz",
+  "addon.mod_quiz.unit": "quiz",
   "addon.mod_quiz.warningattemptfinished": "local_moodlemobileapp",
   "addon.mod_quiz.warningdatadiscarded": "local_moodlemobileapp",
   "addon.mod_quiz.warningdatadiscardedfromfinished": "local_moodlemobileapp",

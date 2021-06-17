@@ -31,7 +31,7 @@
                         {{ 'core.groupsvisible' | translate }}
                     </ion-label>
                     <ion-select [(ngModel)]="groupId" (ionChange)="setGroup(groupId)" aria-labelledby="addon-assign-groupslabel"
-                        interface="action-sheet" slot="end">
+                        interface="action-sheet" slot="end" [interfaceOptions]="{header: 'core.group' | translate}">
                         <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
                             {{groupOpt.name}}
                         </ion-select-option>
