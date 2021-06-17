@@ -2,8 +2,6 @@ os: linux
 dist: trusty
 node_js: 12
 
-if: env(DEPLOY) = 1
-
 git:
   depth: 3
 
@@ -40,6 +38,7 @@ jobs:
   include:
   - stage: build
     name: "Build Android"
+    if: env(DEPLOY) = 1
     language: android
     android:
       components:
