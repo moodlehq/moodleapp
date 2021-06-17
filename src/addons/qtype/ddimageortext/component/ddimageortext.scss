@@ -3,7 +3,7 @@
 // Style ddimageortext content a bit. Almost all these styles are copied from Moodle.
 :host {
     --ddimageortext-border-drop: var(--gray-darker);
-    --ddimageortext-draghome-background: nth($core-dd-question-colors, 2);
+    --ddimageortext-draghome-background: var(--core-dd-question-color-2);
 }
 
 .addon-qtype-ddimageortext-container {
@@ -49,8 +49,8 @@ core-format-text ::ng-deep {
 
         @for $i from 0 to length($core-dd-question-colors) {
             .group#{$i + 1} {
-                background: nth($core-dd-question-colors, $i + 1);
-                color: get_contrast_color(nth($core-dd-question-colors, $i + 1));
+                background: var(--core-dd-question-color-#{$i + 1});
+                color: var(--core-dd-question-color-#{$i + 1}-contrast);
             }
         }
 

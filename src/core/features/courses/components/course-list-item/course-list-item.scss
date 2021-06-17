@@ -14,7 +14,7 @@
 
     @for $i from 0 to length($core-course-image-background) {
         ion-icon[course-color="#{$i}"] {
-            color: nth($core-course-image-background, $i + 1);
+            color: var(--core-course-color-#{$i});
         }
     }
 

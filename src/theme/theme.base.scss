@@ -143,7 +143,7 @@ ion-app.ios ion-header h2 {
     text-align: center;
     font-size: 17px;
     font-weight: 600;
-    line-height: #{$toolbar-ios-height};
+    line-height: var(--core-header-toolbar-height);
     box-sizing: border-box;
     pointer-events: none;
 }
@@ -192,22 +192,15 @@ ion-button.ion-text-wrap {
 }
 
 @each $color-name, $value in $colors {
-    $value: map-get($colors, $color-name);
-    $base: map-get($value, base);
-
     .text-#{$color-name},
     p.text-#{$color-name} {
-        color: $base;
+        color: var(--ion-color-#{$color-name});
     }
 }
 
 // Ionic toolbar on header.
-ion-app.md ion-toolbar {
-    --min-height: #{$toolbar-md-height};
-}
-
-ion-app.ios ion-toolbar {
-    --min-height: #{$toolbar-ios-height};
+ion-toolbar {
+    --min-height: var(--core-header-toolbar-height);
 }
 
 ion-header ion-toolbar {
@@ -280,7 +273,7 @@ button,
 
 // Clear buttons will be black.
 ion-button.button-clear {
-    --ion-color-primary: var(--brand-contrast-color);
+    --ion-color-primary: var(--brand-color-contrast);
 }
 
 [role="button"],
@@ -364,7 +357,7 @@ ion-alert .alert-message {
 }
 
 ion-alert .alert-wrapper button.alert-button {
-    color: var(--brand-contrast-color);
+    color: var(--brand-color-contrast);
 }
 
 // Ionic list.
@@ -455,17 +448,13 @@ ion-toolbar {
 }
 
 // Card styles
-@each $color-name, $value in $colors {
-    $value: map-get($colors, $color-name);
-
-    $base: map-get($value, base);
-    $contrast: map-get($value, contrast);
-    $shade: map-get($value, shade);
-    $tint: map-get($value, tint);
+@each $color-name, $base in $colors {
 
     // Message cards.
     ion-card.core-#{$color-name}-card {
-        border-bottom: 3px solid $base;
+        --color-base: var(--ion-color-#{$color-name});
+
+        border-bottom: 3px solid var(--color-base);
 
         ion-item::part(native) {
             --inner-border-width: 0;
@@ -474,22 +463,24 @@ ion-toolbar {
             white-space: normal !important;
         }
         ion-icon {
-            color: $base;
+            color: var(--color-base);
         }
     }
 
     .item.core-#{$color-name}-item {
+        --color-base: var(--ion-color-#{$color-name});
+
         --inner-border-width: 0 0 3px 0;
         --border-width: 0;
-        border-bottom: 3px solid $base !important;
+        border-bottom: 3px solid var(--color-base) !important;
         ion-icon {
-            color: $base;
+            color: var(--color-base);
         }
     }
 
     ion-icon.ion-color-#{$color-name} {
-        color: $base;
-        --ion-color-base: #{$base};
+        --ion-color-base: var(--ion-color-#{$color-name});
+        color: var(--ion-color-base);
     }
 }
 
@@ -592,7 +583,7 @@ ion-toolbar h1 .core-bar-button-image img {
 // Radio.
 ion-radio,
 input[type=radio] {
-    --color: var(--brand-contrast-color);
+    --color: var(--brand-color-contrast);
     --color-checked: var(--color);
     --border-radius: 50%;
     --border-width: 2px;
@@ -646,8 +637,8 @@ input[type=radio] {
 ion-checkbox,
 input[type=checkbox] {
     --border-radius: 2px;
-    --border-color-checked: var(--brand-contrast-color);
-    --background-checked: var(--brand-contrast-color);
+    --border-color-checked: var(--brand-color-contrast);
+    --background-checked: var(--brand-color-contrast);
     --checkmark-color: var(--contrast-background);
     --border-width: 2px;
     --outer-border-width: 2px;

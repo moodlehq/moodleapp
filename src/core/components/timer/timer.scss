@@ -1,4 +1,6 @@
-$core-timer-warn-color: #cb3d4d !default;
+@import "~theme/globals";
+
+$core-timer-warn-color: $red !default;
 $core-timer-iterations: 15 !default;
 
 :host {

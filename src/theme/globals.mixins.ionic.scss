@@ -46,34 +46,6 @@
   }
 }
 
-// Gets the specific color's css variable from the name and variation. Alpha/rgb are optional.
-// --------------------------------------------------------------------------------------------
-// Example usage:
-// ion-color(primary, base) => var(--ion-color-primary, #3880ff)
-// ion-color(secondary, contrast) => var(--ion-color-secondary-contrast)
-// ion-color(primary, base, 0.5) => rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.5)
-// --------------------------------------------------------------------------------------------
-@function ion-color($name, $variation, $alpha: null, $rgb: null) {
-  $values: map-get($colors, $name);
-  $value: map-get($values, $variation);
-  $variable: --ion-color-#{$name}-#{$variation};
-
-  @if ($variation == base) {
-    $variable: --ion-color-#{$name};
-  }
-
-  @if ($alpha) {
-    $value: color-to-rgb-list($value);
-    @return rgba(var(#{$variable}-rgb, $value), $alpha);
-  }
-  @if ($rgb) {
-    $value: color-to-rgb-list($value);
-    $variable: #{$variable}-rgb;
-  }
-
-  @return var(#{$variable}, $value);
-}
-
 // Mixes a color with black to create its shade.
 // --------------------------------------------------------------------------------------------
 @function get-color-shade($color) {
@@ -99,15 +71,14 @@
 // colors map
 
 @mixin generate-color($color-name, $colors) {
-    $value: map-get($colors, $color-name);
+    $base: map-get($colors, $color-name);
 
-    $base: map-get($value, base);
-    $contrast: map-get($value, contrast);
-    $shade: map-get($value, shade);
-    $tint: map-get($value, tint);
+    $contrast: get_contrast_color($base);
+    $shade: get-color-shade($base);
+    $tint: get-color-tint($base);
 
-    --ion-color-#{$color-name}: #{$base};
-    --ion-color-#{$color-name}-base: #{$base};
+    --ion-color-#{$color-name}: var(--#{$color-name}, #{$base});
+    --ion-color-#{$color-name}-base: var(--ion-color-#{$color-name});
     --ion-color-#{$color-name}-rgb: #{color-to-rgb-list($base)};
     --ion-color-#{$color-name}-contrast: #{$contrast};
     --ion-color-#{$color-name}-contrast-rgb: #{color-to-rgb-list($contrast)};
@@ -115,13 +86,13 @@
     --ion-color-#{$color-name}-tint: #{$tint};
 
     .ion-color-#{$color-name} {
-        --ion-color: #{$base};
-        --ion-color-base: #{$base};
-        --ion-color-rgb: #{color-to-rgb-list($base)};
-        --ion-color-contrast: #{$contrast};
-        --ion-color-contrast-rgb: #{color-to-rgb-list($contrast)};
-        --ion-color-shade: #{$shade};
-        --ion-color-tint: #{$tint};
+        --ion-color: var(--ion-color-#{$color-name});
+        --ion-color-base: var(--ion-color-#{$color-name}-base);
+        --ion-color-rgb: var(--ion-color-#{$color-name}-rgb);
+        --ion-color-contrast: var(--ion-color-#{$color-name}-contrast);
+        --ion-color-contrast-rgb: var(--ion-color-#{$color-name}-contrast-rgb);
+        --ion-color-shade: var(--ion-color-#{$color-name}-shade);
+        --ion-color-tint: var(--ion-color-#{$color-name}-tint);
     }
 }
 
