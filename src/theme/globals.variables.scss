@@ -46,7 +46,6 @@ $ion-item-background-dark: mix(#ffffff, #000000, 80%) !default; // #333333
 $ion-item-background-dark-rgb: color-to-rgb-list($ion-item-background-dark) !default;
 
 $primary:    $brand-color !default;
-$secondary:  $blue !default;
 $danger:     $red !default;
 $warning:    $yellow !default;
 $success:    $green !default;
@@ -57,7 +56,6 @@ $dark:       $black !default;
 
 $colors:  (
     primary: $primary,
-    secondary: $secondary,
     success: $success,
     warning: $warning,
     danger:  $danger,
@@ -68,7 +66,6 @@ $colors:  (
 ) !default;
 
 $primary-dark:    $brand-color !default;
-$secondary-dark:  mix($blue, white, 40%) !default;
 $danger-dark:     mix($red, white, 40%) !default;
 $warning-dark:    mix($yellow, white, 40%) !default;
 $success-dark:    mix($green, white, 40%) !default;
@@ -79,7 +76,6 @@ $dark-dark:       $light !default;
 
 $colors-dark:  (
     primary: $primary-dark,
-    secondary: $secondary-dark,
     success: $success-dark,
     warning: $warning-dark,
     danger: $danger-dark,

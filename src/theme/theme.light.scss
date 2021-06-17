@@ -45,7 +45,6 @@
 
     // Named Color Variables
     --primary:      var(--brand-color);
-    --secondary:    #{$secondary};
     --success:      #{$success};
     --danger:       #{$danger};
     --warning:      #{$warning};
@@ -263,7 +262,6 @@
     --addon-calendar-event-user-color: var(--blue);
     --addon-calendar-event-site-color: var(--green);
     --addon-calendar-today-border-color: var(--primary);
-    --addon-calendar-today-color: var(--white);
     --addon-calendar-border-color: var(--gray);
 
     --addon-messages-message-bg: var(--white);
