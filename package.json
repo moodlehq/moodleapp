@@ -96,7 +96,7 @@
     "cordova-plugin-file-transfer": "git+https://github.com/moodlemobile/cordova-plugin-file-transfer.git",
     "cordova-plugin-geolocation": "4.1.0",
     "cordova-plugin-globalization": "1.11.0",
-    "cordova-plugin-inappbrowser": "5.0.0",
+    "cordova-plugin-inappbrowser": "git+https://github.com/moodlemobile/cordova-plugin-inappbrowser.git#moodle",
     "cordova-plugin-ionic-keyboard": "2.2.0",
     "cordova-plugin-ionic-webview": "5.0.0",
     "cordova-plugin-local-notification": "git+https://github.com/moodlemobile/cordova-plugin-local-notification.git#moodle",
