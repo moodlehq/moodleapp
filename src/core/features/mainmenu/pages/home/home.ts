@@ -86,6 +86,7 @@ export class CoreMainMenuHomePage implements OnInit {
      */
     initHandlers(handlers: CoreMainMenuHomeHandlerToDisplay[]): void {
         // Re-build the list of tabs.
+        const loaded = CoreMainMenuHomeDelegate.areHandlersLoaded();
         const handlersMap = CoreUtils.arrayToObject(handlers, 'title');
         const newTabs = handlers.map((handler): CoreTabsOutletTab => {
             const tab = this.tabs.find(tab => tab.title == handler.title);
@@ -125,7 +126,10 @@ export class CoreMainMenuHomePage implements OnInit {
 
         this.tabs = newTabs;
 
-        this.loaded = CoreMainMenuHomeDelegate.areHandlersLoaded();
+        // Try to prevent empty box displayed for an instant when it shouldn't.
+        setTimeout(() => {
+            this.loaded = loaded;
+        }, 50);
     }
 
     /**
