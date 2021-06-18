@@ -155,7 +155,7 @@
             </ion-item>
         </ion-card>
 
-        <ion-card *ngIf="completed">
+        <ion-card *ngIf="completed && (access!.canviewanalysis || hasNextPage)">
             <ion-grid>
                 <ion-row class="ion-align-items-center">
                     <ion-col *ngIf="access!.canviewanalysis">
