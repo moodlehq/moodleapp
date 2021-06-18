@@ -17,7 +17,7 @@ import { UrlSegment, UrlSegmentGroup } from '@angular/router';
 
 import { mock } from '@/testing/utils';
 
-import { buildRegExpUrlMatcher } from '../app-routing.module';
+import { buildRegExpUrlMatcher } from './app-routing.module';
 
 describe('Routing utils', () => {
 
@@ -35,6 +35,7 @@ describe('Routing utils', () => {
                 );
 
         testMatcher('baz/foo/bar', null);
+        testMatcher('foobar', null);
         testMatcher('foo', ['foo']);
         testMatcher('foo/baz', ['foo']);
         testMatcher('foo/bar/bar/baz', ['foo', 'bar', 'bar']);

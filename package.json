@@ -96,7 +96,7 @@
     "cordova-plugin-file-transfer": "git+https://github.com/moodlemobile/cordova-plugin-file-transfer.git",
     "cordova-plugin-geolocation": "4.1.0",
     "cordova-plugin-globalization": "1.11.0",
-    "cordova-plugin-inappbrowser": "5.0.0",
+    "cordova-plugin-inappbrowser": "git+https://github.com/moodlemobile/cordova-plugin-inappbrowser.git#moodle",
     "cordova-plugin-ionic-keyboard": "2.2.0",
     "cordova-plugin-ionic-webview": "5.0.0",
     "cordova-plugin-local-notification": "git+https://github.com/moodlemobile/cordova-plugin-local-notification.git#moodle",
@@ -169,6 +169,7 @@
     "jest": "26.5.2",
     "jest-preset-angular": "8.3.1",
     "jsonc-parser": "2.3.1",
+    "native-run": "^1.4.0",
     "ts-jest": "26.4.1",
     "ts-node": "8.3.0",
     "typescript": "3.9.9"
