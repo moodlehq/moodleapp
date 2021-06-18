@@ -98,7 +98,8 @@
             </ng-container>
         </ion-list>
 
-        <core-empty-box *ngIf="entries.empty" icon="fas-list" [message]="'addon.mod_glossary.noentriesfound' | translate">
+        <core-empty-box *ngIf="entries.empty && (!isSearch || hasSearched)" icon="fas-list"
+            [message]="'addon.mod_glossary.noentriesfound' | translate">
         </core-empty-box>
 
         <core-infinite-loading [enabled]="!entries.completed" [error]="loadMoreError" (action)="loadMoreEntries($event)">
