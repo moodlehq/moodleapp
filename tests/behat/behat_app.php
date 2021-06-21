@@ -793,11 +793,8 @@ class behat_app extends behat_base {
             new ExpectationException('Forced cron tasks in the app took too long to complete', $session)
         );
 
-        // Trigger Angular change detection multiple times in case some changes have
-        // side-effects that result in further pending operations.
-        for ($ticks = 5; $ticks > 0; $ticks--) {
-            $session->executeScript($this->islegacy ? 'appRef.tick();' : 'changeDetector.detectChanges();');
-        }
+        // Trigger Angular change detection
+        $session->executeScript($this->islegacy ? 'appRef.tick();' : 'changeDetector.detectChanges();');
     }
 
     /**
