@@ -121,8 +121,8 @@ export class AddonModDataFieldLatlongHandlerService implements AddonModDataField
      * @inheritdoc
      */
     overrideData(originalContent: AddonModDataEntryField, offlineContent: CoreFormFields<string>): AddonModDataEntryField {
-        originalContent.content = offlineContent[0] || '';
-        originalContent.content1 = offlineContent[1] || '';
+        originalContent.content = offlineContent['0'] || '';
+        originalContent.content1 = offlineContent['1'] || '';
 
         return originalContent;
     }

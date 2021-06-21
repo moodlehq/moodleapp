@@ -155,7 +155,8 @@ export class AddonModDataFieldPictureHandlerService implements AddonModDataField
         offlineContent: CoreFormFields,
         offlineFiles?: FileEntry[],
     ): AddonModDataEntryField {
-        const uploadedFilesResult: CoreFileUploaderStoreFilesResult = <CoreFileUploaderStoreFilesResult>offlineContent?.file;
+        const uploadedFilesResult: CoreFileUploaderStoreFilesResult | undefined =
+            <CoreFileUploaderStoreFilesResult | undefined> offlineContent?.file;
 
         if (uploadedFilesResult && uploadedFilesResult.offline > 0 && offlineFiles && offlineFiles?.length > 0) {
             originalContent.content = offlineFiles[0].name;
@@ -165,7 +166,7 @@ export class AddonModDataFieldPictureHandlerService implements AddonModDataField
             originalContent.files = [uploadedFilesResult.online[0]];
         }
 
-        originalContent.content1 = <string>offlineContent.alttext || '';
+        originalContent.content1 = <string> offlineContent.alttext || '';
 
         return originalContent;
     }

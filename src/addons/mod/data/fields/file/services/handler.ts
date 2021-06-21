@@ -112,7 +112,8 @@ export class AddonModDataFieldFileHandlerService implements AddonModDataFieldHan
         offlineContent: CoreFormFields,
         offlineFiles?: FileEntry[],
     ): AddonModDataEntryField {
-        const uploadedFilesResult: CoreFileUploaderStoreFilesResult = <CoreFileUploaderStoreFilesResult>offlineContent?.file;
+        const uploadedFilesResult: CoreFileUploaderStoreFilesResult | undefined =
+            <CoreFileUploaderStoreFilesResult | undefined> offlineContent?.file;
 
         if (uploadedFilesResult && uploadedFilesResult.offline > 0 && offlineFiles && offlineFiles?.length > 0) {
             originalContent.content = offlineFiles[0].name;

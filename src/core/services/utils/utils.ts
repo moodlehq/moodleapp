@@ -277,7 +277,10 @@ export class CoreUtilsProvider {
             return source;
         }
 
-        if (Array.isArray(source)) {
+        if (this.valueIsFileEntry(source)) {
+            // Don't clone FileEntry. It has a lot of depth and they shouldn't be modified.
+            return source;
+        } else if (Array.isArray(source)) {
             // Clone the array and all the entries.
             const newArray = [] as unknown as T;
             for (let i = 0; i < source.length; i++) {
@@ -748,6 +751,18 @@ export class CoreUtilsProvider {
      */
     isFileEntry(file: CoreFileEntry): file is FileEntry {
         return 'isFile' in file;
+    }
+
+    /**
+     * Check if an unknown value is a FileEntry.
+     *
+     * @param value Value to check.
+     * @return Type guard indicating if the file is a FileEntry.
+     */
+    valueIsFileEntry(file: unknown): file is FileEntry {
+        // We cannot use instanceof because FileEntry is a type. Check some of the properties.
+        return !!(file && typeof file == 'object' && 'isFile' in file && 'filesystem' in file &&
+            'toInternalURL' in file && 'copyTo' in file);
     }
 
     /**
