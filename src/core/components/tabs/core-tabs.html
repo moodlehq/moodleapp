@@ -27,13 +27,15 @@
                             [tabindex]="selected == tab.id ? 0 : -1"
                         >
                             <ion-icon *ngIf="tab.icon" [name]="tab.icon" aria-hidden="true"></ion-icon>
-                            <ion-label>{{ tab.title | translate}}</ion-label>
-                            <ion-badge *ngIf="tab.badge">
-                                <span [attr.aria-hidden]="!!tab.badgeA11yText">{{ tab.badge }}</span>
-                                <span *ngIf="tab.badgeA11yText" class="sr-only">
-                                    {{ tab.badgeA11yText | translate: {$a : tab.badge } }}
-                                </span>
-                            </ion-badge>
+                            <ion-label>
+                                {{ tab.title | translate}}
+                                <ion-badge *ngIf="tab.badge">
+                                    <span [attr.aria-hidden]="!!tab.badgeA11yText">{{ tab.badge }}</span>
+                                    <span *ngIf="tab.badgeA11yText" class="sr-only">
+                                        {{ tab.badgeA11yText | translate: {$a : tab.badge } }}
+                                    </span>
+                                </ion-badge>
+                            </ion-label>
                         </ion-tab-button>
                     </ion-slide>
                 </ng-container>
