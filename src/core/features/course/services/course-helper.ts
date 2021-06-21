@@ -1163,7 +1163,7 @@ export class CoreCourseHelperProvider {
 
         const status = await this.determineCoursesStatus(courses);
 
-        prefetch = this.getCourseStatusIconAndTitleFromStatus(status);
+        prefetch = this.getCoursePrefetchStatusInfo(status);
 
         if (prefetch.loading) {
             // It seems all courses are being downloaded, show a download button instead.
@@ -1298,16 +1298,16 @@ export class CoreCourseHelperProvider {
     async getCourseStatusIconAndTitle(courseId: number, siteId?: string): Promise<CorePrefetchStatusInfo> {
         const status = await CoreCourse.getCourseStatus(courseId, siteId);
 
-        return this.getCourseStatusIconAndTitleFromStatus(status);
+        return this.getCoursePrefetchStatusInfo(status);
     }
 
     /**
      * Get a course status icon and the langkey to use as a title from status.
      *
      * @param status Course status.
-     * @return Title and icon name.
+     * @return Prefetch status info.
      */
-    getCourseStatusIconAndTitleFromStatus(status: string): CorePrefetchStatusInfo {
+    getCoursePrefetchStatusInfo(status: string): CorePrefetchStatusInfo {
         const prefetchStatus: CorePrefetchStatusInfo = {
             status: status,
             icon: this.getPrefetchStatusIcon(status, false),

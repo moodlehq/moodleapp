@@ -107,7 +107,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         // Determine course prefetch icon.
         const status = await CoreCourse.getCourseStatus(this.course.id);
 
-        this.prefetchCourseData = CoreCourseHelper.getCourseStatusIconAndTitleFromStatus(status);
+        this.prefetchCourseData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
         this.courseStatus = status;
 
         if (this.prefetchCourseData.loading) {
@@ -184,9 +184,13 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      * @param status Status to show.
      */
     protected updateCourseStatus(status: string): void {
-        this.prefetchCourseData = CoreCourseHelper.getCourseStatusIconAndTitleFromStatus(status);
+        const statusData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
 
         this.courseStatus = status;
+        this.prefetchCourseData.status = statusData.status;
+        this.prefetchCourseData.icon = statusData.icon;
+        this.prefetchCourseData.statusTranslatable = statusData.statusTranslatable;
+        this.prefetchCourseData.loading = statusData.loading;
     }
 
     /**

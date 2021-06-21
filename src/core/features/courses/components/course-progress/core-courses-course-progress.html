@@ -49,6 +49,11 @@
             <ion-spinner *ngIf="(downloadCourseEnabled && prefetchCourseData.icon == 'spinner') || showSpinner"
                 [attr.aria-label]="'core.loading' | translate"></ion-spinner>
 
+            <!-- Downloaded icon. -->
+            <ion-icon *ngIf="downloadCourseEnabled && prefetchCourseData.downloadSucceeded && !showSpinner"
+                class="core-icon-downloaded" name="cloud-done" color="success" role="status"
+                [attr.aria-label]="'core.downloaded' | translate"></ion-icon>
+
             <!-- Options menu. -->
             <ion-button fill="clear" color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner"
                 [attr.aria-label]="('core.displayoptions' | translate)">
