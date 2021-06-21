@@ -16,6 +16,10 @@ export type CoreObjectWithoutEmpty<T> = {
     [k in keyof T]: T[k] extends undefined | null ? never : T[k];
 };
 
+export type CoreObjectWithoutUndefined<T> = {
+    [k in keyof T]: T[k] extends undefined ? never : T[k];
+};
+
 /**
  * Singleton with helper functions for objects.
  */
@@ -77,6 +81,26 @@ export class CoreObject {
         }
 
         return cleanObj as CoreObjectWithoutEmpty<T>;
+    }
+
+    /**
+     * Create a new object without undefined values.
+     *
+     * @param obj Objet.
+     * @return New object without undefined values.
+     */
+    static withoutUndefined<T>(obj: T): CoreObjectWithoutUndefined<T> {
+        const cleanObj = {};
+
+        for (const [key, value] of Object.entries(obj)) {
+            if (value === undefined) {
+                continue;
+            }
+
+            cleanObj[key] = value;
+        }
+
+        return cleanObj as CoreObjectWithoutUndefined<T>;
     }
 
 }
