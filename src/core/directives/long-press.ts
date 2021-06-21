@@ -25,9 +25,11 @@ import { GestureController } from '@singletons';
 })
 export class CoreLongPressDirective implements OnInit, OnDestroy {
 
+    readonly HOLD_DURATION = 500;
+
     element: HTMLElement;
     pressGesture?: Gesture;
-    protected moved = false;
+    timeout?: NodeJS.Timeout;
 
     @Output() longPress = new EventEmitter();
 
@@ -45,9 +47,15 @@ export class CoreLongPressDirective implements OnInit, OnDestroy {
             threshold: 0,
             disableScroll: true,
             gestureName: 'longpress',
-            onStart: () => this.moved = false,
-            onMove: () => this.moved = true,
-            onEnd: ev => !this.moved && this.longPress.emit(ev.event),
+            onStart: (event) => {
+                this.timeout = setTimeout(() => {
+                    this.longPress.emit(event);
+
+                    delete this.timeout;
+                }, this.HOLD_DURATION);
+            },
+            onMove: () => this.clearTimeout(),
+            onEnd: () => this.clearTimeout(),
         }, true);
 
         this.pressGesture.enable();
@@ -58,6 +66,16 @@ export class CoreLongPressDirective implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.pressGesture?.destroy();
+        this.clearTimeout();
+    }
+
+    protected clearTimeout(): void {
+        if (!this.timeout) {
+            return;
+        }
+
+        clearTimeout(this.timeout);
+        delete this.timeout;
     }
 
 }
