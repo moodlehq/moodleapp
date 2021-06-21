@@ -191,6 +191,10 @@ ion-button.ion-text-wrap {
     }
 }
 
+ion-button.button-outline {
+    --background: var(--contrast-background);
+}
+
 @each $color-name, $value in $colors {
     .text-#{$color-name},
     p.text-#{$color-name} {
