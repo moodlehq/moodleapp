@@ -273,7 +273,7 @@ button,
 
 // Clear buttons will be black.
 ion-button.button-clear {
-    --ion-color-primary: var(--brand-color-contrast);
+    --ion-color-primary: var(--brand-color);
 }
 
 [role="button"],
@@ -357,7 +357,7 @@ ion-alert .alert-message {
 }
 
 ion-alert .alert-wrapper button.alert-button {
-    color: var(--brand-color-contrast);
+    color: var(--brand-color);
 }
 
 // Ionic list.
@@ -423,7 +423,8 @@ ion-toolbar {
 }
 
 // Item styles
-[aria-current="page"] {
+[aria-current="page"],
+.item.item-current {
     // TODO: Add safe area to border and RTL
     --ion-safe-area-left: calc(-1 * var(--selected-item-border-width));
     border-inline-start: var(--selected-item-border-width) solid var(--selected-item-color);
@@ -583,7 +584,7 @@ ion-toolbar h1 .core-bar-button-image img {
 // Radio.
 ion-radio,
 input[type=radio] {
-    --color: var(--brand-color-contrast);
+    --color: var(--text-color);
     --color-checked: var(--color);
     --border-radius: 50%;
     --border-width: 2px;
@@ -637,8 +638,8 @@ input[type=radio] {
 ion-checkbox,
 input[type=checkbox] {
     --border-radius: 2px;
-    --border-color-checked: var(--brand-color-contrast);
-    --background-checked: var(--brand-color-contrast);
+    --border-color-checked: var(--text-color);
+    --background-checked: var(--text-color);
     --checkmark-color: var(--contrast-background);
     --border-width: 2px;
     --outer-border-width: 2px;
