@@ -37,12 +37,12 @@ $text-color-dark-rgb:      color-to-rgb-list($text-color-dark) !default;
 
 $background-color:          $gray-light !default;
 $background-color-rgb:      color-to-rgb-list($background-color) !default;
-$background-color-dark:     mix(#ffffff, #000000, 90%) !default; // #1a1a1a
+$background-color-dark:     mix(#ffffff, #000000, 10%) !default; // #1a1a1a
 $background-color-dark-rgb: color-to-rgb-list($background-color-dark) !default;
 
 $ion-item-background:      $white !default;
 $ion-item-background-rgb:  color-to-rgb-list($ion-item-background) !default;
-$ion-item-background-dark: mix(#ffffff, #000000, 80%) !default; // #333333
+$ion-item-background-dark: mix(#ffffff, #000000, 20%) !default; // #333333
 $ion-item-background-dark-rgb: color-to-rgb-list($ion-item-background-dark) !default;
 
 $primary:    $brand-color !default;

@@ -76,6 +76,8 @@
     --core-header-toolbar-color:        var(--white);
 
     --core-tabs-background: var(--ion-color-step-200);
+    --core-tab-background: var(--core-tabs-background);
+    --core-tab-color: var(--subdued-text-color);
     --core-tab-border-color: var(--gray-light);
     --core-tab-color-active: var(--dark);
 
@@ -84,8 +86,10 @@
     --ion-item-background: #{$ion-item-background-dark};
     --ion-item-detail-icon-color: var(--white);
     --item-divider-background: var(--ion-color-step-200);
-    --spacer-background: var(--ion-color-step-1000);
+    --item-divider-color: var(--text-color);
+    --spacer-background: var(--ion-color-step-0);
 
+    --core-combobox-background: var(--ion-item-background);
     --core-combobox-color: var(--white);
 
     --core-login-background: var(--black);

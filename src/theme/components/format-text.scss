@@ -366,7 +366,7 @@ core-rich-text-editor .core-rte-editor {
     input[type=checkbox] {
         position: relative;
 
-        --color: var(--brand-color-contrast);
+        --color: var(--text-color);
         --color-checked: var(--color);
 
         width: var(--size);
