@@ -12,10 +12,13 @@
     </ion-refresher>
     <core-loading [hideUntil]="devicesLoaded">
         <ion-list>
-            <ion-item class="ion-text-wrap" *ngFor="let device of devices">
+            <ion-item class="ion-text-wrap" *ngFor="let device of devices" [class.item-current]="device.current">
                 <ion-label [class.core-bold]="device.current">
-                    {{ device.name }} {{ device.model }} {{ device.platform }} {{ device.version }}
-                    <span *ngIf="device.current">({{ 'core.currentdevice' | translate }})</span>
+                    <p class="item-heading">
+                        {{ device.name }} {{ device.model }}
+                        <span *ngIf="device.current">({{ 'core.currentdevice' | translate }})</span>
+                    </p>
+                    <p>{{ device.platform }} {{ device.version }}</p>
                 </ion-label>
                 <core-button-with-spinner [loading]="device.updating" slot="end">
                     <ion-toggle

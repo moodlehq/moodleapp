@@ -74,7 +74,12 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
             device.current = !!(pushId && pushId == device.pushid);
         });
 
-        return formattedDevices;
+        return formattedDevices.sort((a, b) => {
+            const compareA = a.name.toLowerCase();
+            const compareB = b.name.toLowerCase();
+
+            return compareA.localeCompare(compareB);
+        });
     }
 
     /**
