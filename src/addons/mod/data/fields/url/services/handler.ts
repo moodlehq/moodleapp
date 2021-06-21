@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonModDataField, AddonModDataSubfieldData } from '@addons/mod/data/services/data';
+import { AddonModDataEntryField, AddonModDataField, AddonModDataSubfieldData } from '@addons/mod/data/services/data';
 import { Injectable, Type } from '@angular/core';
 import { CoreFormFields } from '@singletons/form';
 import { Translate, makeSingleton } from '@singletons';
@@ -57,6 +57,15 @@ export class AddonModDataFieldUrlHandlerService extends AddonModDataFieldTextHan
         if (field.required && (!inputData || !inputData.length || !inputData[0].value)) {
             return Translate.instant('addon.mod_data.errormustsupplyvalue');
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    overrideData(originalContent: AddonModDataEntryField, offlineContent: CoreFormFields<string>): AddonModDataEntryField {
+        originalContent.content = offlineContent['0'] || '';
+
+        return originalContent;
     }
 
 }

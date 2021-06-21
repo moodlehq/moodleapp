@@ -92,9 +92,9 @@ export class AddonModDataHelperProvider {
 
                         if (offlineContent.subfield) {
                             offlineContents[offlineContent.fieldid][offlineContent.subfield] =
-                                CoreTextUtils.parseJSON(offlineContent.value);
+                                CoreTextUtils.parseJSON(offlineContent.value, '');
                         } else {
-                            offlineContents[offlineContent.fieldid][''] = CoreTextUtils.parseJSON(offlineContent.value);
+                            offlineContents[offlineContent.fieldid][''] = CoreTextUtils.parseJSON(offlineContent.value, '');
                         }
                     });
 
@@ -632,7 +632,7 @@ export class AddonModDataHelperProvider {
         const folderPath = await AddonModDataOffline.getEntryFieldFolder(dataId, entryId, fieldId, siteId);
 
         try {
-            return CoreFileUploader.getStoredFiles(folderPath);
+            return await CoreFileUploader.getStoredFiles(folderPath);
         } catch {
             // Ignore not found files.
             return [];

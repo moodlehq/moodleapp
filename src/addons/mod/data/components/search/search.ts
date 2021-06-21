@@ -71,7 +71,7 @@ export class AddonModDataSearchComponent implements OnInit {
         this.search.advanced?.forEach((field) => {
             if (typeof field != 'undefined') {
                 this.advancedIndexed[field.name] = field.value
-                    ? CoreTextUtils.parseJSON(field.value)
+                    ? CoreTextUtils.parseJSON(field.value, '')
                     : '';
             }
         });

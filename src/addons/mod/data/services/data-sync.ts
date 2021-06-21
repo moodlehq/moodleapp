@@ -345,8 +345,8 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
             try {
                 await Promise.all(editAction.fields.map(async (field) => {
                     // Upload Files if asked.
-                    const value = CoreTextUtils.parseJSON<CoreFileUploaderStoreFilesResult>(field.value || '');
-                    if (value.online || value.offline) {
+                    const value = CoreTextUtils.parseJSON<CoreFileUploaderStoreFilesResult | null>(field.value || '', null);
+                    if (value && (value.online || value.offline)) {
                         let files: CoreFileEntry[] = value.online || [];
 
                         const offlineFiles = value.offline

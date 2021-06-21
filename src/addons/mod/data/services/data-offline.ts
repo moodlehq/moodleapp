@@ -88,9 +88,9 @@ export class AddonModDataOfflineProvider {
         const promises: Promise<void>[] = [];
 
         entry.fields.forEach((field) => {
-            const value = CoreTextUtils.parseJSON<CoreFileUploaderStoreFilesResult>(field.value);
+            const value = CoreTextUtils.parseJSON<CoreFileUploaderStoreFilesResult | null>(field.value, null);
 
-            if (!value.offline) {
+            if (!value || !value.offline) {
                 return;
             }
 

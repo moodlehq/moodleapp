@@ -26,6 +26,7 @@ import { CoreSupressEventsDirective } from './supress-events';
 import { CoreUserLinkDirective } from './user-link';
 import { CoreAriaButtonClickDirective } from './aria-button';
 import { CoreOnResizeDirective } from './on-resize';
+import { CoreDownloadFileDirective } from './download-file';
 
 @NgModule({
     declarations: [
@@ -41,6 +42,7 @@ import { CoreOnResizeDirective } from './on-resize';
         CoreUserLinkDirective,
         CoreAriaButtonClickDirective,
         CoreOnResizeDirective,
+        CoreDownloadFileDirective,
     ],
     exports: [
         CoreAutoFocusDirective,
@@ -55,6 +57,7 @@ import { CoreOnResizeDirective } from './on-resize';
         CoreUserLinkDirective,
         CoreAriaButtonClickDirective,
         CoreOnResizeDirective,
+        CoreDownloadFileDirective,
     ],
 })
 export class CoreDirectivesModule {}

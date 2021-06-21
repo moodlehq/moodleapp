@@ -64,6 +64,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     moduleName = 'glossary';
 
     isSearch = false;
+    hasSearched = false;
     canAdd = false;
     loadMoreError = false;
     loadingMessage?: string;
@@ -429,6 +430,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     toggleSearch(): void {
         if (this.isSearch) {
             this.isSearch = false;
+            this.hasSearched = false;
             this.entries.setOnlineEntries(this.fetchedEntries, this.fetchedEntriesCanLoadMore);
             this.switchMode(this.fetchMode!);
         } else {
@@ -488,6 +490,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             'ASC',
         );
         this.loaded = false;
+        this.hasSearched = true;
         this.loadContent();
     }
 
