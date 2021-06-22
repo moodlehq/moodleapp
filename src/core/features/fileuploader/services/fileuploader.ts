@@ -19,7 +19,7 @@ import { MediaFile, CaptureError, CaptureAudioOptions, CaptureVideoOptions } fro
 import { Subject } from 'rxjs';
 
 import { CoreApp } from '@services/app';
-import { CoreFile } from '@services/file';
+import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
@@ -191,14 +191,14 @@ export class CoreFileUploaderProvider {
 
     /**
      * Clear temporary attachments to be uploaded.
-     * Attachments already saved in an offline store will NOT be deleted.
+     * Attachments already saved in an offline store will NOT be deleted, only files in tmp folder will be deleted.
      *
      * @param files List of files.
      */
     clearTmpFiles(files: (CoreWSFile | FileEntry)[]): void {
-        // Delete the local files.
+        // Delete the temporary files.
         files.forEach((file) => {
-            if ('remove' in file) {
+            if ('remove' in file && CoreFile.removeBasePath(file.toURL()).startsWith(CoreFileProvider.TMPFOLDER)) {
                 // Pass an empty function to prevent missing parameter error.
                 file.remove(() => {
                     // Nothing to do.
