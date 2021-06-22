@@ -17,11 +17,9 @@
             </core-format-text>
         </ion-label>
     </ion-item>
-    <ion-item class="ion-text-wrap" [hidden]="!ddQuestion.loaded">
-        <ion-label>
-            <core-format-text *ngIf="ddQuestion.ddArea" [adaptImg]="false" [component]="component" [componentId]="componentId"
-                [text]="ddQuestion.ddArea" [filter]="false" (afterRender)="ddAreaRendered()">
-            </core-format-text>
-        </ion-label>
-    </ion-item>
+    <div class="fake-ion-item ion-text-wrap" [hidden]="!ddQuestion.loaded">
+        <core-format-text *ngIf="ddQuestion.ddArea" [adaptImg]="false" [component]="component" [componentId]="componentId"
+            [text]="ddQuestion.ddArea" [filter]="false" (afterRender)="ddAreaRendered()">
+        </core-format-text>
+    </div>
 </div>

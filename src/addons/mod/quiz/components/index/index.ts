@@ -647,7 +647,9 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
             if (data) {
                 this.gradebookData = {
-                    grade: 'graderaw' in data ? data.graderaw : Number(data.grade),
+                    grade: 'graderaw' in data && data.graderaw !== undefined && data.graderaw !== null ?
+                        data.graderaw :
+                        (data.grade !== undefined && data.grade !== null ? Number(data.grade) : undefined),
                     feedback: data.feedback,
                 };
             }
