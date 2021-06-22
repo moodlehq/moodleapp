@@ -402,7 +402,12 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
      * @param status Status to show.
      */
     protected updateCourseStatus(status: string): void {
-        this.prefetchCourseData = CoreCourseHelper.getCourseStatusIconAndTitleFromStatus(status);
+        const statusData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
+
+        this.prefetchCourseData.status = statusData.status;
+        this.prefetchCourseData.icon = statusData.icon;
+        this.prefetchCourseData.statusTranslatable = statusData.statusTranslatable;
+        this.prefetchCourseData.loading = statusData.loading;
     }
 
     /**

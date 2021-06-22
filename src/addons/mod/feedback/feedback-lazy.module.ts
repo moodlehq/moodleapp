@@ -44,7 +44,7 @@ const mobileRoutes: Routes = [
         component: AddonModFeedbackRespondentsPage,
     },
     {
-        path: ':courseId/:cmId/attempt/:attemptId',
+        path: ':courseId/:cmId/respondents/attempt/:attemptId',
         loadChildren: () => import('./pages/attempt/attempt.module').then(m => m.AddonModFeedbackAttemptPageModule),
     },
 ];
