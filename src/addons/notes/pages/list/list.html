@@ -99,6 +99,7 @@
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="userId && notesLoaded">
         <ion-fab-button (click)="addNote($event)" [attr.aria-label]="'addon.notes.addnewnote' |translate">
             <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+            <span class="sr-only">{{ 'addon.notes.addnewnote' | translate }}</span>
         </ion-fab-button>
     </ion-fab>
 </ion-content>

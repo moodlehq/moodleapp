@@ -50,6 +50,7 @@
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canCreate">
         <ion-fab-button (click)="openEdit()" [attr.aria-label]="'addon.calendar.newevent' | translate">
             <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+            <span class="sr-only">{{ 'addon.calendar.newevent' | translate }}</span>
         </ion-fab-button>
     </ion-fab>
 </ion-content>

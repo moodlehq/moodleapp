@@ -196,7 +196,7 @@ export class CoreH5PProvider {
     isOfflineDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!(site?.isFeatureDisabled('NoDelegate_H5POffline'));
+        return !!(site?.isOfflineDisabled() || site?.isFeatureDisabled('NoDelegate_H5POffline'));
     }
 
     /**

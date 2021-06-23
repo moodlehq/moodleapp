@@ -97,5 +97,6 @@
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canEdit">
     <ion-fab-button (click)="goToNewPage()" [attr.aria-label]="'addon.mod_wiki.createpage' | translate">
         <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+        <span class="sr-only">{{ 'addon.mod_wiki.createpage' | translate }}</span>
     </ion-fab-button>
 </ion-fab>
