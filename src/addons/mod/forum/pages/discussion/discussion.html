@@ -23,15 +23,15 @@
             (action)="doRefresh(null, $event, true)">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'flat-oldest'"
-            [priority]="500" [content]="'addon.mod_forum.modeflatoldestfirst' | translate" iconAction="arrow-round-down"
+            [priority]="500" [content]="'addon.mod_forum.modeflatoldestfirst' | translate" iconAction="fa-arrow-down"
             (action)="changeSort('flat-oldest')">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'flat-newest'"
-            [priority]="450" [content]="'addon.mod_forum.modeflatnewestfirst' | translate" iconAction="arrow-round-up"
+            [priority]="450" [content]="'addon.mod_forum.modeflatnewestfirst' | translate" iconAction="fa-arrow-up"
             (action)="changeSort('flat-newest')">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'nested'"
-            [priority]="400" [content]="'addon.mod_forum.modenested' | translate" iconAction="swap"
+            [priority]="400" [content]="'addon.mod_forum.modenested' | translate" iconAction="fa-exchange-alt"
             (action)="changeSort('nested')">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!discussion || !discussion.canlock || discussion.locked"
