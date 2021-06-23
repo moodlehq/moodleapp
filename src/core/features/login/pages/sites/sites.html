@@ -42,6 +42,7 @@
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
         <ion-fab-button (click)="add()" [attr.aria-label]="'core.add' | translate">
             <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+            <span class="sr-only">{{ 'core.add' | translate }}</span>
         </ion-fab-button>
     </ion-fab>
 </ion-content>

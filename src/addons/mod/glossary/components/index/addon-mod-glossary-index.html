@@ -109,6 +109,7 @@
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canAdd">
         <ion-fab-button (click)="openNewEntry()" [attr.aria-label]="'addon.mod_glossary.addentry' | translate">
             <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+            <span class="sr-only">{{ 'addon.mod_glossary.addentry' | translate }}</span>
         </ion-fab-button>
     </ion-fab>
 </core-split-view>
