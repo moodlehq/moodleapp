@@ -59,7 +59,7 @@ export class AddonCalendarFilterPopoverComponent implements OnInit {
      * Init the component.
      */
     ngOnInit(): void {
-        this.courseId = this.filter.courseId + '';
+        this.courseId = (this.filter.courseId || -1) + '';
     }
 
     /**
