@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { CoreCourseBlock } from '@features/course/services/course';
-import { CoreBlockPreRenderedComponent } from '../components/pre-rendered-block/pre-rendered-block';
 import { CoreBlockHandler, CoreBlockHandlerData } from '../services/block-delegate';
 
 /**
@@ -48,14 +47,9 @@ export class CoreBlockBaseHandler implements CoreBlockHandler {
         block: CoreCourseBlock, // eslint-disable-line @typescript-eslint/no-unused-vars
         contextLevel: string, // eslint-disable-line @typescript-eslint/no-unused-vars
         instanceId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
-
+    ): undefined | CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
         // To be overridden.
-        return {
-            title: '',
-            class: '',
-            component: CoreBlockPreRenderedComponent,
-        };
+        return undefined;
     }
 
 }
