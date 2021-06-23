@@ -29,7 +29,7 @@
                     <p class="item-heading" [core-mark-required]="true">{{ 'core.date' | translate }}</p>
                 </ion-label>
                 <ion-datetime formControlName="timestart" [placeholder]="'core.date' | translate" [displayFormat]="dateFormat"
-                    [max]="maxDate" [min]="minDate">
+                    [max]="maxDate" [min]="minDate" display-timezone="utc">
                 </ion-datetime>
                 <core-input-errors [control]="form.controls.timestart" [errorMessages]="errors"></core-input-errors>
             </ion-item>
@@ -166,7 +166,8 @@
                         <ion-item>
                             <ion-datetime formControlName="timedurationuntil" [max]="maxDate" [min]="minDate"
                                 [placeholder]="'addon.calendar.durationuntil' | translate" slot="end"
-                                [displayFormat]="dateFormat" [disabled]="form.controls.duration.value != 1">
+                                [displayFormat]="dateFormat" [disabled]="form.controls.duration.value != 1"
+                                display-timezone="utc">
                             </ion-datetime>
                         </ion-item>
                         <ion-item lines="none">
