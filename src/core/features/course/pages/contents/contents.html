@@ -8,7 +8,7 @@
             [iconAction]="prefetchCourseData.icon" [closeOnClick]="false">
         </core-context-menu-item>
         <core-context-menu-item [priority]="1800" [content]="'core.course.coursesummary' | translate" (action)="openCourseSummary()"
-            iconAction="fa-graduation-cap">
+            iconAction="fas-graduation-cap">
         </core-context-menu-item>
         <core-context-menu-item *ngFor="let item of courseMenuHandlers" [priority]="item.priority" (action)="openMenuItem(item)"
             [content]="item.data.title | translate" [iconAction]="item.data.icon" [class]="item.data.class">
