@@ -49,13 +49,14 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
      * @param inputData Data entered in the feedback edit form.
      * @return Text to submit.
      */
-    getTextFromInputData(plugin: AddonModAssignPlugin, inputData: AddonModAssignFeedbackCommentsTextData): string {
+    getTextFromInputData(plugin: AddonModAssignPlugin, inputData: AddonModAssignFeedbackCommentsTextData): string | undefined {
+        if (inputData.assignfeedbackcomments_editor === undefined) {
+            return undefined;
+        }
+
         const files = plugin.fileareas && plugin.fileareas[0] ? plugin.fileareas[0].files : [];
 
-        // The input data can have a string or an object with text and format. Get the text.
-        const text = inputData.assignfeedbackcomments_editor || '';
-
-        return CoreTextUtils.restorePluginfileUrls(text, files || []);
+        return CoreTextUtils.restorePluginfileUrls(inputData.assignfeedbackcomments_editor, files || []);
     }
 
     /**

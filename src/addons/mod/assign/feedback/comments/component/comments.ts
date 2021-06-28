@@ -93,7 +93,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
 
             // Update the text and save it as draft.
             this.isSent = false;
-            this.text = this.replacePluginfileUrls(text);
+            this.text = this.replacePluginfileUrls(text || '');
             AddonModAssignFeedbackDelegate.saveFeedbackDraft(this.assign.id, this.userId, this.plugin, {
                 text: text,
                 format: 1,
