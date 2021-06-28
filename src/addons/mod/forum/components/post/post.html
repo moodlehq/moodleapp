@@ -4,10 +4,10 @@
             <ion-label>
                 <div class="addon-mod-forum-post-title" *ngIf="displaySubject">
                     <h2 class="ion-text-wrap">
-                        <ion-icon name="fa-map-pin" *ngIf="discussion && !post.parentid && discussion.pinned"
+                        <ion-icon name="fas-map-pin" *ngIf="discussion && !post.parentid && discussion.pinned"
                             [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate">
                         </ion-icon>
-                        <ion-icon name="fa-star" class="addon-forum-star"
+                        <ion-icon name="fas-star" class="addon-forum-star"
                             [attr.aria-label]="'addon.mod_forum.favourites' | translate"
                             *ngIf="discussion && !post.parentid && !discussion.pinned && discussion.starred">
                         </ion-icon>
@@ -18,7 +18,7 @@
                     </h2>
                     <ion-note *ngIf="trackPosts && post.unread"
                         class="ion-float-end ion-padding-left ion-text-end" [attr.aria-label]="'addon.mod_forum.unread' | translate">
-                        <ion-icon name="fa-circle" color="primary" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-circle" color="primary" aria-hidden="true"></ion-icon>
                     </ion-note>
                     <ion-button *ngIf="optionsMenuEnabled"
                         fill="clear" color="dark" [attr.aria-label]="('core.displayoptions' | translate)"
@@ -46,7 +46,7 @@
                     <ng-container *ngIf="!displaySubject">
                         <ion-note *ngIf="trackPosts && post.unread"
                             class="ion-float-end ion-padding-left ion-text-end" [attr.aria-label]="'addon.mod_forum.unread' | translate">
-                            <ion-icon name="fa-circle" color="primary" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-circle" color="primary" aria-hidden="true"></ion-icon>
                         </ion-note>
                         <ion-button *ngIf="optionsMenuEnabled"
                             fill="clear" color="dark" [attr.aria-label]="('core.displayoptions' | translate)"
@@ -94,7 +94,7 @@
                     [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId"
                     [attr.aria-expanded]="replyData.replyingTo === post.id"
                     (click)="showReplyForm($event)">
-                    <ion-icon name="fa-reply" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-reply" slot="start" aria-hidden="true"></ion-icon>
                     {{ 'addon.mod_forum.reply' | translate }}
                 </ion-button>
             </ion-label>
@@ -130,8 +130,8 @@
                 [attr.aria-controls]="'addon-forum-reply-edit-form-advanced-' + uniqueId"
                 [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate"
             >
-                <ion-icon *ngIf="!advanced" name="fa-caret-right" flip-rtl slot="start" aria-hidden="true"></ion-icon>
-                <ion-icon *ngIf="advanced" name="fa-caret-down" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="!advanced" name="fas-caret-right" flip-rtl slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="advanced" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <h2>{{ 'addon.mod_forum.advanced' | translate }}</h2>
                 </ion-label>

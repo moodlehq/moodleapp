@@ -30,7 +30,7 @@
                     </ion-badge>
                 </ion-item>
             </ion-list>
-            <core-empty-box icon="fa-tag" *ngIf="!hasUnsupportedAreas && (!areas || !areas.length)"
+            <core-empty-box icon="fas-tag" *ngIf="!hasUnsupportedAreas && (!areas || !areas.length)"
                 [message]="'core.tag.noresultsfor' | translate: { $a: tagName }"></core-empty-box>
         </core-loading>
     </core-split-view>

@@ -23,39 +23,39 @@
             (action)="doRefresh(null, $event, true)">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'flat-oldest'"
-            [priority]="500" [content]="'addon.mod_forum.modeflatoldestfirst' | translate" iconAction="arrow-round-down"
+            [priority]="500" [content]="'addon.mod_forum.modeflatoldestfirst' | translate" iconAction="fas-arrow-down"
             (action)="changeSort('flat-oldest')">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'flat-newest'"
-            [priority]="450" [content]="'addon.mod_forum.modeflatnewestfirst' | translate" iconAction="arrow-round-up"
+            [priority]="450" [content]="'addon.mod_forum.modeflatnewestfirst' | translate" iconAction="fas-arrow-up"
             (action)="changeSort('flat-newest')">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'nested'"
-            [priority]="400" [content]="'addon.mod_forum.modenested' | translate" iconAction="swap"
+            [priority]="400" [content]="'addon.mod_forum.modenested' | translate" iconAction="fas-exchange-alt"
             (action)="changeSort('nested')">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!discussion || !discussion.canlock || discussion.locked"
-            [priority]="300" [content]="'addon.mod_forum.lockdiscussion' | translate" iconAction="fa-lock"
+            [priority]="300" [content]="'addon.mod_forum.lockdiscussion' | translate" iconAction="fas-lock"
             (action)="setLockState(true)">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!discussion || !discussion.canlock || !discussion.locked"
-            [priority]="300" [content]="'addon.mod_forum.unlockdiscussion' | translate" iconAction="fa-unlock"
+            [priority]="300" [content]="'addon.mod_forum.unlockdiscussion' | translate" iconAction="fas-unlock"
             (action)="setLockState(false)">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!discussion || !canPin || discussion.pinned"
-            [priority]="250" [content]="'addon.mod_forum.pindiscussion' | translate" iconAction="fa-map-pin"
+            [priority]="250" [content]="'addon.mod_forum.pindiscussion' | translate" iconAction="fas-map-pin"
             (action)="setPinState(true)">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!discussion || !canPin || !discussion.pinned"
-            [priority]="250" [content]="'addon.mod_forum.unpindiscussion' | translate" [iconSlash]="true" iconAction="fa-map-pin"
+            [priority]="250" [content]="'addon.mod_forum.unpindiscussion' | translate" [iconSlash]="true" iconAction="fas-map-pin"
             (action)="setPinState(false)">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!discussion || !discussion.canfavourite || discussion.starred"
-            [priority]="200" [content]="'addon.mod_forum.addtofavourites' | translate" iconAction="fa-star"
+            [priority]="200" [content]="'addon.mod_forum.addtofavourites' | translate" iconAction="fas-star"
             (action)="toggleFavouriteState(true)">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!discussion || !discussion.canfavourite || !discussion.starred"
-            [priority]="200" [content]="'addon.mod_forum.removefromfavourites' | translate" iconAction="fa-star" [iconSlash]="true"
+            [priority]="200" [content]="'addon.mod_forum.removefromfavourites' | translate" iconAction="fas-star" [iconSlash]="true"
             (action)="toggleFavouriteState(false)">
         </core-context-menu-item>
     </core-context-menu>
@@ -84,7 +84,7 @@
 
         <ion-card class="core-info-card" *ngIf="discussion && discussion.locked">
             <ion-item>
-                <ion-icon name="fa-lock" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-lock" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'addon.mod_forum.discussionlocked' | translate }}</ion-label>
             </ion-item>
         </ion-card>

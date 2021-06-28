@@ -30,7 +30,7 @@
             (action)="removeFiles($event)">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="sortingAvailable"
-            iconAction="fa-sort"
+            iconAction="fas-sort"
             [priority]="300" [content]="'core.sort' | translate"
             (action)="showSortOrderSelector()">
         </core-context-menu-item>
@@ -93,9 +93,9 @@
                 <ion-label>
                     <div class="addon-mod-forum-discussion-title">
                         <p class="ion-text-wrap item-heading">
-                            <ion-icon name="fa-map-pin" *ngIf="discussion.pinned"
+                            <ion-icon name="fas-map-pin" *ngIf="discussion.pinned"
                                 [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate"></ion-icon>
-                            <ion-icon name="fa-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"
+                            <ion-icon name="fas-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"
                                 [attr.aria-label]="'addon.mod_forum.favourites' | translate"></ion-icon>
                             <core-format-text
                                 [text]="discussion.subject"
