@@ -41,7 +41,7 @@
                 [statusTranslatable]="prefetchCourseData.statusTranslatable"
                 canTrustDownload="false"
                 [loading]="prefetchCourseData.loading"
-                action="prefetchCourse()"></core-download-refresh>
+                (action)="prefetchCourse()"></core-download-refresh>
         </div>
 
         <div class="core-button-spinner" *ngIf="courseOptionMenuEnabled" slot="end">
