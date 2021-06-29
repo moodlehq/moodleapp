@@ -221,7 +221,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         const initialIcon = this.prefetchCoursesData.icon;
 
         try {
-            return CoreCourseHelper.prefetchCourses(this.courses, this.prefetchCoursesData);
+            await CoreCourseHelper.prefetchCourses(this.courses, this.prefetchCoursesData);
         } catch (error) {
             if (!this.isDestroyed) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);

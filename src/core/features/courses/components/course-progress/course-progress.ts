@@ -107,8 +107,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         // Determine course prefetch icon.
         const status = await CoreCourse.getCourseStatus(this.course.id);
 
-        this.prefetchCourseData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
-        this.courseStatus = status;
+        this.updateCourseStatus(status);
 
         if (this.prefetchCourseData.loading) {
             // Course is being downloaded. Get the download promise.

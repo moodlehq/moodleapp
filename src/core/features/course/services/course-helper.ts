@@ -374,42 +374,45 @@ export class CoreCourseHelperProvider {
         menuHandlers?: CoreCourseOptionsMenuHandlerToDisplay[],
     ): Promise<void> {
         const initialIcon = data.icon;
-        const initialStatus = data.statusTranslatable;
+        const initialStatus = data.status;
+        const initialStatusTranslatable = data.statusTranslatable;
         const siteId = CoreSites.getCurrentSiteId();
 
         data.downloadSucceeded = false;
         data.icon = CoreConstants.ICON_DOWNLOADING;
+        data.status = CoreConstants.DOWNLOADING;
         data.statusTranslatable = 'core.downloading';
 
-        // Get the sections first if needed.
-        if (!sections) {
-            sections = await CoreCourse.getSections(course.id, false, true);
-        }
-
         try {
+            // Get the sections first if needed.
+            if (!sections) {
+                sections = await CoreCourse.getSections(course.id, false, true);
+            }
+
             // Confirm the download.
             await this.confirmDownloadSizeSection(course.id, undefined, sections, true);
+
+            // User confirmed, get the course handlers if needed.
+            if (!courseHandlers) {
+                courseHandlers = await CoreCourseOptionsDelegate.getHandlersToDisplay(course);
+            }
+            if (!menuHandlers) {
+                menuHandlers = await CoreCourseOptionsDelegate.getMenuHandlersToDisplay(course);
+            }
+
+            // Now we have all the data, download the course.
+            await this.prefetchCourse(course, sections, courseHandlers, menuHandlers, siteId);
+
+            // Download successful.
+            data.downloadSucceeded = true;
         } catch (error) {
-            // User cancelled or there was an error calculating the size.
+            // User cancelled or there was an error.
             data.icon = initialIcon;
-            data.statusTranslatable = initialStatus;
+            data.status = initialStatus;
+            data.statusTranslatable = initialStatusTranslatable;
 
             throw error;
         }
-
-        // User confirmed, get the course handlers if needed.
-        if (!courseHandlers) {
-            courseHandlers = await CoreCourseOptionsDelegate.getHandlersToDisplay(course);
-        }
-        if (!menuHandlers) {
-            menuHandlers = await CoreCourseOptionsDelegate.getMenuHandlersToDisplay(course);
-        }
-
-        // Now we have all the data, download the course.
-        await this.prefetchCourse(course, sections, courseHandlers, menuHandlers, siteId);
-
-        // Download successful.
-        data.downloadSucceeded = true;
     }
 
     /**
