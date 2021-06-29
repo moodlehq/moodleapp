@@ -31,7 +31,7 @@ export class AddonCalendarFilterPopoverComponent implements OnInit {
 
     @Input() filter: AddonCalendarFilter = {
         filtered: false,
-        courseId: -1,
+        courseId: undefined,
         categoryId: undefined,
         course: true,
         group: true,
@@ -40,7 +40,7 @@ export class AddonCalendarFilterPopoverComponent implements OnInit {
         category: true,
     };
 
-    courseId = '-1';
+    courseId = -1;
 
     @Input() courses: Partial<CoreEnrolledCourseData>[] = [];
     typeIcons: AddonCalendarEventIcons[] = [];
@@ -59,24 +59,23 @@ export class AddonCalendarFilterPopoverComponent implements OnInit {
      * Init the component.
      */
     ngOnInit(): void {
-        this.courseId = (this.filter.courseId || -1) + '';
+        this.courseId = this.filter.courseId || -1;
     }
 
     /**
      * Function called when an item is clicked.
      */
     onChange(): void {
-        const courseId = parseInt(this.courseId, 10);
-        if (courseId > 0) {
-            const course = this.courses.find((course) => courseId == course.id);
-            this.filter.courseId = course?.id || -1;
+        if (this.courseId > 0) {
+            const course = this.courses.find((course) => this.courseId == course.id);
+            this.filter.courseId = course?.id;
             this.filter.categoryId = course?.categoryid;
         } else {
-            this.filter.courseId = -1;
+            this.filter.courseId = undefined;
             this.filter.categoryId = undefined;
         }
 
-        this.filter.filtered = this.filter.courseId > 0 || this.types.some((name) => !this.filter[name]);
+        this.filter.filtered = !!this.filter.courseId || this.types.some((name) => !this.filter[name]);
 
         CoreEvents.trigger(AddonCalendarProvider.FILTER_CHANGED_EVENT, this.filter);
     }
