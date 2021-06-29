@@ -881,6 +881,11 @@ ion-datetime.datetime-disabled {
     opacity: .8 !important;
 }
 
+// Hide details on items to align badges.
+ion-item.hide-detail {
+    --detail-icon-opacity: 0;
+}
+
 // Make links clickable when inside radio or checkbox items. Style part.
 @media (hover: hover) {
     ion-item.item-multiple-inputs:hover::part(native) {
