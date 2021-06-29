@@ -89,7 +89,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
     syncIcon = CoreConstants.ICON_LOADING;
     filter: AddonCalendarFilter = {
         filtered: false,
-        courseId: -1,
+        courseId: undefined,
         categoryId: undefined,
         course: true,
         group: true,
@@ -212,7 +212,7 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
-        this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId') || -1;
+        this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId');
         this.syncIcon = CoreConstants.ICON_LOADING;
 
         await this.fetchData(false, true, false);

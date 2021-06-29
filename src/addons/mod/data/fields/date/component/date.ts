@@ -36,6 +36,10 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginCompo
      */
     protected init(): void {
         if (this.displayMode) {
+            this.displayDate = this.value?.content
+                ? parseInt(this.value.content, 10) * 1000
+                : undefined;
+
             return;
         }
 
@@ -61,10 +65,6 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginCompo
             date = this.value?.content
                 ? new Date(parseInt(this.value.content, 10) * 1000)
                 : new Date();
-
-            this.displayDate = this.value?.content
-                ? parseInt(this.value.content, 10) * 1000
-                : undefined;
 
         }
 

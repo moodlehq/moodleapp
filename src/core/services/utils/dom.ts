@@ -407,7 +407,11 @@ export class CoreDomUtilsProvider {
             return size;
         }
 
-        size = Number(size);
+        if (typeof size == 'string') {
+            // It's important to use parseInt instead of Number because Number('') is 0 instead of NaN.
+            size = parseInt(size, 10);
+        }
+
         if (!isNaN(size)) {
             return size + 'px';
         }
