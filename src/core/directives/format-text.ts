@@ -224,6 +224,7 @@ export class CoreFormatTextDirective implements OnChanges {
             const button = document.createElement('button');
 
             button.classList.add('core-image-viewer-icon');
+            button.classList.add('hidden');
             button.setAttribute('aria-label', label);
             // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
             button.innerHTML = '<ion-icon name="fas-search" aria-hidden="true" src="assets/fonts/font-awesome/solid/search.svg">\
@@ -236,6 +237,14 @@ export class CoreFormatTextDirective implements OnChanges {
             });
 
             img.parentNode?.appendChild(button);
+
+            if (img.complete && img.naturalWidth > 0) {
+                // Image has already loaded, show the button.
+                button.classList.remove('hidden');
+            } else {
+                // Show the button when the image is loaded.
+                img.onload = () => button.classList.remove('hidden');
+            }
         });
     }
 
