@@ -2,40 +2,42 @@
     <ion-label>
         <h2>{{ 'addon.block_myoverview.pluginname' | translate }}</h2>
     </ion-label>
-    <!-- Download all courses. -->
-    <div *ngIf="downloadCoursesEnabled && downloadEnabled && filteredCourses.length > 1 && !showFilter" class="core-button-spinner"
-        slot="end">
-        <ion-button *ngIf="!prefetchCoursesData[selectedFilter].loading" fill="clear" color="dark" (click)="prefetchCourses()"
-            [attr.aria-label]="'core.courses.downloadcourses' | translate">
-            <ion-icon [name]="prefetchCoursesData[selectedFilter].icon" slot="icon-only" aria-hidden="true">
-            </ion-icon>
-        </ion-button>
-        <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge"
-            role="progressbar" [attr.aria-valuemax]="prefetchCoursesData[selectedFilter].total"
-            [attr.aria-valuenow]="prefetchCoursesData[selectedFilter].count"
-            [attr.aria-valuetext]="prefetchCoursesData[selectedFilter].badgeA11yText">
-            {{prefetchCoursesData[selectedFilter].badge}}
-        </ion-badge>
-        <ion-spinner *ngIf="prefetchCoursesData[selectedFilter].loading" [attr.aria-label]="'core.loading' | translate">
-        </ion-spinner>
+    <div slot="end" class="flex-row">
+        <!-- Download all courses. -->
+        <div *ngIf="downloadCoursesEnabled && downloadEnabled && filteredCourses.length > 1 && !showFilter"
+            class="core-button-spinner">
+            <ion-button *ngIf="!prefetchCoursesData[selectedFilter].loading" fill="clear" color="dark" (click)="prefetchCourses()"
+                [attr.aria-label]="'core.courses.downloadcourses' | translate">
+                <ion-icon [name]="prefetchCoursesData[selectedFilter].icon" slot="icon-only" aria-hidden="true">
+                </ion-icon>
+            </ion-button>
+            <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge"
+                role="progressbar" [attr.aria-valuemax]="prefetchCoursesData[selectedFilter].total"
+                [attr.aria-valuenow]="prefetchCoursesData[selectedFilter].count"
+                [attr.aria-valuetext]="prefetchCoursesData[selectedFilter].badgeA11yText">
+                {{prefetchCoursesData[selectedFilter].badge}}
+            </ion-badge>
+            <ion-spinner *ngIf="prefetchCoursesData[selectedFilter].loading" [attr.aria-label]="'core.loading' | translate">
+            </ion-spinner>
+        </div>
+        <core-context-menu>
+            <core-context-menu-item *ngIf="loaded && showFilterSwitchButton()" [priority]="1000"
+                [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" iconAction="fas-filter"
+                (onClosed)="switchFilterClosed()"></core-context-menu-item>
+            <core-context-menu-item *ngIf="loaded && showSortFilter" [priority]="900"
+                content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.title' | translate)}}"
+                (action)="switchSort('fullname')" [iconAction]="sort == 'fullname' ? 'far-dot-circle' : 'far-circle'">
+            </core-context-menu-item>
+            <core-context-menu-item *ngIf="loaded && showSortFilter && showSortByShortName" [priority]="800"
+                content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.shortname' | translate)}}"
+                (action)="switchSort('shortname')" [iconAction]="sort == 'shortname' ? 'far-dot-circle' : 'far-circle'">
+            </core-context-menu-item>
+            <core-context-menu-item *ngIf="loaded && showSortFilter" [priority]="700"
+                content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.lastaccessed' | translate)}}"
+                (action)="switchSort('lastaccess')" [iconAction]="sort == 'lastaccess' ? 'far-dot-circle' : 'far-circle'">
+            </core-context-menu-item>
+        </core-context-menu>
     </div>
-    <core-context-menu slot="end">
-        <core-context-menu-item *ngIf="loaded && showFilterSwitchButton()" [priority]="1000"
-            [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" iconAction="fas-filter"
-            (onClosed)="switchFilterClosed()"></core-context-menu-item>
-        <core-context-menu-item *ngIf="loaded && showSortFilter" [priority]="900"
-            content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.title' | translate)}}"
-            (action)="switchSort('fullname')" [iconAction]="sort == 'fullname' ? 'far-dot-circle' : 'far-circle'">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="loaded && showSortFilter && showSortByShortName" [priority]="800"
-            content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.shortname' | translate)}}"
-            (action)="switchSort('shortname')" [iconAction]="sort == 'shortname' ? 'far-dot-circle' : 'far-circle'">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="loaded && showSortFilter" [priority]="700"
-            content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.lastaccessed' | translate)}}"
-            (action)="switchSort('lastaccess')" [iconAction]="sort == 'lastaccess' ? 'far-dot-circle' : 'far-circle'">
-        </core-context-menu-item>
-    </core-context-menu>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" [fullscreen]="false" class="margin">
     <div class="safe-padding-horizontal" [hidden]="showFilter || !showSelectorFilter">

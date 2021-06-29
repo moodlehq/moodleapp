@@ -109,7 +109,8 @@
 
             <!-- Summary of submissions with draft status. -->
             <ion-item class="ion-text-wrap" *ngIf="assign.submissiondrafts && summary && summary.submissionsenabled"
-                [detail]="!showNumbers || summary.submissiondraftscount"
+                [class.hide-detail]="showNumbers && !summary.submissiondraftscount"
+                detail="true"
                 [button]="!showNumbers || summary.submissiondraftscount"
                 (click)="goToSubmissionList(submissionStatusDraft, !!summary.submissiondraftscount)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</h2></ion-label>
@@ -124,7 +125,8 @@
 
             <!-- Summary of submissions with submitted status. -->
             <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled"
-                [detail]="!showNumbers || summary.submissionssubmittedcount"
+                [class.hide-detail]="showNumbers && !summary.submissionssubmittedcount"
+                detail="true"
                 [button]="!showNumbers || summary.submissionssubmittedcount"
                 (click)="goToSubmissionList(submissionStatusSubmitted, !!summary.submissionssubmittedcount)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</h2></ion-label>
@@ -139,7 +141,9 @@
 
             <!-- Summary of submissions that need grading. -->
             <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled && !assign.teamsubmission && showNumbers"
-                [detail]="needsGradingAvailable" [button]="needsGradingAvailable"
+                [class.hide-detail]="!needsGradingAvailable"
+                detail="true"
+                [button]="needsGradingAvailable"
                 (click)="goToSubmissionList(needGrading, needsGradingAvailable)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofsubmissionsneedgrading' | translate }}</h2></ion-label>
                 <ion-badge slot="end" color="primary">
