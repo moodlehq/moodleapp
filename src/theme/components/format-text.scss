@@ -284,7 +284,7 @@ core-format-text {
 
 }
 
-core-format-text,
+core-format-text .core-format-text-content,
 core-rich-text-editor .core-rte-editor {
     @include core-headings();
 
