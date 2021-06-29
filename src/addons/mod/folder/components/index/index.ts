@@ -42,6 +42,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
 
     component = AddonModFolderProvider.COMPONENT;
     canGetFolder = false;
+    contents?: AddonModFolderFolderFormattedData;
 
     constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
         super('AddonModFolderIndexComponent', courseContentsPage);
@@ -57,6 +58,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
 
         if (this.subfolder) {
             this.description = this.folderInstance ? this.folderInstance.intro : this.module.description;
+            this.contents = this.subfolder;
 
             this.loaded = true;
             this.refreshIcon = CoreConstants.ICON_REFRESH;
@@ -112,7 +114,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
             this.dataRetrieved.emit(this.folderInstance || this.module);
 
             this.description = this.folderInstance ? this.folderInstance.intro : this.module.description;
-            this.subfolder = AddonModFolderHelper.formatContents(this.module.contents);
+            this.contents = AddonModFolderHelper.formatContents(this.module.contents);
         } finally {
             this.fillContextMenu(refresh);
         }

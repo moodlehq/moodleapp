@@ -65,7 +65,7 @@
         overflow-x: hidden;
         overflow-y: auto;
         cursor: text;
-        img {
+        ::ng-deep img {
             @include padding(null, null, null, 2px);
             max-width: 95%;
             width: auto;
@@ -78,7 +78,7 @@
         }
 
         // Make empty elements selectable (to move the cursor).
-        *:empty:after {
+        ::ng-deep *:empty:after {
             content: '\200B';
         }
     }
