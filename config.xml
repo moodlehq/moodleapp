@@ -248,6 +248,11 @@
         <edit-config file="*-Info.plist" mode="merge" target="CFBundleShortVersionString">
             <string>3.9.5</string>
         </edit-config>
+        <edit-config target="CFBundleLocalizations" file="*-Info.plist" mode="overwrite">
+            <array>
+                <string>en</string>
+            </array>
+        </edit-config>
         <config-file parent="FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED" target="*-Info.plist">
             <string>YES</string>
         </config-file>
