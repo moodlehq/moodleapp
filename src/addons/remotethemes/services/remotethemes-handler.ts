@@ -24,7 +24,6 @@ import { CoreStyleHandler, CoreStylesService } from '@features/styles/services/s
 import { CoreLogger } from '@singletons/logger';
 import { CoreUtils } from '@services/utils/utils';
 
-const SEPARATOR_35 = /\/\*\*? *3\.5(\.0)? *styles? *\*\//i; // A comment like "/* 3.5 styles */".
 const COMPONENT = 'mmaRemoteStyles';
 
 /**
@@ -61,7 +60,7 @@ export class AddonRemoteThemesHandlerService implements CoreStyleHandler {
             }
 
             // Config received, it's a temp site.
-            return await this.get35Styles(config.mobilecssurl);
+            return await this.getRemoteStyles(config.mobilecssurl);
         }
 
         const site = await CoreSites.getSite(siteId);
@@ -86,7 +85,7 @@ export class AddonRemoteThemesHandlerService implements CoreStyleHandler {
         this.logger.debug('Loading styles from: ', fileUrl);
 
         // Get the CSS content using HTTP because we will treat the styles before saving them in the file.
-        const style = await this.get35Styles(fileUrl);
+        const style = await this.getRemoteStyles(fileUrl);
 
         if (style != '') {
             // Treat the CSS.
@@ -99,24 +98,17 @@ export class AddonRemoteThemesHandlerService implements CoreStyleHandler {
     }
 
     /**
-     * Check if the CSS code has a separator for 3.5 styles. If it does, get only the styles after the separator.
+     * Get styles from the url.
      *
      * @param url Url to get the code from.
-     * @return The filtered styles.
+     * @return The styles.
      */
-    protected async get35Styles(url?: string): Promise<string> {
+    protected async getRemoteStyles(url?: string): Promise<string> {
         if (!url) {
             return '';
         }
 
-        const cssCode = await CoreWS.getText(url);
-
-        const separatorPos = cssCode.search(SEPARATOR_35);
-        if (separatorPos > -1) {
-            return cssCode.substr(separatorPos).replace(SEPARATOR_35, '');
-        }
-
-        return cssCode;
+        return await CoreWS.getText(url);
     }
 
     /**
