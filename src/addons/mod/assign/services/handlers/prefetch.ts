@@ -458,6 +458,11 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                         userIds.push(userSubmission.userid);
                     }
                 }
+
+                if (assign.teamsubmission && submission.lastattempt.submissiongroup) {
+                    // Prefetch group info.
+                    promises.push(CoreGroups.getActivityAllowedGroups(assign.cmid));
+                }
             }
 
             // Prefetch grade items.
