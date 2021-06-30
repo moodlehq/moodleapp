@@ -632,7 +632,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         const completionModules = (<CoreCourseModule[]> [])
             .concat(...this.sections!.map((section) => section.modules))
             .map((module) => module.completion && module.completion > 0 ? 1 : module.completion)
-            .reduce((accumulator, currentValue) => (accumulator || 0) + (currentValue || 0));
+            .reduce((accumulator, currentValue) => (accumulator || 0) + (currentValue || 0), 0);
 
         const moduleProgressPercent = 100 / (completionModules || 1);
         // Use min/max here to avoid floating point rounding errors over/under-flowing the progress bar.

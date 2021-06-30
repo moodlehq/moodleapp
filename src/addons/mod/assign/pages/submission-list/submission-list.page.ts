@@ -29,6 +29,7 @@ import {
     AddonModAssignSubmission,
     AddonModAssignProvider,
     AddonModAssign,
+    AddonModAssignGrade,
 } from '../../services/assign';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../services/assign-helper';
 import { AddonModAssignOffline } from '../../services/assign-offline';
@@ -252,7 +253,10 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
                             // Get the last grade of the submission.
                             const grade = grades
                                 .filter((grade) => grade.userid == submission.userid)
-                                .reduce((a, b) => (a.timemodified > b.timemodified ? a : b));
+                                .reduce(
+                                    (a, b) => (a && a.timemodified > b.timemodified ? a : b),
+                                    <AddonModAssignGrade | undefined> undefined,
+                                );
 
                             if (grade && grade.timemodified < submission.timemodified) {
                                 submission.gradingstatus = AddonModAssignProvider.GRADED_FOLLOWUP_SUBMIT;
