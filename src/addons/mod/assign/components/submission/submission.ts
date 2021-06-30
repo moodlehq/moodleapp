@@ -671,8 +671,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 AddonModAssign.getSubmissionGradingStatusTranslationId(this.grade.gradingStatus);
         }
 
-        if (this.lastAttempt?.gradingstatus == 'graded' && !this.assign!.markingworkflow) {
-            if (this.feedback!.gradeddate < this.lastAttempt!.submission!.timemodified) {
+        if (this.lastAttempt?.gradingstatus == 'graded' && !this.assign!.markingworkflow && this.userSubmission) {
+            if (this.feedback!.gradeddate < this.userSubmission.timemodified) {
                 this.lastAttempt.gradingstatus = AddonModAssignProvider.GRADED_FOLLOWUP_SUBMIT;
 
                 // Get grading text and color.
