@@ -52,9 +52,8 @@ export class CoreLoginHelperProvider {
     static readonly FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation" alt="">';
 
     protected logger: CoreLogger;
-    protected isSSOConfirmShown = false;
+    protected sessionExpiredCheckingSite: Record<string, boolean> = {};
     protected isOpenEditAlertShown = false;
-    protected isOpeningReconnect = false;
     protected waitingForBrowser = false;
 
     constructor() {
@@ -885,6 +884,12 @@ export class CoreLoginHelperProvider {
             return; // Site that triggered the event is not current site.
         }
 
+        if (this.sessionExpiredCheckingSite[siteId || '']) {
+            return; // Operation pending.
+        }
+
+        this.sessionExpiredCheckingSite[siteId || ''] = true;
+
         try {
             // Check authentication method.
             const result = await CoreSites.checkSite(siteUrl);
@@ -895,9 +900,7 @@ export class CoreLoginHelperProvider {
 
             if (this.isSSOLoginNeeded(result.code)) {
                 // SSO. User needs to authenticate in a browser. Check if we need to display a message.
-                if (!CoreApp.isSSOAuthenticationOngoing() && !this.isSSOConfirmShown && !this.waitingForBrowser) {
-                    this.isSSOConfirmShown = true;
-
+                if (!CoreApp.isSSOAuthenticationOngoing() && !this.waitingForBrowser) {
                     try {
                         if (this.shouldShowSSOConfirm(result.code)) {
                             await CoreDomUtils.showConfirm(Translate.instant('core.login.' +
@@ -917,8 +920,6 @@ export class CoreLoginHelperProvider {
                     } catch (error) {
                         // User cancelled, logout him.
                         CoreSites.logout();
-                    } finally {
-                        this.isSSOConfirmShown = false;
                     }
                 }
             } else {
@@ -932,10 +933,8 @@ export class CoreLoginHelperProvider {
                     });
 
                     if (providerToUse) {
-                        if (!CoreApp.isSSOAuthenticationOngoing() && !this.isSSOConfirmShown && !this.waitingForBrowser) {
+                        if (!CoreApp.isSSOAuthenticationOngoing() && !this.waitingForBrowser) {
                             // Open browser to perform the OAuth.
-                            this.isSSOConfirmShown = true;
-
                             const confirmMessage = Translate.instant('core.login.' +
                                     (currentSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription'));
 
@@ -955,8 +954,6 @@ export class CoreLoginHelperProvider {
                             } catch (error) {
                                 // User cancelled, logout him.
                                 CoreSites.logout();
-                            } finally {
-                                this.isSSOConfirmShown = false;
                             }
                         }
 
@@ -965,13 +962,11 @@ export class CoreLoginHelperProvider {
                 }
 
                 const info = currentSite.getInfo();
-                if (typeof info != 'undefined' && typeof info.username != 'undefined' && !this.isOpeningReconnect) {
+                if (typeof info != 'undefined' && typeof info.username != 'undefined') {
                     // If current page is already reconnect, stop.
                     if (CoreNavigator.isCurrent('/login/reconnect')) {
                         return;
                     }
-
-                    this.isOpeningReconnect = true;
 
                     await CoreUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
                         params: {
@@ -981,8 +976,6 @@ export class CoreLoginHelperProvider {
                         },
                         reset: true,
                     }));
-
-                    this.isOpeningReconnect = false;
                 }
             }
         } catch (error) {
@@ -992,6 +985,8 @@ export class CoreLoginHelperProvider {
                 CoreDomUtils.showErrorModalDefault(error, 'core.networkerrormsg', true);
                 CoreSites.logout();
             }
+        } finally {
+            this.sessionExpiredCheckingSite[siteId || ''] = false;
         }
     }
 
