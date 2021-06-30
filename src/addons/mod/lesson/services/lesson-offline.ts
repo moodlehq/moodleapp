@@ -190,7 +190,10 @@ export class AddonModLessonOfflineProvider {
             const attempts = await this.getRetakeAttemptsForPage(lessonId, retake, retakeData.lastquestionpage, siteId);
 
             // Return the attempt with highest timemodified.
-            return attempts.reduce((a, b) => a.timemodified > b.timemodified ? a : b);
+            return attempts.reduce(
+                (a, b) => a && a.timemodified > b.timemodified ? a : b,
+                <AddonModLessonPageAttemptRecord | undefined> undefined,
+            );
         } catch {
             // Error, return undefined.
         }

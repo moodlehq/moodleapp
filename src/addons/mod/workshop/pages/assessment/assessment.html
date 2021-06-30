@@ -53,7 +53,7 @@
             [access]="access" [assessmentId]="assessmentId" [userId]="profile && profile.id" [strategy]="strategy">
         </addon-mod-workshop-assessment-strategy>
 
-        <form ion-list [formGroup]="evaluateForm" *ngIf="evaluating" #evaluateFormEl>
+        <form [formGroup]="evaluateForm" *ngIf="evaluating" #evaluateFormEl>
             <ion-item class="ion-text-wrap">
                 <ion-label><h2>{{ 'addon.mod_workshop.assessmentsettings' | translate }}</h2></ion-label>
             </ion-item>

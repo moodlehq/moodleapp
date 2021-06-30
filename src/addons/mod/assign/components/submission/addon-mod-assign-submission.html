@@ -280,9 +280,11 @@
                     </ion-item>
                 </ng-container>
 
-                <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback!.plugins" [assign]="assign"
-                    [submission]="userSubmission" [userId]="submitId" [plugin]="plugin" [canEdit]="canSaveGrades">
-                </addon-mod-assign-feedback-plugin>
+                <ng-container *ngIf="feedback">
+                    <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" [assign]="assign"
+                        [submission]="userSubmission" [userId]="submitId" [plugin]="plugin" [canEdit]="canSaveGrades">
+                    </addon-mod-assign-feedback-plugin>
+                </ng-container>
 
                 <!-- Workflow status. -->
                 <ion-item class="ion-text-wrap" *ngIf="workflowStatusTranslationId">
@@ -338,7 +340,7 @@
                 </ion-item>
 
                 <!-- Grader is hidden, display only the grade date. -->
-                <ion-item class="ion-text-wrap" *ngIf="!grader && feedback!.gradeddate">
+                <ion-item class="ion-text-wrap" *ngIf="!grader && feedback?.gradeddate">
                     <ion-label>
                         <h2>{{ 'addon.mod_assign.gradedon' | translate }}</h2>
                         <p>{{ feedback!.gradeddate * 1000 | coreFormatDate }}</p>

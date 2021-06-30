@@ -1377,6 +1377,8 @@ export class AddonModAssignProvider {
                 // The WebService returned warnings, reject.
                 throw new CoreWSError(warnings[0]);
             }
+
+            return;
         }
 
         // WS not available, fallback to save_grade.

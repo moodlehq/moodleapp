@@ -13,7 +13,7 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <form ion-list [formGroup]="editForm" *ngIf="workshop" #editFormEl>
+        <form [formGroup]="editForm" *ngIf="workshop" #editFormEl>
             <ion-item class="ion-text-wrap">
                 <ion-label position="stacked">
                     <span core-mark-required="true">
