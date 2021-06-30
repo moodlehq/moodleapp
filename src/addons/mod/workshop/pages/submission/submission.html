@@ -97,7 +97,7 @@
             </addon-mod-workshop-assessment>
         </ion-list>
 
-        <form ion-list [formGroup]="feedbackForm" *ngIf="canAddFeedback && submission" #feedbackFormEl>
+        <form [formGroup]="feedbackForm" *ngIf="canAddFeedback && submission" #feedbackFormEl>
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <h2>{{ 'addon.mod_workshop.feedbackauthor' | translate }}</h2>
