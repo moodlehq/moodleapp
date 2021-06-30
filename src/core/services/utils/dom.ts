@@ -1745,6 +1745,9 @@ export class CoreDomUtilsProvider {
                 case 'ios':
                     fixIOSPopoverPosition(popover, popoverOptions.event);
                     break;
+                case 'md':
+                    fixMDPopoverPosition(popover, popoverOptions.event);
+                    break;
             }
         }
 
@@ -1864,10 +1867,10 @@ export class CoreDomUtilsProvider {
  * Fix the position of a popover that was created with a zoom level applied in iOS.
  *
  * This is necessary because Ionic's implementation gets the body dimensions from `element.ownerDocument.defaultView.innerXXX`,
- * which doesn't return the correct dimensions when the `zoom` CSS property is being used. This is only necessary
- * in iOS because Android already respects system font sizes, and setting the zoom level is unnecessary. Eventually, we
- * should find an alternative implementation for iOS that doesn't require this workaround (also because the `zoom` CSS
- * property is not standard and its usage is discouraged for production).
+ * which doesn't return the correct dimensions when the `zoom` CSS property is being used. This is specially necessary
+ * in iOS because Android already respects system font sizes. Eventually, we should find an alternative implementation for iOS
+ * that doesn't require this workaround (also because the `zoom` CSS property is not standard and its usage is discouraged for
+ * production).
  *
  * This function has been copied in its entirety from Ionic's source code, only changing the aforementioned calculation
  * of the body dimensions with `document.body.clientXXX`.
@@ -1947,6 +1950,69 @@ function fixIOSPopoverPosition(baseEl: HTMLElement, ev?: Event): void {
         contentEl.style.left = `calc(${popoverCSS.left}px - var(--ion-safe-area-right, 0px))`;
     }
 
+    contentEl.style.transformOrigin = originY + ' ' + originX;
+}
+
+/**
+ * Fix the position of a popover that was created with a zoom level applied in Android.
+ *
+ * This is necessary because Ionic's implementation gets the body dimensions from `element.ownerDocument.defaultView.innerXXX`,
+ * which doesn't return the correct dimensions when the `zoom` CSS property is being used. This is only a temporary solution
+ * in Android because system zooming is already supported, so it won't be necessary to do it at an app level.
+ *
+ * @todo remove the ability to zoom in Android.
+ *
+ * This function has been copied in its entirety from Ionic's source code, only changing the aforementioned calculation
+ * of the body dimensions with `document.body.clientXXX`.
+ *
+ * @see https://github.com/ionic-team/ionic-framework/blob/v5.6.6/core/src/components/popover/animations/md.enter.ts
+ */
+function fixMDPopoverPosition(baseEl: HTMLElement, ev?: Event): void {
+    const POPOVER_MD_BODY_PADDING = 12;
+    const isRTL = document.dir === 'rtl';
+
+    let originY = 'top';
+    let originX = isRTL ? 'right' : 'left';
+
+    const contentEl = baseEl.querySelector('.popover-content') as HTMLElement;
+    const contentDimentions = contentEl.getBoundingClientRect();
+    const contentWidth = contentDimentions.width;
+    const contentHeight = contentDimentions.height;
+    const bodyWidth = document.body.clientWidth;
+    const bodyHeight = document.body.clientHeight;
+    const targetDim = ev && ev.target && (ev.target as HTMLElement).getBoundingClientRect();
+    const targetTop = targetDim != null && 'bottom' in targetDim
+        ? targetDim.bottom
+        : bodyHeight / 2 - contentHeight / 2;
+    const targetLeft = targetDim != null && 'left' in targetDim
+        ? isRTL
+            ? targetDim.left - contentWidth + targetDim.width
+            : targetDim.left
+        : bodyWidth / 2 - contentWidth / 2;
+    const targetHeight = (targetDim && targetDim.height) || 0;
+    const popoverCSS: { top: number; left: number } = {
+        top: targetTop,
+        left: targetLeft,
+    };
+
+    if (popoverCSS.left < POPOVER_MD_BODY_PADDING) {
+        popoverCSS.left = POPOVER_MD_BODY_PADDING;
+        originX = 'left';
+    } else if (contentWidth + POPOVER_MD_BODY_PADDING + popoverCSS.left > bodyWidth) {
+        popoverCSS.left = bodyWidth - contentWidth - POPOVER_MD_BODY_PADDING;
+        originX = 'right';
+    }
+
+    if (targetTop + targetHeight + contentHeight > bodyHeight && targetTop - contentHeight > 0) {
+        popoverCSS.top = targetTop - contentHeight - targetHeight;
+        baseEl.className = baseEl.className + ' popover-bottom';
+        originY = 'bottom';
+    } else if (targetTop + targetHeight + contentHeight > bodyHeight) {
+        contentEl.style.bottom = POPOVER_MD_BODY_PADDING + 'px';
+    }
+
+    contentEl.style.top = popoverCSS.top + 'px';
+    contentEl.style.left = popoverCSS.left + 'px';
     contentEl.style.transformOrigin = originY + ' ' + originX;
 }
 
