@@ -13,6 +13,7 @@
 // limitations under the License.
 
 const BuildLangTask = require('./gulp/task-build-lang');
+const BuildBehatPluginTask = require('./gulp/task-build-behat-plugin');
 const BuildEnvTask = require('./gulp/task-build-env');
 const PushTask = require('./gulp/task-push');
 const Utils = require('./gulp/utils');
@@ -40,13 +41,31 @@ gulp.task('env', (done) => {
     new BuildEnvTask().run(done);
 });
 
+// Build a Moodle plugin to run Behat tests.
+if (BuildBehatPluginTask.isBehatConfigured()) {
+    gulp.task('behat', (done) => {
+        new BuildBehatPluginTask().run(done);
+    });
+}
+
 gulp.task('push', (done) => {
     new PushTask().run(args, done);
 });
 
-gulp.task('default', gulp.parallel(['lang', 'env']));
+gulp.task(
+    'default',
+    gulp.parallel([
+        'lang',
+        'env',
+        ...(BuildBehatPluginTask.isBehatConfigured() ? ['behat'] : [])
+    ]),
+);
 
 gulp.task('watch', () => {
     gulp.watch(paths.lang, { interval: 500 }, gulp.parallel('lang'));
     gulp.watch(['./moodle.config.json', './moodle.config.*.json'], { interval: 500 }, gulp.parallel('env'));
+
+    if (BuildBehatPluginTask.isBehatConfigured()) {
+        gulp.watch(['./tests/behat'], { interval: 500 }, gulp.parallel('behat'));
+    }
 });
