@@ -2095,8 +2095,6 @@
   "core.settings.errorsyncsite": "local_moodlemobileapp",
   "core.settings.estimatedfreespace": "local_moodlemobileapp",
   "core.settings.filesystemroot": "local_moodlemobileapp",
-  "core.settings.fontsize": "local_moodlemobileapp",
-  "core.settings.fontsizecharacter": "block_accessibility/char",
   "core.settings.forcedsetting": "local_moodlemobileapp",
   "core.settings.general": "moodle",
   "core.settings.helpusimprove": "local_moodlemobileapp",

@@ -75,11 +75,6 @@
             "password": "moodle"
         }
     },
-    "zoomlevels": {
-        "normal": 100,
-        "low": 110,
-        "high": 120
-    },
     "customurlscheme": "moodlemobile",
     "siteurl": "",
     "sitename": "",

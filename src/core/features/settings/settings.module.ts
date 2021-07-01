@@ -54,7 +54,6 @@ const mainMenuMoreRoutes: Routes = [
             multi: true,
             deps: [CoreSettingsHelperProvider],
             useFactory: (helper: CoreSettingsHelperProvider) => async () => {
-                await helper.upgradeZoomLevel();
                 helper.initDomSettings();
             },
         },

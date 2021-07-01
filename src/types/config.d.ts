@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreColorScheme, CoreZoomLevel } from '@features/settings/services/settings-helper';
+import { CoreColorScheme } from '@features/settings/services/settings-helper';
 import { CoreMainMenuLocalizedCustomItem } from '@features/mainmenu/services/mainmenu';
 import { CoreSitesDemoSiteData } from '@services/sites';
 import { OpenFileAction } from '@services/utils/utils';
@@ -33,7 +33,6 @@ export interface EnvironmentConfig {
     wsservice: string;
     wsextservice: string;
     demo_sites: Record<string, CoreSitesDemoSiteData>;
-    zoomlevels: Record<CoreZoomLevel, number>;
     customurlscheme: string;
     siteurl: string;
     sitename: string;

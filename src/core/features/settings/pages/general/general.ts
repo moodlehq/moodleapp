@@ -19,7 +19,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreLang } from '@services/lang';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
-import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../services/settings-helper';
+import { CoreSettingsHelper, CoreColorScheme } from '../../services/settings-helper';
 import { CoreApp } from '@services/app';
 import { CoreIframeUtils } from '@services/utils/iframe';
 import { Diagnostic } from '@singletons';
@@ -36,8 +36,6 @@ export class CoreSettingsGeneralPage {
 
     languages: { code: string; name: string }[] = [];
     selectedLanguage = '';
-    zoomLevels: { value: CoreZoomLevel; style: number; selected: boolean }[] = [];
-    selectedZoomLevel = CoreZoomLevel.NORMAL;
     richTextEditor = true;
     debugDisplay = false;
     analyticsSupported = false;
@@ -83,16 +81,6 @@ export class CoreSettingsGeneralPage {
             }
         }
 
-        this.selectedZoomLevel = await CoreSettingsHelper.getZoomLevel();
-
-        this.zoomLevels = Object.keys(CoreConstants.CONFIG.zoomlevels).map((value: CoreZoomLevel) =>
-            ({
-                value,
-                // Absolute pixel size based on 1.4rem body text when this size is selected.
-                style: Math.round(CoreConstants.CONFIG.zoomlevels[value] * 16 / 100),
-                selected: value === this.selectedZoomLevel,
-            }));
-
         this.richTextEditor = await CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
 
         this.debugDisplay = await CoreConfig.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false);
@@ -112,20 +100,6 @@ export class CoreSettingsGeneralPage {
         CoreLang.changeCurrentLanguage(this.selectedLanguage).finally(() => {
             CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, this.selectedLanguage);
         });
-    }
-
-    /**
-     * Called when a new zoom level is selected.
-     */
-    zoomLevelChanged(): void {
-        this.zoomLevels = this.zoomLevels.map((fontSize) => {
-            fontSize.selected = fontSize.value === this.selectedZoomLevel;
-
-            return fontSize;
-        });
-
-        CoreSettingsHelper.applyZoomLevel(this.selectedZoomLevel);
-        CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, this.selectedZoomLevel);
     }
 
     /**

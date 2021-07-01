@@ -30,7 +30,6 @@ import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
 
 import { Platform, Translate } from '@singletons';
-import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from './aria-role-tab';
 
 /**
@@ -407,9 +406,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             }
         }
 
-        const zoomLevel = await CoreSettingsHelper.getZoom();
-
-        this.maxSlides = Math.floor(width / (zoomLevel / 100 * CoreTabsBaseComponent.MIN_TAB_WIDTH));
+        this.maxSlides = Math.floor(width / CoreTabsBaseComponent.MIN_TAB_WIDTH);
     }
 
     /**
