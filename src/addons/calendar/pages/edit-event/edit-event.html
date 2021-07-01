@@ -155,13 +155,13 @@
                             <ion-label>
                                 <p>{{ 'addon.calendar.durationnone' | translate }}</p>
                             </ion-label>
-                            <ion-radio slot="end" value="0"></ion-radio>
+                            <ion-radio slot="end" [value]="0"></ion-radio>
                         </ion-item>
                         <ion-item lines="none">
                             <ion-label>
                                 <p>{{ 'addon.calendar.durationuntil' | translate }}</p>
                             </ion-label>
-                            <ion-radio slot="end" value="1"></ion-radio>
+                            <ion-radio slot="end" [value]="1"></ion-radio>
                         </ion-item>
                         <ion-item>
                             <ion-datetime formControlName="timedurationuntil" [max]="maxDate" [min]="minDate"
@@ -174,7 +174,7 @@
                             <ion-label>
                                 <p>{{ 'addon.calendar.durationminutes' | translate }}</p>
                             </ion-label>
-                            <ion-radio slot="end" value="2"></ion-radio>
+                            <ion-radio slot="end" [value]="2"></ion-radio>
                         </ion-item>
                         <ion-item>
                             <ion-label class="sr-only">{{ 'addon.calendar.durationminutes' | translate }}</ion-label>
