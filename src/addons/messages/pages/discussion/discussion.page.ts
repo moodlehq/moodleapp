@@ -109,6 +109,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     newMessages = 0;
     scrollElement?: HTMLElement;
     unreadMessageFrom = 0;
+    initialized = false;
 
     constructor(
         protected route: ActivatedRoute,
@@ -162,6 +163,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         this.route.queryParams.subscribe(async (params) => {
             const oldConversationId = this.conversationId;
             const oldUserId = this.userId;
+            let forceScrollToBottom = false;
             this.conversationId = CoreNavigator.getRouteNumberParam('conversationId', { params }) || undefined;
             this.userId = CoreNavigator.getRouteNumberParam('userId', { params }) || undefined;
             this.showInfo = !params.hideInfo;
@@ -169,13 +171,15 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             if (oldConversationId != this.conversationId || oldUserId != this.userId) {
                 // Showing reload again can break animations.
                 this.loaded = false;
+                this.initialized = false;
+                forceScrollToBottom = true;
             }
 
             this.showKeyboard = CoreNavigator.getRouteBooleanParam('showKeyboard', { params }) || false;
 
             await this.fetchData();
 
-            this.scrollToBottom();
+            this.scrollToBottom(forceScrollToBottom);
         });
     }
 
@@ -480,10 +484,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             message.showUserData = this.showUserData(message, this.messages[index - 1]);
             message.showTail = this.showTail(message, this.messages[index + 1]);
         });
-
-        // Call resize to recalculate the dimensions.
-        // @todo probably not needed.
-        // this.content!.resize();
 
         // If we received a new message while using group messaging, force mark messages as read.
         const last = this.messages[this.messages.length - 1];
@@ -1036,6 +1036,15 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      * @return Resolved when done.
      */
     async loadPrevious(infiniteComplete?: () => void): Promise<void> {
+        if (!this.initialized) {
+            // Don't load previous if the view isn't fully initialized.
+            // Don't put the initialized condition in the "enabled" input because then the load more is hidden and
+            // the scroll height changes when it appears.
+            infiniteComplete && infiniteComplete();
+
+            return;
+        }
+
         let infiniteHeight = this.infinite?.infiniteEl?.nativeElement.getBoundingClientRect().height || 0;
         const scrollHeight = (this.scrollElement?.scrollHeight || 0);
 
@@ -1122,20 +1131,27 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
     /**
      * Scroll bottom when render has finished.
+     *
+     * @param force Whether to force scroll to bottom.
      */
-    scrollToBottom(): void {
+    async scrollToBottom(force = false): Promise<void> {
         // Check if scroll is at bottom. If so, scroll bottom after rendering since there might be something new.
-        if (this.scrollBottom) {
-            // Need a timeout to leave time to the view to be rendered.
-            setTimeout(() => {
-                if (!this.viewDestroyed) {
-                    this.content!.scrollToBottom(0);
-                }
-            });
+        if (this.scrollBottom || force) {
             this.scrollBottom = false;
 
             // Reset the badge.
             this.setNewMessagesBadge(0);
+
+            // Leave time for the view to be rendered.
+            await CoreUtils.nextTicks(5);
+
+            if (!this.viewDestroyed) {
+                this.content!.scrollToBottom(0);
+            }
+
+            if (force) {
+                this.initialized = true;
+            }
         }
     }
 
