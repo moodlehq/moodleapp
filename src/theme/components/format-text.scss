@@ -189,6 +189,10 @@ core-format-text {
         &:hover {
             opacity: .7;
         }
+
+        &.hidden {
+            display: none;
+        }
     }
 }
 
