@@ -146,10 +146,11 @@
     ion-action-sheet {
         --button-color: var(--ion-text-color);
         --button-color-selected: var(--ion-text-color);
-        --title-border-color: var(--gray);
+        --title-border-color: var(--brand-color);
 
         .action-sheet-title {
             --color: var(--ion-text-color);
+            font-weight: bold;
         }
 
         @media (min-height: 500px) {

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
 import { AddonModForum, AddonModForumData, AddonModForumPost, AddonModForumProvider } from '../forum';
-import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreFilepool } from '@services/filepool';
 import { CoreWSFile } from '@services/ws';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
@@ -71,15 +71,15 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      */
     protected getPostsFiles(posts: AddonModForumPost[]): CoreWSFile[] {
         let files: CoreWSFile[] = [];
-        const getInlineFiles = CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.2');
 
         posts.forEach((post) => {
             if (post.attachments && post.attachments.length) {
                 files = files.concat(post.attachments as CoreWSFile[]);
             }
-            if (getInlineFiles && post.messageinlinefiles && post.messageinlinefiles.length) {
+
+            if (post.messageinlinefiles) {
                 files = files.concat(post.messageinlinefiles);
-            } else if (post.message && !getInlineFiles) {
+            } else if (post.message) {
                 files = files.concat(CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(post.message));
             }
         });
