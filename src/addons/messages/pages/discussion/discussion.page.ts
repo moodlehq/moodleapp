@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { AlertOptions } from '@ionic/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -76,6 +76,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     protected viewDestroyed = false;
     protected memberInfoObserver: CoreEventObserver;
     protected showLoadingModal = false; // Whether to show a loading modal while fetching data.
+    protected hostElement: HTMLElement;
 
     conversationId?: number; // Conversation ID. Undefined if it's a new individual conversation.
     conversation?: AddonMessagesConversationFormatted; // The conversation object (if it exists).
@@ -113,7 +114,9 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
     constructor(
         protected route: ActivatedRoute,
+        protected elementRef: ElementRef<HTMLElement>,
     ) {
+        this.hostElement = elementRef.nativeElement;
         this.siteId = CoreSites.getCurrentSiteId();
         this.currentUserId = CoreSites.getCurrentSiteUserId();
         this.groupMessagingEnabled = AddonMessages.isGroupMessagingEnabled();
@@ -357,7 +360,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
         } finally {
             this.checkCanDelete();
-            this.resizeContent();
             this.loaded = true;
             this.setPolling(); // Make sure we're polling messages.
             this.setContactRequestInfo();
@@ -537,7 +539,9 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 return;
             }
 
-            const messages = Array.from(document.querySelectorAll('.addon-message-not-mine')).slice(-this.newMessages).reverse();
+            const messages = Array.from(this.hostElement.querySelectorAll('.addon-message-not-mine'))
+                .slice(-this.newMessages)
+                .reverse();
 
             const newMessagesUnread = messages.findIndex((message) => {
                 const elementRect = message.getBoundingClientRect();
@@ -1045,7 +1049,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             return;
         }
 
-        let infiniteHeight = this.infinite?.infiniteEl?.nativeElement.getBoundingClientRect().height || 0;
+        let infiniteHeight = this.infinite?.hostElement.getBoundingClientRect().height || 0;
         const scrollHeight = (this.scrollElement?.scrollHeight || 0);
 
         // If there is an ongoing fetch, wait for it to finish.
@@ -1060,7 +1064,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 // Try to keep the scroll position.
                 const scrollBottom = scrollHeight - (this.scrollElement?.scrollTop || 0);
 
-                const height = this.infinite?.infiniteEl?.nativeElement.getBoundingClientRect().height || 0;
+                const height = this.infinite?.hostElement.getBoundingClientRect().height || 0;
                 if (this.canLoadMore && infiniteHeight && this.infinite) {
                     // The height of the infinite is different while spinner is shown. Add that difference.
                     infiniteHeight = infiniteHeight - height;
@@ -1082,10 +1086,8 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
     /**
      * Keep scroll position after loading previous messages.
-     * We don't use resizeContent because the approach used is different and it isn't easy to calculate these positions.
      */
     protected keepScroll(oldScrollHeight: number, oldScrollBottom: number, infiniteHeight: number, retries = 0): void {
-
         setTimeout(() => {
             const newScrollHeight = (this.scrollElement?.scrollHeight || 0);
 
@@ -1098,35 +1100,14 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 return;
             }
 
-            const scrollTo = newScrollHeight - oldScrollBottom + infiniteHeight;
+            // Scroll has changed, but maybe it hasn't reached the full height yet.
+            setTimeout(() => {
+                const newScrollHeight = (this.scrollElement?.scrollHeight || 0);
+                const scrollTo = newScrollHeight - oldScrollBottom + infiniteHeight;
 
-            this.content!.scrollToPoint(0, scrollTo, 0);
+                this.content!.scrollToPoint(0, scrollTo, 0);
+            }, 30);
         }, 30);
-    }
-
-    /**
-     * Content or scroll has been resized. For content, only call it if it's been added on top.
-     */
-    resizeContent(): void {
-        /* @todo probably not needed.
-        let top = this.content!.getContentDimensions().scrollTop;
-        // @todo this.content.resize();
-
-        // Wait for new content height to be calculated.
-        setTimeout(() => {
-            // Visible content size changed, maintain the bottom position.
-            if (!this.viewDestroyed && (this.scrollElement?.clientHeight || 0) != this.oldContentHeight) {
-                if (!top) {
-                    top = this.content!.getContentDimensions().scrollTop;
-                }
-
-                top += this.oldContentHeight - (this.scrollElement?.clientHeight || 0);
-                this.oldContentHeight = (this.scrollElement?.clientHeight || 0);
-
-                this.content!.scrollToPoint(0, top, 0);
-            }
-        });
-        */
     }
 
     /**
@@ -1160,7 +1141,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      */
     scrollToFirstUnreadMessage(): void {
         if (this.newMessages > 0) {
-            const messages = Array.from(document.querySelectorAll('.addon-message-not-mine'));
+            const messages = Array.from(this.hostElement.querySelectorAll('.addon-message-not-mine'));
 
             CoreDomUtils.scrollToElement(this.content!, <HTMLElement> messages[messages.length - this.newMessages]);
         }

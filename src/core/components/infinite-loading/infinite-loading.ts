@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange, ViewChild, ElementRef } from '@angular/core';
-import { IonContent, IonInfiniteScroll } from '@ionic/angular';
+import { IonInfiniteScroll } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 
@@ -37,15 +37,16 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
     @Output() action: EventEmitter<() => void>; // Will emit an event when triggered.
 
     @ViewChild('topbutton') topButton?: ElementRef;
-    @ViewChild('infinitescroll') infiniteEl?: ElementRef;
     @ViewChild('bottombutton') bottomButton?: ElementRef;
     @ViewChild('spinnercontainer') spinnerContainer?: ElementRef;
     @ViewChild(IonInfiniteScroll) infiniteScroll?: IonInfiniteScroll;
 
     loadingMore = false; // Hide button and avoid loading more.
+    hostElement: HTMLElement;
 
-    constructor(protected element: ElementRef) {
+    constructor(protected element: ElementRef<HTMLElement>) {
         this.action = new EventEmitter();
+        this.hostElement = element.nativeElement;
     }
 
     /**
@@ -76,14 +77,14 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
         await CoreUtils.nextTick();
 
         // Calculate distance from edge.
-        const content = this.element.nativeElement.closest('ion-content') as IonContent;
+        const content = this.hostElement.closest('ion-content');
         if (!content) {
             return;
         }
 
         const scrollElement = await content.getScrollElement();
 
-        const infiniteHeight = this.element.nativeElement.getBoundingClientRect().height;
+        const infiniteHeight = this.hostElement.getBoundingClientRect().height;
         const scrollTop = scrollElement.scrollTop;
         const height = scrollElement.offsetHeight;
         const threshold = height * THRESHOLD;
@@ -141,11 +142,20 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
      * @deprecated since 3.9.5
      */
     getHeight(): number {
-        // return this.element.nativeElement.getBoundingClientRect().height;
+        return (this.position == 'top' ?
+            this.getElementHeight(this.topButton?.nativeElement) :
+            this.getElementHeight(this.bottomButton?.nativeElement)) +
+            this.getElementHeight(this.infiniteScrollElement) +
+            this.getElementHeight(this.spinnerContainer?.nativeElement);
+    }
 
-        return (this.position == 'top' ? this.getElementHeight(this.topButton): this.getElementHeight(this.bottomButton)) +
-            this.getElementHeight(this.infiniteEl) +
-            this.getElementHeight(this.spinnerContainer);
+    /**
+     * Get the infinite scroll element.
+     *
+     * @return Element or null.
+     */
+    get infiniteScrollElement(): HTMLIonInfiniteScrollElement | null {
+        return this.hostElement.querySelector('ion-infinite-scroll');
     }
 
     /**
@@ -154,9 +164,9 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
      * @param element Element ref.
      * @return Height.
      */
-    protected getElementHeight(element?: ElementRef): number {
-        if (element && element.nativeElement) {
-            return CoreDomUtils.getElementHeight(element.nativeElement, true, true, true);
+    protected getElementHeight(element?: HTMLElement | null): number {
+        if (element) {
+            return CoreDomUtils.getElementHeight(element, true, true, true);
         }
 
         return 0;
