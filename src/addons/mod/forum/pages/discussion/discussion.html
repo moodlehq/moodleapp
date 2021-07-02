@@ -129,7 +129,7 @@
                     (onPostChange)="postListChanged()">
                 </addon-mod-forum-post>
             </ion-card>
-            <div class="ion-padding-left" *ngIf="post.children.length && post.children[0].subject">
+            <div class="ion-padding-start" *ngIf="post.children && post.children.length && post.children[0].subject">
                 <ng-container *ngFor="let child of post.children">
                     <ng-container *ngTemplateOutlet="nestedPosts; context: {post: child}"></ng-container>
                 </ng-container>
