@@ -51,11 +51,11 @@
 
     <core-loading [hideUntil]="loaded">
         <!-- Activity info. -->
-        <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        <core-course-module-info *ngIf="showCompletion && !isSearch" [module]="module" [showManualCompletion]="true"
             (completionChanged)="onCompletionChange()">
         </core-course-module-info>
 
-        <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
+        <core-course-module-description *ngIf="!isSearch" [description]="description" [component]="component" [componentId]="componentId"
             contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
         </core-course-module-description>
 
