@@ -1667,6 +1667,15 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Wait until several next ticks.
+     */
+    async nextTicks(numTicks = 0): Promise<void> {
+        for (let i = 0; i < numTicks; i++) {
+            await this.wait(0);
+        }
+    }
+
+    /**
      * Given some options, check if a file should be opened with showOpenWithDialog.
      *
      * @param options Options.

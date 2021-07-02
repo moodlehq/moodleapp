@@ -1861,6 +1861,32 @@ export class CoreDomUtilsProvider {
         CoreForms.triggerFormSubmittedEvent(formRef, online, siteId);
     }
 
+    /**
+     * In iOS the resize event is triggered before the window size changes. Wait for the size to change.
+     *
+     * @param windowWidth Initial window width.
+     * @param windowHeight Initial window height.
+     * @param retries Number of retries done.
+     */
+    async waitForResizeDone(windowWidth?: number, windowHeight?: number, retries = 0): Promise<void> {
+        if (!CoreApp.isIOS()) {
+            return; // Only wait in iOS.
+        }
+
+        windowWidth = windowWidth || window.innerWidth;
+        windowHeight = windowHeight || window.innerHeight;
+
+        if (windowWidth != window.innerWidth || windowHeight != window.innerHeight || retries >= 10) {
+            // Window size changed or max number of retries reached, stop.
+            return;
+        }
+
+        // Wait a bit and try again.
+        await CoreUtils.wait(50);
+
+        return this.waitForResizeDone(windowWidth, windowHeight, retries+1);
+    }
+
 }
 
 /**
