@@ -17,7 +17,7 @@
                         </core-format-text>
                     </h2>
                     <ion-note *ngIf="trackPosts && post.unread"
-                        class="ion-float-end ion-padding-left ion-text-end" [attr.aria-label]="'addon.mod_forum.unread' | translate">
+                        class="ion-float-end ion-padding-start ion-text-end" [attr.aria-label]="'addon.mod_forum.unread' | translate">
                         <ion-icon name="fas-circle" color="primary" aria-hidden="true"></ion-icon>
                     </ion-note>
                     <ion-button *ngIf="optionsMenuEnabled"
@@ -45,7 +45,7 @@
                     </div>
                     <ng-container *ngIf="!displaySubject">
                         <ion-note *ngIf="trackPosts && post.unread"
-                            class="ion-float-end ion-padding-left ion-text-end" [attr.aria-label]="'addon.mod_forum.unread' | translate">
+                            class="ion-float-end ion-padding-start ion-text-end" [attr.aria-label]="'addon.mod_forum.unread' | translate">
                             <ion-icon name="fas-circle" color="primary" aria-hidden="true"></ion-icon>
                         </ion-note>
                         <ion-button *ngIf="optionsMenuEnabled"

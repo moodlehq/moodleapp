@@ -17,7 +17,7 @@
                     <h2>{{ rating.userfullname }}</h2>
                     <p>{{ rating.rating }}</p>
                 </ion-label>
-                <ion-note slot="end" class="ion-padding-left" *ngIf="rating.timemodified">
+                <ion-note slot="end" class="ion-padding-start" *ngIf="rating.timemodified">
                     {{ rating.timemodified | coreDateDayOrTime }}
                 </ion-note>
             </ion-item>
