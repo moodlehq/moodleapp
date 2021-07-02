@@ -6,7 +6,6 @@ git:
   depth: 3
 
 before_cache:
-  - rm -rf $HOME/.cache/electron-builder/wine
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 
@@ -14,8 +13,6 @@ cache:
   npm: true
   directories:
     - $HOME/.npm
-    - $HOME/.cache/electron
-    - $HOME/.cache/electron-builder
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
@@ -38,7 +35,7 @@ jobs:
   include:
   - stage: build
     name: "Build Android"
-    if: env(DEPLOY) = 1
+    if: env(DEPLOY) = 1 OR (env(DEPLOY) = 2 AND tag IS NOT blank)
     language: android
     android:
       components:
@@ -52,9 +49,9 @@ jobs:
   - stage: build
     name: "Build iOS"
     language: node_js
-    if: env(DEPLOY) = 1 AND env(BUILD_IOS) = 1
+    if: env(BUILD_IOS) = 1 AND (env(DEPLOY) = 1 OR (env(DEPLOY) = 2 AND tag IS NOT blank))
     os: osx
-    osx_image: xcode12.4
+    osx_image: xcode12.5
   - stage: test
     name: "End to end tests (mod_forum and mod_messages)"
     services:
