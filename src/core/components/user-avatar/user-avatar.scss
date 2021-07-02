@@ -13,6 +13,11 @@
         max-width: var(--core-avatar-size);
         max-height: var(--core-avatar-size);
     }
+    img[alt] {
+        text-indent: -999999px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
     img[core-external-content]:not([src]),
     img[core-external-content][src=""] {
         visibility: visible;
