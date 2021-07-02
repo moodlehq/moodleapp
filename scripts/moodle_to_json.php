@@ -46,6 +46,11 @@ if (isset($argv[1]) && !empty($argv[1])) {
     $languages = $config_langs;
 }
 
+if (!file_exists(ASSETSPATH)) {
+    mkdir(ASSETSPATH);
+}
+
+
 $keys = get_langindex_keys();
 
 $added_langs = build_languages($languages, $keys);

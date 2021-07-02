@@ -102,7 +102,7 @@ function get_language {
     pushd $LANGPACKSFOLDER > /dev/null
 
     curl -s $MOODLEORG_URL/$lastversion/$lang.zip --output $lang.zip > /dev/null
-    rm -R $lang
+    rm -R $lang > /dev/null 2>&1> /dev/null
     unzip -o -u $lang.zip > /dev/null
 
     # This is the AWS version to get the language but right now it's slower.
