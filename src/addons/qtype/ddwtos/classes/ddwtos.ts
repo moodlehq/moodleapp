@@ -214,7 +214,7 @@ export class AddonQtypeDdwtosQuestion {
 
         this.positionDragItems();
 
-        this.resizeFunction = this.positionDragItems.bind(this);
+        this.resizeFunction = this.windowResized.bind(this);
         window.addEventListener('resize', this.resizeFunction!);
     }
 
@@ -513,6 +513,15 @@ export class AddonQtypeDdwtosQuestion {
         dropsGroup.forEach((item) => {
             this.padToWidthHeight(item, maxWidth + 2, maxHeight + 2);
         });
+    }
+
+    /**
+     * Window resized.
+     */
+    async windowResized(): Promise<void> {
+        await CoreDomUtils.waitForResizeDone();
+
+        this.positionDragItems();
     }
 
 }

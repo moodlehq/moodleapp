@@ -601,7 +601,7 @@ export class AddonQtypeDdMarkerQuestion {
             this.pollForImageLoad();
         });
 
-        this.resizeFunction = this.redrawDragsAndDrops.bind(this);
+        this.resizeFunction = this.windowResized.bind(this);
         window.addEventListener('resize', this.resizeFunction!);
     }
 
@@ -867,6 +867,15 @@ export class AddonQtypeDdMarkerQuestion {
         if (itemNo !== null) {
             drag.classList.remove('item' + itemNo);
         }
+    }
+
+    /**
+     * Window resized.
+     */
+    async windowResized(): Promise<void> {
+        await CoreDomUtils.waitForResizeDone();
+
+        this.redrawDragsAndDrops();
     }
 
 }
