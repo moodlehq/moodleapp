@@ -26,10 +26,10 @@ before_install:
   - npm --version
   - nvm --version
   - npm ci
-  - npm install npm@^6 gulp -g
+  - npm install npm@^6 -g
 
 before_script:
-  - gulp
+  - npx gulp
 
 script:
   - scripts/build.sh
