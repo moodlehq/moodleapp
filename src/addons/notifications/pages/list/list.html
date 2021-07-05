@@ -38,7 +38,7 @@
                     <p class="item-heading">{{ notification.subject }}</p>
                     <p *ngIf="notification.userfromfullname">{{ notification.userfromfullname }}</p>
                 </ion-label>
-                <ion-note slot="end" class="ion-float-end ion-padding-start ion-text-end">
+                <ion-note slot="end" class="ion-float-end ion-text-end">
                     {{ notification.timecreated | coreDateDayOrTime }}
                     <span *ngIf="!notification.timeread">
                         <ion-icon name="fas-circle" color="primary" aria-hidden="true"></ion-icon>

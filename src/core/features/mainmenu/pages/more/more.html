@@ -43,7 +43,7 @@
             <ng-container *ngFor="let item of customItems">
                 <ion-item button *ngIf="item.type != 'embedded'" [href]="item.url" [attr.aria-label]="item.label" core-link
                     [capture]="item.type == 'app'" [inApp]="item.type == 'inappbrowser'" class="core-moremenu-customitem" detail="true"
-                    [detailIcon]="item.type == 'browser' ? 'open-outline' : null">
+                    [detailIcon]="item.type == 'browser' ? 'open-outline' : 'chevron-forward'">
                     <ion-icon [name]="item.icon" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>
                         <p class="item-heading">{{item.label}}</p>

@@ -37,7 +37,7 @@
     "ionic:build:before": "gulp"
   },
   "dependencies": {
-    "@angular/animations": "11.0.1",
+    "@angular/animations": "10.0.14",
     "@angular/common": "10.0.14",
     "@angular/core": "10.0.14",
     "@angular/forms": "10.0.14",
