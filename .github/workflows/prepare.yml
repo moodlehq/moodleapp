@@ -2,7 +2,7 @@ name: Prepare
 
 on:
   push:
-    branches: [ master, integration, ionic5, workplace, freemium-master ]
+    branches: [ master, integration, workplace, freemium-master ]
 
 jobs:
   prepare:

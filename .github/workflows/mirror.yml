@@ -2,7 +2,7 @@ name: Mirror
 
 on:
   push:
-    branches: [ master, integration, ionic5 ]
+    branches: [ master, integration ]
 
 jobs:
   mirror:
