@@ -869,6 +869,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
             this.toolbarArrows = true;
         }
 
+        await CoreUtils.nextTick();
+
         await this.toolbarSlides.update();
 
         await this.updateToolbarArrows();
