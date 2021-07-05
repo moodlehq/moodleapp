@@ -82,7 +82,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
     protected element: HTMLDivElement;
     protected editorElement?: HTMLDivElement;
-    protected kbHeight = 0; // Last known keyboard height.
     protected minHeight = 200; // Minimum height of the editor.
 
     protected valueChangeSubscription?: Subscription;
@@ -266,8 +265,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         this.selectionChangeFunction = this.updateToolbarStyles.bind(this);
         document.addEventListener('selectionchange', this.selectionChangeFunction!);
 
-        this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, (kbHeight: number) => {
-            this.kbHeight = kbHeight;
+        this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, () => {
+            // Opening or closing the keyboard also calls the resize function, but sometimes the resize is called too soon.
+            // Check the height again, now the window height should have been updated.
             this.maximizeEditorSize();
         });
 
@@ -284,58 +284,28 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      *
      * @return Resolved with calculated editor size.
      */
-    protected maximizeEditorSize(): Promise<number> {
-        // this.content.resize();
+    protected async maximizeEditorSize(): Promise<number> {
+        await CoreUtils.wait(100);
 
-        const deferred = CoreUtils.promiseDefer<number>();
+        const contentVisibleHeight = await CoreDomUtils.getContentHeight(this.content);
 
-        setTimeout(async () => {
-            let contentVisibleHeight = await CoreDomUtils.getContentHeight(this.content);
-            if (!CoreApp.isAndroid()) {
-                // In Android we ignore the keyboard height because it is not part of the web view.
-                contentVisibleHeight -= this.kbHeight;
-            }
+        if (contentVisibleHeight <= 0) {
+            return 0;
+        }
 
-            if (contentVisibleHeight <= 0) {
-                deferred.resolve(0);
+        await CoreUtils.wait(100);
 
-                return;
-            }
+        // Editor is ready, adjust Height if needed.
+        const contentHeight = await CoreDomUtils.getContentHeight(this.content);
+        const height = contentHeight - this.getSurroundingHeight(this.element);
 
-            setTimeout(async () => {
-                // Editor is ready, adjust Height if needed.
-                let height: number;
+        if (height > this.minHeight) {
+            this.element.style.height = CoreDomUtils.formatPixelsSize(height - 1);
+        } else {
+            this.element.style.height = '';
+        }
 
-                if (CoreApp.isAndroid()) {
-                    // In Android we ignore the keyboard height because it is not part of the web view.
-                    const contentHeight = await CoreDomUtils.getContentHeight(this.content);
-                    height = contentHeight - this.getSurroundingHeight(this.element);
-                } else if (CoreApp.isIOS() && this.kbHeight > 0 && CoreApp.getPlatformMajorVersion() < 12) {
-                    // Keyboard open in iOS 11 or previous. The window height changes when the keyboard is open.
-                    height = window.innerHeight - this.getSurroundingHeight(this.element);
-
-                    if (this.element.getBoundingClientRect().top < 40) {
-                        // In iOS sometimes the editor is placed below the status bar. Move the scroll a bit so it doesn't happen.
-                        window.scrollTo(window.scrollX, window.scrollY - 40);
-                    }
-
-                } else {
-                    // Header is fixed, use the content to calculate the editor height.
-                    const contentHeight = await CoreDomUtils.getContentHeight(this.content);
-                    height = contentHeight - this.kbHeight - this.getSurroundingHeight(this.element);
-                }
-
-                if (height > this.minHeight) {
-                    this.element.style.height = CoreDomUtils.formatPixelsSize(height - 1);
-                } else {
-                    this.element.style.height = '';
-                }
-
-                deferred.resolve(height);
-            }, 100);
-        }, 100);
-
-        return deferred.promise;
+        return height;
     }
 
     /**
