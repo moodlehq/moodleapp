@@ -20,6 +20,19 @@
         text-align: center;
     }
 
+    ion-tab-button.ios ion-icon {
+        font-size: 25px;
+    }
+
+    ion-tab-button.md ion-badge {
+        font-size: 12px;
+        font-weight: bold;
+        border-radius: 10px;
+        padding-left: 6px;
+        padding-right: 6px;
+        line-height: 14px;
+    }
+
     ion-tabs.placement-bottom ion-tab-button {
         ion-icon {
             transition: margin 500ms ease-in-out, transform 300ms ease-in-out;
