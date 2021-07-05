@@ -256,7 +256,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
             );
         });
 
-        this.resizeFunction = this.maximizeEditorSize.bind(this);
+        this.resizeFunction = this.windowResized.bind(this);
         window.addEventListener('resize', this.resizeFunction!);
 
         // Start observing the target node for configured mutations
@@ -285,8 +285,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * @return Resolved with calculated editor size.
      */
     protected async maximizeEditorSize(): Promise<number> {
-        await CoreUtils.wait(100);
-
         const contentVisibleHeight = await CoreDomUtils.getContentHeight(this.content);
 
         if (contentVisibleHeight <= 0) {
@@ -1073,6 +1071,16 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
             this.editorElement?.focus(); // Make sure the editor is focused.
             document.execCommand('insertText', false, text);
         }
+    }
+
+    /**
+     * Window resized.
+     */
+    protected async windowResized(): Promise<void> {
+        await CoreDomUtils.waitForResizeDone();
+
+        this.maximizeEditorSize();
+        this.updateToolbarButtons();
     }
 
     /**
