@@ -498,9 +498,11 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         };
 
         // Try to find page number and offset of the entry.
-        const pageXOffset = this.entries.findIndex((entry) => entry.id == entryId);
-        if (pageXOffset >= 0) {
-            params.offset = this.search.page * AddonModDataProvider.PER_PAGE + pageXOffset;
+        if (!this.search.searching) {
+            const pageXOffset = this.entries.findIndex((entry) => entry.id == entryId);
+            if (pageXOffset >= 0) {
+                params.offset = this.search.page * AddonModDataProvider.PER_PAGE + pageXOffset;
+            }
         }
 
         CoreNavigator.navigateToSitePath(
