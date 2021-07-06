@@ -19,3 +19,4 @@ FROM nginx:alpine as serve-stage
 # Copy assets & config
 COPY --from=build-stage /app/www /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+HEALTHCHECK --interval=10s --timeout=4s CMD curl -f http://localhost/assets/env.json || exit 1
