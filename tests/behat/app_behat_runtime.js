@@ -296,7 +296,8 @@
             }
 
             const labelledBy = currentNode.getAttribute('aria-labelledby');
-            if (labelledBy && container.querySelector(`#${labelledBy}`)?.innerText?.includes(text)) {
+            const labelElement = labelledBy && container.querySelector(`#${labelledBy}`);
+            if (labelElement && labelElement.innerText && labelElement.innerText.includes(text)) {
                 elements.push(currentNode);
 
                 continue;
@@ -361,7 +362,7 @@
      * @return {HTMLElement} Parent element.
      */
     var getParentElement = function(element) {
-        return element.parentElement ?? element.getRootNode()?.host ?? null;
+        return element.parentElement || (element.getRootNode() && element.getRootNode().host) || null;
     };
 
     /**
@@ -438,7 +439,7 @@
             // may not work without doing this.
             const parentElement = getParentElement(element);
 
-            if (parentElement?.matches('ion-button, ion-back-button')) {
+            if (parentElement && parentElement.matches('ion-button, ion-back-button')) {
                 element = parentElement;
             }
 
