@@ -70,7 +70,6 @@ export class CoreSitesProvider {
     protected static readonly VALID_VERSION = 1;
     protected static readonly INVALID_VERSION = -1;
 
-    protected isWPApp = false;
     protected logger: CoreLogger;
     protected services = {};
     protected sessionRestored = false;
@@ -639,19 +638,26 @@ export class CoreSitesProvider {
     protected validateWorkplaceVersion(info: CoreSiteInfoResponse): number {
         const isWorkplace = !!info.functions && info.functions.some((func) => func.name == 'tool_program_get_user_programs');
 
-        if (typeof this.isWPApp == 'undefined') {
-            this.isWPApp = false; // @todo
-        }
+        const isWPEnabled = this.isWorkplaceEnabled();
 
-        if (!this.isWPApp && isWorkplace) {
+        if (!isWPEnabled && isWorkplace) {
             return CoreSitesProvider.WORKPLACE_APP;
         }
 
-        if (this.isWPApp && !isWorkplace) {
+        if (isWPEnabled && !isWorkplace) {
             return CoreSitesProvider.MOODLE_APP;
         }
 
         return CoreSitesProvider.VALID_VERSION;
+    }
+
+    /**
+     * Check if the app is workplace enabled.
+     *
+     * @return If the app is workplace enabled.
+     */
+    protected isWorkplaceEnabled(): boolean {
+        return false;
     }
 
     /**
