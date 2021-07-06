@@ -78,7 +78,7 @@ export class AddonModLtiModuleHandlerService implements CoreCourseModuleHandler 
                 CoreNavigator.navigateToSitePath(AddonModLtiModuleHandlerService.PAGE_NAME + routeParams, options);
             },
             buttons: [{
-                icon: 'link',
+                icon: 'fas-external-link-alt',
                 label: 'addon.mod_lti.launchactivity',
                 action: (event: Event, module: CoreCourseModule, courseId: number): void => {
                     // Launch the LTI.

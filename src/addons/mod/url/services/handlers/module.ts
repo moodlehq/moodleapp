@@ -107,7 +107,7 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
             },
             buttons: [{
                 hidden: true, // Hide it until we calculate if it should be displayed or not.
-                icon: 'link',
+                icon: 'fas-link',
                 label: 'core.openmodinbrowser',
                 action: (event: Event, module: CoreCourseModule, courseId: number): void => {
                     openUrl(module, courseId);

@@ -125,6 +125,7 @@ export class CoreSite {
         public loggedOut?: boolean,
     ) {
         this.logger = CoreLogger.getInstance('CoreSite');
+        this.siteUrl = CoreUrlUtils.removeUrlParams(this.siteUrl); // Make sure the URL doesn't have params.
         this.setInfo(infos);
         this.calculateOfflineDisabled();
 
@@ -1460,7 +1461,7 @@ export class CoreSite {
 
         // Use the wwwroot returned by the server.
         if (config!.httpswwwroot) {
-            this.siteUrl = config!.httpswwwroot;
+            this.siteUrl = CoreUrlUtils.removeUrlParams(config!.httpswwwroot); // Make sure the URL doesn't have params.
         }
 
         return config!;
