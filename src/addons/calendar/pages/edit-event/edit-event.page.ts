@@ -450,8 +450,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     async submit(): Promise<void> {
         // Validate data.
         const formData = this.form.value;
-        const timeStartDate = CoreTimeUtils.convertToTimestamp(formData.timestart);
-        const timeUntilDate = CoreTimeUtils.convertToTimestamp(formData.timedurationuntil);
+        const timeStartDate = CoreTimeUtils.convertToTimestamp(formData.timestart, true);
+        const timeUntilDate = CoreTimeUtils.convertToTimestamp(formData.timedurationuntil, true);
         const timeDurationMinutes = parseInt(formData.timedurationminutes || '', 10);
         let error: string | undefined;
 
