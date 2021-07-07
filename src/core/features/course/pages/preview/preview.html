@@ -50,7 +50,7 @@
                     </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngFor="let contact of course.contacts" core-user-link [userId]="contact.id"
-                    [courseId]="isEnrolled ? course.id : null" [attr.aria-label]="'core.viewprofile' | translate">
+                    [courseId]="isEnrolled ? course.id : null" [attr.aria-label]="'core.viewprofile' | translate" detail="true">
                     <core-user-avatar [user]="contact" slot="start" [userId]="contact.id"
                         [courseId]="isEnrolled ? course.id : null">
                     </core-user-avatar>
