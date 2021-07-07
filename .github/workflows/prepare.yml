@@ -2,7 +2,7 @@ name: Prepare
 
 on:
   push:
-    branches: [ master, integration, workplace, freemium-master ]
+    branches: [ master, integration, freemium-master ]
 
 jobs:
   prepare:
