@@ -13,15 +13,15 @@
         [detail]="!countError && commentsLoaded"
         (click)="openComments($event)"
         [disabled]="countError">
-        <core-loading [hideUntil]="commentsLoaded" [fullscreen]="false">
             <ion-label>
-                <p *ngIf="!countError" class="item-heading">
-                    {{ 'core.comments.commentscount' | translate : {'$a': commentsCount} }}
-                </p>
-                <p *ngIf="countError">
-                    {{ 'core.comments.commentsnotworking' | translate }}
-                </p>
+                <core-loading [hideUntil]="commentsLoaded" [fullscreen]="false">
+                    <p *ngIf="!countError" class="item-heading">
+                        {{ 'core.comments.commentscount' | translate : {'$a': commentsCount} }}
+                    </p>
+                    <p *ngIf="countError">
+                        {{ 'core.comments.commentsnotworking' | translate }}
+                    </p>
+                </core-loading>
             </ion-label>
-        </core-loading>
     </ion-item>
 </ng-container>

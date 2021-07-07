@@ -164,8 +164,9 @@
                             <ion-radio slot="end" [value]="1"></ion-radio>
                         </ion-item>
                         <ion-item>
+                            <ion-label position="stacked"></ion-label>
                             <ion-datetime formControlName="timedurationuntil" [max]="maxDate" [min]="minDate"
-                                [placeholder]="'addon.calendar.durationuntil' | translate" slot="end"
+                                [placeholder]="'addon.calendar.durationuntil' | translate"
                                 [displayFormat]="dateFormat" [disabled]="form.controls.duration.value != 1"
                                 display-timezone="utc">
                             </ion-datetime>
