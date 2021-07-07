@@ -33,6 +33,10 @@
         line-height: 14px;
     }
 
+    ion-tab-button.tab-selected {
+        background: var(--background-selected);
+    }
+
     ion-tabs.placement-bottom ion-tab-button {
         ion-icon {
             transition: margin 500ms ease-in-out, transform 300ms ease-in-out;
