@@ -1602,6 +1602,7 @@
   "core.errorinvalidresponse": "local_moodlemobileapp",
   "core.errorloadingcontent": "local_moodlemobileapp",
   "core.errorofflinedisabled": "local_moodlemobileapp",
+  "core.erroropenfiledownloading": "local_moodlemobileapp",
   "core.erroropenfilenoapp": "local_moodlemobileapp",
   "core.erroropenfilenoextension": "local_moodlemobileapp",
   "core.erroropenpopup": "local_moodlemobileapp",
