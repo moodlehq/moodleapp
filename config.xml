@@ -224,6 +224,16 @@
         <config-file parent="/*" target="AndroidManifest.xml">
             <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
         </config-file>
+        <config-file parent="/*" target="AndroidManifest.xml">
+            <queries>
+                <intent>
+                    <action android:name="android.media.action.IMAGE_CAPTURE" />
+                </intent>
+                <intent>
+                    <action android:name="android.intent.action.GET_CONTENT" />
+                </intent>
+            </queries>
+        </config-file>
     </platform>
     <platform name="ios">
         <resource-file src="GoogleService-Info.plist" />
@@ -248,7 +258,7 @@
         <edit-config file="*-Info.plist" mode="merge" target="CFBundleShortVersionString">
             <string>3.9.5</string>
         </edit-config>
-        <edit-config target="CFBundleLocalizations" file="*-Info.plist" mode="overwrite">
+        <edit-config file="*-Info.plist" mode="overwrite" target="CFBundleLocalizations">
             <array>
                 <string>en</string>
             </array>
