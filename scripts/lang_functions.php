@@ -385,15 +385,17 @@ function override_component_lang_files($keys, $translations) {
         }
         switch($type) {
             case 'core':
-            case 'addon':
                 switch($component) {
                     case 'moodle':
-                        $path .= 'lang.json';
+                        $path .= 'core/lang.json';
                         break;
                     default:
-                        $path .= $type.'/'.str_replace('_', '/', $component).'/lang.json';
+                        $path .= 'core/features/'.str_replace('_', '/', $component).'/lang.json';
                         break;
                 }
+                break;
+            case 'addon':
+                $path .= 'addons/'.str_replace('_', '/', $component).'/lang.json';
                 break;
             case 'assets':
                 $path .= $type.'/'.$component.'.json';
@@ -406,6 +408,8 @@ function override_component_lang_files($keys, $translations) {
 
         if (is_file($path)) {
             save_key($plainid, $value, $path);
+        } else {
+            echo "Cannot override: $path not found.\n";
         }
     }
 }
