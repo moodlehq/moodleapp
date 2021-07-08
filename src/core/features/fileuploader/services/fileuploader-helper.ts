@@ -68,7 +68,7 @@ export class CoreFileUploaderHelperProvider {
 
         const modal = await CoreDomUtils.showModalLoading();
 
-        const result = await Chooser.getFile(mimetypes ? mimetypes.join(',') : undefined);
+        const result = await Chooser.getFileMetadata(mimetypes ? mimetypes.join(',') : undefined);
 
         modal.dismiss();
 
