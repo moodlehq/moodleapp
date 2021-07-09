@@ -94,7 +94,7 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
             title: this.title,
             class: this.handlerSchema.displaydata?.class,
             icon: this.handlerSchema.displaydata?.icon || '',
-            page: `siteplugins/${this.plugin.component}/${this.handlerSchema.method}/${hash}`,
+            page: `siteplugins/content/${this.plugin.component}/${this.handlerSchema.method}/${hash}`,
             pageParams: {
                 title: this.title,
                 args,

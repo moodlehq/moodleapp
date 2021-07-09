@@ -47,7 +47,7 @@ export class CoreSitePluginsMainMenuHandler extends CoreSitePluginsBaseHandler i
             title: this.title,
             icon: this.handlerSchema.displaydata?.icon || 'fas-question',
             class: this.handlerSchema.displaydata?.class,
-            page: `siteplugins/${this.plugin.component}/${this.handlerSchema.method}/0`,
+            page: `siteplugins/content/${this.plugin.component}/${this.handlerSchema.method}/0`,
             pageParams: {
                 title: this.title,
                 initResult: this.initResult,

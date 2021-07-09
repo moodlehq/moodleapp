@@ -18,6 +18,7 @@ import { Routes } from '@angular/router';
 import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
+import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
 import { CoreSitePluginsComponentsModule } from './components/components.module';
 import { CoreSitePluginsHelper } from './services/siteplugins-helper';
 
@@ -55,6 +56,7 @@ const moduleRoutes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(moduleRoutes.concat(routes)),
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
         CoreMainMenuHomeRoutingModule.forChild({ children: homeRoutes }),
+        CoreSitePreferencesRoutingModule.forChild(routes),
         CoreSitePluginsComponentsModule,
     ],
     providers: [
