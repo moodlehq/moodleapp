@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRouteSnapshot, Params, UrlSegment } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, Params, UrlSegment } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -29,12 +29,12 @@ export abstract class CorePageItemsListManager<Item> {
     protected itemsMap: Record<string, Item> | null = null;
     protected hasMoreItems = true;
     protected selectedItem: Item | null = null;
-    protected pageComponent: unknown;
+    protected pageRouteLocator?: unknown | ActivatedRoute;
     protected splitView?: CoreSplitViewComponent;
     protected splitViewOutletSubscription?: Subscription;
 
-    constructor(pageComponent: unknown) {
-        this.pageComponent = pageComponent;
+    constructor(pageRouteLocator: unknown | ActivatedRoute) {
+        this.pageRouteLocator = pageRouteLocator;
     }
 
     get items(): Item[] {
@@ -62,7 +62,7 @@ export abstract class CorePageItemsListManager<Item> {
         this.watchSplitViewOutlet(splitView);
 
         // Calculate current selected item.
-        const route = CoreNavigator.getCurrentRoute({ pageComponent: this.pageComponent });
+        const route = this.getCurrentPageRoute();
         this.updateSelectedItem(route?.snapshot ?? null);
 
         // Select default item if none is selected on a non-mobile layout.
@@ -138,7 +138,7 @@ export abstract class CorePageItemsListManager<Item> {
      */
     async select(item: Item): Promise<void> {
         // Get current route in the page.
-        const route = CoreNavigator.getCurrentRoute({ pageComponent: this.pageComponent });
+        const route = this.getCurrentPageRoute();
 
         if (route === null) {
             return;
@@ -208,7 +208,7 @@ export abstract class CorePageItemsListManager<Item> {
             return false;
         }
 
-        return !this.splitView?.isNested;
+        return !!this.splitView && !this.splitView?.isNested;
     }
 
     /**
@@ -254,17 +254,47 @@ export abstract class CorePageItemsListManager<Item> {
     }
 
     /**
+     * Get page route.
+     *
+     * @returns Current page route, if any.
+     */
+    private getCurrentPageRoute(): ActivatedRoute | null {
+        if (this.pageRouteLocator instanceof ActivatedRoute) {
+            return CoreNavigator.isRouteActive(this.pageRouteLocator) ? this.pageRouteLocator : null;
+        }
+
+        return CoreNavigator.getCurrentRoute({ pageComponent: this.pageRouteLocator });
+    }
+
+    /**
      * Get the page route given a child route on the splitview outlet.
      *
      * @param route Child route.
      * @return Page route.
      */
     private getPageRouteFromSplitViewOutlet(route: ActivatedRouteSnapshot | null): ActivatedRouteSnapshot | null {
-        while (route && route.component !== this.pageComponent) {
+        const isPageRoute = this.buildRouteMatcher();
+
+        while (route && !isPageRoute(route)) {
             route = route.parent;
         }
 
         return route;
+    }
+
+    /**
+     * Build a function to check whether the given snapshot belongs to the page.
+     *
+     * @returns Route matcher.
+     */
+    private buildRouteMatcher(): (route: ActivatedRouteSnapshot) => boolean {
+        if (this.pageRouteLocator instanceof ActivatedRoute) {
+            const pageRoutePath = CoreNavigator.getRouteFullPath(this.pageRouteLocator.snapshot);
+
+            return route => CoreNavigator.getRouteFullPath(route) === pageRoutePath;
+        }
+
+        return route => route.component === this.pageRouteLocator;
     }
 
 }

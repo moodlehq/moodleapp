@@ -399,6 +399,27 @@ export class CoreNavigatorService {
     }
 
     /**
+     * Check whether a route is active within the current stack.
+     *
+     * @param route Route to check.
+     * @return Whether the route is active or not.
+     */
+    isRouteActive(route: ActivatedRoute): boolean {
+        const routePath = this.getRouteFullPath(route.snapshot);
+        let activeRoute: ActivatedRoute | null = Router.routerState.root;
+
+        while (activeRoute) {
+            if (this.getRouteFullPath(activeRoute.snapshot) === routePath) {
+                return true;
+            }
+
+            activeRoute = activeRoute.firstChild;
+        }
+
+        return false;
+    }
+
+    /**
      * Increase the number of times a route is repeated on the navigation stack.
      *
      * @param path Absolute route path.
