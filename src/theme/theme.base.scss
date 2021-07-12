@@ -356,8 +356,13 @@ ion-alert.core-nohead {
     }
 }
 
+ion-alert .alert-wrapper {
+    overflow: auto;
+}
+
 ion-alert .alert-message {
     user-select: text;
+    flex-shrink: 0;
 }
 
 ion-alert .alert-wrapper button.alert-button {
