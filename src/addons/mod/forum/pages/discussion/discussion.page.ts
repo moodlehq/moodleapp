@@ -29,6 +29,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Network, NgZone, Translate } from '@singletons';
+import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import {
@@ -771,7 +772,9 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @return Array containing all the posts of the discussion.
      */
     protected getAllPosts(): Post[] {
-        return this.posts.map(this.flattenPostHierarchy.bind(this));
+        const allPosts = this.posts.map(post => this.flattenPostHierarchy(post));
+
+        return CoreArray.flatten(allPosts);
     }
 
     /**
