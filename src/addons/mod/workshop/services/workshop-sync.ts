@@ -205,14 +205,23 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
         const assessments: AddonModWorkshopOfflineAssessment[] = syncs[1];
         const submissionEvaluations: AddonModWorkshopOfflineEvaluateSubmission[] = syncs[2];
         const assessmentEvaluations: AddonModWorkshopOfflineEvaluateAssessment[] = syncs[3];
+        const offlineSubmissions: Record<string, AddonModWorkshopOfflineSubmission[]> = {};
 
         const promises: Promise<void>[] = [];
 
-        promises.push(this.syncSubmission(workshop, submissionsActions, result, siteId).then(() => {
-            result.updated = true;
+        submissionsActions.forEach((action) => {
+            offlineSubmissions[action.submissionid] = offlineSubmissions[action.submissionid] || [];
+            offlineSubmissions[action.submissionid].push(action);
+        });
 
-            return;
-        }));
+        Object.keys(offlineSubmissions).forEach((submissionId) => {
+            const submissionActions = offlineSubmissions[submissionId];
+            promises.push(this.syncSubmission(workshop, submissionActions, result, siteId).then(() => {
+                result.updated = true;
+
+                return;
+            }));
+        });
 
         assessments.forEach((assessment) => {
             promises.push(this.syncAssessment(workshop, assessment, result, siteId).then(() => {
@@ -444,7 +453,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
         try {
             let files: CoreFileEntry[] = [];
             // Upload attachments first if any.
-            if (inputData.feedbackauthorattachmentsid) {
+            if (inputData.feedbackauthorattachmentsid && typeof inputData.feedbackauthorattachmentsid !== 'number') {
                 files = await AddonModWorkshopHelper.getAssessmentFilesFromOfflineFilesObject(
                     <CoreFileUploaderStoreFilesResult>inputData.feedbackauthorattachmentsid,
                     workshop.id,
