@@ -66,7 +66,7 @@ export abstract class CorePageItemsListManager<Item> {
         this.updateSelectedItem(route?.snapshot ?? null);
 
         // Select default item if none is selected on a non-mobile layout.
-        if (!CoreScreen.isMobile && this.selectedItem === null) {
+        if (!CoreScreen.isMobile && this.selectedItem === null && !splitView.isNested) {
             const defaultItem = this.getDefaultItem();
 
             if (defaultItem) {
