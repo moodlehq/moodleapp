@@ -498,6 +498,7 @@ Feature: Test basic usage of one course in app
     And I click on "Side panel" "button"
     And I follow "Add a block"
     And I follow "HTML"
+    And I click on "[aria-label=\"Close drawer\"]" "css_element"
     And I click on "Side panel" "button"
     And I follow "Add a block"
     And I follow "Activities"
