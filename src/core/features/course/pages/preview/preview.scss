@@ -1,0 +1,45 @@
+:host {
+    --scroll-factor: 0.5;
+    --translate-z: calc(-2 * var(--scroll-factor))px;
+    --scale: calc(1 + var(--scroll-factor) * 2);
+
+    perspective: 1px;
+    perspective-origin: center top;
+    transform-style: preserve-3d;
+
+    // @todo This parallax effect caused the image to be scaled during page transitions,
+    // and in some devices it seems like the problem persisted even after the transition.
+    // We should decide whether we want to keep this parallax or not, and if we do fix
+    // the problem or find an alternative implementation. For now, it's disabled.
+
+    // .core-course-thumb-parallax-content {
+    //     transform: translateZ(0);
+    //     -webkit-filter: drop-shadow(0px -3px 3px rgba(var(--drop-shadow)));
+    //     filter: drop-shadow(0px -3px 3px rgba(var(--drop-shadow)));
+    // }
+    // .core-course-thumb-parallax {
+    //     height: 40vw;
+    //     max-height: 35vh;
+    //     z-index: -1;
+    //     overflow: hidden;
+    // }
+    .core-course-thumb {
+        overflow: hidden;
+        text-align: center;
+        cursor: pointer;
+        pointer-events: auto;
+        transform-origin: center top;
+
+        /**
+         * Calculated with scroll-factor: 0.5;
+         * translate-z: -2 * $scroll-factor px;
+         * scale: 1 + $scroll-factor * 2;
+         */
+        // transform: translateZ(-1px) scale(2);
+    }
+
+
+    .core-customfieldvalue core-format-text {
+        display: inline;
+    }
+}

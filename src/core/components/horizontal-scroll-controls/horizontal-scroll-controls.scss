@@ -1,0 +1,10 @@
+:host {
+    --flex-row-direction: row;
+
+    display: flex;
+    flex-direction: var(--flex-row-direction);
+}
+
+:host-context([dir="rtl"]) {
+    --flex-row-direction: row-reverse;
+}

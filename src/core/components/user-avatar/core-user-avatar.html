@@ -1,0 +1,23 @@
+<img
+    *ngIf="avatarUrl"
+    [src]="avatarUrl"
+    [alt]="'core.pictureof' | translate:{$a: fullname}"
+    core-external-content
+    onError="this.src='assets/img/user-avatar.png'"
+    (ariaButtonClick)="gotoProfile($event)"
+    [attr.aria-hidden]="!linkProfile"
+    [attr.role]="linkProfile ? 'button' : null"
+    [attr.tabindex]="linkProfile ? 0 : null"
+    [class.clickable]="linkProfile"
+>
+
+<img *ngIf="!avatarUrl" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}"
+    (ariaButtonClick)="gotoProfile($event)" [attr.aria-hidden]="!linkProfile" [attr.role]="linkProfile ? 'button' : null"
+    [attr.tabindex]="linkProfile ? 0 : null">
+
+<span *ngIf="checkOnline && isOnline()" class="contact-status online" role="status" [attr.aria-label]="'core.online' | translate">
+</span>
+
+<img *ngIf="extraIcon" [src]="extraIcon" alt="" role="presentation" class="core-avatar-extra-icon">
+
+<ng-content></ng-content>

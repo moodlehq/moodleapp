@@ -1,0 +1,25 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text [text]="module?.name" contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId">
+            </core-format-text>
+        </h1>
+
+        <ion-buttons slot="end">
+            <core-context-menu>
+                <core-context-menu-item [priority]="900" *ngIf="module?.url" [href]="module!.url"
+                    [content]="'core.openinbrowser' | translate" iconAction="fas-external-link-alt">
+                </core-context-menu-item>
+                <core-context-menu-item [priority]="800" *ngIf="module?.description" [content]="'core.moduleintro' | translate"
+                    (action)="expandDescription()" iconAction="fas-arrow-right">
+                </core-context-menu-item>
+            </core-context-menu>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-course-unsupported-module [module]="module" [courseId]="courseId"></core-course-unsupported-module>
+</ion-content>

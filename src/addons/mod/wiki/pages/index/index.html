@@ -1,0 +1,24 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId">
+            </core-format-text>
+        </h1>
+
+        <ion-buttons slot="end">
+            <!-- The buttons defined by the component will be added in here. -->
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!activityComponent?.loaded" (ionRefresh)="activityComponent?.doRefresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <addon-mod-wiki-index [module]="module" [courseId]="courseId" [action]="action" [pageId]="pageId" [pageTitle]="pageTitle"
+        [subwikiId]="subwikiId" [userId]="userId" [groupId]="groupId" (dataRetrieved)="updateData($event)">
+    </addon-mod-wiki-index>
+</ion-content>

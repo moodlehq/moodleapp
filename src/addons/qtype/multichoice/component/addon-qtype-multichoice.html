@@ -1,0 +1,71 @@
+<ion-list *ngIf="multiQuestion && (multiQuestion.text || multiQuestion.text === '')">
+    <!-- Question text first. -->
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <p><core-format-text [component]="component" [componentId]="componentId" [text]="multiQuestion.text"
+                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            </core-format-text></p>
+            <p *ngIf="multiQuestion.prompt">{{ multiQuestion.prompt }}</p>
+        </ion-label>
+    </ion-item>
+
+    <!-- Checkbox for multiple choice. -->
+    <ng-container *ngIf="multiQuestion.multi">
+        <ion-item class="ion-text-wrap answer" *ngFor="let option of multiQuestion.options">
+            <ion-label [color]='(option.isCorrect === 1 ? "success": "") + (option.isCorrect === 0 ? "danger": "")' class="flex">
+                <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"
+                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+                </core-format-text>
+                <div *ngIf="option.feedback" class="specificfeedback">
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"
+                        [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+                    </core-format-text>
+                </div>
+            </ion-label>
+
+            <ion-checkbox slot="end" [attr.name]="option.name" [(ngModel)]="option.checked" [disabled]="option.disabled"
+                [color]='(option.isCorrect === 1 ? "success": "") + (option.isCorrect === 0 ? "danger": "")'>
+            </ion-checkbox>
+
+            <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success"
+                [attr.aria-label]="'core.question.correct' | translate"></ion-icon>
+            <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-times" color="danger"
+                [attr.aria-label]="'core.question.incorrect' | translate"></ion-icon>
+
+            <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
+            <input type="hidden" [ngModel]="option.checked" [attr.name]="option.name">
+        </ion-item>
+    </ng-container>
+
+    <!-- Radio buttons for single choice. -->
+    <ion-radio-group *ngIf="!multiQuestion.multi" [(ngModel)]="multiQuestion.singleChoiceModel" [name]="multiQuestion.optionsName">
+        <ion-item class="ion-text-wrap answer" *ngFor="let option of multiQuestion.options">
+            <ion-label class="flex">
+                <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"
+                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+                </core-format-text>
+                <div *ngIf="option.feedback" class="specificfeedback">
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"
+                        [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+                    </core-format-text>
+                </div>
+            </ion-label>
+
+            <ion-radio [value]="option.value" [disabled]="option.disabled" slot="end"
+                [color]='(option.isCorrect === 1 ? "success": "") + (option.isCorrect === 0 ? "danger": "")'>
+            </ion-radio>
+
+            <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success"
+                [attr.aria-label]="'core.question.correct' | translate"></ion-icon>
+            <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-times" color="danger"
+                [attr.aria-label]="'core.question.incorrect' | translate"></ion-icon>
+        </ion-item>
+        <ion-button *ngIf="!multiQuestion.disabled" class="ion-text-wrap ion-margin" expand="full" color="light"
+            [disabled]="!multiQuestion.singleChoiceModel" (click)="clear()" type="reset">
+            {{ 'addon.mod_quiz.clearchoice' | translate }}
+        </ion-button>
+
+        <!-- ion-radio doesn't use an input. Create a hidden input to hold the selected value. -->
+        <input type="hidden" [ngModel]="multiQuestion.singleChoiceModel" [attr.name]="multiQuestion.optionsName">
+    </ion-radio-group>
+</ion-list>

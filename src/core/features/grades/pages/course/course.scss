@@ -1,0 +1,138 @@
+@import "~theme/globals";
+
+:host {
+    --header-background: var(--white);
+    --odd-cell-background: var(--gray-lighter);
+    --even-cell-background: var(--white);
+    --odd-cell-hover: var(--gray-light);
+    --even-cell-hover: var(--gray-lighter);
+    --icon-color: #999999;
+
+    .odd {
+        --cell-background: var(--odd-cell-background);
+        --cell-hover: var(--odd-cell-hover);
+    }
+
+    .even {
+        --cell-background: var(--even-cell-background);
+        --cell-hover: var(--even-cell-hover);
+    }
+
+}
+
+:host-context(body.dark) {
+    --header-background: var(--black);
+    --odd-cell-background: var(--gray-darker);
+    --even-cell-background: var(--black);
+    --odd-cell-hover: var(--gray-dark);
+    --even-cell-hover: var(--gray-darker);
+    --icon-color: #eeeeee;
+}
+
+:host-context(ion-app.md) {
+    --border-color: var(--ion-item-border-color, var(--ion-border-color, var(--ion-color-step-150, rgba(0, 0, 0, .13))));
+}
+
+:host-context(ion-app.ios) {
+    --border-color: var(--ion-item-border-color, var(--ion-border-color, var(--ion-color-step-250, #c8c7cc)));
+}
+
+.core-grades-table {
+    border-collapse: collapse;
+    line-height: 20px;
+    width: 100%;
+    font-size: 16px;
+    color: var(--ion-text-color);
+
+    tr {
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    th, td {
+        @include padding(10px, 10px, 10px, null);
+        vertical-align: top;
+        white-space: normal;
+        text-align: start;
+    }
+
+    thead th {
+        vertical-align: bottom;
+        font-weight: bold;
+        background-color: var(--header-background);
+    }
+
+    tbody th {
+      font-weight: normal;
+    }
+
+    #gradeitem {
+        @include padding(null, null, null, 5px);
+    }
+
+    .core-grades-table-gradeitem {
+        @include padding(null, null, null, 5px);
+        font-weight: bold;
+
+        &.column-itemname {
+            @include padding(null, null, null, 0);
+        }
+
+        img {
+            width: 16px;
+            height: 16px;
+        }
+
+        ion-icon {
+            color: var(--icon-color);
+        }
+
+        span {
+            @include margin(null, null, null, 5px);
+        }
+
+    }
+
+    .core-grades-table-feedback {
+        @include padding(null, null, null, 5px);
+
+        .no-overflow {
+            overflow: auto;
+        }
+
+    }
+
+    .dimmed_text,
+    .hidden {
+        opacity: .7;
+    }
+
+    .odd, .even {
+        td, th, th[aria-current="page"] {
+            background-color: var(--cell-background);
+        }
+    }
+
+    .core-grades-grade-clickable {
+        cursor: pointer;
+        &:hover {
+            td, th, th[aria-current="page"] {
+                background-color: var(--cell-hover);
+            }
+        }
+    }
+
+}
+
+core-split-view.nested .core-grades-table .ion-hide-md-down,
+core-split-view.menu-and-content .core-grades-table .ion-hide-md-down {
+    display: none;
+    opacity: 0;
+}
+
+@include media-breakpoint-down(md) {
+
+    .core-grades-table td {
+        font-size: 0.85em;
+    }
+
+}

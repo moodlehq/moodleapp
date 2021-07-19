@@ -1,0 +1,133 @@
+@import "~theme/globals";
+
+.item-input:last-child {
+    margin-bottom: 20px;
+}
+
+.item {
+    &.core-login-need-help {
+        margin-top: 16px;
+    }
+    &.core-login-site-qrcode {
+        .item-inner {
+            border-bottom: 0;
+        }
+    }
+}
+
+@if ($core-login-hide-need-help) {
+    .core-login-need-help {
+        display: none;
+    }
+}
+
+.core-login-site-connect {
+    margin-top: 1.4rem;
+}
+
+.item ion-thumbnail {
+    min-width: 50px;
+    min-height: 50px;
+    width: 50px;
+    height: 50px;
+    border-radius: 20%;
+    box-shadow: 0 0 4px #eee;
+    text-align: center;
+    overflow: hidden;
+
+    img {
+        max-height: 50px;
+        max-width: fit-content;
+        width: auto;
+        height: auto;
+        margin: 0 auto;
+        margin-left: 50%;
+        transform: translateX(-50%);
+        object-fit: cover;
+        object-position: 50% 50%;
+    }
+    ion-icon {
+        margin: 0 auto;
+        font-size: 35px;
+        height: 50px;
+    }
+}
+
+.core-login-site-logo,
+.core-login-site-list,
+.core-login-site-list-found {
+    transition-delay: 0s;
+    visibility: visible;
+    opacity: 1;
+    transition: all 0.7s ease-in-out;
+    max-height: 9999px;
+
+    &.hidden {
+        opacity: 0;
+        visibility: hidden;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding: 0;
+        max-height: 0;
+    }
+}
+
+.core-login-site-list-found.dimmed {
+    pointer-events: none;
+    position: relative;
+}
+
+.core-login-site-list-loading {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 1;
+    ion-spinner {
+        margin: 0 auto;
+    }
+}
+
+.core-login-site-nolist-loading {
+    margin-top: 16px;
+    text-align: center;
+}
+
+.item.core-login-site-list-title {
+    ion-label, ion-label h2.item-heading {
+        margin-top: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    ion-content > * {
+        max-width: 600px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    ion-content .core-login-site-logo {
+        margin-top: 20%;
+        &.hidden {
+            margin-top: 0;
+        }
+    }
+}
+
+.core-login-entered-site {
+    background-color: var(--gray-lighter);
+    ion-thumbnail {
+        box-shadow: 0 0 4px #ddd;
+    }
+}
+
+.core-login-default-icon {
+    filter: grayscale(100%);
+}

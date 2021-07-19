@@ -1,0 +1,73 @@
+@import "~theme/globals";
+
+:host .addon-mod_forum-post {
+    background-color: var(--ion-item-background);
+    border-bottom: 1px solid var(--addon-forum-border-color);
+
+    .addon-forum-star {
+        color: var(--core-star-color);
+    }
+
+    ion-card-header .item {
+
+        &.highlight::part(native) {
+            background-color: var(--addon-forum-highlight-color);
+        }
+
+        ion-label {
+            margin-top: 4px;
+
+            h2 {
+                margin-top: 8px;
+                margin-bottom: 8px;
+                font-weight: bold;
+                flex-grow: 1;
+
+                ion-icon {
+                    @include margin(0, 6px, 0, 0);
+                }
+
+            }
+
+        }
+
+        core-user-avatar {
+            --core-avatar-size: var(--addon-forum-avatar-size);
+
+            @include margin(0, 8px, 0, 0);
+        }
+
+        .addon-mod-forum-post-title,
+        .addon-mod-forum-post-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .addon-mod-forum-post-info {
+            margin-top: 8px;
+        }
+
+        .addon-mod-forum-post-title + .addon-mod-forum-post-info {
+            margin-top: 0px;
+        }
+
+        .addon-mod-forum-post-title .item-heading,
+        .addon-mod-forum-post-info .addon-mod-forum-post-author {
+            flex-grow: 1;
+        }
+
+    }
+
+    ion-card-content {
+        padding-top: 14px;
+    }
+
+    .item .item-inner {
+        border-bottom: 0;
+    }
+
+    .addon-mod-forum-post-more-info div {
+        font-size: 1rem;
+    }
+
+}

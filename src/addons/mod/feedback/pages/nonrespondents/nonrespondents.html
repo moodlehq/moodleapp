@@ -1,0 +1,53 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'addon.mod_feedback.responses' |translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshFeedback($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+        <ion-list class="ion-no-margin">
+            <ion-item class="ion-text-wrap" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+                <ion-label id="addon-feedback-groupslabel">
+                    <ng-container *ngIf="groupInfo.separateGroups">{{'core.groupsseparate' | translate }}</ng-container>
+                    <ng-container *ngIf="groupInfo.visibleGroups">{{'core.groupsvisible' | translate }}</ng-container>
+                </ion-label>
+                <ion-select [(ngModel)]="selectedGroup" (ionChange)="loadAttempts(selectedGroup)"
+                    aria-labelledby="addon-feedback-groupslabel" interface="action-sheet"
+                    [interfaceOptions]="{header: 'core.group' | translate}">
+                    <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
+                        {{groupOpt.name}}
+                    </ion-select-option>
+                </ion-select>
+            </ion-item>
+
+            <ion-item-divider>
+                <ion-label><h2>{{ 'addon.mod_feedback.non_respondents_students' | translate : {$a: total } }}</h2></ion-label>
+            </ion-item-divider>
+            <ng-container *ngIf="total > 0">
+                <ion-item *ngFor="let user of users" class="ion-text-wrap">
+                    <core-user-avatar [user]="user" slot="start"></core-user-avatar>
+                    <ion-label>
+                        <p class="item-heading">{{ user.fullname }}</p>
+                        <p>
+                            <ion-badge color="success" *ngIf="user.started">
+                                {{ 'addon.mod_feedback.started' | translate}}
+                            </ion-badge>
+                            <ion-badge color="danger" *ngIf="!user.started">
+                                {{ 'addon.mod_feedback.not_started' | translate}}
+                            </ion-badge>
+                        </p>
+                    </ion-label>
+                </ion-item>
+            </ng-container>
+
+            <core-infinite-loading [enabled]="canLoadMore" (action)="loadAttempts(undefined, $event)" [error]="loadMoreError">
+            </core-infinite-loading>
+        </ion-list>
+    </core-loading>
+</ion-content>

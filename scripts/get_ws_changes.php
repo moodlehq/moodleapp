@@ -28,16 +28,17 @@ if (!isset($argv[1])) {
     die();
 }
 
-
 if (!isset($argv[2])) {
     echo "ERROR: Please pass the WS name as the second parameter.\n";
     die();
 }
 
 define('CLI_SCRIPT', true);
+define('CACHE_DISABLE_ALL', true);
+define('SERIALIZED', true);
 require_once('ws_to_ts_functions.php');
 
-$versions = array('master', '38', '37', '36', '35', '34', '33', '32', '31');
+$versions = array('master', '310', '39', '38', '37', '36', '35', '34', '33', '32', '31');
 
 $moodlespath = $argv[1];
 $wsname = $argv[2];
@@ -58,7 +59,12 @@ $previousversion = null;
 $libsloaded = false;
 
 foreach ($versions as $version) {
-    $moodlepath = concatenate_paths($moodlespath, 'stable_' . $version, $pathseparator);
+    $moodlepath = concatenate_paths($moodlespath, 'stable_' . $version . '/moodle', $pathseparator);
+
+    if (!file_exists($moodlepath)) {
+        echo "Folder does not exist for version $version, skipping...\n";
+        continue;
+    }
 
     if (!$libsloaded) {
         $libsloaded = true;

@@ -1,0 +1,28 @@
+<core-loading [hideUntil]="loaded">
+    <ion-item class="ion-text-wrap" [detail]="canViewAssessment && !canSelfAssess" (click)="gotoAssessment($event)"
+        [button]="canViewAssessment && !canSelfAssess">
+        <core-user-avatar [user]="profile" slot="start" [courseId]="courseId" [userId]="profile?.id"></core-user-avatar>
+        <ion-label>
+            <h2 *ngIf="profile && profile.fullname">{{profile.fullname}}</h2>
+            <p *ngIf="showGrade(assessment.grade)">
+                {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{assessment.grade}}
+            </p>
+            <p *ngIf="access.canviewallsubmissions && !showGrade(assessment.gradinggradeover) && showGrade(assessment.gradinggrade)">
+                {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{assessment.gradinggrade}}
+            </p>
+            <p *ngIf="access.canviewallsubmissions && showGrade(assessment.gradinggradeover)" class="core-overriden-grade">
+                {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{assessment.gradinggradeover}}
+            </p>
+            <p *ngIf="assessment.weight && assessment.weight != 1">
+                {{ 'addon.mod_workshop.weightinfo' | translate:{$a: assessment.weight } }}
+            </p>
+            <ion-badge *ngIf="!assessment.grade" color="danger">{{ 'addon.mod_workshop.notassessed' | translate }}</ion-badge>
+            <ion-button expand="block" *ngIf="canSelfAssess && !showGrade(assessment.grade)" (click)="gotoOwnAssessment($event)">
+                {{ 'addon.mod_workshop.assess' | translate }}
+            </ion-button>
+        </ion-label>
+        <ion-note slot="end" *ngIf="offline">
+            <ion-icon name="fas-clock" aria-hidden="true"></ion-icon>{{ 'core.notsent' | translate }}
+        </ion-note>
+    </ion-item>
+</core-loading>

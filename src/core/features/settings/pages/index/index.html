@@ -1,0 +1,20 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'core.settings.appsettings' | translate }}</h1>
+        <ion-buttons slot="end"></ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-split-view>
+        <ion-list>
+            <ion-item *ngFor="let section of sections.items" [attr.aria-current]="sections.getItemAriaCurrent(section)" button
+                detail="true" (click)="sections.select(section)">
+                <ion-icon [name]="section.icon" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ section.name | translate }}</ion-label>
+            </ion-item>
+        </ion-list>
+    </core-split-view>
+</ion-content>

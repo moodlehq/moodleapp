@@ -1,0 +1,46 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'addon.mod_workshop.editsubmission' | translate }}</h1>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="save()" [attr.aria-label]="'core.save' | translate">
+                {{ 'core.save' | translate }}
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <form [formGroup]="editForm" *ngIf="workshop" #editFormEl>
+            <ion-item class="ion-text-wrap">
+                <ion-label position="stacked">
+                    <span core-mark-required="true">
+                        {{ 'addon.mod_workshop.submissiontitle' | translate }}
+                    </span>
+                </ion-label>
+                <ion-input name="title" type="text" [placeholder]="'addon.mod_workshop.submissiontitle' | translate"
+                    formControlName="title">
+                </ion-input>
+            </ion-item>
+
+            <ion-item *ngIf="textAvailable">
+                <ion-label position="stacked">
+                    <span [core-mark-required]="textRequired">
+                        {{ 'addon.mod_workshop.submissioncontent' | translate }}
+                    </span>
+                </ion-label>
+                <core-rich-text-editor [control]="editForm.controls['content']" name="content"
+                    [placeholder]="'addon.mod_workshop.submissioncontent' | translate" name="content" [component]="component"
+                    [componentId]="componentId" [autoSave]="true" contextLevel="module" [contextInstanceId]="module.id"
+                    elementId="content_editor" [draftExtraParams]="editorExtraParams"></core-rich-text-editor>
+            </ion-item>
+
+            <core-attachments *ngIf="fileAvailable" [files]="attachments" [maxSize]="workshop.maxbytes"
+                [maxSubmissions]="workshop.nattachments" [component]="component" [componentId]="workshop.coursemodule"
+                allowOffline="true" [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired">
+            </core-attachments>
+        </form>
+    </core-loading>
+</ion-content>

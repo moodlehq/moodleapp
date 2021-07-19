@@ -1,0 +1,41 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+
+        <h1>{{ 'core.settings.opensourcelicenses' | translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <ion-item button *ngIf="error" class="ion-text-wrap" [href]="licensesUrl" core-link auto-login="no">
+            <ion-label>
+                {{ 'core.settings.opensourcelicenses' | translate }}
+            </ion-label>
+            <ion-button [href]="licensesUrl" target="_blank" fill="clear" slot="end" core-link auto-login="no">
+                {{ 'core.view' | translate }}</ion-button>
+        </ion-item>
+
+        <ng-container *ngIf="!error">
+            <ion-item *ngFor="let license of licenses" class="ion-text-wrap">
+                <ion-label>
+                    <p class="item-heading">
+                        <a *ngIf="license.repository" [href]="license.repository" core-link
+                            auto-login="no">{{ license.name }}</a>
+                        <ng-container *ngIf="!license.repository">{{ license.name }}</ng-container> - {{ license.version }}
+                    </p>
+                    <p class="item-heading" *ngIf="license.publisher">
+                        {{ 'core.settings.publisher' | translate }}{{ 'core.labelsep' | translate }} {{ license.publisher }}
+                    </p>
+                    <p>{{ 'core.settings.license' | translate }}{{ 'core.labelsep' | translate }} {{ license.licenses }}</p>
+                    <p><a *ngIf="license.url" [href]="license.url" core-link auto-login="no">{{ license.url }}</a></p>
+                    <p><a *ngIf="license.email" [href]="'mailto:' + license.email" core-link
+                            auto-login="no">{{ license.email }}</a></p>
+                </ion-label>
+                <ion-button *ngIf="license.licenseUrl" [href]="license.licenseUrl" target="_blank"
+                    fill="clear" slot="end" core-link auto-login="no">{{ 'core.view' | translate }}</ion-button>
+            </ion-item>
+        </ng-container>
+    </core-loading>
+</ion-content>

@@ -1,0 +1,14 @@
+<ion-list>
+    <ng-container *ngFor="let group of subwikis">
+        <ion-item-divider *ngIf="group.label">
+            <ion-label><h2>{{ group.label }}</h2></ion-label>
+        </ion-item-divider>
+        <ion-item class="ion-text-wrap" *ngFor="let subwiki of group.subwikis" (click)="openSubwiki(subwiki)"
+            [attr.disabled]="!subwiki.canedit && subwiki.id <= 0"
+            [button]="subwiki.canedit || subwiki.id > 0"
+            [attr.aria-current]="isSubwikiSelected(subwiki) ? 'page' : 'false'" detail="false">
+            <ion-label>{{ subwiki.name }}</ion-label>
+            <ion-icon *ngIf="isSubwikiSelected(subwiki)" name="fas-check" slot="end" aria-hidden="true"></ion-icon>
+        </ion-item>
+    </ng-container>
+</ion-list>

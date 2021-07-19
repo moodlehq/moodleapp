@@ -1,0 +1,13 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ title }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="finalUrl" class="core-loading-fullheight">
+        <core-iframe *ngIf="finalUrl" [src]="finalUrl"></core-iframe>
+    </core-loading>
+</ion-content>

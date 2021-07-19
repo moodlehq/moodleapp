@@ -1,8 +1,0 @@
-ion-app.app-root page-addon-mod-chat-session-messages.ion-page {
-    @include message-page();
-
-    .addon-mod-chat-notice {
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
-}

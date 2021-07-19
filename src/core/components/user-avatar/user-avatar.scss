@@ -1,0 +1,81 @@
+:host {
+    position: relative;
+    width: var(--core-avatar-size);
+    height: var(--core-avatar-size);
+
+    .clickable {
+        cursor: pointer;
+    }
+    img {
+        border-radius: 50%;
+        width: var(--core-avatar-size);
+        height: var(--core-avatar-size);
+        max-width: var(--core-avatar-size);
+        max-height: var(--core-avatar-size);
+    }
+    img[alt] {
+        text-indent: -999999px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    img[core-external-content]:not([src]),
+    img[core-external-content][src=""] {
+        visibility: visible;
+        display: inline-block;
+        position: relative;
+        &:after {
+            border-radius: 50%;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/assets/img/user-avatar.png');
+            background-size: contain;
+            content: "";
+        }
+    }
+    &.core-bar-button-image img {
+        padding: 0;
+        width: var(--core-header-toolbar-button-image-size);
+        height: var(--core-header-toolbar-button-image-size);
+        max-width: var(--core-header-toolbar-button-image-size);
+        max-height: var(--core-header-toolbar-button-image-size);
+        border-radius: 50%;
+    }
+
+    .contact-status {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        &.online {
+            border: 1px solid white;
+            background-color: var(--core-online-color);
+        }
+    }
+
+    .core-avatar-extra-icon {
+        margin: 0 !important;
+        border-radius: 0 !important;
+        background: none;
+        position: absolute;
+        right: -4px;
+        bottom: -4px;
+        width: 24px;
+        height: 24px;
+    }
+}
+
+:host-context(.toolbar) .contact-status {
+    width: 10px;
+    height: 10px;
+}
+
+:host-context([dir="rtl"]) .contact-status {
+    left: 0;
+    right: unset;
+}

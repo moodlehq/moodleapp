@@ -1,0 +1,8 @@
+<ion-list class="addon-qtype-multianswer-container" *ngIf="question && (question.text || question.text === '')">
+    <div class="fake-ion-item ion-text-wrap">
+        <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"
+            [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"
+            (afterRender)="questionRendered()">
+        </core-format-text>
+    </div>
+</ion-list>

@@ -1,0 +1,29 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
+            </core-format-text>
+        </h1>
+
+        <ion-buttons slot="end"></ion-buttons>
+    </ion-toolbar>
+
+    <core-navbar-buttons slot="end">
+        <ion-button [hidden]="!canSaveGrades" fill="clear" (click)="submitGrade()">
+            {{ 'core.done' | translate }}
+        </ion-button>
+    </core-navbar-buttons>
+</ion-header>
+<ion-content>
+
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshSubmission($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+        <addon-mod-assign-submission [courseId]="courseId" [moduleId]="moduleId" [submitId]="submitId" [blindId]="blindId">
+        </addon-mod-assign-submission>
+    </core-loading>
+</ion-content>

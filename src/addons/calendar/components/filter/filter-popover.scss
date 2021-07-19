@@ -1,0 +1,21 @@
+:host {
+    ion-item {
+        ion-icon, ion-radio {
+            margin-right: 8px;
+        }
+
+        > ion-icon {
+            padding: 4px;
+            font-size: 20px;
+        }
+    }
+}
+
+:host-context([dir=rtl]) {
+    ion-item {
+        ion-icon, ion-radio {
+            margin-left: 8px;
+            margin-right: unset;
+        }
+    }
+}

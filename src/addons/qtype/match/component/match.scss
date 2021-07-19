@@ -1,0 +1,13 @@
+:host {
+    .core-correct-icon {
+        margin-left: 0;
+    }
+
+    .addon-qtype-match-correct {
+        color: var(--success);
+    }
+
+    .addon-qtype-match-incorrect {
+        color: var(--danger);
+    }
+}

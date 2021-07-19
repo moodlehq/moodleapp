@@ -1,0 +1,10 @@
+@import "~theme/globals";
+
+:host {
+    ion-item.course {
+        .item-heading {
+            font-weight: bold;
+        }
+    }
+
+}

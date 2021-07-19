@@ -1,0 +1,136 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+
+        <h1>{{ 'core.login.connecttomoodle' | translate }}</h1>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="openSettings()" [attr.aria-label]="'core.settings.appsettings' | translate">
+                <ion-icon slot="icon-only" name="fas-cog" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+    <div class="ion-text-center ion-padding ion-margin-bottom core-login-site-logo"
+        [class.hidden]="hasSites || enteredSiteUrl">
+        <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation" alt="">
+    </div>
+    <form [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites" #siteFormEl>
+        <!-- Form to input the site URL if there are no fixed sites. -->
+        <ng-container *ngIf="siteSelector == 'url'">
+            <ion-item>
+                <ion-label position="stacked">
+                    <h2>{{ 'core.login.siteaddress' | translate }}</h2>
+                </ion-label>
+                <ion-input name="url" type="url" placeholder="{{ 'core.login.siteaddressplaceholder' | translate }}"
+                    formControlName="siteUrl" [core-auto-focus]="showKeyboard && !showScanQR">
+                </ion-input>
+            </ion-item>
+        </ng-container>
+        <ng-container *ngIf="siteSelector != 'url'">
+            <ion-item>
+                <ion-label position="stacked">
+                    <h2>{{ 'core.login.siteaddress' | translate }}</h2>
+                </ion-label>
+                <ion-input name="url" placeholder="{{ 'core.login.siteaddressplaceholder' | translate }}" formControlName="siteUrl"
+                    [core-auto-focus]="showKeyboard && !showScanQR" (ionChange)="searchSite($event, siteForm.value.siteUrl)">
+                </ion-input>
+            </ion-item>
+
+            <ion-list [class.hidden]="!hasSites && !enteredSiteUrl" class="core-login-site-list">
+                <ion-item lines="none" class="core-login-site-list-title">
+                    <ion-label>
+                        <h2 class="item-heading">{{ 'core.login.selectsite' | translate }}</h2>
+                    </ion-label>
+                </ion-item>
+                <ion-item button *ngIf="enteredSiteUrl" (click)="connect($event, enteredSiteUrl.url)"
+                    [attr.aria-label]="'core.login.connect' | translate" detail="true" class="core-login-entered-site">
+                    <ion-thumbnail slot="start" aria-hidden="true">
+                        <ion-icon name="fas-pen" aria-hidden="true"></ion-icon>
+                    </ion-thumbnail>
+                    <ion-label>
+                        <h2 class="ion-text-wrap">{{ 'core.login.yourenteredsite' | translate }}</h2>
+                        <p>{{enteredSiteUrl.noProtocolUrl}}</p>
+                    </ion-label>
+                </ion-item>
+
+                <div class="core-login-site-list-found" [class.hidden]="!hasSites" [class.dimmed]="loadingSites">
+                    <div *ngIf="loadingSites" class="core-login-site-list-loading">
+                        <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                    </div>
+                    <ng-container *ngFor="let site of sites">
+                        <ng-container *ngTemplateOutlet="sitelisting; context: {site: site}"></ng-container>
+                    </ng-container>
+                </div>
+            </ion-list>
+
+            <div *ngIf="!hasSites && loadingSites" class="core-login-site-nolist-loading">
+                <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+            </div>
+        </ng-container>
+
+        <ion-item *ngIf="siteSelector == 'url'" lines="none">
+            <ion-label>
+                <ion-button expand="block" [disabled]="!siteForm.valid" class="ion-text-wrap" type="submit">
+                    {{ 'core.login.connect' | translate }}
+                </ion-button>
+            </ion-label>
+        </ion-item>
+    </form>
+
+    <ng-container *ngIf="fixedSites">
+        <!-- Pick the site from a list of fixed sites. -->
+        <ion-list *ngIf="siteSelector == 'list'">
+            <ion-item lines="none">
+                <ion-label>
+                    <h2 class="item-heading">{{ 'core.login.selectsite' | translate }}</h2>
+                </ion-label>
+            </ion-item>
+            <ion-searchbar *ngIf="fixedSites.length > 4" [(ngModel)]="filter" (ionInput)="filterChanged($event)"
+                (ionCancel)="filterChanged()" [placeholder]="'core.login.findyoursite' | translate">
+            </ion-searchbar>
+            <ng-container *ngFor="let site of filteredSites">
+                <ng-container *ngTemplateOutlet="sitelisting; context: {site: site}"></ng-container>
+            </ng-container>
+        </ion-list>
+    </ng-container>
+
+    <ng-container *ngIf="showScanQR && !hasSites && !enteredSiteUrl">
+        <div class="ion-text-center ion-padding ion-margin-top">{{ 'core.login.or' | translate }}</div>
+        <ion-button expand="block" color="light" class="ion-margin" lines="none" (click)="showInstructionsAndScanQR()"
+            aria-haspopup="dialog">
+            <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
+            <ion-label>{{ 'core.scanqr' | translate }}</ion-label>
+        </ion-button>
+    </ng-container>
+
+    <!-- Help. -->
+    <ion-button
+        class="ion-margin-top core-login-need-help core-button-as-link ion-text-wrap"
+        (click)="showHelp()"
+        aria-haspopup="dialog"
+        expand="block"
+        fill="clear"
+        color="dark"
+    >
+        <ion-label>{{ 'core.needhelp' | translate }}</ion-label>
+    </ion-button>
+</ion-content>
+
+<!-- Template site selector. -->
+<ng-template #sitelisting let-site="site">
+    <ion-item button (click)="connect($event, site.url, site)" [attr.aria-label]="site.name" detail="true">
+        <ion-thumbnail *ngIf="siteFinderSettings.displayimage" slot="start">
+            <img [src]="site.imageurl" *ngIf="site.imageurl" onError="this.src='assets/icon/icon.png'" alt="" role="presentation">
+            <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon" alt="" role="presentation">
+        </ion-thumbnail>
+        <ion-label>
+            <p *ngIf="site.title" class="item-heading ion-text-wrap">{{site.title}}</p>
+            <p *ngIf="site.noProtocolUrl">{{site.noProtocolUrl}}</p>
+            <p *ngIf="site.location">{{site.location}}</p>
+        </ion-label>
+    </ion-item>
+</ng-template>

@@ -1,0 +1,62 @@
+<ion-item-group *ngFor="let dayEvents of filteredEvents">
+    <ion-item-divider [color]="dayEvents.color">
+        <ion-label><h3>{{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedayshort" }}</h3></ion-label>
+    </ion-item-divider>
+    <ng-container *ngFor="let event of dayEvents.events">
+        <ion-item class="ion-text-wrap core-course-module-handler item-media" detail="false" (click)="action($event, event.url)"
+            [attr.aria-label]="event.name" button>
+            <img slot="start" [src]="event.iconUrl" alt="" role="presentation" *ngIf="event.iconUrl" class="core-module-icon">
+            <ion-label>
+                <!-- Add the icon title so accessibility tools read it. -->
+                <span class="sr-only" *ngIf="event.iconTitle">{{ event.iconTitle }}</span>
+                <p class="item-heading">
+                    <core-format-text [text]="event.name" contextLevel="module" [contextInstanceId]="event.id"
+                        [courseId]="event.course && event.course.id">
+                    </core-format-text>
+                </p>
+                <p *ngIf="showCourse && event.course">
+                    <core-format-text [text]="event.course.fullnamedisplay" contextLevel="course"
+                        [contextInstanceId]="event.course.id">
+                    </core-format-text>
+                </p>
+
+                <ion-button fill="clear" class="ion-hide-md-up ion-text-wrap" (click)="action($event, event.action.url)"
+                    [title]="event.action.name" [disabled]="!event.action.actionable" *ngIf="event.action">
+                    {{event.action.name}}
+                    <ion-badge slot="end" class="ion-margin-start" *ngIf="event.action.showitemcount">{{event.action.itemcount}}
+                    </ion-badge>
+                </ion-button>
+            </ion-label>
+
+            <div slot="end" class="events-info">
+                <div>
+                    <ion-badge color="light">{{event.timesort * 1000 | coreFormatDate:"strftimetime24" }}</ion-badge>
+                </div>
+                <ion-button
+                    class="ion-hide-md-down"
+                    fill="clear"
+                    (click)="action($event, event.action.url)"
+                    [title]="event.action.name"
+                    [disabled]="!event.action.actionable" *ngIf="event.action"
+                >
+                    {{event.action.name}}
+                    <ion-badge slot="end" class="ion-margin-start" *ngIf="event.action.showitemcount">
+                        {{event.action.itemcount}}
+                    </ion-badge>
+                </ion-button>
+            </div>
+        </ion-item>
+    </ng-container>
+</ion-item-group>
+
+<div class="ion-padding ion-text-center" *ngIf="canLoadMore && !empty">
+    <!-- Button and spinner to show more attempts. -->
+    <ion-button expand="block" (click)="loadMoreEvents()" color="light" *ngIf="!loadingMore">
+        {{ 'core.loadmore' | translate }}
+    </ion-button>
+    <ion-spinner *ngIf="loadingMore" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+</div>
+
+<core-empty-box *ngIf="empty" image="assets/img/icons/activities.svg" [message]="'addon.block_timeline.noevents' | translate"
+    inline="true">
+</core-empty-box>

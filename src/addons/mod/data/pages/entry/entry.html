@@ -1,0 +1,79 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+            </core-format-text>
+        </h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed"
+        [disabled]="!entryLoaded || !(isPullingToRefresh || !renderingEntry && !loadingRating && !loadingComments)"
+        (ionRefresh)="refreshDatabase($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="entryLoaded && (isPullingToRefresh || !renderingEntry && !loadingRating && !loadingComments)">
+        <!-- Database entries found to be synchronized -->
+        <ion-card class="core-warning-card" *ngIf="entry && entry.hasOffline">
+            <ion-item>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
+            </ion-item>
+        </ion-card>
+
+        <ion-item class="ion-text-wrap" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+            <ion-label id="addon-data-groupslabel">
+                <ng-container *ngIf="groupInfo.separateGroups">{{ 'core.groupsvisible' | translate }}</ng-container>
+                <ng-container *ngIf="groupInfo.visibleGroups">{{ 'core.groupsseparate' | translate }}</ng-container>
+            </ion-label>
+            <ion-select [(ngModel)]="selectedGroup" (ionChange)="setGroup(selectedGroup)" aria-labelledby="addon-data-groupslabel"
+                interface="action-sheet" [interfaceOptions]="{header: 'core.group' | translate}">
+                <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
+                    {{groupOpt.name}}
+                </ion-select-option>
+            </ion-select>
+        </ion-item>
+
+        <div class="addon-data-contents addon-data-entry addon-data-entries-{{database.id}}" *ngIf="database && entry">
+            <core-style [css]="database.csstemplate" prefix=".addon-data-entries-{{database.id}}"></core-style>
+
+            <core-compile-html [text]="entryHtml" [jsData]="jsData" [extraImports]="extraImports"
+                (compiling)="setRenderingEntry($event)"></core-compile-html>
+        </div>
+
+        <core-rating-rate *ngIf="database && entry && ratingInfo && (!database.approval || entry.approved)"
+            [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="database.coursemodule" [itemId]="entry.id" [itemSetId]="0"
+            [courseId]="courseId" [aggregateMethod]="database.assessed" [scaleId]="database.scale" [userId]="entry.userid"
+            (onLoading)="setLoadingRating($event)" (onUpdate)="ratingUpdated()">
+        </core-rating-rate>
+        <core-rating-aggregate *ngIf="database && entry && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module"
+            [instanceId]="database.coursemodule" [itemId]="entry.id" [courseId]="courseId" [aggregateMethod]="database.assessed"
+            [scaleId]="database.scale">
+        </core-rating-aggregate>
+
+        <core-comments *ngIf="database && database.comments && entry && entry.id > 0 && commentsEnabled"
+            contextLevel="module" [instanceId]="database.coursemodule" component="mod_data" [itemId]="entry.id"
+            area="database_entry" [courseId]="courseId" (onLoading)="setLoadingComments($event)" [showItem]="true">
+        </core-comments>
+
+        <ion-grid *ngIf="hasPrevious || hasNext">
+            <ion-row class="ion-align-items-center">
+                <ion-col *ngIf="hasPrevious">
+                    <ion-button expand="block" fill="outline" (click)="gotoEntry(offset! -1)">
+                        <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
+                        {{ 'core.previous' | translate }}
+                    </ion-button>
+                </ion-col>
+                <ion-col *ngIf="hasNext">
+                    <ion-button expand="block" (click)="gotoEntry(offset! + 1)">
+                        {{ 'core.next' | translate }}
+                        <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </core-loading>
+</ion-content>

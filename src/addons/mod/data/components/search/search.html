@@ -1,0 +1,68 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h2>{{ 'addon.mod_data.search' | translate }}</h2>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="fas-times" slot="icon-only" aria-hidden=true></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-item>
+        <ion-label>{{ 'addon.mod_data.advancedsearch' | translate }}</ion-label>
+        <ion-toggle [(ngModel)]="search.searchingAdvanced"></ion-toggle>
+    </ion-item>
+    <form (ngSubmit)="searchEntries($event)" [formGroup]="searchForm" #searchFormEl>
+        <ion-list class="ion-no-margin">
+            <ion-item [hidden]="search.searchingAdvanced">
+                <ion-label class="sr-only">{{ 'addon.mod_data.search' | translate}}</ion-label>
+                <ion-input type="text" placeholder="{{ 'addon.mod_data.search' | translate}}"
+                    [(ngModel)]="search.text" name="text" formControlName="text">
+                </ion-input>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label position="stacked">{{ 'core.sortby' | translate }}</ion-label>
+                <ion-select interface="action-sheet" name="sortBy" formControlName="sortBy"
+                    [placeholder]="'core.sortby' | translate" [interfaceOptions]="{header: 'core.sortby' | translate}">
+                    <optgroup *ngIf="fieldsArray.length" label="{{ 'addon.mod_data.fields' | translate }}">
+                        <ion-select-option *ngFor="let field of fieldsArray" [value]="field.id">{{field.name}}</ion-select-option>
+                    </optgroup>
+                    <optgroup label="{{ 'addon.mod_data.other' | translate }}">
+                        <ion-select-option value="0">{{ 'addon.mod_data.timeadded' | translate }}</ion-select-option>
+                        <ion-select-option value="-4">{{ 'addon.mod_data.timemodified' | translate }}</ion-select-option>
+                        <ion-select-option value="-1">{{ 'addon.mod_data.authorfirstname' | translate }}</ion-select-option>
+                        <ion-select-option value="-2">{{ 'addon.mod_data.authorlastname' | translate }}</ion-select-option>
+                        <ion-select-option value="-3" *ngIf="database.approval">
+                            {{ 'addon.mod_data.approved' | translate }}
+                        </ion-select-option>
+                    </optgroup>
+                </ion-select>
+            </ion-item>
+            <ion-list >
+                <ion-radio-group [(ngModel)]="search.sortDirection" name="sortDirection" formControlName="sortDirection">
+                    <ion-item>
+                        <ion-label>{{ 'addon.mod_data.ascending' | translate }}</ion-label>
+                        <ion-radio slot="start" value="ASC"></ion-radio>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>{{ 'addon.mod_data.descending' | translate }}</ion-label>
+                        <ion-radio slot="start" value="DESC"></ion-radio>
+                    </ion-item>
+                </ion-radio-group>
+            </ion-list>
+            <div class="ion-padding addon-data-advanced-search" [hidden]="!advancedSearch || !search.searchingAdvanced">
+                <core-compile-html [text]="advancedSearch" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>
+            </div>
+        </ion-list>
+        <div class="ion-padding">
+            <ion-button expand="block" type="submit">
+                <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+                {{ 'addon.mod_data.search' | translate }}
+            </ion-button>
+        </div>
+    </form>
+</ion-content>

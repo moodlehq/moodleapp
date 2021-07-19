@@ -1,0 +1,50 @@
+<ion-tabs class="hide-header">
+    <ion-tab-bar slot="top" class="core-tabs-bar" [hidden]="!tabs || numTabsShown <= 1" #tabBar>
+        <ion-spinner *ngIf="!hideUntil" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+        <ion-row *ngIf="hideUntil">
+            <ion-col class="col-with-arrow ion-no-padding" (click)="slidePrev()" size="1" [class.clickable]="showPrevButton">
+                <ion-icon *ngIf="showPrevButton" name="fas-chevron-left" [attr.aria-label]="'core.previous' | translate"></ion-icon>
+            </ion-col>
+            <ion-col class="ion-no-padding" size="10">
+                <ion-slides (ionSlideDidChange)="slideChanged()" [options]="slidesOpts" [dir]="direction" role="tablist"
+                    [attr.aria-label]="description">
+                    <ng-container *ngFor="let tab of tabs">
+                        <ion-slide
+                            role="presentation"
+                            [id]="tab.id! + '-tab'"
+                            class="tab-slide"
+                            tabindex="-1"
+                            [class.selected]="selected == tab.id">
+                            <ion-tab-button
+                                (ionTabButtonClick)="selectTab(tab.id, $event)"
+                                (keydown)="tabAction.keyDown($event)"
+                                (keyup)="tabAction.keyUp(tab.id, $event)"
+                                [tab]="tab.page"
+                                [layout]="layout"
+                                class="{{tab.class}}"
+                                role="tab"
+                                [attr.aria-controls]="tab.id"
+                                [attr.aria-selected]="selected == tab.id"
+                                [tabindex]="selected == tab.id ? 0 : -1"
+                            >
+                                <ion-icon *ngIf="tab.icon" [name]="tab.icon" aria-hidden="true"></ion-icon>
+                                <ion-label>
+                                    {{ tab.title | translate}}
+                                    <ion-badge *ngIf="tab.badge">
+                                        <span [attr.aria-hidden]="!!tab.badgeA11yText">{{ tab.badge }}</span>
+                                        <span *ngIf="tab.badgeA11yText" class="sr-only">
+                                            {{ tab.badgeA11yText | translate: {$a : tab.badge } }}
+                                        </span>
+                                    </ion-badge>
+                                </ion-label>
+                            </ion-tab-button>
+                        </ion-slide>
+                    </ng-container>
+                </ion-slides>
+            </ion-col>
+            <ion-col class="col-with-arrow ion-no-padding" (click)="slideNext()" size="1" [class.clickable]="showNextButton">
+                <ion-icon *ngIf="showNextButton" name="fas-chevron-right" [attr.aria-label]="'core.next' | translate"></ion-icon>
+            </ion-col>
+        </ion-row>
+    </ion-tab-bar>
+</ion-tabs>

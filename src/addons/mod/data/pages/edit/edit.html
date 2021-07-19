@@ -1,0 +1,40 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+            </core-format-text>
+        </h1>
+        <ion-buttons slot="end">
+            <ion-button *ngIf="entry" fill="clear" (click)="save($event)">
+                {{ 'core.save' | translate }}
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <ion-item class="ion-text-wrap" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+            <ion-label id="addon-data-groupslabel">
+                <ng-container *ngIf="groupInfo.separateGroups">{{ 'core.groupsvisible' | translate }}</ng-container>
+                <ng-container *ngIf="groupInfo.visibleGroups">{{ 'core.groupsseparate' | translate }}</ng-container>
+            </ion-label>
+            <ion-select [(ngModel)]="selectedGroup" (ionChange)="setGroup(selectedGroup)" aria-labelledby="addon-data-groupslabel"
+                interface="action-sheet" [interfaceOptions]="{header: 'core.group' | translate}">
+                <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
+                    {{groupOpt.name}}
+                </ion-select-option>
+            </ion-select>
+        </ion-item>
+
+        <div class="addon-data-contents {{cssClass}}" *ngIf="database">
+            <core-style [css]="database.csstemplate" prefix=".{{cssClass}}"></core-style>
+
+            <form (ngSubmit)="save($event)" [formGroup]="editForm" #editFormEl>
+                <core-compile-html [text]="editFormRender" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>
+            </form>
+        </div>
+    </core-loading>
+</ion-content>

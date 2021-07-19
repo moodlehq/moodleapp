@@ -1,0 +1,67 @@
+:host .core-block-content ::ng-deep {
+    max-height: 200px;
+    overflow-y: auto;
+    .item-inner,
+    .input-wrapper {
+        overflow-y: visible;
+        align-self: start;
+    }
+
+    .list {
+        margin-left: 0;
+        margin-right: 0;
+        -webkit-padding-start: 0;
+
+        li.listentry {
+            clear: both;
+            list-style-type: none;
+
+            .user {
+                float: left;
+                position: relative;
+                padding-bottom: 16px;
+
+                .core-adapted-img-container {
+                    display: inline;
+                    margin-left: 0;
+                    margin-right: 8px;
+                }
+
+                .userpicture {
+                    vertical-align: text-bottom;
+                }
+            }
+
+            .message {
+                float: right;
+                margin-top: 3px;
+            }
+
+            .uservisibility { // No support on the app.
+                display: none;
+            }
+        }
+    }
+
+    .info {
+        text-align: center;
+    }
+
+}
+
+:host-context([dir=rtl]) .core-block-content ::ng-deep {
+    .list li.listentry {
+        .user {
+            float: right;
+
+            .core-adapted-img-container {
+                margin-left: 8px;
+                margin-right: 0;
+            }
+        }
+
+        .message {
+            float: left;
+        }
+    }
+}

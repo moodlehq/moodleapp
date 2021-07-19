@@ -1,0 +1,117 @@
+@import "~theme/globals";
+
+:host {
+    ion-content,
+    ion-list {
+        --background: var(--core-login-background);
+        --ion-item-background: var(--core-login-background);
+        --color: var(--core-login-text-color);
+    }
+
+    ion-item ion-label {
+        --color: var(--core-login-text-color);
+
+        p, h2, h3, .core-oauth-icon {
+            color: var(--color);
+        }
+    }
+    ion-button.core-button-as-link {
+        --color: var(--core-login-text-color);
+        text-decoration-color: var(--core-login-text-color);
+
+        ion-label {
+            color: var(--core-login-text-color);
+        }
+    }
+
+    form .item.item-input,
+    form .core-username.item {
+        margin-bottom: 16px;
+    }
+
+    form .item,
+    form .item ion-label {
+        --background: var(--core-login-input-background);
+        --color: var(--core-login-input-color);
+    }
+
+    form .core-username.item p {
+        font-size: 16px;
+    }
+
+    form .core-username.item.md p {
+        @include padding-horizontal(8px, null);
+    }
+
+    .core-login-site-logo img {
+        max-width: 100%;
+    }
+
+    .core-sitename + .core-siteurl {
+        margin-top: 0;
+    }
+
+    .core-sitename {
+        font-size: 1.2rem;
+        margin-bottom: 0;
+    }
+
+    .core-login-site-logo {
+        width: 90%;
+        max-width: 300px;
+        margin: 5px auto;
+    }
+
+    .core-login-forgotten-password {
+        text-decoration: underline;
+    }
+
+    @if ($core-login-hide-forgot-password) {
+        .core-login-forgotten-password {
+            display: none;
+        }
+    }
+
+    .core-login-reconnect-warning ion-item {
+        font-size: 0.9em;
+        --background: var(--core-login-input-background);
+    }
+
+    @if ($core-fixed-url) {
+        .core-sitename, .core-siteurl {
+            display: none;
+        }
+    }
+
+    @if ($core-login-button-outline) {
+        form ion-button {
+            --background: white;
+            --color: var(--core-login-background);
+        }
+    }
+
+    @if ($core-login-loading-color) {
+        core-loading {
+            --loading-background: var(--core-login-background);
+            --loading-text-color: #{$core-login-loading-color};
+            --loading-spinner: #{$core-login-loading-color};
+        }
+    }
+}
+
+:host-context(body.dark) {
+    @if ($core-login-button-outline-dark) {
+        form ion-button-dark {
+            --background: white;
+            --color: var(--core-login-background-dark);
+        }
+    }
+
+    @if ($core-login-loading-color-dark) {
+        core-loading {
+            --loading-background: var(--core-login-background-dark);
+            --loading-text-color: #{$core-login-loading-color-dark};
+            --loading-spinner: #{$core-login-loading-color-dark};
+        }
+    }
+}

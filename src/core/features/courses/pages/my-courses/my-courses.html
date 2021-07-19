@@ -1,0 +1,54 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'core.courses.mycourses' | translate }}</h1>
+
+        <ion-buttons slot="end">
+            <core-navbar-buttons>
+                <ion-button *ngIf="searchEnabled" (click)="openSearch()"
+                    [attr.aria-label]="'core.courses.searchcourses' | translate">
+                    <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+                <ion-button [hidden]="!downloadAllCoursesEnabled || !courses || courses.length < 2 || downloadAllCoursesLoading"
+                    (click)="prefetchCourses()" [attr.aria-label]="'core.courses.downloadcourses' | translate">
+                    <ion-icon [name]="downloadAllCoursesIcon" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+                <ion-spinner [hidden]="!downloadAllCoursesEnabled || !courses || courses.length < 2 ||
+                    downloadAllCoursesBadge != '' || !downloadAllCoursesLoading"
+                    [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                <ion-badge [hidden]="!downloadAllCoursesEnabled || !courses || courses.length < 2 || !downloadAllCoursesLoading ||
+                    downloadAllCoursesBadge == '' || !downloadAllCoursesLoading"
+                    role="progressbar" [attr.aria-valuemax]="downloadAllCoursesTotal"
+                    [attr.aria-valuenow]="downloadAllCoursesCount" [attr.aria-valuetext]="downloadAllCoursesBadgeA11yText">
+                    {{downloadAllCoursesBadge}}
+                </ion-badge>
+            </core-navbar-buttons>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!coursesLoaded" (ionRefresh)="refreshCourses($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="coursesLoaded">
+        <ion-searchbar #searchbar *ngIf="courses && courses.length > 5" [(ngModel)]="filter" (ionInput)="filterChanged($event)"
+            (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
+        </ion-searchbar>
+        <ion-grid class="ion-no-padding safe-area-page">
+            <ion-row class="ion-no-padding">
+                <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding"
+                    size="12" size-sm="6" size-md="6" size-lg="4" size-xl="4">
+                    <core-courses-course-progress [course]="course" class="core-courseoverview" showAll="true">
+                    </core-courses-course-progress>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+        <core-empty-box *ngIf="!courses || !courses.length" icon="fas-graduation-cap"
+            [message]="'core.courses.nocourses' | translate">
+            <p *ngIf="searchEnabled">{{ 'core.courses.searchcoursesadvice' | translate }}</p>
+        </core-empty-box>
+    </core-loading>
+</ion-content>

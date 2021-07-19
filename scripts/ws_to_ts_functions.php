@@ -25,19 +25,34 @@ function get_ws_structure($wsname, $useparams) {
     global $DB;
 
     // get all the function descriptions
-    $functions = $DB->get_records('external_functions', array(), 'name');
+    $function = $DB->get_record('external_functions', array('services' => 'moodle_mobile_app', 'name' => $wsname));
+    if (!$function) {
+        return false;
+    }
+
+    $functiondesc = external_api::external_function_info($function);
+
+    if ($useparams) {
+        return $functiondesc->parameters_desc;
+    } else {
+        return $functiondesc->returns_desc;
+    }
+}
+
+/**
+ * Return all WS structures.
+ */
+function get_all_ws_structures() {
+    global $DB;
+
+    // get all the function descriptions
+    $functions = $DB->get_records('external_functions', array('services' => 'moodle_mobile_app'), 'name');
     $functiondescs = array();
     foreach ($functions as $function) {
         $functiondescs[$function->name] = external_api::external_function_info($function);
     }
 
-    if (!isset($functiondescs[$wsname])) {
-        return false;
-    } else if ($useparams) {
-        return $functiondescs[$wsname]->parameters_desc;
-    } else {
-        return $functiondescs[$wsname]->returns_desc;
-    }
+    return $functiondescs;
 }
 
 /**
@@ -49,6 +64,16 @@ function fix_comment($desc) {
 
     if (substr($desc, -1) !== '.') {
         $desc .= '.';
+    }
+
+    $lines = explode("\n", $desc);
+    if (count($lines) > 1) {
+        $desc = array_shift($lines)."\n";
+
+        foreach ($lines as $i => $line) {
+            $spaces = strlen($line) - strlen(ltrim($line));
+            $desc .= str_repeat(' ', $spaces - 3) . '// '. ltrim($line)."\n";
+        }
     }
 
     return $desc;
@@ -86,7 +111,7 @@ function get_ts_doc($type, $desc, $indentation) {
 function convert_key_type($key, $type, $required, $indentation) {
     if ($key) {
         // It has a key, it's inside an object.
-        return $indentation . "$key" . ($required == VALUE_OPTIONAL ? '?' : '') . ": $type";
+        return $indentation . "$key" . ($required == VALUE_OPTIONAL || $required == VALUE_DEFAULT ? '?' : '') . ": $type";
     } else {
         // No key, it's probably in an array. Just include the type.
         return $type;
@@ -152,11 +177,30 @@ function convert_to_ts($key, $value, $boolisnumber = false, $indentation = '', $
         $result .= "[]";
 
         return $result;
+    } else if ($value == null) {
+        return "{}; // WARNING: Null structure found";
     } else {
-        echo "WARNING: Unknown structure: $key " . get_class($value) . " \n";
-
-        return "";
+        return "{}; // WARNING: Unknown structure: $key " . get_class($value);
     }
+}
+
+/**
+ * Print structure ready to use.
+ */
+function print_ws_structure($name, $structure, $useparams) {
+    if ($useparams) {
+        $type = implode('', array_map('ucfirst', explode('_', $name))) . 'WSParams';
+        $comment = "Params of $name WS.";
+    } else {
+        $type = implode('', array_map('ucfirst', explode('_', $name))) . 'WSResponse';
+        $comment = "Data returned by $name WS.";
+    }
+
+    echo "
+/**
+ * $comment
+ */
+export type $type = ".convert_to_ts(null, $structure).";\n";
 }
 
 /**

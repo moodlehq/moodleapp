@@ -1,0 +1,37 @@
+<core-loading [hideUntil]="loaded">
+    <core-empty-box *ngIf="!filteredEvents || !filteredEvents.length" icon="fas-calendar" [message]="'addon.calendar.noevents' | translate">
+    </core-empty-box>
+
+    <ion-list *ngIf="filteredEvents && filteredEvents.length" class="ion-no-margin">
+        <ng-container *ngFor="let event of filteredEvents">
+            <ion-item class="ion-text-wrap addon-calendar-event" [attr.aria-label]="event.name" (click)="eventClicked(event)" button
+                [ngClass]="['addon-calendar-eventtype-'+event.eventtype]" detail="true">
+                <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" slot="start" class="core-module-icon" alt=""
+                    role="presentation">
+                <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" slot="start" aria-hidden="true">
+                </ion-icon>
+                <ion-label>
+                    <!-- Add the icon title so accessibility tools read it. -->
+                    <span class="sr-only">
+                        {{ 'addon.calendar.type' + event.formattedType | translate }}
+                        <span class="sr-only" *ngIf="event.moduleIcon && event.iconTitle">{{ event.iconTitle }}</span>
+                    </span>
+                    <p class="item-heading">
+                        <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
+                        [contextInstanceId]="event.contextInstanceId"></core-format-text>
+                    </p>
+                    <p [innerHTML]="event.formattedtime"></p>
+                </ion-label>
+                <ion-note *ngIf="event.offline && !event.deleted" slot="end">
+                    <ion-icon name="fas-clock" aria-hidden="true"></ion-icon>
+                    <span class="ion-text-wrap">{{ 'core.notsent' | translate }}</span>
+                </ion-note>
+                <ion-note *ngIf="event.deleted" slot="end">
+                    <ion-icon name="fas-trash" aria-hidden="true"></ion-icon>
+                    <span class="ion-text-wrap">{{ 'core.deletedoffline' | translate }}</span>
+                </ion-note>
+            </ion-item>
+        </ng-container>
+    </ion-list>
+
+</core-loading>

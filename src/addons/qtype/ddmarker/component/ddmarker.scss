@@ -1,0 +1,150 @@
+// Style ddmarker content a bit. Almost all these styles are copied from Moodle.
+.addon-qtype-ddmarker-container {
+    min-height: 80px; // To display the loading.
+}
+
+core-format-text ::ng-deep {
+    .ddarea, .ddform {
+        user-select: none;
+    }
+
+    .qtext {
+        margin-bottom: 0.5em;
+        display: block;
+    }
+
+    .droparea {
+        display: inline-block;
+    }
+
+    div.droparea img {
+        border: 1px solid var(--core-dd-question-border);
+        max-width: 100%;
+    }
+
+    .dropzones svg {
+        z-index: 3;
+    }
+
+    .dragitem.beingdragged .markertext {
+        z-index: 5;
+        box-shadow: var(--core-dd-question-selected-shadow);
+    }
+
+    .dragitems, // Previous to 3.9.
+    .draghomes {
+        &.readonly {
+            .dragitem,
+            .marker {
+                cursor: auto;
+            }
+        }
+
+        .dragitem, // Previous to 3.9.
+        .draghome,
+        .marker {
+            vertical-align: top;
+            cursor: pointer;
+            position: relative;
+            margin: 10px;
+            display: inline-block;
+            &.dragplaceholder {
+                display: none;
+                visibility: hidden;
+
+                &.active {
+                    display: inline-block;
+                }
+            }
+
+            &.unplaced {
+                position: relative;
+            }
+            &.placed {
+                position: absolute;
+                opacity: 0.6;
+            }
+        }
+    }
+
+    .droparea {
+        .dragitem,
+        .marker {
+            cursor: pointer;
+            position: absolute;
+            vertical-align: top;
+            z-index: 2;
+        }
+    }
+
+    div.ddarea {
+        text-align: center;
+        position: relative;
+    }
+    div.ddarea .dropzones,
+    div.ddarea .markertexts {
+        top: 0;
+        left: 0;
+        min-height: 80px;
+        position: absolute;
+        text-align: start;
+    }
+
+    .dropbackground {
+        margin: 0 auto;
+    }
+
+    div.dragitems div.draghome,
+    div.dragitems div.dragitem,
+    div.draghome,
+    div.drag,
+    div.draghomes div.marker,
+    div.marker,
+    div.drag {
+        font: 13px/1.231 arial, helvetica, clean, sans-serif;
+    }
+    div.dragitems span.markertext,
+    div.draghomes span.markertext,
+    div.markertexts span.markertext {
+        margin: 0 5px;
+        z-index: 2;
+        background-color: var(--ion-item-background);
+        border: 2px solid var(--core-dd-question-border);
+        padding: 5px;
+        display: inline-block;
+        zoom: 1;
+        border-radius: 10px;
+        color: var(--ion-text-color);
+    }
+    div.markertexts span.markertext {
+        z-index: 3;
+        background-color: var(--yellow-light);
+        border-style: solid;
+        border-width: 2px;
+        border-color: var(--yellow);
+        position: absolute;
+        color: var(--black);
+    }
+    span.wrongpart {
+        background-color: var(--yellow-light);
+        border-style: solid;
+        border-width: 2px;
+        border-color: var(--yellow);
+        padding: 5px;
+        border-radius: 10px;
+        opacity: 0.6;
+        margin: 5px;
+        display: inline-block;
+        color: var(--black);
+    }
+    div.dragitems img.target,
+    div.draghomes img.target {
+        position: absolute;
+        left: -7px; /* This must be half the size of the target image, minus 0.5. */
+        top: -7px; /* In other words, this works for a 15x15 cross-hair. */
+    }
+    div.dragitems div.draghome img.target,
+    div.draghomes div.marker img.target {
+        display: none;
+    }
+}

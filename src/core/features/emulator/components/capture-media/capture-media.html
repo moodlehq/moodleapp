@@ -1,0 +1,65 @@
+<ion-header>
+    <ion-toolbar>
+        <h1 *ngIf="title">{{ title | translate }}</h1>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="cancel()">{{ 'core.cancel' | translate }}</ion-button>
+            <ion-button *ngIf="hasCaptured" (click)="done()">{{ 'core.done' | translate }}</ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="readyToCapture" class="core-loading-fullheight">
+        <div class="core-av-wrapper">
+            <!-- Video stream for image and video. -->
+            <video *ngIf="!isAudio" [hidden]="hasCaptured" class="core-webcam-stream" autoplay #streamVideo></video>
+
+            <!-- For video recording, use 2 videos and show/hide them because a CSS rule caused problems with the controls. -->
+            <video *ngIf="isVideo" [hidden]="!hasCaptured" class="core-webcam-video-captured" controls #previewVideo></video>
+
+            <!-- Canvas to treat the image and an img to show the result. -->
+            <canvas *ngIf="isImage" class="core-webcam-image-canvas" #imgCanvas></canvas>
+            <img *ngIf="isImage" [hidden]="!hasCaptured" class="core-webcam-image" alt="{{ 'core.capturedimage' | translate }}"
+                #previewImage>
+
+            <!-- Recording audio. -->
+            <div *ngIf="isAudio" class="core-audio-record-container">
+                <!-- Canvas to show audio waves when recording audio in browser. -->
+                <canvas [hidden]="hasCaptured || isCordovaAudioCapture" class="core-audio-canvas" #streamAudio></canvas>
+
+                <!-- Button to start/stop in mobile devices. -->
+                <ion-button fill="clear" *ngIf="!hasCaptured && isCordovaAudioCapture" (click)="actionClicked()"
+                    [attr.aria-label]="title">
+                    <ion-icon *ngIf="!isCapturing" name="fas-microphone" slot="icon-only" aria-hidden="true"></ion-icon>
+                    <ion-icon *ngIf="isCapturing" name="fas-square" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+
+                <!-- Audio player to listen to the result. -->
+                <audio [hidden]="!hasCaptured" class="core-audio-captured" controls #previewAudio></audio>
+            </div>
+        </div>
+    </core-loading>
+</ion-content>
+
+<ion-footer *ngIf="readyToCapture">
+    <ion-row>
+        <ion-col></ion-col>
+        <ion-col class="ion-text-center">
+            <ion-button fill="clear" *ngIf="!hasCaptured && !isCordovaAudioCapture" (click)="actionClicked()"
+                [attr.aria-label]="title">
+                <ion-icon *ngIf="!isCapturing && isAudio" name="fas-microphone" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="!isCapturing && isVideo" name="fas-video" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="isImage" name="fas-camera" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="isCapturing" name="fas-square" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" *ngIf="hasCaptured" (click)="discard()" [attr.aria-label]="'core.discard' | translate">
+                <ion-icon color="danger" name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-col>
+        <ion-col class="ion-padding ion-text-end chrono-container">
+            <core-chrono *ngIf="!isImage" [hidden]="hasCaptured" [running]="isCapturing" [reset]="resetChrono" [endTime]="maxTime"
+                (onEnd)="stopCapturing()">
+            </core-chrono>
+        </ion-col>
+    </ion-row>
+</ion-footer>

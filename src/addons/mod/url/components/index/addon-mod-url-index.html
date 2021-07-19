@@ -1,0 +1,58 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons slot="end">
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
+            [href]="externalUrl" iconAction="fas-external-link-alt"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
+            (action)="expandDescription()" iconAction="fas-arrow-right"></core-context-menu-item>
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
+            iconAction="far-newspaper" (action)="gotoBlog()"></core-context-menu-item>
+        <core-context-menu-item [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)"
+            [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="core-loading-fullheight">
+
+    <!-- Activity info. -->
+    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        (completionChanged)="onCompletionChange()">
+    </core-course-module-info>
+
+    <core-course-module-description *ngIf="displayDescription" [description]="description" [component]="component"
+        [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+    </core-course-module-description>
+
+    <div *ngIf="shouldIframe || (shouldEmbed && isOther)" class="addon-mod_url-embedded-url">
+        <core-iframe [src]="url"></core-iframe>
+    </div>
+
+    <ion-list *ngIf="!shouldIframe && (!shouldEmbed || !isOther)">
+        <ion-item *ngIf="shouldEmbed">
+            <ion-label>
+                <img *ngIf="isImage" [alt]="name" [src]="url">
+                <video *ngIf="isVideo" [title]="name" controls>
+                    <source [src]="url" [type]="mimetype">
+                </video>
+                <audio *ngIf="isAudio" [title]="name" controls>
+                    <source [src]="url" [type]="mimetype">
+                </audio>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <h2>{{ 'addon.mod_url.pointingtourl' | translate }}</h2>
+                <p>{{ url }}</p>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <ion-button expand="block" (click)="go()">
+                    <ion-icon name="fas-link" slot="start" aria-hidden="true"></ion-icon>
+                    {{ 'addon.mod_url.accessurl' | translate }}
+                </ion-button>
+            </ion-label>
+        </ion-item>
+    </ion-list>
+</core-loading>

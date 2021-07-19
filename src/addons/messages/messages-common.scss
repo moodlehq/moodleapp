@@ -1,0 +1,79 @@
+:host {
+    .addon-messages-conversation-item,
+    .addon-message-discussion {
+        ion-label {
+            margin-right: 0;
+            margin-left: 0;
+        }
+
+        .item-heading {
+            core-format-text {
+                font-weight: bold;
+            }
+
+            ion-icon {
+                margin-left: 2px;
+            }
+        }
+
+        ion-note {
+            display: flex;
+            flex-direction: column;
+            align-self: flex-start;
+            margin-left: 2px;
+
+            ion-badge, ion-icon {
+                margin-top: 3px;
+                align-self: flex-end;
+            }
+            .addon-message-last-message-date {
+                white-space: nowrap;
+                font-size: 11px;
+            }
+        }
+
+        .addon-message-last-message {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .addon-message-last-message-user {
+            white-space: nowrap;
+            color: var(--ion-text-color);
+            margin-right: 2px;
+        }
+
+        .addon-message-last-message-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex-shrink: 1;
+        }
+    }
+
+    .addon-message-discussion {
+        .item-heading {
+            margin-top: 10px;
+        }
+    }
+
+    ion-item-divider ion-badge {
+        margin-left: 16px;
+        margin-right: 16px;
+    }
+}
+
+:host-context([dir=rtl]) {
+    .addon-messages-conversation-item,
+    .addon-message-discussion {
+        .item-heading ion-icon {
+            margin-right: 2px;
+            margin-left: 0;
+        }
+
+        .addon-message-last-message-user {
+            margin-left: 2px;
+            margin-right: 0;
+        }
+    }
+}

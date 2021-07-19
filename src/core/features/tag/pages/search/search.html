@@ -1,0 +1,46 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'core.tag.searchtags' | translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <ion-grid class="safe-area-page">
+        <ion-row>
+            <ion-col size="12" [attr.col-sm-6]="collections && collections.length > 1 ? '' : null">
+                <core-search-box (onSubmit)="searchTags($event)" (onClear)="searchTags('')" [initialSearch]="query"
+                    [disabled]="searching" autocorrect="off" [spellcheck]="false" [autoFocus]="false" [lengthCheck]="0"
+                    searchArea="CoreTag"></core-search-box>
+            </ion-col>
+            <ion-col size="12" size-sm="6" *ngIf="collections && collections.length > 1">
+                <core-combobox [selection]="collectionId" (onChange)="searchTags($event)" [disabled]="searching">
+                    <ion-select-option class="ion-text-wrap" [value]="0">
+                        {{ 'core.tag.inalltagcoll' | translate }}
+                    </ion-select-option>
+                    <ion-select-option class="ion-text-wrap" *ngFor="let collection of collections" [value]="collection.id">
+                        {{ collection.name }}</ion-select-option>
+                </core-combobox>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <core-loading [hideUntil]="loaded && !searching" class="safe-area-page">
+        <core-empty-box *ngIf="!cloud || !cloud!.tags || !cloud!.tags.length" icon="fas-tags"
+            [message]="'core.tag.notagsfound' | translate: {$a: query}"></core-empty-box>
+
+        <ng-container *ngIf="cloud && cloud!.tags && cloud!.tags.length > 0">
+            <div class="ion-text-center core-tag-cloud">
+                <ion-badge *ngFor="let tag of cloud!.tags" (click)="openTag(tag)" class="ion-text-wrap">
+                    <span [class]="'size' + tag.size">{{ tag.name }}</span>
+                </ion-badge>
+            </div>
+            <p *ngIf="cloud!.tags.length < cloud!.totalcount" class="ion-text-center">
+                {{ 'core.tag.showingfirsttags' | translate: {$a: cloud!.tags.length} }}
+            </p>
+        </ng-container>
+    </core-loading>
+</ion-content>

@@ -1,0 +1,11 @@
+<ion-item lines="none" class="core-timer" role="timer"
+    [ngClass]="{'ion-text-center': align == 'center', 'ion-text-end': align == 'right'}">
+    <ion-icon name="fas-clock" slot="start" aria-hidden="true"></ion-icon>
+    <ion-label>
+        <span *ngIf="timeLeft && timeLeft > 0 && timerText" class="core-timer-text">{{ timerText }}</span>
+        <span *ngIf="timeLeft && timeLeft > 0" class="core-timer-time-left">{{ timeLeft | coreSecondsToHMS }}</span>
+        <span class="core-timesup" *ngIf="timeLeft !== undefined && timeLeft <= 0">
+            {{ 'core.timesup' | translate }}
+        </span>
+    </ion-label>
+</ion-item>

@@ -1,0 +1,30 @@
+:host ::ng-deep {
+    div.latesubmission,
+    div.overdue {
+        border-bottom: 3px solid var(--danger) !important;
+        ion-icon {
+            color: var(--danger);
+        }
+    }
+
+    div.earlysubmission {
+        border-bottom: 3px solid var(--success) !important;
+        ion-icon {
+            color: var(--success);
+        }
+    }
+
+    div.submissioneditable p {
+        color: var(--red);
+    }
+
+    .core-grading-summary .advancedgrade {
+        display: none;
+    }
+}
+
+:host-context(body.dark) ::ng-deep {
+    div.submissioneditable p {
+        color: var(--red-light);
+    }
+}

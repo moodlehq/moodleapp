@@ -1,0 +1,52 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h2>{{ 'addon.mod_workshop.userplan' | translate }}</h2>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="fas-times" slot="icon-only" aria-hidden=true></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ng-container *ngFor="let phase of phases">
+            <ion-item-divider [attr.aria-current]="workshopPhase == phase.code ? 'page' : 'false'">
+                <ion-label>
+                    <h2>{{ phase.title }}</h2>
+                    <p class="ion-text-wrap" *ngIf="workshopPhase == phase.code">
+                        {{ 'addon.mod_workshop.userplancurrentphase' | translate }}
+                    </p>
+                </ion-label>
+            </ion-item-divider>
+            <ion-item class="ion-text-wrap" *ngIf="phase.switchUrl" [href]="phase.switchUrl" detail="false">
+                <ion-icon slot="start" name="fas-exchange-alt" aria-hidden="true"></ion-icon>
+                <ion-label>
+                    <p>{{ 'addon.mod_workshop.switchphase' + phase.code | translate }}</p>
+                </ion-label>
+                <ion-icon slot="end" name="fas-external-link-alt" aria-hidden="true"></ion-icon>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngFor="let task of phase.tasks"
+                [class.item-dimmed]="phase.code != workshopPhase || (task.code == 'submit' && !showSubmit)"
+                (click)="runTask(task)" detail="false" button>
+                <ion-icon slot="start" name="far-circle" *ngIf="task.completed == null"
+                    [attr.aria-label]="'addon.mod_workshop.tasktodo' | translate"></ion-icon>
+                <ion-icon slot="start" name="fas-times-circle" color="danger" *ngIf="task.completed == ''"
+                    [attr.aria-label]="'addon.mod_workshop.taskfail' | translate"></ion-icon>
+                <ion-icon slot="start" name="fas-info-circle" color="info" *ngIf="task.completed == 'info'"
+                    [attr.aria-label]="'addon.mod_workshop.taskinfo' | translate"></ion-icon>
+                <ion-icon slot="start" name="fas-check-circle" color="success" *ngIf="task.completed == '1'"
+                    [attr.aria-label]="'addon.mod_workshop.taskdone' | translate"></ion-icon>
+                <ion-label>
+                    <h2 class="ion-text-wrap">{{task.title}}</h2>
+                    <p *ngIf="task.details" [innerHTML]="task.details"></p>
+                </ion-label>
+                <ion-icon slot="end" *ngIf="task.link && task.code != 'submit'" name="fas-external-link-alt" aria-hidden="true">
+                </ion-icon>
+            </ion-item>
+        </ng-container>
+    </ion-list>
+</ion-content>

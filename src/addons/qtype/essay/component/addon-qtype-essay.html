@@ -1,0 +1,105 @@
+<ion-list *ngIf="essayQuestion && (essayQuestion.text || essayQuestion.text === '')">
+    <!-- Question text. -->
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="essayQuestion.text"
+                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            </core-format-text>
+        </ion-label>
+    </ion-item>
+
+    <!-- Editing the question. -->
+    <ng-container *ngIf="!review">
+        <!-- Textarea. -->
+        <ion-item *ngIf="essayQuestion.textarea && (!essayQuestion.hasDraftFiles || uploadFilesSupported)">
+            <ion-label class="sr-only">{{ 'core.question.answer' | translate }}</ion-label>
+            <!-- "Format" and draftid hidden inputs -->
+            <input *ngIf="essayQuestion.formatInput" type="hidden" [name]="essayQuestion.formatInput.name"
+                [value]="essayQuestion.formatInput.value" >
+            <input *ngIf="essayQuestion.answerDraftIdInput" type="hidden" [name]="essayQuestion.answerDraftIdInput.name"
+                [value]="essayQuestion.answerDraftIdInput.value" >
+            <!-- Plain text textarea. -->
+            <ion-textarea *ngIf="essayQuestion.isPlainText" class="core-question-textarea"
+                [ngClass]='{"core-monospaced": essayQuestion.isMonospaced}'
+                placeholder="{{ 'core.question.answer' | translate }}"
+                [attr.name]="essayQuestion.textarea.name" [ngModel]="essayQuestion.textarea.text">
+            </ion-textarea>
+            <!-- Rich text editor. -->
+            <core-rich-text-editor *ngIf="!essayQuestion.isPlainText" placeholder="{{ 'core.question.answer' | translate }}"
+                [control]="formControl" [name]="essayQuestion.textarea.name" [component]="component" [componentId]="componentId"
+                [autoSave]="false">
+            </core-rich-text-editor>
+        </ion-item>
+
+        <!-- Draft files not supported. -->
+        <ng-container *ngIf="essayQuestion.textarea && essayQuestion.hasDraftFiles && !uploadFilesSupported">
+            <ion-item class="ion-text-wrap core-danger-item">
+                <ion-label class="core-question-warning">
+                    {{ 'core.question.errorembeddedfilesnotsupportedinsite' | translate }}
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="essayQuestion.textarea.text"
+                        [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+                    </core-format-text>
+                </ion-label>
+            </ion-item>
+        </ng-container>
+
+        <!-- Attachments. -->
+        <ng-container *ngIf="essayQuestion.allowsAttachments">
+            <core-attachments *ngIf="uploadFilesSupported && essayQuestion.attachmentsDraftIdInput" [files]="attachments"
+                [component]="component" [componentId]="componentId" [maxSize]="essayQuestion.attachmentsMaxBytes"
+                [maxSubmissions]="essayQuestion.attachmentsMaxFiles" [allowOffline]="offlineEnabled"
+                [acceptedTypes]="essayQuestion.attachmentsAcceptedTypes">
+            </core-attachments>
+
+            <input *ngIf="essayQuestion.attachmentsDraftIdInput" type="hidden" [name]="essayQuestion.attachmentsDraftIdInput.name"
+                [value]="essayQuestion.attachmentsDraftIdInput.value" >
+
+            <!-- Attachments not supported in this site. -->
+            <ion-item *ngIf="!uploadFilesSupported" class="ion-text-wrap core-danger-item">
+                <ion-label class="core-question-warning">
+                    {{ 'core.question.errorattachmentsnotsupportedinsite' | translate }}
+                </ion-label>
+            </ion-item>
+        </ng-container>
+    </ng-container>
+
+    <!-- Reviewing the question. -->
+    <ng-container *ngIf="review">
+        <!-- Answer to the question and attachments (reviewing). -->
+        <ion-item class="ion-text-wrap" *ngIf="essayQuestion.answer || essayQuestion.answer == ''">
+            <ion-label>
+                <core-format-text [ngClass]='{"core-monospaced": essayQuestion.isMonospaced}' [component]="component"
+                    [componentId]="componentId" [text]="essayQuestion.answer" [contextLevel]="contextLevel"
+                    [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+                </core-format-text>
+            </ion-label>
+        </ion-item>
+
+        <!-- Word count info. -->
+        <ion-item class="ion-text-wrap" *ngIf="essayQuestion.wordCountInfo">
+            <ion-label>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="essayQuestion.wordCountInfo"
+                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+                </core-format-text>
+            </ion-label>
+        </ion-item>
+
+        <!-- Answer plagiarism. -->
+        <ion-item class="ion-text-wrap" *ngIf="essayQuestion.answerPlagiarism">
+            <ion-label>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="essayQuestion.answerPlagiarism"
+                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+                </core-format-text>
+            </ion-label>
+        </ion-item>
+
+        <!-- List of attachments when reviewing. -->
+        <core-files *ngIf="essayQuestion.attachments" [files]="essayQuestion.attachments" [component]="component"
+            [componentId]="componentId" [extraHtml]="essayQuestion.attachmentsPlagiarisms">
+        </core-files>
+    </ng-container>
+</ion-list>

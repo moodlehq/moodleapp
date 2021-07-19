@@ -1,0 +1,180 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons slot="end">
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
+            [href]="externalUrl" iconAction="fas-external-link-alt">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
+            (action)="expandDescription()" iconAction="fas-arrow-right">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
+            iconAction="far-newspaper" (action)="gotoBlog()">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
+            (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline" [priority]="600" (action)="doRefresh(null, $event, true)"
+            [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)"
+            [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}"
+            iconDescription="fas-archive" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
+        </core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded">
+
+    <!-- Activity info. -->
+    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        (completionChanged)="onCompletionChange()">
+    </core-course-module-info>
+
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
+        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+    </core-course-module-description>
+
+    <!-- Activity availability messages -->
+    <ion-card class="core-info-card" *ngIf="choiceNotOpenYet">
+        <ion-item>
+            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                <p *ngIf="options.length">{{ 'addon.mod_choice.previewonly' | translate:{$a: openTimeReadable} }}</p>
+                <p *ngIf="!options.length">{{ 'addon.mod_choice.notopenyet' | translate:{$a: openTimeReadable} }}</p>
+            </ion-label>
+        </ion-item>
+    </ion-card>
+
+    <ion-card class="core-info-card" *ngIf="choiceClosed">
+        <ion-item>
+            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                <p *ngIf="options.length">
+                    {{ 'addon.mod_choice.yourselection' | translate }}
+                    <core-format-text [text]="options[0].text" contextLevel="module" [contextInstanceId]="module.id"
+                        [courseId]="courseId">
+                    </core-format-text>
+                </p>
+                <p>{{ 'addon.mod_choice.expired' | translate:{$a: closeTimeReadable} }}</p>
+            </ion-label>
+        </ion-item>
+    </ion-card>
+
+    <!-- Choice done in offline but not synchronized -->
+    <ion-card class="core-warning-card" *ngIf="hasOffline">
+        <ion-item>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</ion-label>
+        </ion-item>
+    </ion-card>
+
+    <!-- Inform what will happen with the choices. -->
+    <ion-card class="core-info-card" *ngIf="canEdit && publishInfo && options.length">
+        <ion-item>
+            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>{{ publishInfo | translate }}</ion-label>
+        </ion-item>
+    </ion-card>
+
+    <!-- Choice options -->
+    <ion-card *ngIf="options.length && choice">
+        <ng-container *ngIf="choice.allowmultiple">
+            <ion-item class="ion-text-wrap" *ngFor="let option of options">
+                <ion-label>
+                    <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option: option}"></ng-container>
+                </ion-label>
+                <ion-checkbox slot="end" [(ngModel)]="option.checked" [disabled]="option.disabled || !canEdit"></ion-checkbox>
+            </ion-item>
+        </ng-container>
+        <ion-radio-group *ngIf="!choice.allowmultiple" [(ngModel)]="selectedOption.id">
+            <ion-item class="ion-text-wrap" *ngFor="let option of options">
+                <ion-label>
+                    <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option: option}"></ng-container>
+                </ion-label>
+                <ion-radio slot="end" [value]="option.id" [disabled]="option.disabled || !canEdit"></ion-radio>
+            </ion-item>
+        </ion-radio-group>
+        <ion-button *ngIf="canEdit" expand="block" (click)="save()" [disabled]="!canSave()" class="ion-margin">
+            {{ 'addon.mod_choice.savemychoice' | translate }}
+        </ion-button>
+        <ion-button *ngIf="canDelete" expand="block" color="light" (click)="delete()" class="ion-margin">
+            {{ 'addon.mod_choice.removemychoice' | translate }}
+        </ion-button>
+    </ion-card>
+
+    <!-- Choice results -->
+    <div *ngIf="canSeeResults && choice">
+        <ion-item-divider>
+            <ion-label>
+                <h2>{{ 'addon.mod_choice.responses' | translate }}</h2>
+            </ion-label>
+        </ion-item-divider>
+        <ion-grid class="ion-no-padding">
+            <ion-row>
+                <ion-col size="12" size-lg="5">
+                    <ion-item class="ion-text-wrap core-warning-item" *ngIf="hasOffline">
+                        <ion-icon slot="start" name="fas-exclamation-triangle" color="warning" aria-hidden="true"></ion-icon>
+                        <ion-label>{{ 'addon.mod_choice.resultsnotsynced' | translate }}</ion-label>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>
+                            <core-chart type="pie" [data]="data" [labels]="labels" height="300" contextLevel="module"
+                                [contextInstanceId]="module.id" [courseId]="courseId">
+                            </core-chart>
+                        </ion-label>
+                    </ion-item>
+                </ion-col>
+                <ion-col *ngIf="choice.publish && results" size="12" size-lg="7">
+                    <ion-item-group *ngFor="let result of results">
+                        <ion-item-divider class="ion-text-wrap">
+                            <ion-label>
+                                <h3 class="item-heading">
+                                    <core-format-text [text]="result.text" contextLevel="module" [contextInstanceId]="module.id"
+                                        [courseId]="courseId">
+                                    </core-format-text>
+                                </h3>
+                                <p>
+                                    {{ 'addon.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }}
+                                    ({{ 'core.percentagenumber' | translate: {$a: result.percentageamountfixed} }})
+                                </p>
+                                <p *ngIf="choice.limitanswers && choice.showavailable">
+                                    {{ 'addon.mod_choice.limita' | translate:{$a: result.maxanswer} }}
+                                </p>
+                            </ion-label>
+                        </ion-item-divider>
+                        <ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseId"
+                            [userId]="user.userid" [attr.aria-label]="user.fullname" class="ion-text-wrap">
+                            <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
+                            <ion-label><p>{{user.fullname}}</p></ion-label>
+                        </ion-item>
+                    </ion-item-group>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+
+    <ion-card class="core-info-card" *ngIf="!canSeeResults && !choiceNotOpenYet">
+        <ion-item>
+            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label><p>{{ 'addon.mod_choice.noresultsviewable' | translate }}</p></ion-label>
+        </ion-item>
+    </ion-card>
+</core-loading>
+
+<!-- Template to render a choice option label. -->
+<ng-template #optionLabelTemplate let-option="option">
+    <p>
+        <core-format-text [text]="option.text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+        </core-format-text>
+        <span *ngIf="choice!.limitanswers && option.countanswers >= option.maxanswers">
+            {{ 'addon.mod_choice.full' | translate }}
+        </span>
+    </p>
+    <ng-container *ngIf="choice!.limitanswers && choice!.showavailable">
+        <p>{{ 'addon.mod_choice.responsesa' | translate:{$a: option.countanswers} }}</p>
+        <p>{{ 'addon.mod_choice.limita' | translate:{$a: option.maxanswers} }}</p>
+    </ng-container>
+</ng-template>

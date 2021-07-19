@@ -1,0 +1,121 @@
+@import "~core/features/question/question";
+
+// Style ddwtos content a bit. Almost all these styles are copied from Moodle.
+.addon-qtype-ddwtos-container {
+    min-height: 80px; // To display the loading.
+    position: relative;
+}
+
+core-format-text ::ng-deep, .drags ::ng-deep {
+    .qtext {
+        margin-bottom: 0.5em;
+        display: block;
+    }
+
+    .draghome {
+        margin-bottom: 1em;
+        max-width: calc(100%);
+    }
+
+    .answertext {
+        margin-bottom: 0.5em;
+    }
+
+    .drop {
+        display: inline-block;
+        text-align: center;
+        border: 1px solid var(--core-dd-question-border);
+        margin-bottom: 2px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .draghome, .drag {
+        display: inline-block;
+        text-align: center;
+        background: transparent;
+        border: 0;
+        white-space: normal;
+        overflow: visible;
+        word-wrap: break-word;
+    }
+    .draghome, .drag.unplaced{
+        border: 1px solid var(--core-dd-question-border);
+    }
+    .draghome {
+        visibility: hidden;
+    }
+    .drag {
+        z-index: 2;
+        border-radius: 5px;
+        line-height: 25px;
+        cursor: pointer;
+    }
+    .drag.selected,
+    .drop.selected {
+        z-index: 3;
+        box-shadow: var(--core-dd-question-selected-shadow);
+    }
+
+    &.notreadonly .drag,
+    &.notreadonly .draghome,
+    &.notreadonly .drop,
+    &.notreadonly .answercontainer {
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    &.readonly .drag,
+    &.readonly .draghome,
+    &.readonly .drop,
+    &.readonly .answercontainer {
+        cursor: default;
+    }
+
+    span.incorrect {
+        background-color: var(--core-question-incorrect-color-bg);
+    }
+    span.correct {
+        background-color: var(--core-question-correct-color-bg);
+    }
+
+    @for $i from 0 to length($core-dd-question-colors) {
+        .group#{$i + 1} {
+            background: var(--core-dd-question-color-#{$i + 1});
+            color: var(--core-dd-question-color-#{$i + 1}-contrast);
+        }
+    }
+
+    .group2 {
+        border-radius: var(--core-dd-question-radius) 0 0 0;
+    }
+    .group3 {
+        border-radius: 0 var(--core-dd-question-radius) 0 0;
+    }
+    .group4 {
+        border-radius: 0 0 var(--core-dd-question-radius) 0;
+    }
+    .group5 {
+        border-radius: 0 0 0 var(--core-dd-question-radius);
+    }
+    .group6 {
+        border-radius: 0 var(--core-dd-question-radius) var(--core-dd-question-radius) 0;
+    }
+    .group7 {
+        border-radius: var(--core-dd-question-radius) 0 0 var(--core-dd-question-radius);
+    }
+    .group8 {
+        border-radius: var(--core-dd-question-radius) var(--core-dd-question-radius) var(--core-dd-question-radius) var(--core-dd-question-radius);
+    }
+
+    sub, sup {
+        font-size: 80%;
+        position: relative;
+        vertical-align: baseline;
+    }
+    sup {
+        top: -0.4em;
+    }
+    sub {
+        bottom: -0.2em;
+    }
+}

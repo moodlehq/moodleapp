@@ -1,0 +1,11 @@
+:host {
+    .addon-calendar-eventtype-container.item-select-disabled {
+        ion-label, ion-select {
+            opacity: 1;
+        }
+
+        ion-select::part(icon) {
+            display: none;
+        }
+    }
+}

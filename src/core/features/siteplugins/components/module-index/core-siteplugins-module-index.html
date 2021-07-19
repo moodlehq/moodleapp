@@ -1,0 +1,32 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons slot="end">
+    <core-context-menu>
+        <core-context-menu-item [hidden]="!displayOpenInBrowser || !externalUrl || (
+            content?.compileComponent?.componentInstance?.displayOpenInBrowser === false)" [priority]="900"
+            [content]="'core.openinbrowser' | translate" [href]="externalUrl" iconAction="fas-external-link-alt">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="!displayDescription || !description || (
+            content?.compileComponent?.componentInstance?.displayDescription === false)" [priority]="800"
+            [content]="'core.moduleintro' | translate" (action)="expandDescription()" iconAction="fas-arrow-right">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="!displayRefresh || (
+            content?.compileComponent?.componentInstance?.displayRefresh === false)" [priority]="700"
+            [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon"
+            [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="!displayPrefetch || !prefetchStatusIcon || (
+            content?.compileComponent?.componentInstance?.displayPrefetch === false)" [priority]="600" [content]="prefetchText"
+            (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="!displaySize || !size || (
+            content?.compileComponent?.componentInstance?.displaySize === false)" [priority]="500"
+            [content]="'core.clearstoreddata' | translate:{$a: size}" [iconDescription]="'fas-archive'" (action)="removeFiles()"
+            iconAction="fas-trash" [closeOnClick]="false">
+        </core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<core-site-plugins-plugin-content *ngIf="component && method" [component]="component" [method]="method" [args]="args"
+    [initResult]="initResult" [data]="jsData" [pageTitle]="pageTitle" [preSets]="preSets" (onContentLoaded)="contentLoaded($event)"
+    (onLoadingContent)="contentLoading()">
+</core-site-plugins-plugin-content>

@@ -1,0 +1,120 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'addon.notifications.notifications' | translate }}</h1>
+        <ion-buttons slot="end">
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<core-navbar-buttons slot="end">
+    <core-context-menu>
+        <core-context-menu-item *ngFor="let handler of processorHandlers" [priority]="handler.priority"
+            [content]="handler.label | translate" (action)="openExtraPreferences(handler)" [iconAction]="handler.icon">
+        </core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!preferencesLoaded || !notifPrefsEnabled"
+        (ionRefresh)="refreshPreferences($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="preferencesLoaded">
+        <!-- If notification preferences aren't enabled, show only the notification sound setting. -->
+        <ion-item *ngIf="canChangeSound && !notifPrefsEnabled">
+            <ion-label>{{ 'addon.notifications.playsound' | translate }}</ion-label>
+            <ion-toggle [(ngModel)]="notificationSound" (ngModelChange)="changeNotificationSound(notificationSound)"></ion-toggle>
+        </ion-item>
+
+        <ng-container *ngIf="notifPrefsEnabled">
+            <ion-card>
+                <ion-item class="ion-text-wrap" *ngIf="preferences">
+                    <ion-label>{{ 'addon.notifications.notifications' | translate }}</ion-label>
+                    <ion-toggle [(ngModel)]="preferences!.enableall" (ngModelChange)="enableAll(preferences!.enableall)"></ion-toggle>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="canChangeSound">
+                    <ion-label>{{ 'addon.notifications.playsound' | translate }}</ion-label>
+                    <ion-toggle [(ngModel)]="notificationSound" (ngModelChange)="changeNotificationSound(notificationSound)">
+                    </ion-toggle>
+                </ion-item>
+            </ion-card>
+
+            <!-- Show processor selector. -->
+            <core-combobox *ngIf="preferences && preferences.processors && preferences.processors.length > 0"
+                [selection]="currentProcessor!.name" (onChange)="changeProcessor($event)">
+                <ion-select-option class="ion-text-wrap" *ngFor="let processor of preferences.processors" [value]="processor.name">
+                    {{ processor.displayname }}
+                </ion-select-option>
+            </core-combobox>
+
+            <ion-card list *ngFor="let component of components" class="ion-margin-top">
+                <ion-item-divider class="ion-text-wrap">
+                    <ion-grid class="ion-no-padding">
+                        <ion-row class="ion-no-padding">
+                            <ion-col class="ion-no-padding">{{ component.displayname }}</ion-col>
+                            <ion-col size="2" class="ion-text-center ion-no-padding ion-hide-md-down">
+                                {{ 'core.settings.loggedin' | translate }}
+                            </ion-col>
+                            <ion-col size="2" class="ion-text-center ion-no-padding ion-hide-md-down">
+                                {{ 'core.settings.loggedoff' | translate }}
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item-divider>
+                <ng-container *ngFor="let notification of component.notifications">
+                    <!-- Tablet view -->
+                    <ion-grid class="ion-text-wrap ion-hide-md-down addon-notifications-table-content">
+                        <ion-row class="ion-align-items-center">
+                            <ion-col class="ion-margin-horizontal">{{ notification.displayname }}</ion-col>
+                            <ion-col size="2" class="ion-text-center" *ngFor="let state of ['loggedin', 'loggedoff']">
+                                <!-- If notifications enabled, show toggle. -->
+                                <ion-spinner [hidden]="!preferences!.enableall ||
+                                    !(notification.processorsByName[currentProcessor!.name][state] &&
+                                    notification.processorsByName[currentProcessor!.name][state].updating)">
+                                </ion-spinner>
+                                <ion-toggle
+                                    *ngIf="preferences!.enableall && !notification.processorsByName[currentProcessor!.name].locked"
+                                    [(ngModel)]="notification.processorsByName[currentProcessor!.name][state].checked"
+                                    (ngModelChange)="changePreference(notification, state)"
+                                    [disabled]="notification.processorsByName[currentProcessor!.name][state].updating">
+                                </ion-toggle>
+                                <span class="text-gray"
+                                    *ngIf="preferences!.enableall && notification.processorsByName[currentProcessor!.name].locked">
+                                    {{'core.settings.locked' | translate }}
+                                </span>
+                                <!-- If notifications are disabled, show "Disabled" instead of toggle. -->
+                                <span *ngIf="!preferences!.enableall">{{ 'core.settings.disabled' | translate }}</span>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+
+                    <!-- Phone view -->
+                    <ion-list-header class="ion-text-wrap ion-no-margin ion-hide-md-up">
+                        {{ notification.displayname }}
+                    </ion-list-header>
+                    <!-- If notifications enabled, show toggles. If disabled, show "Disabled" instead of toggle. -->
+                    <ion-item *ngFor="let state of ['loggedin', 'loggedoff']" class="ion-text-wrap ion-hide-md-up" lines="none">
+                        <ion-label>{{ 'core.settings.' + state | translate }}</ion-label>
+                        <ion-spinner slot="end"
+                            *ngIf="preferences!.enableall && (notification.processorsByName[currentProcessor!.name][state] &&
+                            notification.processorsByName[currentProcessor!.name][state].updating)">
+                        </ion-spinner>
+                        <ion-toggle slot="end"
+                            *ngIf="preferences!.enableall && !notification.processorsByName[currentProcessor!.name].locked"
+                            [(ngModel)]="notification.processorsByName[currentProcessor!.name][state].checked"
+                            (ngModelChange)="changePreference(notification, state)"
+                            [disabled]="notification.processorsByName[currentProcessor!.name][state].updating">
+                        </ion-toggle>
+                        <span slot="end"
+                            *ngIf="preferences!.enableall && notification.processorsByName[currentProcessor!.name].locked"
+                            class="text-gray">
+                            {{'core.settings.locked' | translate }}
+                        </span>
+                        <ion-note slot="end" *ngIf="!preferences!.enableall">{{ 'core.settings.disabled' | translate }}</ion-note>
+                    </ion-item>
+                </ng-container>
+            </ion-card>
+        </ng-container>
+    </core-loading>
+</ion-content>

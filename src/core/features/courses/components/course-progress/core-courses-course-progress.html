@@ -1,0 +1,71 @@
+<ion-card [attr.course-color]="course.color ? null : course.colorNumber">
+    <div (click)="openCourse()" class="core-course-thumb" [class.core-course-color-img]="course.courseImage"
+        [style.background-color]="course.color">
+        <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt=""/>
+    </div>
+    <ion-item button lines="none" (click)="openCourse()" [attr.aria-label]="course.displayname || course.fullname"
+        class="core-course-header" [class.item-disabled]="course.visible == 0"
+        [class.core-course-only-title]="!showAll || course.progress! < 0 && course.completionusertracked === false"
+        detail="false">
+        <ion-label
+            class="ion-text-wrap core-course-title"
+            [class.core-course-with-buttons]="courseOptionMenuEnabled || (downloadCourseEnabled && showDownload)"
+            [class.core-course-with-spinner]="(downloadCourseEnabled && prefetchCourseData.icon == 'spinner') || showSpinner">
+            <p *ngIf="course.categoryname || (course.displayname && course.shortname && course.fullname != course.displayname)"
+                class="core-course-additional-info">
+                <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
+                <span *ngIf="course.categoryname" class="core-course-category">
+                    <core-format-text [text]="course.categoryname"></core-format-text>
+                </span>
+                <span *ngIf="course.categoryname && course.displayname && course.shortname && course.fullname != course.displayname"
+                    class="core-course-category"> | </span>
+                <span *ngIf="course.displayname && course.shortname && course.fullname != course.displayname"
+                    class="core-course-shortname">
+                    <core-format-text [text]="course.shortname" contextLevel="course" [contextInstanceId]="course.id">
+                    </core-format-text>
+                </span>
+            </p>
+            <p class="item-heading">
+                <ion-icon name="fas-star" *ngIf="course.isfavourite" [attr.aria-label]="'core.courses.favourite' | translate">
+                </ion-icon>
+                <span class="sr-only" *ngIf="course.isfavourite">{{ 'core.courses.aria:favourite' | translate }}</span>
+                <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
+                <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id"></core-format-text>
+            </p>
+        </ion-label>
+
+        <div class="core-button-spinner" *ngIf="downloadCourseEnabled && !courseOptionMenuEnabled && showDownload" slot="end">
+            <core-download-refresh
+                [status]="prefetchCourseData.status"
+                [enabled]="downloadCourseEnabled"
+                [statusTranslatable]="prefetchCourseData.statusTranslatable"
+                canTrustDownload="false"
+                [loading]="prefetchCourseData.loading"
+                (action)="prefetchCourse()"></core-download-refresh>
+        </div>
+
+        <div class="core-button-spinner" *ngIf="courseOptionMenuEnabled" slot="end">
+            <!-- Download course spinner. -->
+            <ion-spinner *ngIf="(downloadCourseEnabled && prefetchCourseData.icon == 'spinner') || showSpinner"
+                [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+
+            <!-- Downloaded icon. -->
+            <ion-icon *ngIf="downloadCourseEnabled && prefetchCourseData.downloadSucceeded && !showSpinner"
+                class="core-icon-downloaded" name="cloud-done" color="success" role="status"
+                [attr.aria-label]="'core.downloaded' | translate"></ion-icon>
+
+            <!-- Options menu. -->
+            <ion-button fill="clear" color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner"
+                [attr.aria-label]="('core.displayoptions' | translate)">
+                <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </div>
+    </ion-item>
+    <ion-item *ngIf="showAll && course.progress! >= 0 && course.completionusertracked !== false" lines="none"
+        class="core-course-progress">
+        <ion-label>
+            <core-progress-bar [progress]="course.progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
+        </ion-label>
+    </ion-item>
+    <ng-content></ng-content>
+</ion-card>

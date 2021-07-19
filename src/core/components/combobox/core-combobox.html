@@ -1,0 +1,32 @@
+<ion-select
+    *ngIf="interface != 'modal'"
+    class="ion-text-start"
+    [(ngModel)]="selection"
+    (ngModelChange)="onChange.emit(selection)"
+    [interface]="interface"
+    [attr.aria-label]="label + ': ' + selection"
+    [disabled]="disabled"
+>
+    <ng-content></ng-content>
+</ion-select>
+
+<ion-button
+    *ngIf="interface == 'modal'"
+    aria-haspopup="listbox"
+    aria-controls="addon-mod-forum-sort-order-selector"
+    [attr.aria-owns]="listboxId"
+    [attr.aria-expanded]="expanded"
+    (click)="showModal()"
+    [disabled]="disabled"
+    expand="block"
+    role="combobox"
+>
+    <ion-icon *ngIf="icon" [name]="icon" slot="start" aria-hidden="true"></ion-icon>
+    <span class="sr-only" *ngIf="label">{{ label }}:</span>
+    <div class="select-text">
+        <slot name="text">{{selection}}</slot>
+    </div>
+    <div class="select-icon" role="presentation" aria-hidden="true">
+        <div class="select-icon-inner"></div>
+    </div>
+</ion-button>

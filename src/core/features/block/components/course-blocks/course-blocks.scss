@@ -1,0 +1,59 @@
+:host {
+    --side-blocks-box-shadow: var(--core-menu-box-shadow-start);
+
+    &.core-no-blocks .core-course-blocks-content {
+        height: auto;
+    }
+
+    &.core-has-blocks {
+        @media (min-width: 768px) {
+            display: flex;
+
+            flex-direction: row;
+            flex-wrap: nowrap;
+
+            .core-course-blocks-content {
+                box-shadow: none !important;
+                flex-grow: 1;
+                max-width: 100%;
+            }
+
+            div.core-course-blocks-side {
+                max-width: var(--side-blocks-max-width);
+                min-width: var(--side-blocks-min-width);
+                box-shadow: var(--side-blocks-box-shadow);
+                z-index: 2;
+            }
+
+            .core-course-blocks-content,
+            div.core-course-blocks-side {
+                position: relative;
+                height: 100%;
+
+                .core-loading-center,
+                core-loading.core-loading-loaded {
+                    position: initial;
+                }
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            // Disable scroll on individual columns.
+            div.core-course-blocks-side {
+                height: auto;
+
+                &.core-hide-blocks {
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
+:host-context([dir="rtl"]).core-has-blocks {
+    @media (min-width: 768px) {
+        div.core-course-blocks-side {
+            box-shadow: var(--side-blocks-box-shadow);
+        }
+    }
+}

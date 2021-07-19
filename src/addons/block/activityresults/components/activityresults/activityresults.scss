@@ -1,0 +1,29 @@
+:host .core-block-content ::ng-deep {
+    table.grades {
+        text-align: start;
+        width: 100%;
+
+        .number {
+            text-align: start;
+            width: 10%;
+        }
+
+        .name {
+            text-align: start;
+            width: 77%;
+        }
+
+        .grade {
+            text-align: end;
+        }
+
+        caption {
+            text-align: start;
+            padding-top: .75rem;
+            padding-bottom: .75rem;
+            color: var(--gray-darker);
+            font-weight: bold;
+            font-size: 18px;
+        }
+    }
+}

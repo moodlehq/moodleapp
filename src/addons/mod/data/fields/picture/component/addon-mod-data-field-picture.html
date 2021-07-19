@@ -1,0 +1,22 @@
+<span *ngIf="editMode && form" [formGroup]="form">
+    <span [core-mark-required]="field.required" class="core-mark-required"></span>
+    <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component"
+        [componentId]="componentId" [allowOffline]="true" acceptedTypes="image">
+    </core-attachments>
+    <core-input-errors *ngIf="error" [errorText]="error"></core-input-errors>
+
+    <ion-label position="stacked">{{ 'addon.mod_data.alttext' | translate }}</ion-label>
+    <ion-input type="text" [formControlName]="'f_'+field.id+'_alttext'" [placeholder]=" 'addon.mod_data.alttext' | translate" >
+    </ion-input>
+</span>
+
+<span *ngIf="searchMode && form" [formGroup]="form">
+    <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name"></ion-input>
+</span>
+
+<button class="as-link" *ngIf="listMode && imageUrl" (click)="navigateEntry()">
+    <img [src]="imageUrl" [alt]="title" class="core-media-adapt-width listMode_picture" core-external-content/>
+</button>
+
+<img *ngIf="showMode && imageUrl" [src]="imageUrl" [alt]="title" class="core-media-adapt-width listMode_picture"
+    [attr.width]="width" [attr.height]="height" core-external-content/>

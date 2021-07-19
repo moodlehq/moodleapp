@@ -1,0 +1,123 @@
+@import "~core/features/question/question";
+
+// Style ddimageortext content a bit. Almost all these styles are copied from Moodle.
+:host {
+    --ddimageortext-border-drop: var(--gray-darker);
+    --ddimageortext-draghome-background: var(--core-dd-question-color-2);
+}
+
+.addon-qtype-ddimageortext-container {
+    min-height: 80px; // To display the loading.
+}
+
+core-format-text ::ng-deep {
+
+    div.ddarea {
+        text-align: center;
+        position: relative;
+        margin-top: 10px;
+        user-select: none;
+
+        .qtext {
+            margin-bottom: 0.5em;
+            display: block;
+        }
+
+        div.droparea img {
+            border: 1px solid var(--core-dd-question-border);
+            max-width: 100%;
+        }
+
+        .draghome {
+            vertical-align: top;
+            margin: 5px;
+            visibility : hidden;
+        }
+        .draghome img {
+            display: block;
+        }
+
+        div.draghome {
+            border: 1px solid var(--core-dd-question-border);
+            cursor: pointer;
+            background-color: var(--ddimageortext-draghome-background);
+            display: inline-block;
+            height: auto;
+            width: auto;
+            zoom: 1;
+        }
+
+        @for $i from 0 to length($core-dd-question-colors) {
+            .group#{$i + 1} {
+                background: var(--core-dd-question-color-#{$i + 1});
+                color: var(--core-dd-question-color-#{$i + 1}-contrast);
+            }
+        }
+
+        .group2 {
+            border-radius: var(--core-dd-question-radius) 0 0 0;
+        }
+        .group3 {
+            border-radius: 0 var(--core-dd-question-radius) 0 0;
+        }
+        .group4 {
+            border-radius: 0 0 var(--core-dd-question-radius) 0;
+        }
+        .group5 {
+            border-radius: 0 0 0 var(--core-dd-question-radius);
+        }
+        .group6 {
+            border-radius: 0 var(--core-dd-question-radius) var(--core-dd-question-radius) 0;
+        }
+        .group7 {
+            border-radius: var(--core-dd-question-radius) 0 0 var(--core-dd-question-radius);
+        }
+        .group8 {
+            border-radius: var(--core-dd-question-radius) var(--core-dd-question-radius) var(--core-dd-question-radius) var(--core-dd-question-radius);
+        }
+
+        .drag {
+            border: 1px solid var(--core-dd-question-border);
+            cursor: pointer;
+            z-index: 2;
+        }
+        .drag.placed {
+            border: 1px solid var(--ddimageortext-border-drop);
+        }
+        .dragitems.readonly .drag {
+            cursor: auto;
+        }
+        .dragitems>div {
+            clear: both;
+        }
+        .dragitems {
+            cursor: pointer;
+        }
+        .dragitems.readonly {
+            cursor: auto;
+        }
+        .drag img {
+            display: block;
+        }
+        .dropbackground {
+            margin:0 auto;
+        }
+        .dropzone {
+            border: 1px solid var(--ddimageortext-border-drop);
+            position: absolute;
+            z-index: 1;
+            cursor: pointer;
+        }
+        .readonly .dropzone {
+            cursor: auto;
+        }
+
+        div.dragitems div.draghome, div.dragitems div.drag {
+            font: 13px/1.231 arial, helvetica, clean, sans-serif;
+        }
+        .drag.beingdragged {
+            z-index: 3;
+            box-shadow: var(--core-dd-question-selected-shadow);
+        }
+    }
+}

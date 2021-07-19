@@ -1,0 +1,73 @@
+<ion-list class="addon-qtype-calculated-container" *ngIf="calcQuestion && (calcQuestion.text || calcQuestion.text === '')">
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="calcQuestion.text"
+                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            </core-format-text>
+        </ion-label>
+    </ion-item>
+
+    <!-- Display unit options before the answer input. -->
+    <ng-container *ngIf="calcQuestion.options && calcQuestion.options.length && calcQuestion.optionsFirst">
+        <ng-container *ngTemplateOutlet="radioUnits"></ng-container>
+    </ng-container>
+
+    <ion-item *ngIf="calcQuestion.input" class="ion-text-wrap core-{{calcQuestion.input.correctIconColor}}-item">
+        <ion-label position="stacked">{{ 'addon.mod_quiz.answercolon' | translate }}</ion-label>
+
+        <div class="flex-row">
+            <!-- Display unit select before the answer input. -->
+            <ng-container *ngIf="calcQuestion.select && calcQuestion.selectFirst">
+                <ng-container *ngTemplateOutlet="selectUnits"></ng-container>
+            </ng-container>
+
+            <!-- Input to enter the answer. -->
+            <ion-input type="text" [attr.name]="calcQuestion.input.name"
+                [placeholder]="calcQuestion.input.readOnly ? '' : 'core.question.answer' | translate"
+                [value]="calcQuestion.input.value" [disabled]="calcQuestion.input.readOnly" autocorrect="off">
+            </ion-input>
+
+            <!-- Display unit select after the answer input. -->
+            <ng-container *ngIf="calcQuestion.select && !calcQuestion.selectFirst">
+                <ng-container *ngTemplateOutlet="selectUnits"></ng-container>
+            </ng-container>
+        </div>
+        <ion-icon *ngIf="calcQuestion.input.correctIcon" class="core-correct-icon ion-align-self-center" slot="end"
+            [name]="calcQuestion.input.correctIcon" [color]="[calcQuestion.input.correctIconColor]">
+        </ion-icon>
+    </ion-item>
+
+    <!-- Display unit options after the answer input. -->
+    <ng-container *ngIf="calcQuestion.options && calcQuestion.options.length && !calcQuestion.optionsFirst">
+        <ng-container *ngTemplateOutlet="radioUnits"></ng-container>
+    </ng-container>
+</ion-list>
+
+<!-- Template for units entered using a select. -->
+<ng-template #selectUnits>
+    <label *ngIf="calcQuestion!.select!.accessibilityLabel" class="accesshide" for="{{calcQuestion!.select!.id}}">
+        {{ calcQuestion!.select!.accessibilityLabel }}
+    </label>
+    <ion-select id="{{calcQuestion!.select!.id}}" [name]="calcQuestion!.select!.name"
+        [(ngModel)]="calcQuestion!.select!.selected" interface="action-sheet" [disabled]="calcQuestion!.select!.disabled"
+        [slot]="calcQuestion?.selectFirst ? 'start' : 'end'" [interfaceOptions]="{header: 'addon.mod_quiz.unit' | translate}">
+        <ion-select-option *ngFor="let option of calcQuestion!.select!.options" [value]="option.value">
+            {{option.label}}
+        </ion-select-option>
+    </ion-select>
+</ng-template>
+
+<!-- Template for units entered using radio buttons. -->
+<ng-template #radioUnits>
+    <ion-radio-group [(ngModel)]="calcQuestion!.unit" [name]="calcQuestion!.optionsName">
+        <ion-item class="ion-text-wrap" *ngFor="let option of calcQuestion!.options">
+            <ion-label>{{ option.text }}</ion-label>
+            <ion-radio slot="end" [value]="option.value" [disabled]="option.disabled || calcQuestion!.input?.readOnly"
+                [color]="calcQuestion!.input?.correctIconColor">
+            </ion-radio>
+        </ion-item>
+
+        <!-- ion-radio doesn't use an input. Create a hidden input to hold the selected value. -->
+        <input type="hidden" [ngModel]="calcQuestion!.unit" [attr.name]="calcQuestion!.optionsName">
+    </ion-radio-group>
+</ng-template>

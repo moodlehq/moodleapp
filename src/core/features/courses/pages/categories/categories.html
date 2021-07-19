@@ -1,0 +1,71 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text [text]="title" contextLevel="coursecat" [contextInstanceId]="currentCategory && currentCategory!.id">
+            </core-format-text>
+        </h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!categoriesLoaded" (ionRefresh)="refreshCategories($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="categoriesLoaded">
+        <ion-item *ngIf="currentCategory" class="ion-text-wrap">
+            <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.category' | translate"></ion-icon>
+            <ion-label>
+                <h2>
+                    <core-format-text [text]="currentCategory!.name" contextLevel="coursecat"
+                    [contextInstanceId]="currentCategory!.id"></core-format-text>
+                </h2>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap" *ngIf="currentCategory && currentCategory!.description">
+            <ion-label>
+                <h2>
+                    <core-format-text [text]="currentCategory!.description" maxHeight="60" contextLevel="coursecat"
+            [contextInstanceId]="currentCategory!.id"></core-format-text>
+                </h2>
+            </ion-label>
+        </ion-item>
+
+        <div *ngIf="categories.length > 0">
+            <ion-item-divider>
+                <ion-label>
+                    <h2>{{ 'core.courses.categories' | translate }}</h2>
+                </ion-label>
+            </ion-item-divider>
+            <section *ngFor="let category of categories">
+                <ion-item button class="ion-text-wrap" (click)="openCategory(category.id)" [attr.aria-label]="category.name"
+                    detail="true">
+                    <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.category' | translate"></ion-icon>
+                    <ion-label>
+                        <h2>
+                            <core-format-text [text]="category.name" contextLevel="coursecat" [contextInstanceId]="category.id">
+                            </core-format-text>
+                        </h2>
+                    </ion-label>
+                    <ion-badge slot="end" *ngIf="category.coursecount > 0" color="light">
+                        <span aria-hidden="true">{{ category.coursecount }}</span>
+                        <span class="sr-only">{{ 'core.courses.therearecourses' | translate:{ $a: category.coursecount } }}</span>
+                    </ion-badge>
+                </ion-item>
+            </section>
+        </div>
+
+        <div *ngIf="courses.length > 0">
+            <ion-item-divider>
+                <ion-label>
+                    <h2>{{ 'core.courses.courses' | translate }}</h2>
+                </ion-label>
+            </ion-item-divider>
+            <core-courses-course-list-item *ngFor="let course of courses" [course]="course"></core-courses-course-list-item>
+        </div>
+        <core-empty-box *ngIf="!categories.length && !courses.length" icon="fas-graduation-cap"
+            [message]="'core.courses.nocoursesyet' | translate">
+        </core-empty-box>
+    </core-loading>
+</ion-content>

@@ -1,0 +1,126 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+            </core-format-text>
+        </h1>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" *ngIf="loaded" (click)="showChatUsers()" [attr.aria-label]="'core.users' | translate">
+                <ion-icon name="fas-users" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content class="has-footer">
+    <core-loading [hideUntil]="loaded" class="safe-area-page">
+        <ion-list class="addon-messages-discussion-container" aria-live="polite">
+            <ng-container *ngFor="let message of messages; index as index; last as last">
+
+                <p class="ion-text-center addon-messages-date" *ngIf="message.showDate">
+                    {{ message.timestamp * 1000 | coreFormatDate: "strftimedayshort" }}
+                </p>
+
+                <div class="ion-text-center addon-mod_chat-notice" *ngIf="message.special">
+                    <ion-badge class="ion-text-wrap" color="success" *ngIf="message.system && message.message == 'enter'">
+                        <span>
+                            <ion-icon name="fas-sign-in-alt" aria-hidden="true"></ion-icon>
+                            {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
+                            {{ 'addon.mod_chat.messageenter' | translate:{$a: message.userfullname} }}
+                        </span>
+                    </ion-badge>
+
+                    <ion-badge class="ion-text-wrap" color="danger" *ngIf="message.system && message.message == 'exit'">
+                        <span>
+                            <ion-icon name="fas-sign-out-alt" aria-hidden="true"></ion-icon>
+                            {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
+                            {{ 'addon.mod_chat.messageexit' | translate:{$a: message.userfullname} }}
+                        </span>
+                    </ion-badge>
+
+                    <ion-badge class="ion-text-wrap" color="primary" *ngIf="message.beep == 'all'">
+                        <span>
+                            <ion-icon name="fas-bell" aria-hidden="true"></ion-icon>
+                            {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
+                            {{ 'addon.mod_chat.messagebeepseveryone' | translate:{$a: message.userfullname} }}
+                        </span>
+                    </ion-badge>
+
+                    <ion-badge class="ion-text-wrap" color="primary"
+                        *ngIf="message.userid != currentUserId && message.beep == currentUserId">
+                        <span>
+                            <ion-icon name="fas-bell" aria-hidden="true"></ion-icon>
+                            {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
+                            {{ 'addon.mod_chat.messagebeepsyou' | translate:{$a: message.userfullname} }}
+                        </span>
+                    </ion-badge>
+
+                    <ion-badge class="ion-text-wrap" color="light"
+                        *ngIf="message.userid == currentUserId && message.beep && message.beep != 'all'">
+                        <span>
+                            <ion-icon name="fas-bell" aria-hidden="true"></ion-icon>
+                            {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
+                            {{ 'addon.mod_chat.messageyoubeep' | translate:{$a: message.beepWho} }}
+                        </span>
+                    </ion-badge>
+
+                    <ion-badge class="ion-text-wrap" color="info" *ngIf="!message.system && !message.beep">
+                        <span>
+                            <ion-icon name="fas-asterisk" aria-hidden="true"></ion-icon>
+                            {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
+                            <strong>
+                                {{ message.userfullname }} <core-format-text [text]="message.message" contextLevel="module"
+                                [contextInstanceId]="cmId" [courseId]="courseId" (afterRender)="last && scrollToBottom()">
+                                </core-format-text>
+                            </strong>
+                        </span>
+                    </ion-badge>
+                </div>
+
+                <ion-item *ngIf="!message.special" class="ion-text-wrap addon-message"
+                    [class.addon-message-mine]="message.userid == currentUserId"
+                    [class.addon-message-not-mine]="message.userid != currentUserId"
+                    [class.addon-message-no-user]="!message.showUserData"
+                    [@coreSlideInOut]="message.userid == currentUserId ? '' : 'fromLeft'">
+                    <ion-label>
+                        <!-- User data. -->
+                        <h2 class="addon-message-user" *ngIf="message.showUserData">
+                            <core-user-avatar slot="start" [user]="message" [linkProfile]="false">
+                            </core-user-avatar>
+                            <div>{{ message.userfullname }}</div>
+                        </h2>
+
+                        <p class="addon-message-text">
+                            <core-format-text [text]="message.message" contextLevel="module" [contextInstanceId]="cmId"
+                                [courseId]="courseId" (afterRender)="last && scrollToBottom()">
+                            </core-format-text>
+                        </p>
+                    </ion-label>
+                    <ion-note>{{ message.timestamp * 1000 | coreFormatDate: "strftimetime" }}</ion-note>
+                    <div class="tail" *ngIf="message.showTail"></div>
+                </ion-item>
+            </ng-container>
+        </ion-list>
+
+        <core-empty-box *ngIf="!messages || messages.length <= 0" icon="far-comments"
+            [message]="'addon.mod_chat.nomessages' | translate">
+        </core-empty-box>
+    </core-loading>
+</ion-content>
+<ion-footer color="light" class="footer-adjustable">
+    <ion-toolbar color="light">
+        <p class="ion-text-center" *ngIf="!isOnline">
+            {{ 'addon.mod_chat.mustbeonlinetosendmessages' | translate }}
+        </p>
+
+        <core-send-message-form [sendDisabled]="sending" *ngIf="isOnline && polling && loaded" [message]="newMessage"
+            (onSubmit)="sendMessage($event)" [placeholder]="'addon.messages.newmessage' | translate" (onResize)="resizeContent()">
+        </core-send-message-form>
+
+        <ion-button *ngIf="isOnline && !polling && loaded" (click)="reconnect()" expand="block" color="light">
+            {{ 'core.login.reconnect' | translate }}
+        </ion-button>
+    </ion-toolbar>
+</ion-footer>

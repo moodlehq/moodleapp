@@ -1,0 +1,19 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0"></core-format-text>
+            <img src="assets/img/top_logo.png" class="core-header-logo" [alt]="siteName">
+        </h1>
+        <ion-buttons slot="end">
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<core-loading [hideUntil]="loaded">
+    <core-empty-box *ngIf="tabs.length == 0" icon="fas-home" [message]="'core.courses.nocourses' | translate"></core-empty-box>
+</core-loading>
+<core-tabs-outlet *ngIf="tabs.length > 0" [selectedIndex]="selectedTab" [hideUntil]="loaded" [tabs]="tabs"
+    (ionChange)="tabSelected()">
+</core-tabs-outlet>

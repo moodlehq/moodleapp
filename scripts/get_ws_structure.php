@@ -28,10 +28,13 @@ if (!isset($argv[1])) {
     die();
 }
 
-
 if (!isset($argv[2])) {
     echo "ERROR: Please pass the WS name as the second parameter.\n";
     die();
+}
+
+if (!defined('SERIALIZED')) {
+    define('SERIALIZED', false);
 }
 
 $moodlepath = $argv[1];
@@ -52,4 +55,9 @@ if ($structure === false) {
 }
 
 remove_default_closures($structure);
-echo serialize($structure);
+
+if (SERIALIZED) {
+    echo serialize($structure);
+} else {
+    print_ws_structure($wsname, $structure, $useparams);
+}

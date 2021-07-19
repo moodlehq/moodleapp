@@ -1,0 +1,67 @@
+@import "~theme/components/discussion.scss";
+@import "~theme/globals.scss";
+
+:host {
+
+    .addon-messages-unreadfrom {
+        color: var(--ion-color-primary);
+        background-color: transparent;
+        margin-top: 6px;
+        margin-left: auto;
+        margin-right: auto;
+        ion-icon {
+            color: var(--ion-color-primary);
+            background-color: transparent;
+        }
+    }
+
+   .has-fab .scroll-content {
+        padding-bottom: 0;
+    }
+
+    ion-fab ion-fab-button {
+        &::part(native) {
+            contain: unset;
+            overflow: visible;
+        }
+
+        .core-discussion-messages-badge {
+            position: absolute;
+            border-radius: 50%;
+            color: var(--addon-messages-discussion-badge-text);
+            background-color: var(--addon-messages-discussion-badge);
+            display: block;
+            line-height: 20px;
+            height: 20px;
+            width: 20px;
+            @include position(-6px, -6px, null, null);
+        }
+    }
+
+    ion-header ion-toolbar h1 {
+        display: flex;
+        align-items: center;
+        padding: 0;
+
+        .core-bar-button-image {
+            @include margin-horizontal(null, 6px);
+        }
+
+        core-format-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex-shrink: 1;
+        }
+
+        ion-icon {
+            @include margin-horizontal(6px, null);
+        }
+    }
+}
+
+:host-context(.ios) {
+    ion-header ion-toolbar h1 {
+        justify-content: center;
+    }
+}

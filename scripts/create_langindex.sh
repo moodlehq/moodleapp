@@ -1,5 +1,12 @@
 #!/bin/bash
+#
+# Script to create langindex from available language packs.
+# ./create_langindex.sh [findbetter]
+# If findbetter is set it will try to find a better solution for every key.
+#
+
 source "functions.sh"
+source "lang_functions.sh"
 
 #Saves or updates a key on langindex_old.json
 function save_key {
@@ -48,7 +55,8 @@ function exists_in_mobile {
 }
 
 function do_match {
-    match=$1
+    match=${1/\{\{/\{}
+    match=${match/\}\}/\}}
     filematch=""
 
     coincidence=`grep "$match" $LANGPACKSFOLDER/en/*.php | wc -l`
@@ -56,7 +64,7 @@ function do_match {
         filematch=`grep "$match" $LANGPACKSFOLDER/en/*.php | cut -d'/' -f5 | cut -d'.' -f1`
         exists_in_file $filematch $plainid
     elif [ $coincidence -gt 0 ] && [ "$#" -gt 1 ]; then
-        print_message $2
+        print_message "$2"
         tput setaf 6
         grep "$match" $LANGPACKSFOLDER/en/*.php
     fi
@@ -67,18 +75,21 @@ function find_matches {
     do_match "string\[\'$plainid\'\] = \'$value\'" "Found EXACT match for $key in the following paths"
     if [ $coincidence -gt 0 ]; then
         case=1
+        save_key $key "TBD"
         return
     fi
 
     do_match " = \'$value\'" "Found some string VALUES for $key in the following paths"
     if [ $coincidence -gt 0 ]; then
         case=2
+        save_key $key "TBD"
         return
     fi
 
     do_match "string\[\'$plainid\'\]" "Found some string KEYS for $key in the following paths, value $value"
     if [ $coincidence -gt 0 ]; then
         case=3
+        save_key $key "TBD"
         return
     fi
 
@@ -297,17 +308,13 @@ function array_contains {
     done
 }
 
+
 print_title 'Generating language from code...'
-gulp lang
+npx gulp lang
 
 print_title 'Getting languages'
-git clone https://git.in.moodle.com/moodle/moodle-langpacks.git $LANGPACKSFOLDER
-pushd $LANGPACKSFOLDER
-BRANCHES=($(git branch -r --format="%(refname:lstrip=3)" --sort="refname" | grep MOODLE_))
-BRANCH=${BRANCHES[${#BRANCHES[@]}-1]}
-git checkout $BRANCH
-git pull
-popd
+
+get_language en
 
 print_title 'Processing file'
 #Create langindex.json if not exists.

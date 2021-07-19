@@ -358,9 +358,7 @@ function detect_lang($lang, $keys) {
     return false;
 }
 
-function save_key($key, $value, $path) {
-    $filePath = $path . '/en.json';
-
+function save_key($key, $value, $filePath) {
     $file = file_get_contents($filePath);
     $file = (array) json_decode($file);
     $value = html_entity_decode($value);
@@ -387,27 +385,31 @@ function override_component_lang_files($keys, $translations) {
         }
         switch($type) {
             case 'core':
-            case 'addon':
                 switch($component) {
                     case 'moodle':
-                        $path .= 'lang';
+                        $path .= 'core/lang.json';
                         break;
                     default:
-                        $path .= $type.'/'.str_replace('_', '/', $component).'/lang';
+                        $path .= 'core/features/'.str_replace('_', '/', $component).'/lang.json';
                         break;
                 }
                 break;
+            case 'addon':
+                $path .= 'addons/'.str_replace('_', '/', $component).'/lang.json';
+                break;
             case 'assets':
-                $path .= $type.'/'.$component;
+                $path .= $type.'/'.$component.'.json';
                 break;
             default:
-                $path .= $type.'/lang';
+                $path .= $type.'/lang.json';
                 break;
 
         }
 
-        if (is_file($path.'/en.json')) {
+        if (is_file($path)) {
             save_key($plainid, $value, $path);
+        } else {
+            echo "Cannot override: $path not found.\n";
         }
     }
 }

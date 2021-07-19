@@ -1,41 +1,51 @@
 {
-  "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "declaration": false,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "lib": [
-      "dom",
-      "es2015"
-    ],
-    "module": "es2015",
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "target": "es5",
-    "baseUrl": "./src",
-    "paths": {
-      "@addon/*": ["addon/*"],
-      "@app/*": ["app/*"],
-      "@classes/*": ["classes/*"],
-      "@core/*": ["core/*"],
-      "@providers/*": ["providers/*"],
-      "@components/*": ["components/*"],
-      "@directives/*": ["directives/*"],
-      "@pipes/*": ["pipes/*"],
-      "@singletons/*": ["singletons/*"]
-    },
-    "typeRoots": [
-      "node_modules/@types"
-    ]
-  },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
   "compileOnSave": false,
-  "atom": {
-    "rewriteTsconfig": false
+  "compilerOptions": {
+    "baseUrl": "src",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2015",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "types": [
+        "cordova-plugin-file-transfer",
+        "cordova-plugin-inappbrowser",
+        "cordova",
+        "dom-mediacapture-record",
+        "faker",
+        "jest",
+        "node",
+        "resize-observer-browser",
+        "webpack-env"
+    ],
+    "paths": {
+      "@addons/*": ["addons/*"],
+      "@classes/*": ["core/classes/*"],
+      "@components/*": ["core/components/*"],
+      "@directives/*": ["core/directives/*"],
+      "@features/*": ["core/features/*"],
+      "@guards/*": ["core/guards/*"],
+      "@pipes/*": ["core/pipes/*"],
+      "@services/*": ["core/services/*"],
+      "@singletons": ["core/singletons/index"],
+      "@singletons/*": ["core/singletons/*"],
+      "@/*": ["*"]
+    }
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
   }
 }

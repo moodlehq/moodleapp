@@ -1,0 +1,26 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'core.settings.settings' | translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item *ngIf="defaultTime != -1">
+            <ion-label>{{ 'addon.calendar.defaultnotificationtime' | translate }}</ion-label>
+            <ion-select [(ngModel)]="defaultTime" (ionChange)="updateDefaultTime(defaultTime)" interface="action-sheet"
+                [interfaceOptions]="{header: 'addon.calendar.defaultnotificationtime' | translate}">
+                <ion-select-option [value]="0">{{ 'core.settings.disabled' | translate }}</ion-select-option>
+                <ion-select-option [value]="10">{{ 600 | coreDuration }}</ion-select-option>
+                <ion-select-option [value]="30">{{ 1800 | coreDuration }}</ion-select-option>
+                <ion-select-option [value]="60">{{ 3600 | coreDuration }}</ion-select-option>
+                <ion-select-option [value]="120">{{ 7200 | coreDuration }}</ion-select-option>
+                <ion-select-option [value]="360">{{ 21600 | coreDuration }}</ion-select-option>
+                <ion-select-option [value]="720">{{ 43200 | coreDuration }}</ion-select-option>
+                <ion-select-option [value]="1440">{{ 86400 | coreDuration }}</ion-select-option>
+            </ion-select>
+        </ion-item>
+    </ion-list>
+</ion-content>

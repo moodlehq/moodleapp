@@ -1,0 +1,49 @@
+<ion-header>
+    <ion-toolbar>
+        <h2>{{ pageInstance?.lesson?.name }}</h2>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content class="addon-mod_lesson-menu-modal">
+    <nav>
+        <ion-list *ngIf="pageInstance">
+            <!-- Media file. -->
+            <ng-container *ngIf="pageInstance.mediaFile">
+                <ion-item-divider>
+                    <ion-label><h2>{{ 'addon.mod_lesson.linkedmedia' | translate }}</h2></ion-label>
+                </ion-item-divider>
+                <core-file [file]="pageInstance.mediaFile" [component]="pageInstance.component"
+                    [componentId]="pageInstance.lesson?.coursemodule">
+                </core-file>
+            </ng-container>
+
+            <!-- Lesson menu. -->
+            <ng-container *ngIf="pageInstance.displayMenu">
+                <ion-item-divider>
+                    <ion-label><h2>{{ 'addon.mod_lesson.lessonmenu' | translate }}</h2></ion-label>
+                </ion-item-divider>
+                <ion-item class="ion-text-center" *ngIf="pageInstance.loadingMenu">
+                    <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
+                </ion-item>
+                <div *ngIf="!pageInstance.loadingMenu">
+                    <ng-container *ngFor="let page of pageInstance.lessonPages">
+                        <ion-item class="ion-text-wrap" *ngIf="page.display && page.displayinmenublock" (click)="loadPage(page.id)"
+                            [attr.aria-current]="!pageInstance.eolData && pageInstance.currentPage == page.id ? 'page' : 'false'"
+                            button detail="true">
+                            <ion-label>
+                                <core-format-text [text]="page.title" contextLevel="module" [courseId]="pageInstance.courseId"
+                                    [contextInstanceId]="pageInstance.lesson?.coursemodule">
+                                </core-format-text>
+                            </ion-label>
+                        </ion-item>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </ion-list>
+    </nav>
+</ion-content>

@@ -1,0 +1,40 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/tests",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "types": [
+      "cordova-plugin-file-transfer",
+      "cordova-plugin-inappbrowser",
+      "cordova",
+      "dom-mediacapture-record",
+      "faker",
+      "jest",
+      "node",
+      "resize-observer-browser"
+    ],
+    "paths": {
+      "@addons/*": ["addons/*"],
+      "@classes/*": ["core/classes/*"],
+      "@components/*": ["core/components/*"],
+      "@directives/*": ["core/directives/*"],
+      "@features/*": ["core/features/*"],
+      "@guards/*": ["core/guards/*"],
+      "@pipes/*": ["core/pipes/*"],
+      "@services/*": ["core/services/*"],
+      "@singletons": ["core/singletons/index"],
+      "@singletons/*": ["core/singletons/*"],
+      "@/*": ["*"]
+    }
+  },
+  "files": [
+    "src/testing/setup.ts",
+    "src/polyfills.ts"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts"
+  ]
+}

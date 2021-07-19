@@ -1,0 +1,27 @@
+<ng-container *ngIf="!disabled">
+    <core-loading *ngIf="!showItem" [hideUntil]="commentsLoaded" [fullscreen]="false" class="margin">
+        <button *ngIf="!countError" (click)="openComments($event)" class="as-link">
+            {{ 'core.comments.commentscount' | translate : {'$a': commentsCount} }}
+        </button>
+        <div *ngIf="countError">
+            {{ 'core.comments.commentsnotworking' | translate }}
+        </div>
+    </core-loading>
+    <ion-item
+        *ngIf="showItem"
+        button
+        [detail]="!countError && commentsLoaded"
+        (click)="openComments($event)"
+        [disabled]="countError">
+            <ion-label>
+                <core-loading [hideUntil]="commentsLoaded" [fullscreen]="false">
+                    <p *ngIf="!countError" class="item-heading">
+                        {{ 'core.comments.commentscount' | translate : {'$a': commentsCount} }}
+                    </p>
+                    <p *ngIf="countError">
+                        {{ 'core.comments.commentsnotworking' | translate }}
+                    </p>
+                </core-loading>
+            </ion-label>
+    </ion-item>
+</ng-container>

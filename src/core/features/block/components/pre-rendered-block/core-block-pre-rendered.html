@@ -1,0 +1,25 @@
+<ion-item-divider class="ion-text-wrap" *ngIf="title" sticky="true">
+    <ion-label>
+        <h2>
+            <core-format-text [text]="title | translate" contextLevel="block" [contextInstanceId]="block.instanceid"
+            [courseId]="courseId">
+            </core-format-text>
+        </h2>
+    </ion-label>
+</ion-item-divider>
+<core-loading [hideUntil]="loaded" [fullscreen]="false" class="margin">
+    <ion-item *ngIf="block.contents?.content" class="ion-text-wrap core-block-content">
+        <ion-label>
+            <core-format-text [text]="block.contents?.content" contextLevel="block" [contextInstanceId]="block.instanceid"
+            [courseId]="courseId">
+            </core-format-text>
+        </ion-label>
+    </ion-item>
+    <ion-item *ngIf="block.contents?.footer" class="ion-text-wrap core-block-footer">
+        <ion-label>
+            <core-format-text [text]="block.contents?.footer" contextLevel="block" [contextInstanceId]="block.instanceid"
+            [courseId]="courseId">
+            </core-format-text>
+        </ion-label>
+    </ion-item>
+</core-loading>

@@ -1,0 +1,225 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons slot="end">
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
+            [href]="externalUrl" iconAction="fas-external-link-alt">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
+            (action)="expandDescription()" iconAction="fas-arrow-right">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
+            [iconAction]="'far-newspaper'" (action)="gotoBlog()">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
+            (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline" [priority]="600" (action)="doRefresh(null, $event, true)"
+            [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)"
+            [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}"
+            iconDescription="fas-archive" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
+        </core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded">
+
+    <!-- Activity info. -->
+    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        (completionChanged)="onCompletionChange()">
+    </core-course-module-info>
+
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
+        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+    </core-course-module-description>
+
+    <!-- Access rules description messages. -->
+    <ion-card *ngIf="gradeMethodReadable || accessRules.length || syncTime">
+        <ion-list>
+            <ion-item class="ion-text-wrap" *ngFor="let rule of accessRules">
+                <ion-label><p>{{ rule }}</p></ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="gradeMethodReadable">
+                <ion-label>
+                    <h3>{{ 'addon.mod_quiz.grademethod' | translate }}</h3>
+                    <p>{{ gradeMethodReadable }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="bestGrade && bestGrade.gradetopass && quiz && quiz.gradeFormatted">
+                <ion-label>
+                    <h3>{{ 'core.grades.gradepass' | translate }}</h3>
+                    <p>{{ 'addon.mod_quiz.outof' | translate: { $a: {
+                        grade: bestGrade.gradetopass,
+                        maxgrade: quiz.gradeFormatted
+                    } } }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="syncTime">
+                <ion-label>
+                    <h3>{{ 'core.lastsync' | translate }}</h3>
+                    <p>{{ syncTime }}</p>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    </ion-card>
+
+    <!-- List of user attempts. -->
+    <ion-card class="addon-mod_quiz-table" *ngIf="quiz && attempts.length">
+        <ion-card-header class="ion-text-wrap">
+            <ion-card-title>{{ 'addon.mod_quiz.summaryofattempts' | translate }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content role="table">
+            <!-- "Header" of the table -->
+            <ion-item class="ion-text-wrap addon-mod_quiz-table-header detail-hide">
+                <ion-label role="rowgroup">
+                    <ion-row class="ion-align-items-center" role="row">
+                        <ion-col class="ion-text-center" *ngIf="quiz.showAttemptColumn" role="columnheader">
+                            <strong class="ion-hide-md-up" aria-hidden="true">#</strong>
+                            <span class="sr-only ion-hide-md-up">{{ 'addon.mod_quiz.attemptnumber' | translate }}</span>
+                            <strong class="ion-hide-md-down">{{ 'addon.mod_quiz.attemptnumber' | translate }}</strong>
+                        </ion-col>
+                        <ion-col size="7" role="columnheader">
+                            <strong>{{ 'addon.mod_quiz.attemptstate' | translate }}</strong>
+                        </ion-col>
+                        <ion-col class="ion-text-center ion-hide-md-down" *ngIf="quiz.showMarkColumn" role="columnheader">
+                            <strong>{{ 'addon.mod_quiz.marks' | translate }} / {{ quiz.sumGradesFormatted }}</strong>
+                        </ion-col>
+                        <ion-col class="ion-text-center" *ngIf="quiz.showGradeColumn" role="columnheader">
+                            <strong>{{ 'addon.mod_quiz.grade' | translate }} / {{ quiz.gradeFormatted }}</strong>
+                        </ion-col>
+                    </ion-row>
+                </ion-label>
+            </ion-item>
+            <div role="rowgroup">
+                <!-- List of attempts. -->
+                <ion-item
+                    button
+                    detail="true"
+                    *ngFor="let attempt of attempts"
+                    class="ion-text-wrap"
+                    [ngClass]='{"addon-mod_quiz-highlighted": attempt.highlightGrade}'
+                    [attr.aria-label]="'core.seemoredetail' | translate"
+                    (click)="viewAttempt(attempt.id)"
+                >
+                    <ion-label>
+                        <ion-row class="ion-align-items-center" role="row">
+                            <ion-col class="ion-text-center" *ngIf="quiz.showAttemptColumn && attempt.preview" role="cell">
+                                {{ 'addon.mod_quiz.preview' | translate }}
+                            </ion-col>
+                            <ion-col class="ion-text-center" *ngIf="quiz.showAttemptColumn && !attempt.preview" role="cell">
+                                {{ attempt.attempt }}
+                            </ion-col>
+                            <ion-col size="7" role="cell">
+                                <p *ngFor="let sentence of attempt.readableState">{{ sentence }}</p>
+                            </ion-col>
+                            <ion-col class="ion-text-center ion-hide-md-down" *ngIf="quiz.showMarkColumn" role="cell">
+                                <p>{{ attempt.readableMark }}</p>
+                            </ion-col>
+                            <ion-col class="ion-text-center" *ngIf="quiz.showGradeColumn" role="cell">
+                                <p>{{ attempt.readableGrade }}</p>
+                            </ion-col>
+                        </ion-row>
+                    </ion-label>
+                </ion-item>
+            </div>
+        </ion-card-content>
+    </ion-card>
+
+    <!-- Result info. -->
+    <ion-card *ngIf="quiz && showResults &&
+        (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedbackColumn && overallFeedback))">
+        <ion-list>
+            <ion-item class="ion-text-wrap" *ngIf="gradeResult">
+                <ion-label>{{ gradeResult }}</ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="gradeOverridden">
+                <ion-label>{{ 'core.course.overriddennotice' | translate }}</ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="gradebookFeedback">
+                <ion-label>
+                    <h3 class="item-heading">{{ 'addon.mod_quiz.comment' | translate }}</h3>
+                    <p><core-format-text [component]="component" [componentId]="componentId" [text]="gradebookFeedback"
+                        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                    </core-format-text></p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="quiz.showFeedbackColumn && overallFeedback">
+                <ion-label>
+                    <h3 class="item-heading">{{ 'addon.mod_quiz.overallfeedback' | translate }}</h3>
+                    <p><core-format-text [component]="component" [componentId]="componentId" [text]="overallFeedback"
+                        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                    </core-format-text></p>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    </ion-card>
+
+    <!-- More data and button to start/continue. -->
+    <ion-card *ngIf="quiz">
+        <ion-list>
+            <!-- Error messages. -->
+            <ion-item class="ion-text-wrap core-danger-item" *ngFor="let message of preventMessages">
+                <ion-label><p>{{ message }}</p></ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap core-danger-item" *ngIf="quiz.hasquestions === 0">
+                <ion-label><p>{{ 'addon.mod_quiz.noquestions' | translate }}</p></ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap core-danger-item" *ngIf="!hasSupportedQuestions && unsupportedQuestions.length">
+                <ion-label>
+                    <p>{{ 'addon.mod_quiz.errorquestionsnotsupported' | translate }}</p>
+                    <p *ngFor="let type of unsupportedQuestions">{{ type }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap core-danger-item" *ngIf="unsupportedRules.length">
+                <ion-label>
+                    <p>{{ 'addon.mod_quiz.errorrulesnotsupported' | translate }}</p>
+                    <p *ngFor="let name of unsupportedRules">{{ name }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap core-danger-item" *ngIf="behaviourSupported === false">
+                <ion-label>
+                    <p>{{ 'addon.mod_quiz.errorbehaviournotsupported' | translate }}</p>
+                    <p>{{ quiz.preferredbehaviour }}</p>
+                </ion-label>
+            </ion-item>
+
+            <!-- Quiz has data to be synchronized -->
+            <ion-card class="core-warning-card" *ngIf="buttonText && hasOffline && !showStatusSpinner">
+                <ion-item class="ion-text-wrap">
+                    <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
+                </ion-item>
+            </ion-card>
+
+            <!-- Other warnings. -->
+            <ion-item class="core-warning-item ion-text-wrap" *ngIf="hasSupportedQuestions && unsupportedQuestions.length">
+                <ion-label>
+                    <p>{{ 'addon.mod_quiz.canattemptbutnotsubmit' | translate }}</p>
+                    <p>{{ 'addon.mod_quiz.warningquestionsnotsupported' | translate }}</p>
+                    <p *ngFor="let type of unsupportedQuestions">{{ type }}</p>
+                </ion-label>
+            </ion-item>
+
+            <!-- Button to start/continue. -->
+            <ion-button *ngIf="buttonText && !showStatusSpinner" expand="block" (click)="attemptQuiz()" class="ion-margin">
+                {{ buttonText | translate }}
+            </ion-button>
+
+            <!-- Button to open in browser if it cannot be attempted in the app. -->
+            <ion-button class="ion-margin" *ngIf="!buttonText && ((!hasSupportedQuestions && unsupportedQuestions.length) ||
+                unsupportedRules.length || behaviourSupported === false)" expand="block" [href]="externalUrl" core-link>
+                {{ 'core.openinbrowser' | translate }}
+                <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
+            </ion-button>
+
+            <!-- Spinner shown while downloading or calculating. -->
+            <ion-item class="ion-text-center" *ngIf="showStatusSpinner">
+                <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
+            </ion-item>
+        </ion-list>
+    </ion-card>
+</core-loading>

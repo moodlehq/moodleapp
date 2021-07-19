@@ -1,0 +1,247 @@
+/*
+ * App custom mixins for SCSS
+ * ----------------------------------------------------------------------------
+ * Place here our custom mixins.
+ */
+
+ @mixin core-focus() {
+    outline: none;
+    position: relative;
+    &::after {
+        @include position(0, 0, 0, 0);
+        position: absolute;
+        content: "";
+        opacity: 1;
+        z-index: 1;
+        @include core-focus-style();
+    }
+ }
+
+ @mixin core-focus-style() {
+    box-shadow: inset 0 0 var(--a11y-focus-width) 1px var(--a11y-focus-color);
+    // Thicker option:
+    // border: var(--a11y-focus-width) solid var(--a11y-focus-color);
+}
+
+@mixin core-transition($where: all, $time: 500ms) {
+    -webkit-transition: $where $time ease-in-out;
+    -moz-transition: $where $time ease-in-out;
+    -ms-transition: $where $time ease-in-out;
+    -o-transition: $where $time ease-in-out;
+    transition: $where $time ease-in-out;
+}
+
+@mixin push-arrow-color($color: dedede, $flip-rtl: false) {
+    $svg: "<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2012%2020'><path%20d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z'%20fill='%23#{$color}'/></svg>";
+    @if $flip-rtl != true {
+        @include multi-dir() {
+            background-image: url("data:image/svg+xml;charset=utf-8,#{$svg}");
+        }
+    } @else {
+        $flipped-svg: "<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2012%2020'><path%20transform='translate(20,%200)%20scale(-1,%201)'%20d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z'%20fill='%23#{$color}'/></svg>";
+
+        @include ltr () {
+            background-image: url("data:image/svg+xml;charset=utf-8,#{$svg}");
+        }
+        @include rtl() {
+            background-image: url("data:image/svg+xml;charset=utf-8,#{$flipped-svg}");
+        }
+    }
+}
+
+@mixin border-start($px, $type: null, $color: null) {
+    @include ltr() {
+        border-left: $px $type $color;
+    }
+
+    @include rtl() {
+        border-right: $px $type $color;
+    }
+}
+
+
+@mixin border-end($px, $type: null, $color: null) {
+    @include ltr() {
+        border-right: $px $type $color;
+    }
+
+    @include rtl() {
+        border-left: $px $type $color;
+    }
+}
+
+@mixin safe-area-border-start($px, $type, $color) {
+    $safe-area-position: calc(constant(safe-area-inset-left) + #{$px});
+    $safe-area-position-env: calc(env(safe-area-inset-left) + #{$px});
+
+    @include border-start($px, $type, $color);
+    @media screen and (orientation: landscape) {
+        @include border-start($safe-area-position, $type, $color);
+        @include border-start($safe-area-position-env, $type, $color);
+    }
+}
+
+@mixin safe-area-border-end($px, $type, $color) {
+    $safe-area-position: calc(constant(safe-area-inset-right) + #{$px});
+    $safe-area-position-env: calc(env(safe-area-inset-right) + #{$px});
+
+    @include border-end($px, $type, $color);
+    @media screen and (orientation: landscape) {
+        @include border-end($safe-area-position, $type, $color);
+        @include border-end($safe-area-position-env, $type, $color);
+    }
+}
+
+@mixin safe-area-margin-horizontal($start, $end: $start) {
+    $safe-area-end: null;
+    $safe-area-start: null;
+    $safe-area-start-env: null;
+    $safe-area-end-env: null;
+
+    @if ($end) {
+        $safe-area-end: calc(constant(safe-area-inset-right) + #{$end});
+        $safe-area-end-env: calc(env(safe-area-inset-right) + #{$end});
+    }
+    @if ($start) {
+        $safe-area-start: calc(constant(safe-area-inset-left) + #{$start});
+        $safe-area-start-env: calc(env(safe-area-inset-left) + #{$start});
+    }
+
+    @include margin-horizontal($start, $end);
+
+    @media screen and (orientation: landscape) {
+        @include margin-horizontal($safe-area-start, $safe-area-end);
+        @include margin-horizontal($safe-area-start-env, $safe-area-end-env);
+    }
+}
+
+@mixin safe-area-padding-start($start, $end) {
+    $safe-area-start: calc(constant(safe-area-inset-left) + #{$start});
+    $safe-area-start-env: calc(env(safe-area-inset-left) + #{$start});
+
+    @include padding-horizontal($start, $end);
+
+    @media screen and (orientation: landscape) {
+        @include padding-horizontal($safe-area-start, $end);
+        @include padding-horizontal($safe-area-start-env, $end);
+    }
+}
+
+@mixin safe-area-padding-end($start, $end) {
+    $safe-area-end: calc(constant(safe-area-inset-right) + #{$end});
+    $safe-area-end-env: calc(env(safe-area-inset-right) + #{$end});
+
+    @include padding-horizontal($start, $end);
+
+    @media screen and (orientation: landscape) {
+        @include padding-horizontal($start, $safe-area-end);
+        @include padding-horizontal($start, $safe-area-end-env);
+    }
+}
+
+@mixin safe-area-position($top: null, $end: null, $bottom: null, $start: null) {
+    @include position-horizontal($start, $end);
+    @include safe-position-horizontal($start, $end);
+    top: $top;
+    bottom: $bottom;
+}
+
+@mixin core-headings() {
+    h1 {
+        font-size: 26px;
+    }
+    h2, .item-heading {
+        font-size: 24px;
+    }
+    h3 {
+        font-size: 22px;
+    }
+    h4 {
+        font-size: 20px;
+    }
+    h5 {
+        font-size: 18px;
+    }
+    h6 {
+        font-size: 16px;
+    }
+}
+
+@mixin core-as-items() {
+    .item-md.item-block > .item-inner {
+        border-bottom: 1px solid $list-md-border-color;
+    }
+
+    .item-ios.item-block > .item-inner {
+        border-bottom: $hairlines-width solid $list-ios-border-color;
+    }
+
+    &:last-child .item > .item-inner {
+        border-bottom: 0;
+    }
+}
+
+@mixin core-items() {
+    &.item-md.item-block > .item-inner {
+        border-bottom: 1px solid $list-md-border-color;
+    }
+
+    &.item-ios.item-block > .item-inner {
+        border-bottom: $hairlines-width solid $list-ios-border-color;
+    }
+
+    &.item-block:last-child > .item-inner {
+        border-bottom: 0;
+    }
+}
+
+@mixin darkmode() {
+    $root: #{&};
+
+    @at-root body.dark {
+        #{$root} {
+            @content;
+        }
+    }
+}
+
+@mixin horizontal_scroll_item($width, $min-width, $max-width) {
+    flex: 0 0 $width;
+    min-width: $min-width;
+    max-width: $max-width;
+    align-self: stretch;
+    display: block;
+
+    ion-card {
+        --vertical-margin: 10px;
+        --horizontal-margin: 10px;
+
+        width: calc(100% - var(--vertical-margin) - var(--vertical-margin));
+        height: calc(100% - var(--vertical-margin) - var(--vertical-margin));
+        margin: var(--vertical-margin) var(--horizontal-margin);
+
+        @media (max-width: 360px) {
+            --horizontal-margin: 6px;
+        }
+    }
+
+    .ion-text-wrap ion-label {
+        .item-heading, h2, p {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+
+// Color mixins.
+@function get_brightness($color) {
+    @return (red($color) + green($color) + blue($color)) / 3;
+}
+
+@function get_contrast_color($color) {
+    $brightness: get_brightness($color);
+
+    @return if($brightness < 127, white, black);
+}

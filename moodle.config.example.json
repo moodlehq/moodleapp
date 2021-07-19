@@ -1,0 +1,10 @@
+/**
+ * Application config.
+ *
+ * You can create your own environment files such as "moodle.config.prod.json" and "moodle.config.dev.json"
+ * to override some values. The values will be merged, so you don't need to duplicate everything in this file.
+ */
+{
+    // You can find all the properties you can configure in src/types/config.d.ts
+    "default_lang": "es"
+}

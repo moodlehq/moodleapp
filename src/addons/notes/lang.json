@@ -1,0 +1,14 @@
+{
+    "addnewnote": "Add a new note",
+    "coursenotes": "Course notes",
+    "deleteconfirm": "Delete this note?",
+    "eventnotecreated": "Note created",
+    "eventnotedeleted": "Note deleted",
+    "nonotes": "There are no notes of this type yet",
+    "note": "Note",
+    "notes": "Notes",
+    "personalnotes": "Personal notes",
+    "publishstate": "Context",
+    "sitenotes": "Site notes",
+    "warningnotenotsent": "Couldn't add note(s) to course {{course}}. {{error}}"
+}

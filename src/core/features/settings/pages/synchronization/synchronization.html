@@ -1,0 +1,49 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'core.settings.synchronization' | translate }}</h1>
+        <ion-buttons slot="end">
+            <core-navbar-buttons>
+                <ion-button (click)="showInfo()" [attr.aria-label]="'core.info' | translate">
+                    <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </core-navbar-buttons>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="sitesLoaded">
+        <ion-item-divider>
+            <ion-label>
+                <h2>{{ 'core.settings.syncsettings' | translate }}</h2>
+            </ion-label>
+        </ion-item-divider>
+        <ion-item class="ion-text-wrap">
+            <ion-label>{{ 'core.settings.enablesyncwifi' | translate }}</ion-label>
+            <ion-toggle slot="end" [(ngModel)]="syncOnlyOnWifi" (ngModelChange)="syncOnlyOnWifiChanged()">
+            </ion-toggle>
+        </ion-item>
+        <ion-item-divider>
+            <ion-label>
+                <h2>{{ 'core.settings.sites' | translate }}</h2>
+            </ion-label>
+        </ion-item-divider>
+        <ion-item *ngFor="let site of sites" [attr.aria-current]="site.id == currentSiteId ? 'page' : 'false'" class="ion-text-wrap">
+            <ion-label>
+                <p class="item-heading">
+                    <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>
+                </p>
+                <p>{{ site.fullName }}</p>
+                <p>{{ site.siteUrl }}</p>
+            </ion-label>
+            <core-button-with-spinner [loading]="isSynchronizing(site.id)" slot="end">
+                <ion-button fill="clear"  (click)="synchronize(site.id)"
+                    [title]="site.siteName" [attr.aria-label]="'core.settings.synchronizenow' | translate">
+                    <ion-icon name="fas-sync-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </core-button-with-spinner>
+        </ion-item>
+    </core-loading>
+</ion-content>

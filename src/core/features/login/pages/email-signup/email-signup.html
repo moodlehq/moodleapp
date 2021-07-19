@@ -1,0 +1,237 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+
+        <h1>{{ 'core.login.newaccount' | translate }}</h1>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" *ngIf="authInstructions" (click)="showAuthInstructions()"
+                [attr.aria-label]="'core.login.instructions' | translate">
+                <ion-icon slot="icon-only" name="far-question-circle" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!settingsLoaded || isMinor" (ionRefresh)="refreshSettings($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="settingsLoaded" *ngIf="!isMinor">
+
+        <!-- Site has an unsupported required field. -->
+        <ion-list *ngIf="!allRequiredSupported">
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    {{ 'core.login.signuprequiredfieldnotsupported' | translate }}
+                </ion-label>
+            </ion-item>
+            <ion-button expand="block" class="ion-margin" [href]="signupUrl" core-link autoLogin="no">
+                {{ 'core.openinbrowser' | translate }}
+            </ion-button>
+        </ion-list>
+
+        <!-- Age verification. -->
+        <form *ngIf="allRequiredSupported && settingsLoaded && settings && ageDigitalConsentVerification"
+            [formGroup]="ageVerificationForm" (ngSubmit)="verifyAge($event)" #ageForm>
+
+            <ion-item-divider class="ion-text-wrap">
+                <ion-label><h3>{{ 'core.agelocationverification' | translate }}</h3></ion-label>
+            </ion-item-divider>
+
+            <ion-item class="ion-text-wrap">
+                <ion-label position="stacked">
+                    <span core-mark-required="true">{{ 'core.whatisyourage' | translate }}</span>
+                </ion-label>
+                <ion-input type="number" name="age" placeholder="0" formControlName="age" autocapitalize="none" autocorrect="off">
+                </ion-input>
+            </ion-item>
+
+            <ion-item class="ion-text-wrap">
+                <ion-label position="stacked">
+                    <span core-mark-required="true">{{ 'core.wheredoyoulive' | translate }}</span>
+                </ion-label>
+                <ion-select name="country" formControlName="country" [placeholder]="'core.login.selectacountry' | translate">
+                    <ion-select-option value="">{{ 'core.login.selectacountry' | translate }}</ion-select-option>
+                    <ion-select-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+
+            <!-- Submit button. -->
+            <ion-button expand="block" class="ion-margin" type="submit" [disabled]="!ageVerificationForm.valid">
+                {{ 'core.proceed' | translate }}
+            </ion-button>
+
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <h3 class="item-heading">{{ 'core.whyisthisrequired' | translate }}</h3>
+                    <p>{{ 'core.explanationdigitalminor' | translate }}</p>
+                </ion-label>
+            </ion-item>
+        </form>
+
+        <!-- Signup form. -->
+        <form *ngIf="allRequiredSupported && settingsLoaded && settings && !ageDigitalConsentVerification"
+            [formGroup]="signupForm" (ngSubmit)="create($event)" #signupFormEl>
+
+            <ion-item class="ion-text-wrap ion-text-center">
+                <ion-label>
+                    <!-- If no sitename show big siteurl. -->
+                    <p *ngIf="!siteName" class="ion-padding item-heading">{{siteUrl}}</p>
+                    <!-- If sitename, show big sitename and small siteurl. -->
+                    <p *ngIf="siteName" class="ion-padding item-heading">
+                        <core-format-text [text]="siteName" [filter]="false"></core-format-text>
+                    </p>
+                    <p *ngIf="siteName">{{siteUrl}}</p>
+                </ion-label>
+            </ion-item>
+
+            <!-- Username and password. -->
+            <ion-item-divider class="ion-text-wrap">
+                <ion-label><h3>{{ 'core.login.createuserandpass' | translate }}</h3></ion-label>
+            </ion-item-divider>
+            <ion-item class="ion-text-wrap">
+                <ion-label position="stacked">
+                    <span core-mark-required="true">{{ 'core.login.username' | translate }}</span>
+                </ion-label>
+                <ion-input type="text" name="username" placeholder="{{ 'core.login.username' | translate }}"
+                    formControlName="username" autocapitalize="none" autocorrect="off">
+                </ion-input>
+                <core-input-errors [control]="signupForm.controls.username" [errorMessages]="usernameErrors"></core-input-errors>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label position="stacked">
+                    <span core-mark-required="true">{{ 'core.login.password' | translate }}</span>
+                </ion-label>
+                <core-show-password name="password">
+                    <ion-input name="password" type="password" placeholder="{{ 'core.login.password' | translate }}"
+                        formControlName="password" [clearOnEdit]="false" autocomplete="new-password" required="true">
+                    </ion-input>
+                </core-show-password>
+                <p *ngIf="settings.passwordpolicy" class="core-input-footnote">
+                    {{settings.passwordpolicy}}
+                </p>
+                <core-input-errors [control]="signupForm.controls.password" [errorMessages]="passwordErrors"></core-input-errors>
+            </ion-item>
+
+            <!-- More details. -->
+            <ion-item-divider class="ion-text-wrap">
+                <ion-label>
+                    <h3>{{ 'core.login.supplyinfo' | translate }}</h3>
+                </ion-label>
+            </ion-item-divider>
+            <ion-item class="ion-text-wrap">
+                <ion-label position="stacked">
+                    <span core-mark-required="true">{{ 'core.user.email' | translate }}</span>
+                </ion-label>
+                <ion-input type="email" name="email" placeholder="{{ 'core.user.email' | translate }}" formControlName="email"
+                    autocapitalize="none" autocorrect="off">
+                </ion-input>
+                <core-input-errors [control]="signupForm.controls.email" [errorMessages]="emailErrors"></core-input-errors>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label position="stacked">
+                    <span core-mark-required="true">{{ 'core.user.emailagain' | translate }}</span>
+                </ion-label>
+                <ion-input type="email" name="email2" placeholder="{{ 'core.user.emailagain' | translate }}" autocapitalize="none"
+                    formControlName="email2" autocorrect="off" [pattern]="escapeMail(signupForm.controls.email.value)">
+                </ion-input>
+                <core-input-errors [control]="signupForm.controls.email2" [errorMessages]="email2Errors"></core-input-errors>
+            </ion-item>
+            <ion-item *ngFor="let nameField of settings.namefields" class="ion-text-wrap">
+                <ion-label position="stacked">
+                    <span core-mark-required="true">{{ 'core.user.' + nameField | translate }}</span>
+                </ion-label>
+                <ion-input type="text" name="nameField" placeholder="{{ 'core.user.' + nameField | translate }}"
+                    formControlName="{{nameField}}" autocorrect="off">
+                </ion-input>
+                <core-input-errors [control]="signupForm.controls[nameField]" [errorMessages]="namefieldsErrors![nameField]">
+                </core-input-errors>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label position="stacked">{{ 'core.user.city' | translate }}</ion-label>
+                <ion-input type="text" name="city" placeholder="{{ 'core.user.city' | translate }}" formControlName="city"
+                    autocorrect="off">
+                </ion-input>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label position="stacked" id="core-login-signup-country">{{ 'core.user.country' | translate }}</ion-label>
+                <ion-select name="country" formControlName="country" aria-labelledby="core-login-signup-country"
+                    [placeholder]="'core.login.selectacountry' | translate">
+
+                    <ion-select-option value="">{{ 'core.login.selectacountry' | translate }}</ion-select-option>
+                    <ion-select-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+
+            <!-- Other categories. -->
+            <ng-container *ngFor="let category of categories">
+                <ion-item-divider class="ion-text-wrap">
+                    <ion-label><p class="item-heading">{{ category.name }}</p></ion-label>
+                </ion-item-divider>
+                <core-user-profile-field *ngFor="let field of category.fields" [field]="field" [edit]="true" [signup]="true"
+                    registerAuth="email" [form]="signupForm"></core-user-profile-field>
+            </ng-container>
+
+            <!-- ReCAPTCHA -->
+            <ng-container *ngIf="settings.recaptchapublickey">
+                <ion-item-divider class="ion-text-wrap">
+                    <ion-label>
+                        <h3><span [core-mark-required]="true">{{ 'core.login.security_question' | translate }}</span></h3>
+                    </ion-label>
+                </ion-item-divider>
+                <core-recaptcha [publicKey]="settings.recaptchapublickey" [model]="captcha" [siteUrl]="siteUrl"></core-recaptcha>
+            </ng-container>
+
+            <!-- Site policy (if any). -->
+            <ng-container *ngIf="settings.sitepolicy">
+                <ion-item-divider class="ion-text-wrap">
+                    <ion-label><h3>{{ 'core.login.policyagreement' | translate }}</h3></ion-label>
+                </ion-item-divider>
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <a [href]="settings.sitepolicy" core-link capture="false">
+                            {{ 'core.login.policyagreementclick' | translate }}
+                        </a>
+                    </ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <span [core-mark-required]="true">{{ 'core.login.policyaccept' | translate }}</span>
+                        <core-input-errors [control]="signupForm.controls.policyagreed" [errorMessages]="policyErrors">
+                        </core-input-errors>
+                    </ion-label>
+                    <ion-checkbox slot="end" name="policyagreed" formControlName="policyagreed"></ion-checkbox>
+                </ion-item>
+            </ng-container>
+
+            <!-- Submit button. -->
+            <ion-button expand="block" class="ion-margin" type="submit">{{ 'core.login.createaccount' | translate }}</ion-button>
+            <!-- Remove this once Ionic fixes this bug: https://github.com/ionic-team/ionic-framework/issues/19368 -->
+            <input type="submit" class="core-submit-hidden-enter" />
+        </form>
+    </core-loading>
+
+    <ion-list *ngIf="allRequiredSupported && isMinor">
+        <ion-item-divider class="ion-text-wrap">
+            <ion-label>
+                <h3 *ngIf="siteName" class="item-heading ion-padding">
+                    <core-format-text [text]="siteName" [filter]="false"></core-format-text>
+                </h3>
+            </ion-label>
+        </ion-item-divider>
+        <ion-item class="ion-text-wrap" lines="none">
+            <ion-label>
+                <h3 class="item-heading">{{ 'core.considereddigitalminor' | translate }}</h3>
+                <p>{{ 'core.digitalminor_desc' | translate }}</p>
+                <p *ngIf="supportName">{{ supportName }}</p>
+                <p *ngIf="supportEmail">{{ supportEmail }}</p>
+            </ion-label>
+        </ion-item>
+        <ion-button *ngIf="!supportName && !supportEmail" expand="block" class="ion-margin" (click)="showContactOnSite()">
+            {{ 'core.openinbrowser' | translate }}
+        </ion-button>
+    </ion-list>
+</ion-content>

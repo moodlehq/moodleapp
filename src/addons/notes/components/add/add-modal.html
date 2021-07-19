@@ -1,0 +1,33 @@
+<ion-header>
+    <ion-toolbar>
+        <h2>{{ 'addon.notes.addnewnote' | translate }}</h2>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="fas-times" slot="icon-only" aria-hidden=true></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <form name="itemEdit" (ngSubmit)="addNote($event)" #itemEdit>
+        <ion-item>
+            <ion-label>{{ 'addon.notes.publishstate' | translate }}</ion-label>
+            <ion-select [(ngModel)]="type" name="publishState" interface="popover">
+                <ion-select-option value="personal">{{ 'addon.notes.personalnotes' | translate }}</ion-select-option>
+                <ion-select-option value="course">{{ 'addon.notes.coursenotes' | translate }}</ion-select-option>
+                <ion-select-option value="site">{{ 'addon.notes.sitenotes' | translate }}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-label class="sr-only">{{ 'addon.notes.note' | translate }}</ion-label>
+            <ion-textarea placeholder="{{ 'addon.notes.note' | translate }}" rows="5" [(ngModel)]="text" name="text"
+                required="required">
+            </ion-textarea>
+        </ion-item>
+        <div class="ion-padding">
+            <ion-button expand="block" type="submit" [disabled]="processing || text.length < 2">
+                {{ 'addon.notes.addnewnote' | translate }}
+            </ion-button>
+        </div>
+    </form>
+</ion-content>

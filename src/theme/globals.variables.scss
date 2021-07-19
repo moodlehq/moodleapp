@@ -1,0 +1,133 @@
+/*
+ * App Global variables SCSS
+ * ----------------------------------------------------------------------------
+ * Place here all global variables.
+ */
+
+$black:           #282828 !default; // Headings, standard text.
+$gray-darker:     #686566 !default;
+$gray-dark:       #9e9e9e !default;
+$gray:            #dddddd !default;
+$gray-light:      #e9e9e9 !default; // Background.
+$gray-lighter:    #f5f5f5 !default;
+$white:           #ffffff !default; // Background, reversed text.
+
+$blue:            #0064d2 !default; // Link, background.
+$blue-light:      mix($blue, white, 20%) !default; // Background.
+$blue-dark:       darken($blue, 10%) !default;
+
+$green:           #5e8100 !default; // Accent.
+$green-light:     mix($green, white, 20%) !default;
+$green-dark:      darken($green, 10%) !default;
+
+$red:             #cb3d4d !default;
+$red-light:       mix($red, white, 20%) !default;
+$red-dark:        darken($red, 10%) !default;
+
+$yellow:          #fbad1a !default; // Accent (never text).
+$yellow-light:    mix($yellow, white, 20%) !default;
+$yellow-dark:     mix($yellow, black, 40%) !default;
+
+$brand-color:    #f98012 !default;
+
+$text-color:               $black !default;
+$text-color-rgb:           color-to-rgb-list($text-color) !default;
+$text-color-dark:          $white !default;
+$text-color-dark-rgb:      color-to-rgb-list($text-color-dark) !default;
+
+$background-color:          $gray-light !default;
+$background-color-rgb:      color-to-rgb-list($background-color) !default;
+$background-color-dark:     mix(#ffffff, #000000, 10%) !default; // #1a1a1a
+$background-color-dark-rgb: color-to-rgb-list($background-color-dark) !default;
+
+$ion-item-background:      $white !default;
+$ion-item-background-rgb:  color-to-rgb-list($ion-item-background) !default;
+$ion-item-background-dark: mix(#ffffff, #000000, 20%) !default; // #333333
+$ion-item-background-dark-rgb: color-to-rgb-list($ion-item-background-dark) !default;
+
+$primary:    $brand-color !default;
+$danger:     $red !default;
+$warning:    $yellow !default;
+$success:    $green !default;
+$info:       $blue !default;
+$light:      $gray-lighter !default;
+$medium:     $gray-light !default;
+$dark:       $black !default;
+
+$colors:  (
+    primary: $primary,
+    success: $success,
+    warning: $warning,
+    danger:  $danger,
+    info: $info,
+    light: $light,
+    medium: $medium,
+    dark: $dark
+) !default;
+
+$primary-dark:    $brand-color !default;
+$danger-dark:     mix($red, white, 40%) !default;
+$warning-dark:    mix($yellow, white, 40%) !default;
+$success-dark:    mix($green, white, 40%) !default;
+$info-dark:       mix($blue, white, 40%) !default;
+$light-dark:      $dark !default;
+$medium-dark:     $gray-light !default;
+$dark-dark:       $light !default;
+
+$colors-dark:  (
+    primary: $primary-dark,
+    success: $success-dark,
+    warning: $warning-dark,
+    danger: $danger-dark,
+    info: $info-dark,
+    light: $light-dark,
+    medium: $medium-dark,
+    dark: $dark-dark,
+) !default;
+
+/**
+ * Layout Breakpoints
+ *
+ * https://ionicframework.com/docs/layout/grid#default-breakpoints
+ */
+
+// The minimum dimensions at which your layout will change,
+// adapting to different screen sizes, for use in media queries
+$screen-breakpoints: (
+    xs: 0,
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    tablet: 992px,
+    xl: 1200px
+) !default;
+
+$core-course-image-background: #81ecec, #74b9ff, #a29bfe, #dfe6e9, #00b894, #0984e3, #b2bec3, #fdcb6e, #fd79a8, #6c5ce7 !default;
+$core-dd-question-colors: #FFFFFF, #B0C4DE, #DCDCDC, #D8BFD8, #87CEFA, #DAA520, #FFD700, #F0E68C !default;
+$core-text-hightlight-background-color: lighten($blue, 40%) !default;
+
+$core-fixed-url: false !default;
+$core-dashboard-logo: false !default;
+$core-always-show-main-menu: false !default;
+$core-format-text-never-shorten: false !default;
+
+$core-show-courseimage-on-course: false !default;
+$core-hide-progress-on-course: false !default;
+$core-hide-progress-on-section-selector: false !default;
+
+$core-course-hide-thumb-on-cards: false !default;
+$core-course-thumb-on-cards-background: null !default;
+$core-course-hide-progress-on-cards: false !default;
+
+// Configuration options for login page.
+$core-login-button-outline: false !default;
+$core-login-button-outline-dark: $core-login-button-outline !default;
+$core-login-loading-color: false !default;
+$core-login-loading-color-dark: $text-color-dark !default;
+$core-login-hide-forgot-password: false !default;
+$core-login-hide-need-help: false !default;
+
+// Configuration options for more page.
+$core-more-hide-siteinfo: false !default;
+$core-more-hide-sitename: false !default;
+$core-more-hide-siteurl: false !default;

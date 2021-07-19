@@ -1,0 +1,17 @@
+:host {
+    .button-disabled {
+        opacity: 0.4;
+    }
+
+    .addon-mod_lesson-highlight {
+        --background: var(--blue-light);
+
+        ion-label, ion-label p {
+            color: var(--blue-dark);
+        }
+    }
+
+    .item-interactive-disabled ion-label {
+        opacity: 0.5;
+    }
+}

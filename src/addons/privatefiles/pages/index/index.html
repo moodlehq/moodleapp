@@ -1,0 +1,58 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ title }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!filesLoaded || (!showPrivateFiles && !showSiteFiles)"
+        (ionRefresh)="refreshData($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="filesLoaded" *ngIf="showPrivateFiles || showSiteFiles">
+        <!-- Allow selecting the files to see: private or site. -->
+        <core-combobox [selection]="root" (onChange)="rootChanged($event)" *ngIf="showPrivateFiles && showSiteFiles && !path">
+            <ion-select-option class="ion-text-wrap" value="my">
+                {{ 'addon.privatefiles.privatefiles' | translate }}
+            </ion-select-option>
+            <ion-select-option class="ion-text-wrap" value="site">
+                {{ 'addon.privatefiles.sitefiles' | translate }}
+            </ion-select-option>
+        </core-combobox>
+
+        <!-- Display info about space used and space left. -->
+        <ion-card class="core-info-card" *ngIf="userQuota && filesInfo && filesInfo.filecount > 0">
+            <ion-item><ion-label>
+            {{ 'core.quotausage' | translate:{$a: {used: spaceUsed, total: userQuotaReadable} } }}
+            </ion-label></ion-item>
+        </ion-card>
+
+        <!-- List of files. -->
+        <ion-list *ngIf="files && files.length > 0">
+            <ng-container *ngFor="let file of files">
+                <ion-item button *ngIf="file.isdir" class="item-file" (click)="openFolder(file)" detail="true">
+                    <ion-thumbnail slot="start">
+                        <img [src]="file.imgPath" alt="" role="presentation">
+                    </ion-thumbnail>
+                    <ion-label>{{file.filename}}</ion-label>
+                </ion-item>
+                <core-file *ngIf="!file.isdir" [file]="file" [component]="component" [componentId]="file.contextid"></core-file>
+            </ng-container>
+        </ion-list>
+
+        <!-- Message telling there are no files. -->
+        <core-empty-box *ngIf="!files || !files.length" icon="far-folder-open" [message]="'addon.privatefiles.emptyfilelist' | translate">
+        </core-empty-box>
+    </core-loading>
+
+    <!-- Upload a private file. -->
+    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="showUpload && root != 'site' && !path">
+        <ion-fab-button (click)="uploadFile()" [attr.aria-label]="'core.fileuploader.uploadafile' | translate">
+            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+            <span class="sr-only">{{ 'core.fileuploader.uploadafile' | translate }}</span>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>

@@ -1,0 +1,25 @@
+<div class="ion-padding">
+    <core-course-module-description [description]="module?.description" contextLevel="module"
+        [contextInstanceId]="module?.id" [courseId]="courseId">
+    </core-course-module-description>
+
+    <h2 *ngIf="!isDisabledInSite && isSupportedByTheApp">{{ 'core.whoops' | translate }}</h2>
+    <h2 *ngIf="isDisabledInSite || !isSupportedByTheApp">{{ 'core.uhoh' | translate }}</h2>
+
+    <p class="core-big" *ngIf="isDisabledInSite">{{ 'core.course.activitydisabled' | translate }}</p>
+    <p class="core-big" *ngIf="!isDisabledInSite && isSupportedByTheApp">
+        {{ 'core.course.activitynotyetviewablesiteupgradeneeded' | translate }}
+    </p>
+    <p class="core-big" *ngIf="!isDisabledInSite && !isSupportedByTheApp">
+        {{ 'core.course.activitynotyetviewableremoteaddon' | translate }}
+    </p>
+    <p *ngIf="isDisabledInSite || !isSupportedByTheApp"><strong>{{ 'core.course.askadmintosupport' | translate }}</strong></p>
+
+    <div *ngIf="module && module.url">
+        <p><strong>{{ 'core.course.useactivityonbrowser' | translate }}</strong></p>
+        <ion-button expand="block" [href]="module.url" core-link>
+            {{ 'core.openinbrowser' | translate }}
+            <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
+        </ion-button>
+    </div>
+</div>

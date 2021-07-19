@@ -1,0 +1,37 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons slot="end">
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
+            [href]="externalUrl" iconAction="fas-external-link-alt">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
+            (action)="expandDescription()" iconAction="fas-arrow-right">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
+            iconAction="far-newspaper" (action)="gotoBlog()">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && isOnline" [priority]="700" [content]="'core.refresh' | translate"
+            (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="safe-area-page">
+
+    <!-- Activity info. -->
+    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        (completionChanged)="onCompletionChange()">
+    </core-course-module-info>
+
+    <core-course-module-description *ngIf="lti && lti.showdescriptionlaunch" [description]="description" [component]="component"
+        [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+    </core-course-module-description>
+
+    <div class="ion-padding">
+        <ion-button expand="block" (click)="launch()">
+            <ion-icon name="fas-external-link-alt" slot="start" aria-hidden="true"></ion-icon>
+            {{ 'addon.mod_lti.launchactivity' | translate }}
+        </ion-button>
+    </div>
+</core-loading>

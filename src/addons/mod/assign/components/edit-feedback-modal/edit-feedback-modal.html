@@ -1,0 +1,18 @@
+<ion-header>
+    <ion-toolbar>
+        <h2>{{ plugin.name }}</h2>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <form name="addon-mod_assign-edit-feedback-form" *ngIf="userId && plugin" #editFeedbackForm>
+        <addon-mod-assign-feedback-plugin [assign]="assign" [submission]="submission" [userId]="userId"
+            [plugin]="plugin" [edit]="true">
+        </addon-mod-assign-feedback-plugin>
+        <ion-button expand="block" (click)="done($event)">{{ 'core.done' | translate }}</ion-button>
+    </form>
+</ion-content>

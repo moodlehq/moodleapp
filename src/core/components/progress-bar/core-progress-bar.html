@@ -1,0 +1,9 @@
+<ng-container *ngIf="progress >= 0">
+    <progress max="100" [value]="progress" role="progressbar" [attr.aria-valuenow]="progress"
+        [attr.aria-valuetext]="progressBarValueText" [attr.aria-describedby]="ariaDescribedBy">
+    </progress>
+    <div class="core-progress-text">
+        <span class="sr-only" *ngIf="a11yText">{{ a11yText | translate }}</span>
+        {{ 'core.percentagenumber' | translate: {$a: text} }}
+    </div>
+</ng-container>

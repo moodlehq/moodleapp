@@ -1,0 +1,17 @@
+<span *ngIf="inputMode && form" [formGroup]="form">
+    <span *ngIf="editMode" [core-mark-required]="field.required" class="core-mark-required"></span>
+    <ion-select [formControlName]="'f_'+field.id" multiple="true" [placeholder]="'addon.mod_data.menuchoose' | translate"
+        [interfaceOptions]="{header: field.name}" interface="alert">
+        <ion-select-option *ngFor="let option of options" [value]="option.value">{{option.key}}</ion-select-option>
+    </ion-select>
+    <core-input-errors *ngIf="error && editMode" [control]="form.controls['f_'+field.id]" [errorText]="error"></core-input-errors>
+
+
+    <ion-item *ngIf="searchMode">
+        <ion-label>{{ 'addon.mod_data.selectedrequired' | translate }}</ion-label>
+        <ion-checkbox slot="end" [formControlName]="'f_'+field.id+'_allreq'" [(ngModel)]="searchFields!['f_'+field.id+'_allreq']">
+        </ion-checkbox>
+    </ion-item>
+</span>
+
+<core-format-text *ngIf="displayMode && value && value.content" [text]="value.content" [filter]="false"></core-format-text>

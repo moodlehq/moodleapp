@@ -12,57 +12,60 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const BuildConfigTask = require('./gulp/task-build-config');
 const BuildLangTask = require('./gulp/task-build-lang');
-const CombineScssTask = require('./gulp/task-combine-scss');
-const CopyComponentTemplatesTask = require('./gulp/task-copy-component-templates');
+const BuildBehatPluginTask = require('./gulp/task-build-behat-plugin');
+const BuildEnvTask = require('./gulp/task-build-env');
 const PushTask = require('./gulp/task-push');
 const Utils = require('./gulp/utils');
 const gulp = require('gulp');
-const pathLib = require('path');
 
 const paths = {
     lang: [
-        './src/lang/',
-        './src/core/**/lang/',
-        './src/addon/**/lang/',
-        './src/assets/countries/',
-        './src/assets/mimetypes/'
+        './src/addons/**/',
+        './src/assets/countries.json',
+        './src/assets/mimetypes.json',
+        './src/core/features/**/',
+        './src/core/',
     ],
-    config: './src/config.json',
 };
 
 const args = Utils.getCommandLineArguments();
 
 // Build the language files into a single file per language.
 gulp.task('lang', (done) => {
-    new BuildLangTask().run('en', paths.lang, done);
+    new BuildLangTask().run(paths.lang, done);
 });
 
-// Convert config.json into a TypeScript class.
-gulp.task('config', (done) => {
-    new BuildConfigTask().run(paths.config, done);
+// Build an env file depending on the current environment.
+gulp.task('env', (done) => {
+    new BuildEnvTask().run(done);
 });
 
-// Copy component templates to www to make compile-html work in AOT.
-gulp.task('copy-component-templates', (done) => {
-    new CopyComponentTemplatesTask().run(done);
-});
-
-// Combine SCSS files.
-gulp.task('combine-scss', (done) => {
-    new CombineScssTask().run(done);
-});
+// Build a Moodle plugin to run Behat tests.
+if (BuildBehatPluginTask.isBehatConfigured()) {
+    gulp.task('behat', (done) => {
+        new BuildBehatPluginTask().run(done);
+    });
+}
 
 gulp.task('push', (done) => {
     new PushTask().run(args, done);
 });
 
-gulp.task('default', gulp.parallel('lang', 'config'));
+gulp.task(
+    'default',
+    gulp.parallel([
+        'lang',
+        'env',
+        ...(BuildBehatPluginTask.isBehatConfigured() ? ['behat'] : [])
+    ]),
+);
 
 gulp.task('watch', () => {
-    const langsPaths = paths.lang.map(path => path + 'en.json');
+    gulp.watch(paths.lang, { interval: 500 }, gulp.parallel('lang'));
+    gulp.watch(['./moodle.config.json', './moodle.config.*.json'], { interval: 500 }, gulp.parallel('env'));
 
-    gulp.watch(langsPaths, { interval: 500 }, gulp.parallel('lang'));
-    gulp.watch(paths.config, { interval: 500 }, gulp.parallel('config'));
+    if (BuildBehatPluginTask.isBehatConfigured()) {
+        gulp.watch(['./tests/behat'], { interval: 500 }, gulp.parallel('behat'));
+    }
 });

@@ -1,0 +1,102 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons slot="end">
+    <!-- Select subwiki. -->
+    <ion-button *ngIf="subwikiData.count > 1" (click)="showSubwikiPicker($event)"
+        [attr.aria-label]="'addon.mod_wiki.subwiki' | translate" aria-haspopup="true">
+        <ion-icon *ngIf="!groupWiki" name="fas-user" aria-hidden="true"></ion-icon>
+        <ion-icon *ngIf="groupWiki" name="fas-users" aria-hidden="true"></ion-icon>
+    </ion-button>
+
+    <ion-button *ngIf="loaded && currentPageObj" (click)="openMap()" [attr.aria-label]="'addon.mod_wiki.map' | translate"
+        aria-haspopup="true">
+        <ion-icon name="fas-map" aria-hidden="true"></ion-icon>
+    </ion-button>
+
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
+            [href]="externalUrl" iconAction="fas-external-link-alt">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
+            (action)="expandDescription()" iconAction="fas-arrow-right">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
+            iconAction="far-newspaper" (action)="gotoBlog()">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline && !pageIsOffline" [priority]="700"
+            [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon"
+            [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && isOnline && (hasOffline || pageIsOffline)" [priority]="600"
+            [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon"
+            [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="canEdit && (isOnline || pageIsOffline)" [priority]="590" [content]="'core.edit' | translate"
+            iconAction="fas-edit" (action)="goToEditPage()">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="canEdit" [priority]="580" [content]="'addon.mod_wiki.createpage' | translate"
+            iconAction="fas-plus" (action)="goToNewPage()">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)"
+            [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}"
+            iconDescription="fas-archive" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
+        </core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded">
+
+    <!-- Activity info. -->
+    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        (completionChanged)="onCompletionChange()">
+    </core-course-module-info>
+
+    <div *ngIf="description || pageIsOffline || hasOffline || pageWarning">
+        <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
+            contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+        </core-course-module-description>
+
+        <!-- Wiki has something offline. -->
+        <ion-card class="core-warning-card" *ngIf="pageIsOffline || hasOffline">
+            <ion-item>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>
+                    <span *ngIf="pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>
+                    <span *ngIf="!pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</span>
+                </ion-label>
+            </ion-item>
+        </ion-card>
+
+        <!-- Page warning. -->
+        <ion-card class="core-warning-card" *ngIf="pageWarning">
+            <ion-item>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ pageWarning }}</ion-label>
+            </ion-item>
+        </ion-card>
+    </div>
+    <div class="ion-padding addon-mod_wiki-page-content">
+        <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
+            <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"
+                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+            </core-format-text>
+            <core-empty-box *ngIf="!pageContent" icon="fas-file-alt" [message]="'addon.mod_wiki.nocontent' | translate"
+                inline="true">
+            </core-empty-box>
+        </article>
+
+        <div class="ion-margin-top" *ngIf="tagsEnabled && tags.length > 0">
+            <b>{{ 'core.tag.tags' | translate }}:</b>
+            <core-tag-list [tags]="tags"></core-tag-list>
+        </div>
+    </div>
+</core-loading>
+
+<ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canEdit">
+    <ion-fab-button (click)="goToNewPage()" [attr.aria-label]="'addon.mod_wiki.createpage' | translate">
+        <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+        <span class="sr-only">{{ 'addon.mod_wiki.createpage' | translate }}</span>
+    </ion-fab-button>
+</ion-fab>

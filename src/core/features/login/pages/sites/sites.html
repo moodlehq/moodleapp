@@ -1,0 +1,48 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+
+        <h1>{{ 'core.settings.sites' | translate }}</h1>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" *ngIf="sites && sites.length > 0" (click)="toggleDelete()"
+                [attr.aria-label]="'core.delete' | translate">
+                <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true"></ion-icon>
+            </ion-button>
+            <ion-button (click)="openSettings()" [attr.aria-label]="'core.settings.appsettings' | translate">
+                <ion-icon slot="icon-only" name="fas-cog" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item button (click)="login(site.id)" *ngFor="let site of sites" detail="true">
+            <ion-avatar slot="start">
+                <img [src]="site.avatar" core-external-content [siteId]="site.id"
+                    alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}" onError="this.src='assets/img/user-avatar.png'">
+            </ion-avatar>
+            <ion-label>
+                <p class="item-heading">{{site.fullName}}</p>
+                <p><core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text></p>
+                <p>{{site.siteUrl}}</p>
+            </ion-label>
+            <ion-badge slot="end" *ngIf="!showDelete && site.badge">
+                <span aria-hidden="true">{{site.badge}}</span>
+                <span class="sr-only">{{ 'core.login.sitebadgedescription' | translate:{ count: site.badge } }}</span>
+            </ion-badge>
+            <ion-button *ngIf="showDelete" slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
+                [attr.aria-label]="'core.delete' | translate" [@coreSlideInOut]="'fromRight'">
+                <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-item>
+    </ion-list>
+    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
+        <ion-fab-button (click)="add()" [attr.aria-label]="'core.add' | translate">
+            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+            <span class="sr-only">{{ 'core.add' | translate }}</span>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>

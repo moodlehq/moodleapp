@@ -1,0 +1,129 @@
+:host {
+    margin: 0;
+}
+
+:host-context([dir=rtl]).icon-flip-rtl {
+    transform: scaleX(-1);
+}
+
+:host-context(ion-item.md) ion-icon {
+    &[slot] {
+        font-size: 1.6em;
+        color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.54);
+        font-size: 24px;
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+    &[slot=start] {
+        margin-right: 32px;
+    }
+    &[slot=end] {
+        margin-left: 16px;
+    }
+
+    @supports (margin-inline-start: 0) or (-webkit-margin-start: 0) {
+        &[slot=start] {
+            margin-right: unset;
+            -webkit-margin-end: 32px;
+            margin-inline-end: 32px;
+        }
+    }
+
+    @supports (margin-inline-start: 0) or (-webkit-margin-start: 0) {
+        &[slot=end] {
+            margin-left: unset;
+            -webkit-margin-start: 16px;
+            margin-inline-start: 16px;
+        }
+    }
+}
+
+:host-context(ion-item.ios) ion-icon {
+    &[slot] {
+        font-size: 1.6em;
+    }
+    &[slot=start] {
+        margin-top: 7px;
+        margin-bottom: 7px;
+        margin-left: 0;
+        margin-right: 20px;
+    }
+    &[slot=end] {
+        margin-top: 7px;
+        margin-bottom: 7px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    @supports (margin-inline-start: 0) or (-webkit-margin-start: 0) {
+        &[slot=start] {
+            margin-left: unset;
+            margin-right: unset;
+            -webkit-margin-start: 0;
+            margin-inline-start: 0;
+            -webkit-margin-end: 20px;
+            margin-inline-end: 20px;
+        }
+    }
+
+    @supports (margin-inline-start: 0) or (-webkit-margin-start: 0) {
+        &[slot=end] {
+            margin-left: unset;
+            margin-right: unset;
+            -webkit-margin-start: 10px;
+            margin-inline-start: 10px;
+            -webkit-margin-end: 10px;
+            margin-inline-end: 10px;
+        }
+    }
+}
+
+:host-context(ion-item.ion-color) {
+    color: var(--ion-color-contrast);
+}
+
+:host-context(ion-button.md) ion-icon,
+:host-context(ion-button.ios) ion-icon {
+    &[slot] {
+        font-size: 1.4em;
+        pointer-events: none;
+
+    }
+    &[slot=start] {
+        margin-left: -0.3em;
+        margin-right: 0.3em;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+    &[slot=end] {
+        margin-left: 0.3em;
+        margin-right: -0.2em;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+    &[slot=icon-only] {
+        font-size: 1.8em;
+    }
+
+    @supports (margin-inline-start: 0) or (-webkit-margin-start: 0) {
+        &[slot=start] {
+            margin-left: unset;
+            margin-right: unset;
+            -webkit-margin-start: -0.3em;
+            margin-inline-start: -0.3em;
+            -webkit-margin-end: 0.3em;
+            margin-inline-end: 0.3em;
+        }
+    }
+
+    @supports (margin-inline-start: 0) or (-webkit-margin-start: 0) {
+        &[slot=end] {
+            margin-left: unset;
+            margin-right: unset;
+            -webkit-margin-start: 0.3em;
+            margin-inline-start: 0.3em;
+            -webkit-margin-end: -0.2em;
+            margin-inline-end: -0.2em;
+        }
+    }
+}

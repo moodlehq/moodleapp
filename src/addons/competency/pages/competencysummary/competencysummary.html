@@ -1,0 +1,39 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1 *ngIf="competency">
+            {{ competency.competency.shortname }} <small>{{ competency.competency.idnumber }}</small>
+        </h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!competencyLoaded" (ionRefresh)="refreshCompetency($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="competencyLoaded">
+        <ion-card *ngIf="competency">
+            <ion-item class="ion-text-wrap" *ngIf="competency.competency.description">
+                <ion-label>
+                    <core-format-text [text]="competency.competency.description" [contextLevel]="contextLevel"
+                        [contextInstanceId]="contextInstanceId">
+                    </core-format-text>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
+                    <p>{{ competency.comppath.framework.name }}
+                        <ng-container *ngFor="let ancestor of competency.comppath.ancestors">
+                            &nbsp;/&nbsp;
+                            <button class="as-link" (click)="openCompetencySummary(ancestor.id)">
+                                {{ ancestor.name }}
+                            </button>
+                        </ng-container>
+                    </p>
+                </ion-label>
+            </ion-item>
+        </ion-card>
+    </core-loading>
+</ion-content>

@@ -1,0 +1,57 @@
+<ion-item-divider sticky="true">
+    <ion-label><h2>{{ 'addon.block_timeline.pluginname' | translate }}</h2></ion-label>
+    <core-context-menu slot="end">
+        <core-context-menu-item *ngIf="loaded" [priority]="900" [content]="'addon.block_timeline.sortbydates' | translate"
+            (action)="switchSort('sortbydates')" [iconAction]="sort == 'sortbydates' ? 'far-dot-circle' : 'far-circle'">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded" [priority]="800" [content]="'addon.block_timeline.sortbycourses' | translate"
+            (action)="switchSort('sortbycourses')" [iconAction]="sort == 'sortbycourses' ? 'far-dot-circle' : 'far-circle'">
+        </core-context-menu-item>
+    </core-context-menu>
+</ion-item-divider>
+<core-loading [hideUntil]="loaded" [fullscreen]="false" class="margin">
+    <div class="safe-padding-horizontal">
+        <core-combobox [selection]="filter" (onChange)="switchFilter($event)">
+            <ion-select-option class="ion-text-wrap" value="all">
+                {{ 'core.all' | translate }}
+            </ion-select-option>
+            <ion-select-option class="ion-text-wrap" value="overdue">
+                {{ 'addon.block_timeline.overdue' | translate }}
+            </ion-select-option>
+            <ion-select-option class="ion-text-wrap" disabled value="disabled">
+                {{ 'addon.block_timeline.duedate' | translate }}
+            </ion-select-option>
+            <ion-select-option class="ion-text-wrap" value="next7days">
+                {{ 'addon.block_timeline.next7days' | translate }}
+            </ion-select-option>
+            <ion-select-option class="ion-text-wrap" value="next30days">
+                {{ 'addon.block_timeline.next30days' | translate }}
+            </ion-select-option>
+            <ion-select-option class="ion-text-wrap" value="next3months">
+                {{ 'addon.block_timeline.next3months' | translate }}
+            </ion-select-option>
+            <ion-select-option class="ion-text-wrap" value="next6months">
+                {{ 'addon.block_timeline.next6months' | translate }}
+            </ion-select-option>
+        </core-combobox>
+    </div>
+    <core-loading [hideUntil]="timeline.loaded" [hidden]="sort != 'sortbydates'" [fullscreen]="false" class="margin">
+        <addon-block-timeline-events [events]="timeline.events" showCourse="true" [canLoadMore]="timeline.canLoadMore"
+            (loadMore)="loadMoreTimeline()" [from]="dataFrom" [to]="dataTo"></addon-block-timeline-events>
+    </core-loading>
+    <core-loading [hideUntil]="timelineCourses.loaded" [hidden]="sort != 'sortbycourses'"
+        [fullscreen]="false" class="safe-area-page margin">
+        <ion-grid class="ion-no-padding">
+            <ion-row class="ion-no-padding">
+                <ion-col *ngFor="let course of timelineCourses.courses" class="ion-no-padding" size="12" size-md="6">
+                    <core-courses-course-progress [course]="course">
+                        <addon-block-timeline-events [events]="course.events" [canLoadMore]="course.canLoadMore"
+                            (loadMore)="loadMoreCourse(course)" [from]="dataFrom" [to]="dataTo"></addon-block-timeline-events>
+                    </core-courses-course-progress>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+        <core-empty-box *ngIf="timelineCourses.courses.length == 0" image="assets/img/icons/courses.svg" inline="true"
+            [message]="'addon.block_timeline.nocoursesinprogress' | translate"></core-empty-box>
+    </core-loading>
+</core-loading>

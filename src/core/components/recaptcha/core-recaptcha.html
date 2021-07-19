@@ -1,0 +1,13 @@
+<!-- ReCAPTCHA V2 -->
+<div *ngIf="publicKey && siteUrl && model">
+    <!-- A button to open the recaptcha modal. -->
+    <ion-button expand="block" color="light" class="ion-margin" *ngIf="!model[modelValueName]" (click)="answerRecaptcha()">
+        {{ 'core.opensecurityquestion' | translate }}
+    </ion-button>
+    <ion-item *ngIf="model[modelValueName]">
+        <ion-label color="success">{{ 'core.answered' | translate }}</ion-label>
+    </ion-item>
+    <ion-item *ngIf="expired" class="ion-text-wrap">
+        <ion-label color="danger">{{ 'core.login.recaptchaexpired' | translate }}</ion-label>
+    </ion-item>
+</div>

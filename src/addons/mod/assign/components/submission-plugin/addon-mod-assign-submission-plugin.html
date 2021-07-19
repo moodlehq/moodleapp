@@ -1,0 +1,23 @@
+
+<core-dynamic-component [component]="pluginComponent" [data]="data">
+    <!-- This content will be replaced by the component if found. -->
+    <core-loading [hideUntil]="pluginLoaded">
+        <ion-item class="ion-text-wrap" *ngIf="text.length > 0 || files.length > 0">
+            <ion-label>
+                <h2>{{ plugin.name }}</h2>
+                <ion-badge *ngIf="notSupported" color="primary">
+                    {{ 'addon.mod_assign.submissionnotsupported' | translate }}
+                </ion-badge>
+                <p *ngIf="text">
+                    <core-format-text [component]="component" [componentId]="assign.cmid" [maxHeight]="80" [fullOnClick]="true"
+                        [fullTitle]="plugin.name" [text]="text" contextLevel="module" [contextInstanceId]="assign.cmid"
+                        [courseId]="assign.course">
+                    </core-format-text>
+                </p>
+                <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="assign.cmid"
+                    [alwaysDownload]="true">
+                </core-file>
+            </ion-label>
+        </ion-item>
+    </core-loading>
+</core-dynamic-component>

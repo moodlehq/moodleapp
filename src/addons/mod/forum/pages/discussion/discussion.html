@@ -1,0 +1,139 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1 *ngIf="startingPost">
+            <core-format-text contextLevel="module" [text]="startingPost.subject" [contextInstanceId]="cmId" [courseId]="courseId">
+            </core-format-text>
+        </h1>
+        <ion-buttons slot="end">
+            <!-- The context menu will be added in here. -->
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<core-navbar-buttons slot="end">
+    <core-context-menu>
+        <core-context-menu-item *ngIf="discussionLoaded && !postHasOffline && isOnline"
+            [priority]="650" [content]="'addon.mod_forum.refreshposts' | translate" [iconAction]="refreshIcon" [closeOnClick]="false"
+            (action)="doRefresh(null, $event)">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="discussionLoaded && isMobile && postHasOffline && isOnline"
+            [priority]="550" [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon" [closeOnClick]="false"
+            (action)="doRefresh(null, $event, true)">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="sort == 'flat-oldest'"
+            [priority]="500" [content]="'addon.mod_forum.modeflatoldestfirst' | translate" iconAction="fas-arrow-down"
+            (action)="changeSort('flat-oldest')">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="sort == 'flat-newest'"
+            [priority]="450" [content]="'addon.mod_forum.modeflatnewestfirst' | translate" iconAction="fas-arrow-up"
+            (action)="changeSort('flat-newest')">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="sort == 'nested'"
+            [priority]="400" [content]="'addon.mod_forum.modenested' | translate" iconAction="fas-exchange-alt"
+            (action)="changeSort('nested')">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !discussion.canlock || discussion.locked"
+            [priority]="300" [content]="'addon.mod_forum.lockdiscussion' | translate" iconAction="fas-lock"
+            (action)="setLockState(true)">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !discussion.canlock || !discussion.locked"
+            [priority]="300" [content]="'addon.mod_forum.unlockdiscussion' | translate" iconAction="fas-unlock"
+            (action)="setLockState(false)">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !canPin || discussion.pinned"
+            [priority]="250" [content]="'addon.mod_forum.pindiscussion' | translate" iconAction="fas-map-pin"
+            (action)="setPinState(true)">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !canPin || !discussion.pinned"
+            [priority]="250" [content]="'addon.mod_forum.unpindiscussion' | translate" [iconSlash]="true" iconAction="fas-map-pin"
+            (action)="setPinState(false)">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !discussion.canfavourite || discussion.starred"
+            [priority]="200" [content]="'addon.mod_forum.addtofavourites' | translate" iconAction="fas-star"
+            (action)="toggleFavouriteState(true)">
+        </core-context-menu-item>
+        <core-context-menu-item [hidden]="!discussion || !discussion.canfavourite || !discussion.starred"
+            [priority]="200" [content]="'addon.mod_forum.removefromfavourites' | translate" iconAction="fas-star" [iconSlash]="true"
+            (action)="toggleFavouriteState(false)">
+        </core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!discussionLoaded" (ionRefresh)="doRefresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="discussionLoaded">
+        <!-- Discussion replies found to be synchronized -->
+        <ion-card class="core-warning-card" *ngIf="postHasOffline || hasOfflineRatings">
+            <ion-item>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ 'core.hasdatatosync' | translate:{$a: discussionStr} }}</ion-label>
+            </ion-item>
+        </ion-card>
+
+        <!-- Cut-off date or due date message -->
+        <ion-card class="core-info-card" *ngIf="availabilityMessage">
+            <ion-item>
+                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ availabilityMessage }}</ion-label>
+            </ion-item>
+        </ion-card>
+
+        <ion-card class="core-info-card" *ngIf="discussion && discussion.locked">
+            <ion-item>
+                <ion-icon name="fas-lock" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ 'addon.mod_forum.discussionlocked' | translate }}</ion-label>
+            </ion-item>
+        </ion-card>
+
+        <div *ngIf="startingPost" class="ion-margin-bottom">
+            <addon-mod-forum-post
+                [post]="startingPost" [discussion]="discussion" [courseId]="courseId" [highlight]="true"
+                [discussionId]="discussionId" [component]="component" [componentId]="cmId"
+                [replyData]="replyData" [originalData]="originalData" [forum]="forum" [accessInfo]="accessInfo"
+                [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" [leavingPage]="leavingPage"
+                (onPostChange)="postListChanged()">
+            </addon-mod-forum-post>
+        </div>
+
+        <ion-card *ngIf="sort != 'nested'">
+            <ng-container *ngFor="let post of posts; first as first">
+                <core-spacer *ngIf="!first"></core-spacer>
+                <addon-mod-forum-post
+                    [post]="post" [courseId]="courseId" [discussionId]="discussionId"
+                    [component]="component" [componentId]="cmId" [replyData]="replyData"
+                    [originalData]="originalData" [parentSubject]="postSubjects[post.parentid]"
+                    [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo"
+                    [leavingPage]="leavingPage"
+                    (onPostChange)="postListChanged()">
+                </addon-mod-forum-post>
+            </ng-container>
+        </ion-card>
+
+        <ng-container *ngIf="sort == 'nested'">
+            <ng-container *ngFor="let post of posts">
+                <ng-container *ngTemplateOutlet="nestedPosts; context: {post: post}"></ng-container>
+            </ng-container>
+        </ng-container>
+
+        <ng-template #nestedPosts let-post="post">
+            <ion-card>
+                <addon-mod-forum-post
+                    [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component"
+                    [componentId]="cmId" [replyData]="replyData" [originalData]="originalData"
+                    [parentSubject]="postSubjects[post.parentid]" [forum]="forum" [accessInfo]="accessInfo"
+                    [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" [leavingPage]="leavingPage"
+                    (onPostChange)="postListChanged()">
+                </addon-mod-forum-post>
+            </ion-card>
+            <div class="ion-padding-start" *ngIf="post.children && post.children.length && post.children[0].subject">
+                <ng-container *ngFor="let child of post.children">
+                    <ng-container *ngTemplateOutlet="nestedPosts; context: {post: child}"></ng-container>
+                </ng-container>
+            </div>
+        </ng-template>
+    </core-loading>
+</ion-content>

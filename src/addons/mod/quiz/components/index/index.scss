@@ -1,0 +1,33 @@
+:host {
+
+    .addon-mod_quiz-table {
+        ion-card-content {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .item:nth-child(even) {
+            --background: var(--light);
+        }
+
+        .addon-mod_quiz-highlighted,
+        .item.addon-mod_quiz-highlighted,
+        .addon-mod_quiz-highlighted p,
+        .item.addon-mod_quiz-highlighted p {
+            --background: var(--blue-light);
+            color: var(--blue-dark);
+        }
+    }
+}
+
+:host-context(body.dark) {
+    .addon-mod_quiz-table {
+        .addon-mod_quiz-highlighted,
+        .item.addon-mod_quiz-highlighted,
+        .addon-mod_quiz-highlighted p,
+        .item.addon-mod_quiz-highlighted p {
+            --background: var(--blue-dark);
+            color: var(--blue-light);
+        }
+    }
+}

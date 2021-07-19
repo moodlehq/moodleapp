@@ -1,0 +1,23 @@
+{
+    "aggregatemean": "Mean of grades",
+    "aggregatesum": "Natural",
+    "average": "Average",
+    "badgrade": "Supplied grade is invalid",
+    "calculatedgrade": "Calculated grade",
+    "category": "Category",
+    "contributiontocoursetotal": "Contribution to course total",
+    "feedback": "Feedback",
+    "grade": "Grade",
+    "gradeitem": "Grade item",
+    "gradepass": "Grade to pass",
+    "grades": "Grades",
+    "lettergrade": "Letter grade",
+    "manualitem": "Manual item",
+    "nogradesreturned": "No grades returned",
+    "nooutcome": "No outcome",
+    "outcome": "Outcome",
+    "percentage": "Percentage",
+    "range": "Range",
+    "rank": "Rank",
+    "weight": "Weight"
+}

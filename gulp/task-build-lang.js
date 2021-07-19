@@ -41,22 +41,24 @@ class BuildLangTask {
     /**
      * Run the task.
      *
-     * @param language Language to treat.
      * @param langPaths Paths to the possible language files.
      * @param done Function to call when done.
      */
-    run(language, langPaths, done) {
-        const filename = language + '.json';
+    run(langPaths, done) {
         const data = {};
         let firstFile = null;
         const self = this;
 
         const paths = langPaths.map((path) => {
-            if (path.slice(-1) != '/') {
+            if (path.endsWith('.json')) {
+                return path;
+            }
+
+            if (!path.endsWith('/')) {
                 path = path + '/';
             }
 
-            return path + language + '.json';
+            return path + 'lang.json';
         });
 
         gulp.src(paths, { allowEmpty: true })
@@ -72,7 +74,7 @@ class BuildLangTask {
                 /* This implementation is based on gulp-jsoncombine module.
                  * https://github.com/reflog/gulp-jsoncombine */
                 if (firstFile) {
-                    const joinedPath = pathLib.join(firstFile.base, language + '.json');
+                    const joinedPath = pathLib.join(firstFile.base, 'en.json');
 
                     const joinedFile = new File({
                         cwd: firstFile.cwd,
@@ -103,13 +105,24 @@ class BuildLangTask {
         }
 
         try {
-            let srcPos = file.path.lastIndexOf('/src/');
-            if (srcPos == -1) {
-                // It's probably a Windows environment.
-                srcPos = file.path.lastIndexOf('\\src\\');
-            }
+            let path = file.path;
+            let length = 9;
 
-            const path = file.path.substr(srcPos + 5);
+            let srcPos = path.lastIndexOf('/src/app/');
+            if (srcPos < 0) {
+                // It's probably a Windows environment.
+                srcPos = path.lastIndexOf('\\src\\app\\');
+            }
+            if (srcPos < 0) {
+                length = 5;
+                srcPos = path.lastIndexOf('/src/');
+                if (srcPos < 0) {
+                    // It's probably a Windows environment.
+                    srcPos = path.lastIndexOf('\\src\\');
+                }
+            }
+            path = path.substr(srcPos + length);
+
             data[path] = JSON.parse(file.contents.toString());
         } catch (err) {
             console.log('Error parsing JSON: ' + err);
@@ -125,42 +138,32 @@ class BuildLangTask {
     treatMergedData(data) {
         const merged = {};
         const mergedOrdered = {};
+        const getPrefix = (path) => {
+            const folders = path.split(/[\/\\]/);
+            let filename = folders.pop();
+
+            switch (folders[0]) {
+                case 'core':
+                    switch (folders[1]) {
+                        case 'features':
+                            return `core.${folders[2]}.`;
+                        default:
+                            return 'core.';
+                    }
+                case 'addons':
+                    return `addon.${folders.slice(1).join('_')}.`;
+                case 'assets':
+                    filename = filename.split('.').slice(0, -1).join('.');
+                    return `assets.${filename}.`;
+                default:
+                    return `${folders[0]}.${folders[1]}.`;
+            }
+        }
 
         for (let filepath in data) {
-            const pathSplit = filepath.split(/[\/\\]/);
-            let prefix;
-
-            pathSplit.pop();
-
-            switch (pathSplit[0]) {
-                case 'lang':
-                    prefix = 'core';
-                    break;
-                case 'core':
-                    if (pathSplit[1] == 'lang') {
-                        // Not used right now.
-                        prefix = 'core';
-                    } else {
-                        prefix = 'core.' + pathSplit[1];
-                    }
-                    break;
-                case 'addon':
-                    // Remove final item 'lang'.
-                    pathSplit.pop();
-                    // Remove first item 'addon'.
-                    pathSplit.shift();
-
-                    // For subplugins. We'll use plugin_subfolder_subfolder2_...
-                    // E.g. 'mod_assign_feedback_comments'.
-                    prefix = 'addon.' + pathSplit.join('_');
-                    break;
-                case 'assets':
-                    prefix = 'assets.' + pathSplit[1];
-                    break;
-            }
-
+            const prefix = getPrefix(filepath);
             if (prefix) {
-                this.addProperties(merged, data[filepath], prefix + '.');
+                this.addProperties(merged, data[filepath], prefix);
             }
         }
 

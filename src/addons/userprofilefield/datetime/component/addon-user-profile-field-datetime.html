@@ -1,0 +1,18 @@
+<!-- Render (no edit). -->
+<ion-item *ngIf="!edit && field && field.name">
+    <ion-label>
+        <h2>{{ field.name }}</h2>
+        <p>{{ valueNumber * 1000 | coreFormatDate }}</p>
+    </ion-label>
+</ion-item>
+
+<!-- Edit. -->
+<ion-item *ngIf="edit && field && field.shortname && form" class="ion-text-wrap" [formGroup]="form">
+    <ion-label position="stacked">
+        <span [core-mark-required]="required">{{ field.name }}</span>
+    </ion-label>
+    <ion-datetime [formControlName]="modelName" [placeholder]="'core.choosedots' | translate" [displayFormat]="format"
+        [max]="max" [min]="min" [monthNames]="monthNames">
+    </ion-datetime>
+    <core-input-errors [control]="form.controls[modelName]"></core-input-errors>
+</ion-item>

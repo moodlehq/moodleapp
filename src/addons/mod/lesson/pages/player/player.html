@@ -1,0 +1,300 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
+                [courseId]="courseId">
+            </core-format-text>
+        </h1>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" *ngIf="displayMenu || mediaFile" [attr.aria-label]="'addon.mod_lesson.lessonmenu' | translate"
+                (click)="showMenu()">
+                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <!-- Info messages. Only show the first one. -->
+        <ion-card class="core-info-card" *ngIf="lesson && messages?.length">
+            <ion-item>
+                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ messages[0].message }}</ion-label>
+            </ion-item>
+        </ion-card>
+
+        <div *ngIf="lesson" [ngClass]='{"addon-mod_lesson-slideshow": lesson.slideshow}'
+            [ngStyle]="{'width': lessonWidth, 'height': lessonHeight}">
+
+            <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()"
+                [timerText]="'addon.mod_lesson.timeremaining' | translate">
+            </core-timer>
+
+            <!-- Retake and ongoing score. -->
+            <ion-item class="ion-text-wrap" *ngIf="showRetake && !eolData && !processData">
+                <p>{{ 'addon.mod_lesson.attempt' | translate:{$a: retake} }}</p>
+            </ion-item>
+            <ion-item *ngIf="pageData && pageData.ongoingscore && !eolData && !processData"
+                class="addon-mod_lesson-ongoingscore ion-text-wrap">
+                {{ pageData.ongoingscore }}
+            </ion-item>
+
+            <!-- Page content. -->
+            <ion-card *ngIf="!eolData && !processData">
+                <!-- Content page. -->
+                <ion-item class="ion-text-wrap" *ngIf="!question && pageContent">
+                    <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="pageContent"
+                        contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId">
+                    </core-format-text>
+                </ion-item>
+
+                <!-- Question page. -->
+                <!-- We need to set ngIf loaded to make formGroup directive restart every time a page changes, see MOBILE-2540. -->
+                <form *ngIf="question && loaded" [formGroup]="questionForm" #questionFormEl
+                    (ngSubmit)="submitQuestion($event)">
+
+                    <ion-item-divider class="ion-text-wrap" *ngIf="pageContent">
+                        <ion-label>
+                            <h2>
+                                <core-format-text [component]="component" [componentId]="lesson?.coursemodule" [text]="pageContent"
+                                    contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId">
+                                </core-format-text>
+                            </h2>
+                        </ion-label>
+                    </ion-item-divider>
+
+                    <!-- Render a different input depending on the type of the question. -->
+                    <ng-container [ngSwitch]="question.template">
+
+                        <!-- Short answer. -->
+                        <ion-item class="ion-text-wrap" *ngSwitchCase="'shortanswer'">
+                            <ion-input [type]="question.input!.type" placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}"
+                                [id]="question.input!.id" [formControlName]="question.input!.name" autocorrect="off"
+                                [maxlength]="question.input!.maxlength">
+                            </ion-input>
+                        </ion-item>
+
+                        <!-- Essay. -->
+                        <ng-container *ngSwitchCase="'essay'">
+                            <ion-item *ngIf="question.textarea">
+                                <core-rich-text-editor placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}"
+                                    [control]="question.control" [component]="component" [componentId]="lesson?.coursemodule"
+                                    [autoSave]="true" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
+                                    elementId="answer_editor">
+                                </core-rich-text-editor>
+                            </ion-item>
+                            <ion-item class="ion-text-wrap" *ngIf="!question.textarea && question.useranswer">
+                                <ion-label>
+                                    <h3 class="item-heading">{{ 'addon.mod_lesson.youranswer' | translate }}</h3>
+                                    <p>
+                                        <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
+                                            [text]="question.useranswer" contextLevel="module"
+                                            [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
+                                        </core-format-text>
+                                    </p>
+                                </ion-label>
+                            </ion-item>
+                        </ng-container>
+
+                        <!-- Multichoice. -->
+                        <ng-container *ngSwitchCase="'multichoice'">
+                            <!-- Single choice. -->
+                            <ion-radio-group *ngIf="!question.multi" [formControlName]="question.controlName">
+                                <ion-item class="ion-text-wrap" *ngFor="let option of question.options">
+                                    <ion-label>
+                                        <core-format-text [component]="component" [componentId]="lesson.coursemodule"
+                                            [text]="option.text" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
+                                            [courseId]="courseId">
+                                        </core-format-text>
+                                    </ion-label>
+                                    <ion-radio slot="end" [id]="option.id" [value]="option.value" [disabled]="option.disabled">
+                                    </ion-radio>
+                                </ion-item>
+                            </ion-radio-group>
+
+                            <!-- Multiple choice. -->
+                            <ng-container *ngIf="question.multi">
+                                <ion-item class="ion-text-wrap" *ngFor="let option of question.options">
+                                    <ion-label>
+                                        <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
+                                            [text]="option.text" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
+                                            [courseId]="courseId">
+                                        </core-format-text>
+                                    </ion-label>
+                                    <ion-checkbox [id]="option.id" [formControlName]="option.name" slot="end"></ion-checkbox>
+                                </ion-item>
+                            </ng-container>
+                        </ng-container>
+
+                        <!-- Matching. -->
+                        <ng-container *ngSwitchCase="'matching'">
+                            <ion-item class="ion-text-wrap" *ngFor="let row of question.rows">
+                                <ion-label>
+                                    <p><core-format-text id="addon-mod_lesson-matching-{{row.id}}" [component]="component"
+                                        [componentId]="lesson?.coursemodule" [text]="row.text" contextLevel="module"
+                                        [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
+                                    </core-format-text></p>
+                                </ion-label>
+                                <ion-select [id]="row.id" [formControlName]="row.name" interface="action-sheet"
+                                    [attr.aria-labelledby]="'addon-mod_lesson-matching-' + row.id">
+                                    <ion-select-option *ngFor="let option of row.options" [value]="option.value">
+                                        {{option.label}}
+                                    </ion-select-option>
+                                </ion-select>
+                            </ion-item>
+                        </ng-container>
+                    </ng-container>
+
+                    <ion-button expand="block" type="submit" class="ion-text-wrap ion-margin button-no-uppercase">
+                        {{ question.submitLabel }}
+                    </ion-button>
+                    <!-- Remove this once Ionic fixes this bug: https://github.com/ionic-team/ionic-framework/issues/19368 -->
+                    <input type="submit" class="core-submit-hidden-enter" />
+                </form>
+            </ion-card>
+
+            <!-- Page buttons and progress. -->
+            <ion-list *ngIf="!eolData && !processData">
+                <ion-grid *ngIf="pageButtons?.length" class="ion-text-wrap addon-mod_lesson-pagebuttons">
+                    <ion-row class="ion-align-items-center">
+                        <ion-col *ngFor="let button of pageButtons" size="12" size-md="6" size-lg="3" col-xl>
+                            <ion-button expand="block" fill="outline" [id]="button.id"
+                                (click)="buttonClicked(button.data)" class="ion-text-wrap button-no-uppercase">
+                                {{ button.content }}
+                            </ion-button>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+                <ion-item class="ion-text-wrap" *ngIf="lesson?.progressbar && !canManage && pageData">
+                    <ion-label>
+                        <span id="addon-mod_lesson-{{cmId}}-progress">
+                            {{ 'addon.mod_lesson.progresscompleted' | translate:{$a: pageData.progress} }}
+                        </span>
+                        <core-progress-bar [progress]="pageData.progress" ariaDescribedBy="addon-mod_lesson-{{cmId}}-progress">
+                        </core-progress-bar>
+                    </ion-label>
+                </ion-item>
+                <div class="core-info-card" *ngIf="lesson?.progressbar && canManage">
+                    <ion-item>
+                        <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                        <ion-label>{{ 'addon.mod_lesson.progressbarteacherwarning2' | translate }}</ion-label>
+                    </ion-item>
+                </div>
+            </ion-list>
+
+            <!-- End of lesson reached. -->
+            <ion-card class="core-warning-card" *ngIf="eolData && !processData && eolData.offline?.value">
+                <ion-item>
+                    <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label>{{ 'addon.mod_lesson.finishretakeoffline' | translate }}</ion-label>
+                </ion-item>
+            </ion-card>
+
+            <ion-card *ngIf="eolData && !processData">
+
+                <ion-card-header class="ion-text-wrap" *ngIf="eolData.gradelesson">
+                    <ion-card-title>{{ 'addon.mod_lesson.congratulations' | translate }}</ion-card-title>
+                </ion-card-header>
+                <ion-item class="ion-text-wrap" *ngIf="eolData.notenoughtimespent" lines="none">
+                    <ion-label>{{ eolData.notenoughtimespent.message }}</ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="eolData.numberofpagesviewed" lines="none">
+                    <ion-label>{{ eolData.numberofpagesviewed.message }}</ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="eolData.youshouldview" lines="none">
+                    <ion-label>{{ eolData.youshouldview.message }}</ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="eolData.numberofcorrectanswers" lines="none">
+                    <ion-label>{{ eolData.numberofcorrectanswers.message }}</ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="eolData.displayscorewithessays" lines="none">
+                    <ion-label [innerHTML]="eolData.displayscorewithessays.message"></ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="!eolData.displayscorewithessays && eolData.displayscorewithoutessays"
+                    lines="none">
+                    <ion-label>{{ eolData.displayscorewithoutessays.message }}</ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="eolData.yourcurrentgradeisoutof" lines="none">
+                    <ion-label>{{ eolData.yourcurrentgradeisoutof.message }}</ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="eolData.eolstudentoutoftimenoanswers" lines="none">
+                    <ion-label>{{ eolData.eolstudentoutoftimenoanswers.message }}</ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="eolData.welldone" lines="none">
+                    <ion-label>{{ eolData.welldone.message }}</ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="lesson.progressbar && eolData.progresscompleted" lines="none">
+                    <ion-label>
+                        <span id="addon-mod_lesson-{{cmId}}-progress-end">
+                            {{ 'addon.mod_lesson.progresscompleted' | translate:{$a: eolData.progresscompleted.value} }}
+                        </span>
+                        <core-progress-bar [progress]="eolData.progresscompleted.value"
+                            ariaDescribedBy="addon-mod_lesson-{{cmId}}-progress-end">
+                        </core-progress-bar>
+                    </ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="eolData.displayofgrade" lines="none">
+                    <ion-label>{{ eolData.displayofgrade.message }}</ion-label>
+                </ion-item>
+                <ion-button *ngIf="eolData.reviewlesson" expand="block" class="ion-text-wrap ion-margin button-no-uppercase"
+                    (click)="reviewLesson(reviewPageId!)">
+                    {{ 'addon.mod_lesson.reviewlesson' | translate }}
+                </ion-button>
+                <ion-item class="ion-text-wrap" *ngIf="eolData.modattemptsnoteacher" lines="none">
+                    <ion-label>{{ eolData.modattemptsnoteacher.message }}</ion-label>
+                </ion-item>
+                <!-- If activity link was successfully formatted, render the button. -->
+                <ion-button *ngIf="activityLink && activityLink.formatted"
+                    expand="block" color="light" [href]="activityLink.href" core-link [capture]="true"
+                    class="ion-text-wrap ion-margin button-no-uppercase">
+                    <core-format-text [text]="activityLink.label" contextLevel="module"
+                        [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
+                    </core-format-text>
+                </ion-button>
+                <ion-item class="ion-text-wrap" *ngIf="activityLink && !activityLink.formatted"
+                    lines="none">
+                    <!-- Activity link wasn't formatted, render the original link. -->
+                    <ion-label>
+                        <core-format-text [text]="activityLink.label" contextLevel="module"
+                            [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
+                        </core-format-text>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+
+            <!-- Feedback returned when processing an action. -->
+            <ion-list *ngIf="processData">
+                <ion-item class="ion-text-wrap" *ngIf="processData.ongoingscore && !processData.reviewmode" >
+                    <ion-label>{{ processData.ongoingscore }}</ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="!processData.reviewmode || review">
+                    <ion-label>
+                        <div *ngIf="!processData.reviewmode">
+                            <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
+                                [text]="processData.feedback" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
+                                [courseId]="courseId">
+                            </core-format-text>
+                        </div>
+                        <div *ngIf="review">
+                            <p>{{ 'addon.mod_lesson.gotoendoflesson' | translate }}</p>
+                            <p>{{ 'addon.mod_lesson.or' | translate }}</p>
+                            <p>{{ 'addon.mod_lesson.continuetonextpage' | translate }}</p>
+                        </div>
+                    </ion-label>
+                </ion-item>
+
+                <ion-button expand="block" class="ion-text-wrap ion-margin" color="light" *ngIf="review"
+                    (click)="changePage(LESSON_EOL)">
+                    {{ 'addon.mod_lesson.finish' | translate }}
+                </ion-button>
+                <ion-button expand="block" class="ion-text-wrap ion-margin" color="light" *ngFor="let button of processDataButtons"
+                    (click)="changePage(button.pageId, true)">
+                    {{ button.label | translate }}
+                </ion-button>
+            </ion-list>
+        </div>
+    </core-loading>
+</ion-content>

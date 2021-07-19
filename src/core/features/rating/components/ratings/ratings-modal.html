@@ -1,0 +1,28 @@
+<ion-header>
+    <ion-toolbar>
+        <h2>{{ 'core.rating.ratings' | translate }}</h2>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <ion-list *ngIf="ratings.length > 0">
+            <ion-item class="ion-text-wrap" *ngFor="let rating of ratings">
+                <core-user-avatar [user]="rating" [courseId]="courseId" slot="start"></core-user-avatar>
+                <ion-label>
+                    <h2>{{ rating.userfullname }}</h2>
+                    <p>{{ rating.rating }}</p>
+                </ion-label>
+                <ion-note slot="end" *ngIf="rating.timemodified">
+                    {{ rating.timemodified | coreDateDayOrTime }}
+                </ion-note>
+            </ion-item>
+        </ion-list>
+        <core-empty-box *ngIf="ratings.length == 0" icon="fas-star-half-alt" [message]="'core.rating.noratings' | translate">
+        </core-empty-box>
+    </core-loading>
+</ion-content>

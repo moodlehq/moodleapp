@@ -1,0 +1,166 @@
+// (C) Copyright 2015 Moodle Pty Ltd.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { IonRefresher } from '@ionic/angular';
+
+import { CoreDomUtils } from '@services/utils/dom';
+import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
+import { AddonMessageOutputAirnotifier, AddonMessageOutputAirnotifierDevice } from '../../services/airnotifier';
+import { CoreUtils } from '@services/utils/utils';
+
+/**
+ * Page that displays the list of devices.
+ */
+@Component({
+    selector: 'page-addon-message-output-airnotifier-devices',
+    templateUrl: 'devices.html',
+})
+export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestroy {
+
+    devices?: AddonMessageOutputAirnotifierDeviceFormatted[] = [];
+    devicesLoaded = false;
+
+    protected updateTimeout?: number;
+
+    /**
+     * Component being initialized.
+     */
+    ngOnInit(): void {
+        this.fetchDevices();
+    }
+
+    /**
+     * Fetches the list of devices.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async fetchDevices(): Promise<void> {
+        try {
+            const devices = await AddonMessageOutputAirnotifier.getUserDevices();
+
+            this.devices = this.formatDevices(devices);
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        } finally {
+            this.devicesLoaded = true;
+        }
+    }
+
+    /**
+     * Add some calculated data for devices.
+     *
+     * @param devices Devices to format.
+     * @return Formatted devices.
+     */
+    protected formatDevices(devices: AddonMessageOutputAirnotifierDevice[]): AddonMessageOutputAirnotifierDeviceFormatted[] {
+        const formattedDevices: AddonMessageOutputAirnotifierDeviceFormatted[] = devices;
+        const pushId = CorePushNotifications.getPushId();
+
+        // Convert enabled to boolean and search current device.
+        formattedDevices.forEach((device) => {
+            device.enable = !!device.enable;
+            device.current = !!(pushId && pushId == device.pushid);
+        });
+
+        return formattedDevices.sort((a, b) => {
+            const compareA = a.name.toLowerCase();
+            const compareB = b.name.toLowerCase();
+
+            return compareA.localeCompare(compareB);
+        });
+    }
+
+    /**
+     * Update list of devices after a certain time. The purpose is to store the updated data, it won't be reflected in the view.
+     */
+    protected updateDevicesAfterDelay(): void {
+        // Cancel pending updates.
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+        }
+
+        this.updateTimeout = window.setTimeout(() => {
+            this.updateTimeout = undefined;
+            this.updateDevices();
+        }, 5000);
+    }
+
+    /**
+     * Fetch devices. The purpose is to store the updated data, it won't be reflected in the view.
+     */
+    protected async updateDevices(): Promise<void> {
+        await CoreUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
+
+        await AddonMessageOutputAirnotifier.getUserDevices();
+    }
+
+    /**
+     * Refresh the list of devices.
+     *
+     * @param refresher Refresher.
+     */
+    async refreshDevices(refresher: IonRefresher): Promise<void> {
+        try {
+            await CoreUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
+
+            await this.fetchDevices();
+        } finally {
+            refresher?.complete();
+        }
+    }
+
+    /**
+     * Enable or disable a certain device.
+     *
+     * @param device The device object.
+     * @param enable True to enable the device, false to disable it.
+     */
+    async enableDevice(device: AddonMessageOutputAirnotifierDeviceFormatted, enable: boolean): Promise<void> {
+        device.updating = true;
+
+        try {
+            await AddonMessageOutputAirnotifier.enableDevice(device.id, enable);
+
+            // Update the list of devices since it was modified.
+            this.updateDevicesAfterDelay();
+        } catch (error) {
+            // Show error and revert change.
+            CoreDomUtils.showErrorModal(error);
+            device.enable = !device.enable;
+        } finally {
+            device.updating = false;
+        }
+    }
+
+    /**
+     * Page destroyed.
+     */
+    ngOnDestroy(): void {
+        // If there is a pending action to update devices, execute it right now.
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+            this.updateDevices();
+        }
+    }
+
+}
+
+/**
+ * User device with some calculated data.
+ */
+type AddonMessageOutputAirnotifierDeviceFormatted = AddonMessageOutputAirnotifierDevice & {
+    current?: boolean; // Calculated in the app. Whether it's the current device.
+    updating?: boolean; // Calculated in the app. Whether the device enable is being updated right now.
+};

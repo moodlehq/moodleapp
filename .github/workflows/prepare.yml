@@ -1,0 +1,20 @@
+name: Prepare
+
+on:
+  push:
+    branches: [ master, integration, freemium-master ]
+
+jobs:
+  prepare:
+    if: github.repository == 'moodlemobile/moodleapp'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+    - name: Prepare builds
+      env:
+        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+      run: ./.github/scripts/prepare.sh

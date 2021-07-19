@@ -1,0 +1,129 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text [text]="course?.fullname" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
+        </h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!dataLoaded" (ionRefresh)="refreshData($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="dataLoaded">
+        <div *ngIf="courseImageUrl" class="core-course-thumb-parallax">
+            <div (click)="openCourse()" class="core-course-thumb">
+                <img [src]="courseImageUrl" core-external-content alt=""/>
+            </div>
+        </div>
+        <div class="core-course-thumb-parallax-content" *ngIf="course">
+            <ion-item class="ion-text-wrap" (click)="openCourse()" [attr.aria-label]="course.fullname"
+                [detail]="!avoidOpenCourse && canAccessCourse" [button]="!avoidOpenCourse && canAccessCourse">
+                <ion-icon name="fas-graduation-cap" fixed-width slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>
+                    <h2>
+                        <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id">
+                        </core-format-text>
+                    </h2>
+                    <p *ngIf="course.categoryname"><core-format-text [text]="course.categoryname"
+                        contextLevel="coursecat" [contextInstanceId]="course.categoryid"></core-format-text></p>
+                    <p *ngIf="course.startdate">
+                        {{course.startdate * 1000 | coreFormatDate:"strftimedatefullshort" }}
+                        <span *ngIf="course.enddate"> - {{course.enddate * 1000 | coreFormatDate:"strftimedatefullshort" }}</span>
+                    </p>
+                </ion-label>
+            </ion-item>
+
+            <ion-item class="ion-text-wrap" *ngIf="course.summary" detail="false">
+                <ion-label>
+                    <core-format-text [text]="course.summary" maxHeight="120" contextLevel="course" [contextInstanceId]="course.id">
+                    </core-format-text>
+                </ion-label>
+            </ion-item>
+
+            <ng-container class="ion-text-wrap" *ngIf="course.contacts && course.contacts.length">
+                <ion-item-divider>
+                    <ion-label>
+                        <h2>{{ 'core.teachers' | translate }}</h2>
+                    </ion-label>
+                </ion-item-divider>
+                <ion-item class="ion-text-wrap" *ngFor="let contact of course.contacts" core-user-link [userId]="contact.id"
+                    [courseId]="isEnrolled ? course.id : null" [attr.aria-label]="'core.viewprofile' | translate" detail="true">
+                    <core-user-avatar [user]="contact" slot="start" [userId]="contact.id"
+                        [courseId]="isEnrolled ? course.id : null">
+                    </core-user-avatar>
+                    <ion-label>
+                        <p class="item-heading">{{contact.fullname}}</p>
+                    </ion-label>
+                </ion-item>
+                <core-spacer></core-spacer>
+            </ng-container>
+
+            <ion-item class="ion-text-wrap" *ngIf="course.customfields">
+                <ion-label>
+                <ng-container *ngFor="let field of course.customfields">
+                    <div *ngIf="field.value"
+                        class="core-customfield core-customfield_{{field.type}} core-customfield_{{field.shortname}}">
+                        <span class="core-customfieldname">
+                            <core-format-text [text]="field.name" contextLevel="course" [contextInstanceId]="course.id">
+                            </core-format-text>
+                        </span><span class="core-customfieldseparator">: </span>
+                        <span class="core-customfieldvalue">
+                            <core-format-text [text]="field.value" maxHeight="120" contextLevel="course"
+                            [contextInstanceId]="course.id">
+                            </core-format-text>
+                        </span>
+                    </div>
+                </ng-container>
+                </ion-label>
+            </ion-item>
+
+            <div *ngIf="!isEnrolled" detail="false">
+                <ion-item class="ion-text-wrap" *ngFor="let instance of selfEnrolInstances">
+                    <ion-label>
+                        <p class="item-heading">{{ instance.name }}</p>
+                        <ion-button expand="block" class="ion-margin-top" (click)="selfEnrolClicked(instance.id)">
+                            {{ 'core.courses.enrolme' | translate }}
+                        </ion-button>
+                    </ion-label>
+                </ion-item>
+            </div>
+            <ion-item class="ion-text-wrap" *ngIf="!isEnrolled && paypalEnabled">
+                <ion-label>
+                    <h2>{{ 'core.courses.paypalaccepted' | translate }}</h2>
+                    <p>{{ 'core.paymentinstant' | translate }}</p>
+                    <ion-button expand="block" class="ion-margin-top" (click)="paypalEnrol()" *ngIf="isMobile">
+                        {{ 'core.courses.sendpaymentbutton' | translate }}
+                    </ion-button>
+                </ion-label>
+            </ion-item>
+            <ion-item *ngIf="!isEnrolled && !selfEnrolInstances.length && !paypalEnabled">
+                <ion-label><p>{{ 'core.courses.notenrollable' | translate }}</p></ion-label>
+            </ion-item>
+            <ion-item *ngIf="canAccessCourse && downloadCourseEnabled" (click)="prefetchCourse()" detail="false"
+                    [attr.aria-label]="prefetchCourseData.statusTranslatable | translate" button>
+                <ion-icon *ngIf="(prefetchCourseData.status != statusDownloaded) && !prefetchCourseData.loading"
+                    [name]="prefetchCourseData.icon" slot="start" aria-hidden="true">
+                </ion-icon>
+                <ion-icon *ngIf="(prefetchCourseData.status == statusDownloaded) && !prefetchCourseData.loading"
+                    slot="start" [name]="prefetchCourseData.icon" color="success"
+                    aria-hidden="true" role="status">
+                </ion-icon>
+                <ion-spinner *ngIf="prefetchCourseData.loading" slot="start"
+                    [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                <ion-label><h2>{{ 'core.course.downloadcourse' | translate }}</h2></ion-label>
+            </ion-item>
+            <ion-item button (click)="openCourse()" [attr.aria-label]="course.fullname" *ngIf="!avoidOpenCourse && canAccessCourse"
+                detail="true">
+                <ion-icon name="fas-briefcase" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label><h2>{{ 'core.course.contents' | translate }}</h2></ion-label>
+            </ion-item>
+            <ion-item [href]="courseUrl" core-link [attr.aria-label]="course.fullname" button detail="false">
+                <ion-icon name="fas-external-link-alt" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label><h2>{{ 'core.openinbrowser' | translate }}</h2></ion-label>
+            </ion-item>
+        </div>
+    </core-loading>
+</ion-content>

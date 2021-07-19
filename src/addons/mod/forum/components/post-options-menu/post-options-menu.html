@@ -1,0 +1,26 @@
+<core-loading [hideUntil]="loaded" [fullscreen]="false" class="margin">
+    <ion-item button class="ion-text-wrap" (click)="editPost()" *ngIf="offlinePost || (canEdit && isOnline)" detail="false">
+        <ion-icon name="fas-pen" slot="start" aria-hidden="true"></ion-icon>
+        <ion-label>
+            <p class="item-heading">{{ 'addon.mod_forum.edit' | translate }}</p>
+        </ion-label>
+    </ion-item>
+    <ion-item button class="ion-text-wrap" (click)="deletePost()" *ngIf="offlinePost || (canDelete && isOnline)" detail="false">
+        <ion-icon name="fas-trash" slot="start" aria-hidden="true"></ion-icon>
+        <ion-label>
+            <p  class="item-heading" *ngIf="!offlinePost">{{ 'addon.mod_forum.delete' | translate }}</p>
+            <p  class="item-heading" *ngIf="offlinePost">{{ 'core.discard' | translate }}</p>
+        </ion-label>
+    </ion-item>
+    <ion-item class="ion-text-wrap" *ngIf="wordCount">
+        <ion-label>
+            <p  class="item-heading">{{ 'core.numwords' | translate: {'$a': wordCount} }}</p>
+        </ion-label>
+    </ion-item>
+    <ion-item class="ion-text-wrap" [href]="url" *ngIf="url" core-link capture="false" button detail="false">
+        <ion-icon name="fas-external-link-alt" slot="start" aria-hidden="true"></ion-icon>
+        <ion-label>
+            <p  class="item-heading">{{ 'core.openinbrowser' | translate }}</p>
+        </ion-label>
+    </ion-item>
+</core-loading>

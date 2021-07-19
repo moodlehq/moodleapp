@@ -1,0 +1,12 @@
+:host {
+    .core-module-automatic-completion-conditions {
+        ion-badge {
+            font-weight: normal;
+            margin-right: 5px;
+
+            &[color="medium"] {
+                color: black;
+            }
+        }
+    }
+}

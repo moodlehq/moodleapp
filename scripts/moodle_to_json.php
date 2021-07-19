@@ -25,7 +25,7 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
 define('MOODLE_INTERNAL', 1);
 define('LANGPACKSFOLDER', '../../moodle-langpacks');
 define('ASSETSPATH', '../src/assets/lang/');
-define('CONFIG', '../src/config.json');
+define('CONFIG', '../moodle.config.json');
 define('OVERRIDE_LANG_SUFIX', false);
 
 global $strings;
@@ -45,6 +45,11 @@ if (isset($argv[1]) && !empty($argv[1])) {
     define('TOTRANSLATE', false);
     $languages = $config_langs;
 }
+
+if (!file_exists(ASSETSPATH)) {
+    mkdir(ASSETSPATH);
+}
+
 
 $keys = get_langindex_keys();
 

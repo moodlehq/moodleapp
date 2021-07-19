@@ -1,0 +1,60 @@
+<ion-header>
+    <ion-toolbar>
+        <h2>{{ 'addon.mod_forum.yourreply' | translate }}</h2>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="fas-times" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <form #editFormEl>
+        <ion-item>
+            <ion-label position="stacked">{{ 'addon.mod_forum.subject' | translate }}</ion-label>
+            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject" name="subject">
+            </ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label position="stacked">{{ 'addon.mod_forum.message' | translate }}</ion-label>
+            <core-rich-text-editor elementId="message"
+                [name]="'mod_forum_reply_' + replyData.id" [control]="messageControl"
+                [placeholder]="'addon.mod_forum.replyplaceholder' | translate" [autoSave]="true"
+                [component]="component" [componentId]="componentId" [draftExtraParams]="{edit: replyData.id}"
+                contextLevel="module" [contextInstanceId]="forum.cmid"
+                (contentChanged)="onMessageChange($event)">
+            </core-rich-text-editor>
+        </ion-item>
+        <ion-item
+            button class="divider ion-text-wrap"
+            (click)="toggleAdvanced()"
+            role="heading"
+            detail="false"
+            [attr.aria-expanded]="advanced"
+            aria-controls="addon-mod-forum-advanced"
+            [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate"
+        >
+            <ion-icon *ngIf="!advanced" name="fas-caret-right" flip-rtl slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon *ngIf="advanced" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label><h2>{{ 'addon.mod_forum.advanced' | translate }}</h2></ion-label>
+        </ion-item>
+        <div *ngIf="advanced" id="addon-mod-forum-advanced">
+            <core-attachments *ngIf="forum.id && forum.maxattachments > 0"
+                [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [allowOffline]="true" [files]="replyData.files"
+                [component]="component" [componentId]="forum.cmid">
+            </core-attachments>
+        </div>
+        <ion-grid>
+            <ion-row>
+                <ion-col>
+                    <ion-button expand="block" (click)="reply($event)" [disabled]="replyData.subject == '' || replyData.message == null">
+                        {{ 'core.savechanges' | translate }}
+                    </ion-button>
+                </ion-col>
+                <ion-col>
+                    <ion-button expand="block" color="light" (click)="closeModal()">{{ 'core.cancel' | translate }}</ion-button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </form>
+</ion-content>

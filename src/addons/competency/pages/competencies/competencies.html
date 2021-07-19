@@ -1,0 +1,34 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ title }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-split-view>
+        <ion-refresher slot="fixed" [disabled]="!competencies.loaded" (ionRefresh)="refreshCompetencies($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="competencies.loaded">
+            <ion-list>
+                <ion-item class="ion-text-wrap" *ngFor="let competency of competencies.items"
+                    [attr.aria-label]="competency.competency.shortname" (click)="competencies.select(competency)"
+                    [attr.aria-current]="competencies.getItemAriaCurrent(competency)" button detail="true">
+                    <ion-label>
+                        <p class="item-heading">{{ competency.competency.shortname }} <em>{{competency.competency.idnumber}}</em></p>
+                    </ion-label>
+                    <ion-badge slot="end" *ngIf="competency.usercompetency"
+                        [color]="competency.usercompetency.proficiency ? 'success' : 'danger'">
+                        {{ competency.usercompetency.gradename }}
+                    </ion-badge>
+                    <ion-badge slot="end" *ngIf="competency.usercompetencycourse"
+                        [color]="competency.usercompetencycourse.proficiency ? 'success' : 'danger'">
+                        {{ competency.usercompetencycourse.gradename }}
+                    </ion-badge>
+                </ion-item>
+            </ion-list>
+        </core-loading>
+    </core-split-view>
+</ion-content>

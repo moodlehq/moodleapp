@@ -1,0 +1,78 @@
+:host {
+    display: contents;
+    color: var(--text-color);
+
+    .core-empty-box {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: table;
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        clear: both;
+        pointer-events: none;
+
+        .core-empty-box-content {
+            margin: 0;
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+            pointer-events: auto;
+        }
+
+        &.core-empty-box-inline {
+            position: relative;
+            z-index: initial;
+            top: initial;
+            right: initial;
+            bottom: 0;
+            left: initial;
+            height: auto;
+        }
+
+        ion-icon {
+            font-size: 120px;
+        }
+        img {
+            height: 125px;
+            width: 145px;
+            margin: 0 auto;
+        }
+        p {
+            font-size: 120%;
+        }
+    }
+
+    &.core-empty-box-clickable .core-empty-box {
+        z-index: 0;
+    }
+
+    @media (max-height: 550px) {
+        .core-empty-box {
+            position: relative;
+            height: auto;
+            margin-top: 50px;
+
+            ion-icon {
+                font-size: 100px;
+            }
+            img {
+                height: 104px;
+                width: 121px;
+            }
+        }
+    }
+
+     &.core-empty-inline .core-empty-box {
+        position: relative;
+        z-index: initial;
+        height: auto;
+    }
+}
+
+:host-context(core-block-course-blocks) .core-empty-box {
+    position: relative;
+}

@@ -1,0 +1,25 @@
+@import "~theme/globals";
+
+:host {
+    .course-icon {
+        color: white;
+        background: var(--gray-light);
+        padding: 8px;
+        font-size: 24px;
+        border-radius: 50%;
+        margin-inline-end: 16px;
+        -webkit-transition: all 50ms ease-in-out;
+        transition: all 50ms ease-in-out;
+    }
+
+    @for $i from 0 to length($core-course-image-background) {
+        ion-icon[course-color="#{$i}"] {
+            color: var(--core-course-color-#{$i});
+        }
+    }
+
+    ion-avatar {
+        -webkit-transition: all 50ms ease-in-out;
+        transition: all 50ms ease-in-out;
+    }
+}

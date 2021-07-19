@@ -1,0 +1,20 @@
+name: Mirror
+
+on:
+  push:
+    branches: [ master, integration ]
+
+jobs:
+  mirror:
+    if: github.repository == 'moodlehq/moodleapp'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+    - name: Mirror the branch and tags
+      env:
+        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+      run: ./.github/scripts/mirror.sh

@@ -1,0 +1,193 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text *ngIf="h5pActivity" [text]="h5pActivity.name" contextLevel="module"
+                [contextInstanceId]="h5pActivity.coursemodule" [courseId]="courseId">
+            </core-format-text>
+        </h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+        <ng-container *ngIf="attempt">
+            <!-- Attempt number and user that did the attempt. -->
+            <ion-item class="ion-text-wrap" *ngIf="user" core-user-link [userId]="user.id" [courseId]="courseId"
+                [attr.aria-label]="user.fullname">
+                <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
+                <ion-label>
+                    <h2>{{ 'addon.mod_h5pactivity.attempt' | translate }} #{{attempt.attempt}}: {{user.fullname}}</h2>
+                </ion-label>
+            </ion-item>
+            <!-- Attempt number (if user not known). -->
+            <ion-item class="ion-text-wrap" *ngIf="!user">
+                <ion-label>
+                    <h2>{{ 'addon.mod_h5pactivity.attempt' | translate }} #{{attempt.attempt}}</h2>
+                </ion-label>
+            </ion-item>
+
+            <!-- Attempt summary. -->
+            <ion-card class="addon-mod_h5pactivity-attempt-result-summary">
+                <ion-list>
+                    <ion-item class="ion-text-wrap" lines="none">
+                        <ion-label>
+                            <h2>{{ 'addon.mod_h5pactivity.startdate' | translate }}</h2>
+                            <p>{{ attempt.timecreated | coreFormatDate:'strftimedatetime' }}</p>
+                        </ion-label>
+                    </ion-item>
+                    <ion-item class="ion-text-wrap" lines="none">
+                        <ion-label>
+                            <h2>{{ 'addon.mod_h5pactivity.completion' | translate }}</h2>
+                            <p *ngIf="attempt.completion">
+                                <img src="assets/img/completion/completion-auto-y.svg" role="presentation" alt="">
+                                {{ 'addon.mod_h5pactivity.attempt_completion_yes' | translate }}
+                            </p>
+                            <p *ngIf="!attempt.completion">
+                                <img src="assets/img/completion/completion-auto-n.svg" role="presentation" alt="">
+                                {{ 'addon.mod_h5pactivity.attempt_completion_no' | translate }}
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                    <ion-item class="ion-text-wrap" lines="none">
+                        <ion-label>
+                            <h2>{{ 'addon.mod_h5pactivity.duration' | translate }}</h2>
+                            <p>{{ attempt.durationReadable }}</p>
+                        </ion-label>
+                    </ion-item>
+                    <ion-item class="ion-text-wrap" lines="none">
+                        <ion-label>
+                            <h2>{{ 'addon.mod_h5pactivity.outcome' | translate }}</h2>
+                            <p *ngIf="attempt.success !== null && attempt.success" >
+                                <ion-icon name="fas-check-circle" aria-hidden="true"></ion-icon>
+                                {{ 'addon.mod_h5pactivity.attempt_success_pass' | translate }}
+                            </p>
+                            <p *ngIf="attempt.success !== null && !attempt.success" >
+                                <ion-icon name="far-circle" aria-hidden="true"></ion-icon>
+                                {{ 'addon.mod_h5pactivity.attempt_success_fail' | translate }}
+                            </p>
+                            <p *ngIf="attempt.success === null" >
+                                {{ 'addon.mod_h5pactivity.attempt_success_unknown' | translate }}
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                    <ion-item *ngIf="attempt.maxscore" class="ion-text-wrap" lines="none">
+                        <ion-label>
+                            <h2>{{ 'addon.mod_h5pactivity.totalscore' | translate }}</h2>
+                            <p>{{ 'addon.mod_h5pactivity.score_out_of' | translate:{$a: attempt} }}</p>
+                        </ion-label>
+                    </ion-item>
+                </ion-list>
+            </ion-card>
+
+            <!-- Results. -->
+            <ng-container *ngIf="attempt.results">
+                <ion-card *ngFor="let result of attempt.results">
+                    <ion-card-header class="ion-text-wrap">
+                        <ion-card-title>
+                            <core-format-text [text]="result.description" [component]="component" [componentId]="cmId"
+                                contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                            </core-format-text>
+                        </ion-card-title>
+                    </ion-card-header>
+                    <ion-item *ngIf="result.content" class="ion-text-wrap">
+                        <ion-label>
+                            <core-format-text [text]="result.content" [component]="component" [componentId]="cmId"
+                                contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                            </core-format-text>
+                        </ion-label>
+                    </ion-item>
+
+                    <!-- Options. -->
+                    <ng-container *ngIf="result.options && result.options.length">
+                        <ion-item class="ion-text-wrap addon-mod_h5pactivity-result-table-header">
+                            <ion-label>
+                                <ion-row class="ion-align-items-center">
+                                    <ion-col class="ion-text-center">{{ result.optionslabel }}</ion-col>
+                                    <ion-col class="ion-text-center">{{ result.correctlabel }}</ion-col>
+                                    <ion-col class="ion-text-center">{{ result.answerlabel }}</ion-col>
+                                </ion-row>
+                            </ion-label>
+                        </ion-item>
+                        <ion-item *ngFor="let option of result.options"
+                            class="ion-text-wrap addon-mod_h5pactivity-result-table-row">
+                            <ion-label>
+                                <ion-row class="ion-align-items-center">
+                                    <ion-col class="ion-text-center">
+                                        <core-format-text [text]="option.description" [component]="component" [componentId]="cmId"
+                                            contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                                        </core-format-text>
+                                    </ion-col>
+                                    <ion-col class="ion-text-center">
+                                        <ng-container *ngIf="option.correctanswer">
+                                            <ng-container
+                                                *ngTemplateOutlet="answerTemplate; context: {answer: option.correctanswer}">
+                                            </ng-container>
+                                        </ng-container>
+                                    </ion-col>
+                                    <ion-col class="ion-text-center">
+                                        <ng-container *ngIf="option.useranswer">
+                                            <ng-container *ngTemplateOutlet="answerTemplate; context: {answer: option.useranswer}">
+                                            </ng-container>
+                                        </ng-container>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-label>
+                        </ion-item>
+
+                        <!-- Result score. -->
+                        <ion-item *ngIf="result.maxscore" class="ion-text-wrap ion-text-end addon-mod_h5pactivity-result-score">
+                            <ion-label>
+                                <p><strong>
+                                    {{ 'addon.mod_h5pactivity.score' | translate }}:
+                                     {{ 'addon.mod_h5pactivity.score_out_of' | translate:{$a: result} }}
+                                </strong></p>
+                            </ion-label>
+                        </ion-item>
+                    </ng-container>
+
+                    <!-- Result doesn't support tracking. -->
+                    <ion-item class="ion-text-wrap core-warning-item" *ngIf="!result.track" lines="none">
+                        <ion-icon slot="start" name="fas-exclamation-triangle" color="warning" aria-hidden="true"></ion-icon>
+                        <ion-label>
+                            {{ 'addon.mod_h5pactivity.no_compatible_track' | translate:{$a: result.interactiontype} }}
+                        </ion-label>
+                    </ion-item>
+                </ion-card>
+            </ng-container>
+        </ng-container>
+    </core-loading>
+</ion-content>
+
+<!-- Template to render an answer. -->
+<ng-template #answerTemplate let-answer="answer">
+    <p *ngIf="answer.correct">
+        <ion-icon name="fas-check" [attr.aria-label]="'addon.mod_h5pactivity.answer_correct' | translate" color="success">
+        </ion-icon>
+        {{ answer.answer }}
+    </p>
+    <p *ngIf="answer.incorrect">
+        <ion-icon name="fas-times" [attr.aria-label]="'addon.mod_h5pactivity.answer_incorrect' | translate" color="danger">
+        </ion-icon>
+        {{ answer.answer }}
+    </p>
+    <p *ngIf="answer.text">
+        {{ answer.answer }}
+    </p>
+    <p *ngIf="answer.checked">
+        <ion-icon name="fas-check-circle" [attr.aria-label]="'addon.mod_h5pactivity.answer_checked' | translate">
+        </ion-icon>
+    </p>
+    <p *ngIf="answer.pass">
+        <ion-icon name="fas-check" [attr.aria-label]="'addon.mod_h5pactivity.answer_pass' | translate" color="success">
+        </ion-icon>
+    </p>
+    <p *ngIf="answer.fail">
+        <ion-icon name="fas-times" [attr.aria-label]="'addon.mod_h5pactivity.answer_fail' | translate" color="danger">
+        </ion-icon>
+    </p>
+</ng-template>

@@ -1,0 +1,248 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons slot="end">
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
+            [href]="externalUrl" iconAction="fas-external-link-alt">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
+            (action)="expandDescription()" iconAction="fas-arrow-right">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
+            iconAction="far-newspaper" (action)="gotoBlog()">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
+            (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline" [priority]="600" (action)="doRefresh(null, $event, true)"
+            [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)"
+            [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}"
+            iconDescription="fas-archive" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
+        </core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded">
+
+    <!-- Activity info. -->
+    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        (completionChanged)="onCompletionChange()">
+    </core-course-module-info>
+
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
+        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+    </core-course-module-description>
+
+    <core-tabs [hideUntil]="tabsReady" [selectedIndex]="firstSelectedTab">
+        <core-tab [title]="'addon.mod_feedback.overview' | translate" id="overview" (ionSelect)="tabChanged('overview')">
+            <ng-template>
+                <ng-container *ngTemplateOutlet="tabOverview"></ng-container>
+            </ng-template>
+        </core-tab>
+        <core-tab *ngIf="showAnalysis && access && access.canviewreports" id="analysis"
+            [title]="'addon.mod_feedback.analysis' | translate" (ionSelect)="tabChanged('analysis')">
+            <ng-template>
+                <ng-container *ngTemplateOutlet="tabAnalysis"></ng-container>
+            </ng-template>
+        </core-tab>
+
+        <core-tab *ngIf="showAnalysis && access && !access.canviewreports" id="analysis"
+            [title]="'addon.mod_feedback.completed_feedbacks' | translate" (ionSelect)="tabChanged('analysis')">
+            <ng-template>
+                <ng-container *ngTemplateOutlet="tabAnalysis"></ng-container>
+            </ng-template>
+        </core-tab>
+    </core-tabs>
+</core-loading>
+
+<ng-template #basicInfo>
+    <ion-list *ngIf="access && access.canviewanalysis && !access.isempty">
+        <ion-item class="ion-text-wrap" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+            <ion-label id="addon-feedback-groupslabel">
+                <ng-container *ngIf="groupInfo.separateGroups">{{'core.groupsseparate' | translate }}</ng-container>
+                <ng-container *ngIf="groupInfo.visibleGroups">{{'core.groupsvisible' | translate }}</ng-container>
+            </ion-label>
+            <ion-select [(ngModel)]="group" (ionChange)="setGroup(group)" aria-labelledby="addon-feedback-groupslabel"
+                interface="action-sheet" [interfaceOptions]="{header: 'core.group' | translate}">
+                <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
+                    {{groupOpt.name}}
+                </ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item class="ion-text-wrap" (click)="openRespondents()"
+            [class.hide-detail]="!(access.canviewreports && completedCount > 0)"
+            detail="true"
+            [button]="access.canviewreports && completedCount > 0">
+            <ion-label>
+                <h2>{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</h2>
+            </ion-label>
+            <ion-badge slot="end">
+                <span aria-hidden="true">{{completedCount}}</span>
+                <span class="sr-only">
+                    {{ 'addon.mod_feedback.completedfeedbackscountdescription' | translate:{count: completedCount} }}
+                </span>
+            </ion-badge>
+        </ion-item>
+        <ion-item class="ion-text-wrap" *ngIf="!access.isanonymous && access.canviewreports" (click)="openNonRespondents()"
+            detail="true" button>
+            <ion-label>
+                <h2>{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</h2>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <h2>{{ 'addon.mod_feedback.questions' | translate }}</h2>
+            </ion-label>
+            <ion-badge slot="end">
+                <span aria-hidden="true">{{itemsCount}}</span>
+                <span class="sr-only">
+                    {{ 'addon.mod_feedback.questionscountdescription' | translate:{count: itemsCount} }}
+                </span>
+            </ion-badge>
+        </ion-item>
+    </ion-list>
+</ng-template>
+
+<!-- Template to render the overview. -->
+<ng-template #tabOverview>
+    <core-loading [hideUntil]="tabsLoaded.overview">
+        <ng-container *ngTemplateOutlet="basicInfo"></ng-container>
+
+        <!-- Feedback done in offline but not synchronized -->
+        <ion-card class="core-warning-card" *ngIf="hasOffline">
+            <ion-item>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</ion-label>
+            </ion-item>
+        </ion-card>
+
+        <ion-card class="core-info-card" *ngIf="access && access.cancomplete && !access.isopen">
+            <ion-item>
+                <ion-icon name="fas-question-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ 'addon.mod_feedback.feedback_is_not_open' | translate }}</ion-label>
+            </ion-item>
+        </ion-card>
+
+        <ion-card class="core-success-card" *ngIf="access && access.cancomplete && access.isopen && !access.cansubmit">
+            <ion-item>
+                <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ 'addon.mod_feedback.this_feedback_is_already_submitted' | translate }}</ion-label>
+            </ion-item>
+        </ion-card>
+
+        <ion-list *ngIf="access && (access.canedititems || access.canviewreports || !access.isempty)">
+            <ion-item class="ion-text-wrap" *ngIf="access.canedititems && overview.timeopen">
+                <ion-label>
+                    <h2>{{ 'addon.mod_feedback.feedbackopen' | translate }}</h2>
+                    <p>{{overview.openTimeReadable}}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="access.canedititems && overview.timeclose">
+                <ion-label>
+                    <h2>{{ 'addon.mod_feedback.feedbackclose' | translate }}</h2>
+                    <p>{{overview.closeTimeReadable}}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="access.canedititems && feedback && feedback.page_after_submit">
+                <ion-label>
+                    <h2>{{ 'addon.mod_feedback.page_after_submit' | translate }}</h2>
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="feedback.page_after_submit"
+                        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                    </core-format-text>
+                </ion-label>
+            </ion-item>
+            <ng-container *ngIf="!access.isempty">
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <h2>{{ 'addon.mod_feedback.mode' | translate }}</h2>
+                        <p *ngIf="access.isanonymous">{{ 'addon.mod_feedback.anonymous' | translate }}</p>
+                        <p *ngIf="!access.isanonymous">{{ 'addon.mod_feedback.non_anonymous' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+                <ion-grid>
+                    <ion-row class="ion-align-items-center">
+                        <ion-col>
+                            <ion-button expand="block" fill="outline" (click)="gotoAnswerQuestions(true)" class="ion-text-wrap">
+                                <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+                                {{ 'addon.mod_feedback.preview' | translate }}
+                            </ion-button>
+                        </ion-col>
+                        <ion-col *ngIf="access.cancomplete && access.cansubmit && access.isopen">
+                            <ion-button expand="block" (click)="gotoAnswerQuestions()" class="ion-text-wrap">
+                                <ng-container *ngIf="!goPage">
+                                    {{ 'addon.mod_feedback.complete_the_form' | translate }}
+                                </ng-container>
+                                <ng-container *ngIf="goPage">
+                                    {{ 'addon.mod_feedback.continue_the_form' | translate }}
+                                </ng-container>
+                                <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
+                            </ion-button>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+
+            </ng-container>
+        </ion-list>
+    </core-loading>
+</ng-template>
+
+<!-- Template to render the analysis. -->
+<ng-template #tabAnalysis>
+    <core-loading [hideUntil]="tabsLoaded.analysis">
+        <ng-container *ngTemplateOutlet="basicInfo"></ng-container>
+
+        <ng-container *ngIf="access && (access.canedititems || !access.isempty)">
+            <ion-card class="core-info-card" *ngIf="warning">
+                <ion-item>
+                    <ion-icon name="fas-question-circle" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label>{{ warning }}</ion-label>
+                </ion-item>
+            </ion-card>
+
+            <ion-list *ngIf="items && items.length">
+                <ion-item class="ion-text-wrap core-analysis" *ngFor="let item of items">
+                    <ion-label>
+                        <p class="item-heading">
+                            {{item.num}}. <core-format-text [component]="component" [componentId]="componentId" [text]="item.name"
+                            contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                            </core-format-text>
+                        </p>
+                        <p>
+                            <core-format-text [component]="component" [componentId]="componentId" [text]="item.label"
+                                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                            </core-format-text>
+                        </p>
+                        <ng-container [ngSwitch]="item.templateName">
+                            <ng-container *ngSwitchCase="'numeric'">
+                                <ul>
+                                    <li *ngFor="let data of item.data">{{ data }}</li>
+                                </ul>
+                                <p>{{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}</p>
+                            </ng-container>
+                            <ng-container *ngSwitchCase="'list'">
+                                <ul>
+                                    <ng-container *ngFor="let data of item.data">
+                                        <li *ngIf="data">{{ data }}</li>
+                                    </ng-container>
+                                </ul>
+                            </ng-container>
+                            <ng-container *ngSwitchCase="'chart'">
+                                <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300"
+                                    contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true"
+                                    [courseId]="courseId">
+                                </core-chart>
+                                <p *ngIf="item.average">
+                                    {{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}
+                                </p>
+                            </ng-container>
+                        </ng-container>
+                    </ion-label>
+                </ion-item>
+            </ion-list>
+        </ng-container>
+    </core-loading>
+</ng-template>

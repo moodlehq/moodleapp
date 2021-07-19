@@ -1,0 +1,50 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'addon.storagemanager.managestorage' | translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <ion-card>
+            <ion-card-header>
+                <ion-card-title class="ion-text-wrap">{{ 'core.courses.courses' | translate }}</ion-card-title>
+                <p class="ion-text-wrap">{{ 'addon.storagemanager.info' | translate }}</p>
+                <ion-item class="size ion-text-wrap ion-no-padding" lines="none">
+                    <ion-icon name="fas-archive" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label><h2 class="ion-text-wrap">{{ 'addon.storagemanager.storageused' | translate }}</h2></ion-label>
+                    <p slot="end" class="ion-text-end">{{ totalSize | coreBytesToSize }}</p>
+                    <ion-button slot="end" (click)="deleteCompletelyDownloadedCourses()"
+                        [disabled]="completelyDownloadedCourses.length === 0">
+                        <ion-icon name="fas-trash" slot="icon-only"
+                            ariaLabel="{{ 'addon.storagemanager.deletecourses' | translate }}">
+                        </ion-icon>
+                    </ion-button>
+                </ion-item>
+            </ion-card-header>
+        </ion-card>
+        <ion-card>
+            <ion-card-content class="ion-no-padding">
+                <ion-list>
+                    <ion-item *ngFor="let course of downloadedCourses" class="course">
+                        <ion-label class="ion-text-wrap">
+                            <p class="item-heading" *ngIf="course.displayname">{{ course.displayname }}</p>
+                            <p class="item-heading" *ngIf="!course.displayname">{{ course.fullname }}</p>
+                            <p class="item-heading item-heading-secondary" *ngIf="course.isDownloading">
+                                {{ 'core.downloading' | translate }}
+                            </p>
+                        </ion-label>
+                        <p slot="end" class="ion-text-end">{{ course.totalSize | coreBytesToSize }}</p>
+                        <ion-button slot="end" (click)="deleteCourse(course)" [disabled]="course.isDownloading">
+                            <ion-icon name="fas-trash" slot="icon-only"
+                                [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: course.displayname }">
+                            </ion-icon>
+                        </ion-button>
+                    </ion-item>
+                </ion-list>
+            </ion-card-content>
+        </ion-card>
+    </core-loading>
+</ion-content>

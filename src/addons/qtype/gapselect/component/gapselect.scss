@@ -1,0 +1,6 @@
+// Style gapselect content a bit. Most of these styles are copied from Moodle.
+:host ::ng-deep {
+    p {
+        margin: 0 0 .5em;
+    }
+}

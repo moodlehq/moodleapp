@@ -1,0 +1,100 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'addon.calendar.calendarevents' | translate }}</h1>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="openFilter($event)" [attr.aria-label]="'core.filter' | translate">
+                <ion-icon slot="icon-only" name="fas-filter" aria-hidden="true"></ion-icon>
+            </ion-button>
+            <core-context-menu>
+                <core-context-menu-item *ngIf="!isCurrentDay" [priority]="900" [content]="'addon.calendar.today' | translate"
+                    iconAction="fas-calendar-day" (action)="goToCurrentDay()">
+                </core-context-menu-item>
+                <core-context-menu-item [hidden]="!loaded || !hasOffline || !isOnline" [priority]="400"
+                    [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event)"
+                    [iconAction]="syncIcon" [closeOnClick]="false">
+                </core-context-menu-item>
+            </core-context-menu>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <!-- Period name and arrows to navigate. -->
+    <ion-grid class="ion-no-padding safe-area-page">
+        <ion-row class="ion-align-items-center">
+            <ion-col class="ion-text-start" *ngIf="currentMoment">
+                <ion-button fill="clear" (click)="loadPrevious()" [attr.aria-label]="'addon.calendar.dayprev' | translate">
+                    <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </ion-col>
+            <ion-col class="ion-text-center addon-calendar-period">
+                <h3>{{ periodName }}</h3>
+            </ion-col>
+            <ion-col class="ion-text-end" *ngIf="currentMoment">
+                <ion-button fill="clear" (click)="loadNext()" [attr.aria-label]="'addon.calendar.daynext' | translate">
+                    <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <core-loading [hideUntil]="loaded" class="safe-area-page">
+        <!-- There is data to be synchronized -->
+        <ion-card class="core-warning-card" *ngIf="hasOffline">
+            <ion-item>
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'core.day' | translate} }}</ion-label>
+            </ion-item>
+        </ion-card>
+
+        <core-empty-box *ngIf="!filteredEvents || !filteredEvents.length" icon="fas-calendar" inline="true"
+            [message]="'addon.calendar.noevents' | translate">
+        </core-empty-box>
+
+        <ion-list *ngIf="filteredEvents && filteredEvents.length" class="ion-no-margin">
+            <ng-container *ngFor="let event of filteredEvents">
+                <ion-item class="addon-calendar-event ion-text-wrap" [attr.aria-label]="event.name" (click)="gotoEvent(event.id)"
+                [class.item-dimmed]="event.ispast" [ngClass]="['addon-calendar-eventtype-'+event.eventtype]" button detail="true">
+                    <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" slot="start" class="core-module-icon" alt=""
+                        role="presentation">
+                    <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" slot="start" aria-hidden="true">
+                    </ion-icon>
+                    <ion-label>
+                        <!-- Add the icon title so accessibility tools read it. -->
+                        <span class="sr-only">
+                            {{ 'addon.calendar.type' + event.formattedType | translate }}
+                            <span class="sr-only" *ngIf="event.moduleIcon && event.iconTitle">{{ event.iconTitle }}</span>
+                        </span>
+                        <p class="item-heading">
+                            <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
+                            [contextInstanceId]="event.contextInstanceId"></core-format-text>
+                        </p>
+                        <p [innerHTML]="event.formattedtime"></p>
+                    </ion-label>
+                    <ion-note *ngIf="event.offline && !event.deleted" slot="end">
+                        <ion-icon name="fas-clock" aria-hidden="true"></ion-icon>
+                        <span class="ion-text-wrap">{{ 'core.notsent' | translate }}</span>
+                    </ion-note>
+                    <ion-note *ngIf="event.deleted" slot="end">
+                        <ion-icon name="fas-trash" aria-hidden="true"></ion-icon>
+                        <span class="ion-text-wrap">{{ 'core.deletedoffline' | translate }}</span>
+                    </ion-note>
+                </ion-item>
+            </ng-container>
+        </ion-list>
+    </core-loading>
+
+    <!-- Create a calendar event. -->
+    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canCreate && loaded">
+        <ion-fab-button (click)="openEdit()" [attr.aria-label]="'addon.calendar.newevent' | translate">
+            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+            <span class="sr-only">{{ 'addon.calendar.newevent' | translate }}</span>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>

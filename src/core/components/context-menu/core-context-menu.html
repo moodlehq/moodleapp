@@ -1,0 +1,6 @@
+<ion-button [hidden]="hideMenu" fill="clear" [attr.aria-label]="ariaLabel" (click)="showContextMenu($event)" aria-haspopup="true"
+    [attr.aria-controls]="uniqueId">
+    <ion-icon [name]="icon" slot="icon-only" aria-hidden="true">
+    </ion-icon>
+</ion-button>
+<ng-content></ng-content>

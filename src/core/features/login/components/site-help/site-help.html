@@ -1,0 +1,76 @@
+<ion-header>
+    <ion-toolbar>
+        <h2>{{ 'core.login.help' | translate }}</h2>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeHelp()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <h2><b>{{ 'core.login.faqcannotfindmysitequestion' | translate }}</b></h2>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <p>{{ 'core.login.faqcannotfindmysiteanswer' | translate }}</p>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <h2><b>{{ 'core.login.faqwhatisurlquestion' | translate }}</b></h2>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap core-login-faqwhatisurlanswer">
+            <ion-label>
+                <p [innerHTML]="'core.login.faqwhatisurlanswer' | translate: {$image: urlImageHtml}"></p>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <h2><b>{{ 'core.login.faqcannotconnectquestion' | translate }}</b></h2>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <p>{{ 'core.login.faqcannotconnectanswer' | translate }} {{ 'core.whoissiteadmin' | translate }}</p>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <h2><b>{{ 'core.login.faqsetupsitequestion' | translate }}</b></h2>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <p><core-format-text [text]="'core.login.faqsetupsiteanswer' | translate:{$link: setupLinkHtml}" [filter]="false">
+                </core-format-text></p>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <h2><b>{{ 'core.login.faqtestappquestion' | translate }}</b></h2>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <p>{{ 'core.login.faqtestappanswer' | translate }}</p>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap" *ngIf="canScanQR">
+            <ion-label>
+                <h2><b>{{ 'core.login.faqwhereisqrcode' | translate }}</b></h2>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap core-login-faqwhereisqrcodeanswer" *ngIf="canScanQR">
+            <ion-label>
+                <p [innerHTML]="'core.login.faqwhereisqrcodeanswer' | translate: {$image: qrCodeImageHtml}"></p>
+            </ion-label>
+        </ion-item>
+    </ion-list>
+</ion-content>

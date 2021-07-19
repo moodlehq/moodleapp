@@ -1,0 +1,113 @@
+{
+    "[Moodle] Component class": {
+        "scope": "typescript",
+        "prefix": "macomponent",
+        "body": [
+            "import { Component } from '@angular/core';",
+            "",
+            "@Component({",
+            "    selector: '$2${TM_FILENAME_BASE}',",
+            "    templateUrl: '$2${TM_FILENAME_BASE}.html',",
+            "})",
+            "export class ${1:${TM_FILENAME_BASE}}Component {",
+            "",
+            "    $0",
+            "",
+            "}",
+            ""
+        ],
+        "description": "[Moodle] Create a Component class"
+    },
+    "[Moodle] Page class": {
+        "scope": "typescript",
+        "prefix": "mapage",
+        "body": [
+            "import { Component } from '@angular/core';",
+            "",
+            "@Component({",
+            "    selector: 'page-$2${TM_FILENAME_BASE}',",
+            "    templateUrl: '${TM_FILENAME_BASE}.html',",
+            "})",
+            "export class ${1:${TM_FILENAME_BASE}}Page {",
+            "",
+            "    $0",
+            "",
+            "}",
+            ""
+        ],
+        "description": "[Moodle] Create a Page class"
+    },
+    "[Moodle] Module class": {
+        "scope": "typescript",
+        "prefix": "mamodule",
+        "body": [
+            "import { NgModule } from '@angular/core';",
+            "",
+            "@NgModule({",
+            "    $0",
+            "})",
+            "export class ${1}Module {}",
+            ""
+        ],
+        "description": "[Moodle] Create a Module class"
+    },
+    "[Moodle] Lazy Module class": {
+        "scope": "typescript",
+        "prefix": "malazymodule",
+        "body": [
+            "import { NgModule } from '@angular/core';",
+            "import { RouterModule, Routes } from '@angular/router';",
+            "",
+            "const routes: Routes = [",
+            "    $0",
+            "];",
+            "",
+            "@NgModule({",
+            "    imports: [",
+            "        RouterModule.forChild(routes),",
+            "    ],",
+            "})",
+            "export class ${1}LazyModule {}",
+            ""
+        ],
+        "description": "[Moodle] Create a Lazy Module class"
+    },
+    "[Moodle] Service Singleton": {
+        "scope": "typescript",
+        "prefix": "massingleton",
+        "body": [
+            "import { Injectable } from '@angular/core';",
+            "import { makeSingleton } from '@singletons';",
+            "",
+            "/**",
+            " * $2.",
+            " */",
+            "@Injectable({ providedIn: 'root' })",
+            "export class ${1:${TM_FILENAME_BASE}}Service {",
+            "",
+            "    $0",
+            "",
+            "}",
+            "",
+            "export const ${1:${TM_FILENAME_BASE}} = makeSingleton(${1:${TM_FILENAME_BASE}}Service);",
+            ""
+        ],
+        "description": "[Moodle] Create a Service Singleton"
+    },
+    "[Moodle] Singleton": {
+        "scope": "typescript",
+        "prefix": "masingleton",
+        "body": [
+            "/**",
+            " * Singleton$2.",
+            " */",
+            "export class ${1:${TM_FILENAME_BASE}} {",
+            "",
+            "    $0",
+            "",
+            "}",
+            ""
+        ],
+        "description": "[Moodle] Create a Pure Singleton"
+    },
+}

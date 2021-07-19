@@ -1,0 +1,13 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ title }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-shared-files-list [siteId]="siteId" [mimetypes]="mimetypes" [isModal]="false" [manage]="manage" [pick]="false"
+        [path]="path" [showSitePicker]="showSitePicker" (onPathChanged)="calculateTitle($event)">
+    </core-shared-files-list>
+</ion-content>

@@ -1,0 +1,133 @@
+/*
+ * App DARK theme CSS
+ * ----------------------------------------------------------------------------
+ * Ionic Variables and Theming. For more info, please see:
+ * http://ionicframework.com/docs/theming/
+ */
+
+:root body.dark {
+    // Enlighten the ionic shades.
+    --ion-color-step-0:    #000000;
+    --ion-color-step-50:   #1e1e1e;
+    --ion-color-step-100:  #2a2a2a;
+    --ion-color-step-150:  #363636;
+    --ion-color-step-200:  #414141;
+    --ion-color-step-250:  #4d4d4d;
+    --ion-color-step-300:  #595959;
+    --ion-color-step-350:  #656565;
+    --ion-color-step-400:  #717171;
+    --ion-color-step-450:  #7d7d7d;
+    --ion-color-step-500:  #898989;
+    --ion-color-step-550:  #949494;
+    --ion-color-step-600:  #a0a0a0;
+    --ion-color-step-650:  #acacac;
+    --ion-color-step-700:  #b8b8b8;
+    --ion-color-step-750:  #c4c4c4;
+    --ion-color-step-800:  #d0d0d0;
+    --ion-color-step-850:  #dbdbdb;
+    --ion-color-step-900:  #e7e7e7;
+    --ion-color-step-950:  #f3f3f3;
+    --ion-color-step-1000: #ffffff;
+
+    --ion-background-color:     #{$background-color-dark};
+    --ion-background-color-rgb: #{$background-color-dark-rgb};
+
+    --text-color:               #{$text-color-dark};
+    --ion-text-color:           var(--text-color);
+    --ion-text-color-rgb:       #{$text-color-dark-rgb};
+    --subdued-text-color:     #b4b4b4;
+
+    --primary:      var(--brand-color);
+    --success:      #{$success-dark};
+    --danger:       #{$danger-dark};
+    --warning:      #{$warning-dark};
+    --info:         #{$info-dark};
+    --light:        #{$light-dark};
+    --dark:         #{$dark-dark};
+    --medium:       #{$medium-dark};
+
+    @each $color-name, $value in $colors-dark {
+        @include generate-color($color-name, $colors-dark);
+    }
+
+    --ion-border-color: var(--ion-color-step-100);
+
+    --ion-card-color: var(--text-color);
+    --ion-card-background: var(--ion-item-background);
+
+    --contrast-background: black;
+
+    ion-content {
+        --background: var(--ion-background-color);
+        --background-alternative: var(--black);
+    }
+
+    --core-bottom-tabs-badge-text-color: var(--brand-color-contrast);
+
+    ion-action-sheet {
+        .action-sheet-cancel {
+            --button-color: var(--ion-color-danger-tint);
+        }
+    }
+
+    --core-link-color: var(--blue-light);
+
+    --core-header-toolbar-background:   var(--black);
+    --core-header-toolbar-color:        var(--white);
+
+    --core-tabs-background: var(--ion-color-step-200);
+    --core-tab-background: var(--core-tabs-background);
+    --core-tab-color: var(--subdued-text-color);
+    --core-tab-border-color: var(--gray-light);
+    --core-tab-color-active: var(--dark);
+
+    --core-progressbar-text-color: var(--gray-lighter);
+
+    --ion-item-background: #{$ion-item-background-dark};
+    --ion-item-detail-icon-color: var(--white);
+    --item-divider-background: var(--ion-color-step-200);
+    --item-divider-color: var(--text-color);
+    --spacer-background: var(--ion-color-step-0);
+
+    --core-combobox-background: var(--ion-item-background);
+    --core-combobox-color: var(--white);
+
+    --core-login-background: var(--black);
+    --core-login-text-color: var(--white);
+    --core-login-input-background: var(--core-login-background);
+    --core-login-input-color: var(--core-login-text-color);
+
+    --core-question-correct-color: var(--green-light);
+    --core-question-correct-color-bg: var(--green-dark);
+    --core-question-incorrect-color: var(--red);
+    --core-question-incorrect-color-bg: var(--red-dark);
+    --core-question-feedback-color: var(--yellow-light);
+    --core-question-feedback-color-bg: var(--yellow-dark);
+    --core-question-warning-color: var(--red);
+    --core-question-saved-color-bg: var(--gray-dark);
+
+    --core-question-state-correct-color: var(--green-dark);
+    --core-question-state-partial-color: var(--yellow-dark);
+    --core-question-state-partial-text: var(--yellow);
+    --core-question-state-incorrect-color: var(--red-dark);
+
+    --core-question-feedback-color: var(--yellow-light);
+    --core-question-feedback-background-color: var(--yellow-dark);
+
+    --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-light);
+    --core-dd-question-border: var(--gray-light);
+
+    --core-send-message-input-background: var(--black);
+    --core-send-message-input-color: var(--white);
+
+    --addon-messages-message-bg: var(--ion-color-step-200);
+    --addon-messages-message-activated-bg: var(--ion-color-step-300);
+    --addon-messages-message-note-text: var(--subdued-text-color);
+    --addon-messages-message-mine-bg: var(--ion-color-step-350);
+    --addon-messages-message-mine-activated-bg: var(--ion-color-step-450);
+    --addon-messages-discussion-badge: var(--primary);
+    --addon-messages-discussion-badge-text: var(--dark);
+
+    --addon-forum-border-color: var(--gray-dark);
+    --addon-forum-highlight-color: var(--gray-darker);
+}

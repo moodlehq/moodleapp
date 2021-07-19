@@ -1,0 +1,30 @@
+<core-navbar-buttons slot="end">
+    <ion-button *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
+        <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="(downloadCourseEnabled || downloadCoursesEnabled)" [priority]="1000"
+        [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()"
+        [iconAction]="downloadEnabledIcon"></core-context-menu-item>
+        <core-context-menu-item *ngIf="(downloadCourseEnabled || downloadCoursesEnabled)" [priority]="500"
+        [content]="'addon.storagemanager.managestorage' | translate"
+        (action)="manageCoursesStorage()" iconAction="fas-archive"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshDashboard($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="loaded">
+        <ion-list>
+            <ng-container *ngFor="let block of blocks">
+                <core-block *ngIf="block.visible" [block]="block" contextLevel="user" [instanceId]="userId"
+                [extraData]="{'downloadEnabled': downloadEnabled}"></core-block>
+            </ng-container>
+        </ion-list>
+
+        <core-empty-box *ngIf="blocks.length == 0" icon="fas-th-large" [message]="'core.course.nocontentavailable' | translate">
+        </core-empty-box>
+    </core-loading>
+</ion-content>

@@ -1,0 +1,12 @@
+<ion-item class="ion-text-wrap" *ngFor="let item of items" [href]="item.url" core-link [capture]="true">
+    <ion-avatar slot="start" *ngIf="item.avatarUrl">
+        <img [src]="item.avatarUrl" core-external-content alt="" role="presentation"
+            onError="this.src='assets/img/user-avatar.png'">
+    </ion-avatar>
+    <img slot="start" *ngIf="item.iconUrl" [src]="item.iconUrl" core-external-content alt="" role="presentation"
+        class="core-module-icon">
+    <ion-label>
+        <h2>{{ item.heading }}</h2>
+        <p *ngFor="let text of item.details">{{ text }}</p>
+    </ion-label>
+</ion-item>

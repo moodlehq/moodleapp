@@ -1,0 +1,28 @@
+:host {
+    form {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        background: var(--ion-item-background);
+    }
+
+    .core-send-message-input {
+        appearance: none;
+        display: block;
+        width: 100%;
+        border: 0;
+        font-family: inherit;
+        background: var(--core-send-message-input-background);
+        color: var(--core-send-message-input-color);
+        border-radius: 21px;
+        line-height: 20px;
+        padding: 9px 12px 11px;
+        margin: 5px 10px;
+        resize: vertical;
+    }
+
+    .core-send-message-input::placeholder {
+        color: var(--ion-placeholder-color);
+    }
+}

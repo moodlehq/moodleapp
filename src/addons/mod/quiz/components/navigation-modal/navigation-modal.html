@@ -1,0 +1,67 @@
+<ion-header>
+    <ion-toolbar>
+        <h2>{{ 'addon.mod_quiz.quiznavigation' | translate }}</h2>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content class="addon-mod_quiz-navigation-modal">
+    <nav>
+        <ion-list>
+            <!-- In player, show button to finish attempt. -->
+            <ion-item button class="ion-text-wrap" *ngIf="!isReview" (click)="loadPage(-1)" detail="true">
+                <ion-label>{{ 'addon.mod_quiz.finishattemptdots' | translate }}</ion-label>
+            </ion-item>
+
+            <!-- In review we can toggle between all questions in same page or one page at a time. -->
+            <ion-item button class="ion-text-wrap" *ngIf="isReview && numPages > 1" (click)="switchMode()" detail="true">
+                <ion-label>
+                    <span *ngIf="!showAll">{{ 'addon.mod_quiz.showall' | translate }}</span>
+                    <span *ngIf="showAll">{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
+                </ion-label>
+            </ion-item>
+
+            <ion-item button class="ion-text-wrap {{question.stateClass}}" *ngFor="let question of navigation"
+                [attr.aria-current]="!summaryShown && currentPage == question.page ? 'page' : 'false'"
+                (click)="loadPage(question.page, question.slot)" detail="false">
+
+                <ion-label>
+                    <span *ngIf="question.number">{{ 'core.question.questionno' | translate:{$a: question.number} }}</span>
+                    <span *ngIf="!question.number">{{ 'core.question.information' | translate }}</span>
+                </ion-label>
+
+                <ion-icon *ngIf="!question.number" name="fas-info-circle" slot="end" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="question.stateClass == 'core-question-requiresgrading'" name="fas-question-circle"
+                    [attr.aria-label]="question.status" slot="end">
+                </ion-icon>
+                <ion-icon *ngIf="question.stateClass == 'core-question-correct'" name="fas-check" color="success"
+                    [attr.aria-label]="question.status" slot="end">
+                </ion-icon>
+                <ion-icon *ngIf="question.stateClass == 'core-question-partiallycorrect'" name="fas-check-square"
+                    color="warning" [attr.aria-label]="question.status" slot="end">
+                </ion-icon>
+                <ion-icon *ngIf="question.stateClass == 'core-question-incorrect' ||
+                    question.stateClass == 'core-question-notanswered'" name="fas-times" color="danger"
+                    [attr.aria-label]="question.status" slot="end">
+                </ion-icon>
+            </ion-item>
+
+            <!-- In player, show button to finish attempt. -->
+            <ion-item button class="ion-text-wrap" *ngIf="!isReview" (click)="loadPage(-1)" detail="true">
+                <ion-label>{{ 'addon.mod_quiz.finishattemptdots' | translate }}</ion-label>
+            </ion-item>
+
+            <!-- In review we can toggle between all questions in same page or one page at a time. -->
+            <ion-item button class="ion-text-wrap" *ngIf="isReview && numPages > 1" (click)="switchMode()" detail="true">
+                <ion-label>
+                    <span *ngIf="!showAll">{{ 'addon.mod_quiz.showall' | translate }}</span>
+                    <span *ngIf="showAll">{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    </nav>
+</ion-content>

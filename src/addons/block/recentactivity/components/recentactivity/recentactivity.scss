@@ -1,0 +1,25 @@
+:host .core-block-content ::ng-deep {
+    .activitydate, .activityhead {
+        text-align: center;
+    }
+
+    .unlist {
+        list-style: none;
+        margin-left: 0;
+        margin-right: 0;
+        -webkit-padding-start: 0;
+        li {
+            margin-bottom: 1em;
+
+            .head .date {
+                float: right;
+            }
+        }
+    }
+}
+
+:host-context([dir=rtl]) .core-block-content ::ng-deep {
+    .unlist li .head .date {
+        float: left;
+    }
+}

@@ -1,0 +1,31 @@
+<section class="addon-qtype-match-container" *ngIf="matchQuestion && matchQuestion.loaded">
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="matchQuestion.text"
+                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            </core-format-text>
+        </ion-label>
+    </ion-item>
+    <ion-item class="ion-text-wrap" *ngFor="let row of matchQuestion.rows">
+        <ion-label>
+            <core-format-text id="addon-qtype-match-question-{{row.id}}" [component]="component"
+                [componentId]="componentId" [text]="row.text" [contextLevel]="contextLevel"
+                [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            </core-format-text>
+            <label class="accesshide" for="{{row.id}}" *ngIf="row.accessibilityLabel">
+                {{ row.accessibilityLabel }}
+            </label>
+        </ion-label>
+        <ion-select id="{{row.id}}" [name]="row.name" [(ngModel)]="row.selected" interface="action-sheet"
+            [attr.aria-labelledby]="'addon-qtype-match-question-' + row.id" [disabled]="row.disabled"
+            [ngClass]="{'addon-qtype-match-correct': row.isCorrect === 1,'addon-qtype-match-incorrect': row.isCorrect === 0}">
+            <ion-select-option *ngFor="let option of row.options" [value]="option.value">
+                {{option.label}}
+            </ion-select-option>
+        </ion-select>
+        <ion-icon *ngIf="row.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success" slot="end"
+            [attr.aria-label]="'core.question.correct' | translate"></ion-icon>
+        <ion-icon *ngIf="row.isCorrect === 0" class="core-correct-icon" name="fas-times" color="danger" slot="end"
+            [attr.aria-label]="'core.question.incorrect' | translate"></ion-icon>
+    </ion-item>
+</section>

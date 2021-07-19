@@ -1,0 +1,102 @@
+<ion-item-divider sticky="true">
+    <ion-label>
+        <h2>{{ 'addon.block_myoverview.pluginname' | translate }}</h2>
+    </ion-label>
+    <div slot="end" class="flex-row">
+        <!-- Download all courses. -->
+        <div *ngIf="downloadCoursesEnabled && downloadEnabled && filteredCourses.length > 1 && !showFilter"
+            class="core-button-spinner">
+            <ion-button *ngIf="!prefetchCoursesData[selectedFilter].loading" fill="clear" color="dark" (click)="prefetchCourses()"
+                [attr.aria-label]="'core.courses.downloadcourses' | translate">
+                <ion-icon [name]="prefetchCoursesData[selectedFilter].icon" slot="icon-only" aria-hidden="true">
+                </ion-icon>
+            </ion-button>
+            <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge"
+                role="progressbar" [attr.aria-valuemax]="prefetchCoursesData[selectedFilter].total"
+                [attr.aria-valuenow]="prefetchCoursesData[selectedFilter].count"
+                [attr.aria-valuetext]="prefetchCoursesData[selectedFilter].badgeA11yText">
+                {{prefetchCoursesData[selectedFilter].badge}}
+            </ion-badge>
+            <ion-spinner *ngIf="prefetchCoursesData[selectedFilter].loading" [attr.aria-label]="'core.loading' | translate">
+            </ion-spinner>
+        </div>
+        <core-context-menu>
+            <core-context-menu-item *ngIf="loaded && showFilterSwitchButton()" [priority]="1000"
+                [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" iconAction="fas-filter"
+                (onClosed)="switchFilterClosed()"></core-context-menu-item>
+            <core-context-menu-item *ngIf="loaded && showSortFilter" [priority]="900"
+                content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.title' | translate)}}"
+                (action)="switchSort('fullname')" [iconAction]="sort == 'fullname' ? 'far-dot-circle' : 'far-circle'">
+            </core-context-menu-item>
+            <core-context-menu-item *ngIf="loaded && showSortFilter && showSortByShortName" [priority]="800"
+                content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.shortname' | translate)}}"
+                (action)="switchSort('shortname')" [iconAction]="sort == 'shortname' ? 'far-dot-circle' : 'far-circle'">
+            </core-context-menu-item>
+            <core-context-menu-item *ngIf="loaded && showSortFilter" [priority]="700"
+                content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.lastaccessed' | translate)}}"
+                (action)="switchSort('lastaccess')" [iconAction]="sort == 'lastaccess' ? 'far-dot-circle' : 'far-circle'">
+            </core-context-menu-item>
+        </core-context-menu>
+    </div>
+</ion-item-divider>
+<core-loading [hideUntil]="loaded" [fullscreen]="false" class="margin">
+    <div class="safe-padding-horizontal" [hidden]="showFilter || !showSelectorFilter">
+        <!-- "Time" selector. -->
+        <core-combobox [label]="'core.show' | translate" [selection]="selectedFilter" (onChange)="selectedChanged($event)">
+            <ion-select-option class="ion-text-wrap" value="allincludinghidden" *ngIf="showFilters.allincludinghidden != 'hidden'">
+                {{ 'addon.block_myoverview.allincludinghidden' | translate }}
+            </ion-select-option>
+            <ion-select-option class="ion-text-wrap" value="all" *ngIf="showFilters.all != 'hidden'">
+                {{ 'addon.block_myoverview.all' | translate }}
+            </ion-select-option>
+            <ion-select-option class="ion-text-wrap" value="inprogress" *ngIf="showFilters.inprogress != 'hidden'"
+                [disabled]="showFilters.inprogress == 'disabled'">
+                {{ 'addon.block_myoverview.inprogress' | translate }}
+            </ion-select-option>
+            <ion-select-option class="ion-text-wrap" value="future" *ngIf="showFilters.future != 'hidden'"
+                [disabled]="showFilters.future == 'disabled'">
+                {{ 'addon.block_myoverview.future' | translate }}
+            </ion-select-option>
+            <ion-select-option class="ion-text-wrap" value="past" *ngIf="showFilters.past != 'hidden'"
+                [disabled]="showFilters.past == 'disabled'">
+                {{ 'addon.block_myoverview.past' | translate }}
+            </ion-select-option>
+            <ng-container *ngIf="showFilters.custom != 'hidden'">
+                <ng-container *ngFor="let customOption of customFilter; let index = index">
+                    <ion-select-option class="ion-text-wrap" value="custom-{{index}}">{{ customOption.name }}</ion-select-option>
+                </ng-container>
+            </ng-container>
+            <ion-select-option class="ion-text-wrap" value="favourite" *ngIf="showFilters.favourite != 'hidden'"
+                [disabled]="showFilters.favourite == 'disabled'">
+                {{ 'addon.block_myoverview.favourites' | translate }}
+            </ion-select-option>
+            <ion-select-option class="ion-text-wrap" value="hidden" *ngIf="showFilters.hidden != 'hidden'"
+                [disabled]="showFilters.hidden == 'disabled'">
+                {{ 'addon.block_myoverview.hiddencourses' | translate }}
+            </ion-select-option>
+        </core-combobox>
+    </div>
+
+    <!-- Filter courses. -->
+    <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="courses.filter" (ionInput)="filterChanged($event)"
+        (ionCancel)="filterChanged($event)" [placeholder]="'core.courses.filtermycourses' | translate">
+    </ion-searchbar>
+
+    <core-empty-box *ngIf="filteredCourses.length == 0" image="assets/img/icons/courses.svg"
+        [message]="'addon.block_myoverview.nocourses' | translate" inline="true">
+    </core-empty-box>
+
+    <!-- List of courses. -->
+    <div class="safe-area-page">
+        <ion-grid class="ion-no-padding">
+            <ion-row class="ion-no-padding">
+                <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding"
+                    size="12" size-sm="6" size-md="6" size-lg="4" size-xl="3">
+                    <core-courses-course-progress [course]="course" class="core-courseoverview" showAll="true"
+                        [showDownload]="downloadCourseEnabled && downloadEnabled">
+                    </core-courses-course-progress>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+</core-loading>

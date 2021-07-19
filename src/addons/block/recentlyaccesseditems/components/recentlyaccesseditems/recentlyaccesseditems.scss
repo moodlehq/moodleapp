@@ -1,0 +1,14 @@
+@import "~theme/globals";
+
+:host {
+    .core-horizontal-scroll > div > div {
+        @include horizontal_scroll_item(80%, 250px, 300px);
+    }
+
+    .core-course-module-handler {
+        --inner-border-width: 0;
+    }
+    core-loading {
+        --loading-inline-min-height: 102px;
+    }
+}

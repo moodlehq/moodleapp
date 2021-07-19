@@ -1,0 +1,80 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'addon.mod_feedback.responses' |translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-split-view>
+        <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshFeedback($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="loaded">
+            <ion-list class="ion-no-margin">
+                <ion-item class="ion-text-wrap" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+                    <ion-label id="addon-feedback-groupslabel">
+                        <ng-container *ngIf="groupInfo.separateGroups">{{'core.groupsseparate' | translate }}</ng-container>
+                        <ng-container *ngIf="groupInfo.visibleGroups">{{'core.groupsvisible' | translate }}</ng-container>
+                    </ion-label>
+                    <ion-select [(ngModel)]="selectedGroup" (ionChange)="loadAttempts(selectedGroup)"
+                        aria-labelledby="addon-feedback-groupslabel" interface="action-sheet"
+                        [interfaceOptions]="{header: 'core.group' | translate}">
+                        <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
+                            {{groupOpt.name}}
+                        </ion-select-option>
+                    </ion-select>
+                </ion-item>
+
+                <ng-container *ngIf="responses.responses.total > 0">
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>{{ 'addon.mod_feedback.non_anonymous_entries' | translate : {$a: responses.responses.total } }}</h2>
+                        </ion-label>
+                    </ion-item-divider>
+                    <ion-item *ngFor="let attempt of responses.responses.attempts" class="ion-text-wrap" button detail="true"
+                        (click)="responses.select(attempt)" [attr.aria-current]="responses.getItemAriaCurrent(attempt)">
+                        <core-user-avatar [user]="attempt" slot="start"></core-user-avatar>
+                        <ion-label>
+                            <p class="item-heading">{{ attempt.fullname }}</p>
+                            <p *ngIf="attempt.timemodified">{{attempt.timemodified * 1000 | coreFormatDate }}</p>
+                        </ion-label>
+                    </ion-item>
+
+                    <!-- Button and spinner to show more attempts. -->
+                    <ion-button *ngIf="responses.responses.canLoadMore && !loadingMore" class="ion-margin" expand="block"
+                        (click)="loadAttempts()">
+                        {{ 'core.loadmore' | translate }}
+                    </ion-button>
+                    <ion-item *ngIf="responses.responses.canLoadMore && loadingMore" class="ion-text-center">
+                        <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
+                    </ion-item>
+                </ng-container>
+
+                <ng-container *ngIf="responses.anonResponses.total > 0">
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>{{ 'addon.mod_feedback.anonymous_entries' |translate : {$a: responses.anonResponses.total } }}</h2>
+                        </ion-label>
+                    </ion-item-divider>
+                    <ion-item *ngFor="let attempt of responses.anonResponses.attempts" class="ion-text-wrap" button detail="true"
+                        (click)="responses.select(attempt)" [attr.aria-current]="responses.getItemAriaCurrent(attempt)">
+                        <ion-label>
+                            <h2>{{ 'addon.mod_feedback.response_nr' |translate }}: {{attempt.number}}</h2>
+                        </ion-label>
+                    </ion-item>
+
+                    <!-- Button and spinner to show more attempts. -->
+                    <ion-button *ngIf="responses.anonResponses.canLoadMore && !loadingMore" class="ion-margin" expand="block"
+                        (click)="loadAttempts()">
+                        {{ 'core.loadmore' | translate }}
+                    </ion-button>
+                    <ion-item *ngIf="responses.anonResponses.canLoadMore && loadingMore" class="ion-text-center">
+                        <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
+                    </ion-item>
+                </ng-container>
+            </ion-list>
+        </core-loading>
+    </core-split-view>
+</ion-content>

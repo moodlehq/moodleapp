@@ -1,0 +1,73 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'core.settings.preferences' | translate}}</h1>
+        <ion-buttons slot="end">
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-split-view>
+        <ion-refresher slot="fixed" [disabled]="!handlers.loaded" (ionRefresh)="refreshData($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="handlers.loaded">
+            <ion-list>
+                <ion-item *ngIf="siteInfo" class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{siteInfo!.fullname}}</p>
+                        <p>
+                            <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0"
+                                [wsNotFiltered]="true"></core-format-text>
+                        </p>
+                        <p>{{ siteUrl }}</p>
+                    </ion-label>
+                </ion-item>
+                <core-spacer></core-spacer>
+
+                <ion-item *ngFor="let handler of handlers.items" [ngClass]="['core-settings-handler', handler.class]"
+                    [attr.aria-label]="handler.title | translate" detail="true" (click)="handlers.select(handler)" button
+                    [attr.aria-current]="handlers.getItemAriaCurrent(handler)">
+                    <ion-icon [name]="handler.icon" slot="start" *ngIf="handler.icon" aria-hidden="true">
+                    </ion-icon>
+                    <ion-label>
+                        <p class="item-heading">{{ handler.title | translate}}</p>
+                    </ion-label>
+                </ion-item>
+
+                <ion-card>
+                    <ion-item class="ion-text-wrap" *ngIf="spaceUsage">
+                        <ion-label>
+                            <p class="item-heading ion-text-wrap">{{ 'core.settings.spaceusage' | translate }}</p>
+                            <p *ngIf="spaceUsage.spaceUsage">{{ spaceUsage.spaceUsage | coreBytesToSize }}</p>
+                        </ion-label>
+                        <ion-button fill="clear" [attr.aria-label]="'core.info' | translate" (click)="showSpaceInfo()" slot="end">
+                            <ion-icon name="fas-info-circle" color="info" slot="icon-only"></ion-icon>
+                        </ion-button>
+                        <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage()"
+                            [hidden]="spaceUsage.spaceUsage! + spaceUsage.cacheEntries! <= 0"
+                            [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
+                            <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+                        </ion-button>
+                    </ion-item>
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.settings.synchronizenow' | translate }}</p>
+                        </ion-label>
+                        <ion-button fill="clear" [attr.aria-label]="'core.info' | translate" (click)="showSyncInfo()" slot="end">
+                            <ion-icon name="fas-info-circle" color="info" slot="icon-only"></ion-icon>
+                        </ion-button>
+                        <core-button-with-spinner [loading]="isSynchronizing()" slot="end">
+                            <ion-button fill="clear" (click)="synchronize()"
+                                [attr.aria-label]="'core.settings.synchronizenow' | translate">
+                                <ion-icon name="fas-sync-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+                            </ion-button>
+                        </core-button-with-spinner>
+                    </ion-item>
+                </ion-card>
+            </ion-list>
+        </core-loading>
+    </core-split-view>
+</ion-content>

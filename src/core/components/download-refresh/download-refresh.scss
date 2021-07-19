@@ -1,0 +1,15 @@
+:host {
+    font-size: 1.4rem;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: space-around;
+    align-content: center;
+    min-height: var(--a11y-min-target-size);
+    min-width: var(--a11y-min-target-size);
+    position: relative;
+
+    > * {
+        position: absolute;
+    }
+}

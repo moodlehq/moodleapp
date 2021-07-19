@@ -1,0 +1,23 @@
+<ion-header>
+    <ion-toolbar>
+        <h2 id="addon-mod-forum-sort-order-label">{{ 'core.sort' | translate }}</h2>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="fas-times" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list id="addon-mod-forum-sort-selector" role="listbox" aria-labelledby="addon-mod-forum-sort-order-label">
+        <ng-container *ngFor="let sortOrder of sortOrders">
+            <ion-item class="ion-text-wrap" detail="false" role="combobox"
+                [attr.aria-current]="selected == sortOrder.value ? 'page' : 'false'" [attr.aria-label]="sortOrder.label | translate"
+                (click)="selectSortOrder(sortOrder)" button aria-haspopup="dialog">
+                <ion-label>
+                    <h2>{{ sortOrder.label | translate }}</h2>
+                </ion-label>
+            </ion-item>
+        </ng-container>
+    </ion-list>
+</ion-content>

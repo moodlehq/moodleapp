@@ -1,0 +1,22 @@
+<!-- Render (no edit). -->
+<ion-item *ngIf="!edit && field && field.name">
+    <ion-label>
+        <h2>{{ field.name }}</h2>
+        <p><core-format-text [text]="value" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+            [courseId]="courseId">
+        </core-format-text></p>
+    </ion-label>
+</ion-item>
+
+<!-- Edit. -->
+<ion-item *ngIf="edit && field && field.shortname && form" class="ion-text-wrap" [formGroup]="form">
+    <ion-label position="stacked">
+        <span [core-mark-required]="required">{{ field.name }}</span>
+    </ion-label>
+    <ion-select [formControlName]="modelName" [placeholder]="'core.choosedots' | translate" interface="action-sheet"
+        [interfaceOptions]="{header: field.name}">
+        <ion-select-option value="">{{ 'core.choosedots' | translate }}</ion-select-option>
+        <ion-select-option *ngFor="let option of options" [value]="option">{{option}}</ion-select-option>
+    </ion-select>
+    <core-input-errors [control]="form.controls[modelName]"></core-input-errors>
+</ion-item>

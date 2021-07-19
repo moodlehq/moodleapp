@@ -10,21 +10,22 @@ dockercompose="$dockerscripts/moodle-docker-compose"
 export MOODLE_DOCKER_DB=pgsql
 export MOODLE_DOCKER_BROWSER=chrome
 export MOODLE_DOCKER_WWWROOT="$HOME/moodle"
-export MOODLE_DOCKER_PHP_VERSION=7.3
+export MOODLE_DOCKER_PHP_VERSION=7.4
 export MOODLE_DOCKER_APP_PATH=$basedir
 
 # Prepare dependencies
 print_title "Preparing dependencies"
 git clone --branch master --depth 1 git://github.com/moodle/moodle $HOME/moodle
-git clone --branch master --depth 1 git://github.com/moodlehq/moodle-local_moodlemobileapp $HOME/moodle/local/moodlemobileapp
-git clone --branch master --depth 1 git://github.com/moodlehq/moodle-docker $HOME/moodle-docker
+git clone --branch ionic5 --depth 1 git://github.com/moodlehq/moodle-local_moodlemobileapp $HOME/moodle/local/moodlemobileapp
+
+# TODO replace for moodlehq/moodle-docker after merging https://github.com/moodlehq/moodle-docker/pull/156
+git clone --branch MOBILE-3738 --depth 1 git://github.com/NoelDeMartin/moodle-docker $HOME/moodle-docker
 
 cp $HOME/moodle-docker/config.docker-template.php $HOME/moodle/config.php
 
 # Build app
 print_title "Building app"
-npm install
-npm run setup
+npm ci
 
 # Start containers
 print_title "Starting containers"

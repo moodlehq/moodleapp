@@ -1,0 +1,192 @@
+:host {
+    --addon-calendar-blank-day-background-color: var(--gray-lighter);
+
+    .addon-calendar-navigation {
+        padding-top: 5px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .addon-calendar-months {
+        background-color: var(--contrast-background);
+        padding: 0;
+        font-size: 14px;
+    }
+
+    .addon-calendar-day {
+        border-bottom: 1px solid var(--addon-calendar-border-color);
+        border-right: 1px solid var(--addon-calendar-border-color);
+        overflow: hidden;
+        min-height: 60px;
+        cursor: pointer;
+
+        &:first-child {
+            padding-left: 10px;
+        }
+        &:last-child {
+            border-right: 0;
+            padding-left: 8px;
+        }
+
+        &.addon-calendar-event-past-day > .addon-calendar-dot-types,
+        &.addon-calendar-event-past-day > .addon-calendar-day-events {
+            opacity: 0.5;
+        }
+
+        .addon-calendar-day-number {
+            margin: 0;
+
+            span {
+                line-height: 24px;
+                font-weight: 500;
+                display: inline-block;
+                margin: 3px;
+                width: max-content;
+                width: 24px;
+                height: 24px;
+                text-align: center;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .addon-calendar-day-number {
+                text-align: start;
+            }
+        }
+
+        &.today .addon-calendar-day-number span {
+            border: 2px solid var(--addon-calendar-today-border-color);
+            line-height: 20px;;
+            border-radius: 50%;
+        }
+        &.dayblank {
+            cursor: auto;
+            background-color: var(--addon-calendar-blank-day-background-color);
+        }
+
+        .addon-calendar-event {
+            margin-top: 0.6em;
+            margin-bottom: 0.6em;
+            overflow: hidden;
+            white-space: nowrap;
+            color: var(--text-color);
+            min-height: auto;
+
+            &.addon-calendar-event-past {
+                opacity: 0.5;
+            }
+
+            .addon-calendar-event-name {
+                font-weight: 500;
+            }
+        }
+
+        .addon-calendar-day-more {
+            margin-top: 0.6em;
+            margin-bottom: 0.6em;
+            margin-right: 4px;
+        }
+
+        .addon-calendar-dot-types {
+            margin: 0;
+        }
+    }
+
+    .addon-calendar-period {
+        flex-grow: 3;
+        h3 {
+            margin-top: 10px;
+            font-size: 1.2rem;
+        }
+    }
+
+    .addon-calendar-weekday {
+        border-bottom: 1px solid var(--addon-calendar-border-color);
+        font-weight: bold;
+    }
+
+    .addon-calendar-day-events {
+        text-align: left;
+
+        ion-icon {
+            margin-right: 2px;
+            font-size: 1em;
+        }
+    }
+
+    .addon-calendar-event, .addon-calendar-day-number, .addon-calendar-day-more {
+        cursor: pointer;
+    }
+
+    .calendar_event_type {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        border: 1px solid white;
+        margin-right: 1px;
+        margin-left: 1px;
+
+        &.calendar_event_category {
+            background-color: var(--addon-calendar-event-category-color);
+        }
+        &.calendar_event_course {
+            background-color: var(--addon-calendar-event-course-color);
+        }
+        &.calendar_event_group {
+            background-color: var(--addon-calendar-event-group-color);
+        }
+        &.calendar_event_user {
+            background-color: var(--addon-calendar-event-user-color);
+        }
+        &.calendar_event_site {
+            background-color: var(--addon-calendar-event-site-color);
+        }
+    }
+
+    .core-module-icon {
+        margin-right: 1px;
+        margin-left: 1px;
+        --size: 16px;
+        display: inline-block;
+        vertical-align: bottom;
+    }
+    .core-module-icon[slot="start"] {
+        padding: 6px;
+    }
+}
+
+:host-context([dir=rtl]) {
+    .addon-calendar-day-events {
+        text-align: right;
+
+        ion-icon {
+            margin-right: unset;
+            margin-left: 2px;
+        }
+    }
+
+    .addon-calendar-day {
+        border-left: 1px solid var(--addon-calendar-border-color);
+        border-right: unset;
+
+        &:first-child {
+            padding-right: 10px;
+            padding-left: unset;
+        }
+        &:last-child {
+            border-left: 0;
+            border-right: unset;
+            padding-right: 8px;
+            padding-left: unset;
+        }
+        .addon-calendar-day-more {
+            margin-left: 4px;
+            margin-right: unset;
+        }
+    }
+}
+
+:host-context(body.dark) {
+    --addon-calendar-blank-day-background-color: var(--black);
+}

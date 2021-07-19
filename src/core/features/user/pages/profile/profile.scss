@@ -1,0 +1,44 @@
+:host {
+
+    .core-user-profile-maininfo::part(native) {
+        flex-direction: column;
+    }
+    ::ng-deep {
+        core-user-avatar {
+            display: block;
+            --core-avatar-size: var(--core-large-avatar-size);
+            height: calc(var(--core-avatar-size) + 16px);
+
+            img {
+                margin: 8px auto;
+            }
+
+            .contact-status {
+                width: 24px !important;
+                height: 24px !important;
+                right: calc(50% - 12px -  var(--core-avatar-size) / 2) !important;
+            }
+
+            .edit-avatar {
+                position: absolute;
+                right: calc(50% - 15px -  var(--core-avatar-size) / 2);
+                bottom: -12px;
+
+                :host-context([dir="rtl"]) & {
+                    left: 0;
+                    right: unset;
+                }
+                &::part(native) {
+                    border-radius: 50%;
+                    background: var(--ion-item-background);
+                }
+            }
+        }
+    }
+
+}
+
+:host-context([dir="rtl"]) ::ng-deep core-user-avatar .edit-avatar {
+    left: -24px;
+    right: unset;
+}

@@ -1,0 +1,16 @@
+:host ::ng-deep {
+    .specificfeedback {
+        background-color: var(--core-question-feedback-color-bg);
+        color: var(--core-question-feedback-color);
+        display: inline;
+        padding: 0 .7em;
+    }
+
+    .flex {
+        display: flex !important;
+    }
+
+    .answer .answernumber {
+        min-width: 1.5em;
+    }
+}

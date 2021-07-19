@@ -1,0 +1,12 @@
+<ion-list *ngIf="question && (question.text || question.text === '')">
+    <!-- "Seen" hidden input -->
+    <input *ngIf="seenInput" type="hidden" [name]="seenInput.name" [value]="seenInput.value" >
+
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"
+                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            </core-format-text>
+        </ion-label>
+    </ion-item>
+</ion-list>

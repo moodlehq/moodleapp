@@ -1,0 +1,82 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1 *ngIf="entry">
+            <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId" [courseId]="courseId">
+            </core-format-text>
+        </h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="loaded">
+        <ng-container *ngIf="entry && loaded">
+            <ion-item class="ion-text-wrap" *ngIf="showAuthor">
+                <core-user-avatar [user]="entry" slot="start"></core-user-avatar>
+                <ion-label>
+                    <h2>
+                        <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId"
+                            [courseId]="courseId">
+                        </core-format-text>
+                    </h2>
+                    <p>{{ entry.userfullname }}</p>
+                </ion-label>
+                <ion-note slot="end" *ngIf="showDate">{{ entry.timemodified | coreDateDayOrTime }}</ion-note>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="!showAuthor">
+                <ion-label>
+                    <p class="item-heading">
+                        <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId">
+                        </core-format-text>
+                    </p>
+                </ion-label>
+                <ion-note slot="end" *ngIf="showDate">{{ entry.timemodified | coreDateDayOrTime }}</ion-note>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="entry.definition"
+                        contextLevel="module" [contextInstanceId]="componentId" [courseId]="courseId">
+                    </core-format-text>
+                </ion-label>
+            </ion-item>
+            <div *ngIf="entry.attachment" lines="none">
+                <core-file *ngFor="let file of entry.attachments" [file]="file" [component]="component"
+                    [componentId]="componentId">
+                </core-file>
+            </div>
+            <ion-item class="ion-text-wrap" *ngIf="tagsEnabled && entry && entry.tags && entry.tags.length > 0">
+                <ion-label>
+                    <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
+                    <core-tag-list [tags]="entry.tags"></core-tag-list>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="!entry.approved">
+                <ion-label><p><em>{{ 'addon.mod_glossary.entrypendingapproval' | translate }}</em></p></ion-label>
+            </ion-item>
+            <core-comments *ngIf="glossary && glossary.allowcomments && entry && entry.id > 0 && commentsEnabled"
+                contextLevel="module" [instanceId]="glossary.coursemodule" component="mod_glossary"
+                [itemId]="entry.id" area="glossary_entry" [courseId]="glossary.course" [showItem]="true">
+            </core-comments>
+            <core-rating-rate *ngIf="glossary && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module"
+                [instanceId]="glossary.coursemodule" [itemId]="entry.id" [itemSetId]="0" [courseId]="glossary.course"
+                [aggregateMethod]="glossary.assessed" [scaleId]="glossary.scale" [userId]="entry.userid"
+                (onUpdate)="ratingUpdated()">
+            </core-rating-rate>
+            <core-rating-aggregate *ngIf="glossary && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module"
+                [instanceId]="glossary.coursemodule" [itemId]="entry.id" [courseId]="glossary.course"
+                [aggregateMethod]="glossary.assessed" [scaleId]="glossary.scale">
+            </core-rating-aggregate>
+        </ng-container>
+
+        <ion-card *ngIf="!entry" class="core-warning-card">
+            <ion-item>
+                <ion-label>{{ 'addon.mod_glossary.errorloadingentry' | translate }}</ion-label>
+            </ion-item>
+        </ion-card>
+    </core-loading>
+</ion-content>

@@ -1,0 +1,16 @@
+:host {
+    width: 100%;
+
+    .core-input-error-container {
+        .core-input-error {
+            padding: 4px;
+            color: var(--ion-color-danger);
+            font-size: 12px;
+            display: none;
+
+            &:first-child {
+                display: block;
+            }
+        }
+    }
+}

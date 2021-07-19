@@ -12,204 +12,127 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, NgZone } from '@angular/core';
-import { Config, Platform, IonicApp } from 'ionic-angular';
-import { Network } from '@ionic-native/network';
-import { CoreApp, CoreAppProvider } from '@providers/app';
-import { CoreEventsProvider } from '@providers/events';
-import { CoreLangProvider } from '@providers/lang';
-import { CoreLoggerProvider } from '@providers/logger';
-import { CoreSitesProvider } from '@providers/sites';
-import { CoreUrlUtilsProvider } from '@providers/utils/url';
-import { CoreUtilsProvider } from '@providers/utils/utils';
-import { CoreCustomURLSchemesProvider, CoreCustomURLSchemesHandleError } from '@providers/urlschemes';
-import { CoreLoginHelperProvider } from '@core/login/providers/helper';
-import { Keyboard } from '@ionic-native/keyboard';
-import { ScreenOrientation } from '@ionic-native/screen-orientation';
-import { CoreLoginSitesPage } from '@core/login/pages/sites/sites';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { IonRouterOutlet } from '@ionic/angular';
+import { BackButtonEvent } from '@ionic/core';
+
+import { CoreLang } from '@services/lang';
+import { CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreEvents } from '@singletons/events';
+import { Network, NgZone, Platform, SplashScreen } from '@singletons';
+import { CoreApp, CoreAppProvider } from '@services/app';
+import { CoreSites } from '@services/sites';
+import { CoreNavigator } from '@services/navigator';
+import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreWindow } from '@singletons/window';
-import { Device } from '@ionic-native/device';
+import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CoreUtils } from '@services/utils/utils';
+import { CoreUrlUtils } from '@services/utils/url';
+import { CoreConstants } from '@/core/constants';
+import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
+
+const MOODLE_VERSION_PREFIX = 'version-';
+const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
+
+type AutomatedTestsWindow = Window & {
+    changeDetector?: ChangeDetectorRef;
+};
 
 @Component({
-    templateUrl: 'app.html'
+    selector: 'app-root',
+    templateUrl: 'app.component.html',
+    styleUrls: ['app.component.scss'],
 })
-export class MoodleMobileApp implements OnInit {
-    // Use page name (string) because the page is lazy loaded (Ionic feature). That way we can load pages without importing them.
-    // The downside is that each page needs to implement a ngModule.
-    rootPage: any = 'CoreLoginInitPage';
-    protected logger;
-    protected lastUrls = {};
-    protected lastInAppUrl: string;
+export class AppComponent implements OnInit, AfterViewInit {
 
-    constructor(
-            private platform: Platform,
-            logger: CoreLoggerProvider,
-            keyboard: Keyboard,
-            config: Config,
-            device: Device,
-            private app: IonicApp,
-            private eventsProvider: CoreEventsProvider,
-            private loginHelper: CoreLoginHelperProvider,
-            private zone: NgZone,
-            private appProvider: CoreAppProvider,
-            private langProvider: CoreLangProvider,
-            private sitesProvider: CoreSitesProvider,
-            private screenOrientation: ScreenOrientation,
-            private urlSchemesProvider: CoreCustomURLSchemesProvider,
-            private utils: CoreUtilsProvider,
-            private urlUtils: CoreUrlUtilsProvider,
-            private network: Network
-            ) {
-        this.logger = logger.getInstance('AppComponent');
+    @ViewChild(IonRouterOutlet) outlet?: IonRouterOutlet;
 
-        if (this.appProvider.isIOS() && !platform.is('ios')) {
-            // Solve problem with wrong detected iPadOS.
-            const platforms = platform.platforms();
-            const index = platforms.indexOf('core');
-            if (index > -1) {
-                platforms.splice(index, 1);
-            }
-            platforms.push('mobile');
-            platforms.push('ios');
-            platforms.push('ipad');
-            platforms.push('tablet');
+    protected lastUrls: Record<string, number> = {};
+    protected lastInAppUrl?: string;
 
-            app.setElementClass('app-root-ios', true);
-            platform.ready().then(() => {
-                if (device.version) {
-                    const [major, minor]: string[] = device.version.split('.', 2);
-                    app.setElementClass('platform-ios' + major, true);
-                    app.setElementClass('platform-ios' + major + '_' + minor, true);
-                }
-            });
-
-            app._elementRef.nativeElement.classList.remove('app-root-md');
-
-            const iosConfig = config.getModeConfig('ios');
-
-            config.set('mode', 'ios');
-
-            Object.keys(iosConfig).forEach((key) => {
-                // Already overriden: pageTransition, do not change.
-                if (key != 'pageTransition') {
-                    config.set('ios', key, iosConfig[key]);
-                }
-            });
+    constructor(changeDetector: ChangeDetectorRef) {
+        if (CoreAppProvider.isAutomated()) {
+            (window as AutomatedTestsWindow).changeDetector = changeDetector;
         }
-
-        platform.ready().then(() => {
-            // Okay, so the platform is ready and our plugins are available.
-            // Here you can do any higher level native things you might need.
-
-            // Set StatusBar properties.
-            this.appProvider.setStatusBarColor();
-
-            keyboard.hideFormAccessoryBar(false);
-
-            if (this.appProvider.isDesktop()) {
-                app.setElementClass('platform-desktop', true);
-
-                if (this.appProvider.isMac()) {
-                    app.setElementClass('platform-mac', true);
-                } else if (this.appProvider.isLinux()) {
-                    app.setElementClass('platform-linux', true);
-                } else if (this.appProvider.isWindows()) {
-                    app.setElementClass('platform-windows', true);
-                }
-            }
-
-            // Register back button action to allow closing modals before anything else.
-            this.appProvider.registerBackButtonAction(() => {
-                return this.closeModal();
-            }, 2000);
-        });
-
     }
 
     /**
      * Component being initialized.
+     *
+     * @todo Review all old code to see if something is missing:
+     * - IAB events listening.
+     * - Platform pause/resume subscriptions.
+     * - handleOpenURL and openWindowSafely.
+     * - Screen orientation events (probably it can be removed).
+     * - Back button registering to close modal first.
+     * - Note: HideKeyboardFormAccessoryBar has been moved to config.xml.
      */
     ngOnInit(): void {
-        this.eventsProvider.on(CoreEventsProvider.LOGOUT, () => {
-            // Go to sites page when user is logged out.
-            // Due to DeepLinker, we need to use the ViewCtrl instead of name.
-            // Otherwise some pages are re-created when they shouldn't.
-            this.appProvider.getRootNavController().setRoot(CoreLoginSitesPage);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const win = <any> window;
+        document.body.classList.add('ionic5');
+        this.addVersionClass(MOODLEAPP_VERSION_PREFIX, CoreConstants.CONFIG.versionname.replace('-dev', ''));
 
+        CoreEvents.on(CoreEvents.LOGOUT, async () => {
             // Unload lang custom strings.
-            this.langProvider.clearCustomStrings();
+            CoreLang.clearCustomStrings();
 
             // Remove version classes from body.
-            this.removeVersionClass();
+            this.removeVersionClass(MOODLE_VERSION_PREFIX);
+
+            // Go to sites page when user is logged out.
+            await CoreNavigator.navigate('/login/sites', { reset: true });
+
+            if (CoreSitePlugins.hasSitePluginsLoaded) {
+                // Temporary fix. Reload the page to unload all plugins.
+                window.location.reload();
+            }
         });
 
         // Listen for session expired events.
-        this.eventsProvider.on(CoreEventsProvider.SESSION_EXPIRED, (data) => {
-            this.loginHelper.sessionExpired(data);
+        CoreEvents.on(CoreEvents.SESSION_EXPIRED, (data) => {
+            CoreLoginHelper.sessionExpired(data);
         });
 
         // Listen for passwordchange and usernotfullysetup events to open InAppBrowser.
-        this.eventsProvider.on(CoreEventsProvider.PASSWORD_CHANGE_FORCED, (data) => {
-            this.loginHelper.passwordChangeForced(data.siteId);
+        CoreEvents.on(CoreEvents.PASSWORD_CHANGE_FORCED, (data) => {
+            CoreLoginHelper.passwordChangeForced(data.siteId!);
         });
-        this.eventsProvider.on(CoreEventsProvider.USER_NOT_FULLY_SETUP, (data) => {
-            this.loginHelper.openInAppForEdit(data.siteId, '/user/edit.php', 'core.usernotfullysetup');
+        CoreEvents.on(CoreEvents.USER_NOT_FULLY_SETUP, (data) => {
+            CoreLoginHelper.openInAppForEdit(data.siteId!, '/user/edit.php', 'core.usernotfullysetup');
         });
 
         // Listen for sitepolicynotagreed event to accept the site policy.
-        this.eventsProvider.on(CoreEventsProvider.SITE_POLICY_NOT_AGREED, (data) => {
-            this.loginHelper.sitePolicyNotAgreed(data.siteId);
-        });
-
-        this.platform.ready().then(() => {
-            // Refresh online status when changes.
-            this.network.onchange().subscribe(() => {
-                // Execute the callback in the Angular zone, so change detection doesn't stop working.
-                this.zone.run(() => {
-                    const isOnline = this.appProvider.isOnline(),
-                        hadOfflineMessage = document.body.classList.contains('core-offline');
-
-                    document.body.classList.toggle('core-offline', !isOnline);
-
-                    if (isOnline && hadOfflineMessage) {
-                        document.body.classList.add('core-online');
-
-                        setTimeout(() => {
-                            document.body.classList.remove('core-online');
-                        }, 3000);
-                    } else if (!isOnline) {
-                        document.body.classList.remove('core-online');
-                    }
-                });
-            });
+        CoreEvents.on(CoreEvents.SITE_POLICY_NOT_AGREED, (data) => {
+            CoreLoginHelper.sitePolicyNotAgreed(data.siteId);
         });
 
         // Check URLs loaded in any InAppBrowser.
-        this.eventsProvider.on(CoreEventsProvider.IAB_LOAD_START, (event) => {
+        CoreEvents.on(CoreEvents.IAB_LOAD_START, (event) => {
             // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
             const url = event.url.replace(/^https?:\/\//, '');
 
-            if (this.urlSchemesProvider.isCustomURL(url)) {
+            if (CoreCustomURLSchemes.isCustomURL(url)) {
                 // Close the browser if it's a valid SSO URL.
-                this.urlSchemesProvider.handleCustomURL(url).catch((error: CoreCustomURLSchemesHandleError) => {
-                    this.urlSchemesProvider.treatHandleCustomURLError(error);
+                CoreCustomURLSchemes.handleCustomURL(url).catch((error) => {
+                    CoreCustomURLSchemes.treatHandleCustomURLError(error);
                 });
-                this.utils.closeInAppBrowser(false);
+                CoreUtils.closeInAppBrowser();
 
             } else if (CoreApp.instance.isAndroid()) {
                 // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
-                const urlScheme = this.urlUtils.getUrlProtocol(url);
+                const urlScheme = CoreUrlUtils.getUrlProtocol(url);
                 if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
                     // Open in browser should launch the right app if found and do nothing if not found.
-                    this.utils.openInBrowser(url);
+                    CoreUtils.openInBrowser(url);
 
                     // At this point the InAppBrowser is showing a "Webpage not available" error message.
                     // Try to navigate to last loaded URL so this error message isn't found.
                     if (this.lastInAppUrl) {
-                        this.utils.openInApp(this.lastInAppUrl);
+                        CoreUtils.openInApp(this.lastInAppUrl);
                     } else {
                         // No last URL loaded, close the InAppBrowser.
-                        this.utils.closeInAppBrowser(false);
+                        CoreUtils.closeInAppBrowser();
                     }
                 } else {
                     this.lastInAppUrl = url;
@@ -218,163 +141,206 @@ export class MoodleMobileApp implements OnInit {
         });
 
         // Check InAppBrowser closed.
-        this.eventsProvider.on(CoreEventsProvider.IAB_EXIT, () => {
-            this.loginHelper.waitingForBrowser = false;
+        CoreEvents.on(CoreEvents.IAB_EXIT, () => {
             this.lastInAppUrl = '';
-            this.loginHelper.checkLogout();
+
+            if (CoreLoginHelper.isWaitingForBrowser()) {
+                CoreLoginHelper.setWaitingForBrowser(false);
+                CoreLoginHelper.checkLogout();
+            }
         });
 
-        this.platform.resume.subscribe(() => {
+        Platform.resume.subscribe(() => {
             // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
             setTimeout(() => {
-                this.loginHelper.waitingForBrowser = false;
-                this.loginHelper.checkLogout();
+                if (CoreLoginHelper.isWaitingForBrowser()) {
+                    CoreLoginHelper.setWaitingForBrowser(false);
+                    CoreLoginHelper.checkLogout();
+                }
             }, 1000);
         });
 
         // Handle app launched with a certain URL (custom URL scheme).
-        (<any> window).handleOpenURL = (url: string): void => {
+        win.handleOpenURL = (url: string): void => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            this.zone.run(() => {
+            NgZone.run(() => {
                 // First check that the URL hasn't been treated a few seconds ago. Sometimes this function is called more than once.
                 if (this.lastUrls[url] && Date.now() - this.lastUrls[url] < 3000) {
                     // Function called more than once, stop.
                     return;
                 }
 
-                if (!this.urlSchemesProvider.isCustomURL(url)) {
+                if (!CoreCustomURLSchemes.isCustomURL(url)) {
                     // Not a custom URL, ignore.
                     return;
                 }
 
-                this.logger.debug('App launched by URL ', url);
-
                 this.lastUrls[url] = Date.now();
 
-                this.eventsProvider.trigger(CoreEventsProvider.APP_LAUNCHED_URL, url);
-                this.urlSchemesProvider.handleCustomURL(url).catch((error: CoreCustomURLSchemesHandleError) => {
-                    this.urlSchemesProvider.treatHandleCustomURLError(error);
+                CoreEvents.trigger(CoreEvents.APP_LAUNCHED_URL, { url });
+                CoreCustomURLSchemes.handleCustomURL(url).catch((error) => {
+                    CoreCustomURLSchemes.treatHandleCustomURLError(error);
                 });
             });
         };
 
         // "Expose" CoreWindow.open.
-        (<any> window).openWindowSafely = (url: string, name?: string, windowFeatures?: string): void => {
+        win.openWindowSafely = (url: string, name?: string): void => {
             CoreWindow.open(url, name);
         };
 
-        // Load custom lang strings. This cannot be done inside the lang provider because it causes circular dependencies.
-        const loadCustomStrings = (): void => {
-            const currentSite = this.sitesProvider.getCurrentSite(),
-                customStrings = currentSite && currentSite.getStoredConfig('tool_mobile_customlangstrings');
-
-            if (typeof customStrings != 'undefined') {
-                this.langProvider.loadCustomStrings(customStrings);
-            }
+        // Treat URLs that try to override the app.
+        win.onOverrideUrlLoading = (url: string) => {
+            CoreWindow.open(url);
         };
 
-        this.eventsProvider.on(CoreEventsProvider.LOGIN, (data) => {
+        CoreEvents.on(CoreEvents.LOGIN, async (data) => {
             if (data.siteId) {
-                this.sitesProvider.getSite(data.siteId).then((site) => {
-                    const info = site.getInfo();
-                    if (info) {
-                        // Add version classes to body.
-                        this.removeVersionClass();
-                        this.addVersionClass(this.sitesProvider.getReleaseNumber(info.release || ''));
-                    }
-                });
+                const site = await CoreSites.getSite(data.siteId);
+                const info = site.getInfo();
+                if (info) {
+                    // Add version classes to body.
+                    this.removeVersionClass(MOODLE_VERSION_PREFIX);
+                    this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(info.release || ''));
+                }
             }
 
-            loadCustomStrings();
+            this.loadCustomStrings();
         });
 
-        this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, (data) => {
-            if (data.siteId == this.sitesProvider.getCurrentSiteId()) {
-                loadCustomStrings();
+        CoreEvents.on(CoreEvents.SITE_UPDATED, (data) => {
+            if (data.siteId == CoreSites.getCurrentSiteId()) {
+                this.loadCustomStrings();
 
                 // Add version classes to body.
-                this.removeVersionClass();
-                this.addVersionClass(this.sitesProvider.getReleaseNumber(data.release || ''));
+                this.removeVersionClass(MOODLE_VERSION_PREFIX);
+                this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(data.release || ''));
             }
         });
 
-        this.eventsProvider.on(CoreEventsProvider.SITE_ADDED, (data) => {
-            if (data.siteId == this.sitesProvider.getCurrentSiteId()) {
-                loadCustomStrings();
+        CoreEvents.on(CoreEvents.SITE_ADDED, (data) => {
+            if (data.siteId == CoreSites.getCurrentSiteId()) {
+                this.loadCustomStrings();
 
                 // Add version classes to body.
-                this.removeVersionClass();
-                this.addVersionClass(this.sitesProvider.getReleaseNumber(data.release || ''));
+                this.removeVersionClass(MOODLE_VERSION_PREFIX);
+                this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(data.release || ''));
             }
         });
 
-        // Pause Youtube videos in Android when app is put in background or screen is locked.
-        this.platform.pause.subscribe(() => {
-            if (!CoreApp.instance.isAndroid()) {
-                return;
-            }
+        this.onPlatformReady();
 
-            const pauseVideos = (window: Window): void => {
-                // Search videos in iframes recursively.
-                for (let i = 0; i < window.length; i++) {
-                    pauseVideos(window[i]);
+        // Quit app with back button.
+        document.addEventListener('ionBackButton', (event: BackButtonEvent) => {
+            // This callback should have the lowest priority in the app.
+            event.detail.register(-100, async () => {
+                const initialPath = CoreNavigator.getCurrentPath();
+                if (initialPath.startsWith('/main/')) {
+                    // Main menu has its own callback to handle back. If this callback is called it means we should exit app.
+                    CoreApp.closeApp();
+
+                    return;
                 }
 
-                if (window.location.hostname.match(/^www\.youtube(-nocookie)?\.com$/)) {
-                    // Embedded Youtube video, pause it.
-                    const videos = window.document.querySelectorAll('video');
-                    for (let i = 0; i < videos.length; i++) {
-                        videos[i].pause();
-                    }
-                }
-            };
+                // This callback can be called at the same time as Ionic's back navigation callback.
+                // Check if the path changes due to the back navigation handler, to know if we're at root level.
+                // Ionic doc recommends IonRouterOutlet.canGoBack, but there's no easy way to get the current outlet from here.
+                // The path seems to change immediately (0 ms timeout), but use 50ms just in case.
+                await CoreUtils.wait(50);
 
-            pauseVideos(window);
+                if (CoreNavigator.getCurrentPath() != initialPath) {
+                    // Ionic has navigated back, nothing else to do.
+                    return;
+                }
+
+                // Quit the app.
+                CoreApp.closeApp();
+            });
         });
+    }
 
-        // Detect orientation changes.
-        this.screenOrientation.onChange().subscribe(
-            () => {
-                if (CoreApp.instance.isIOS()) {
-                    // Force ios to recalculate safe areas when rotating.
-                    // This can be erased when https://issues.apache.org/jira/browse/CB-13448 issue is solved or
-                    // After switching to WkWebview.
-                    const viewport = document.querySelector('meta[name=viewport]');
-                    viewport.setAttribute('content', viewport.getAttribute('content').replace('viewport-fit=cover,', ''));
+    /**
+     * @inheritdoc
+     */
+    ngAfterViewInit(): void {
+        if (!this.outlet) {
+            return;
+        }
+
+        CoreSubscriptions.once(this.outlet.activateEvents, () => SplashScreen.hide());
+    }
+
+    /**
+     * Async init function on platform ready.
+     */
+    protected async onPlatformReady(): Promise<void> {
+        await Platform.ready();
+
+        // Refresh online status when changes.
+        Network.onChange().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            NgZone.run(() => {
+                const isOnline = CoreApp.isOnline();
+                const hadOfflineMessage = document.body.classList.contains('core-offline');
+
+                document.body.classList.toggle('core-offline', !isOnline);
+
+                if (isOnline && hadOfflineMessage) {
+                    document.body.classList.add('core-online');
 
                     setTimeout(() => {
-                        viewport.setAttribute('content', 'viewport-fit=cover,' + viewport.getAttribute('content'));
-                    });
+                        document.body.classList.remove('core-online');
+                    }, 3000);
+                } else if (!isOnline) {
+                    document.body.classList.remove('core-online');
                 }
+            });
+        });
 
-                this.eventsProvider.trigger(CoreEventsProvider.ORIENTATION_CHANGE);
-            }
-        );
+        // Set StatusBar properties.
+        CoreApp.setStatusBarColor();
+    }
+
+    /**
+     * Load custom lang strings. This cannot be done inside the lang provider because it causes circular dependencies.
+     */
+    protected loadCustomStrings(): void {
+        const currentSite = CoreSites.getCurrentSite();
+
+        if (currentSite) {
+            CoreLang.loadCustomStringsFromSite(currentSite);
+        }
     }
 
     /**
      * Convenience function to add version to body classes.
      *
+     * @param prefix Prefix to add to the class.
      * @param release Current release number of the site.
      */
-    protected addVersionClass(release: string): void {
-        const parts = release.split('.');
+    protected addVersionClass(prefix: string, release: string): void {
+        const parts = release.split('.', 3);
 
         parts[1] = parts[1] || '0';
         parts[2] = parts[2] || '0';
 
-        document.body.classList.add('version-' + parts[0], 'version-' + parts[0] + '-' + parts[1],
-            'version-' + parts[0] + '-' + parts[1] + '-' + parts[2]);
-
+        document.body.classList.add(
+            prefix + parts[0],
+            prefix + parts[0] + '-' + parts[1],
+            prefix + parts[0] + '-' + parts[1] + '-' + parts[2],
+        );
     }
 
     /**
      * Convenience function to remove all version classes form body.
+     *
+     * @param prefix Prefix of to the class.
      */
-    protected removeVersionClass(): void {
-        const remove = [];
+    protected removeVersionClass(prefix: string): void {
+        const remove: string[] = [];
+
         Array.from(document.body.classList).forEach((tempClass) => {
-            if (tempClass.substring(0, 8) == 'version-') {
+            if (tempClass.substring(0, 8) == prefix) {
                 remove.push(tempClass);
             }
         });
@@ -384,20 +350,4 @@ export class MoodleMobileApp implements OnInit {
         });
     }
 
-    /**
-     * Close one modal if any.
-     *
-     * @return True if one modal was present.
-     */
-    closeModal(): boolean {
-        // Following function is hidden in Ionic Code, however there's no solution for that.
-        const portal = this.app._getActivePortal();
-        if (portal) {
-            portal.pop();
-
-            return true;
-        }
-
-        return false;
-    }
 }

@@ -1,0 +1,84 @@
+@import "~theme/globals";
+
+:host {
+    --loading-background: var(--ion-background-color);
+    --loading-background-inline: var(--ion-background-color-rgb);
+    --loading-spinner: var(--ion-color-primary);
+    --loading-text-color: var(--ion-text-color);
+    --loading-inline-margin: 0;
+    --loading-inline-min-height: 28px;
+    --internal-loading-inline-min-height: var(--loading-inline-min-height);
+
+    position: static;
+    color: var(--loading-text-color);
+    @include core-transition(all, 200ms);
+
+    &.margin {
+        --loading-inline-margin: 10px;
+        --internal-loading-inline-min-height: calc(var(--loading-inline-min-height) + var(--loading-inline-margin) + var(--loading-inline-margin));
+    }
+
+    &.core-loading-loaded {
+        --internal-loading-inline-min-height: 0;
+    }
+
+    ion-spinner {
+        --color: var(--loading-spinner);
+        color: var(--color);
+    }
+
+    .core-loading-container {
+        position: absolute;
+        @include position(0, 0, 0, 0);
+        height: 100%;
+        width: 100%;
+        z-index: 3;
+        margin: 0;
+        padding: 0;
+        background-color: var(--loading-background);
+        @include core-transition(all, 200ms);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .core-loading-content {
+        @include core-transition(opacity, 200ms);
+    }
+
+    .core-loading-message {
+        @include margin(10px, 0, 0, 0);
+    }
+
+    &.core-loading-fullheight .core-loading-content {
+        height: 100%;
+    }
+
+    &.core-loading-loaded {
+        position: unset;
+        display: contents;
+    }
+
+    &.core-loading-inline {
+        --loading-background: rgba(var(--loading-background-inline), 0.5);
+        position: relative;
+        display: block;
+        min-height: var(--internal-loading-inline-min-height);
+
+        .core-loading-message {
+            @include margin(0, 0, 0, 10px);
+        }
+
+        .core-loading-container {
+            flex-direction: row;
+        }
+    }
+}
+
+:host-context(ion-item) {
+    &.core-loading-inline {
+        position: static;
+        display: block;
+    }
+}

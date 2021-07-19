@@ -1,0 +1,45 @@
+<ion-header>
+    <ion-toolbar>
+        <h2 id="core-course-section-selector-label">{{ 'core.course.sections' | translate }}</h2>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list id="core-course-section-selector" role="listbox" aria-labelledby="core-course-section-selector-label">
+        <ng-container *ngFor="let section of sections">
+            <ion-item *ngIf="!section.hiddenbynumsections && section.id != stealthModulesSectionId" class="ion-text-wrap"
+                (click)="selectSection(section)" [attr.aria-current]="selected?.id == section.id ? 'page' : 'false'"
+                [class.item-dimmed]="section.visible === 0 || section.uservisible === false" detail="false"
+                [attr.aria-hidden]="section.uservisible === false" button>
+
+                <ion-icon name="fas-folder" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>
+                    <p class="item-heading">
+                        <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="course?.id">
+                        </core-format-text>
+                    </p>
+                    <core-progress-bar *ngIf="section.progress >= 0" [progress]="section.progress"
+                        a11yText="core.course.aria:sectionprogress">
+                    </core-progress-bar>
+
+                    <ion-badge color="info" *ngIf="section.visible === 0 && section.uservisible !== false"
+                        class="ion-text-wrap">
+                        {{ 'core.course.hiddenfromstudents' | translate }}
+                    </ion-badge>
+                    <ion-badge color="info" *ngIf="section.visible === 0 && section.uservisible === false"
+                        class="ion-text-wrap">
+                        {{ 'core.notavailable' | translate }}
+                    </ion-badge>
+                    <ion-badge color="info" *ngIf="section.availabilityinfo" class="ion-text-wrap">
+                        <core-format-text [text]=" section.availabilityinfo" contextLevel="course" [contextInstanceId]="course?.id">
+                        </core-format-text>
+                    </ion-badge>
+                </ion-label>
+            </ion-item>
+        </ng-container>
+    </ion-list>
+</ion-content>

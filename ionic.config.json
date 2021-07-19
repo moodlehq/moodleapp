@@ -1,10 +1,11 @@
 {
   "name": "moodlemobile",
   "integrations": {
-    "cordova": {},
-    "gulp": {}
+    "cordova": {}
   },
-  "type": "ionic-angular",
-  "watchPatterns": [],
-  "id": "com.moodle.moodlemobile"
+  "type": "angular",
+  "hooks": {
+    "build:before": "./scripts/copy-assets.js",
+    "serve:before": "./scripts/copy-assets.js"
+  }
 }

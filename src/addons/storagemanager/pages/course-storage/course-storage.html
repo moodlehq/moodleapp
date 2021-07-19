@@ -1,0 +1,67 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'addon.storagemanager.managestorage' | translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <ion-card class="wholecourse">
+            <ion-card-header>
+                <ion-card-title *ngIf="course.displayname">{{ course.displayname }}</ion-card-title>
+                <ion-card-title *ngIf="!course.displayname">{{ course.fullname }}</ion-card-title>
+                <p class="ion-text-wrap">{{ 'addon.storagemanager.info' | translate }}</p>
+                <ion-item class="size ion-text-wrap ion-no-padding" lines="none">
+                    <ion-icon name="fas-archive" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label>
+                        <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.storageused' | translate }}</p>
+                    </ion-label>
+                    <p slot="end" class="ion-text-end">{{ totalSize | coreBytesToSize }}</p>
+                    <ion-button slot="end" (click)="deleteForCourse()" [disabled]="totalSize == 0">
+                        <ion-icon name="fas-trash" slot="icon-only"
+                            [attr.aria-label]="'addon.storagemanager.deletecourse' | translate">
+                        </ion-icon>
+                    </ion-button>
+                </ion-item>
+            </ion-card-header>
+        </ion-card>
+        <ng-container *ngFor="let section of sections">
+            <ion-card *ngIf="section.totalSize! > 0" class="section">
+                <ion-card-header>
+                    <ion-item class="ion-no-padding">
+                        <ion-label>
+                            <p class="item-heading ion-text-wrap">{{ section.name }}</p>
+                        </ion-label>
+                        <p slot="end" class="ion-text-end">{{ section.totalSize | coreBytesToSize }}</p>
+                        <ion-button slot="end" (click)="deleteForSection(section)">
+                            <ion-icon name="fas-trash" slot="icon-only"
+                                [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: section.name }">
+                            </ion-icon>
+                        </ion-button>
+                    </ion-item>
+                </ion-card-header>
+                <ion-card-content>
+                    <ng-container *ngFor="let module of section.modules">
+                        <ion-item class="ion-no-padding" *ngIf="module.totalSize! > 0">
+                            <img *ngIf="module.handlerData!.icon" [src]="module.handlerData!.icon" [alt]="module.modNameTranslated"
+                                class="core-module-icon" slot="start">
+                            <ion-label class="ion-text-wrap">
+                                <h3 class="{{module.handlerData!.class}} addon-storagemanager-module-size">
+                                    {{ module.name }}
+                                </h3>
+                            </ion-label>
+                            <p slot="end" class="ion-text-end">{{ module.totalSize | coreBytesToSize }}</p>
+                            <ion-button fill="clear" slot="end" (click)="deleteForModule(module)">
+                                <ion-icon name="fas-trash" slot="icon-only"
+                                    [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: module.name }">
+                                </ion-icon>
+                            </ion-button>
+                        </ion-item>
+                    </ng-container>
+                </ion-card-content>
+            </ion-card>
+        </ng-container>
+    </core-loading>
+</ion-content>

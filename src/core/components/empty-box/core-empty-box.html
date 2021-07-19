@@ -1,0 +1,8 @@
+<div class="core-empty-box ion-padding" [class.core-empty-box-inline]="(!image && !icon) || inline">
+    <div class="core-empty-box-content">
+        <img *ngIf="image && !icon" [src]="image" role="presentation" alt="">
+        <ion-icon *ngIf="icon" [name]="icon" aria-hidden="true"></ion-icon>
+        <p *ngIf="message" [class.ion-padding-top]="image || icon">{{ message }}</p>
+        <ng-content></ng-content>
+    </div>
+</div>

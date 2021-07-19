@@ -1,0 +1,37 @@
+@import "~theme/globals";
+
+ion-item {
+	--border-color: var(--core-more-item-border,
+        var(--ion-item-border-color,
+        var(--ion-border-color,
+        var(--ion-color-step-150,
+        rgba(0, 0, 0, 0.13)))));
+
+    ion-icon {
+        color: var(--core-more-icon, rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.54));
+    }
+}
+
+:host-context(ion-app.ios) {
+    ion-item ion-icon {
+        color: var(--core-more-icon, inherit);
+    }
+}
+
+@if ($core-more-hide-siteinfo) {
+    .core-moremenu-siteinfo {
+        display: none;
+    }
+}
+
+@if ($core-more-hide-sitename) {
+    .core-moremenu-sitename {
+        display: none;
+    }
+}
+
+@if ($core-more-hide-siteurl) {
+    .core-moremenu-siteurl {
+        display: none;
+    }
+}

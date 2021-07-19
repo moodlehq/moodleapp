@@ -1,0 +1,32 @@
+<ion-header>
+    <ion-toolbar>
+        <h2>{{ title | translate }}</h2>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content class="addon-mod_quiz-preflight-modal">
+    <core-loading [hideUntil]="loaded">
+        <form [formGroup]="preflightForm" (ngSubmit)="sendData($event)" #preflightFormEl>
+            <ion-list>
+                <!-- Access rules. -->
+                <ng-container *ngFor="let data of accessRulesData; let last = last">
+                    <core-dynamic-component [component]="data.component" [data]="data.data">
+                        <p class="ion-padding">Couldn't find the directive to render this access rule.</p>
+                    </core-dynamic-component>
+                    <core-spacer *ngIf="!last"></core-spacer>
+                </ng-container>
+
+                <ion-button expand="block" type="submit" class="ion-margin">
+                    {{ title | translate }}
+                </ion-button>
+                <!-- Remove this once Ionic fixes this bug: https://github.com/ionic-team/ionic-framework/issues/19368 -->
+                <input type="submit" class="core-submit-hidden-enter" />
+            </ion-list>
+        </form>
+    </core-loading>
+</ion-content>

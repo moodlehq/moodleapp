@@ -1,0 +1,65 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
+                [courseId]="courseId">
+            </core-format-text>
+        </h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+        <ion-list *ngIf="attempt" lines="none">
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <h2>{{ 'addon.mod_quiz.attemptnumber' | translate }}</h2>
+                    <p *ngIf="attempt.preview">{{ 'addon.mod_quiz.preview' | translate }}</p>
+                    <p *ngIf="!attempt.preview">{{ attempt.attempt }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <h2>{{ 'addon.mod_quiz.attemptstate' | translate }}</h2>
+                    <p *ngFor="let sentence of attempt.readableState">{{ sentence }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="quiz!.showMarkColumn && attempt.readableMark !== ''">
+                <ion-label>
+                    <h2>{{ 'addon.mod_quiz.marks' | translate }} / {{ quiz!.sumGradesFormatted }}</h2>
+                    <p>{{ attempt.readableMark }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="quiz!.showGradeColumn && attempt.readableGrade !== ''">
+                <ion-label>
+                    <h2>{{ 'addon.mod_quiz.grade' | translate }} / {{ quiz!.gradeFormatted }}</h2>
+                    <p>{{ attempt.readableGrade }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="quiz!.showFeedbackColumn && feedback">
+                <ion-label>
+                    <h2>{{ 'addon.mod_quiz.feedback' | translate }}</h2>
+                    <p>
+                        <core-format-text [component]="component" [componentId]="componentId" [text]="feedback"
+                            contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                        </core-format-text>
+                    </p>
+                </ion-label>
+            </ion-item>
+            <ion-button *ngIf="showReviewColumn && attempt.finished" class="ion-margin" expand="block" (click)="reviewAttempt()">
+                <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+                {{ 'addon.mod_quiz.review' | translate }}
+            </ion-button>
+            <ion-item class="ion-text-wrap core-danger-item" *ngIf="!showReviewColumn">
+                <ion-label>
+                    <p>{{ 'addon.mod_quiz.noreviewattempt' | translate }}</p>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    </core-loading>
+</ion-content>

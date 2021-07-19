@@ -1,0 +1,7 @@
+<ion-item *ngIf="item && item!.canviewaggregate && labelKey && !disabled" class="ion-text-wrap"
+    [detail]="ratingInfo.canviewall && item!.count" (click)="openRatings()" [button]="ratingInfo.canviewall && item!.count">
+    <ion-label>
+        {{ labelKey | translate }}{{ 'core.labelsep' | translate }} {{ item!.aggregatestr || '-' }}
+        <span *ngIf="showCount && item!.count && item!.count! > 0">({{ item!.count! }})</span>
+    </ion-label>
+</ion-item>

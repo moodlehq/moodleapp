@@ -1,0 +1,38 @@
+:host {
+    display: flex;
+    width: 100%;
+
+    --line-height: 40px;
+    --bar-margin: 16px 0;
+
+    .core-progress-text {
+        line-height: var(--line-height);
+        font-size: 1rem;
+        color: var(--text-color);
+        width: 55px;
+        text-align: center;
+    }
+
+    progress {
+        -webkit-appearance: none;
+        appearance: none;
+        height: var(--height);
+        margin: var(--bar-margin);
+        padding: 0;
+        display: block;
+        width: 100%;
+        flex: 1;
+
+        &[value]::-webkit-progress-bar {
+            background-color: var(--background);
+            border-radius: 0;
+            border: 0;
+            box-shadow: none;
+        }
+
+        &[value]::-webkit-progress-value {
+            background-color: var(--color);
+            border-radius: 0;
+        }
+    }
+}

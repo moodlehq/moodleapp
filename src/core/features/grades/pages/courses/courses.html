@@ -1,0 +1,48 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'core.grades.grades' | translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-split-view>
+        <ion-refresher slot="fixed" [disabled]="!courses.loaded" (ionRefresh)="refreshCourses($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="courses.loaded">
+            <core-empty-box
+                *ngIf="courses.empty"
+                icon="fas-chart-bar"
+                [message]="'core.grades.nogradesreturned' | translate"
+            ></core-empty-box>
+
+            <ion-list *ngIf="!courses.empty">
+                <ion-item
+                    *ngFor="let course of courses.items"
+                    [attr.aria-label]="course.courseFullName"
+                    [attr.aria-current]="courses.getItemAriaCurrent(course)"
+                    class="ion-text-wrap"
+                    button
+                    detail="true"
+                    (click)="courses.select(course)"
+                >
+                    <ion-label>
+                        <core-format-text
+                            [text]="course.courseFullName"
+                            [contextInstanceId]="course.courseid"
+                            contextLevel="course"
+                        ></core-format-text>
+                    </ion-label>
+                    <ion-badge slot="end" color="light">
+                        <span class="sr-only" *ngIf="course.grade && course.grade != '-'">
+                            {{ 'core.grades.grade' | translate }}
+                        </span>
+                        {{course.grade}}
+                    </ion-badge>
+                </ion-item>
+            </ion-list>
+        </core-loading>
+    </core-split-view>
+</ion-content>

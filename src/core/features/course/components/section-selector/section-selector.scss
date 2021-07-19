@@ -1,0 +1,15 @@
+@import '~theme/globals.scss';
+core-progress-bar {
+    --bar-margin: 8px 0 4px 0;
+    --line-height: 20px;
+}
+
+@if ($core-hide-progress-on-section-selector) {
+    core-progress-bar {
+        display: none;
+    }
+}
+
+ion-badge {
+    text-align: start;
+}

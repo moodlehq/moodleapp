@@ -1,0 +1,70 @@
+@import "~theme/globals";
+
+/// @prop - The padding for the grid column
+$grid-column-padding:        var(--ion-grid-column-padding, 5px) !default;
+
+/// @prop - The padding for the column at different breakpoints
+$grid-column-paddings: (
+  xs: var(--ion-grid-column-padding-xs, $grid-column-padding),
+  sm: var(--ion-grid-column-padding-sm, $grid-column-padding),
+  md: var(--ion-grid-column-padding-md, $grid-column-padding),
+  lg: var(--ion-grid-column-padding-lg, $grid-column-padding),
+  xl: var(--ion-grid-column-padding-xl, $grid-column-padding)
+) !default;
+
+:host {
+    --border-color: var(--gray);
+}
+
+.addon-data-contents {
+    overflow: visible;
+    white-space: normal;
+    word-break: break-word;
+    padding: 16px;
+
+    background-color: var(--ion-item-background);
+    border-bottom: 1px solid var(--border-color);
+
+    ::ng-deep {
+        table, tbody {
+            display: block;
+        }
+
+        tr {
+            // Imported form ion-row;
+            display: flex;
+            flex-wrap: wrap;
+
+            padding: 0;
+            @include media-breakpoint-down(sm) {
+                flex-direction: column;
+            }
+        }
+
+        td, th {
+            // Imported form ion-col;
+            @include make-breakpoint-padding($grid-column-paddings);
+            @include margin(0);
+            box-sizing: border-box;
+            position: relative;
+            flex-basis: 0;
+            flex-grow: 1;
+            width: 100%;
+            max-width: 100%;
+            min-height: auto;
+        }
+
+        // Do not let block elements to define widths or heights.
+        address, article, aside, blockquote, canvas, dd, div, dl, dt, fieldset, figcaption, figure, footer, form,
+        h1, h2, h3, h4, h5, h6,
+        header, hr, li, main, nav, noscript, ol, p, pre, section, table, tfoot, ul, video {
+            width: auto !important;
+            height: auto !important;
+            min-width: auto !important;
+            min-height: auto !important;
+            // Avoid having one entry over another.
+            max-height: none !important;
+
+        }
+    }
+}

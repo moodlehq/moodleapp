@@ -1,0 +1,80 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+
+        <h1>{{ 'core.settings.general' | translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <h2>{{ 'core.settings.language' | translate }}</h2>
+        </ion-label>
+        <ion-select [(ngModel)]="selectedLanguage" (ionChange)="languageChanged()" interface="action-sheet"
+            [interfaceOptions]="{header: 'core.settings.language' | translate}">
+            <ion-select-option *ngFor="let entry of languages" [value]="entry.code">{{ entry.name }}</ion-select-option>
+        </ion-select>
+    </ion-item>
+    <ion-item class="ion-text-wrap core-settings-general-font-size item-interactive">
+        <ion-label>
+            <h2>{{ 'core.settings.fontsize' | translate }}</h2>
+        </ion-label>
+        <ion-segment [(ngModel)]="selectedZoomLevel" (ionChange)="zoomLevelChanged()" color="primary">
+            <ion-segment-button *ngFor="let zoomLevel of zoomLevels" [value]="zoomLevel.value"
+                [ngStyle]="{'font-size.px': zoomLevel.style}">
+                <ion-label>
+                    {{ 'core.settings.fontsizecharacter' | translate }}
+                    <!-- Empty element styled with the largest font size, so all buttons share a common baseline. -->
+                    <span [ngStyle]="{'font-size.px': zoomLevels[zoomLevels.length - 1].style}"></span>
+                </ion-label>
+            </ion-segment-button>
+        </ion-segment>
+    </ion-item>
+    <ion-item class="ion-text-wrap core-settings-general-color-scheme" *ngIf="colorSchemes.length > 0"
+        [lines]="selectedScheme=='system' && isAndroid ? 'none' : 'inset'">
+        <ion-label>
+            <h2>{{ 'core.settings.colorscheme' | translate }}</h2>
+            <p *ngIf="colorSchemeDisabled" class="text-danger">{{ 'core.settings.forcedsetting' | translate }}</p>
+        </ion-label>
+        <ion-select [(ngModel)]="selectedScheme" (ionChange)="colorSchemeChanged()" interface="action-sheet"
+            [disabled]="colorSchemeDisabled" [interfaceOptions]="{header: 'core.settings.colorscheme' | translate}">
+            <ion-select-option *ngFor="let scheme of colorSchemes" [value]="scheme">
+                {{ 'core.settings.colorscheme-' + scheme | translate }}</ion-select-option>
+        </ion-select>
+    </ion-item>
+    <ion-item text-wrap *ngIf="colorSchemes.length > 0 && selectedScheme=='system' && isAndroid">
+        <ion-label><p>{{ 'core.settings.colorscheme-system-notice' | translate }}</p></ion-label>
+    </ion-item>
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <h2>{{ 'core.settings.enablerichtexteditor' | translate }}</h2>
+            <p>{{ 'core.settings.enablerichtexteditordescription' | translate }}</p>
+        </ion-label>
+        <ion-toggle [(ngModel)]="richTextEditor" (ionChange)="richTextEditorChanged()"></ion-toggle>
+    </ion-item>
+    <ion-item class="ion-text-wrap" *ngIf="displayIframeHelp">
+        <ion-label>
+            <h2>{{ 'core.settings.ioscookies' | translate }}</h2>
+            <p>{{ 'core.settings.ioscookiesdescription' | translate }}</p>
+            <ion-button expand="block" (click)="openNativeSettings()">
+                {{ 'core.opensettings' | translate }}
+            </ion-button>
+        </ion-label>
+    </ion-item>
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <h2>{{ 'core.settings.debugdisplay' | translate }}</h2>
+            <p>{{ 'core.settings.debugdisplaydescription' | translate }}</p>
+        </ion-label>
+        <ion-toggle [(ngModel)]="debugDisplay" (ionChange)="debugDisplayChanged()"></ion-toggle>
+    </ion-item>
+    <ion-item class="ion-text-wrap" *ngIf="analyticsSupported">
+        <ion-label>
+            <h2>{{ 'core.settings.enablefirebaseanalytics' | translate }}</h2>
+            <p>{{ 'core.settings.enablefirebaseanalyticsdescription' | translate }}</p>
+        </ion-label>
+        <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged()"></ion-toggle>
+    </ion-item>
+</ion-content>

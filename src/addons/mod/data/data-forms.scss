@@ -1,0 +1,104 @@
+@import "~theme/globals";
+
+// Edit and search modal.
+:host {
+    --input-border-color: var(--gray);
+    --input-border-width: 1px;
+    --select-border-width: 0;
+
+    ::ng-deep {
+        table {
+            width: 100%;
+        }
+        td {
+            vertical-align: top;
+        }
+
+        .addon-data-latlong {
+            display: flex;
+        }
+    }
+
+    .addon-data-advanced-search {
+        padding: 16px;
+        width: 100%;
+    }
+
+    .addon-data-contents form,
+    form .addon-data-advanced-search {
+        background-color: var(--ion-item-background);
+
+        ::ng-deep {
+
+            ion-input {
+                border-bottom: var(--input-border-width) solid var(--input-border-color);
+                &.has-focus,
+                &.has-focus.ion-valid,
+                &.ion-touched.ion-invalid {
+                    --input-border-width: 2px;
+                }
+
+                &.has-focus {
+                    --input-border-color: var(--ion-color-primary);
+                }
+                &.has-focus.ion-valid {
+                    --input-border-color: var(--success);
+                }
+                &.ion-touched.ion-invalid {
+                    --input-border-color: var(--danger);
+                }
+            }
+
+            core-rich-text-editor {
+                border-bottom: var(--select-border-width) solid var(--input-border-color);
+
+                &.ion-touched.ng-valid,
+                &.ion-touched.ng-invalid {
+                    --select-border-width: 2px;
+                }
+
+                &.ion-touched.ng-valid {
+                    --input-border-color: var(--success);
+                }
+                &.ion-touched.ng-invalid {
+                    --input-border-color: var(--danger);
+                }
+            }
+            ion-select {
+                border-bottom: var(--select-border-width) solid var(--input-border-color);
+
+                &.ion-touched.ion-valid,
+                &.ion-touched.ion-invalid {
+                    --select-border-width: 2px;
+                }
+
+                &.ion-touched.ion-valid {
+                    --input-border-color: var(--success);
+                }
+                &.ion-touched.ion-invalid {
+                    --input-border-color: var(--danger);
+                }
+            }
+
+            .has-errors ion-input.ion-invalid {
+                --input-border-width: 2px;
+                --input-border-color: var(--danger);
+            }
+
+            .has-errors ion-select.ion-invalid,
+            .has-errors core-rich-text-editor.ng-invalid {
+                --select-border-width: 2px;
+                --input-border-color: var(--danger);
+            }
+
+            .core-mark-required {
+                @include float(end);
+
+                + ion-input,
+                + ion-select {
+                    @include padding(null, 20px, null, null);
+                }
+            }
+        }
+    }
+}

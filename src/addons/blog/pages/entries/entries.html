@@ -1,0 +1,77 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ title | translate }}</h1>
+        <ion-buttons slot="end"></ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+        <ion-item *ngIf="showMyEntriesToggle">
+            <ion-label>{{ 'addon.blog.showonlyyourentries' | translate }}</ion-label>
+            <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)"></ion-toggle>
+        </ion-item>
+        <core-empty-box *ngIf="entries && entries.length == 0" icon="far-newspaper"
+            [message]="'addon.blog.noentriesyet' | translate">
+        </core-empty-box>
+        <ng-container *ngFor="let entry of entries">
+            <ion-card *ngIf="!onlyMyEntries || entry.userid == currentUserId">
+                <ion-item class="ion-text-wrap">
+                    <core-user-avatar [user]="entry.user" slot="start" [courseId]="entry.courseid"></core-user-avatar>
+                    <ion-label>
+                        <p class="item-heading">
+                            <core-format-text [text]="entry.subject" [contextLevel]="contextLevel"
+                                [contextInstanceId]="contextInstanceId">
+                            </core-format-text>
+                            <ion-note class="ion-float-end ion-padding-start ion-text-end">
+                                {{ 'addon.blog.' + entry.publishTranslated! | translate}}
+                            </ion-note>
+                        </p>
+                        <p>
+                            <ion-note class="ion-float-end ion-text-end">
+                                {{entry.created | coreDateDayOrTime}}
+                            </ion-note>
+                            {{entry.user && entry.user!.fullname}}
+                        </p>
+                    </ion-label>
+                </ion-item>
+                <ion-card-content>
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <core-format-text [text]="entry.summary" [component]="this.component" [componentId]="entry.id"
+                                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId">
+                            </core-format-text>
+                        </ion-label>
+                    </ion-item>
+                    <ion-item class="ion-text-wrap" *ngIf="tagsEnabled && entry.tags && entry.tags!.length > 0">
+                        <ion-label>
+                            <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
+                            <core-tag-list [tags]="entry.tags"></core-tag-list>
+                        </ion-label>
+                    </ion-item>
+                    <core-comments *ngIf="commentsEnabled" [component]="this.component" [itemId]="entry.id" area="format_blog"
+                        [instanceId]="entry.userid" contextLevel="user" [showItem]="true">
+                    </core-comments>
+                    <core-file *ngFor="let file of entry.attachmentfiles" [file]="file" [component]="this.component"
+                        [componentId]="entry.id">
+                    </core-file>
+                    <ion-item *ngIf="entry.uniquehash" [href]="entry.uniquehash" core-link detail="true">
+                        <ion-label>{{ 'addon.blog.linktooriginalentry' | translate }}</ion-label>
+                    </ion-item>
+                </ion-card-content>
+                <div class="ion-text-center ion-margin-bottom" *ngIf="entry.lastmodified > entry.created">
+                    <ion-note>
+                        <ion-icon name="fas-clock"
+                            [attr.aria-label]="'core.lastmodified' | translate"></ion-icon> {{entry.lastmodified | coreTimeAgo}}
+                    </ion-note>
+                </div>
+            </ion-card>
+        </ng-container>
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" [error]="loadMoreError"></core-infinite-loading>
+    </core-loading>
+</ion-content>

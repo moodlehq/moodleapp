@@ -1,0 +1,85 @@
+@import '~theme/globals.scss';
+
+:host {
+
+    .core-format-progress-list {
+        margin-bottom: 0;
+
+        .item {
+            background: transparent;
+
+            .label {
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    .core-course-thumb {
+        display: none;
+        height: var(--core-courseimage-on-course-height);
+        width: 100%;
+        overflow: hidden;
+        cursor: pointer;
+        pointer-events: auto;
+        position: relative;
+        background: var(--ion-item-background);
+        border-bottom: 1px solid var(--gray);
+
+        img {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            width: 100%;
+        }
+    }
+
+    @if ($core-show-courseimage-on-course) {
+        .core-course-thumb {
+            display: block;
+        }
+    }
+
+    @if ($core-hide-progress-on-course) {
+        .core-course-progress {
+            display: none;
+        }
+    }
+
+
+    .core-button-selector-row {
+        display: flex;
+        core-combobox {
+            flex-grow: 1;
+        }
+    }
+
+    .core-section-download {
+        core-combobox {
+            max-width: calc(100% - 64px);
+        }
+        .core-button-spinner {
+            display: flex;
+            align-items: center;
+            @include margin-horizontal(10px);
+
+            ion-badge.core-course-download-courses-progress {
+                @include margin(null, 12px, null, null);
+            }
+        }
+    }
+
+    .core-course-section-nav-buttons {
+        display: flex;
+        justify-content: flex-end;
+
+        core-format-text {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            text-transform: none;
+        }
+    }
+
+}

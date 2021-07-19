@@ -1,0 +1,27 @@
+:host {
+    .core-login-onboarding-step {
+        padding: 10px 20px;
+        text-align: center;
+        @media (min-width: 768px) {
+            max-width: 80%;
+        }
+        margin: 0 auto;
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin-bottom: 30px;
+            list-style-type: none;
+            padding-inline-start: 10px;
+            li {
+                margin-bottom: 10px;
+            }
+        }
+
+        .button-block {
+            margin-top: 20px;
+        }
+    }
+}

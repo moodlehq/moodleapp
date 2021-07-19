@@ -1,0 +1,41 @@
+<ion-item-divider sticky="true">
+    <ion-label>
+        <h2>{{ 'addon.block_starredcourses.pluginname' | translate }}</h2>
+    </ion-label>
+    <div slot="end" class="flex-row">
+        <div *ngIf="downloadCoursesEnabled && downloadEnabled && courses && courses.length > 1" class="core-button-spinner">
+            <ion-button *ngIf="prefetchCoursesData.icon && !prefetchCoursesData.loading" fill="clear" color="dark"
+                (click)="prefetchCourses()" [attr.aria-label]="'core.courses.downloadcourses' | translate">
+                <ion-icon [name]="prefetchCoursesData.icon" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+            <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData.badge"
+                role="progressbar" [attr.aria-valuemax]="prefetchCoursesData.total"
+                [attr.aria-valuenow]="prefetchCoursesData.count" [attr.aria-valuetext]="prefetchCoursesData.badgeA11yText">
+                {{prefetchCoursesData.badge}}
+            </ion-badge>
+            <ion-spinner *ngIf="!prefetchCoursesData.icon || prefetchCoursesData.loading"
+                [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+        </div>
+
+        <core-horizontal-scroll-controls #scrollControls [aria-controls]="scrollElementId">
+        </core-horizontal-scroll-controls>
+    </div>
+</ion-item-divider>
+<core-loading [hideUntil]="loaded" [fullscreen]="false" class="safe-area-page margin">
+    <core-empty-box *ngIf="courses.length == 0" image="assets/img/icons/courses.svg" inline="true"
+        [message]="'addon.block_starredcourses.nocourses' | translate"></core-empty-box>
+    <!-- List of courses. -->
+    <div
+        [hidden]="courses.length === 0"
+        [id]="scrollElementId"
+        class="core-horizontal-scroll"
+        (scroll)="scrollControls.updateScrollPosition()"
+    >
+        <div (onResize)="scrollControls.updateScrollPosition()" class="flex-row">
+            <ng-container *ngFor="let course of courses">
+                <core-courses-course-progress [course]="course" class="core-block_starredcourses"
+                    [showDownload]="downloadCourseEnabled && downloadEnabled"></core-courses-course-progress>
+            </ng-container>
+        </div>
+    </div>
+</core-loading>

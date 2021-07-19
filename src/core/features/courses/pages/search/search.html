@@ -1,0 +1,23 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'core.courses.searchcourses' | translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch()"
+    [placeholder]="'core.courses.search' | translate" [searchLabel]="'core.courses.search' | translate" autoFocus="true"
+    searchArea="CoreCoursesSearch"></core-search-box>
+
+    <ng-container *ngIf="total > 0">
+        <ion-item-divider>
+            <ion-label><h2>{{ 'core.courses.totalcoursesearchresults' | translate:{$a: total} }}</h2></ion-label>
+        </ion-item-divider>
+        <core-courses-course-list-item *ngFor="let course of courses" [course]="course"></core-courses-course-list-item>
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreResults($event)" [error]="loadMoreError">
+        </core-infinite-loading>
+    </ng-container>
+    <core-empty-box *ngIf="total == 0" icon="search" [message]="'core.courses.nosearchresults' | translate"></core-empty-box>
+</ion-content>

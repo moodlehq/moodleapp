@@ -1,0 +1,32 @@
+<div *ngIf="showCompletionConditions && completion && completion.isautomatic" class="core-module-automatic-completion-conditions"
+    role="list" [attr.aria-label]="'core.course.completionrequirements' | translate:{ $a: moduleName }">
+
+    <ng-container *ngIf="completion.istrackeduser">
+        <ng-container *ngFor="let rule of details">
+            <ion-badge *ngIf="rule.statuscomplete" color="success" role="listitem"
+                [attr.aria-label]="rule.accessibleDescription">
+                <strong>{{ 'core.course.completion_automatic:done' | translate }}</strong> {{ rule.rulevalue.description }}
+            </ion-badge>
+
+            <ion-badge *ngIf="rule.statuscompletefail" color="danger" role="listitem"
+                [attr.aria-label]="rule.accessibleDescription">
+                <strong>{{ 'core.course.completion_automatic:failed' | translate }}</strong> {{ rule.rulevalue.description }}
+            </ion-badge>
+
+            <ion-badge *ngIf="rule.statusincomplete" color="medium" role="listitem"
+                [attr.aria-label]="rule.accessibleDescription">
+                <strong>{{ 'core.course.completion_automatic:todo' | translate }}</strong> {{ rule.rulevalue.description }}
+            </ion-badge>
+        </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="!completion.istrackeduser">
+        <ion-badge *ngFor="let rule of details" color="light" role="listitem">
+            {{ rule.rulevalue.description }}
+        </ion-badge>
+    </ng-container>
+</div>
+
+<core-course-module-manual-completion *ngIf="showManualCompletion" [completion]="completion" [moduleName]="moduleName"
+    (completionChanged)="completionChanged.emit($event)">
+</core-course-module-manual-completion>

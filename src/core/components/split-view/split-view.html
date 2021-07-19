@@ -1,0 +1,7 @@
+<ion-content class="menu">
+    <ng-content></ng-content>
+</ion-content>
+<ion-router-outlet class="content-outlet"></ion-router-outlet>
+<core-empty-box class="content-placeholder" icon="fas-arrow-circle-left" [message]="placeholderText | translate"
+    [flipIconRtl]="true">
+</core-empty-box>

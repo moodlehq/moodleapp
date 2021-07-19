@@ -1,78 +1,29 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Moodle Desktop</title> <!-- Title is used in desktop, but should be ignored in mobile apps. -->
-  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta http-equiv="Content-Security-Policy" content="default-src * filesystem: cdvfile: file: data: gap: https://ssl.gstatic.com moodleappfs:; img-src * filesystem: gap: data: cdvfile: file: https://ssl.gstatic.com android-webview-video-poster: blob: moodleappfs:; style-src 'self' 'unsafe-inline' filesystem: cdvfile: file: moodleappfs:; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:* filesystem: cdvfile: file: moodleappfs:; media-src * filesystem: cdvfile: file: gap: blob: moodleappfs:">
-  <meta name="format-detection" content="telephone=no">
-  <meta name="msapplication-tap-highlight" content="no">
+    <meta charset="utf-8" />
+    <title>Moodle App</title>
 
-  <!-- Workaround for Cordova/Angular conflict:
-       http://weblogs.thinktecture.com/thomas/2017/02/cordova-vs-zonejs-or-why-is-angulars-document-event-listener-not-in-a-zone.html-->
-  <script>
-  (function () {
-    'use strict';
+    <base href="/" />
 
-    var EvTarget = EventTarget || Element; // EventTarget doesn't exist in iOS 8 and 9.
+    <meta name="color-scheme" content="light dark" />
+    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * filesystem: cdvfile: file: data: gap: https://ssl.gstatic.com moodleappfs: http://localhost; img-src * filesystem: gap: data: cdvfile: file: https://ssl.gstatic.com android-webview-video-poster: blob: moodleappfs: http://localhost; style-src 'self' 'unsafe-inline' filesystem: cdvfile: file: moodleappfs: http://localhost; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:* filesystem: cdvfile: file: moodleappfs:; media-src * filesystem: cdvfile: file: gap: blob: moodleappfs: http://localhost">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
 
-    window.addEventListener = function () {
-      EvTarget.prototype.addEventListener.apply(this, arguments);
-    };
+    <link rel="icon" type="image/png" href="assets/icon/favicon.png" />
 
-    window.removeEventListener = function () {
-      EvTarget.prototype.removeEventListener.apply(this, arguments);
-    };
+    <!-- add to homescreen for ios -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
-    document.addEventListener = function () {
-      EvTarget.prototype.addEventListener.apply(this, arguments);
-    };
-
-    document.removeEventListener = function () {
-      EvTarget.prototype.removeEventListener.apply(this, arguments);
-    };
-  })();
-  </script>
-
-  <link rel="icon" type="image/x-icon" href="assets/icon/favicon.ico">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4e8ef7">
-
-  <!-- add to homescreen for ios -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-
-  <!-- cordova.js required for cordova apps -->
-  <script src="cordova.js"></script>
-
-  <!-- un-comment this code to enable service worker
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('service worker installed'))
-        .catch(err => console.error('Error', err));
-    }
-  </script>-->
-
-  <link href="build/main.css" rel="stylesheet">
-
-  <script src="lib/mathjax/MathJax.js?delayStartupUntil=configured"></script>
-
+    <script src="assets/lib/mathjax/MathJax.js?delayStartupUntil=configured"></script>
 </head>
+
 <body>
-
-  <!-- Ionic's root component and where the app will load -->
-  <ion-app></ion-app>
-
-  <!-- The polyfills js is generated during the build process -->
-  <script src="build/polyfills.js"></script>
-
-  <!-- The vendor js is generated during the build process
-       It contains all of the dependencies in node_modules -->
-  <script src="build/vendor.js"></script>
-
-  <!-- The main bundle js is generated during the build process -->
-  <script src="build/main.js"></script>
-
+    <app-root></app-root>
 </body>
+
 </html>

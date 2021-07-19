@@ -1,0 +1,19 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'core.courses.availablecourses' | translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!coursesLoaded" (ionRefresh)="refreshCourses($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="coursesLoaded">
+        <ng-container *ngIf="courses.length > 0">
+            <core-courses-course-list-item *ngFor="let course of courses" [course]="course"></core-courses-course-list-item>
+        </ng-container>
+        <core-empty-box *ngIf="!courses.length" icon="fas-graduation-cap" [message]="'core.courses.nocourses' | translate"></core-empty-box>
+    </core-loading>
+</ion-content>

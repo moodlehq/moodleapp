@@ -1,0 +1,25 @@
+<div *ngIf="ddQuestion && (ddQuestion.text || ddQuestion.text === '')">
+    <!-- Content is outside the core-loading to let the script calculate drag items position -->
+    <core-loading [hideUntil]="ddQuestion.loaded"></core-loading>
+
+    <div class="fake-ion-item ion-text-wrap" [hidden]="!ddQuestion.loaded">
+        <ion-card *ngIf="!ddQuestion.readOnly" class="core-info-card">
+            <ion-item>
+                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ 'core.question.howtodraganddrop' | translate }}</ion-label>
+            </ion-item>
+        </ion-card>
+        <div class="addon-qtype-ddwtos-container">
+            <core-format-text [component]="component" [componentId]="componentId" [text]="ddQuestion.text"
+                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" #questiontext
+                (afterRender)="textRendered()">
+            </core-format-text>
+
+            <core-format-text *ngIf="ddQuestion.answers" [component]="component" [componentId]="componentId"
+                [text]="ddQuestion.answers" [filter]="false" (afterRender)="answersRendered()">
+            </core-format-text>
+
+            <div class="drags"></div>
+        </div>
+    </div>
+</div>

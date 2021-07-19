@@ -1,0 +1,50 @@
+<ion-header>
+    <ion-toolbar>
+        <h1>{{ 'addon.mod_scorm.toc' | translate }}</h1>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <nav>
+        <ion-list class="addon-mod_scorm-toc">
+            <ion-item class="ion-text-wrap" *ngIf="attemptToContinue">
+                <ion-label>
+                    <p>{{ 'addon.mod_scorm.dataattemptshown' | translate:{number: attemptToContinue} }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-center" *ngIf="isBrowse">
+                <ion-label>
+                    <p>{{ 'addon.mod_scorm.browsemode' | translate }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-center" *ngIf="isReview">
+                <ion-label>
+                    <p>{{ 'addon.mod_scorm.reviewmode' | translate }}</p>
+                </ion-label>
+            </ion-item>
+
+            <!-- List of SCOs. -->
+            <ng-container *ngFor="let sco of toc">
+                <ion-item *ngIf="sco.isvisible" class="ion-text-wrap" [detail]="sco.prereq && sco.launch"
+                    [ngClass]="'core-padding-' + sco.level + ' addon-mod_scorm-type-' + sco.scormtype"
+                    [attr.aria-current]="selected == sco.id ? 'page' : 'false'" (click)="loadSco(sco)"
+                    [disabled]="!sco.prereq || !sco.launch ? true : null" [button]="sco.prereq && sco.launch">
+                    <ion-icon *ngIf="sco.icon" [name]="sco.icon.icon" [attr.aria-label]="sco.icon.description" slot="start">
+                    </ion-icon>
+                    <ion-label>
+                        <core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="moduleId"
+                            [courseId]="courseId">
+                        </core-format-text>
+                        <span *ngIf="accessInfo && accessInfo.canviewscores && sco.scoreraw">
+                            ({{ 'addon.mod_scorm.score' | translate }}: {{sco.scoreraw}})
+                        </span>
+                    </ion-label>
+                </ion-item>
+            </ng-container>
+        </ion-list>
+    </nav>
+</ion-content>

@@ -1,0 +1,32 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+
+        <h1>{{ 'core.login.policyagreement' | translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="policyLoaded">
+        <ion-list *ngIf="sitePolicy">
+            <ion-item class="ion-text-wrap">
+                <ion-label><p>{{ 'core.login.policyagree' | translate }}</p></ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label><p>
+                    <a [href]="sitePolicy" core-link [capture]="false">{{ 'core.login.policyagreementclick' | translate }}</a>
+                </p></ion-label>
+            </ion-item>
+            <ion-card *ngIf="showInline">
+                <core-iframe [src]="sitePolicy"></core-iframe>
+            </ion-card>
+            <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="accept()">
+                {{ 'core.login.policyaccept' | translate }}
+            </ion-button>
+            <ion-button class="ion-text-wrap ion-margin" expand="block" color="light" (click)="cancel()">
+                {{ 'core.login.cancel' | translate }}
+            </ion-button>
+        </ion-list>
+    </core-loading>
+</ion-content>

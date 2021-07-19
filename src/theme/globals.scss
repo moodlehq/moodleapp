@@ -1,0 +1,12 @@
+/*
+ * App Global variables SCSS
+ * ----------------------------------------------------------------------------
+ * Place here the different files you should import to use global variables.
+ */
+
+$font-path: "../assets/fonts";
+$assets-path: "../assets";
+@import "./globals.mixins.scss";
+@import "./globals.mixins.ionic.scss";
+@import "./globals.custom.scss";
+@import "./globals.variables.scss";

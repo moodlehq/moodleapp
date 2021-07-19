@@ -1,0 +1,91 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'addon.messages.contacts' | translate }}</h1>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="gotoSearch()" [attr.aria-label]="'addon.messages.searchcombined' | translate">
+                <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+            <!-- Add an empty context menu so discussion page can add items in split view, otherwise the menu
+                disappears in some cases. -->
+            <core-context-menu></core-context-menu>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-split-view>
+        <core-tabs [hideUntil]="true">
+
+            <!-- Contacts tab. -->
+            <core-tab [title]="'addon.messages.contacts' | translate" (ionSelect)="selectTab('confirmed')">
+                <ng-template>
+                    <ion-refresher slot="fixed" [disabled]="!confirmedLoaded" (ionRefresh)="refreshData($event.target)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
+                    <core-loading [hideUntil]="confirmedLoaded">
+                        <ion-list class="ion-no-margin">
+                            <ion-item class="ion-text-wrap addon-messages-conversation-item" (click)="selectUser(contact.id)" button
+                                *ngFor="let contact of confirmedContacts" [attr.aria-label]="contact.fullname" detail="true"
+                                [attr.aria-current]="contact.id == selectedUserId ? 'page' : 'false'">
+                                <core-user-avatar slot="start" [user]="contact"
+                                    [checkOnline]="contact.showonlinestatus" [linkProfile]="false">
+                                </core-user-avatar>
+                                <ion-label>
+                                    <p class="item-heading">
+                                        <core-format-text [text]="contact.fullname" contextLevel="system" [contextInstanceId]="0">
+                                        </core-format-text>
+                                        <ion-icon *ngIf="contact.isblocked" name="fas-user-slash" slot="end"
+                                            [attr.aria-label]="'addon.messages.contactblocked' | translate">
+                                        </ion-icon>
+                                    </p>
+                                </ion-label>
+                            </ion-item>
+                        </ion-list>
+
+                        <core-empty-box *ngIf="!confirmedContacts.length" icon="far-address-book"
+                            [message]="'addon.messages.nocontactsgetstarted' | translate">
+                        </core-empty-box>
+
+                        <core-infinite-loading [enabled]="confirmedCanLoadMore" (action)="loadMore($event)"
+                            [error]="confirmedLoadMoreError" position="bottom">
+                        </core-infinite-loading>
+                    </core-loading>
+                </ng-template>
+            </core-tab>
+
+            <!-- Requests tab. -->
+            <core-tab [title]="'addon.messages.requests' | translate" (ionSelect)="selectTab('requests')" [badge]="requestsBadge"
+                badgeA11yText="addon.messages.pendingcontactrequests">
+                <ng-template>
+                    <ion-refresher slot="fixed" [disabled]="!requestsLoaded" (ionRefresh)="refreshData($event.target)">
+                        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+                    </ion-refresher>
+                    <core-loading [hideUntil]="requestsLoaded">
+                        <ion-list class="ion-no-margin">
+                            <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngFor="let request of requests"
+                                [attr.aria-label]="request.fullname" (click)="selectUser(request.id)" button
+                                [attr.aria-current]="request.id == selectedUserId ? 'page' : 'false'" detail="true">
+                                <core-user-avatar slot="start" [user]="request" [linkProfile]="false"></core-user-avatar>
+                                <ion-label>
+                                    <core-format-text [text]="request.fullname" contextLevel="system" [contextInstanceId]="0">
+                                    </core-format-text>
+                                    <p *ngIf="!request.iscontact">
+                                        {{ 'addon.messages.wouldliketocontactyou' | translate }}
+                                    </p>
+                                </ion-label>
+                            </ion-item>
+                        </ion-list>
+                        <core-empty-box *ngIf="!requests.length" icon="far-address-book"
+                            [message]="'addon.messages.nocontactrequests' | translate">
+                        </core-empty-box>
+                        <core-infinite-loading [enabled]="requestsCanLoadMore" (action)="loadMore($event)"
+                            [error]="requestsLoadMoreError" position="bottom">
+                        </core-infinite-loading>
+                    </core-loading>
+                </ng-template>
+            </core-tab>
+        </core-tabs>
+    </core-split-view>
+</ion-content>

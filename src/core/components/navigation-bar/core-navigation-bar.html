@@ -1,0 +1,27 @@
+<ion-grid class="ion-no-padding ion-padding-bottom" *ngIf="previous || info || next">
+    <ion-row>
+        <ion-col class="ion-text-start ion-padding-end" [size]="info ? 4 : 6">
+            <ion-button *ngIf="previous" class="core-navigation-bar-arrow" fill="outline"
+                [attr.aria-label]="previousTitle || ('core.previous' | translate)" (click)="action?.emit(previous)">
+                <ion-icon name="fas-arrow-left" [slot]="previousTitle ? 'start' : 'icon-only'" aria-hidden="true"></ion-icon>
+                <core-format-text *ngIf="previousTitle" [text]="previousTitle" [component]="component" [componentId]="componentId"
+                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" aria-hidden="true">
+                </core-format-text>
+            </ion-button>
+        </ion-col>
+        <ion-col class="ion-text-center" size="4" *ngIf="info">
+            <ion-button fill="clear" (click)="showInfo()" [attr.aria-label]="title">
+                <ion-icon slot="icon-only" name="fas-info-circle" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-col>
+        <ion-col class="ion-text-end ion-padding-start" [size]="info ? 4 : 6">
+            <ion-button *ngIf="next" class="core-navigation-bar-arrow" [attr.aria-label]="nextTitle || ('core.next' | translate)"
+                (click)="action?.emit(next)">
+                <core-format-text *ngIf="nextTitle" [text]="nextTitle" [component]="component" [componentId]="componentId"
+                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" aria-hidden="true">
+                </core-format-text>
+                <ion-icon name="fas-arrow-right" [slot]="nextTitle ? 'end' : 'icon-only'" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-col>
+    </ion-row>
+</ion-grid>

@@ -1,0 +1,96 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons slot="end">
+    <core-context-menu>
+        <core-context-menu-item *ngIf="h5pActivity && h5pActivity.enabletracking && accessInfo && !accessInfo.canreviewattempts"
+            [priority]="1000" [content]="'addon.mod_h5pactivity.review_my_attempts' | translate" (action)="viewMyAttempts()"
+            iconAction="stats-chart">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
+            [href]="externalUrl" iconAction="fas-external-link-alt">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
+            (action)="expandDescription()" iconAction="fas-arrow-right">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
+            iconAction="far-newspaper" (action)="gotoBlog()">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
+            (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline" [priority]="600" (action)="doRefresh(null, $event, true)"
+            [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)"
+            [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
+        </core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}"
+            iconDescription="fas-archive" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
+        </core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="safe-area-page">
+
+    <!-- Activity info. -->
+    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        (completionChanged)="onCompletionChange()">
+    </core-course-module-info>
+
+    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
+        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+    </core-course-module-description>
+
+    <!-- Offline data stored. -->
+    <ion-card class="core-warning-card" *ngIf="hasOffline">
+        <ion-item>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
+        </ion-item>
+    </ion-card>
+
+    <!-- Offline disabled. -->
+    <ion-card class="core-warning-card" *ngIf="!siteCanDownload && playing">
+        <ion-item>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                {{ 'core.h5p.offlinedisabled' | translate }} {{ 'addon.mod_h5pactivity.offlinedisabledwarning' | translate }}
+            </ion-label>
+        </ion-item>
+    </ion-card>
+
+    <!-- Preview mode. -->
+    <ion-card class="core-warning-card" *ngIf="accessInfo && !trackComponent">
+        <ion-item>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                {{ 'addon.mod_h5pactivity.previewmode' | translate }}
+            </ion-label>
+        </ion-item>
+    </ion-card>
+
+    <ion-list *ngIf="deployedFile && !playing">
+        <ion-item class="ion-text-wrap" *ngIf="stateMessage">
+            <ion-label>{{ stateMessage | translate }}</ion-label>
+        </ion-item>
+
+        <!-- Button to download the package. -->
+        <ion-button *ngIf="!downloading && needsDownload" class="ion-text-wrap ion-margin" expand="block"
+            (click)="downloadAndPlay($event)">
+            {{ 'addon.mod_h5pactivity.downloadh5pfile' | translate }}
+        </ion-button>
+
+        <!-- Download progress. -->
+        <ion-item class="ion-text-center" *ngIf="downloading">
+            <ion-label>
+                <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                <h2 *ngIf="progressMessage">{{ progressMessage | translate }}</h2>
+                <core-progress-bar *ngIf="showPercentage" [progress]="percentage" [a11yText]="progressMessage"></core-progress-bar>
+            </ion-label>
+        </ion-item>
+    </ion-list>
+
+    <core-h5p-iframe *ngIf="playing" [fileUrl]="fileUrl" [displayOptions]="displayOptions" [onlinePlayerUrl]="onlinePlayerUrl"
+        [trackComponent]="trackComponent" [contextId]="h5pActivity?.context">
+    </core-h5p-iframe>
+</core-loading>

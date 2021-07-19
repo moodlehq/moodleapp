@@ -1,0 +1,10 @@
+:host {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--background);
+
+    ion-item-divider {
+        min-height: var(--item-divider-min-height);
+    }
+}

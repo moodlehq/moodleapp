@@ -1,0 +1,33 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'addon.competency.userplans' | translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-split-view>
+        <ion-refresher slot="fixed" [disabled]="!plans.loaded" (ionRefresh)="refreshLearningPlans($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="plans.loaded">
+            <core-empty-box *ngIf="plans.empty" icon="fas-route" [message]="'addon.competency.noplanswerecreated' | translate">
+
+            </core-empty-box>
+            <ion-list *ngIf="!plans.empty" class="ion-no-margin">
+                <ion-item class="ion-text-wrap" *ngFor="let plan of plans.items" [attr.aria-label]="plan.name"
+                    (click)="plans.select(plan)" [attr.aria-current]="plans.getItemAriaCurrent(plan)" button detail="true">
+                    <ion-label>
+                        <p class="item-heading">{{ plan.name }}</p>
+                        <p *ngIf="plan.duedate > 0">
+                            {{ 'addon.competency.duedate' | translate }}:&nbsp;
+                            {{ plan.duedate * 1000 | coreFormatDate :'strftimedatetimeshort' }}
+                        </p>
+                    </ion-label>
+                    <ion-badge slot="end" class="ion-text-wrap" [color]="plan.statuscolor">{{ plan.statusname }}</ion-badge>
+                </ion-item>
+            </ion-list>
+        </core-loading>
+    </core-split-view>
+    </ion-content>

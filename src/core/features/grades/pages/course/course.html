@@ -1,0 +1,74 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'core.grades.grades' | translate }}</h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-split-view [mode]="splitViewMode">
+        <ion-refresher slot="fixed" [disabled]="!grades.loaded" (ionRefresh)="refreshGrades($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="grades.loaded" class="safe-area-page">
+            <core-empty-box *ngIf="grades.empty" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate">
+            </core-empty-box>
+            <div *ngIf="!grades.empty" class="core-grades-container">
+                <table cellspacing="0" cellpadding="0" class="core-grades-table">
+                    <thead>
+                        <tr>
+                            <th
+                                *ngFor="let column of grades.columns"
+                                id="{{column.name}}"
+                                class="ion-text-start"
+                                [class.ion-hide-md-down]="column.hiddenPhone"
+                                [attr.colspan]="column.colspan"
+                            >
+                                {{ 'core.grades.' + column.name | translate }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let row of grades.rows"
+                            role="button row"
+                            [attr.tabindex]="row.itemtype != 'category' ? 0 : null"
+                            (ariaButtonClick)="row.itemtype != 'category' && grades.select(row)"
+                            [class]="row.rowclass"
+                            [ngClass]='{"core-grades-grade-clickable": row.itemtype != "category"}'
+                        >
+                            <ng-container *ngIf="row.itemtype">
+                                <td
+                                    *ngIf="row.itemtype == 'category'"
+                                    class="core-grades-table-category"
+                                    [attr.rowspan]="row.rowspan"
+                                ></td>
+                                <th
+                                    class="core-grades-table-gradeitem ion-text-start"
+                                    [class.column-itemname]="row.itemtype == 'category'"
+                                    [attr.aria-current]="grades.getItemAriaCurrent(row)"
+                                    [attr.colspan]="row.colspan"
+                                >
+                                    <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start" [attr.aria-label]="row.iconAlt">
+                                    </ion-icon>
+                                    <img *ngIf="row.image" [src]="row.image" slot="start" class="core-module-icon"
+                                        [alt]="row.iconAlt"/>
+                                    <span [innerHTML]="row.gradeitem"></span>
+                                </th>
+                                <ng-container *ngFor="let column of grades.columns">
+                                    <td
+                                        *ngIf="column.name != 'gradeitem' && row[column.name] != undefined"
+                                        [class]="'ion-text-start core-grades-table-' + column.name"
+                                        [class.ion-hide-md-down]="column.hiddenPhone"
+                                        [innerHTML]="row[column.name]"
+                                    ></td>
+                                </ng-container>
+                            </ng-container>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </core-loading>
+    </core-split-view>
+</ion-content>

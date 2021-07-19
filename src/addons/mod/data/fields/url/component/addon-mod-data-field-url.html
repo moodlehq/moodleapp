@@ -1,0 +1,10 @@
+<span *ngIf="inputMode && form" [formGroup]="form">
+    <span *ngIf="editMode" [core-mark-required]="field.required" class="core-mark-required"></span>
+    <ion-input type="url" [formControlName]="'f_'+field.id" [placeholder]="field.name"></ion-input>
+    <core-input-errors *ngIf="error && editMode" [control]="form.controls['f_'+field.id]" [errorText]="error"></core-input-errors>
+</span>
+
+<ng-container *ngIf="displayMode && value && value.content">
+    <a *ngIf="autoLink" [href]="value.content" core-link capture="true">{{ displayValue }}</a>
+    <span *ngIf="!autoLink">{{ displayValue }}</span>
+</ng-container>

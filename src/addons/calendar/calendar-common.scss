@@ -1,0 +1,28 @@
+:host {
+
+    --addon-calendar-blank-day-background-color: var(--gray-lighter);
+
+    .item.addon-calendar-event {
+        > ion-icon {
+            color: white;
+            border-radius: 50%;
+            padding: 6px;
+        }
+
+        &.addon-calendar-eventtype-category > ion-icon {
+            background-color: var(--addon-calendar-event-category-color);
+        }
+        &.addon-calendar-eventtype-course > ion-icon {
+            background-color: var(--addon-calendar-event-course-color);
+        }
+        &.addon-calendar-eventtype-group > ion-icon {
+            background-color: var(--addon-calendar-event-group-color);
+        }
+        &.addon-calendar-eventtype-user > ion-icon {
+            background-color: var(--addon-calendar-event-user-color);
+        }
+        &.addon-calendar-eventtype-site > ion-icon {
+            background-color: var(--addon-calendar-event-site-color);
+        }
+    }
+}

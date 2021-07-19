@@ -1,0 +1,128 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text [text]="title" [contextLevel]="contextLevel" [contextInstanceId]="instanceId" [courseId]="courseId">
+            </core-format-text>
+        </h1>
+        <ion-buttons slot="end">
+            <ion-button *ngIf="canDeleteComments" slot="end" fill="clear" (click)="toggleDelete()"
+                [attr.aria-label]="'core.toggledelete' | translate">
+                <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+            <core-context-menu>
+                <core-context-menu-item [hidden]="!(commentsLoaded && !hasOffline)" [priority]="100"
+                    [content]="'core.refresh' | translate" (action)="refreshComments(false)" [iconAction]="refreshIcon"
+                    [closeOnClick]="true">
+                </core-context-menu-item>
+                <core-context-menu-item [hidden]="!(commentsLoaded && hasOffline)" [priority]="100"
+                    [content]="'core.settings.synchronizenow' | translate" (action)="refreshComments(true)" [iconAction]="syncIcon"
+                    [closeOnClick]="false">
+                </core-context-menu-item>
+            </core-context-menu>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!commentsLoaded" (ionRefresh)="refreshComments(false, $event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="commentsLoaded">
+        <core-empty-box *ngIf="!comments || !comments.length" icon="fas-comments"
+            [message]="'core.comments.nocomments' | translate">
+        </core-empty-box>
+
+        <!-- Load previous messages. -->
+        <core-infinite-loading [enabled]="canLoadMore" position="top" (action)="loadPrevious($event)" [error]="loadMoreError">
+        </core-infinite-loading>
+
+        <ion-list class="addon-messages-discussion-container">
+            <ng-container *ngFor="let comment of comments; index as index; last as last">
+
+                <p class="ion-text-center addon-messages-date" *ngIf="comment.showDate">
+                    {{ comment.timecreated * 1000 | coreFormatDate: "strftimedayshort" }}
+                </p>
+
+                <ion-item class="ion-text-wrap addon-message"
+                    [class.addon-message-mine]="comment.userid == currentUserId"
+                    [class.addon-message-not-mine]="comment.userid != currentUserId"
+                    [class.addon-message-no-user]="!comment.showUserData"
+                    [@coreSlideInOut]="comment.userid == currentUserId ? '' : 'fromLeft'">
+                    <ion-label>
+                        <!-- User data. -->
+                        <h2 class="addon-message-user" *ngIf="comment.showUserData">
+                            <core-user-avatar slot="start" [user]="comment" [linkProfile]="false">
+                            </core-user-avatar>
+                            <div>{{ comment.fullname }}</div>
+                        </h2>
+
+                        <p class="addon-message-text">
+                            <core-format-text [text]="comment.content" [contextLevel]="contextLevel" [contextInstanceId]="instanceId"
+                                [courseId]="courseId">
+                            </core-format-text>
+                        </p>
+                    </ion-label>
+                    <ion-note>
+                        <ng-container *ngIf="!comment.deleted">
+                            {{ comment.timecreated * 1000 | coreFormatDate: 'strftimetime' }}
+                        </ng-container>
+                        <ng-container *ngIf="comment.deleted">
+                            <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> <span class="ion-text-wrap">
+                                {{ 'core.deletedoffline' | translate }}
+                            </span>
+                        </ng-container>
+                    </ion-note>
+                    <div class="tail" *ngIf="comment.showTail"></div>
+                    <ion-button *ngIf="showDelete && !comment.deleted && comment.delete" slot="end" fill="clear"
+                        [@coreSlideInOut]="'fromRight'" color="danger" (click)="deleteComment($event, comment)"
+                        [attr.aria-label]="'core.delete' | translate" class="addon-messages-delete-button">
+                        <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                    <ion-button *ngIf="showDelete && comment.deleted" slot="end" fill="clear" color="danger"
+                        (click)="undoDeleteComment($event, comment)" [attr.aria-label]="'core.restore' | translate"
+                        class="addon-messages-delete-button">
+                        <ion-icon name="fas-undo-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                </ion-item>
+            </ng-container>
+
+            <ion-item
+                *ngIf="offlineComment"
+                class="ion-text-wrap addon-message addon-message-mine"
+            >
+                <ion-label>
+                    <!-- User data. -->
+                    <p class="ion-text-center">
+                        <ion-icon name="fas-exclamation-triangle" aria-hidden="true"></ion-icon>
+                        {{ 'core.thereisdatatosync' | translate:{$a: 'core.comments.comments' | translate | lowercase } }}
+                    </p>
+
+                    <p class="addon-message-text">
+                        <core-format-text [text]="offlineComment.content" [contextLevel]="contextLevel" [contextInstanceId]="instanceId"
+                            [courseId]="courseId">
+                        </core-format-text>
+                    </p>
+                </ion-label>
+                <ion-note>
+                    <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}
+                </ion-note>
+                <div class="tail"></div>
+                <ion-button *ngIf="showDelete" slot="end" fill="clear"
+                    [@coreSlideInOut]="'fromRight'" color="danger" (click)="deleteComment($event, offlineComment)"
+                    [attr.aria-label]="'core.delete' | translate" class="addon-messages-delete-button">
+                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </ion-item>
+        </ion-list>
+
+    </core-loading>
+</ion-content>
+<ion-footer color="light" class="footer-adjustable" *ngIf="commentsLoaded && canAddComments">
+    <ion-toolbar color="light">
+        <core-send-message-form [sendDisabled]="sending" [message]="newComment"
+            (onSubmit)="addComment($event)" [placeholder]="'core.comments.addcomment' | translate">
+        </core-send-message-form>
+    </ion-toolbar>
+</ion-footer>

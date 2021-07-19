@@ -1,0 +1,25 @@
+<ion-list [id]="uniqueId" role="menu">
+    <ion-list-header *ngIf="title">
+        <ion-label>{{title}}</ion-label>
+    </ion-list-header>
+    <ion-item class="ion-text-wrap" *ngFor="let item of items" core-link [capture]="item.captureLink" [autoLogin]="item.autoLogin"
+        [href]="item.href" (click)="itemClicked($event, item)" [attr.aria-label]="item.ariaAction" [hidden]="item.hidden"
+        [detail]="(item.href && !item.iconAction) || null" role="menuitem" [button]="(item.href && !item.iconAction)">
+        <ion-icon *ngIf="item.iconDescription" [name]="item.iconDescription" aria-hidden="true" slot="start">
+        </ion-icon>
+        <ion-label>
+            <p class="item-heading"><core-format-text [clean]="true" [text]="item.content" [filter]="false"></core-format-text></p>
+        </ion-label>
+        <ion-icon *ngIf="(item.href || item.action) && item.iconAction && item.iconAction != 'spinner'" [name]="item.iconAction"
+            [class.icon-slash]="item.iconSlash" slot="end" aria-hidden="true">
+        </ion-icon>
+        <ion-spinner *ngIf="(item.href || item.action) && item.iconAction == 'spinner'" slot="end"
+            [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+        <ion-badge class="{{item.badgeClass}}" slot="end" *ngIf="item.badge">
+            <span [attr.ara-hidden]="!!item.badgeA11yText">{{item.badge}}</span>
+            <span class="sr-only" *ngIf="item.badgeA11yText">
+                {{ item.badgeA11yText | translate: {$a : item.badge } }}
+            </span>
+        </ion-badge>
+    </ion-item>
+</ion-list>

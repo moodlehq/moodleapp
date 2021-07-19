@@ -1,0 +1,8 @@
+<ion-row *ngIf="actions && actions.length > 0" class="justify-content-around">
+    <ion-col *ngFor="let action of actions">
+        <ion-button fill="clear" expand="block" (click)="action.action()">
+            <ion-icon slot="start" name="{{action.icon}}" aria-hidden="true"></ion-icon>
+            {{ action.message | translate }}
+        </ion-button>
+    </ion-col>
+</ion-row>

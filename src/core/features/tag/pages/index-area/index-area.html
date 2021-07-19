@@ -1,0 +1,22 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            {{ 'core.tag.itemstaggedwith' | translate: { $a: {tagarea: areaNameKey | translate, tag: tagName} } }}
+        </h1>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+        <ng-container *ngIf="loaded">
+            <core-dynamic-component [component]="areaComponent" [data]="{items: items}"></core-dynamic-component>
+        </ng-container>
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" [error]="loadMoreError">
+        </core-infinite-loading>
+    </core-loading>
+</ion-content>

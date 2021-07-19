@@ -1,0 +1,37 @@
+<ion-item class="ion-text-wrap" (click)="openCourse()" [class.item-disabled]="course.visible == 0"
+    [attr.aria-label]="course.displayname || course.fullname" detail="true" button>
+    <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" class="course-icon"
+        [attr.course-color]="course.color ? null : course.colorNumber" [style.color]="course.color"></ion-icon>
+    <ion-avatar *ngIf="course.courseImage" slot="start">
+        <img [src]="course.courseImage" core-external-content alt=""/>
+    </ion-avatar>
+    <ion-label>
+        <p *ngIf="course.categoryname || (course.displayname && course.shortname && course.fullname != course.displayname)"
+            class="core-course-additional-info">
+            <span *ngIf="course.categoryname" class="core-course-category">
+                <core-format-text [text]="course.categoryname"></core-format-text>
+            </span>
+            <span *ngIf="course.categoryname && course.displayname && course.shortname && course.fullname != course.displayname"
+                class="core-course-category"> | </span>
+            <span *ngIf="course.displayname && course.shortname && course.fullname != course.displayname"
+                class="core-course-shortname">
+                <core-format-text [text]="course.shortname" contextLevel="course" [contextInstanceId]="course.id">
+                </core-format-text>
+            </span>
+        </p>
+        <h2>
+            <core-format-text [text]="course.displayname || course.fullname" contextLevel="course" [contextInstanceId]="course.id">
+            </core-format-text>
+        </h2>
+        <p *ngIf="isEnrolled && course.progress! >= 0 && course.completionusertracked !== false">
+            <core-progress-bar [progress]="course.progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
+        </p>
+    </ion-label>
+    <ng-container *ngIf="!isEnrolled">
+        <ion-icon *ngFor="let icon of icons" color="dark" size="small" [name]="icon.icon"
+            [title]="icon.label | translate"
+            [attr.aria-label]="icon.label | translate"
+            slot="end">
+        </ion-icon>
+    </ng-container>
+</ion-item>

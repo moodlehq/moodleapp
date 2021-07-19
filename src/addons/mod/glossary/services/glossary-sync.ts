@@ -1,0 +1,358 @@
+// (C) Copyright 2015 Moodle Pty Ltd.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import { ContextLevel } from '@/core/constants';
+import { Injectable } from '@angular/core';
+import { CoreSyncBlockedError } from '@classes/base-sync';
+import { CoreNetworkError } from '@classes/errors/network-error';
+import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/activity-sync';
+import { CoreCourseLogHelper } from '@features/course/services/log-helper';
+import { CoreRatingSync } from '@features/rating/services/rating-sync';
+import { CoreApp } from '@services/app';
+import { CoreSites } from '@services/sites';
+import { CoreSync } from '@services/sync';
+import { CoreUtils } from '@services/utils/utils';
+import { makeSingleton, Translate } from '@singletons';
+import { CoreEvents } from '@singletons/events';
+import { AddonModGlossary, AddonModGlossaryProvider } from './glossary';
+import { AddonModGlossaryHelper } from './glossary-helper';
+import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from './glossary-offline';
+import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
+import { CoreFileEntry } from '@services/file-helper';
+
+/**
+ * Service to sync glossaries.
+ */
+@Injectable({ providedIn: 'root' })
+export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModGlossarySyncResult> {
+
+    static readonly AUTO_SYNCED = 'addon_mod_glossary_autom_synced';
+
+    protected componentTranslatableString = 'glossary';
+
+    constructor() {
+        super('AddonModGlossarySyncProvider');
+    }
+
+    /**
+     * Try to synchronize all the glossaries in a certain site or in all sites.
+     *
+     * @param siteId Site ID to sync. If not defined, sync all sites.
+     * @param force Wether to force sync not depending on last execution.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
+     */
+    syncAllGlossaries(siteId?: string, force?: boolean): Promise<void> {
+        return this.syncOnSites('all glossaries', this.syncAllGlossariesFunc.bind(this, !!force), siteId);
+    }
+
+    /**
+     * Sync all glossaries on a site.
+     *
+     * @param force Wether to force sync not depending on last execution.
+     * @param siteId Site ID to sync.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
+     */
+    protected async syncAllGlossariesFunc(force: boolean, siteId: string): Promise<void> {
+        siteId = siteId || CoreSites.getCurrentSiteId();
+
+        await Promise.all([
+            this.syncAllGlossariesEntries(force, siteId),
+            this.syncRatings(undefined, force, siteId),
+        ]);
+    }
+
+    /**
+     * Sync entried of all glossaries on a site.
+     *
+     * @param force Wether to force sync not depending on last execution.
+     * @param siteId Site ID to sync.
+     * @return Promise resolved if sync is successful, rejected if sync fails.
+     */
+    protected async syncAllGlossariesEntries(force: boolean, siteId: string): Promise<void> {
+        const entries = await AddonModGlossaryOffline.getAllNewEntries(siteId);
+
+        // Do not sync same glossary twice.
+        const treated: Record<number, boolean> = {};
+
+        await Promise.all(entries.map(async (entry) => {
+            if (treated[entry.glossaryid]) {
+                return;
+            }
+
+            treated[entry.glossaryid] = true;
+
+            const result = force ?
+                await this.syncGlossaryEntries(entry.glossaryid, entry.userid, siteId) :
+                await this.syncGlossaryEntriesIfNeeded(entry.glossaryid, entry.userid, siteId);
+
+            if (result?.updated) {
+                // Sync successful, send event.
+                CoreEvents.trigger(AddonModGlossarySyncProvider.AUTO_SYNCED, {
+                    glossaryId: entry.glossaryid,
+                    userId: entry.userid,
+                    warnings: result.warnings,
+                }, siteId);
+            }
+        }));
+    }
+
+    /**
+     * Sync a glossary only if a certain time has passed since the last time.
+     *
+     * @param glossaryId Glossary ID.
+     * @param userId User the entry belong to.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when the glossary is synced or if it doesn't need to be synced.
+     */
+    async syncGlossaryEntriesIfNeeded(
+        glossaryId: number,
+        userId: number,
+        siteId?: string,
+    ): Promise<AddonModGlossarySyncResult | undefined> {
+        siteId = siteId || CoreSites.getCurrentSiteId();
+
+        const syncId = this.getGlossarySyncId(glossaryId, userId);
+
+        const needed = await this.isSyncNeeded(syncId, siteId);
+
+        if (needed) {
+            return this.syncGlossaryEntries(glossaryId, userId, siteId);
+        }
+    }
+
+    /**
+     * Synchronize all offline entries of a glossary.
+     *
+     * @param glossaryId Glossary ID to be synced.
+     * @param userId User the entries belong to.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
+     */
+    syncGlossaryEntries(glossaryId: number, userId?: number, siteId?: string): Promise<AddonModGlossarySyncResult> {
+        userId = userId || CoreSites.getCurrentSiteUserId();
+        siteId = siteId || CoreSites.getCurrentSiteId();
+
+        const syncId = this.getGlossarySyncId(glossaryId, userId);
+        if (this.isSyncing(syncId, siteId)) {
+            // There's already a sync ongoing for this glossary, return the promise.
+            return this.getOngoingSync(syncId, siteId)!;
+        }
+
+        // Verify that glossary isn't blocked.
+        if (CoreSync.isBlocked(AddonModGlossaryProvider.COMPONENT, syncId, siteId)) {
+            this.logger.debug('Cannot sync glossary ' + glossaryId + ' because it is blocked.');
+
+            throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
+        }
+
+        this.logger.debug('Try to sync glossary ' + glossaryId + ' for user ' + userId);
+
+        const syncPromise = this.performSyncGlossaryEntries(glossaryId, userId, siteId);
+
+        return this.addOngoingSync(syncId, syncPromise, siteId);
+    }
+
+    protected async performSyncGlossaryEntries(
+        glossaryId: number,
+        userId: number,
+        siteId: string,
+    ): Promise<AddonModGlossarySyncResult> {
+        const result: AddonModGlossarySyncResult = {
+            warnings: [],
+            updated: false,
+        };
+        const syncId = this.getGlossarySyncId(glossaryId, userId);
+
+        // Sync offline logs.
+        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(AddonModGlossaryProvider.COMPONENT, glossaryId, siteId));
+
+        // Get offline responses to be sent.
+        const entries = await CoreUtils.ignoreErrors(
+            AddonModGlossaryOffline.getGlossaryNewEntries(glossaryId, siteId, userId),
+            <AddonModGlossaryOfflineEntry[]> [],
+        );
+
+        if (!entries.length) {
+            // Nothing to sync.
+            await CoreUtils.ignoreErrors(this.setSyncTime(syncId, siteId));
+
+            return result;
+        } else if (!CoreApp.isOnline()) {
+            // Cannot sync in offline.
+            throw new CoreNetworkError();
+        }
+
+        let courseId: number | undefined;
+
+        await Promise.all(entries.map(async (data) => {
+            courseId = courseId || data.courseid;
+
+            try {
+                // First of all upload the attachments (if any).
+                const itemId = await this.uploadAttachments(glossaryId, data, siteId);
+
+                // Now try to add the entry.
+                await AddonModGlossary.addEntryOnline(glossaryId, data.concept, data.definition, data.options, itemId, siteId);
+
+                result.updated = true;
+
+                await this.deleteAddEntry(glossaryId, data.concept, data.timecreated, siteId);
+            } catch (error) {
+                if (!CoreUtils.isWebServiceError(error)) {
+                    // Couldn't connect to server, reject.
+                    throw error;
+                }
+
+                // The WebService has thrown an error, this means that responses cannot be submitted. Delete them.
+                result.updated = true;
+
+                await this.deleteAddEntry(glossaryId, data.concept, data.timecreated, siteId);
+
+                // Responses deleted, add a warning.
+                this.addOfflineDataDeletedWarning(result.warnings, data.concept, error);
+            }
+        }));
+
+        if (result.updated && courseId) {
+            // Data has been sent to server. Now invalidate the WS calls.
+            try {
+                const glossary = await AddonModGlossary.getGlossaryById(courseId, glossaryId);
+
+                await AddonModGlossary.invalidateGlossaryEntries(glossary, true);
+            } catch {
+                // Ignore errors.
+            }
+        }
+
+        // Sync finished, set sync time.
+        await CoreUtils.ignoreErrors(this.setSyncTime(syncId, siteId));
+
+        return result;
+    }
+
+    /**
+     * Synchronize offline ratings.
+     *
+     * @param cmId Course module to be synced. If not defined, sync all glossaries.
+     * @param force Wether to force sync not depending on last execution.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved if sync is successful, rejected otherwise.
+     */
+    async syncRatings(cmId?: number, force?: boolean, siteId?: string): Promise<AddonModGlossarySyncResult> {
+        siteId = siteId || CoreSites.getCurrentSiteId();
+
+        const results = await CoreRatingSync.syncRatings('mod_glossary', 'entry', ContextLevel.MODULE, cmId, 0, force, siteId);
+
+        let updated = false;
+        const warnings: string[] = [];
+
+        await CoreUtils.allPromises(results.map(async (result) => {
+            if (result.updated.length) {
+                updated = true;
+
+                // Invalidate entry of updated ratings.
+                await Promise.all(result.updated.map((itemId) => AddonModGlossary.invalidateEntry(itemId, siteId)));
+            }
+
+            if (result.warnings.length) {
+                const glossary = await AddonModGlossary.getGlossary(result.itemSet.courseId, result.itemSet.instanceId, { siteId });
+
+                result.warnings.forEach((warning) => {
+                    this.addOfflineDataDeletedWarning(warnings, glossary.name, warning);
+                });
+            }
+        }));
+
+        return { updated, warnings };
+    }
+
+    /**
+     * Delete a new entry.
+     *
+     * @param glossaryId Glossary ID.
+     * @param concept Glossary entry concept.
+     * @param timeCreated Time to allow duplicated entries.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when deleted.
+     */
+    protected async deleteAddEntry(glossaryId: number, concept: string, timeCreated: number, siteId?: string): Promise<void> {
+        await Promise.all([
+            AddonModGlossaryOffline.deleteNewEntry(glossaryId, concept, timeCreated, siteId),
+            AddonModGlossaryHelper.deleteStoredFiles(glossaryId, concept, timeCreated, siteId),
+        ]);
+    }
+
+    /**
+     * Upload attachments of an offline entry.
+     *
+     * @param glossaryId Glossary ID.
+     * @param entry Offline entry.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with draftid if uploaded, resolved with 0 if nothing to upload.
+     */
+    protected async uploadAttachments(glossaryId: number, entry: AddonModGlossaryOfflineEntry, siteId?: string): Promise<number> {
+        if (!entry.attachments) {
+            // No attachments.
+            return 0;
+        }
+
+        // Has some attachments to sync.
+        let files: CoreFileEntry[] = entry.attachments.online || [];
+
+        if (entry.attachments.offline) {
+            // Has offline files.
+            const storedFiles = await CoreUtils.ignoreErrors(
+                AddonModGlossaryHelper.getStoredFiles(glossaryId, entry.concept, entry.timecreated, siteId),
+                [], // Folder not found, no files to add.
+            );
+
+            files = files.concat(storedFiles);
+        }
+
+        return CoreFileUploader.uploadOrReuploadFiles(files, AddonModGlossaryProvider.COMPONENT, glossaryId, siteId);
+    }
+
+    /**
+     * Get the ID of a glossary sync.
+     *
+     * @param glossaryId Glossary ID.
+     * @param userId User the entries belong to.. If not defined, current user.
+     * @return Sync ID.
+     */
+    protected getGlossarySyncId(glossaryId: number, userId?: number): string {
+        userId = userId || CoreSites.getCurrentSiteUserId();
+
+        return 'glossary#' + glossaryId + '#' + userId;
+    }
+
+}
+
+export const AddonModGlossarySync = makeSingleton(AddonModGlossarySyncProvider);
+
+/**
+ * Data returned by a glossary sync.
+ */
+export type AddonModGlossarySyncResult = {
+    warnings: string[]; // List of warnings.
+    updated: boolean; // Whether some data was sent to the server or offline data was updated.
+};
+
+/**
+ * Data passed to AUTO_SYNCED event.
+ */
+export type AddonModGlossaryAutoSyncData = {
+    glossaryId: number;
+    userId: number;
+    warnings: string[];
+};

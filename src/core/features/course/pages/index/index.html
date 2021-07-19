@@ -1,0 +1,13 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>
+            <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
+        </h1>
+
+        <ion-buttons slot="end"></ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<core-tabs-outlet [tabs]="tabs" [hideUntil]="loaded" (ionChange)="tabSelected()"></core-tabs-outlet>

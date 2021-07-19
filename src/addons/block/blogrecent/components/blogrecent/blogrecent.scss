@@ -1,0 +1,12 @@
+:host .core-block-content ::ng-deep {
+    ul.list {
+        list-style: none;
+        margin-left: 0;
+        margin-right: 0;
+        -webkit-padding-start: 0;
+
+        li {
+            padding-bottom: 8px;
+        }
+    }
+}

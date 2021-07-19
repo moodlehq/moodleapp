@@ -1,0 +1,66 @@
+:host {
+
+    .item.core-module-main-item {
+        --min-height: 52px;
+    }
+
+    .core-module-main-item {
+        .core-module-buttons,
+        .buttons.core-module-buttons {
+            margin: 0;
+        }
+
+        .core-module-buttons,
+        .core-module-buttons-more {
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+            z-index: 1;
+            justify-content: space-around;
+            align-content: center;
+        }
+
+        .core-module-buttons core-course-module-completion,
+        .core-module-buttons-more button {
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .core-module-buttons core-course-module-completion {
+            text-align: center;
+        }
+    }
+
+    .core-module-module-info {
+        ion-badge {
+            text-align: start;
+        }
+
+        .core-module-availabilityinfo {
+            font-size: 90%;
+            ul {
+                margin-block-start: 0.5em;
+            }
+        }
+    }
+
+    .core-module-loading {
+        width: 100%;
+        text-align: center;
+        padding-top: 10px;
+        clear: both;
+    }
+
+    .core-module-main-item + .core-module-module-info ion-label {
+        margin-top: 0px;
+    }
+
+    .core-module-main-item.has-module-info {
+        --inner-border-width: 0;
+    }
+
+    .core-module-module-info ion-label {
+        margin-inline-start: 50px;
+    }
+
+}

@@ -1,9 +1,15 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.9.5 ===
+
+- Several functions inside AddonNotificationsProvider have been modified to accept an "options" parameter instead of having several optional parameters.
+- Schemas are now registered using Angular providers with the CORE_SITE_SCHEMAS injection token instead of CoreSitesProvider.registerSiteSchema.
+
 === 3.9.3 ===
 
 - In the core-attachments component, passing a -1 as maxSize or maxSubmissions used to mean "unknown limit". Now -1 means unlimited. Also, passing a 0 to maxSize used to mean "unknown" too, now 0 means user max size.
+- Most functions that call a WebService in addons/mod have been modified to accept an "options" parameter instead of having several optional parameters.
 
 === 3.8.3 ===
 
