@@ -13,7 +13,7 @@
     <ion-item-divider class="ion-text-wrap" sticky="true">
         <ion-label><h2>{{ plugin.name }}</h2></ion-label>
     </ion-item-divider>
-    <core-attachments [files]="files" [maxSize]="maxSize" [maxSubmissions]="maxSubmissions"
+    <core-attachments [files]="files" [maxSize]="maxSize" [maxSubmissions]="maxSubmissions" [courseId]="assign.course"
         [component]="component" [componentId]="assign.cmid" [acceptedTypes]="acceptedTypes" [allowOffline]="allowOffline">
     </core-attachments>
 </div>

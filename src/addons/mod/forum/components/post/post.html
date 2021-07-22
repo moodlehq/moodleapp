@@ -139,7 +139,7 @@
             <div *ngIf="advanced" [id]="'addon-forum-reply-edit-form-advanced-' + uniqueId">
                 <core-attachments
                     [files]="replyData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments"
-                    [component]="component" [componentId]="forum.cmid" [allowOffline]="true">
+                    [component]="component" [componentId]="forum.cmid" [allowOffline]="true" [courseId]="courseId">
                 </core-attachments>
             </div>
         </ng-container>

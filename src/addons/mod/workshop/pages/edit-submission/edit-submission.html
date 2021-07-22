@@ -39,7 +39,8 @@
 
             <core-attachments *ngIf="fileAvailable" [files]="attachments" [maxSize]="workshop.maxbytes"
                 [maxSubmissions]="workshop.nattachments" [component]="component" [componentId]="workshop.coursemodule"
-                allowOffline="true" [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired">
+                allowOffline="true" [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired"
+                [courseId]="workshop.course">
             </core-attachments>
         </form>
     </core-loading>

@@ -50,7 +50,7 @@
                 <ion-label><h2>{{ 'addon.mod_glossary.attachment' | translate }}</h2></ion-label>
             </ion-item-divider>
             <core-attachments [files]="attachments" [component]="component" [componentId]="glossary.coursemodule"
-                [allowOffline]="true">
+                [allowOffline]="true" [courseId]="courseId">
             </core-attachments>
             <ng-container *ngIf="glossary.usedynalink">
                 <ion-item-divider>

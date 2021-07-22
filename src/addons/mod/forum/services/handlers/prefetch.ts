@@ -24,6 +24,7 @@ import { CoreGroups, CoreGroupsProvider } from '@services/groups';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModForumSync } from '../forum-sync';
 import { makeSingleton } from '@singletons';
+import { CoreCourses } from '@features/courses/services/courses';
 
 /**
  * Handler to prefetch forums.
@@ -228,6 +229,9 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
         if (AddonModForum.isDiscussionListSortingAvailable()) {
             promises.push(CoreUser.getUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER, siteId));
         }
+
+        // Get course data, needed to determine upload max size if it's configured to be course limit.
+        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         await Promise.all(promises);
     }

@@ -37,7 +37,7 @@
             </ion-item>
             <core-attachments *ngIf="edit && workshop.overallfeedbackfiles" [files]="data.assessment?.feedbackattachmentfiles"
                 [maxSize]="workshop.overallfeedbackmaxbytes" [maxSubmissions]="workshop.overallfeedbackfiles"
-                [component]="component" [componentId]="componentId" [allowOffline]="true">
+                [component]="component" [componentId]="componentId" [allowOffline]="true" [courseId]="workshop.course">
             </core-attachments>
             <ion-item *ngIf="edit && access && access.canallocate">
                 <ion-label position="stacked">

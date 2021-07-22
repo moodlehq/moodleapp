@@ -86,8 +86,8 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
 
     advanced = false; // Display all form fields.
     accessInfo: AddonModForumAccessInformation = {};
+    courseId!: number;
 
-    protected courseId!: number;
     protected cmId!: number;
     protected forumId!: number;
     protected timeCreated!: number;
