@@ -580,7 +580,7 @@ export class AddonModH5PActivityProvider {
      * @return Promise resolved when the WS call is successful.
      */
     logView(id: number, name?: string, siteId?: string): Promise<void> {
-        const params: AddonModH5pactivityViewH5pactivityWSParams = {
+        const params: AddonModH5PActivityViewH5pactivityWSParams = {
             h5pactivityid: id,
         };
 
@@ -593,6 +593,40 @@ export class AddonModH5PActivityProvider {
             'h5pactivity',
             {},
             siteId,
+        );
+    }
+
+    /**
+     * Report an H5P activity report as being viewed.
+     *
+     * @param id H5P activity ID.
+     * @param name Name of the activity.
+     * @param options Options.
+     * @return Promise resolved when the WS call is successful.
+     */
+    async logViewReport(id: number, name?: string,  options: AddonModH5PActivityViewReportOptions = {}): Promise<void> {
+        const site = await CoreSites.getSite(options.siteId);
+
+        if (!site.wsAvailable('mod_h5pactivity_log_report_viewed')) {
+            // Site doesn't support the WS, stop.
+            return;
+        }
+
+        const params: AddonModH5PActivityLogReportViewedWSParams = {
+            h5pactivityid: id,
+            userid: options.userId,
+            attemptid: options.attemptId,
+        };
+
+        return CoreCourseLogHelper.logSingle(
+            'mod_h5pactivity_log_report_viewed',
+            params,
+            AddonModH5PActivityProvider.COMPONENT,
+            id,
+            name,
+            'h5pactivity',
+            {},
+            site.getId(),
         );
     }
 
@@ -840,8 +874,26 @@ export type AddonModH5PActivityGetAttemptsOptions = AddonModH5PActivityGetAttemp
 /**
  * Params of mod_h5pactivity_view_h5pactivity WS.
  */
-export type AddonModH5pactivityViewH5pactivityWSParams = {
+export type AddonModH5PActivityViewH5pactivityWSParams = {
     h5pactivityid: number; // H5P activity instance id.
+};
+
+/**
+ * Params of mod_h5pactivity_log_report_viewed WS.
+ */
+export type AddonModH5PActivityLogReportViewedWSParams = {
+    h5pactivityid: number; // H5P activity instance id.
+    userid?: number | null; // The user id to log attempt (null means only current user).
+    attemptid?: number | null; // The attempt id.
+};
+
+/**
+ * Options for logViewReport.
+ */
+export type AddonModH5PActivityViewReportOptions = {
+    userId?: number; // User ID being viewed. Undefined for current user or when viewing an attempt.
+    attemptId?: number; // Attempt ID being viewed. Undefined if no attempt.
+    siteId?: string; // Site ID. If not defined, current site.
 };
 
 declare module '@singletons/events' {
