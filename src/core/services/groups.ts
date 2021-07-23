@@ -172,8 +172,7 @@ export class CoreGroupsProvider {
             groupInfo.visibleGroups = false;
             groupInfo.defaultGroupId = 0;
         } else {
-            // The "canaccessallgroups" field was added in 3.4. Add all participants for visible groups in previous versions.
-            if (result.canaccessallgroups || (typeof result.canaccessallgroups == 'undefined' && groupInfo.visibleGroups)) {
+            if (result.canaccessallgroups || groupInfo.visibleGroups) {
                 groupInfo.groups!.push({ id: 0, name: Translate.instant('core.allparticipants') });
                 groupInfo.defaultGroupId = 0;
             } else {
