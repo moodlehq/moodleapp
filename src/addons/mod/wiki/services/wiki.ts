@@ -335,7 +335,10 @@ export class AddonModWikiProvider {
 
         const response = await site.read<AddonModWikiGetSubwikisWSResponse>('mod_wiki_get_subwikis', params, preSets);
 
-        return response.subwikis;
+        return response.subwikis.map(subwiki => ({
+            ...subwiki,
+            groupid: Number(subwiki.groupid), // Convert groupid to number.
+        }));
     }
 
     /**
@@ -1112,19 +1115,26 @@ export type AddonModWikiGetSubwikisWSParams = {
  * Data returned by mod_wiki_get_subwikis WS.
  */
 export type AddonModWikiGetSubwikisWSResponse = {
-    subwikis: AddonModWikiSubwiki[];
+    subwikis: AddonModWikiSubwikiWSData[];
     warnings?: CoreWSExternalWarning[];
 };
 
 /**
  * Subwiki data returned by mod_wiki_get_subwikis WS.
  */
-export type AddonModWikiSubwiki = {
+export type AddonModWikiSubwikiWSData = {
     id: number; // Subwiki ID.
     wikiid: number; // Wiki ID.
-    groupid: number; // Group ID.
+    groupid: string; // Group ID.
     userid: number; // User ID.
     canedit: boolean; // True if user can edit the subwiki.
+};
+
+/**
+ * Subwiki data with some calculated data.
+ */
+export type AddonModWikiSubwiki = Omit<AddonModWikiSubwikiWSData, 'groupid'> & {
+    groupid: number; // Group ID.
 };
 
 /**
