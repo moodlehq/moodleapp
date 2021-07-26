@@ -48,6 +48,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     protected firstTabName?: string;
     protected module?: CoreCourseWSModule;
     protected modParams?: Params;
+    protected isGuest?: boolean;
     protected contentsTab: CoreTabsOutletTab = {
         page: CONTENTS_PAGE_NAME,
         title: 'core.course.contents',
@@ -91,6 +92,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         this.firstTabName = CoreNavigator.getRouteParam('selectedTab');
         this.module = CoreNavigator.getRouteParam<CoreCourseWSModule>('module');
         this.modParams = CoreNavigator.getRouteParam<Params>('modParams');
+        this.isGuest = CoreNavigator.getRouteBooleanParam('isGuest');
 
         this.currentPagePath = CoreNavigator.getCurrentPath();
         this.contentsTab.page = CoreTextUtils.concatenatePaths(this.currentPagePath, this.contentsTab.page);
@@ -98,6 +100,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
             course: this.course,
             sectionId: CoreNavigator.getRouteNumberParam('sectionId'),
             sectionNumber: CoreNavigator.getRouteNumberParam('sectionNumber'),
+            isGuest: this.isGuest,
         };
 
         if (this.module) {
@@ -132,7 +135,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      */
     protected async loadCourseHandlers(): Promise<void> {
         // Load the course handlers.
-        const handlers = await CoreCourseOptionsDelegate.getHandlersToDisplay(this.course!, false, false);
+        const handlers = await CoreCourseOptionsDelegate.getHandlersToDisplay(this.course!, false, this.isGuest);
 
         let tabToLoad: number | undefined;
 

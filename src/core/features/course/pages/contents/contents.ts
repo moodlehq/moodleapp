@@ -82,6 +82,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected modulesHaveCompletion = false;
+    protected isGuest?: boolean;
     protected debouncedUpdateCachedCompletion?: () => void; // Update the cached completion after a certain time.
 
     /**
@@ -101,6 +102,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         this.sectionId = CoreNavigator.getRouteNumberParam('sectionId');
         this.sectionNumber = CoreNavigator.getRouteNumberParam('sectionNumber');
         this.moduleId = CoreNavigator.getRouteNumberParam('moduleId');
+        this.isGuest = CoreNavigator.getRouteBooleanParam('isGuest');
 
         this.displayEnableDownload = !CoreSites.getCurrentSite()?.isOfflineDisabled() &&
             CoreCourseFormatDelegate.displayEnableDownload(this.course);
@@ -309,7 +311,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadMenuHandlers(refresh?: boolean): Promise<void> {
-        this.courseMenuHandlers = await CoreCourseOptionsDelegate.getMenuHandlersToDisplay(this.course, refresh);
+        this.courseMenuHandlers = await CoreCourseOptionsDelegate.getMenuHandlersToDisplay(this.course, refresh, this.isGuest);
     }
 
     /**
@@ -450,9 +452,11 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
             await CoreCourseHelper.confirmAndPrefetchCourse(
                 this.prefetchCourseData,
                 this.course,
-                this.sections,
-                undefined,
-                this.courseMenuHandlers,
+                {
+                    sections: this.sections,
+                    menuHandlers: this.courseMenuHandlers,
+                    isGuest: this.isGuest,
+                },
             );
         } catch (error) {
             if (this.isDestroyed) {

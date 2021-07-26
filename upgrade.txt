@@ -1,6 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 3.9.6 ===
+
+- The parameters of the functions confirmAndPrefetchCourse and confirmAndPrefetchCourses have changed, they now accept an object with options.
+
 === 3.9.5 ===
 
 - Several functions inside AddonNotificationsProvider have been modified to accept an "options" parameter instead of having several optional parameters.
