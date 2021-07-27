@@ -18,6 +18,8 @@ import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/def
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { makeSingleton } from '@singletons';
 import { CoreH5PPlayerComponent } from '@features/h5p/components/h5p-player/h5p-player';
+import { CoreUrlUtils } from '@services/utils/url';
+import { CoreH5PHelper } from '@features/h5p/classes/helper';
 
 /**
  * Handler to support the Display H5P filter.
@@ -61,6 +63,24 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
             placeholder.setAttribute('data-player-src', iframe.src);
 
             iframe.parentElement?.replaceChild(placeholder, iframe);
+        });
+
+        // Handle H5P iframes embedded using the embed HTML code.
+        const embeddedH5PIframes = <HTMLIFrameElement[]> Array.from(this.template.content.querySelectorAll('iframe.h5p-player'));
+
+        embeddedH5PIframes.forEach((iframe) => {
+            // Add the preventredirect param to allow authenticating if auto-login fails.
+            iframe.src = CoreUrlUtils.addParamsToUrl(iframe.src, { preventredirect: false });
+
+            // Add resizer script so the H5P has the right height.
+            CoreH5PHelper.addResizerScript();
+
+            // If the iframe has a small height, add some minimum initial height so it's seen if auto-login fails.
+            const styleHeight = Number(iframe.style.height);
+            const height = Number(iframe.getAttribute('height'));
+            if ((!height || height < 400) && (!styleHeight || styleHeight < 400)) {
+                iframe.style.height = '400px';
+            }
         });
 
         return this.template.innerHTML;

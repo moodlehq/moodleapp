@@ -138,7 +138,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading H5P package.', true);
 
         } finally {
-            this.addResizerScript();
+            CoreH5PHelper.addResizerScript();
             this.onIframeUrlSet.emit({ src: this.iframeSrc!, online: !!localUrl });
         }
     }
@@ -183,22 +183,6 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
                 this.logger.error('Error loading downloaded index:', error, this.fileUrl);
             }
         }
-    }
-
-    /**
-     * Add the resizer script if it hasn't been added already.
-     */
-    protected addResizerScript(): void {
-        if (document.head.querySelector('#core-h5p-resizer-script') != null) {
-            // Script already added, don't add it again.
-            return;
-        }
-
-        const script = document.createElement('script');
-        script.id = 'core-h5p-resizer-script';
-        script.type = 'text/javascript';
-        script.src = CoreH5P.h5pPlayer.getResizerScriptUrl();
-        document.head.appendChild(script);
     }
 
     /**
