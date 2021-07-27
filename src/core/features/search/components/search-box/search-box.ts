@@ -46,12 +46,12 @@ export class CoreSearchBoxComponent implements OnInit {
     @Input() lengthCheck = 3; // Check value length before submit. If 0, any string will be submitted.
     @Input() showClear = true; // Show/hide clear button.
     @Input() disabled = false; // Disables the input text.
-    @Input() protected initialSearch = ''; // Initial search text.
+    @Input() initialSearch = ''; // Initial search text.
 
     /* If provided. It will save and display a history of searches for this particular Id.
      * To use different history lists, place different Id.
      * I.e. AddonMessagesContacts or CoreUserParticipants-6 (using the course Id).*/
-    @Input() protected searchArea = '';
+    @Input() searchArea = '';
 
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the search form.
     @Output() onClear: EventEmitter<void>; // Send event when clearing the search form.

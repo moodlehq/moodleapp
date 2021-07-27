@@ -49,7 +49,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
 
     @Input() hideUntil: unknown; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
-    @Input() protected fullscreen = true; // Use the whole screen.
+    @Input() fullscreen = true; // Use the whole screen.
 
     @ViewChild('content') content?: ElementRef;
 

@@ -36,15 +36,15 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 })
 export class CoreRatingRateComponent implements OnChanges, OnDestroy {
 
-    @Input() protected ratingInfo!: CoreRatingInfo;
-    @Input() protected contextLevel!: ContextLevel; // Context level: course, module, user, etc.
-    @Input() protected instanceId!: number; // Context instance id.
-    @Input() protected itemId!: number; // Item id. Example: forum post id.
-    @Input() protected itemSetId!: number; // Item set id. Example: forum discussion id.
-    @Input() protected courseId!: number;
-    @Input() protected aggregateMethod!: number;
-    @Input() protected scaleId!: number;
-    @Input() protected userId!: number;
+    @Input() ratingInfo!: CoreRatingInfo;
+    @Input() contextLevel!: ContextLevel; // Context level: course, module, user, etc.
+    @Input() instanceId!: number; // Context instance id.
+    @Input() itemId!: number; // Item id. Example: forum post id.
+    @Input() itemSetId!: number; // Item set id. Example: forum discussion id.
+    @Input() courseId!: number;
+    @Input() aggregateMethod!: number;
+    @Input() scaleId!: number;
+    @Input() userId!: number;
     @Output() protected onLoading: EventEmitter<boolean>; // Eevent that indicates whether the component is loading data.
     @Output() protected onUpdate: EventEmitter<void>; // Event emitted when the rating is updated online.
 

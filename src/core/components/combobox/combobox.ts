@@ -51,7 +51,7 @@ export class CoreComboboxComponent {
 
     // Additional options when interface modal is selected.
     @Input() icon?: string; // Icon for modal interface.
-    @Input() protected modalOptions?: ModalOptions; // Will emit an event the value changed.
+    @Input() modalOptions?: ModalOptions; // Will emit an event the value changed.
     @Input() listboxId = '';
 
     expanded = false;

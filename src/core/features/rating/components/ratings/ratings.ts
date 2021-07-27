@@ -26,13 +26,13 @@ import { ModalController } from '@singletons';
 })
 export class CoreRatingRatingsComponent implements OnInit {
 
-    @Input() protected contextLevel!: ContextLevel;
-    @Input() protected instanceId!: number;
-    @Input() protected ratingComponent!: string;
-    @Input() protected ratingArea!: string;
-    @Input() protected aggregateMethod!: number;
-    @Input() protected itemId!: number;
-    @Input() protected scaleId!: number;
+    @Input() contextLevel!: ContextLevel;
+    @Input() instanceId!: number;
+    @Input() ratingComponent!: string;
+    @Input() ratingArea!: string;
+    @Input() aggregateMethod!: number;
+    @Input() itemId!: number;
+    @Input() scaleId!: number;
     @Input() courseId!: number;
 
     loaded = false;
