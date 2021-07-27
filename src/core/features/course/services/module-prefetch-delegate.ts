@@ -1261,7 +1261,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         previousTime?: number,
     ): CourseUpdates {
         // Format the response to index it by module ID.
-        CoreUtils.arrayToObject(response.instances, 'id', result);
+        CoreUtils.arrayToObject<false | CheckUpdatesWSInstance>(response.instances, 'id', result);
 
         // Treat warnings, adding the not supported modules.
         response.warnings?.forEach((warning) => {

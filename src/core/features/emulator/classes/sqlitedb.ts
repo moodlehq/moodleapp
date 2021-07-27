@@ -60,7 +60,7 @@ export class SQLiteDBMock extends SQLiteDB {
                 tx.executeSql(query, args, (tx, result) => {
                     if (result.rows.length <= 0) {
                         // No tables to delete, stop.
-                        resolve();
+                        resolve(null);
 
                         return;
                     }
