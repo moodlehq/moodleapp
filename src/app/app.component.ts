@@ -110,6 +110,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         // Check URLs loaded in any InAppBrowser.
         CoreEvents.on(CoreEvents.IAB_LOAD_START, (event) => {
             // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
+            const protocol = CoreUrlUtils.getUrlProtocol(event.url);
             const url = event.url.replace(/^https?:\/\//, '');
 
             if (CoreCustomURLSchemes.isCustomURL(url)) {
@@ -135,7 +136,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                         CoreUtils.closeInAppBrowser();
                     }
                 } else {
-                    this.lastInAppUrl = url;
+                    this.lastInAppUrl = protocol ? `${protocol}://${url}` : url;
                 }
             }
         });
