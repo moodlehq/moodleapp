@@ -12,9 +12,11 @@ jobs:
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
-        node-version: '12.x'
+        node-version: '12'
     - name: Install npm packages
-      run: npm ci
+      run: |
+        npm install -g npm@7
+        npm ci --no-audit
     - name: Check langindex
       run: |
         result=$(cat scripts/langindex.json | grep \"TBD\" | wc -l); test $result -eq 0
