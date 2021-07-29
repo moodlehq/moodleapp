@@ -52,7 +52,7 @@
             <core-attachments *ngIf="uploadFilesSupported && essayQuestion.attachmentsDraftIdInput" [files]="attachments"
                 [component]="component" [componentId]="componentId" [maxSize]="essayQuestion.attachmentsMaxBytes"
                 [maxSubmissions]="essayQuestion.attachmentsMaxFiles" [allowOffline]="offlineEnabled"
-                [acceptedTypes]="essayQuestion.attachmentsAcceptedTypes">
+                [acceptedTypes]="essayQuestion.attachmentsAcceptedTypes" [courseId]="courseId">
             </core-attachments>
 
             <input *ngIf="essayQuestion.attachmentsDraftIdInput" type="hidden" [name]="essayQuestion.attachmentsDraftIdInput.name"

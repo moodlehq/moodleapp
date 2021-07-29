@@ -35,6 +35,7 @@ import { CoreGroups } from '@services/groups';
 import { AddonModAssignSync, AddonModAssignSyncResult } from '../assign-sync';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGradesHelper } from '@features/grades/services/grades-helper';
+import { CoreCourses } from '@features/courses/services/courses';
 
 /**
  * Handler to prefetch assigns.
@@ -252,6 +253,8 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         promises.push(this.prefetchSubmissions(assign, courseId, module.id, userId, siteId));
 
         promises.push(CoreCourseHelper.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
+        // Get course data, needed to determine upload max size if it's configured to be course limit.
+        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         // Download intro files and attachments. Do not call getFiles because it'd call some WS twice.
         let files: CoreWSFile[] = assign.introattachments || [];

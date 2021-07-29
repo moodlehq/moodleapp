@@ -41,7 +41,7 @@
         <div *ngIf="advanced" id="addon-mod-forum-advanced">
             <core-attachments *ngIf="forum.id && forum.maxattachments > 0"
                 [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [allowOffline]="true" [files]="replyData.files"
-                [component]="component" [componentId]="forum.cmid">
+                [component]="component" [componentId]="forum.cmid" [courseId]="forum.course">
             </core-attachments>
         </div>
         <ion-grid>
