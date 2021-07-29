@@ -31,6 +31,22 @@ import { CoreError } from '@classes/errors/error';
 export class CoreH5PHelper {
 
     /**
+     * Add the resizer script if it hasn't been added already.
+     */
+    static addResizerScript(): void {
+        if (document.head.querySelector('#core-h5p-resizer-script') != null) {
+            // Script already added, don't add it again.
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.id = 'core-h5p-resizer-script';
+        script.type = 'text/javascript';
+        script.src = CoreH5P.h5pPlayer.getResizerScriptUrl();
+        document.head.appendChild(script);
+    }
+
+    /**
      * Convert the number representation of display options into an object.
      *
      * @param displayOptions Number representing display options.
