@@ -114,6 +114,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
         let resource: AddonModResourceResource | CoreCourseWSModule | undefined;
         let options: AddonModResourceCustomData = {};
+        let hasCalledDownloadResource = false;
 
         // Get the resource instance to get the latest name/description and to know if it's embedded.
         if (this.canGetResource) {
@@ -133,6 +134,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             }
 
             if (AddonModResourceHelper.isDisplayedInIframe(this.module)) {
+                hasCalledDownloadResource = true;
+
                 const downloadResult = await this.downloadResourceIfNeeded(refresh, true);
                 const src = await AddonModResourceHelper.getIframeSrc(this.module);
                 this.mode = 'iframe';
@@ -174,7 +177,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                 this.isStreamedFile = CoreMimetypeUtils.isStreamedMimetype(mimetype);
             }
         } finally {
-            this.fillContextMenu(refresh);
+            // Pass false in some cases because downloadResourceIfNeeded already invalidates and refresh data if refresh=true.
+            this.fillContextMenu(hasCalledDownloadResource ? false : refresh);
         }
     }
 

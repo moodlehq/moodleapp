@@ -143,7 +143,8 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
 
             await Promise.all(promises);
         } finally {
-            this.fillContextMenu(refresh);
+            // Pass false because downloadResourceIfNeeded already invalidates and refresh data if refresh=true.
+            this.fillContextMenu(false);
         }
     }
 

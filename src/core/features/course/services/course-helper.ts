@@ -1397,6 +1397,8 @@ export class CoreCourseHelperProvider {
         const siteId = CoreSites.getCurrentSiteId();
 
         if (invalidateCache) {
+            // Currently, some modules pass invalidateCache=false because they already invalidate data in downloadResourceIfNeeded.
+            // If this function is changed to do more actions if invalidateCache=true, please review those modules.
             CoreCourseModulePrefetchDelegate.invalidateModuleStatusCache(module);
         }
 
