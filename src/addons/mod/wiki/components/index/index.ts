@@ -350,12 +350,20 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             cmId: this.module.id,
         });
 
-        // If no page specified, search first page.
-        if (!this.currentPage && !this.pageTitle) {
-            const firstPage = subwikiPages.find((page) => page.firstpage );
-            if (firstPage) {
-                this.currentPage = firstPage.id;
-                this.pageTitle = firstPage.title;
+        if (!this.currentPage) {
+            if (!this.pageTitle) {
+                // No page specified, search first page.
+                const firstPage = subwikiPages.find((page) => page.firstpage );
+                if (firstPage) {
+                    this.currentPage = firstPage.id;
+                    this.pageTitle = firstPage.title;
+                }
+            } else {
+                // Got the page title but not its ID. Search the page.
+                const page = subwikiPages.find((page) => page.title === this.pageTitle );
+                if (page) {
+                    this.currentPage = page.id;
+                }
             }
         }
 
