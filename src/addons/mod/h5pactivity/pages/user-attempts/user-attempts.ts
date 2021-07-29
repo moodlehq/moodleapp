@@ -58,6 +58,8 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
 
         try {
             await this.fetchData();
+
+            await AddonModH5PActivity.logViewReport(this.h5pActivity!.id, this.h5pActivity!.name, { userId: this.userId });
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading attempts.');
         } finally {
