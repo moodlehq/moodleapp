@@ -125,9 +125,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         }
 
         // Check if the plugin specifies if FEATURE_NO_VIEW_LINK is supported.
-        const noViewLink = <boolean | undefined> (this.supportsFeature ?
-            this.supportsFeature(CoreConstants.FEATURE_NO_VIEW_LINK) :
-            this.supportedFeatures?.[CoreConstants.FEATURE_NO_VIEW_LINK]);
+        const noViewLink = this.supportsNoViewLink();
 
         if (noViewLink !== undefined) {
             return noViewLink;
@@ -135,6 +133,17 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
 
         // The plugin doesn't specify it. Use the value returned by the site.
         return 'noviewlink' in module && !!module.noviewlink;
+    }
+
+    /**
+     * Check whether the module supports NO_VIEW_LINK.
+     *
+     * @return Bool if defined, undefined if not specified.
+     */
+    supportsNoViewLink(): boolean | undefined {
+        return <boolean | undefined> (this.supportsFeature ?
+            this.supportsFeature(CoreConstants.FEATURE_NO_VIEW_LINK) :
+            this.supportedFeatures?.[CoreConstants.FEATURE_NO_VIEW_LINK]);
     }
 
     /**

@@ -81,6 +81,9 @@ import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-deleg
 import { CoreSitePluginsMainMenuHomeHandler } from '../classes/handlers/main-menu-home-handler';
 import { AddonWorkshopAssessmentStrategyDelegate } from '@addons/mod/workshop/services/assessment-strategy-delegate';
 import { CoreSitePluginsWorkshopAssessmentStrategyHandler } from '../classes/handlers/workshop-assessment-strategy-handler';
+import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 
 const HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
 
@@ -886,15 +889,27 @@ export class CoreSitePluginsHelperProvider {
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
         const modName = (handlerSchema.moodlecomponent || plugin.component).replace('mod_', '');
 
-        CoreCourseModuleDelegate.registerHandler(
-            new CoreSitePluginsModuleHandler(uniqueName, modName, plugin, handlerSchema, initResult),
-        );
+        const moduleHandler = new CoreSitePluginsModuleHandler(uniqueName, modName, plugin, handlerSchema, initResult);
+        CoreCourseModuleDelegate.registerHandler(moduleHandler);
 
         if (handlerSchema.offlinefunctions && Object.keys(handlerSchema.offlinefunctions).length) {
             // Register the prefetch handler.
             CoreCourseModulePrefetchDelegate.registerHandler(
                 new CoreSitePluginsModulePrefetchHandler(plugin.component, uniqueName, modName, handlerSchema),
             );
+        }
+
+        // Create default link handlers if needed.
+        if (!moduleHandler.supportsNoViewLink() && handlerSchema.method && !handlerSchema.nolinkhandlers) {
+            const indexLinkHandler = new CoreContentLinksModuleIndexHandler(uniqueName, modName);
+            indexLinkHandler.name = uniqueName + '_indexlink';
+            indexLinkHandler.priority = -1; // Use -1 to give more priority to the plugins link handlers if any.
+            CoreContentLinksDelegate.registerHandler(indexLinkHandler);
+
+            const listLinkHandler = new CoreContentLinksModuleListHandler(uniqueName, modName);
+            listLinkHandler.name = uniqueName + '_listlink';
+            listLinkHandler.priority = -1; // Use -1 to give more priority to the plugins link handlers if any.
+            CoreContentLinksDelegate.registerHandler(listLinkHandler);
         }
 
         return uniqueName;
