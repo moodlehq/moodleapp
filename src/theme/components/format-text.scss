@@ -191,6 +191,11 @@ core-format-text {
             display: none;
         }
     }
+
+    // Disable clicks in links inside MathJax equations.
+    .core-format-text-content .filter_mathjaxloader_equation .MathJax_Preview a {
+        pointer-events: none;
+    }
 }
 
 
