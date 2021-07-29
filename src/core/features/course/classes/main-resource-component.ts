@@ -321,28 +321,33 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     /**
      * Watch for changes on the status.
      *
+     * @param refresh Whether we're refreshing data.
      * @return Promise resolved when done.
      */
-    protected async setStatusListener(): Promise<void> {
-        if (typeof this.statusObserver != 'undefined') {
+    protected async setStatusListener(refresh?: boolean): Promise<void> {
+        if (this.statusObserver === undefined) {
+            // Listen for changes on this module status.
+            this.statusObserver = CoreEvents.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
+                if (data.componentId != this.module.id || data.component != this.component) {
+                    return;
+                }
+
+                // The status has changed, update it.
+                const previousStatus = this.currentStatus;
+                this.currentStatus = data.status;
+
+                this.showStatus(this.currentStatus, previousStatus);
+            }, this.siteId);
+        } else if (!refresh) {
             return;
         }
 
-        // Listen for changes on this module status.
-        this.statusObserver = CoreEvents.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
-            if (data.componentId != this.module.id || data.component != this.component) {
-                return;
-            }
-
-            // The status has changed, update it.
-            const previousStatus = this.currentStatus;
-            this.currentStatus = data.status;
-
-            this.showStatus(this.currentStatus, previousStatus);
-        }, this.siteId);
+        if (refresh) {
+            await CoreUtils.ignoreErrors(CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(this.courseId));
+        }
 
         // Also, get the current status.
-        const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(this.module, this.courseId);
+        const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(this.module, this.courseId, undefined, refresh);
 
         this.currentStatus = status;
         this.showStatus(status);
@@ -366,7 +371,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         };
 
         // Get module status to determine if it needs to be downloaded.
-        await this.setStatusListener();
+        await this.setStatusListener(refresh);
 
         if (this.currentStatus != CoreConstants.DOWNLOADED) {
             // Download content. This function also loads module contents if needed.

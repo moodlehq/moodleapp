@@ -117,7 +117,8 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
             this.warning = downloadResult!.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult!.error!) : '';
 
         } finally {
-            this.fillContextMenu(refresh);
+            // Pass false because downloadResourceIfNeeded already invalidates and refresh data if refresh=true.
+            this.fillContextMenu(false);
         }
     }
 

@@ -546,7 +546,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @param courseId Course ID the module belongs to.
      * @param updates Result of getCourseUpdates for all modules in the course. If not provided, it will be
      *                calculated (slower). If it's false it means the site doesn't support check updates.
-     * @param refresh True if it should ignore the cache.
+     * @param refresh True if it should ignore the memory cache, not the WS cache.
      * @param sectionId ID of the section the module belongs to.
      * @return Promise resolved with the status.
      */

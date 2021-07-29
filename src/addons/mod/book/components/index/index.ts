@@ -186,7 +186,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
                 // Ignore errors, they're handled inside the loadChapter function.
             }
         } finally {
-            this.fillContextMenu(refresh);
+            // Pass false because downloadResourceIfNeeded already invalidates and refresh data if refresh=true.
+            this.fillContextMenu(false);
         }
     }
 
