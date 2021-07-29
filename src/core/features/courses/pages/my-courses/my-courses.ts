@@ -185,13 +185,13 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
         this.downloadAllCoursesLoading = true;
 
         try {
-            await CoreCourseHelper.confirmAndPrefetchCourses(this.courses, (progress) => {
+            await CoreCourseHelper.confirmAndPrefetchCourses(this.courses, { onProgress: (progress) => {
                 this.downloadAllCoursesBadge = progress.count + ' / ' + progress.total;
                 this.downloadAllCoursesBadgeA11yText =
                     Translate.instant('core.course.downloadcoursesprogressdescription', progress);
                 this.downloadAllCoursesCount = progress.count;
                 this.downloadAllCoursesTotal = progress.total;
-            });
+            } });
         } catch (error) {
             if (!this.isDestroyed) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);

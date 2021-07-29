@@ -361,17 +361,13 @@ export class CoreCourseHelperProvider {
      *
      * @param data An object where to store the course icon and title: "prefetchCourseIcon", "title" and "downloadSucceeded".
      * @param course Course to prefetch.
-     * @param sections List of course sections.
-     * @param courseHandlers List of course handlers.
-     * @param menuHandlers List of course menu handlers.
+     * @param options Other options.
      * @return Promise resolved when the download finishes, rejected if an error occurs or the user cancels.
      */
     async confirmAndPrefetchCourse(
         data: CorePrefetchStatusInfo,
         course: CoreCourseAnyCourseData,
-        sections?: CoreCourseWSSection[],
-        courseHandlers?: CoreCourseOptionsHandlerToDisplay[],
-        menuHandlers?: CoreCourseOptionsMenuHandlerToDisplay[],
+        options: CoreCoursePrefetchCourseOptions = {},
     ): Promise<void> {
         const initialIcon = data.icon;
         const initialStatus = data.status;
@@ -386,23 +382,23 @@ export class CoreCourseHelperProvider {
 
         try {
             // Get the sections first if needed.
-            if (!sections) {
-                sections = await CoreCourse.getSections(course.id, false, true);
+            if (!options.sections) {
+                options.sections = await CoreCourse.getSections(course.id, false, true);
             }
 
             // Confirm the download.
-            await this.confirmDownloadSizeSection(course.id, undefined, sections, true);
+            await this.confirmDownloadSizeSection(course.id, undefined, options.sections, true);
 
             // User confirmed, get the course handlers if needed.
-            if (!courseHandlers) {
-                courseHandlers = await CoreCourseOptionsDelegate.getHandlersToDisplay(course);
+            if (!options.courseHandlers) {
+                options.courseHandlers = await CoreCourseOptionsDelegate.getHandlersToDisplay(course, false, options.isGuest);
             }
-            if (!menuHandlers) {
-                menuHandlers = await CoreCourseOptionsDelegate.getMenuHandlersToDisplay(course);
+            if (!options.menuHandlers) {
+                options.menuHandlers = await CoreCourseOptionsDelegate.getMenuHandlersToDisplay(course, false, options.isGuest);
             }
 
             // Now we have all the data, download the course.
-            await this.prefetchCourse(course, sections, courseHandlers, menuHandlers, siteId);
+            await this.prefetchCourse(course, options.sections, options.courseHandlers, options.menuHandlers, siteId);
 
             // Download successful.
             data.downloadSucceeded = true;
@@ -422,12 +418,12 @@ export class CoreCourseHelperProvider {
      * Confirm and prefetches a list of courses.
      *
      * @param courses List of courses to download.
-     * @param onProgress Function to call everytime a course is downloaded.
+     * @param options Other options.
      * @return Resolved when downloaded, rejected if error or canceled.
      */
     async confirmAndPrefetchCourses(
         courses: CoreEnrolledCourseDataWithExtraInfoAndOptions[],
-        onProgress?: (data: CoreCourseCoursesProgress) => void,
+        options: CoreCourseConfirmPrefetchCoursesOptions = {},
     ): Promise<void> {
         const siteId = CoreSites.getCurrentSiteId();
 
@@ -437,12 +433,18 @@ export class CoreCourseHelperProvider {
         const total = courses.length;
         let count = 0;
 
-        const promises = courses.map((course) => {
+        const promises = courses.map(async (course) => {
             const subPromises: Promise<void>[] = [];
             let sections: CoreCourseWSSection[];
             let handlers: CoreCourseOptionsHandlerToDisplay[] = [];
             let menuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
             let success = true;
+            let isGuest = false;
+
+            if (options.canHaveGuestCourses) {
+                // Check if the user can only access as guest.
+                isGuest = await this.courseUsesGuestAccess(course.id, siteId);
+            }
 
             // Get the sections and the handlers.
             subPromises.push(CoreCourse.getSections(course.id, false, true).then((courseSections) => {
@@ -451,12 +453,12 @@ export class CoreCourseHelperProvider {
                 return;
             }));
 
-            subPromises.push(CoreCourseOptionsDelegate.getHandlersToDisplay(course).then((cHandlers) => {
+            subPromises.push(CoreCourseOptionsDelegate.getHandlersToDisplay(course, false, isGuest).then((cHandlers) => {
                 handlers = cHandlers;
 
                 return;
             }));
-            subPromises.push(CoreCourseOptionsDelegate.getMenuHandlersToDisplay(course).then((mHandlers) => {
+            subPromises.push(CoreCourseOptionsDelegate.getMenuHandlersToDisplay(course, false, isGuest).then((mHandlers) => {
                 menuHandlers = mHandlers;
 
                 return;
@@ -470,15 +472,15 @@ export class CoreCourseHelperProvider {
                 }).finally(() => {
                 // Course downloaded or failed, notify the progress.
                     count++;
-                    if (onProgress) {
-                        onProgress({ count: count, total: total, courseId: course.id, success: success });
+                    if (options.onProgress) {
+                        options.onProgress({ count: count, total: total, courseId: course.id, success: success });
                     }
                 });
         });
 
-        if (onProgress) {
+        if (options.onProgress) {
             // Notify the start of the download.
-            onProgress({ count: 0, total: total, success: true });
+            options.onProgress({ count: 0, total: total, success: true });
         }
 
         return CoreUtils.allPromises(promises);
@@ -606,6 +608,55 @@ export class CoreCourseHelperProvider {
             if (!instance.isDestroyed) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
             }
+        }
+    }
+
+    /**
+     * Check whether a course is accessed using guest access.
+     *
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with boolean: whether course is accessed using guest access.
+     */
+    async courseUsesGuestAccess(courseId: number, siteId?: string): Promise<boolean> {
+        try {
+            try {
+                // Check if user is enrolled. If enrolled, no guest access.
+                await CoreCourses.getUserCourse(courseId, false, siteId);
+
+                return false;
+            } catch {
+                // Ignore errors.
+            }
+
+            try {
+                // The user is not enrolled in the course. Use getCourses to see if it's an admin/manager and can see the course.
+                await CoreCourses.getCourse(courseId, siteId);
+
+                return false;
+            } catch {
+                // Ignore errors.
+            }
+
+            // Check if guest access is enabled.
+            const enrolmentMethods = await CoreCourses.getCourseEnrolmentMethods(courseId, siteId);
+
+            const method = enrolmentMethods.find((method) => method.type === 'guest');
+
+            if (!method) {
+                return false;
+            }
+
+            const info = await CoreCourses.getCourseGuestEnrolmentInfo(method.id);
+            if (!info.status) {
+                // Not active, reject.
+                return false;
+            }
+
+            // Don't allow guest access if it requires a password.
+            return !info.passwordrequired;
+        } catch {
+            return false;
         }
     }
 
@@ -1257,23 +1308,30 @@ export class CoreCourseHelperProvider {
      *
      * @param courses Courses array to prefetch.
      * @param prefetch Prefetch information to be updated.
+     * @param options Other options.
      * @return Promise resolved when done.
      */
     async prefetchCourses(
         courses: CoreEnrolledCourseDataWithExtraInfoAndOptions[],
         prefetch: CorePrefetchStatusInfo,
+        options: CoreCoursePrefetchCoursesOptions = {},
     ): Promise<void> {
         prefetch.loading = true;
         prefetch.icon = CoreConstants.ICON_DOWNLOADING;
         prefetch.badge = '';
 
-        try {
-            await this.confirmAndPrefetchCourses(courses, (progress) => {
+        const prefetchOptions = {
+            ...options,
+            onProgress: (progress) => {
                 prefetch.badge = progress.count + ' / ' + progress.total;
                 prefetch.badgeA11yText = Translate.instant('core.course.downloadcoursesprogressdescription', progress);
                 prefetch.count = progress.count;
                 prefetch.total = progress.total;
-            });
+            },
+        };
+
+        try {
+            await this.confirmAndPrefetchCourses(courses, prefetchOptions);
             prefetch.icon = CoreConstants.ICON_OUTDATED;
         } finally {
             prefetch.loading = false;
@@ -2057,6 +2115,30 @@ export type CoreCourseModuleCompletionData = CoreCourseModuleWSCompletionData & 
     tracking?: number;
     cmid?: number;
     offline?: boolean;
+};
+
+/**
+ * Options for prefetch course function.
+ */
+export type CoreCoursePrefetchCourseOptions = {
+    sections?: CoreCourseWSSection[]; // List of course sections.
+    courseHandlers?: CoreCourseOptionsHandlerToDisplay[]; // List of course handlers.
+    menuHandlers?: CoreCourseOptionsMenuHandlerToDisplay[]; // List of course menu handlers.
+    isGuest?: boolean; // Whether the user is guest.
+};
+
+/**
+ * Options for prefetch courses function.
+ */
+export type CoreCoursePrefetchCoursesOptions = {
+    canHaveGuestCourses?: boolean; // Whether the list of courses can contain courses with only guest access.
+};
+
+/**
+ * Options for confirm and prefetch courses function.
+ */
+export type CoreCourseConfirmPrefetchCoursesOptions = CoreCoursePrefetchCoursesOptions & {
+    onProgress?: (data: CoreCourseCoursesProgress) => void;
 };
 
 type ComponentWithContextMenu = {

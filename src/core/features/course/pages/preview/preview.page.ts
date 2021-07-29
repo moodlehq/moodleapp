@@ -67,6 +67,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     isMobile: boolean;
 
     protected isGuestEnabled = false;
+    protected useGuestAccess = false;
     protected guestInstanceId?: number;
     protected enrolmentMethods: CoreCourseEnrolmentMethod[] = [];
     protected waitStart = 0;
@@ -209,10 +210,12 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
             this.course!.fullname = course.fullname || this.course!.fullname;
             this.course!.summary = course.summary || this.course!.summary;
             this.canAccessCourse = true;
+            this.useGuestAccess = false;
         } catch {
             // The user is not an admin/manager. Check if we can provide guest access to the course.
             try {
                 this.canAccessCourse = !(await this.canAccessAsGuest());
+                this.useGuestAccess = this.canAccessCourse;
             } catch {
                 this.canAccessCourse = false;
             }
@@ -243,7 +246,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
             return;
         }
 
-        CoreCourseHelper.openCourse(this.course!);
+        CoreCourseHelper.openCourse(this.course!, { isGuest: this.useGuestAccess });
     }
 
     /**
@@ -452,12 +455,16 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     /**
      * Prefetch the course.
      */
-    prefetchCourse(): void {
-        CoreCourseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course!).catch((error) => {
+    async prefetchCourse(): Promise<void> {
+        try {
+            await CoreCourseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course!, {
+                isGuest: this.useGuestAccess,
+            });
+        } catch (error) {
             if (!this.pageDestroyed) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
             }
-        });
+        }
     }
 
     /**

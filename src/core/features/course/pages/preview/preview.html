@@ -113,7 +113,10 @@
                 </ion-icon>
                 <ion-spinner *ngIf="prefetchCourseData.loading" slot="start"
                     [attr.aria-label]="'core.loading' | translate"></ion-spinner>
-                <ion-label><h2>{{ 'core.course.downloadcourse' | translate }}</h2></ion-label>
+                <ion-label>
+                    <h2 *ngIf="prefetchCourseData.status != statusDownloaded">{{ 'core.course.downloadcourse' | translate }}</h2>
+                    <h2 *ngIf="prefetchCourseData.status == statusDownloaded">{{ 'core.course.refreshcourse' | translate }}</h2>
+                </ion-label>
             </ion-item>
             <ion-item button (click)="openCourse()" [attr.aria-label]="course.fullname" *ngIf="!avoidOpenCourse && canAccessCourse"
                 detail="true">
