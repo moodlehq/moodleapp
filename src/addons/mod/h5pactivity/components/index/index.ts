@@ -79,6 +79,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     trackComponent?: string; // Component for tracking.
     hasOffline = false;
     isOpeningPage = false;
+    canViewAllAttempts = false;
 
     protected listeningResize = false;
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
@@ -137,6 +138,8 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             ]);
 
             this.trackComponent = this.accessInfo?.cansubmit ? AddonModH5PActivityProvider.TRACK_COMPONENT : '';
+            this.canViewAllAttempts = !!this.h5pActivity.enabletracking && !!this.accessInfo?.canreviewattempts &&
+                AddonModH5PActivity.canGetUsersAttemptsInSite();
 
             if (this.h5pActivity.package && this.h5pActivity.package[0]) {
                 // The online player should use the original file, not the trusted one.
@@ -377,7 +380,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     }
 
     /**
-     * Go to view user events.
+     * Go to view user attempts.
      */
     async viewMyAttempts(): Promise<void> {
         this.isOpeningPage = true;
@@ -386,6 +389,21 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         try {
             await CoreNavigator.navigateToSitePath(
                 `${AddonModH5PActivityModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/userattempts/${userId}`,
+            );
+        } finally {
+            this.isOpeningPage = false;
+        }
+    }
+
+    /**
+     * Go to view all user attempts.
+     */
+    async viewAllAttempts(): Promise<void> {
+        this.isOpeningPage = true;
+
+        try {
+            await CoreNavigator.navigateToSitePath(
+                `${AddonModH5PActivityModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/users`,
             );
         } finally {
             this.isOpeningPage = false;

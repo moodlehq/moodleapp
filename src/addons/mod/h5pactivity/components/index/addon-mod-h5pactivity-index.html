@@ -5,6 +5,10 @@
             [priority]="1000" [content]="'addon.mod_h5pactivity.review_my_attempts' | translate" (action)="viewMyAttempts()"
             iconAction="stats-chart">
         </core-context-menu-item>
+        <core-context-menu-item *ngIf="canViewAllAttempts"
+            [priority]="1000" [content]="'addon.mod_h5pactivity.review_attempts' | translate" (action)="viewAllAttempts()"
+            iconAction="stats-chart">
+        </core-context-menu-item>
         <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
             [href]="externalUrl" iconAction="fas-external-link-alt">
         </core-context-menu-item>
