@@ -16,7 +16,7 @@ module.exports = {
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src/' }),
     globals: {
         'ts-jest': {
-            tsConfig: './tsconfig.test.json',
+            tsconfig: './tsconfig.test.json',
         },
     },
 };
