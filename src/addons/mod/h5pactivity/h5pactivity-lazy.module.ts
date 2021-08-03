@@ -36,6 +36,11 @@ const routes: Routes = [
         loadChildren: () => import('./pages/attempt-results/attempt-results.module')
             .then( m => m.AddonModH5PActivityAttemptResultsPageModule),
     },
+    {
+        path: ':courseId/:cmId/users',
+        loadChildren: () => import('./pages/users-attempts/users-attempts.module')
+            .then( m => m.AddonModH5PActivityUsersAttemptsPageModule),
+    },
 ];
 
 @NgModule({
