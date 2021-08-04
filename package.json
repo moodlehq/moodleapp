@@ -24,7 +24,7 @@
     "build:prod": "NODE_ENV=production ionic build --prod",
     "build:test": "NODE_ENV=testing ionic build",
     "dev:android": "ionic cordova run android --livereload",
-    "dev:ios": "ionic cordova run ios --livereload",
+    "dev:ios": "ionic cordova run ios --livereload --external",
     "prod:android": "NODE_ENV=production ionic cordova run android --aot",
     "prod:ios": "NODE_ENV=production ionic cordova run ios --aot",
     "test": "NODE_ENV=testing gulp && jest --verbose",
