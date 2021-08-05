@@ -23,8 +23,6 @@ import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the tag index area.
- *
- * @todo testing.
  */
 @Component({
     selector: 'page-core-tag-index-area',

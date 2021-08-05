@@ -104,8 +104,6 @@ export class CoreFileProvider {
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreFileProvider');
-
-        // @todo: Check if redefining FileReader getters and setters is still needed in Android.
     }
 
     /**

@@ -23,8 +23,6 @@ import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page to display the list of sites to choose one to perform a content link action.
- *
- * @todo Include routing and testing.
  */
 @Component({
     selector: 'core-content-links-choose-site-modal',

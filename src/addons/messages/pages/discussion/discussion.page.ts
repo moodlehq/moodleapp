@@ -71,7 +71,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     protected keepMessageMap: {[hash: string]: boolean} = {};
     protected syncObserver: CoreEventObserver;
     protected oldContentHeight = 0;
-    protected keyboardObserver: CoreEventObserver;
     protected scrollBottom = true;
     protected viewDestroyed = false;
     protected memberInfoObserver: CoreEventObserver;
@@ -148,12 +147,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             },
             this.siteId,
         );
-
-        // Recalculate footer position when keyboard is shown or hidden.
-        this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, () => {
-            // @todo probably not needed.
-            // this.content.resize();
-        });
     }
 
     /**
@@ -1701,7 +1694,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         // Unset again, just in case.
         this.unsetPolling();
         this.syncObserver?.off();
-        this.keyboardObserver?.off();
         this.memberInfoObserver?.off();
         this.viewDestroyed = true;
     }

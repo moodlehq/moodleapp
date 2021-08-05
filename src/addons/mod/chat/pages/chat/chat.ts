@@ -23,7 +23,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Network, NgZone, Translate } from '@singletons';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { AddonModChatUsersModalComponent, AddonModChatUsersModalResult } from '../../components/users-modal/users-modal';
 import { AddonModChat, AddonModChatProvider, AddonModChatUser } from '../../services/chat';
@@ -59,7 +59,6 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     protected lastTime = 0;
     protected oldContentHeight = 0;
     protected onlineSubscription: Subscription;
-    protected keyboardObserver: CoreEventObserver;
     protected viewDestroyed = false;
     protected pollingRunning = false;
     protected users: AddonModChatUser[] = [];
@@ -72,12 +71,6 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
             NgZone.run(() => {
                 this.isOnline = CoreApp.isOnline();
             });
-        });
-
-        // Recalculate footer position when keyboard is shown or hidden.
-        this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, () => {
-            // @todo probably not needed.
-            // this.content.resize();
         });
     }
 
@@ -358,30 +351,6 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
-     * Content or scroll has been resized. For content, only call it if it's been added on top.
-     */
-    resizeContent(): void {
-        // @todo probably not needed.
-        // let top = this.content.getContentDimensions().scrollTop;
-        // this.content.resize();
-
-        // // Wait for new content height to be calculated.
-        // setTimeout(() => {
-        //     // Visible content size changed, maintain the bottom position.
-        //     if (!this.viewDestroyed && this.content && this.domUtils.getContentHeight(this.content) != this.oldContentHeight) {
-        //         if (!top) {
-        //             top = this.content.getContentDimensions().scrollTop;
-        //         }
-
-        //         top += this.oldContentHeight - this.domUtils.getContentHeight(this.content);
-        //         this.oldContentHeight = this.domUtils.getContentHeight(this.content);
-
-        //         this.content.scrollTo(0, top, 0);
-        //     }
-        // });
-    }
-
-    /**
      * Check if we can leave the page or not.
      *
      * @return Resolved with true if we can leave it, rejected if not.
@@ -402,7 +371,6 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
      */
     ngOnDestroy(): void {
         this.onlineSubscription && this.onlineSubscription.unsubscribe();
-        this.keyboardObserver && this.keyboardObserver.off();
         this.stopPolling();
         this.viewDestroyed = true;
     }

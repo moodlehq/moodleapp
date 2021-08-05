@@ -363,10 +363,6 @@ export class AddonCalendarListPage implements OnInit, OnDestroy {
 
                 this.daysLoaded += AddonCalendarProvider.DAYS_INTERVAL;
             }
-
-            // Resize the content so infinite loading is able to calculate if it should load more items or not.
-            // @todo: Infinite loading is not working if content is not high enough.
-            // this.content.resize();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
