@@ -76,19 +76,6 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
      */
     protected async initializeTabs(): Promise<void> {
         await super.initializeTabs();
-
-        // @todo: Is this still needed?
-        // if (this.content) {
-        //     if (!this.parentScrollable) {
-        //         // Parent scroll element (if core-tabs is inside a ion-content).
-        //         const scroll = await this.content.getScrollElement();
-        //         if (scroll) {
-        //             scroll.classList.add('no-scroll');
-        //         }
-        //     } else {
-        //         this.originalTabsContainer?.classList.add('no-scroll');
-        //     }
-        // }
     }
 
     /**

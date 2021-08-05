@@ -116,7 +116,7 @@
         </p>
 
         <core-send-message-form [sendDisabled]="sending" *ngIf="isOnline && polling && loaded" [message]="newMessage"
-            (onSubmit)="sendMessage($event)" [placeholder]="'addon.messages.newmessage' | translate" (onResize)="resizeContent()">
+            (onSubmit)="sendMessage($event)" [placeholder]="'addon.messages.newmessage' | translate">
         </core-send-message-form>
 
         <ion-button *ngIf="isOnline && !polling && loaded" (click)="reconnect()" expand="block" color="light">

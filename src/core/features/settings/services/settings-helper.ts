@@ -405,7 +405,7 @@ export class CoreSettingsHelperProvider {
      */
     applyZoomLevel(zoomLevel: CoreZoomLevel): void {
         const zoom = CoreConstants.CONFIG.zoomlevels[zoomLevel];
-        // @todo Since zoom is deprecated and fontSize is not working, we should do some research here.
+        // @todo MOBILE-3790 non-standard property, doesn't work everywhere.
         document.documentElement.style.zoom = zoom + '%';
     }
 

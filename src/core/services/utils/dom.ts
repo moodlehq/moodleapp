@@ -1986,7 +1986,7 @@ function fixIOSPopoverPosition(baseEl: HTMLElement, ev?: Event): void {
  * which doesn't return the correct dimensions when the `zoom` CSS property is being used. This is only a temporary solution
  * in Android because system zooming is already supported, so it won't be necessary to do it at an app level.
  *
- * @todo remove the ability to zoom in Android.
+ * @todo MOBILE-3790 remove the ability to zoom in Android.
  *
  * This function has been copied in its entirety from Ionic's source code, only changing the aforementioned calculation
  * of the body dimensions with `document.body.clientXXX`.

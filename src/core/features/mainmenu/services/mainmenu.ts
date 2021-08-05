@@ -241,8 +241,6 @@ export class CoreMainMenuProvider {
 
         if (tablet != this.tablet) {
             this.tablet = tablet;
-
-            // @todo Resize so content margins can be updated.
         }
 
         return tablet ? 'side' : 'bottom';

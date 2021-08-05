@@ -109,8 +109,6 @@ export abstract class CorePageItemsListManager<Item> {
         this.selectedItem = null;
     }
 
-    // @todo Implement watchResize.
-
     /**
      * Check whether the given item is selected or not.
      *
