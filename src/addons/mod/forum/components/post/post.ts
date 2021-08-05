@@ -225,6 +225,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                 cmId: this.forum.cmid,
             },
             event,
+            waitForDismiss: true,
         });
 
         if (popoverData && popoverData.action) {
@@ -319,15 +320,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                 await this.confirmDiscard();
                 this.setReplyFormData(this.post.id);
 
-                if (this.content) {
-                    setTimeout(() => {
-                        CoreDomUtils.scrollToElementBySelector(
-                            this.elementRef.nativeElement,
-                            this.content,
-                            '#addon-forum-reply-edit-form-' + this.uniqueId,
-                        );
-                    });
-                }
+                this.scrollToForm();
             } catch {
                 // Cancelled.
             }
@@ -351,16 +344,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             this.messageControl.setValue(this.replyData.message);
         }
 
-        if (this.content) {
-            setTimeout(() => {
-                CoreDomUtils.scrollToElementBySelector(
-                    this.elementRef.nativeElement,
-                    this.content,
-                    '#addon-forum-reply-edit-form-' + this.uniqueId,
-                );
-            });
-        }
-
+        this.scrollToForm();
     }
 
     /**
@@ -382,6 +366,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                 this.post.attachments,
                 this.post.isprivatereply,
             );
+
+            this.scrollToForm(5);
         } catch (error) {
             // Cancelled.
         }
@@ -598,6 +584,26 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
         CoreSync.unblockOperation(AddonModForumProvider.COMPONENT, this.replyData.syncId);
         delete this.replyData.syncId;
+    }
+
+    /**
+     * Scroll to reply/edit form.
+     *
+     * @param ticksToWait Number of ticks to wait before scrolling.
+     * @return Promise resolved when done.
+     */
+    protected async scrollToForm(ticksToWait = 1): Promise<void> {
+        if (!this.content) {
+            return;
+        }
+
+        await CoreUtils.nextTicks(ticksToWait);
+
+        CoreDomUtils.scrollToElementBySelector(
+            this.elementRef.nativeElement,
+            this.content,
+            '#addon-forum-reply-edit-form-' + this.uniqueId,
+        );
     }
 
 }

@@ -1728,13 +1728,13 @@ export class CoreDomUtilsProvider {
     /**
      * Opens a popover.
      *
-     * @param popoverOptions Modal Options.
+     * @param options Options.
      */
     async openPopover<T = void>(
-        popoverOptions: PopoverOptions,
+        options: OpenPopoverOptions,
     ): Promise<T | undefined> {
 
-        const popover = await PopoverController.create(popoverOptions);
+        const popover = await PopoverController.create(options);
         const zoomLevel = await CoreConfig.get(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.NORMAL);
 
         await popover.present();
@@ -1743,16 +1743,16 @@ export class CoreDomUtilsProvider {
         if (zoomLevel !== CoreZoomLevel.NORMAL) {
             switch (getMode()) {
                 case 'ios':
-                    fixIOSPopoverPosition(popover, popoverOptions.event);
+                    fixIOSPopoverPosition(popover, options.event);
                     break;
                 case 'md':
-                    fixMDPopoverPosition(popover, popoverOptions.event);
+                    fixMDPopoverPosition(popover, options.event);
                     break;
             }
         }
 
         // If onDidDismiss is nedded we can add a new param to the function to wait one function or the other.
-        const result = await popover.onWillDismiss<T>();
+        const result = options.waitForDismiss ? await popover.onDidDismiss<T>() : await popover.onWillDismiss<T>();
         if (result?.data) {
             return result?.data;
         }
@@ -2046,3 +2046,10 @@ export const CoreDomUtils = makeSingleton(CoreDomUtilsProvider);
 
 type AnchorOrMediaElement =
     HTMLAnchorElement | HTMLImageElement | HTMLAudioElement | HTMLVideoElement | HTMLSourceElement | HTMLTrackElement;
+
+/**
+ * Options for the openPopover function.
+ */
+export type OpenPopoverOptions = PopoverOptions & {
+    waitForDismiss?: boolean;
+};
