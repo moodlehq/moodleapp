@@ -54,6 +54,7 @@ import { AddonModForumEditPostComponent } from '../edit-post/edit-post';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreForms } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
+import { AddonModForumSharedReplyData } from '../../pages/discussion/discussion.page';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -71,7 +72,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     @Input() discussion?: AddonModForumDiscussion; // Post's' discussion, only for starting posts.
     @Input() component!: string; // Component this post belong to.
     @Input() componentId!: number; // Component ID.
-    @Input() replyData!: AddonModForumReply; // Object with the new post data. Usually shared between posts.
+    @Input() replyData!: AddonModForumSharedReplyData; // Object with the new post data. Usually shared between posts.
     @Input() originalData!: Omit<AddonModForumReply, 'id'>; // Object with the original post data. Usually shared between posts.
     @Input() trackPosts!: boolean; // True if post is being tracked.
     @Input() forum!: AddonModForumData; // The forum the post belongs to. Required for attachments and offline posts.
@@ -92,8 +93,6 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     tagsEnabled!: boolean;
     displaySubject = true;
     optionsMenuEnabled = false;
-
-    protected syncId!: string;
 
     constructor(
         protected elementRef: ElementRef,
@@ -372,8 +371,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         try {
             await this.confirmDiscard();
 
-            this.syncId = AddonModForumSync.getDiscussionSyncId(this.discussionId);
-            CoreSync.blockOperation(AddonModForumProvider.COMPONENT, this.syncId);
+            this.replyData.syncId = AddonModForumSync.getDiscussionSyncId(this.discussionId);
+            CoreSync.blockOperation(AddonModForumProvider.COMPONENT, this.replyData.syncId);
 
             this.setReplyFormData(
                 this.post.parentid,
@@ -498,9 +497,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
 
-            if (this.syncId) {
-                CoreSync.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);
-            }
+            this.unblockOperation();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_forum.couldnotadd', true);
         } finally {
@@ -520,9 +517,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
             CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
-            if (this.syncId) {
-                CoreSync.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);
-            }
+            this.unblockOperation();
         } catch (error) {
             // Cancelled.
         }
@@ -552,9 +547,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
             this.onPostChange.emit();
 
-            if (this.syncId) {
-                CoreSync.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);
-            }
+            this.unblockOperation();
         } catch (error) {
             // Cancelled.
         }
@@ -578,9 +571,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * Component being destroyed.
      */
     ngOnDestroy(): void {
-        if (this.syncId) {
-            CoreSync.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);
-        }
+        this.unblockOperation();
     }
 
     /**
@@ -588,13 +579,25 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      *
      * @return Promise resolved if the user confirms or data was not changed and rejected otherwise.
      */
-    protected confirmDiscard(): Promise<void> {
+    protected async confirmDiscard(): Promise<void> {
         if (AddonModForumHelper.hasPostDataChanged(this.replyData, this.originalData)) {
             // Show confirmation if some data has been modified.
-            return CoreDomUtils.showConfirm(Translate.instant('core.confirmloss'));
-        } else {
-            return Promise.resolve();
+            await CoreDomUtils.showConfirm(Translate.instant('core.confirmloss'));
         }
+
+        this.unblockOperation();
+    }
+
+    /**
+     * Unblock operation if there's any blocked operation.
+     */
+    protected unblockOperation(): void {
+        if (!this.replyData.syncId) {
+            return;
+        }
+
+        CoreSync.unblockOperation(AddonModForumProvider.COMPONENT, this.replyData.syncId);
+        delete this.replyData.syncId;
     }
 
 }

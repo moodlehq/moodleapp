@@ -74,7 +74,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     postHasOffline!: boolean;
     sort: SortType = 'nested';
     trackPosts!: boolean;
-    replyData: Omit<AddonModForumReply, 'id'> = {
+    replyData: AddonModForumSharedReplyData = {
         replyingTo: 0,
         isEditing: false,
         subject: '',
@@ -795,3 +795,10 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     }
 
 }
+
+/**
+ * Reply data shared by post.
+ */
+export type AddonModForumSharedReplyData = Omit<AddonModForumReply, 'id'> & {
+    syncId?: string; // Sync ID if some post has blocked synchronization.
+};
