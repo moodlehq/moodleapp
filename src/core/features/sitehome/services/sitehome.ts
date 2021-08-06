@@ -27,7 +27,7 @@ import { AddonModForum, AddonModForumData } from '@addons/mod/forum/services/for
 export enum FrontPageItemNames {
     NEWS_ITEMS = 0,
     LIST_OF_CATEGORIES = 2,
-    COMBO_LIST = 3,
+    COMBO_LIST = 4,
     ENROLLED_COURSES = 5,
     LIST_OF_COURSE = 6,
     COURSE_SEARCH_BOX = 7,
