@@ -23,7 +23,6 @@ before_install:
   - npm --version
   - nvm --version
   - npm ci
-  - npm install npm@^6 -g
 
 before_script:
   - npx gulp
@@ -41,8 +40,8 @@ jobs:
       components:
       - tools
       - platform-tools
-      - build-tools-29.0.3
-      - android-29
+      - build-tools-30.0.2
+      - android-30
       - extra-google-google_play_services
       - extra-google-m2repository
       - extra-android-m2repository
