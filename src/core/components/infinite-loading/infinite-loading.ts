@@ -69,7 +69,7 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
      * like the Ionic component does.
      */
     protected async checkScrollDistance(): Promise<void> {
-        if (!this.enabled) {
+        if (!this.enabled || this.error || this.loadingMore) {
             return;
         }
 

@@ -1443,3 +1443,9 @@ type StoredLoginLaunchData = {
     pageOptions: CoreNavigationOptions;
     ssoUrlParams: CoreUrlParams;
 };
+
+export type CoreLoginSiteSelectorListMethod =
+    'url'|
+    'sitefinder'|
+    'list'|
+    '';
