@@ -20,7 +20,7 @@ import { CoreConfig } from '@services/config';
 import { CoreSites, CoreSiteCheckResponse, CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreLoginHelper, CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { CoreLoginHelper, CoreLoginHelperProvider, CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
@@ -49,7 +49,7 @@ export class CoreLoginSitePage implements OnInit {
     siteForm: FormGroup;
     fixedSites?: CoreLoginSiteInfoExtended[];
     filteredSites?: CoreLoginSiteInfoExtended[];
-    siteSelector = 'sitefinder';
+    siteSelector: CoreLoginSiteSelectorListMethod = 'sitefinder';
     showKeyboard = false;
     filter = '';
     sites: CoreLoginSiteInfoExtended[] = [];
@@ -124,22 +124,12 @@ export class CoreLoginSitePage implements OnInit {
      * @return URL of the first site.
      */
     protected initSiteSelector(): string {
-        // Deprecate listnourl on 3.9.3, remove this block on the following release.
-        if (this.siteSelector == 'listnourl') {
-            this.siteSelector = 'list';
-            this.siteFinderSettings.displayurl = false;
-        }
-
         this.fixedSites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> CoreLoginHelper.getFixedSites());
+        this.siteSelector = 'list'; // In case it's not defined
 
         // Do not show images if none are set.
         if (!this.fixedSites.some((site) => !!site.imageurl)) {
             this.siteFinderSettings.displayimage = false;
-        }
-
-        // Autoselect if not defined.
-        if (this.siteSelector != 'list' && this.siteSelector != 'buttons') {
-            this.siteSelector = this.fixedSites.length > 3 ? 'list' : 'buttons';
         }
 
         this.filteredSites = this.fixedSites;
