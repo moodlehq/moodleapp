@@ -1729,12 +1729,12 @@ export class CoreDomUtilsProvider {
      * Opens a popover.
      *
      * @param options Options.
+     * @return Promise resolved when the popover is dismissed or will be dismissed.
      */
-    async openPopover<T = void>(
-        options: OpenPopoverOptions,
-    ): Promise<T | undefined> {
+    async openPopover<T = void>(options: OpenPopoverOptions): Promise<T | undefined> {
 
-        const popover = await PopoverController.create(options);
+        const { waitForDismissCompleted, ...popoverOptions } = options;
+        const popover = await PopoverController.create(popoverOptions);
         const zoomLevel = await CoreConfig.get(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.NORMAL);
 
         await popover.present();
@@ -1751,8 +1751,7 @@ export class CoreDomUtilsProvider {
             }
         }
 
-        // If onDidDismiss is nedded we can add a new param to the function to wait one function or the other.
-        const result = options.waitForDismiss ? await popover.onDidDismiss<T>() : await popover.onWillDismiss<T>();
+        const result = waitForDismissCompleted ? await popover.onDidDismiss<T>() : await popover.onWillDismiss<T>();
         if (result?.data) {
             return result?.data;
         }
@@ -2051,5 +2050,5 @@ type AnchorOrMediaElement =
  * Options for the openPopover function.
  */
 export type OpenPopoverOptions = PopoverOptions & {
-    waitForDismiss?: boolean;
+    waitForDismissCompleted?: boolean;
 };

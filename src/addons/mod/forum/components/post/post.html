@@ -1,5 +1,5 @@
 <div class="addon-mod_forum-post">
-    <ng-container *ngIf="!replyData.isEditing || !showForm">
+    <ng-container *ngIf="!formData.isEditing || !showForm">
         <ion-card-header class="ion-text-wrap ion-no-padding" id="addon-mod_forum-post-{{post.id}}">
             <ion-item class="ion-text-wrap" [class.highlight]="highlight" lines="none">
                 <ion-label>
@@ -94,7 +94,7 @@
                 <ion-label>
                     <ion-button fill="clear" size="small"
                         [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId"
-                        [attr.aria-expanded]="replyData.replyingTo === post.id"
+                        [attr.aria-expanded]="formData.replyingTo === post.id"
                         (click)="showReplyForm($event)">
                         <ion-icon name="fas-reply" slot="start" aria-hidden="true"></ion-icon>
                         {{ 'addon.mod_forum.reply' | translate }}
@@ -108,7 +108,7 @@
         [id]="'addon-forum-reply-edit-form-' + uniqueId" #replyFormEl>
         <ion-item>
             <ion-label position="stacked">{{ 'addon.mod_forum.subject' | translate }}</ion-label>
-            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="replyData.subject"
+            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="formData.subject"
                 name="subject">
             </ion-input>
         </ion-item>
@@ -123,7 +123,7 @@
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="accessInfo.canpostprivatereply">
             <ion-label>{{ 'addon.mod_forum.privatereply' | translate }}</ion-label>
-            <ion-checkbox slot="end" [(ngModel)]="replyData.isprivatereply" name="isprivatereply"></ion-checkbox>
+            <ion-checkbox slot="end" [(ngModel)]="formData.isprivatereply" name="isprivatereply"></ion-checkbox>
         </ion-item>
         <ng-container *ngIf="forum.id && forum.maxattachments > 0">
             <ion-item
@@ -142,7 +142,7 @@
             </ion-item>
             <div *ngIf="advanced" [id]="'addon-forum-reply-edit-form-advanced-' + uniqueId">
                 <core-attachments
-                    [files]="replyData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments"
+                    [files]="formData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments"
                     [component]="component" [componentId]="forum.cmid" [allowOffline]="true" [courseId]="courseId">
                 </core-attachments>
             </div>
@@ -150,7 +150,7 @@
         <ion-grid>
             <ion-row>
                 <ion-col>
-                    <ion-button expand="block" (click)="reply()" [disabled]="replyData.subject == '' || replyData.message == null">
+                    <ion-button expand="block" (click)="send()" [disabled]="formData.subject == '' || formData.message == null">
                         {{ 'addon.mod_forum.posttoforum' | translate }}
                     </ion-button>
                 </ion-col>

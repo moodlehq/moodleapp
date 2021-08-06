@@ -39,7 +39,7 @@ import {
     AddonModForumDiscussion,
     AddonModForumPost,
     AddonModForumProvider,
-    AddonModForumReply,
+    AddonModForumPostFormData,
 } from '../../services/forum';
 import { AddonModForumHelper } from '../../services/forum-helper';
 import { AddonModForumOffline } from '../../services/forum-offline';
@@ -74,7 +74,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     postHasOffline!: boolean;
     sort: SortType = 'nested';
     trackPosts!: boolean;
-    replyData: AddonModForumSharedReplyData = {
+    formData: AddonModForumSharedPostFormData = {
         replyingTo: 0,
         isEditing: false,
         subject: '',
@@ -83,7 +83,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         isprivatereply: false,
     };
 
-    originalData: Omit<AddonModForumReply, 'id'> = {
+    originalData: Omit<AddonModForumPostFormData, 'id'> = {
         subject: null,
         message: null,
         files: [],
@@ -259,13 +259,13 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @return Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
-        if (AddonModForumHelper.hasPostDataChanged(this.replyData, this.originalData)) {
+        if (AddonModForumHelper.hasPostDataChanged(this.formData, this.originalData)) {
             // Show confirmation if some data has been modified.
             await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
         }
 
         // Delete the local files from the tmp folder.
-        CoreFileUploader.clearTmpFiles(this.replyData.files);
+        CoreFileUploader.clearTmpFiles(this.formData.files);
 
         this.leavingPage = true;
 
@@ -799,6 +799,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 /**
  * Reply data shared by post.
  */
-export type AddonModForumSharedReplyData = Omit<AddonModForumReply, 'id'> & {
+export type AddonModForumSharedPostFormData = Omit<AddonModForumPostFormData, 'id'> & {
+    id?: number; // ID when editing an online reply.
     syncId?: string; // Sync ID if some post has blocked synchronization.
 };
