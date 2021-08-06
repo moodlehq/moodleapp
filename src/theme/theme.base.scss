@@ -466,7 +466,7 @@ ion-toolbar {
 
         border-bottom: 3px solid var(--color-base);
 
-        ion-item::part(native) {
+        ion-item {
             --inner-border-width: 0;
         }
         ion-label {
@@ -480,9 +480,9 @@ ion-toolbar {
     .item.core-#{$color-name}-item {
         --color-base: var(--ion-color-#{$color-name});
 
-        --inner-border-width: 0 0 3px 0;
-        --border-width: 0;
-        border-bottom: 3px solid var(--color-base) !important;
+        --border-width: 0 0 3px 0;
+        --border-color: var(--color-base);
+        --inner-border-width: 0;
         ion-icon {
             color: var(--color-base);
         }
