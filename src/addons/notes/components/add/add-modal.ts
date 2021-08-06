@@ -30,8 +30,8 @@ export class AddonNotesAddComponent {
 
     @ViewChild('itemEdit') formElement?: ElementRef;
 
-    @Input() protected courseId!: number;
-    @Input() protected userId?: number;
+    @Input() courseId!: number;
+    @Input() userId?: number;
     @Input() type: AddonNotesPublishState = 'personal';
     text = '';
     processing = false;

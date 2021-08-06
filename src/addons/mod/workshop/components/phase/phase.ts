@@ -28,7 +28,7 @@ export class AddonModWorkshopPhaseInfoComponent implements OnInit {
     @Input() phases!: AddonModWorkshopPhaseDataWithSwitch[];
     @Input() workshopPhase!: AddonModWorkshopPhase;
     @Input() showSubmit = false;
-    @Input() protected externalUrl!: string;
+    @Input() externalUrl!: string;
 
     ngOnInit(): void {
 

@@ -34,7 +34,7 @@ export class AddonModBookTocComponent implements OnInit {
     addPadding = true;
     showBullets = false;
 
-    @Input() protected book?: AddonModBookBookWSData;
+    @Input() book?: AddonModBookBookWSData;
 
     /**
      * Component loaded.

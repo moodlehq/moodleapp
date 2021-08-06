@@ -46,7 +46,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     // Max height that allows tab hiding.
     protected static readonly MAX_HEIGHT_TO_HIDE_TABS = 768;
 
-    @Input() protected selectedIndex = 0; // Index of the tab to select.
+    @Input() selectedIndex = 0; // Index of the tab to select.
     @Input() hideUntil = false; // Determine when should the contents be shown.
     @Output() protected ionChange = new EventEmitter<T>(); // Emitted when the tab changes.
 

@@ -40,8 +40,8 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
     @Input() courseId!: number;
     @Input() workshop!: AddonModWorkshopData;
     @Input() access!: AddonModWorkshopGetWorkshopAccessInformationWSResponse;
-    @Input() protected submission!: AddonModWorkshopSubmissionDataWithOfflineData;
-    @Input() protected module!: CoreCourseModule;
+    @Input() submission!: AddonModWorkshopSubmissionDataWithOfflineData;
+    @Input() module!: CoreCourseModule;
 
     canViewAssessment = false;
     canSelfAssess = false;
