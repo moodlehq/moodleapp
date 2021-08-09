@@ -16,6 +16,7 @@ import { CoreColorScheme, CoreZoomLevel } from '@features/settings/services/sett
 import { CoreMainMenuLocalizedCustomItem } from '@features/mainmenu/services/mainmenu';
 import { CoreSitesDemoSiteData } from '@services/sites';
 import { OpenFileAction } from '@services/utils/utils';
+import { CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
@@ -37,7 +38,7 @@ export interface EnvironmentConfig {
     customurlscheme: string;
     siteurl: string;
     sitename: string;
-    multisitesdisplay: string;
+    multisitesdisplay: CoreLoginSiteSelectorListMethod;
     sitefindersettings: Record<string, unknown>;
     onlyallowlistedsites: boolean;
     skipssoconfirmation: boolean;
