@@ -45,14 +45,16 @@
                             <span *ngIf="user.attempts.length">
                                 {{ user.attempts[user.attempts.length - 1].timemodified | coreFormatDate:'strftimedatetimeshort' }}
                             </span>
+                            <span *ngIf="!user.attempts.length">-</span>
                         </ion-col>
                         <ion-col class="ion-text-center" size="2">
                             <span *ngIf="user.score !== undefined">
                                 {{ 'core.percentagenumber' | translate: {$a: user.score} }}
                             </span>
+                            <span *ngIf="user.score === undefined">-</span>
                         </ion-col>
                         <ion-col class="ion-text-center" size="2">
-                            <span *ngIf="user.attempts.length">{{user.attempts.length}}</span>
+                            {{user.attempts.length}}
                         </ion-col>
                     </ion-row>
                 </ion-label>
