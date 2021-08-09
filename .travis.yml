@@ -40,8 +40,8 @@ jobs:
       components:
       - tools
       - platform-tools
-      - build-tools-30.0.2
-      - android-30
+      - build-tools-29.0.3
+      - android-29
       - extra-google-google_play_services
       - extra-google-m2repository
       - extra-android-m2repository
