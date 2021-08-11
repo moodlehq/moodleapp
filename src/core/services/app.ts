@@ -50,7 +50,7 @@ type SchemaVersionsManager = {
 @Injectable({ providedIn: 'root' })
 export class CoreAppProvider {
 
-    protected db: SQLiteDB;
+    protected db?: SQLiteDB;
     protected logger: CoreLogger;
     protected ssoAuthenticationDeferred?: PromiseDefer<void>;
     protected isKeyboardShown = false;
@@ -65,7 +65,6 @@ export class CoreAppProvider {
 
     constructor() {
         this.schemaVersionsManager = new Promise(resolve => this.resolveSchemaVersionsManager = resolve);
-        this.db = CoreDB.getDB(DBNAME);
         this.logger = CoreLogger.getInstance('CoreAppProvider');
     }
 
@@ -82,13 +81,13 @@ export class CoreAppProvider {
      * Initialize database.
      */
     async initializeDatabase(): Promise<void> {
-        await this.db.createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
+        await this.getDB().createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
 
         this.resolveSchemaVersionsManager({
             get: async name => {
                 try {
                     // Fetch installed version of the schema.
-                    const entry = await this.db.getRecord<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE_NAME, { name });
+                    const entry = await this.getDB().getRecord<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE_NAME, { name });
 
                     return entry.version;
                 } catch (error) {
@@ -97,7 +96,7 @@ export class CoreAppProvider {
                 }
             },
             set: async (name, version) => {
-                await this.db.insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name, version });
+                await this.getDB().insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name, version });
             },
         });
     }
@@ -149,10 +148,10 @@ export class CoreAppProvider {
         this.logger.debug(`Migrating schema '${schema.name}' of app DB from version ${oldVersion} to ${schema.version}`);
 
         if (schema.tables) {
-            await this.db.createTablesFromSchema(schema.tables);
+            await this.getDB().createTablesFromSchema(schema.tables);
         }
         if (schema.migrate && oldVersion > 0) {
-            await schema.migrate(this.db, oldVersion);
+            await schema.migrate(this.getDB(), oldVersion);
         }
 
         // Set installed version.
@@ -165,6 +164,10 @@ export class CoreAppProvider {
      * @return App's DB.
      */
     getDB(): SQLiteDB {
+        if (!this.db) {
+            this.db = CoreDB.getDB(DBNAME);
+        }
+
         return this.db;
     }
 
