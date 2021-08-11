@@ -22,7 +22,7 @@ console.debug = () => {
 };
 
 // eslint-disable-next-line no-console, jest/no-jasmine-globals, @typescript-eslint/no-explicit-any
-console.error = (...args: any[]) => fail(args.map(a => a.toString()).join(''));
+console.error = (...args: any[]) => fail(args.map(a => String(a)).join(''));
 
 // eslint-disable-next-line jest/no-jasmine-globals
 process.on('unhandledRejection', error => fail(error));
