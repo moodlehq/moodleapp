@@ -16,6 +16,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, Type, ViewChild } from '@angular/cor
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CoreSingletonProxy } from '@singletons';
+import { CoreTextUtilsProvider } from '@services/utils/text';
 
 abstract class WrapperComponent<U> {
 
@@ -29,6 +30,8 @@ export interface RenderConfig {
 }
 
 export type WrapperComponentFixture<T> = ComponentFixture<WrapperComponent<T>>;
+
+const textUtils = new CoreTextUtilsProvider();
 
 export function mock<T>(instance?: Record<string, unknown>): T;
 export function mock<T>(methods: string[], instance?: Record<string, unknown>): T;
@@ -108,12 +111,12 @@ export async function renderTemplate<T>(
 export async function renderWrapperComponent<T>(
     component: Type<T>,
     tag: string,
-    inputs: Record<string, { toString() }> = {},
+    inputs: Record<string, unknown> = {},
     config: Partial<RenderConfig> = {},
 ): Promise<WrapperComponentFixture<T>> {
     const inputAttributes = Object
         .entries(inputs)
-        .map(([name, value]) => `${name}="${value.toString().replace(/"/g, '&quot;')}"`)
+        .map(([name, value]) => `[${name}]="${textUtils.escapeHTML(JSON.stringify(value)).replace(/\//g, '\\/')}"`)
         .join(' ');
 
     return renderTemplate(component, `<${tag} ${inputAttributes}></${tag}>`, config);
