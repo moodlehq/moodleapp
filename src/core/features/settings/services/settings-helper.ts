@@ -65,7 +65,7 @@ export class CoreSettingsHelperProvider {
     protected colorSchemes: CoreColorScheme[] = [];
     protected currentColorScheme = CoreColorScheme.LIGHT;
 
-    constructor() {
+    async initialize(): Promise<void> {
         this.prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
         if (!CoreConstants.CONFIG.forceColorScheme) {
@@ -94,6 +94,11 @@ export class CoreSettingsHelperProvider {
 
         // Listen for changes to the prefers-color-scheme media query.
         this.prefersDark.addEventListener && this.prefersDark.addEventListener('change', this.toggleDarkModeListener.bind(this));
+
+        // Init zoom level.
+        await this.upgradeZoomLevel();
+
+        this.initDomSettings();
     }
 
     /**

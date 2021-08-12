@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
@@ -21,7 +21,7 @@ import { CoreConstants } from '@/core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 
-import { makeSingleton, Network } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { APP_SCHEMA, CRON_TABLE_NAME, CronDBEntry } from '@services/database/cron';
 
@@ -44,17 +44,9 @@ export class CoreCronDelegateService {
     protected appDB: Promise<SQLiteDB>;
     protected resolveAppDB!: (appDB: SQLiteDB) => void;
 
-    constructor(zone: NgZone) {
+    constructor() {
         this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
         this.logger = CoreLogger.getInstance('CoreCronDelegate');
-
-        // When the app is re-connected, start network handlers that were stopped.
-        Network.onConnect().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            zone.run(() => {
-                this.startNetworkHandlers();
-            });
-        });
     }
 
     /**

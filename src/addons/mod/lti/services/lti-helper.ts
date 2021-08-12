@@ -31,6 +31,13 @@ export class AddonModLtiHelperProvider {
     protected pendingCheckCompletion: {[moduleId: string]: {courseId: number; module: CoreCourseModule}} = {};
 
     constructor() {
+        // Clear pending completion on logout.
+        CoreEvents.on(CoreEvents.LOGOUT, () => {
+            this.pendingCheckCompletion = {};
+        });
+    }
+
+    watchPendingCompletions(): void {
         Platform.resume.subscribe(() => {
             // User went back to the app, check pending completions.
             for (const moduleId in this.pendingCheckCompletion) {
@@ -38,11 +45,6 @@ export class AddonModLtiHelperProvider {
 
                 CoreCourse.checkModuleCompletion(data.courseId, data.module.completiondata);
             }
-        });
-
-        // Clear pending completion on logout.
-        CoreEvents.on(CoreEvents.LOGOUT, () => {
-            this.pendingCheckCompletion = {};
         });
     }
 
