@@ -12,8 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreUserAvatarComponent } from '@components/user-avatar/user-avatar';
+
+import { renderComponent } from '@/testing/utils';
+
 describe('CoreUserAvatarComponent', () => {
 
-    it.todo('should render');
+    it('should render', async () => {
+        // Act.
+        const { nativeElement } = await renderComponent(CoreUserAvatarComponent);
+
+        // Assert.
+        expect(nativeElement.innerHTML.trim()).not.toHaveLength(0);
+
+        const image = nativeElement.querySelector('img');
+        expect(image).not.toBeNull();
+        expect(image.src).toEqual(document.location.href + 'assets/img/user-avatar.png');
+    });
 
 });
