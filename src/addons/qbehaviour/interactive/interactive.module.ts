@@ -24,8 +24,7 @@ import { AddonQbehaviourInteractiveHandler } from './services/handlers/interacti
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourInteractiveHandler.instance);
             },
         },

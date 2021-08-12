@@ -29,8 +29,7 @@ import { AddonModDataFieldPictureHandler } from './services/handler';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldPictureHandler.instance);
             },
         },

@@ -24,8 +24,7 @@ import { AddonQtypeTrueFalseHandler } from './services/handlers/truefalse';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionDelegate.registerHandler(AddonQtypeTrueFalseHandler.instance);
             },
         },

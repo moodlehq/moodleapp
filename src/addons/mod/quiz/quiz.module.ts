@@ -69,8 +69,7 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModQuizModuleHandler.instance);
                 CoreCourseModulePrefetchDelegate.registerHandler(AddonModQuizPrefetchHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModQuizGradeLinkHandler.instance);

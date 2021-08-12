@@ -40,8 +40,7 @@ const appRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => async () => {
+            useValue: () => {
                 CoreCronDelegate.register(CoreLoginCronHandler.instance);
             },
         },

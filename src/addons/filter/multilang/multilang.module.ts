@@ -26,8 +26,7 @@ import { AddonFilterMultilangHandler } from './services/handlers/multilang';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => CoreFilterDelegate.registerHandler(AddonFilterMultilangHandler.instance),
+            useValue: () => CoreFilterDelegate.registerHandler(AddonFilterMultilangHandler.instance),
         },
     ],
 })

@@ -49,8 +49,7 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModFolderModuleHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModFolderIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModFolderListLinkHandler.instance);

@@ -24,8 +24,7 @@ import { AddonQtypeCalculatedMultiHandler } from './services/handlers/calculated
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionDelegate.registerHandler(AddonQtypeCalculatedMultiHandler.instance);
             },
         },

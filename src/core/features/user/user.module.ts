@@ -77,8 +77,7 @@ const courseIndexRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreUserDelegate.registerHandler(CoreUserProfileMailHandler.instance);
                 CoreContentLinksDelegate.registerHandler(CoreUserProfileLinkHandler.instance);
                 CoreCronDelegate.register(CoreUserSyncCronHandler.instance);

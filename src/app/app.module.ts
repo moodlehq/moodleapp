@@ -51,7 +51,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
-                useFactory: (createTranslateLoader),
+                useFactory: createTranslateLoader,
                 deps: [HttpClient],
             },
         }),
@@ -66,8 +66,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCronDelegate.register(CoreSiteInfoCronHandler.instance);
             },
         },

@@ -26,8 +26,7 @@ import { AddonFilterGlossaryHandler } from './services/handlers/glossary';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => CoreFilterDelegate.registerHandler(AddonFilterGlossaryHandler.instance),
+            useValue: () => CoreFilterDelegate.registerHandler(AddonFilterGlossaryHandler.instance),
         },
     ],
 })

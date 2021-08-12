@@ -29,8 +29,7 @@ import { AddonModWorkshopAssessmentStrategyRubricHandler } from './services/hand
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonWorkshopAssessmentStrategyDelegate.registerHandler(
                     AddonModWorkshopAssessmentStrategyRubricHandler.instance,
                 );

@@ -30,8 +30,7 @@ import { AddonModQuizAccessOfflineAttemptsHandler } from './services/handlers/of
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessOfflineAttemptsHandler.instance);
             },
         },

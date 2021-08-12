@@ -24,8 +24,7 @@ import { AddonQbehaviourImmediateCBMHandler } from './services/handlers/immediat
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourImmediateCBMHandler.instance);
             },
         },

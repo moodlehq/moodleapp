@@ -30,8 +30,7 @@ import { AddonQtypeShortAnswerHandler } from './services/handlers/shortanswer';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionDelegate.registerHandler(AddonQtypeShortAnswerHandler.instance);
             },
         },

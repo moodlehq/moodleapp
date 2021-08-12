@@ -24,8 +24,7 @@ import { AddonQbehaviourImmediateFeedbackHandler } from './services/handlers/imm
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourImmediateFeedbackHandler.instance);
             },
         },

@@ -44,16 +44,16 @@ const routes: Routes = [
         AddonModLtiComponentsModule,
     ],
     providers: [
-        { provide: APP_INITIALIZER, multi: true, useValue: () => AddonModLtiHelper.watchPendingCompletions() },
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModLtiModuleHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModLtiIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModLtiListLinkHandler.instance);
                 CoreCourseModulePrefetchDelegate.registerHandler(AddonModLtiPrefetchHandler.instance);
+
+                AddonModLtiHelper.watchPendingCompletions();
             },
         },
     ],

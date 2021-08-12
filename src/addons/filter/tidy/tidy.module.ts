@@ -26,8 +26,7 @@ import { AddonFilterTidyHandler } from './services/handlers/tidy';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => CoreFilterDelegate.registerHandler(AddonFilterTidyHandler.instance),
+            useValue: () => CoreFilterDelegate.registerHandler(AddonFilterTidyHandler.instance),
         },
     ],
 })

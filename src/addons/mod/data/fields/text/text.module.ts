@@ -29,8 +29,7 @@ import { AddonModDataFieldTextHandler } from './services/handler';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldTextHandler.instance);
             },
         },

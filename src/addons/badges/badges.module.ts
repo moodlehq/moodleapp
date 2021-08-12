@@ -44,8 +44,7 @@ const mainMenuRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreContentLinksDelegate.registerHandler(AddonBadgesMyBadgesLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonBadgesBadgeLinkHandler.instance);
                 CoreUserDelegate.registerHandler(AddonBadgesUserHandler.instance);

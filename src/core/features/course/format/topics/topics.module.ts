@@ -22,8 +22,7 @@ import { CoreCourseFormatTopicsHandler } from './services/handlers/topics-format
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseFormatDelegate.registerHandler(CoreCourseFormatTopicsHandler.instance);
             },
         },

@@ -40,8 +40,7 @@ const mainMenuHomeRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreContentLinksDelegate.registerHandler(CoreSiteHomeIndexLinkHandler.instance);
                 CoreMainMenuHomeDelegate.registerHandler(CoreSiteHomeHomeHandler.instance);
             },

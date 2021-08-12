@@ -30,9 +30,9 @@ import { CoreSharedModule } from '@/core/shared.module';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () =>
-                CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldCheckboxHandler.instance),
+            useValue: () => {
+                CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldCheckboxHandler.instance);
+            },
         },
     ],
     exports: [

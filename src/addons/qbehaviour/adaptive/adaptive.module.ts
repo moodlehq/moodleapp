@@ -23,8 +23,7 @@ import { AddonQbehaviourAdaptiveHandler } from './services/handlers/adaptive';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourAdaptiveHandler.instance);
             },
         },

@@ -58,8 +58,7 @@ const preferencesRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreMainMenuDelegate.registerHandler(AddonNotificationsMainMenuHandler.instance);
                 CoreCronDelegate.register(AddonNotificationsCronHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonNotificationsPushClickHandler.instance);
