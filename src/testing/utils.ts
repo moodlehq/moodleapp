@@ -15,12 +15,10 @@
 import { AbstractType, Component, CUSTOM_ELEMENTS_SCHEMA, Type, ViewChild } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Network } from '@ionic-native/network/ngx';
 import { Observable, Subject } from 'rxjs';
-import { Platform } from '@ionic/angular';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreSingletonProxy } from '@singletons';
+import { CoreSingletonProxy, Network, Platform } from '@singletons';
 import { CoreTextUtilsProvider } from '@services/utils/text';
 
 import { TranslatePipeStub } from './stubs/pipes/translate';
@@ -36,6 +34,10 @@ type ServiceInjectionToken = AbstractType<unknown> | Type<unknown> | string;
 
 let testBedInitialized = false;
 const textUtils = new CoreTextUtilsProvider();
+const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, Record<string, unknown>][] = [
+    [Platform, mock({ is: () => false, ready: () => Promise.resolve(), resume: new Subject<void>() })],
+    [Network, { onChange: () => new Observable() }],
+];
 
 async function renderAngularComponent<T>(component: Type<T>, config: RenderConfig): Promise<ComponentFixture<T>> {
     config.declarations.push(component);
@@ -86,12 +88,15 @@ function getDefaultDeclarations(): unknown[] {
 }
 
 function getDefaultProviders(): unknown[] {
-    const platformMock = mock<Platform>({ is: () => false, ready: () => Promise.resolve(), resume: new Subject<void>() });
-    const networkMock = mock<Network>({ onChange: () => new Observable() });
+    const serviceProviders = DEFAULT_SERVICE_SINGLETON_MOCKS.map(
+        ([singleton, mockInstance]) => ({
+            provide: singleton.injectionToken,
+            useValue: mockInstance,
+        }),
+    );
 
     return [
-        { provide: Platform, useValue: platformMock },
-        { provide: Network, useValue: networkMock },
+        ...serviceProviders,
         { provide: CORE_SITE_SCHEMAS, multiple: true, useValue: [] },
     ];
 }
@@ -175,6 +180,10 @@ export function mockSingleton<T>(
 
 export function resetTestingEnvironment(): void {
     testBedInitialized = false;
+
+    for (const [singleton, mockInstance] of DEFAULT_SERVICE_SINGLETON_MOCKS) {
+        mockSingleton(singleton, mockInstance);
+    }
 }
 
 export function getServiceInstance(injectionToken: ServiceInjectionToken): Record<string, unknown> {
