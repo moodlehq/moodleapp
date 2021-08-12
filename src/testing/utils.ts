@@ -12,11 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, CUSTOM_ELEMENTS_SCHEMA, Type, ViewChild } from '@angular/core';
+import { AbstractType, Component, CUSTOM_ELEMENTS_SCHEMA, Type, ViewChild } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Network } from '@ionic-native/network/ngx';
+import { Observable, Subject } from 'rxjs';
+import { Platform } from '@ionic/angular';
 
+import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreSingletonProxy } from '@singletons';
 import { CoreTextUtilsProvider } from '@services/utils/text';
+
+import { TranslatePipeStub } from './stubs/pipes/translate';
+import { CoreExternalContentDirectiveStub } from './stubs/directives/core-external-content';
 
 abstract class WrapperComponent<U> {
 
@@ -24,14 +32,94 @@ abstract class WrapperComponent<U> {
 
 };
 
+type ServiceInjectionToken = AbstractType<unknown> | Type<unknown> | string;
+
+let testBedInitialized = false;
+const textUtils = new CoreTextUtilsProvider();
+
+async function renderAngularComponent<T>(component: Type<T>, config: RenderConfig): Promise<ComponentFixture<T>> {
+    config.declarations.push(component);
+
+    TestBed.configureTestingModule({
+        declarations: [
+            ...getDefaultDeclarations(),
+            ...config.declarations,
+        ],
+        providers: [
+            ...getDefaultProviders(),
+            ...config.providers,
+        ],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        imports: [BrowserModule],
+    });
+
+    testBedInitialized = true;
+
+    await TestBed.compileComponents();
+
+    const fixture = TestBed.createComponent(component);
+
+    fixture.autoDetectChanges(true);
+
+    await fixture.whenRenderingDone();
+    await fixture.whenStable();
+
+    return fixture;
+}
+
+function createWrapperComponent<U>(template: string, componentClass: Type<U>): Type<WrapperComponent<U>> {
+    @Component({ template })
+    class HostComponent extends WrapperComponent<U> {
+
+        @ViewChild(componentClass) child!: U;
+
+    }
+
+    return HostComponent;
+}
+
+function getDefaultDeclarations(): unknown[] {
+    return [
+        TranslatePipeStub,
+        CoreExternalContentDirectiveStub,
+    ];
+}
+
+function getDefaultProviders(): unknown[] {
+    const platformMock = mock<Platform>({ is: () => false, ready: () => Promise.resolve(), resume: new Subject<void>() });
+    const networkMock = mock<Network>({ onChange: () => new Observable() });
+
+    return [
+        { provide: Platform, useValue: platformMock },
+        { provide: Network, useValue: networkMock },
+        { provide: CORE_SITE_SCHEMAS, multiple: true, useValue: [] },
+    ];
+}
+
+function resolveServiceInstanceFromTestBed(injectionToken: Exclude<ServiceInjectionToken, string>): Record<string, unknown> | null {
+    if (!testBedInitialized) {
+        return null;
+    }
+
+    return TestBed.inject(injectionToken) as Record<string, unknown> | null;
+}
+
+function createNewServiceInstance(injectionToken: Exclude<ServiceInjectionToken, string>): Record<string, unknown> | null {
+    try {
+        const constructor = injectionToken as { new (): Record<string, unknown> };
+
+        return new constructor();
+    } catch (e) {
+        return null;
+    }
+}
+
 export interface RenderConfig {
     declarations: unknown[];
     providers: unknown[];
 }
 
 export type WrapperComponentFixture<T> = ComponentFixture<WrapperComponent<T>>;
-
-const textUtils = new CoreTextUtilsProvider();
 
 export function mock<T>(instance?: Record<string, unknown>): T;
 export function mock<T>(methods: string[], instance?: Record<string, unknown>): T;
@@ -69,17 +157,34 @@ export function mockSingleton<T>(
 ): T;
 export function mockSingleton<T>(
     singleton: CoreSingletonProxy<T>,
-    methodsOrInstance: string[] | Record<string, unknown> = [],
-    instance: Record<string, unknown> = {},
+    methodsOrProperties: string[] | Record<string, unknown> = [],
+    properties: Record<string, unknown> = {},
 ): T {
-    instance = Array.isArray(methodsOrInstance) ? instance : methodsOrInstance;
+    properties = Array.isArray(methodsOrProperties) ? properties : methodsOrProperties;
 
-    const methods = Array.isArray(methodsOrInstance) ? methodsOrInstance : [];
+    const methods = Array.isArray(methodsOrProperties) ? methodsOrProperties : [];
+    const instance = getServiceInstance(singleton.injectionToken);
     const mockInstance = mock<T>(methods, instance);
+
+    Object.assign(mockInstance, properties);
 
     singleton.setInstance(mockInstance);
 
     return mockInstance;
+}
+
+export function resetTestingEnvironment(): void {
+    testBedInitialized = false;
+}
+
+export function getServiceInstance(injectionToken: ServiceInjectionToken): Record<string, unknown> {
+    if (typeof injectionToken === 'string') {
+        return {};
+    }
+
+    return resolveServiceInstanceFromTestBed(injectionToken)
+        ?? createNewServiceInstance(injectionToken)
+        ?? {};
 }
 
 export async function renderComponent<T>(component: Type<T>, config: Partial<RenderConfig> = {}): Promise<ComponentFixture<T>> {
@@ -120,36 +225,4 @@ export async function renderWrapperComponent<T>(
         .join(' ');
 
     return renderTemplate(component, `<${tag} ${inputAttributes}></${tag}>`, config);
-}
-
-async function renderAngularComponent<T>(component: Type<T>, config: RenderConfig): Promise<ComponentFixture<T>> {
-    config.declarations.push(component);
-
-    TestBed.configureTestingModule({
-        declarations: config.declarations,
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        providers: config.providers,
-    });
-
-    await TestBed.compileComponents();
-
-    const fixture = TestBed.createComponent(component);
-
-    fixture.autoDetectChanges(true);
-
-    await fixture.whenRenderingDone();
-    await fixture.whenStable();
-
-    return fixture;
-}
-
-function createWrapperComponent<U>(template: string, componentClass: Type<U>): Type<WrapperComponent<U>> {
-    @Component({ template })
-    class HostComponent extends WrapperComponent<U> {
-
-        @ViewChild(componentClass) child!: U;
-
-    }
-
-    return HostComponent;
 }

@@ -14,7 +14,9 @@
 
 import 'jest-preset-angular';
 
-import { setCreateSingletonMethodProxy } from '@singletons';
+import { setCreateSingletonMethodProxy, setSingletonsInjector } from '@singletons';
+
+import { resetTestingEnvironment, getServiceInstance } from './utils';
 
 // eslint-disable-next-line no-console
 console.debug = () => {
@@ -35,3 +37,6 @@ setCreateSingletonMethodProxy(
             instance[`mock_${String(property)}`] ??
             jest.fn((...args) => method.call(instance, ...args)),
 );
+
+setSingletonsInjector({ get: injectionToken => getServiceInstance(injectionToken) });
+beforeEach(() => resetTestingEnvironment());

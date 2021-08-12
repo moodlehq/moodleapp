@@ -73,8 +73,9 @@ let createSingletonMethodProxy = (instance: any, method: Function, property: str
  *
  * @see makeSingleton
  */
-export type CoreSingletonProxy<Service> = Service & {
+export type CoreSingletonProxy<Service = unknown> = Service & {
     instance: Service;
+    injectionToken: Type<Service> | AbstractType<Service> | Type<unknown> | string;
     setInstance(instance: Service): void;
 };
 
@@ -113,13 +114,14 @@ export function makeSingleton<Service extends object = object>( // eslint-disabl
     injectionToken: Type<Service> | AbstractType<Service> | Type<unknown> | string,
 ): CoreSingletonProxy<Service> {
     const singleton = {
+        injectionToken,
         setInstance(instance: Service) {
             Object.defineProperty(singleton, 'instance', {
                 value: instance,
                 configurable: true,
             });
         },
-    } as { instance: Service; setInstance(instance: Service) };
+    } as Pick<CoreSingletonProxy<Service>, 'injectionToken' | 'instance' | 'setInstance'>;
 
     Object.defineProperty(singleton, 'instance', {
         get: () => {

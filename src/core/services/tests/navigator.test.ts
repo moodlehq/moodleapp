@@ -14,12 +14,9 @@
 
 import { NavController as NavControllerService } from '@ionic/angular';
 
-import { mock, mockSingleton } from '@/testing/utils';
+import { mockSingleton } from '@/testing/utils';
 
 import { CoreNavigatorService } from '@services/navigator';
-import { CoreUtils, CoreUtilsProvider } from '@services/utils/utils';
-import { CoreUrlUtils, CoreUrlUtilsProvider } from '@services/utils/url';
-import { CoreTextUtils, CoreTextUtilsProvider } from '@services/utils/text';
 import { NavController, Router } from '@singletons';
 import { ActivatedRoute, RouterState } from '@angular/router';
 import { CoreSites } from '@services/sites';
@@ -36,15 +33,12 @@ describe('CoreNavigator', () => {
     let navControllerMock: NavControllerService;
 
     beforeEach(() => {
-        router = { url: '/' };
         currentMainMenuHandlers = ['home'];
         navigator = new CoreNavigatorService();
         navControllerMock = mockSingleton(NavController, ['navigateRoot', 'navigateForward']);
 
-        mockSingleton(Router, router);
-        mockSingleton(CoreUtils, new CoreUtilsProvider(mock()));
-        mockSingleton(CoreUrlUtils, new CoreUrlUtilsProvider());
-        mockSingleton(CoreTextUtils, new CoreTextUtilsProvider());
+        router = mockSingleton(Router, { url: '/' });
+
         mockSingleton(CoreSites, { getCurrentSiteId: () => 42, isLoggedIn: () => true });
         mockSingleton(CoreMainMenu, { isMainMenuTab: path => Promise.resolve(currentMainMenuHandlers.includes(path)) });
     });
