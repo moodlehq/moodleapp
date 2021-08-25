@@ -76,11 +76,7 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
 
         // Redirect to non-site path.
         const route = Router.parseUrl(redirect.page);
-
-        route.queryParams = {
-            redirectPath: redirect.page,
-            redirectOptions: redirect.options,
-        } as CoreRedirectPayload;
+        route.queryParams = redirect.options?.params || {};
 
         return route;
     }

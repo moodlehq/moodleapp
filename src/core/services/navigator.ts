@@ -201,14 +201,6 @@ export class CoreNavigatorService {
         const siteId = options.siteId ?? CoreSites.getCurrentSiteId();
         const navigationOptions: CoreNavigationOptions = CoreObject.without(options, ['siteId']);
 
-        // If the path doesn't belong to a site, call standard navigation.
-        if (siteId === CoreConstants.NO_SITE_ID) {
-            return this.navigate(path, {
-                ...navigationOptions,
-                reset: true,
-            });
-        }
-
         // If we are logged into a different site, log out first.
         if (CoreSites.isLoggedIn() && CoreSites.getCurrentSiteId() !== siteId) {
             if (CoreSitePlugins.hasSitePluginsLoaded) {
@@ -221,6 +213,14 @@ export class CoreNavigatorService {
             }
 
             await CoreSites.logout();
+        }
+
+        // If the path doesn't belong to a site, call standard navigation.
+        if (siteId === CoreConstants.NO_SITE_ID) {
+            return this.navigate(path, {
+                ...navigationOptions,
+                reset: true,
+            });
         }
 
         // If we are not logged into the site, load the site.
