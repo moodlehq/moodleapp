@@ -1105,7 +1105,7 @@ export class AddonModScormProvider {
 
         const currentScorm = <AddonModScormScorm> response.scorms.find(scorm => scorm[key] == value);
         if (!currentScorm) {
-            throw new CoreError('SCORM not found.');
+            throw new CoreError(Translate.instant('core.course.modulenotfound'));
         }
 
         // If the SCORM isn't available the WS returns a warning and it doesn't return timeopen and timeclosed.

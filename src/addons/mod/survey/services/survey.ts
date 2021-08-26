@@ -22,7 +22,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModSurveyOffline } from './survey-offline';
 
 const ROOT_CACHE_KEY = 'mmaModSurvey:';
@@ -121,7 +121,7 @@ export class AddonModSurveyProvider {
             return currentSurvey;
         }
 
-        throw new CoreError('Activity not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

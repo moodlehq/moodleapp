@@ -110,7 +110,7 @@ export class AddonModLtiProvider {
             return currentLti;
         }
 
-        throw new CoreError('Activity not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

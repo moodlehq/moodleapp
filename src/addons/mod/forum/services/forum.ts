@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -480,7 +481,7 @@ export class AddonModForumProvider {
         const forum = forums.find(forum => forum.cmid == cmId);
 
         if (!forum) {
-            throw new Error('Forum not found');
+            throw new CoreError(Translate.instant('core.course.modulenotfound'));
         }
 
         return forum;

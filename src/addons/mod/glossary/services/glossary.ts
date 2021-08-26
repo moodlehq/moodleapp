@@ -811,7 +811,7 @@ export class AddonModGlossaryProvider {
             return glossary;
         }
 
-        throw new CoreError('Glossary not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -835,7 +835,7 @@ export class AddonModGlossaryProvider {
             return glossary;
         }
 
-        throw new CoreError('Glossary not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

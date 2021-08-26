@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreCourse } from '@features/course/services/course';
@@ -131,7 +131,7 @@ export class AddonModUrlProvider {
             return currentUrl;
         }
 
-        throw new CoreError('Url not found');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

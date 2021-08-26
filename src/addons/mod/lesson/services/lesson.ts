@@ -1445,7 +1445,7 @@ export class AddonModLessonProvider {
             return currentLesson;
         }
 
-        throw new CoreError('Lesson not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

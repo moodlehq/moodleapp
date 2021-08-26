@@ -20,7 +20,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 const ROOT_CACHE_KEY = 'mmaModFolder:';
 
@@ -80,7 +80,7 @@ export class AddonModFolderProvider {
             return currentFolder;
         }
 
-        throw new CoreError('Folder not found');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

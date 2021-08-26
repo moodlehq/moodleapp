@@ -41,6 +41,7 @@
     "insufficientavailablespace": "You are trying to download {{size}}. This will leave your device with insufficient space to operate normally. Please clear some storage space first.",
     "insufficientavailablequota": "Your device could not allocate space to save this download. It may be reserving space for app and system updates. Please clear some storage space first.",
     "manualcompletionnotsynced": "Manual completion not synchronised.",
+    "modulenotfound": "Resource or activity not found, please make sure you're online and it's still available.",
     "nocontentavailable": "No content available at the moment.",
     "overriddennotice": "Your final grade from this activity was manually adjusted.",
     "refreshcourse": "Refresh course",

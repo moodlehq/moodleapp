@@ -23,7 +23,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModChoiceOffline } from './choice-offline';
 import { AddonModChoiceAutoSyncData, AddonModChoiceSyncProvider } from './choice-sync';
 
@@ -215,7 +215,7 @@ export class AddonModChoiceProvider {
             return currentChoice;
         }
 
-        throw new CoreError('Choice not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

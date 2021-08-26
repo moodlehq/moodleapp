@@ -505,7 +505,7 @@ export class CoreCourseProvider {
             return foundModule;
         }
 
-        throw Error('Module not found');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
