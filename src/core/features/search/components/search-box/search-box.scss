@@ -13,8 +13,8 @@
     }
 
     ion-button.button {
-        margin-left: unset;
-        margin-inline-start: 10px;
+        margin-left: 0;
+        margin-right: 0;
     }
 
     .core-search-history {
@@ -34,5 +34,7 @@
     ion-input {
         --padding-start: 0;
         --padding-end: 0;
+        padding-left: 0;
+        padding-right: 0;
     }
 }
