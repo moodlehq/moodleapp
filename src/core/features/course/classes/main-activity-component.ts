@@ -26,6 +26,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourseContentsPage } from '../pages/contents/contents';
 import { CoreConstants } from '@/core/constants';
+import { CoreSites } from '@services/sites';
 
 /**
  * Template class to easily create CoreCourseModuleMainComponent of activities.
@@ -211,7 +212,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
             await this.fetchContent(refresh, sync, showErrors);
         } catch (error) {
-            if (!refresh) {
+            if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled()) {
                 // Some call failed, retry without using cache since it might be a new activity.
                 return await this.refreshContent(sync);
             }
