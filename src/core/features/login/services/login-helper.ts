@@ -573,9 +573,10 @@ export class CoreLoginHelperProvider {
      * Check if a site URL is "allowed". In case the app has fixed sites, only those will be allowed to connect to.
      *
      * @param siteUrl Site URL to check.
+     * @param checkSiteFinder Whether to check site finder if needed. Defaults to true.
      * @return Promise resolved with boolean: whether is one of the fixed sites.
      */
-    async isSiteUrlAllowed(siteUrl: string): Promise<boolean> {
+    async isSiteUrlAllowed(siteUrl: string, checkSiteFinder = true): Promise<boolean> {
         if (this.isFixedUrlSet()) {
             // Only 1 site allowed.
             return CoreUrl.sameDomainAndPath(siteUrl, <string> this.getFixedSites());
@@ -583,7 +584,8 @@ export class CoreLoginHelperProvider {
             const sites = <CoreLoginSiteInfo[]> this.getFixedSites();
 
             return sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url));
-        } else if (CoreConstants.CONFIG.multisitesdisplay == 'sitefinder' && CoreConstants.CONFIG.onlyallowlistedsites) {
+        } else if (CoreConstants.CONFIG.multisitesdisplay == 'sitefinder' && CoreConstants.CONFIG.onlyallowlistedsites &&
+                checkSiteFinder) {
             // Call the sites finder to validate the site.
             const result = await CoreSites.findSites(siteUrl.replace(/^https?:\/\/|\.\w{2,3}\/?$/g, ''));
 

@@ -13,7 +13,10 @@
 // limitations under the License.
 
 import { CoreSites } from '@services/sites';
+import { CoreUpdateManager } from '@services/update-manager';
 
 export default async function(): Promise<void> {
+    await CoreUpdateManager.donePromise;
+
     await CoreSites.restoreSession();
 }

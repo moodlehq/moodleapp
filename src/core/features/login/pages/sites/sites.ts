@@ -49,6 +49,10 @@ export class CoreLoginSitesPage implements OnInit {
      * @return Promise resolved when done.
      */
     async ngOnInit(): Promise<void> {
+        if (CoreNavigator.getRouteBooleanParam('openAddSite')) {
+            this.add();
+        }
+
         const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
 
         // Remove protocol from the url to show more url text.

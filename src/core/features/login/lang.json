@@ -108,6 +108,7 @@
     "sitebadgedescription": "There are {{count}} unread notifications.",
     "sitehasredirect": "Your site contains at least one HTTP redirect. The app cannot follow redirects, this could be the issue that's preventing the app from connecting to your site.",
     "siteinmaintenance": "Your site is in maintenance mode",
+    "sitenotallowed": "This site is no longer available.",
     "sitepolicynotagreederror": "Site policy not agreed.",
     "siteurl": "Site URL",
     "siteurlrequired": "Site URL required i.e <i>http://www.yourmoodlesite.org</i>",
