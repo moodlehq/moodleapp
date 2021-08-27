@@ -136,7 +136,7 @@ document.onreadystatechange = function() {
     // When resize has been prepared tell parent window to resize.
     H5PEmbedCommunicator.on('resizePrepared', function() {
         H5PEmbedCommunicator.send('resize', {
-            scrollHeight: iFrame.contentDocument.body.scrollHeight
+            scrollHeight: getIframeBodyHeights(iFrame).scrollHeight
         });
     });
 
@@ -154,10 +154,11 @@ document.onreadystatechange = function() {
         resizeDelay = setTimeout(function() {
             // Only resize if the iframe can be resized.
             if (parentIsFriendly) {
+                var heights = getIframeBodyHeights(iFrame);
                 H5PEmbedCommunicator.send('prepareResize',
                     {
-                        scrollHeight: iFrame.contentDocument.body.scrollHeight,
-                        clientHeight: iFrame.contentDocument.body.clientHeight
+                        scrollHeight: heights.scrollHeight,
+                        clientHeight: heights.clientHeight
                     }
                 );
             } else {
@@ -201,3 +202,14 @@ document.onreadystatechange = function() {
     // Trigger initial resize for instance.
     H5P.trigger(instance, 'resize');
 };
+
+// Function created for the Moodle app.
+// It also takes the current body margin into account because some user agents put some margin to the body of the outer iframe.
+function getIframeBodyHeights(iFrame) {
+    var margin = parseInt(getComputedStyle(document.body)['margin'], 10) || 0;
+
+    return {
+        scrollHeight: iFrame.contentDocument.body.scrollHeight + margin * 2,
+        clientHeight: iFrame.contentDocument.body.clientHeight + margin * 2,
+    };
+}
