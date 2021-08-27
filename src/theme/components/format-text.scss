@@ -201,6 +201,10 @@ core-format-text {
     display: inline;
 }
 
+ion-header h1 > core-format-text {
+    display: inline;
+}
+
 @keyframes loading {
     0% {
         left: -45%;
