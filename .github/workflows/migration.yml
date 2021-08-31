@@ -12,7 +12,7 @@ jobs:
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
-        node-version: '12.x'
+        node-version: '14.x'
     - run: npm ci
     - run: result=$(find src -type f -iname '*.html' -exec sh -c 'cat {} | tr "\n" " " | grep -Eo "class=\"[^\"]+\"[^>]+class=\"" ' \; | wc -l); test $result -eq 0
     - run: npm install -D @ionic/v4-migration-tslint
