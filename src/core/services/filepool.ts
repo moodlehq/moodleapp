@@ -102,17 +102,15 @@ export class CoreFilepoolProvider {
     /**
      * Initialize queue.
      */
-    async initialize(): Promise<void> {
-        // Waiting for the app to be ready to start processing the queue.
-        await ApplicationInit.donePromise;
+    initialize(): void {
+        // Start processing the queue once the app is ready.
+        ApplicationInit.whenDone(() => {
+            this.checkQueueProcessing();
 
-        this.checkQueueProcessing();
-
-        // Start queue when device goes online.
-        Network.onConnect().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.checkQueueProcessing();
+            // Start queue when device goes online.
+            Network.onConnect().subscribe(() => {
+                // Execute the callback in the Angular zone, so change detection doesn't stop working.
+                NgZone.run(() => this.checkQueueProcessing());
             });
         });
     }
