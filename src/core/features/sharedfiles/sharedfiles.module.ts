@@ -51,7 +51,7 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            useFactory: () => async () => {
+            useValue: async () => {
                 CoreFileUploaderDelegate.registerHandler(CoreSharedFilesUploadHandler.instance);
                 CoreSettingsDelegate.registerHandler(CoreSharedFilesSettingsHandler.instance);
 

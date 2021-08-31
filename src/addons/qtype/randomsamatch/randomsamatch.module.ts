@@ -24,8 +24,7 @@ import { AddonQtypeRandomSaMatchHandler } from './services/handlers/randomsamatc
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionDelegate.registerHandler(AddonQtypeRandomSaMatchHandler.instance);
             },
         },

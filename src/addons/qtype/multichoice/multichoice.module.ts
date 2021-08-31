@@ -30,8 +30,7 @@ import { AddonQtypeMultichoiceHandler } from './services/handlers/multichoice';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionDelegate.registerHandler(AddonQtypeMultichoiceHandler.instance);
             },
         },

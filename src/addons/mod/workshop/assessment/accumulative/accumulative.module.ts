@@ -29,8 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonWorkshopAssessmentStrategyDelegate.registerHandler(
                     AddonModWorkshopAssessmentStrategyAccumulativeHandler.instance,
                 );

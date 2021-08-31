@@ -24,8 +24,7 @@ import { AddonModQuizAccessOpenCloseDateHandler } from './services/handlers/open
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessOpenCloseDateHandler.instance);
             },
         },

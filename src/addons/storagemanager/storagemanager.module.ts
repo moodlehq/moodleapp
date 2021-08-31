@@ -36,8 +36,7 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => async () => {
+            useValue: () => {
                 CoreCourseOptionsDelegate.registerHandler(AddonStorageManagerCourseMenuHandler.instance);
             },
         },

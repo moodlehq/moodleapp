@@ -24,7 +24,7 @@ import { AddonModLtiListLinkHandler } from './services/handlers/list-link';
 import { AddonModLtiModuleHandler, AddonModLtiModuleHandlerService } from './services/handlers/module';
 import { AddonModLtiPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModLtiProvider } from './services/lti';
-import { AddonModLtiHelperProvider } from './services/lti-helper';
+import { AddonModLtiHelper, AddonModLtiHelperProvider } from './services/lti-helper';
 
 export const ADDON_MOD_LTI_SERVICES: Type<unknown>[] = [
     AddonModLtiProvider,
@@ -47,12 +47,13 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModLtiModuleHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModLtiIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModLtiListLinkHandler.instance);
                 CoreCourseModulePrefetchDelegate.registerHandler(AddonModLtiPrefetchHandler.instance);
+
+                AddonModLtiHelper.watchPendingCompletions();
             },
         },
     ],

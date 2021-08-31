@@ -38,8 +38,7 @@ export const CORE_H5P_SERVICES: Type<unknown>[] = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CorePluginFileDelegate.registerHandler(CoreH5PPluginFileHandler.instance);
             },
         },

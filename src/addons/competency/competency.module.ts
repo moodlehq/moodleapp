@@ -64,8 +64,7 @@ const courseIndexRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => async () => {
+            useValue: () => {
                 CoreContentLinksDelegate.registerHandler(AddonCompetencyCompetencyLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonCompetencyPlanLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonCompetencyPlansLinkHandler.instance);

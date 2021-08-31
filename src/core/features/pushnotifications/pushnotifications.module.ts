@@ -41,8 +41,7 @@ export const CORE_PUSHNOTIFICATIONS_SERVICES: Type<unknown>[] = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => async () => {
+            useValue: async () => {
                 // Register the handlers.
                 CoreCronDelegate.register(CorePushNotificationsRegisterCronHandler.instance);
                 CoreCronDelegate.register(CorePushNotificationsUnregisterCronHandler.instance);

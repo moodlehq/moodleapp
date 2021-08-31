@@ -21,8 +21,7 @@ import { AddonRemoteThemesHandler } from './services/remotethemes-handler';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => async () => {
+            useValue: () => {
                 CoreStyles.registerStyleHandler(AddonRemoteThemesHandler.instance);
             },
         },

@@ -24,8 +24,7 @@ import { AddonModQuizAccessNumAttemptsHandler } from './services/handlers/numatt
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessNumAttemptsHandler.instance);
             },
         },

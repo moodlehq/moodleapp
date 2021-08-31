@@ -49,8 +49,7 @@ const appRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreMainMenuDelegate.registerHandler(CoreMainMenuHomeHandler.instance);
             },
         },

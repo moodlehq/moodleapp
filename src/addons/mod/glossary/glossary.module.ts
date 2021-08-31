@@ -104,8 +104,7 @@ const courseContentsRoutes: Routes = conditionalRoutes(
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModGlossaryModuleHandler.instance);
                 CoreCourseModulePrefetchDelegate.registerHandler(AddonModGlossaryPrefetchHandler.instance);
                 CoreCronDelegate.register(AddonModGlossarySyncCronHandler.instance);

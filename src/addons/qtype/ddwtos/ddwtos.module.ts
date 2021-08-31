@@ -30,8 +30,7 @@ import { AddonQtypeDdwtosHandler } from './services/handlers/ddwtos';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionDelegate.registerHandler(AddonQtypeDdwtosHandler.instance);
             },
         },

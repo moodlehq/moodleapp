@@ -30,8 +30,7 @@ import { AddonQbehaviourDeferredCBMHandler } from './services/handlers/deferredc
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourDeferredCBMHandler.instance);
             },
         },

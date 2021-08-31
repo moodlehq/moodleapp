@@ -26,8 +26,7 @@ import { AddonFilterDataHandler } from './services/handlers/data';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => CoreFilterDelegate.registerHandler(AddonFilterDataHandler.instance),
+            useValue: () => CoreFilterDelegate.registerHandler(AddonFilterDataHandler.instance),
         },
     ],
 })

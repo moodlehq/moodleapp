@@ -37,12 +37,10 @@ export class CoreLangProvider {
     protected customStringsRaw?: string;
     protected sitePluginsStrings: CoreLanguageObject = {}; // Strings defined by site plugins.
 
-    constructor() {
+    async initialize(): Promise<void> {
         // Set fallback language and language to use until the app determines the right language to use.
         Translate.setDefaultLang(this.fallbackLanguage);
         Translate.use(this.defaultLanguage);
-
-        this.initLanguage();
 
         Translate.onLangChange.subscribe((event: LangChangeEvent) => {
             document.documentElement.setAttribute('lang', event.lang);
@@ -51,12 +49,14 @@ export class CoreLangProvider {
             dir = dir.indexOf('rtl') != -1 ? 'rtl' : 'ltr';
             document.documentElement.setAttribute('dir', dir);
         });
+
+        await this.initializeCurrentLanguage();
     }
 
     /**
      * Init language.
      */
-    protected async initLanguage(): Promise<void> {
+    protected async initializeCurrentLanguage(): Promise<void> {
         await Platform.ready();
 
         let language: string;
@@ -68,7 +68,7 @@ export class CoreLangProvider {
             language = await this.getCurrentLanguage();
         }
 
-        return this.changeCurrentLanguage(language);
+        await this.changeCurrentLanguage(language);
     }
 
     /**

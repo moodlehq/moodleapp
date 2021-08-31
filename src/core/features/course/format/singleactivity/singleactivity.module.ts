@@ -30,8 +30,7 @@ import { CoreCourseFormatSingleActivityHandler } from './services/handlers/singl
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseFormatDelegate.registerHandler(CoreCourseFormatSingleActivityHandler.instance);
             },
         },

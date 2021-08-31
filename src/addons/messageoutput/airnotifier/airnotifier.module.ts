@@ -39,8 +39,7 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonMessageOutputDelegate.registerHandler(AddonMessageOutputAirnotifierHandler.instance);
             },
         },

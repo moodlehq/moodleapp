@@ -73,8 +73,7 @@ const preferencesRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 // Register handlers.
                 CoreMainMenuDelegate.registerHandler(AddonMessagesMainMenuHandler.instance);
                 CoreCronDelegate.register(AddonMessagesMainMenuHandler.instance);

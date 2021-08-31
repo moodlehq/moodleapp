@@ -32,6 +32,8 @@ import { DomSanitizer } from '@singletons';
 })
 export class CoreIframeComponent implements OnChanges {
 
+    static loadingTimeout = 15000;
+
     @ViewChild('iframe') iframe?: ElementRef;
     @Input() src?: string;
     @Input() iframeWidth?: string;
@@ -43,7 +45,6 @@ export class CoreIframeComponent implements OnChanges {
     safeUrl?: SafeResourceUrl;
     displayHelp = false;
 
-    protected readonly IFRAME_TIMEOUT = 15000;
     protected logger: CoreLogger;
     protected initialized = false;
 
@@ -89,7 +90,7 @@ export class CoreIframeComponent implements OnChanges {
         if (this.loading) {
             setTimeout(() => {
                 this.loading = false;
-            }, this.IFRAME_TIMEOUT);
+            }, CoreIframeComponent.loadingTimeout);
         }
     }
 

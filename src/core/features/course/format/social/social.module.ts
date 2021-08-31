@@ -22,8 +22,7 @@ import { CoreCourseFormatSocialHandler } from './services/handlers/social-format
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseFormatDelegate.registerHandler(CoreCourseFormatSocialHandler.instance);
             },
         },

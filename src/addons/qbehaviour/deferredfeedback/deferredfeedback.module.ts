@@ -23,8 +23,7 @@ import { AddonQbehaviourDeferredFeedbackHandler } from './services/handlers/defe
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourDeferredFeedbackHandler.instance);
             },
         },

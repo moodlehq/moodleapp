@@ -47,8 +47,7 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModUrlModuleHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModUrlIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModUrlListLinkHandler.instance);

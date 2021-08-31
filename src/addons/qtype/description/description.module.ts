@@ -30,8 +30,7 @@ import { AddonQtypeDescriptionHandler } from './services/handlers/description';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionDelegate.registerHandler(AddonQtypeDescriptionHandler.instance);
             },
         },

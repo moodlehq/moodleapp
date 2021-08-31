@@ -51,8 +51,7 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => async () => {
+            useValue: () => {
                 CoreContentLinksDelegate.registerHandler(AddonBlogIndexLinkHandler.instance);
                 CoreMainMenuDelegate.registerHandler(AddonBlogMainMenuHandler.instance);
                 CoreUserDelegate.registerHandler(AddonBlogUserHandler.instance);

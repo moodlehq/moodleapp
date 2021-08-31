@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-browser';
 import { FileEntry } from '@ionic-native/file/ngx';
 import { Subscription } from 'rxjs';
@@ -26,7 +26,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreWSError } from '@classes/errors/wserror';
-import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, QRScanner, Translate } from '@singletons';
+import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, QRScanner, Translate, NgZone } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreViewerQRScannerComponent } from '@features/viewer/components/qr-scanner/qr-scanner';
@@ -49,7 +49,7 @@ export class CoreUtilsProvider {
     protected uniqueIds: {[name: string]: number} = {};
     protected qrScanData?: {deferred: PromiseDefer<string>; observable: Subscription};
 
-    constructor(protected zone: NgZone) {
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreUtilsProvider');
     }
 
@@ -1005,7 +1005,7 @@ export class CoreUtilsProvider {
             // Trigger global events when a url is loaded or the window is closed. This is to make it work like in Ionic 1.
             const loadStartSubscription = this.iabInstance.on('loadstart').subscribe((event) => {
                 // Execute the callback in the Angular zone, so change detection doesn't stop working.
-                this.zone.run(() => {
+                NgZone.run(() => {
                     // Store the last loaded URLs (max 10).
                     loadStartUrls.push(event.url);
                     if (loadStartUrls.length > 10) {
@@ -1020,7 +1020,7 @@ export class CoreUtilsProvider {
                 // Load stop is needed with InAppBrowser v3. Custom URL schemes no longer trigger load start, simulate it.
                 loadStopSubscription = this.iabInstance.on('loadstop').subscribe((event) => {
                     // Execute the callback in the Angular zone, so change detection doesn't stop working.
-                    this.zone.run(() => {
+                    NgZone.run(() => {
                         if (loadStartUrls.indexOf(event.url) == -1) {
                             // The URL was stopped but not started, probably a custom URL scheme.
                             CoreEvents.trigger(CoreEvents.IAB_LOAD_START, event);
@@ -1031,7 +1031,7 @@ export class CoreUtilsProvider {
 
             const exitSubscription = this.iabInstance.on('exit').subscribe((event) => {
                 // Execute the callback in the Angular zone, so change detection doesn't stop working.
-                this.zone.run(() => {
+                NgZone.run(() => {
                     loadStartSubscription.unsubscribe();
                     loadStopSubscription && loadStopSubscription.unsubscribe();
                     exitSubscription.unsubscribe();

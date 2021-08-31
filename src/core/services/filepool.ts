@@ -97,8 +97,24 @@ export class CoreFilepoolProvider {
     constructor() {
         this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
         this.logger = CoreLogger.getInstance('CoreFilepoolProvider');
+    }
 
-        this.init();
+    /**
+     * Initialize queue.
+     */
+    async initialize(): Promise<void> {
+        // Waiting for the app to be ready to start processing the queue.
+        await ApplicationInit.donePromise;
+
+        this.checkQueueProcessing();
+
+        // Start queue when device goes online.
+        Network.onConnect().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            NgZone.run(() => {
+                this.checkQueueProcessing();
+            });
+        });
     }
 
     /**
@@ -112,24 +128,6 @@ export class CoreFilepoolProvider {
         }
 
         this.resolveAppDB(CoreApp.getDB());
-    }
-
-    /**
-     * Init some properties.
-     */
-    protected async init(): Promise<void> {
-        // Waiting for the app to be ready to start processing the queue.
-        await ApplicationInit.donePromise;
-
-        this.checkQueueProcessing();
-
-        // Start queue when device goes online.
-        Network.onConnect().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.checkQueueProcessing();
-            });
-        });
     }
 
     /**

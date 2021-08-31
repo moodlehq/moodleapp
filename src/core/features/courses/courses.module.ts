@@ -66,8 +66,7 @@ const mainMenuHomeSiblingRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreMainMenuHomeDelegate.registerHandler(CoreDashboardHomeHandler.instance);
                 CoreMainMenuHomeDelegate.registerHandler(CoreCoursesMyCoursesHomeHandler.instance);
                 CoreContentLinksDelegate.registerHandler(CoreCoursesCourseLinkHandler.instance);

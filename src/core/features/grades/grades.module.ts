@@ -62,7 +62,6 @@ const courseIndexRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
             useValue: () => {
                 CoreMainMenuDelegate.registerHandler(CoreGradesMainMenuHandler.instance);
                 CoreUserDelegate.registerHandler(CoreGradesUserHandler.instance);

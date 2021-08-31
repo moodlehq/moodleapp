@@ -17,7 +17,7 @@ import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreSettingsHelperProvider } from './services/settings-helper';
+import { CoreSettingsHelper, CoreSettingsHelperProvider } from './services/settings-helper';
 import { CoreSettingsDelegateService } from './services/settings-delegate';
 
 export const CORE_SETTINGS_SERVICES: Type<unknown>[] = [
@@ -49,15 +49,7 @@ const mainMenuMoreRoutes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(mainMenuMoreRoutes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            deps: [CoreSettingsHelperProvider],
-            useFactory: (helper: CoreSettingsHelperProvider) => async () => {
-                await helper.upgradeZoomLevel();
-                helper.initDomSettings();
-            },
-        },
+        { provide: APP_INITIALIZER, multi: true, useValue: () => CoreSettingsHelper.initialize() },
     ],
 })
 export class CoreSettingsModule {}

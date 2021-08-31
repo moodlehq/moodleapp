@@ -62,27 +62,12 @@ export class CoreLocalNotificationsProvider {
         this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
         this.logger = CoreLogger.getInstance('CoreLocalNotificationsProvider');
         this.queueRunner = new CoreQueueRunner(10);
-
-        this.init();
-    }
-
-    /**
-     * Initialize database.
-     */
-    async initializeDatabase(): Promise<void> {
-        try {
-            await CoreApp.createTablesFromSchema(APP_SCHEMA);
-        } catch (e) {
-            // Ignore errors.
-        }
-
-        this.resolveAppDB(CoreApp.getDB());
     }
 
     /**
      * Init some properties.
      */
-    protected async init(): Promise<void> {
+    async initialize(): Promise<void> {
         await Platform.ready();
 
         if (!this.isAvailable()) {
@@ -129,6 +114,19 @@ export class CoreLocalNotificationsProvider {
                 this.cancelSiteNotifications(site.id!);
             }
         });
+    }
+
+    /**
+     * Initialize database.
+     */
+    async initializeDatabase(): Promise<void> {
+        try {
+            await CoreApp.createTablesFromSchema(APP_SCHEMA);
+        } catch (e) {
+            // Ignore errors.
+        }
+
+        this.resolveAppDB(CoreApp.getDB());
     }
 
     /**

@@ -24,8 +24,7 @@ import { AddonModQuizAccessIpAddressHandler } from './services/handlers/ipaddres
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessIpAddressHandler.instance);
             },
         },

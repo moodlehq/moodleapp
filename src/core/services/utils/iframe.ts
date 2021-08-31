@@ -25,7 +25,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 
-import { makeSingleton, Network, Platform, NgZone, Translate, Diagnostic } from '@singletons';
+import { makeSingleton, Network, NgZone, Translate, Diagnostic } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
@@ -52,11 +52,6 @@ export class CoreIframeUtilsProvider {
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreUtilsProvider');
-
-        if (CoreApp.isIOS() && 'WKUserScript' in window) {
-            // eslint-disable-next-line promise/catch-or-return
-            Platform.ready().then(() => this.injectiOSScripts(window));
-        }
     }
 
     /**
@@ -558,7 +553,7 @@ export class CoreIframeUtilsProvider {
      *
      * @param userScriptWindow Window.
      */
-    private injectiOSScripts(userScriptWindow: WKUserScriptWindow) {
+    injectiOSScripts(userScriptWindow: WKUserScriptWindow): void {
         const wwwPath = CoreFile.getWWWAbsolutePath();
         const linksPath = CoreTextUtils.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
 
