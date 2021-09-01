@@ -485,7 +485,7 @@ Feature: Test basic usage of one course in app
     And I should find "Test scorm name" in the app
     And I should find "Test workshop name" in the app
 
-  Scenario: View blocks bellow/beside contents also when All sections selected
+  Scenario: View blocks below/beside contents also when All sections selected
     Given I enter the app
     And I log in as "teacher1"
     And I press "Course 1" near "Recently accessed courses" in the app
@@ -498,7 +498,7 @@ Feature: Test basic usage of one course in app
     And I click on "Side panel" "button"
     And I follow "Add a block"
     And I follow "HTML"
-    And I click on "[aria-label=\"Close drawer\"]" "css_element"
+    And I click on "#theme_boost-drawers-blocks [aria-label=\"Close drawer\"]" "css_element"
     And I click on "Side panel" "button"
     And I follow "Add a block"
     And I follow "Activities"

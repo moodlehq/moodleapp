@@ -56,34 +56,13 @@ Feature: Test basic usage of login in app
   Scenario: Require minium version of the app for a site
 
     # Log in with a previous required version
+    Given the following config values are set as admin:
+      | minimumversion | 3.8.1 | tool_mobile |
     When I enter the app
-    And I log in as "teacher1"
-    And I press the main menu button in the app
-    And I press "Website" in the app
-    And I switch to the browser tab opened by the app
-    And I follow "Log in"
-    And I log in as "admin"
-    And I press "Side panel"
-    And I follow "Site administration"
-    And I follow "Mobile authentication"
-    And I set the field "Minimum app version required" to "3.8.1"
-    And I press "Save changes"
-    And I close the browser tab opened by the app
-    And I enter the app
     Then I should not find "App update required" in the app
 
     # Log in with a future required version
-    When I log in as "teacher1"
-    And I press the main menu button in the app
-    And I press "Website" in the app
-    And I switch to the browser tab opened by the app
-    And I follow "Log in"
-    And I log in as "admin"
-    And I press "Side panel"
-    And I follow "Site administration"
-    And I follow "Mobile authentication"
-    And I set the field "Minimum app version required" to "11.0.0"
-    And I press "Save changes"
-    And I close the browser tab opened by the app
-    And I enter the app
+    Given the following config values are set as admin:
+      | minimumversion | 11.0.0 | tool_mobile |
+    When I enter the app
     Then I should find "App update required" in the app
