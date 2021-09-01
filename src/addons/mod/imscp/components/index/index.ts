@@ -14,10 +14,7 @@
 
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreSilentError } from '@classes/errors/silenterror';
-import {
-    CoreCourseModuleMainResourceComponent,
-    CoreCourseResourceDownloadResult,
-} from '@features/course/classes/main-resource-component';
+import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -81,24 +78,12 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
      * @return Promise resolved when done.
      */
     protected async fetchContent(refresh = false): Promise<void> {
-        let downloadResult: CoreCourseResourceDownloadResult;
-        const promises: Promise<void>[] = [];
+        try {
+            const downloadResult = await this.downloadResourceIfNeeded(refresh);
 
-        promises.push(AddonModImscp.getImscp(this.courseId, this.module.id).then((imscp) => {
+            const imscp = await AddonModImscp.getImscp(this.courseId, this.module.id);
             this.description = imscp.intro;
             this.dataRetrieved.emit(imscp);
-
-            return;
-        }));
-
-        promises.push(this.downloadResourceIfNeeded(refresh).then((result) => {
-            downloadResult = result;
-
-            return;
-        }));
-
-        try {
-            await Promise.all(promises);
 
             this.items = AddonModImscp.createItemList(this.module.contents);
 

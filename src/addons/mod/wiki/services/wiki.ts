@@ -397,7 +397,7 @@ export class AddonModWikiProvider {
             return currentWiki;
         }
 
-        throw new CoreError('Wiki not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

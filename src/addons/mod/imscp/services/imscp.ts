@@ -24,7 +24,7 @@ import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 const ROOT_CACHE_KEY = 'mmaModImscp:';
 
@@ -183,7 +183,7 @@ export class AddonModImscpProvider {
             return currentImscp;
         }
 
-        throw new CoreError('Imscp not found');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

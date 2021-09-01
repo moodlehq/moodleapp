@@ -23,7 +23,7 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreTextFormat, defaultTextFormat } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWS, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
 import { AddonModWorkshopOffline } from './workshop-offline';
 import { AddonModWorkshopAutoSyncData, AddonModWorkshopSyncProvider } from './workshop-sync';
@@ -272,7 +272,7 @@ export class AddonModWorkshopProvider {
 
         const workshop = response.workshops.find((workshop) => workshop[key] == value);
         if (!workshop) {
-            throw new CoreError('Activity not found');
+            throw new CoreError(Translate.instant('core.course.modulenotfound'));
         }
 
         // Set submission types for Moodle 3.5 and older.

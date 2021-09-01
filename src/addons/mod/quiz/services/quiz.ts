@@ -748,7 +748,7 @@ export class AddonModQuizProvider {
         const quiz = response.quizzes.find(quiz => quiz[key] == value);
 
         if (!quiz) {
-            throw new CoreError('Quiz not found.');
+            throw new CoreError(Translate.instant('core.course.modulenotfound'));
         }
 
         return quiz;

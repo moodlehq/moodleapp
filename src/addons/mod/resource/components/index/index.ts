@@ -14,9 +14,7 @@
 
 import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import {
-    CoreCourseModuleMainResourceComponent,
-} from '@features/course/classes/main-resource-component';
+import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
@@ -118,13 +116,13 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
         // Get the resource instance to get the latest name/description and to know if it's embedded.
         if (this.canGetResource) {
-            resource = await CoreUtils.ignoreErrors(AddonModResource.getResourceData(this.courseId, this.module.id));
-            this.description = resource?.intro || '';
-            options = resource?.displayoptions ? CoreTextUtils.unserialize(resource.displayoptions) : {};
+            resource = await AddonModResource.getResourceData(this.courseId, this.module.id);
+            this.description = resource.intro || '';
+            options = resource.displayoptions ? CoreTextUtils.unserialize(resource.displayoptions) : {};
         } else {
-            resource = await CoreUtils.ignoreErrors(CoreCourse.getModule(this.module.id, this.courseId));
-            this.description = resource?.description || '';
-            options = resource?.customdata ? CoreTextUtils.unserialize(CoreTextUtils.parseJSON(resource.customdata)) : {};
+            resource = await CoreCourse.getModule(this.module.id, this.courseId);
+            this.description = resource.description || '';
+            options = resource.customdata ? CoreTextUtils.unserialize(CoreTextUtils.parseJSON(resource.customdata)) : {};
         }
 
         try {

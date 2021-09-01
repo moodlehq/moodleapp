@@ -28,7 +28,7 @@
         <core-iframe [src]="url"></core-iframe>
     </div>
 
-    <ion-list *ngIf="!shouldIframe && (!shouldEmbed || !isOther)">
+    <ion-list *ngIf="url && !shouldIframe && (!shouldEmbed || !isOther)">
         <ion-item *ngIf="shouldEmbed">
             <ion-label>
                 <img *ngIf="isImage" [alt]="name" [src]="url">

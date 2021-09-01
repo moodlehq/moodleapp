@@ -14,9 +14,7 @@
 
 import { Component, Optional, Input, OnInit } from '@angular/core';
 import { IonContent } from '@ionic/angular';
-import {
-    CoreCourseModuleMainResourceComponent, CoreCourseResourceDownloadResult,
-} from '@features/course/classes/main-resource-component';
+import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import {
     AddonModBookProvider,
     AddonModBookContentsMap,
@@ -130,35 +128,10 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      * @return Promise resolved when done.
      */
     protected async fetchContent(refresh = false): Promise<void> {
-        const promises: Promise<void>[] = [];
-        let downloadResult: CoreCourseResourceDownloadResult | undefined;
-
-        // Try to get the book data. Ignore errors since this WS isn't available in some Moodle versions.
-        promises.push(CoreUtils.ignoreErrors(AddonModBook.getBook(this.courseId, this.module.id))
-            .then((book) => {
-                if (!book) {
-                    return;
-                }
-
-                this.book = book;
-                this.dataRetrieved.emit(book);
-
-                this.description = book.intro;
-                this.displayNavBar = book.navstyle != AddonModBookNavStyle.TOC_ONLY;
-                this.displayTitlesInNavBar = book.navstyle == AddonModBookNavStyle.TEXT;
-
-                return;
-            }));
-
-        // Get module status to determine if it needs to be downloaded.
-        promises.push(this.downloadResourceIfNeeded(refresh).then((result) => {
-            downloadResult = result;
-
-            return;
-        }));
-
         try {
-            await Promise.all(promises);
+            const downloadResult = await this.downloadResourceIfNeeded(refresh);
+
+            await this.loadBookData();
 
             this.contentsMap = AddonModBook.getContentsMap(this.module.contents);
             this.chapters = AddonModBook.getTocList(this.module.contents);
@@ -189,6 +162,21 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             // Pass false because downloadResourceIfNeeded already invalidates and refresh data if refresh=true.
             this.fillContextMenu(false);
         }
+    }
+
+    /**
+     * Load book data from WS.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async loadBookData(): Promise<void> {
+        this.book = await AddonModBook.getBook(this.courseId, this.module.id);
+
+        this.dataRetrieved.emit(this.book);
+
+        this.description = this.book.intro;
+        this.displayNavBar = this.book.navstyle != AddonModBookNavStyle.TOC_ONLY;
+        this.displayTitlesInNavBar = this.book.navstyle == AddonModBookNavStyle.TEXT;
     }
 
     /**

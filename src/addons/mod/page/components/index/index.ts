@@ -13,9 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Optional } from '@angular/core';
-import {
-    CoreCourseModuleMainResourceComponent,
-} from '@features/course/classes/main-resource-component';
+import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreTextUtils } from '@services/utils/text';
@@ -82,70 +80,57 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
      * @return Promise resolved when done.
      */
     protected async fetchContent(refresh?: boolean): Promise<void> {
-        // Download the resource if it needs to be downloaded.
         try {
+            // Download the resource if it needs to be downloaded.
             const downloadResult = await this.downloadResourceIfNeeded(refresh);
 
-            const promises: Promise<void>[] = [];
+            const results = await Promise.all([
+                this.loadPageData(),
+                AddonModPageHelper.getPageHtml(this.module.contents, this.module.id),
+            ]);
 
-            let getPagePromise: Promise<CoreCourseWSModule | AddonModPagePage>;
-
-            // Get the module to get the latest title and description. Data should've been updated in download.
-            if (this.canGetPage) {
-                getPagePromise = AddonModPage.getPageData(this.courseId, this.module.id);
-            } else {
-                getPagePromise = CoreCourse.getModule(this.module.id, this.courseId);
-            }
-
-            promises.push(getPagePromise.then((page) => {
-                if (!page) {
-                    return;
-                }
-
-                this.description = 'intro' in page ? page.intro : page.description;
-                this.dataRetrieved.emit(page);
-
-                if (!this.canGetPage) {
-                    return;
-                }
-
-                this.page = page;
-
-                // Check if description and timemodified should be displayed.
-                if ('displayoptions' in this.page) {
-                    const options: Record<string, string | boolean> =
-                        CoreTextUtils.unserialize(this.page.displayoptions) || {};
-
-                    this.displayDescription = typeof options.printintro == 'undefined' ||
-                            CoreUtils.isTrueOrOne(options.printintro);
-                    this.displayTimemodified = typeof options.printlastmodified == 'undefined' ||
-                            CoreUtils.isTrueOrOne(options.printlastmodified);
-                } else {
-                    this.displayDescription = true;
-                    this.displayTimemodified = true;
-                }
-
-                this.timemodified = 'timemodified' in this.page ? this.page.timemodified : undefined;
-
-                return;
-            }).catch(() => {
-                // Ignore errors.
-            }));
-
-            // Get the page HTML.
-            promises.push(AddonModPageHelper.getPageHtml(this.module.contents, this.module.id).then((content) => {
-
-                this.contents = content;
-                this.warning = downloadResult?.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
-
-                return;
-            }));
-
-            await Promise.all(promises);
+            this.contents = results[1];
+            this.warning = downloadResult?.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
         } finally {
-            // Pass false because downloadResourceIfNeeded already invalidates and refresh data if refresh=true.
-            this.fillContextMenu(false);
+            this.fillContextMenu(refresh);
         }
+    }
+
+    /**
+     * Load page data from WS.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async loadPageData(): Promise<void> {
+        // Get latest title, description and some extra data. Data should've been updated in download.
+        const page = this.canGetPage ?
+            await AddonModPage.getPageData(this.courseId, this.module.id) :
+            await CoreCourse.getModule(this.module.id, this.courseId);
+
+        this.description = 'intro' in page ? page.intro : page.description;
+        this.dataRetrieved.emit(page);
+
+        if (!this.canGetPage) {
+            return;
+        }
+
+        this.page = page;
+
+        // Check if description and timemodified should be displayed.
+        if ('displayoptions' in this.page) {
+            const options: Record<string, string | boolean> =
+                CoreTextUtils.unserialize(this.page.displayoptions) || {};
+
+            this.displayDescription = typeof options.printintro == 'undefined' ||
+                    CoreUtils.isTrueOrOne(options.printintro);
+            this.displayTimemodified = typeof options.printlastmodified == 'undefined' ||
+                    CoreUtils.isTrueOrOne(options.printlastmodified);
+        } else {
+            this.displayDescription = true;
+            this.displayTimemodified = true;
+        }
+
+        this.timemodified = 'timemodified' in this.page ? this.page.timemodified : undefined;
     }
 
 }

@@ -19,7 +19,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 const ROOT_CACHE_KEY = 'mmaModLabel:';
 
@@ -77,7 +77,7 @@ export class AddonModLabelProvider {
             return currentLabel;
         }
 
-        throw new CoreError('Label not found');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

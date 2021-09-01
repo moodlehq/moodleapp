@@ -17,7 +17,7 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWS } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CoreUtils } from '@services/utils/utils';
@@ -103,7 +103,7 @@ export class AddonModBookProvider {
             return book;
         }
 
-        throw new CoreError('Book not found');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

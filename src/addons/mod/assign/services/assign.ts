@@ -17,7 +17,7 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreInterceptor } from '@classes/interceptor';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreGrades } from '@features/grades/services/grades';
@@ -218,7 +218,7 @@ export class AddonModAssignProvider {
             }
         }
 
-        throw new CoreError('Assignment not found');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

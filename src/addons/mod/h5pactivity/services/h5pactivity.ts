@@ -528,7 +528,7 @@ export class AddonModH5PActivityProvider {
             return currentActivity;
         }
 
-        throw new CoreError(Translate.instant('addon.mod_h5pactivity.errorgetactivity'));
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

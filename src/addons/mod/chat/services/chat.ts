@@ -61,7 +61,7 @@ export class AddonModChatProvider {
             return chat;
         }
 
-        throw new CoreError('Chat not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**

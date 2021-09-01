@@ -22,7 +22,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
 import { AddonModFeedbackAutoSyncData, AddonModFeedbackSyncProvider } from './feedback-sync';
 
@@ -605,7 +605,7 @@ export class AddonModFeedbackProvider {
             return currentFeedback;
         }
 
-        throw new CoreError('Feedback not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
