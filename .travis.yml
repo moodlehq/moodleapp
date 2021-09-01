@@ -1,6 +1,6 @@
 os: linux
 dist: trusty
-node_js: 12
+node_js: 14
 
 git:
   depth: 3
@@ -18,7 +18,7 @@ cache:
     - $HOME/.android/build-cache
 
 before_install:
-  - nvm install 12
+  - nvm use
   - node --version
   - npm --version
   - nvm --version

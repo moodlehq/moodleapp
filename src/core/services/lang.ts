@@ -50,7 +50,7 @@ export class CoreLangProvider {
             document.documentElement.setAttribute('dir', dir);
         });
 
-        await this.initializeCurrentLanguage();
+        this.initializeCurrentLanguage();
     }
 
     /**

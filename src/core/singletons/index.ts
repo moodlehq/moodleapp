@@ -57,6 +57,8 @@ import { Zip as ZipService } from '@ionic-native/zip/ngx';
 
 import { TranslateService } from '@ngx-translate/core';
 
+import { CoreApplicationInitStatus } from '@classes/application-init-status';
+
 /**
  * Injector instance used to resolve singletons.
  */
@@ -198,7 +200,7 @@ export const ModalController = makeSingleton(ModalControllerService);
 export const PopoverController = makeSingleton(PopoverControllerService);
 export const ToastController = makeSingleton(ToastControllerService);
 export const GestureController = makeSingleton(GestureControllerService);
-export const ApplicationInit = makeSingleton(ApplicationInitStatus);
+export const ApplicationInit = makeSingleton<CoreApplicationInitStatus>(ApplicationInitStatus);
 export const Application = makeSingleton(ApplicationRef);
 export const NavController = makeSingleton(NavControllerService);
 export const Router = makeSingleton(RouterService);

@@ -24,4 +24,9 @@ export class CoreApplicationInitStatus extends ApplicationInitStatus {
         super(injector.get(APP_INITIALIZER, []));
     }
 
+    whenDone(callback: () => unknown): void {
+        // eslint-disable-next-line promise/catch-or-return, promise/no-callback-in-promise
+        this.donePromise.then(callback);
+    }
+
 }

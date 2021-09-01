@@ -44,7 +44,7 @@ export class CoreSubscriptions {
                 // Unsubscribe using a timeout because we can receive a value immediately.
                 setTimeout(() => subscription.unsubscribe(), 0);
 
-                onError?.call(error);
+                onError && onError(error);
             },
         );
     }

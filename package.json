@@ -173,7 +173,7 @@
     "typescript": "^3.9.9"
   },
   "engines": {
-    "node": ">=12.x"
+    "node": ">=14.15.0 <15"
   },
   "cordova": {
     "platforms": [
