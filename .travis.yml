@@ -18,7 +18,7 @@ cache:
     - $HOME/.android/build-cache
 
 before_install:
-  - nvm use
+  - nvm install
   - node --version
   - npm --version
   - nvm --version
