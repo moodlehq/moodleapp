@@ -13,7 +13,10 @@
 // limitations under the License.
 
 import { CoreApp } from '@services/app';
+import { CoreUpdateManager } from '@services/update-manager';
 
-export default function(): void {
+export default async function(): Promise<void> {
+    await CoreUpdateManager.donePromise;
+
     CoreApp.consumeStorageRedirect();
 }

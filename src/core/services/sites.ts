@@ -53,6 +53,8 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreNavigationOptions } from './navigator';
 import { CoreSitesFactory } from './sites-factory';
 import { CoreText } from '@singletons/text';
+import { CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreErrorWithTitle } from '@classes/errors/errorwithtitle';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 
@@ -823,6 +825,11 @@ export class CoreSitesProvider {
 
         const site = await this.getSite(siteId);
 
+        const siteUrlAllowed = await CoreLoginHelper.isSiteUrlAllowed(site.getURL(), false);
+        if (!siteUrlAllowed) {
+            throw new CoreErrorWithTitle(Translate.instant('core.login.sitenotallowed'));
+        }
+
         this.currentSite = site;
 
         if (site.isLoggedOut()) {
@@ -1196,8 +1203,6 @@ export class CoreSitesProvider {
             return;
         }
 
-        const db = await this.appDB;
-
         const promises: Promise<unknown>[] = [];
         const siteConfig = this.currentSite.getStoredConfig();
         const siteId = this.currentSite.getId();
@@ -1208,7 +1213,7 @@ export class CoreSitesProvider {
             promises.push(this.setSiteLoggedOut(siteId, true));
         }
 
-        promises.push(db.deleteRecords(CURRENT_SITE_TABLE_NAME, { id: 1 }));
+        promises.push(this.removeStoredCurrentSite());
 
         await CoreUtils.ignoreErrors(Promise.all(promises));
 
@@ -1447,6 +1452,17 @@ export class CoreSitesProvider {
         const currentSite = await db.getRecord<CurrentSiteDBEntry>(CURRENT_SITE_TABLE_NAME, { id: 1 });
 
         return currentSite.siteId;
+    }
+
+    /**
+     * Remove current site stored in DB.
+     *
+     * @return Promise resolved when done.
+     */
+    async removeStoredCurrentSite(): Promise<void> {
+        const db = await this.appDB;
+
+        await db.deleteRecords(CURRENT_SITE_TABLE_NAME, { id: 1 });
     }
 
     /**

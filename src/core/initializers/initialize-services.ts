@@ -15,11 +15,13 @@
 import { CoreFilepool } from '@services/filepool';
 import { CoreLang } from '@services/lang';
 import { CoreLocalNotifications } from '@services/local-notifications';
+import { CoreUpdateManager } from '@services/update-manager';
 
 export default async function(): Promise<void> {
     await Promise.all([
         CoreFilepool.initialize(),
         CoreLang.initialize(),
         CoreLocalNotifications.initialize(),
+        CoreUpdateManager.initialize(),
     ]);
 }

@@ -23,6 +23,7 @@ import { CoreAjaxWSError } from './ajaxwserror';
 import { CoreCaptureError } from './captureerror';
 import { CoreNetworkError } from './network-error';
 import { CoreSiteError } from './siteerror';
+import { CoreErrorWithTitle } from './errorwithtitle';
 
 export const CORE_ERRORS_CLASSES: Type<unknown>[] = [
     CoreAjaxError,
@@ -34,4 +35,5 @@ export const CORE_ERRORS_CLASSES: Type<unknown>[] = [
     CoreSilentError,
     CoreSiteError,
     CoreWSError,
+    CoreErrorWithTitle,
 ];

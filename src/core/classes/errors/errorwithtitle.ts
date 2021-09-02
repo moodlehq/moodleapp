@@ -12,8 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreUpdateManager } from '@services/update-manager';
+import { CoreError } from './error';
 
-export default async function(): Promise<void> {
-    await CoreUpdateManager.load();
+/**
+ * Error with an explicit title describing the problem (instead of just "Error" or a generic message).
+ * This title should be used to communicate the problem with users, and if it's undefined it should be omitted.
+ */
+export class CoreErrorWithTitle extends CoreError {
+
+    title?: string;
+
+    constructor(message?: string, title?: string) {
+        super(message);
+
+        this.title = title;
+    }
+
 }

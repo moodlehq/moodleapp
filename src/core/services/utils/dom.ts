@@ -38,6 +38,7 @@ import { CoreViewerImageComponent } from '@features/viewer/components/image/imag
 import { CoreFormFields, CoreForms } from '../../singletons/form';
 import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
+import { CoreErrorWithTitle } from '@classes/errors/errorwithtitle';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -1376,6 +1377,8 @@ export class CoreDomUtilsProvider {
 
         if (this.isNetworkError(message, error)) {
             alertOptions.cssClass = 'core-alert-network-error';
+        } else if (error instanceof CoreErrorWithTitle) {
+            alertOptions.header = error.title || undefined;
         } else {
             alertOptions.header = Translate.instant('core.error');
         }
