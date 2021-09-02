@@ -93,7 +93,7 @@
             <addon-mod-forum-post
                 [post]="startingPost" [discussion]="discussion" [courseId]="courseId" [highlight]="true"
                 [discussionId]="discussionId" [component]="component" [componentId]="cmId"
-                [replyData]="replyData" [originalData]="originalData" [forum]="forum" [accessInfo]="accessInfo"
+                [formData]="formData" [originalData]="originalData" [forum]="forum" [accessInfo]="accessInfo"
                 [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" [leavingPage]="leavingPage"
                 (onPostChange)="postListChanged()">
             </addon-mod-forum-post>
@@ -104,7 +104,7 @@
                 <core-spacer *ngIf="!first"></core-spacer>
                 <addon-mod-forum-post
                     [post]="post" [courseId]="courseId" [discussionId]="discussionId"
-                    [component]="component" [componentId]="cmId" [replyData]="replyData"
+                    [component]="component" [componentId]="cmId" [formData]="formData"
                     [originalData]="originalData" [parentSubject]="postSubjects[post.parentid]"
                     [forum]="forum" [accessInfo]="accessInfo" [trackPosts]="trackPosts" [ratingInfo]="ratingInfo"
                     [leavingPage]="leavingPage"
@@ -123,7 +123,7 @@
             <ion-card>
                 <addon-mod-forum-post
                     [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component"
-                    [componentId]="cmId" [replyData]="replyData" [originalData]="originalData"
+                    [componentId]="cmId" [formData]="formData" [originalData]="originalData"
                     [parentSubject]="postSubjects[post.parentid]" [forum]="forum" [accessInfo]="accessInfo"
                     [trackPosts]="trackPosts" [ratingInfo]="ratingInfo" [leavingPage]="leavingPage"
                     (onPostChange)="postListChanged()">

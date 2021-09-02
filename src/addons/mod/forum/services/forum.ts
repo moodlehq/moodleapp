@@ -1559,9 +1559,9 @@ export type AddonModForumAccessInformation = {
 };
 
 /**
- * Reply info.
+ * Post creation or edition data.
  */
-export type AddonModForumReply = {
+export type AddonModForumPostFormData = {
     id: number;
     subject: string | null; // Null means original data is not set.
     message: string | null; // Null means empty or just white space.

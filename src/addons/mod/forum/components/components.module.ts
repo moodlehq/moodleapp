@@ -21,7 +21,6 @@ import { CoreTagComponentsModule } from '@features/tag/components/components.mod
 import { CoreRatingComponentsModule } from '@features/rating/components/components.module';
 
 import { AddonModForumDiscussionOptionsMenuComponent } from './discussion-options-menu/discussion-options-menu';
-import { AddonModForumEditPostComponent } from './edit-post/edit-post';
 import { AddonModForumIndexComponent } from './index/index';
 import { AddonModForumPostComponent } from './post/post';
 import { AddonModForumPostOptionsMenuComponent } from './post-options-menu/post-options-menu';
@@ -30,7 +29,6 @@ import { AddonModForumSortOrderSelectorComponent } from './sort-order-selector/s
 @NgModule({
     declarations: [
         AddonModForumDiscussionOptionsMenuComponent,
-        AddonModForumEditPostComponent,
         AddonModForumIndexComponent,
         AddonModForumPostComponent,
         AddonModForumPostOptionsMenuComponent,

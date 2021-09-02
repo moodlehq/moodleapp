@@ -122,11 +122,7 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit, OnDestroy 
      * Edit a post.
      */
     editPost(): void {
-        if (!this.offlinePost) {
-            PopoverController.dismiss({ action: 'edit' });
-        } else {
-            PopoverController.dismiss({ action: 'editoffline' });
-        }
+        PopoverController.dismiss({ action: 'edit' });
     }
 
 }
