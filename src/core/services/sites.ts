@@ -606,14 +606,11 @@ export class CoreSitesProvider {
             return CoreSitesProvider.INVALID_VERSION;
         }
 
-        const version31 = 2016052300;
-        const release31 = CoreSite.MINIMUM_MOODLE_VERSION;
-
         // Try to validate by version.
         if (info.version) {
             const version = parseInt(info.version, 10);
             if (!isNaN(version)) {
-                if (version >= version31) {
+                if (version >= CoreSite.MOODLE_RELEASES[CoreSite.MINIMUM_MOODLE_VERSION]) {
                     return this.validateWorkplaceVersion(info);
                 }
             }
@@ -622,7 +619,7 @@ export class CoreSitesProvider {
         // We couldn't validate by version number. Let's try to validate by release number.
         const release = this.getReleaseNumber(info.release || '');
         if (release) {
-            if (release >= release31) {
+            if (release >= CoreSite.MINIMUM_MOODLE_VERSION) {
                 return this.validateWorkplaceVersion(info);
             }
         }

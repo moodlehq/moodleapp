@@ -65,14 +65,10 @@ export class CoreSite {
     static readonly WS_CACHE_TABLE = 'wscache_2';
     static readonly CONFIG_TABLE = 'core_site_config';
 
-    static readonly MINIMUM_MOODLE_VERSION = '3.1';
+    static readonly MINIMUM_MOODLE_VERSION = '3.5';
 
     // Versions of Moodle releases.
-    protected readonly MOODLE_RELEASES = {
-        '3.1': 2016052300,
-        '3.2': 2016120500,
-        '3.3': 2017051503,
-        '3.4': 2017111300,
+    static readonly MOODLE_RELEASES = {
         '3.5': 2018051700,
         '3.6': 2018120300,
         '3.7': 2019052000,
@@ -495,6 +491,13 @@ export class CoreSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async request<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets, retrying?: boolean): Promise<T> {
+        if (this.isLoggedOut()) {
+            // Site is logged out, it cannot call WebServices.
+            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
+
+            throw new CoreError(Translate.instant('core.lostconnection'));
+        }
+
         const initialToken = this.token || '';
         data = data || {};
 
@@ -1812,12 +1815,12 @@ export class CoreSite {
             return 0;
         }
 
-        if (typeof this.MOODLE_RELEASES[data.major] == 'undefined') {
+        if (CoreSite.MOODLE_RELEASES[data.major] === undefined) {
             // Major version not found. Use the last one.
-            data.major = Object.keys(this.MOODLE_RELEASES).pop()!;
+            data.major = Object.keys(CoreSite.MOODLE_RELEASES).pop()!;
         }
 
-        return this.MOODLE_RELEASES[data.major] + data.minor;
+        return CoreSite.MOODLE_RELEASES[data.major] + data.minor;
     }
 
     /**
@@ -1847,7 +1850,7 @@ export class CoreSite {
      */
     protected getNextMajorVersionNumber(version: string): number {
         const data = this.getMajorAndMinor(version);
-        const releases = Object.keys(this.MOODLE_RELEASES);
+        const releases = Object.keys(CoreSite.MOODLE_RELEASES);
 
         if (!data) {
             // Invalid version.
@@ -1858,10 +1861,10 @@ export class CoreSite {
 
         if (position == -1 || position == releases.length - 1) {
             // Major version not found or it's the last one. Use the last one.
-            return this.MOODLE_RELEASES[releases[position]];
+            return CoreSite.MOODLE_RELEASES[releases[position]];
         }
 
-        return this.MOODLE_RELEASES[releases[position + 1]];
+        return CoreSite.MOODLE_RELEASES[releases[position + 1]];
     }
 
     /**
