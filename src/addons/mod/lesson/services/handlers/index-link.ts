@@ -67,21 +67,6 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
     }
 
     /**
-     * Check if the handler is enabled for a certain site (site + user) and a URL.
-     * If not defined, defaults to true.
-     *
-     * @param siteId The site ID.
-     * @param url The URL to treat.
-     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param courseId Course ID related to the URL. Optional but recommended.
-     * @return Whether the handler is enabled for the URL and site.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
-        return AddonModLesson.isPluginEnabled(siteId);
-    }
-
-    /**
      * Navigate to a lesson module (index page) with a fixed password.
      *
      * @param moduleId Module ID.

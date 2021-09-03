@@ -19,7 +19,7 @@ import { CoreCronHandler } from '@services/cron';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonNotifications, AddonNotificationsProvider } from '../notifications';
+import { AddonNotificationsProvider } from '../notifications';
 
 /**
  * Notifications cron handler.
@@ -44,8 +44,7 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
      * @return Whether it's a synchronization process or not.
      */
     isSync(): boolean {
-        // This is done to use only wifi if using the fallback function.
-        return !AddonNotifications.isPreciseNotificationCountEnabled();
+        return false;
     }
 
     /**

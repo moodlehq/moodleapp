@@ -34,7 +34,6 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
     component = AddonModChatProvider.COMPONENT;
     moduleName = 'chat';
     chat?: AddonModChatChat;
-    sessionsAvailable = false;
     chatInfo?: {
         date: string;
         fromnow: string;
@@ -89,8 +88,6 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             this.dataRetrieved.emit(this.chat);
-
-            this.sessionsAvailable = await AddonModChat.areSessionsAvailable();
         } finally {
             this.fillContextMenu(refresh);
         }

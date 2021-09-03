@@ -19,7 +19,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreGradesFormattedItem, CoreGradesFormattedRow, CoreGradesHelper } from '@features/grades/services/grades-helper';
+import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import {
     CoreQuestion,
@@ -647,7 +647,7 @@ export class AddonModQuizProvider {
         ignoreCache?: boolean,
         siteId?: string,
         userId?: number,
-    ): Promise<CoreGradesFormattedItem | CoreGradesFormattedRow | undefined> {
+    ): Promise<CoreGradesFormattedItem | undefined> {
 
         const items = await CoreGradesHelper.getGradeModuleItems(
             courseId,

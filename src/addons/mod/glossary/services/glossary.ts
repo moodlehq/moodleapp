@@ -22,7 +22,6 @@ import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreApp } from '@services/app';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -964,11 +963,6 @@ export class AddonModGlossaryProvider {
             });
         }
 
-        // Workaround for bug MDL-57737.
-        if (!site.isVersionGreaterEqualThan('3.2.2')) {
-            params.definition = CoreTextUtils.cleanTags(params.definition);
-        }
-
         const response = await site.write<AddonModGlossaryAddEntryWSResponse>('mod_glossary_add_entry', params);
 
         return response.entryid;
@@ -1005,16 +999,6 @@ export class AddonModGlossaryProvider {
             // Error, assume not used.
             return false;
         }
-    }
-
-    /**
-     * Return whether or not the plugin is enabled for editing in the current site. Plugin is enabled if the glossary WS are
-     * available.
-     *
-     * @return Whether the glossary editing is available or not.
-     */
-    isPluginEnabledForEditing(): boolean {
-        return !!CoreSites.getCurrentSite()?.wsAvailable('mod_glossary_add_entry');
     }
 
     /**

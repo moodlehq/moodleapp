@@ -951,19 +951,6 @@ export class AddonModDataProvider {
     }
 
     /**
-     * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the database WS are available.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
-     * @since 3.3
-     */
-    async isPluginEnabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return site.wsAvailable('mod_data_get_data_access_information');
-    }
-
-    /**
      * Report the database as being viewed.
      *
      * @param id Module ID.

@@ -46,7 +46,7 @@ export class AddonCalendarMainMenuHandlerService implements CoreMainMenuHandler 
         return {
             icon: 'far-calendar',
             title: 'addon.calendar.calendar',
-            page: AddonCalendar.getMainCalendarPagePath(),
+            page: AddonCalendarMainMenuHandlerService.PAGE_NAME,
             class: 'addon-calendar-handler',
         };
     }

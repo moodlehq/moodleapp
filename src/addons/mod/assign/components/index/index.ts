@@ -63,7 +63,6 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     canViewOwnSubmission = false; // Whether the user can view their own submission.
     timeRemaining?: string; // Message about time remaining to submit.
     lateSubmissions?: string; // Message about late submissions.
-    showNumbers = true; // Whether to show number of submissions with each status.
     summary?: AddonModAssignSubmissionGradingSummary; // The grading summary.
     needsGradingAvailable = false; // Whether we can see the submissions that need grading.
 
@@ -235,8 +234,6 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
                 // Check if groupmode is enabled to avoid showing wrong numbers.
                 this.groupInfo = await CoreGroups.getActivityGroupInfo(this.assign.cmid, false);
-                this.showNumbers = (this.groupInfo.groups && this.groupInfo.groups.length == 0) ||
-                    this.currentSite!.isVersionGreaterEqualThan('3.5');
 
                 await this.setGroup(CoreGroups.validateGroupId(this.group, this.groupInfo));
 
@@ -296,9 +293,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             }
         }
 
-        this.needsGradingAvailable =
-            (submissionStatus.gradingsummary?.submissionsneedgradingcount || 0) > 0 &&
-            this.currentSite!.isVersionGreaterEqualThan('3.2');
+        this.needsGradingAvailable = (submissionStatus.gradingsummary?.submissionsneedgradingcount || 0) > 0;
     }
 
     /**
@@ -308,7 +303,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      * @param hasSubmissions If the status has any submission.
      */
     goToSubmissionList(status?: string, hasSubmissions = false): void {
-        if (typeof status != 'undefined' && !hasSubmissions && this.showNumbers) {
+        if (typeof status != 'undefined' && !hasSubmissions) {
             return;
         }
 

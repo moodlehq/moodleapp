@@ -111,13 +111,9 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
             return false;
         }
 
-        return AddonCalendar.isDisabled(siteId).then((disabled) => {
-            if (disabled) {
-                return false;
-            }
+        const disabled = await AddonCalendar.isDisabled(siteId);
 
-            return AddonCalendar.canViewMonth(siteId);
-        });
+        return !disabled;
     }
 
 }

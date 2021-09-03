@@ -1567,9 +1567,8 @@ export class AddonMessagesProvider {
                 self: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_SELF] || 0,
             };
 
-        } else if (this.isMessageCountEnabled()) {
-            // @since 3.2
-            const params: { useridto: number } = {
+        } else {
+            const params: AddonMessageGetUnreadConversationsCountWSParams = {
                 useridto: site.getUserId(),
             };
             const preSets: CoreSiteWSPreSets = {
@@ -1577,37 +1576,11 @@ export class AddonMessagesProvider {
                 typeExpected: 'number',
             };
 
-            const count: number = await site.read('core_message_get_unread_conversations_count', params, preSets);
+            const count = await site.read<number>('core_message_get_unread_conversations_count', params, preSets);
 
             counts = { favourites: 0, individual: count, group: 0, self: 0 };
-        } else {
-            // Fallback call.
-            const params: AddonMessagesGetMessagesWSParams = {
-                read: false,
-                limitfrom: 0,
-                limitnum: AddonMessagesProvider.LIMIT_MESSAGES + 1,
-                useridto: site.getUserId(),
-                useridfrom: 0,
-            };
-
-            const response = await this.getMessages(params, {}, siteId);
-
-            // Count the discussions by filtering same senders.
-            const discussions = {};
-            response.messages.forEach((message) => {
-                discussions[message.useridto] = 1;
-            });
-
-            const count = Object.keys(discussions).length;
-
-            counts = {
-                favourites: 0,
-                individual: count,
-                group: 0,
-                self: 0,
-                orMore: count > AddonMessagesProvider.LIMIT_MESSAGES,
-            };
         }
+
         // Notify the new counts so all views are updated.
         CoreEvents.trigger(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, counts, site.id);
 
@@ -1936,8 +1909,7 @@ export class AddonMessagesProvider {
             // @since 3.6
             return site.invalidateWsCacheForKey(this.getCacheKeyForUnreadConversationCounts());
 
-        } else if (this.isMessageCountEnabled()) {
-            // @since 3.2
+        } else {
             return site.invalidateWsCacheForKey(this.getCacheKeyForMessageCount(site.getUserId()));
         }
     }
@@ -2017,37 +1989,6 @@ export class AddonMessagesProvider {
     }
 
     /**
-     * Returns whether or not we can mark all messages as read.
-     *
-     * @return If related WS is available on current site.
-     * @since 3.2
-     */
-    isMarkAllMessagesReadEnabled(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('core_message_mark_all_conversation_messages_as_read') ||
-                CoreSites.wsAvailableInCurrentSite('core_message_mark_all_messages_as_read');
-    }
-
-    /**
-     * Returns whether or not we can count unread messages.
-     *
-     * @return True if enabled, false otherwise.
-     * @since 3.2
-     */
-    isMessageCountEnabled(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('core_message_get_unread_conversations_count');
-    }
-
-    /**
-     * Returns whether or not the message preferences are enabled for the current site.
-     *
-     * @return True if enabled, false otherwise.
-     * @since 3.2
-     */
-    isMessagePreferencesEnabled(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('core_message_get_user_message_preferences');
-    }
-
-    /**
      * Returns whether or not messaging is enabled for a certain site.
      *
      * This could call a WS so do not abuse this method.
@@ -2103,15 +2044,6 @@ export class AddonMessagesProvider {
         const site = await CoreSites.getSite(siteId);
 
         return site.canUseAdvancedFeature('messaging');
-    }
-
-    /**
-     * Returns whether or not we can search messages.
-     *
-     * @since 3.2
-     */
-    isSearchMessagesEnabled(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('core_message_data_for_messagearea_search_messages');
     }
 
     /**
@@ -3689,6 +3621,13 @@ export type AddonMessagesGetConversationCountsWSResponse = {
 type AddonMessagesSetFavouriteConversationsWSParams = {
     userid?: number; // Id of the user, 0 for current user.
     conversations: number[];
+};
+
+/**
+ * Params of core_message_get_unread_conversations_count WS.
+ */
+type AddonMessageGetUnreadConversationsCountWSParams = {
+    useridto: number; // The user id who received the message, 0 for any user.
 };
 
 /**

@@ -222,15 +222,6 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return Promise resolved with a boolean indicating if the handler is enabled.
-     */
-    isEnabled(): Promise<boolean> {
-        return AddonModLesson.isPluginEnabled();
-    }
-
-    /**
      * @inheritdoc
      */
     prefetch(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<void> {

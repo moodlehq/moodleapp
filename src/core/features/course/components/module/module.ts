@@ -69,7 +69,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @Output() statusChanged = new EventEmitter<CoreCourseModuleStatusChangedData>(); // Notify when the download status changes.
 
     downloadStatus?: string;
-    canCheckUpdates?: boolean;
     spinner?: boolean; // Whether to display a loading spinner.
     downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     modNameTranslated = '';
@@ -108,7 +107,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         if (this.module.handlerData.showDownloadButton) {
             // Listen for changes on this module status, even if download isn't enabled.
             this.prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(this.module);
-            this.canCheckUpdates = CoreCourseModulePrefetchDelegate.canCheckUpdates();
 
             this.statusObserver = CoreEvents.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
                 if (!this.module || data.componentId != this.module.id || !this.prefetchHandler ||

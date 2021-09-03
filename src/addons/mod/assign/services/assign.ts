@@ -90,8 +90,6 @@ export class AddonModAssignProvider {
     static readonly SUBMITTED_FOR_GRADING_EVENT = 'addon_mod_assign_submitted_for_grading';
     static readonly GRADED_EVENT = 'addon_mod_assign_graded';
 
-    protected gradingOfflineEnabled: {[siteId: string]: boolean} = {};
-
     /**
      * Check if the user can submit in offline. This should only be used if submissionStatus.lastattempt.cansubmit cannot
      * be used (offline usage).
@@ -151,7 +149,7 @@ export class AddonModAssignProvider {
 
         return {
             isBlind: !userId ? false : !!isBlind,
-            groupId: site.isVersionGreaterEqualThan('3.5') ? groupId || 0 : 0,
+            groupId: groupId || 0,
             userId: userId || site.getUserId(),
         };
     }
@@ -662,10 +660,6 @@ export class AddonModAssignProvider {
         groupId = groupId || 0;
 
         const site = await CoreSites.getSite(options.siteId);
-        if (!site.wsAvailable('mod_assign_list_participants')) {
-            // Silently fail if is not available. (needs Moodle version >= 3.2)
-            throw new CoreError('mod_assign_list_participants WS is only available 3.2 onwards');
-        }
 
         const params: AddonModAssignListParticipantsWSParams = {
             assignid: assignId,
@@ -834,47 +828,6 @@ export class AddonModAssignProvider {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.listParticipantsPrefixCacheKey(assignId));
-    }
-
-    /**
-     * Convenience function to check if grading offline is enabled.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether grading offline is enabled.
-     */
-    protected async isGradingOfflineEnabled(siteId?: string): Promise<boolean> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
-        if (typeof this.gradingOfflineEnabled[siteId] != 'undefined') {
-            return this.gradingOfflineEnabled[siteId];
-        }
-
-        this.gradingOfflineEnabled[siteId] = await CoreGrades.isGradeItemsAvailable(siteId);
-
-        return this.gradingOfflineEnabled[siteId];
-    }
-
-    /**
-     * Outcomes only can be edited if mod_assign_submit_grading_form is available.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if outcomes edit is enabled, rejected or resolved with false otherwise.
-     * @since 3.2
-     */
-    async isOutcomesEditEnabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return site.wsAvailable('mod_assign_submit_grading_form');
-    }
-
-    /**
-     * Check if assignments plugin is enabled in a certain site.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @return Whether the plugin is enabled.
-     */
-    isPluginEnabled(): boolean {
-        return true;
     }
 
     /**
@@ -1261,25 +1214,6 @@ export class AddonModAssignProvider {
             return false;
         };
 
-        // Grading offline is only allowed if WS of grade items is enabled to avoid inconsistency.
-        const enabled = await this.isGradingOfflineEnabled(siteId);
-        if (!enabled) {
-            await this.submitGradingFormOnline(
-                assignId,
-                userId,
-                grade,
-                attemptNumber,
-                addAttempt,
-                workflowState,
-                applyToAll,
-                outcomes,
-                pluginData,
-                siteId,
-            );
-
-            return true;
-        }
-
         if (!CoreApp.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
@@ -1345,58 +1279,35 @@ export class AddonModAssignProvider {
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
-        if (site.wsAvailable('mod_assign_submit_grading_form')) {
-            // WS available @since 3.2.
+        const jsonData = {
+            grade,
+            attemptnumber: attemptNumber,
+            addattempt: addAttempt ? 1 : 0,
+            workflowstate: workflowState,
+            applytoall: applyToAll ? 1 : 0,
+        };
 
-            const jsonData = {
-                grade,
-                attemptnumber: attemptNumber,
-                addattempt: addAttempt ? 1 : 0,
-                workflowstate: workflowState,
-                applytoall: applyToAll ? 1 : 0,
-            };
-
-            for (const index in outcomes) {
-                jsonData['outcome_' + index + '[' + userId + ']'] = outcomes[index];
-            }
-
-            for (const index in pluginData) {
-                jsonData[index] = pluginData[index];
-            }
-
-            const serialized = CoreInterceptor.serialize(jsonData, true);
-            const params: AddonModAssignSubmitGradingFormWSParams = {
-                assignmentid: assignId,
-                userid: userId,
-                jsonformdata: JSON.stringify(serialized),
-            };
-
-            const warnings = await site.write<CoreWSExternalWarning[]>('mod_assign_submit_grading_form', params);
-
-            if (warnings.length) {
-                // The WebService returned warnings, reject.
-                throw new CoreWSError(warnings[0]);
-            }
-
-            return;
+        for (const index in outcomes) {
+            jsonData['outcome_' + index + '[' + userId + ']'] = outcomes[index];
         }
 
-        // WS not available, fallback to save_grade.
-        const params: AddonModAssignSaveGradeWSParams = {
+        for (const index in pluginData) {
+            jsonData[index] = pluginData[index];
+        }
+
+        const serialized = CoreInterceptor.serialize(jsonData, true);
+        const params: AddonModAssignSubmitGradingFormWSParams = {
             assignmentid: assignId,
             userid: userId,
-            grade: grade,
-            attemptnumber: attemptNumber,
-            addattempt: addAttempt,
-            workflowstate: workflowState,
-            applytoall: applyToAll,
-            plugindata: pluginData,
-        };
-        const preSets: CoreSiteWSPreSets = {
-            responseExpected: false,
+            jsonformdata: JSON.stringify(serialized),
         };
 
-        await site.write('mod_assign_save_grade', params, preSets);
+        const warnings = await site.write<CoreWSExternalWarning[]>('mod_assign_submit_grading_form', params);
+
+        if (warnings.length) {
+            // The WebService returned warnings, reject.
+            throw new CoreWSError(warnings[0]);
+        }
     }
 
 }
@@ -1431,7 +1342,7 @@ export type AddonModAssignAssign = {
     timemodified: number; // Last time assignment was modified.
     completionsubmit: number; // If enabled, set activity as complete following submission.
     cutoffdate: number; // Date after which submission is not accepted without an extension.
-    gradingduedate?: number; // @since 3.3. The expected date for marking the submissions.
+    gradingduedate?: number; // The expected date for marking the submissions.
     teamsubmission: number; // If enabled, students submit as a team.
     requireallteammemberssubmit: number; // If enabled, all team members must submit.
     teamsubmissiongroupingid: number; // The grouping id for the team submission groups.
@@ -1443,13 +1354,13 @@ export type AddonModAssignAssign = {
     markingworkflow: number; // Enable marking workflow.
     markingallocation: number; // Enable marking allocation.
     requiresubmissionstatement: number; // Student must accept submission statement.
-    preventsubmissionnotingroup?: number; // @since 3.2. Prevent submission not in group.
-    submissionstatement?: string; // @since 3.2. Submission statement formatted.
-    submissionstatementformat?: number; // @since 3.2. Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    preventsubmissionnotingroup?: number; // Prevent submission not in group.
+    submissionstatement?: string; // Submission statement formatted.
+    submissionstatementformat?: number; // Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     configs: AddonModAssignConfig[]; // Configuration settings.
     intro?: string; // Assignment intro, not allways returned because it deppends on the activity configuration.
     introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    introfiles?: CoreWSExternalFile[];
     introattachments?: CoreWSExternalFile[];
 };
 
@@ -1494,7 +1405,7 @@ export type AddonModAssignSubmission = {
     assignment?: number; // Assignment id.
     latest?: number; // Latest attempt.
     plugins?: AddonModAssignPlugin[]; // Plugins.
-    gradingstatus?: string; // @since 3.2. Grading status.
+    gradingstatus?: string; // Grading status.
 };
 
 /**
@@ -1539,7 +1450,7 @@ export type AddonModAssignSubmissionAttempt = {
     locked: boolean; // Whether new submissions are locked.
     graded: boolean; // Whether the submission is graded.
     canedit: boolean; // Whether the user can edit the current submission.
-    caneditowner?: boolean; // @since 3.2. Whether the owner of the submission can edit it.
+    caneditowner?: boolean; // Whether the owner of the submission can edit it.
     cansubmit: boolean; // Whether the user can submit.
     extensionduedate: number; // Extension due date.
     blindmarking: boolean; // Whether blind marking is enabled.
@@ -1610,7 +1521,7 @@ export type AddonModAssignParticipant = {
     interests?: string; // User interests (separated by commas).
     firstaccess?: number; // First access to the site (0 if never).
     lastaccess?: number; // Last access to the site (0 if never).
-    suspended?: boolean; // @since 3.2. Suspend user account, either false to enable user login or true to disable it.
+    suspended?: boolean; // Suspend user account, either false to enable user login or true to disable it.
     description?: string; // User profile description.
     descriptionformat?: number; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     city?: string; // Home city of the user.
@@ -1647,7 +1558,7 @@ export type AddonModAssignParticipant = {
     }[];
     submitted: boolean; // Have they submitted their assignment.
     requiregrading: boolean; // Is their submission waiting for grading.
-    grantedextension?: boolean; // @since 3.3. Have they been granted an extension.
+    grantedextension?: boolean; // Have they been granted an extension.
     groupid?: number; // For group assignments this is the group id.
     groupname?: string; // For group assignments this is the group name.
 };
@@ -1813,45 +1724,6 @@ type AddonModAssignSubmitGradingFormWSParams = {
     assignmentid: number; // The assignment id to operate on.
     userid: number; // The user id the submission belongs to.
     jsonformdata: string; // The data from the grading form, encoded as a json array.
-};
-
-/**
- * Params of mod_assign_save_grade WS.
- */
-type AddonModAssignSaveGradeWSParams = {
-    assignmentid: number; // The assignment id to operate on.
-    userid: number; // The student id to operate on.
-    grade: number; // The new grade for this user. Ignored if advanced grading used.
-    attemptnumber: number; // The attempt number (-1 means latest attempt).
-    addattempt: boolean; // Allow another attempt if the attempt reopen method is manual.
-    workflowstate: string; // The next marking workflow state.
-    applytoall: boolean; // If true, this grade will be applied to all members of the group (for group assignments).
-    plugindata?: AddonModAssignSavePluginData; // Plugin data.
-    advancedgradingdata?: {
-        guide?: {
-            criteria: {
-                criterionid: number; // Criterion id.
-                fillings?: { // Filling.
-                    criterionid: number; // Criterion id.
-                    levelid?: number; // Level id.
-                    remark?: string; // Remark.
-                    remarkformat?: number; // Remark format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-                    score: number; // Maximum score.
-                }[];
-            }[];
-        }; // Items.
-        rubric?: {
-            criteria: {
-                criterionid: number; // Criterion id.
-                fillings?: { // Filling.
-                    criterionid: number; // Criterion id.
-                    levelid?: number; // Level id.
-                    remark?: string; // Remark.
-                    remarkformat?: number; // Remark format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-                }[];
-            }[];
-        }; // Items.
-    }; // Advanced grading data.
 };
 
 /**

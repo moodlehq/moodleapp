@@ -20,7 +20,6 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonModChatIndexComponent } from '../../components/index';
-import { AddonModChat } from '../chat';
 
 /**
  * Handler to support chat modules.
@@ -59,6 +58,7 @@ export class AddonModChatModuleHandlerService implements CoreCourseModuleHandler
             icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
             title: module.name,
             class: 'addon-mod_chat-handler',
+            showDownloadButton: true,
             action(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void {
                 options = options || {};
                 options.params = options.params || {};
@@ -69,18 +69,7 @@ export class AddonModChatModuleHandlerService implements CoreCourseModuleHandler
             },
         };
 
-        this.checkDownloadButton(data);
-
         return data;
-    }
-
-    /**
-     * Check whether download button should be displayed.
-     *
-     * @param data Handler data.
-     */
-    protected async checkDownloadButton(data: CoreCourseModuleHandlerData): Promise<void> {
-        data.showDownloadButton = await AddonModChat.areSessionsAvailable();
     }
 
     /**

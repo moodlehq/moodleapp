@@ -270,22 +270,17 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      * @return Promise resolved when done.
      */
     protected async calculateUserHandlers(user: CoreUserProfile, courseId?: number): Promise<void> {
-        let navOptions: CoreCourseUserAdminOrNavOptionIndexed | undefined;
-        let admOptions: CoreCourseUserAdminOrNavOptionIndexed | undefined;
+        // Get course options.
+        const courses = await CoreCourses.getUserCourses(true);
+        const courseIds = courses.map((course) => course.id);
 
-        if (CoreCourses.canGetAdminAndNavOptions()) {
-            // Get course options.
-            const courses = await CoreCourses.getUserCourses(true);
-            const courseIds = courses.map((course) => course.id);
+        const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);
 
-            const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);
+        // For backwards compatibility we don't modify the courseId.
+        const courseIdForOptions = courseId || CoreSites.getCurrentSiteHomeId();
 
-            // For backwards compatibility we don't modify the courseId.
-            const courseIdForOptions = courseId || CoreSites.getCurrentSiteHomeId();
-
-            navOptions = options.navOptions[courseIdForOptions];
-            admOptions = options.admOptions[courseIdForOptions];
-        }
+        const navOptions = options.navOptions[courseIdForOptions];
+        const admOptions = options.admOptions[courseIdForOptions];
 
         const userData = this.userHandlers[user.id];
         userData.handlers = [];

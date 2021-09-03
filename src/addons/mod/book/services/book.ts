@@ -441,7 +441,7 @@ export type AddonModBookBookWSData = {
     name: string; // Book name.
     intro: string; // The Book intro.
     introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    introfiles?: CoreWSExternalFile[];
     numbering: number; // Book numbering configuration.
     navstyle: number; // Book navigation style configuration.
     customtitles: number; // Book custom titles type.

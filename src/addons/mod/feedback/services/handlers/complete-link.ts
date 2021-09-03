@@ -19,7 +19,6 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModFeedback } from '../feedback';
 import { AddonModFeedbackModuleHandlerService } from './module';
 
 /**
@@ -72,7 +71,7 @@ export class AddonModFeedbackCompleteLinkHandlerService extends CoreContentLinks
             return false;
         }
 
-        return AddonModFeedback.isPluginEnabled(siteId);
+        return true;
     }
 
 }

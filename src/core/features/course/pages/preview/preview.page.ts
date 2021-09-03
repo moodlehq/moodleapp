@@ -223,12 +223,9 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
 
         if (!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.7')) {
             try {
-                const available = await CoreCourses.isGetCoursesByFieldAvailableInSite();
-                if (available) {
-                    const course = await CoreCourses.getCourseByField('id', this.course!.id);
+                const course = await CoreCourses.getCourseByField('id', this.course!.id);
 
-                    this.course!.customfields = course.customfields;
-                }
+                this.course!.customfields = course.customfields;
             } catch {
                 // Ignore errors.
             }

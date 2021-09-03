@@ -47,11 +47,11 @@ export class CoreRatingProvider {
     /**
      * Returns whether the web serivce to add ratings is available.
      *
-     * @return If WS is abalaible.
-     * @since 3.2
+     * @return If WS is available.
+     * @deprecated since app 4.0
      */
     isAddRatingWSAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('core_rating_add_rating');
+        return true;
     }
 
     /**
@@ -70,7 +70,6 @@ export class CoreRatingProvider {
      * @param aggregateMethod Aggregate method.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the aggregated rating or void if stored offline.
-     * @since 3.2
      */
     async addRating(
         component: string,
@@ -162,7 +161,6 @@ export class CoreRatingProvider {
      * @param aggregateMethod Aggregate method.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the aggregated rating.
-     * @since 3.2
      */
     async addRatingOnline(
         component: string,

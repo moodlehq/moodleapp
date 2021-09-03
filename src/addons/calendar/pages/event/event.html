@@ -28,7 +28,7 @@
         <core-context-menu-item [hidden]="!canEdit || !event || !event.canedit || event.deleted" [priority]="300"
             [content]="'core.edit' | translate" (action)="openEdit()" iconAction="fas-edit">
         </core-context-menu-item>
-        <core-context-menu-item [hidden]="!canDelete || !event || !event.candelete || event.deleted" [priority]="200"
+        <core-context-menu-item [hidden]="!event || !event.candelete || event.deleted" [priority]="200"
             [content]="'core.delete' | translate" (action)="deleteEvent()"
             iconAction="fas-trash"></core-context-menu-item>
         <core-context-menu-item [hidden]="!event || !event.deleted" [priority]="200" [content]="'core.restore' | translate"

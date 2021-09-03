@@ -1481,11 +1481,6 @@ export class CoreSitesProvider {
      * @return Promise resolved with config if available.
      */
     protected async getSiteConfig(site: CoreSite): Promise<CoreSiteConfig | undefined> {
-        if (!site.wsAvailable('tool_mobile_get_config')) {
-            // WS not available, cannot get config.
-            return;
-        }
-
         return await site.getConfig(undefined, true);
     }
 

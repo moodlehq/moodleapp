@@ -248,13 +248,8 @@ export class AddonBlockTimelineProvider {
     async isAvailable(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
 
-        // First check if dashboard is disabled.
-        if (CoreCoursesDashboard.isDisabledInSite(site)) {
-            return false;
-        }
-
-        return site.wsAvailable('core_calendar_get_action_events_by_courses') &&
-            site.wsAvailable('core_calendar_get_action_events_by_timesort');
+        // Check if dashboard is disabled.
+        return !CoreCoursesDashboard.isDisabledInSite(site);
     }
 
     /**

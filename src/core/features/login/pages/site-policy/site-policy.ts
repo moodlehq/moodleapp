@@ -55,8 +55,8 @@ export class CoreLoginSitePolicyPage implements OnInit {
         const currentSiteId = this.currentSite.id;
         this.siteId = this.siteId || currentSiteId;
 
-        if (this.siteId != currentSiteId || !this.currentSite.wsAvailable('core_user_agree_site_policy')) {
-            // Not current site or WS not available, stop.
+        if (this.siteId != currentSiteId) {
+            // Not current site, stop.
             this.cancel();
 
             return;

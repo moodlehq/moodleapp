@@ -18,7 +18,6 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { CoreCourses } from '../courses';
 import { CoreCoursesMyCoursesHomeHandlerService } from './my-courses-home';
 
 /**
@@ -44,15 +43,10 @@ export class CoreCoursesIndexLinkHandlerService extends CoreContentLinksHandlerB
             action: (siteId): void => {
                 let pageName = CoreCoursesMyCoursesHomeHandlerService.PAGE_NAME;
 
-                if (CoreCourses.isGetCoursesByFieldAvailable()) {
-                    if (params.categoryid) {
-                        pageName += '/categories/' + params.categoryid;
-                    } else {
-                        pageName += '/all';
-                    }
+                if (params.categoryid) {
+                    pageName += '/categories/' + params.categoryid;
                 } else {
-                    // By default, go to My Courses.
-                    pageName += '/my';
+                    pageName += '/all';
                 }
 
                 CoreNavigator.navigateToSitePath(pageName, { siteId });

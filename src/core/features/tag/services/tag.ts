@@ -47,6 +47,7 @@ export class CoreTagProvider {
      *
      * @param site Site. If not defined, use current site.
      * @return True if available.
+     * @since 3.7
      */
     areTagsAvailableInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();

@@ -80,9 +80,10 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * Check if current site can check updates using core_course_check_updates.
      *
      * @return True if can check updates, false otherwise.
+     * @deprecated since app 4.0
      */
     canCheckUpdates(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('core_course_check_updates');
+        return true;
     }
 
     /**
@@ -166,10 +167,9 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      *
      * @param module Module.
      * @param status Current status.
-     * @param canCheck True if updates can be checked using core_course_check_updates.
      * @return Module status.
      */
-    determineModuleStatus(module: CoreCourseAnyModuleData, status: string, canCheck?: boolean): string {
+    determineModuleStatus(module: CoreCourseAnyModuleData, status: string): string {
         const handler = this.getPrefetchHandlerFor(module);
         const siteId = CoreSites.getCurrentSiteId();
 
@@ -186,9 +186,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             }
         } else if (handler.determineStatus) {
             // The handler implements a determineStatus function. Apply it.
-            canCheck = canCheck ?? this.canCheckUpdates();
-
-            return handler.determineStatus(module, status, canCheck);
+            return handler.determineStatus(module, status, true);
         }
 
         return status;
@@ -224,10 +222,6 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      *         checked for that module in the current site.
      */
     async getCourseUpdates(modules: CoreCourseWSModule[], courseId: number): Promise<CourseUpdates> {
-        if (!this.canCheckUpdates()) {
-            throw new CoreError('Cannot check course updates.');
-        }
-
         // Check if there's already a getCourseUpdates in progress.
         const id = <string> Md5.hashAsciiStr(courseId + '#' + JSON.stringify(modules));
         const siteId = CoreSites.getCurrentSiteId();
@@ -334,10 +328,6 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Promise resolved with the updates.
      */
     async getCourseUpdatesByCourseId(courseId: number): Promise<CourseUpdates> {
-        if (!this.canCheckUpdates()) {
-            throw new CoreError('Cannot check course updates.');
-        }
-
         // Get course sections and all their modules.
         const sections = await CoreCourse.getSections(courseId, false, true, { omitExpires: true });
 
@@ -558,7 +548,6 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         sectionId?: number,
     ): Promise<string> {
         const handler = this.getPrefetchHandlerFor(module);
-        const canCheck = this.canCheckUpdates();
 
         if (!handler) {
             // No handler found, module not downloadable.
@@ -572,7 +561,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         if (!refresh && typeof status != 'undefined') {
             this.storeCourseAndSection(packageId, courseId, sectionId);
 
-            return this.determineModuleStatus(module, status, canCheck);
+            return this.determineModuleStatus(module, status);
         }
 
         const result = await this.calculateModuleStatus(handler, module, courseId, updates, sectionId);
@@ -580,7 +569,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             this.updateStatusCache(result.status, handler.component, module.id, courseId, sectionId);
         }
 
-        return this.determineModuleStatus(module, result.status, canCheck);
+        return this.determineModuleStatus(module, result.status);
     }
 
     /**
@@ -612,10 +601,9 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
 
         // Get the saved package status.
         const siteId = CoreSites.getCurrentSiteId();
-        const canCheck = this.canCheckUpdates();
         const currentStatus = await CoreFilepool.getPackageStatus(siteId, handler.component, module.id);
 
-        let status = handler.determineStatus ? handler.determineStatus(module, currentStatus, canCheck) : currentStatus;
+        let status = handler.determineStatus ? handler.determineStatus(module, currentStatus, true) : currentStatus;
         if (status != CoreConstants.DOWNLOADED || updates === false) {
             return {
                 status,
@@ -677,7 +665,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             const status = this.statusCache.getValue<string>(packageId, 'status', true);
 
             return {
-                status: this.determineModuleStatus(module, status || CoreConstants.NOT_DOWNLOADED, canCheck),
+                status: this.determineModuleStatus(module, status || CoreConstants.NOT_DOWNLOADED),
                 updateStatus: true,
             };
         }
@@ -1441,10 +1429,10 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      *
      * @param module Module.
      * @param status The current status.
-     * @param canCheck Whether the site allows checking for updates.
+     * @param canCheck Whether the site allows checking for updates. This parameter was deprecated since app 4.0.
      * @return Status to display.
      */
-    determineStatus?(module: CoreCourseAnyModuleData, status: string, canCheck: boolean): string;
+    determineStatus?(module: CoreCourseAnyModuleData, status: string, canCheck: true): string;
 
     /**
      * Get the downloaded size of a module. If not defined, we'll use getFiles to calculate it (it can be slow).

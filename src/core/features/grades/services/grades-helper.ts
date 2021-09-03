@@ -231,11 +231,7 @@ export class CoreGradesHelperProvider {
 
         // If any course wasn't found, make a network request.
         if (coursesWereMissing) {
-            const coursesPromise = CoreCourses.isGetCoursesByFieldAvailable()
-                ? CoreCourses.getCoursesByField('ids', grades.map((grade) => grade.courseid).join(','))
-                : CoreCourses.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.PREFER_NETWORK);
-
-            const courses = await coursesPromise;
+            const courses = await CoreCourses.getCoursesByField('ids', grades.map((grade) => grade.courseid).join(','));
             const coursesMap =
                 CoreUtils.arrayToObject(courses as Record<string, unknown>[], 'id') as
                     Record<string, CoreEnrolledCourseData> |
@@ -337,17 +333,8 @@ export class CoreGradesHelperProvider {
         groupId?: number,
         siteId?: string,
         ignoreCache: boolean = false,
-    ): Promise<CoreGradesFormattedItem[] | CoreGradesFormattedRow[]> {
+    ): Promise<CoreGradesFormattedItem[]> {
         const grades = await CoreGrades.getGradeItems(courseId, userId, groupId, siteId, ignoreCache);
-
-        if (!grades) {
-            throw new CoreError('Couldn\'t get grade module items');
-        }
-
-        if ('tabledata' in grades) {
-            // 3.1 Table format.
-            return this.getModuleGradesTableRows(grades, moduleId);
-        }
 
         return grades.filter((item) => item.cmid == moduleId).map((item) => this.formatGradeItem(item));
     }
@@ -419,6 +406,7 @@ export class CoreGradesHelperProvider {
      * @param table JSON object representing a table with data.
      * @param moduleId Grade Object identifier.
      * @return Formatted HTML table.
+     * @deprecated since app 4.0
      */
     getModuleGradesTableRows(table: CoreGradesTable, moduleId: number): CoreGradesFormattedRow[] {
         if (!table.tabledata) {
@@ -470,14 +458,7 @@ export class CoreGradesHelperProvider {
                 throw new CoreError('Invalid moduleId');
             }
 
-            // Try to open the module grade directly. Check if it's possible.
-            const grades = await CoreGrades.isGradeItemsAvailable(siteId);
-
-            if (!grades) {
-                throw new CoreError('No grades found.');
-            }
-
-            // Can get grades. Do it.
+            // Try to open the module grade directly.
             const items = await CoreGrades.getGradeItems(courseId, userId, undefined, siteId);
 
             // Find the item of the module.
@@ -543,11 +524,7 @@ export class CoreGradesHelperProvider {
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
-        const enabled = await CoreGrades.isGradeItemsAvailable(siteId);
-
-        return enabled
-            ? CoreGrades.invalidateCourseGradesItemsData(courseId, userId, groupId, siteId)
-            : CoreGrades.invalidateCourseGradesData(courseId, userId, siteId);
+        return CoreGrades.invalidateCourseGradesItemsData(courseId, userId, groupId, siteId);
     }
 
     /**

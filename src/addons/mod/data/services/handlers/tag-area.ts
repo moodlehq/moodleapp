@@ -17,7 +17,6 @@ import { CoreTagFeedComponent } from '@features/tag/components/feed/feed';
 import { CoreTagAreaHandler } from '@features/tag/services/tag-area-delegate';
 import { CoreTagFeedElement, CoreTagHelper } from '@features/tag/services/tag-helper';
 import { makeSingleton } from '@singletons';
-import { AddonModData } from '../data';
 
 /**
  * Handler to support tags.
@@ -32,7 +31,7 @@ export class AddonModDataTagAreaHandlerService implements CoreTagAreaHandler {
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return AddonModData.isPluginEnabled();
+        return true;
     }
 
     /**

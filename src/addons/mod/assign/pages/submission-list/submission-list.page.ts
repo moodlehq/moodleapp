@@ -55,7 +55,6 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
     assign?: AddonModAssignAssign; // Assignment.
     submissions: AddonModAssignSubmissionListManager; // List of submissions
     loaded = false; // Whether data has been loaded.
-    haveAllParticipants = true; // Whether all participants have been loaded.
     groupId = 0; // Group ID to show.
     courseId!: number; // Course ID the assignment belongs to.
     moduleId!: number; // Module ID the submission belongs to.
@@ -201,16 +200,6 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
      */
     async setGroup(groupId: number): Promise<void> {
         this.groupId = groupId;
-
-        this.haveAllParticipants = true;
-
-        if (!CoreSites.getCurrentSite()?.wsAvailable('mod_assign_list_participants')) {
-            // Submissions are not displayed in Moodle 3.1 without the local plugin, see MOBILE-2968.
-            this.haveAllParticipants = false;
-            this.submissions.resetItems();
-
-            return;
-        }
 
         // Fetch submissions and grades.
         const submissions =

@@ -39,13 +39,6 @@ function buildRoutes(injector: Injector): Routes {
             loadChildren: () => import('@/addons/calendar/pages/index/index.module').then(m => m.AddonCalendarIndexPageModule),
         },
         {
-            path: 'list',
-            data: {
-                mainMenuTabRoot: AddonCalendarMainMenuHandlerService.PAGE_NAME,
-            },
-            loadChildren: () => import('@/addons/calendar/pages/list/list.module').then(m => m.AddonCalendarListPageModule),
-        },
-        {
             path: 'settings',
             loadChildren: () =>
                 import('@/addons/calendar/pages/settings/settings.module').then(m => m.AddonCalendarSettingsPageModule),

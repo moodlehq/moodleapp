@@ -19,7 +19,6 @@ import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { AddonModFeedback } from '../feedback';
 import { AddonModFeedbackIndexComponent } from '../../components/index';
 
 /**
@@ -48,8 +47,8 @@ export class AddonModFeedbackModuleHandlerService implements CoreCourseModuleHan
     /**
      * @inheritdoc
      */
-    isEnabled(): Promise<boolean> {
-        return AddonModFeedback.isPluginEnabled();
+    async isEnabled(): Promise<boolean> {
+        return true;
     }
 
     /**

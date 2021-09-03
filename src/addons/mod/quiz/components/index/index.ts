@@ -18,7 +18,6 @@ import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
@@ -154,7 +153,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // If the site doesn't support check updates, always prefetch it because we cannot tell if there's something new.
         const isDownloaded = this.currentStatus == CoreConstants.DOWNLOADED;
 
-        if (isDownloaded && CoreCourseModulePrefetchDelegate.canCheckUpdates()) {
+        if (isDownloaded) {
             // Already downloaded, open it.
             return this.openQuiz();
         }
@@ -168,7 +167,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             // Success downloading, open quiz.
             this.openQuiz();
         } catch (error) {
-            if (this.hasOffline || (isDownloaded && !CoreCourseModulePrefetchDelegate.canCheckUpdates())) {
+            if (this.hasOffline) {
                 // Error downloading but there is something offline, allow continuing it.
                 // If the site doesn't support check updates, continue too because we cannot tell if there's something new.
                 this.openQuiz();
@@ -647,9 +646,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
             if (data) {
                 this.gradebookData = {
-                    grade: 'graderaw' in data && data.graderaw !== undefined && data.graderaw !== null ?
-                        data.graderaw :
-                        (data.grade !== undefined && data.grade !== null ? Number(data.grade) : undefined),
+                    grade: data.graderaw ?? (data.grade !== undefined && data.grade !== null ? Number(data.grade) : undefined),
                     feedback: data.feedback,
                 };
             }

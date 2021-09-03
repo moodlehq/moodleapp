@@ -1764,7 +1764,7 @@ export class CoreSite {
      * @return Promise resolved with the converted URL.
      */
     async getAutoLoginUrl(url: string, showModal: boolean = true): Promise<string> {
-        if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') || (this.lastAutoLogin &&
+        if (!this.privateToken || (this.lastAutoLogin &&
                 CoreTimeUtils.timestamp() - this.lastAutoLogin < CoreConstants.SECONDS_MINUTE * 6)) {
             // No private token, WS not available or last auto-login was less than 6 minutes ago. Don't change the URL.
             return url;

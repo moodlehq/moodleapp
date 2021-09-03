@@ -35,13 +35,6 @@ export class AddonModChatPrefetchHandlerService extends CoreCourseActivityPrefet
     /**
      * @inheritdoc
      */
-    async isEnabled(): Promise<boolean> {
-        return AddonModChat.areSessionsAvailable();
-    }
-
-    /**
-     * @inheritdoc
-     */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         const chat = await AddonModChat.getChat(courseId, moduleId);
 

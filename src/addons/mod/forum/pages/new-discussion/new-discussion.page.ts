@@ -359,12 +359,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
      * @return Promise resolved with the list of groups.
      */
     protected addAllParticipantsOption(groups: CoreGroup[], check: boolean): Promise<CoreGroup[]> {
-        if (!AddonModForum.isAllParticipantsFixed()) {
-            // All participants has a bug, don't add it.
-            return Promise.resolve(groups);
-        }
-
-        let promise;
+        let promise: Promise<boolean>;
 
         if (check) {
             // We need to check if the user can add a discussion to all participants.

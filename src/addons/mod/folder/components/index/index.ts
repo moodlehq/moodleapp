@@ -18,7 +18,6 @@ import { Params } from '@angular/router';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
 import { Md5 } from 'ts-md5';
 import { AddonModFolder, AddonModFolderFolder, AddonModFolderProvider } from '../../services/folder';
@@ -41,7 +40,6 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     @Input() subfolder?: AddonModFolderFolderFormattedData; // Subfolder to show.
 
     component = AddonModFolderProvider.COMPONENT;
-    canGetFolder = false;
     contents?: AddonModFolderFolderFormattedData;
 
     constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
@@ -53,8 +51,6 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
-
-        this.canGetFolder = AddonModFolder.isGetFolderWSAvailable();
 
         if (this.subfolder) {
             this.description = this.folderInstance ? this.folderInstance.intro : this.module.description;
@@ -98,18 +94,8 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
      */
     protected async fetchContent(refresh = false): Promise<void> {
         try {
-            if (this.canGetFolder) {
-                this.folderInstance = await AddonModFolder.getFolder(this.courseId, this.module.id);
-                await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, refresh);
-            } else {
-                const module = await CoreCourse.getModule(this.module.id, this.courseId);
-
-                if (!module.contents.length && this.module.contents.length && !CoreApp.isOnline()) {
-                    // The contents might be empty due to a cached data. Use the old ones.
-                    module.contents = this.module.contents;
-                }
-                this.module = module;
-            }
+            this.folderInstance = await AddonModFolder.getFolder(this.courseId, this.module.id);
+            await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, refresh);
 
             this.dataRetrieved.emit(this.folderInstance || this.module);
 

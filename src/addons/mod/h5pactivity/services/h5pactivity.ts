@@ -744,6 +744,7 @@ export class AddonModH5PActivityProvider {
      * Delete launcher.
      *
      * @return Promise resolved when the launcher file is deleted.
+     * @since 3.9
      */
     async isPluginEnabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -788,7 +789,7 @@ export class AddonModH5PActivityProvider {
         const site = await CoreSites.getSite(options.siteId);
 
         if (!site.wsAvailable('mod_h5pactivity_log_report_viewed')) {
-            // Site doesn't support the WS, stop.
+            // Site doesn't support the WS, stop. Added in Moodle 3.11.
             return;
         }
 

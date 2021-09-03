@@ -82,7 +82,7 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
         this.ddQuestion.readOnly = false;
 
         if (this.ddQuestion.initObjects) {
-            // Moodle version <= 3.5.
+            // Moodle version = 3.5.
             if (typeof this.ddQuestion.initObjects.dropzones != 'undefined') {
                 this.dropZones = <unknown[]> this.ddQuestion.initObjects.dropzones;
             }

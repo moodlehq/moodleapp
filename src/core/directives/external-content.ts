@@ -33,7 +33,7 @@ import { CoreError } from '@classes/errors/error';
  *
  * If a file is downloaded, its URL will be replaced by the local file URL.
  *
- * From v3.5.2 this directive will also download inline styles, so it can be used in any element as long as it has inline styles.
+ * This directive also downloads inline styles, so it can be used in any element as long as it has inline styles.
  */
 @Directive({
     selector: '[core-external-content]',

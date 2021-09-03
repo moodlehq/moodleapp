@@ -42,10 +42,7 @@ export class AddonModPagePrefetchHandlerService extends CoreCourseResourcePrefet
         const promises: Promise<unknown>[] = [];
 
         promises.push(super.downloadOrPrefetch(module, courseId, prefetch));
-
-        if (AddonModPage.isGetPageWSAvailable()) {
-            promises.push(AddonModPage.getPageData(courseId, module.id));
-        }
+        promises.push(AddonModPage.getPageData(courseId, module.id));
 
         await Promise.all(promises);
     }

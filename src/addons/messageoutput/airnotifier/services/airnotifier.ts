@@ -125,17 +125,6 @@ export class AddonMessageOutputAirnotifierProvider {
         return site.invalidateWsCacheForKey(this.getUserDevicesCacheKey());
     }
 
-    /**
-     * Returns whether or not the plugin is enabled for the current site.
-     *
-     * @return True if enabled, false otherwise.
-     * @since 3.2
-     */
-    isEnabled(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('message_airnotifier_enable_device') &&
-                CoreSites.wsAvailableInCurrentSite('message_airnotifier_get_user_devices');
-    }
-
 }
 
 export const AddonMessageOutputAirnotifier = makeSingleton(AddonMessageOutputAirnotifierProvider);

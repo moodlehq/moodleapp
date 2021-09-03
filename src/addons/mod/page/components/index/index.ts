@@ -15,7 +15,7 @@
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModPageProvider, AddonModPagePage, AddonModPage } from '../../services/page';
@@ -32,12 +32,11 @@ import { AddonModPageHelper } from '../../services/page-helper';
 export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
     component = AddonModPageProvider.COMPONENT;
-    canGetPage = false;
     contents?: string;
     displayDescription = true;
     displayTimemodified = true;
     timemodified?: number;
-    page?: CoreCourseWSModule | AddonModPagePage;
+    page?: AddonModPagePage;
     warning?: string;
 
     protected fetchContentDefaultError = 'addon.mod_page.errorwhileloadingthepage';
@@ -51,8 +50,6 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
-
-        this.canGetPage = AddonModPage.isGetPageWSAvailable();
 
         await this.loadContent();
 
@@ -103,21 +100,13 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
      */
     protected async loadPageData(): Promise<void> {
         // Get latest title, description and some extra data. Data should've been updated in download.
-        const page = this.canGetPage ?
-            await AddonModPage.getPageData(this.courseId, this.module.id) :
-            await CoreCourse.getModule(this.module.id, this.courseId);
+        this.page = await AddonModPage.getPageData(this.courseId, this.module.id);
 
-        this.description = 'intro' in page ? page.intro : page.description;
-        this.dataRetrieved.emit(page);
-
-        if (!this.canGetPage) {
-            return;
-        }
-
-        this.page = page;
+        this.description = this.page.intro;
+        this.dataRetrieved.emit(this.page);
 
         // Check if description and timemodified should be displayed.
-        if ('displayoptions' in this.page) {
+        if (this.page.displayoptions) {
             const options: Record<string, string | boolean> =
                 CoreTextUtils.unserialize(this.page.displayoptions) || {};
 

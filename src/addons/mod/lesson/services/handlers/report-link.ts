@@ -20,7 +20,6 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModLesson } from '../lesson';
 import { AddonModLessonModuleHandlerService } from './module';
 
 /**
@@ -81,7 +80,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
             return false;
         }
 
-        return AddonModLesson.isPluginEnabled(siteId);
+        return true;
     }
 
     /**

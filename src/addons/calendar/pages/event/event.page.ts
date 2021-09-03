@@ -17,16 +17,12 @@ import { IonRefresher } from '@ionic/angular';
 import { AlertOptions } from '@ionic/core';
 import {
     AddonCalendar,
-    AddonCalendarEvent,
-    AddonCalendarEventBase,
     AddonCalendarEventToDisplay,
-    AddonCalendarGetEventsEvent,
     AddonCalendarProvider,
 } from '../../services/calendar';
 import { AddonCalendarHelper } from '../../services/calendar-helper';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarSync, AddonCalendarSyncEvents, AddonCalendarSyncProvider } from '../../services/calendar-sync';
-import { CoreCourses } from '@features/courses/services/courses';
 import { CoreApp } from '@services/app';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -82,7 +78,6 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     defaultTime = 0;
     reminders: AddonCalendarReminderDBRecord[] = [];
     canEdit = false;
-    canDelete = false;
     hasOffline = false;
     isOnline = false;
     syncIcon = CoreConstants.ICON_LOADING; // Sync icon.
@@ -99,9 +94,8 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         this.currentSiteId = CoreSites.getCurrentSiteId();
         this.isSplitViewOn = this.svComponent?.outletActivated;
 
-        // Check if site supports editing and deleting. No need to check allowed types, event.canedit already does it.
+        // Check if site supports editing. No need to check allowed types, event.canedit already does it.
         this.canEdit = AddonCalendar.canEditEventsInSite();
-        this.canDelete = AddonCalendar.canDeleteEventsInSite();
 
         // Listen for event edited. If current event is edited, reload the data.
         this.editEventObserver = CoreEvents.on(AddonCalendarProvider.EDIT_EVENT_EVENT, (data) => {
@@ -168,8 +162,6 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async fetchEvent(sync = false, showErrors = false): Promise<void> {
-        const currentSite = CoreSites.getCurrentSite();
-        const canGetById = AddonCalendar.isGetEventByIdAvailableInSite();
         let deleted = false;
 
         this.isOnline = CoreApp.isOnline();
@@ -209,13 +201,8 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         }
 
         try {
-            let event: AddonCalendarEvent | AddonCalendarEventBase | AddonCalendarGetEventsEvent;
             // Get the event data.
-            if (canGetById) {
-                event = await AddonCalendar.getEventById(this.eventId);
-            } else {
-                event = await AddonCalendar.getEvent(this.eventId);
-            }
+            const event = await AddonCalendar.getEventById(this.eventId);
             this.event = AddonCalendarHelper.formatEventData(event);
 
             try {
@@ -254,9 +241,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 }
 
                 // Get the module URL.
-                if (canGetById) {
-                    this.moduleUrl = this.event!.url || '';
-                }
+                this.moduleUrl = this.event!.url || '';
             }
 
             const promises: Promise<void>[] = [];
@@ -264,24 +249,10 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             const courseId = this.event.courseid;
             if (courseId != this.siteHomeId) {
                 // If the event belongs to a course, get the course name and the URL to view it.
-                if (canGetById && this.event.course) {
+                if (this.event.course) {
                     this.courseId = this.event.course.id;
                     this.courseName = this.event.course.fullname;
                     this.courseUrl = this.event.course.viewurl;
-                } else if (!canGetById && this.event.courseid ) {
-                    // Retrieve the course.
-                    promises.push(CoreCourses.getUserCourse(this.event.courseid, true).then((course) => {
-                        this.courseId = course.id;
-                        this.courseName = course.fullname;
-                        this.courseUrl = currentSite ? CoreTextUtils.concatenatePaths(
-                            currentSite.siteUrl,
-                            '/course/view.php?id=' + this.courseId,
-                        ) : '';
-
-                        return;
-                    }).catch(() => {
-                        // Error getting course, just don't show the course name.
-                    }));
                 }
             }
 
@@ -299,7 +270,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 }));
             }
 
-            if (canGetById && this.event.iscategoryevent && this.event.category) {
+            if (this.event.iscategoryevent && this.event.category) {
                 this.categoryPath = this.event.category.nestedname;
             }
 

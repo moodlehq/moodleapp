@@ -1127,11 +1127,6 @@ export class CoreLoginHelperProvider {
             return;
         }
 
-        if (!CoreSites.wsAvailableInCurrentSite('core_user_agree_site_policy')) {
-            // WS not available, stop.
-            return;
-        }
-
         // If current page is already site policy, stop.
         if (CoreNavigator.isCurrent('/login/sitepolicy')) {
             return;
