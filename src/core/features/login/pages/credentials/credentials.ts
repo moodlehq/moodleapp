@@ -124,7 +124,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Check if a site uses local_mobile, requires SSO login, etc.
+     * Get site config and check if it requires SSO login.
      * This should be used only if a fixed URL is set, otherwise this check is already performed in CoreLoginSitePage.
      *
      * @param siteUrl Site URL to check.
@@ -144,10 +144,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
             this.siteConfig = result.config;
             this.treatSiteConfig();
-
-            if (result && result.warning) {
-                CoreDomUtils.showErrorModal(result.warning, true, 4000);
-            }
 
             if (CoreLoginHelper.isSSOLoginNeeded(result.code)) {
                 // SSO. User needs to authenticate in a browser.

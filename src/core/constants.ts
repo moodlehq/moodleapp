@@ -68,7 +68,7 @@ export class CoreConstants {
     // WS constants.
     static readonly WS_TIMEOUT = 30000; // Timeout when not in WiFi.
     static readonly WS_TIMEOUT_WIFI = 30000; // Timeout when in WiFi.
-    static readonly WS_PREFIX = 'local_mobile_';
+    static readonly WS_PREFIX = 'local_mobile_'; // @deprecated since app 4.0.
 
     // Login constants.
     static readonly LOGIN_SSO_CODE = 2; // SSO in browser window is required.

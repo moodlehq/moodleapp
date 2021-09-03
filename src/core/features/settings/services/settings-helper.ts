@@ -267,7 +267,6 @@ export class CoreSettingsHelperProvider {
             CoreUtils.ignoreErrors(CoreFilepool.invalidateAllFiles(siteId)),
             // Invalidate and synchronize site data.
             site.invalidateWsCache(),
-            this.checkSiteLocalMobile(site),
             CoreSites.updateSiteInfo(site.getId()),
             CoreCronDelegate.forceSyncExecution(site.getId()),
         // eslint-disable-next-line arrow-body-style
@@ -282,27 +281,6 @@ export class CoreSettingsHelperProvider {
         } finally {
             delete this.syncPromises[siteId];
         }
-    }
-
-    /**
-     * Check if local_mobile was added to the site.
-     *
-     * @param site Site to check.
-     * @return Promise resolved if no action needed.
-     */
-    protected async checkSiteLocalMobile(site: CoreSite): Promise<void> {
-        try {
-            // Check if local_mobile was installed in Moodle.
-            await site.checkIfLocalMobileInstalledAndNotUsed();
-        } catch {
-            // Not added, nothing to do.
-            return;
-        }
-
-        // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-        CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, site.getId());
-
-        throw new CoreError(Translate.instant('core.lostconnection'));
     }
 
     /**

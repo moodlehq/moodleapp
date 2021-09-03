@@ -310,8 +310,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         };
 
         if (this.siteConfig?.launchurl) {
-            const service = CoreSites.determineService(this.siteUrl);
-            params.redirect = CoreLoginHelper.prepareForSSOLogin(this.siteUrl, service, this.siteConfig.launchurl);
+            params.redirect = CoreLoginHelper.prepareForSSOLogin(this.siteUrl, undefined, this.siteConfig.launchurl);
         }
 
         // Get the recaptcha response (if needed).

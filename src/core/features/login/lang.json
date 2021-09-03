@@ -56,7 +56,6 @@
     "invalidurl": "Invalid URL specified",
     "invalidvaluemax": "The maximum value is {{$a}}",
     "invalidvaluemin": "The minimum value is {{$a}}",
-    "localmobileunexpectedresponse": "Moodle Mobile Additional Features check returned an unexpected response. You will be authenticated using the standard mobile service.",
     "loggedoutssodescription": "You have to authenticate again. You need to log in to the site in a browser window.",
     "login": "Log in",
     "loginbutton": "Log in",

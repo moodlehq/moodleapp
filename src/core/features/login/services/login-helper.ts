@@ -128,8 +128,8 @@ export class CoreLoginHelperProvider {
      *
      * @param siteurl URL of the site where the SSO login will be performed.
      * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
-     * @param service The service to use. If not defined, external service will be used.
-     * @param launchUrl The URL to open for SSO. If not defined, local_mobile launch URL will be used.
+     * @param service The service to use. If not defined, core service will be used.
+     * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
      * @return Promise resolved when done or if user cancelled.
      */
     async confirmAndOpenBrowserForSSOLogin(
@@ -655,8 +655,7 @@ export class CoreLoginHelperProvider {
             return false;
         }
 
-        const service = CoreSites.determineService(siteUrl);
-        const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, pageName, pageOptions, {
+        const loginUrl = this.prepareForSSOLogin(siteUrl, undefined, launchUrl, pageName, pageOptions, {
             oauthsso: params.id,
         });
 
@@ -672,8 +671,8 @@ export class CoreLoginHelperProvider {
      *
      * @param siteurl URL of the site where the SSO login will be performed.
      * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
-     * @param service The service to use. If not defined, external service will be used.
-     * @param launchUrl The URL to open for SSO. If not defined, local_mobile launch URL will be used.
+     * @param service The service to use. If not defined, core service will be used.
+     * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
      * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
      * @param pageOptions Options of the state to go once authenticated.
      */
@@ -790,8 +789,8 @@ export class CoreLoginHelperProvider {
      * Prepare the app to perform SSO login.
      *
      * @param siteUrl URL of the site where the SSO login will be performed.
-     * @param service The service to use. If not defined, external service will be used.
-     * @param launchUrl The URL to open for SSO. If not defined, local_mobile launch URL will be used.
+     * @param service The service to use. If not defined, core service will be used.
+     * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
      * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
      * @param pageOptions Options of the page to go once authenticated.
      * @param urlParams Other params to add to the URL.
@@ -806,8 +805,8 @@ export class CoreLoginHelperProvider {
         urlParams?: CoreUrlParams,
     ): string {
 
-        service = service || CoreConstants.CONFIG.wsextservice;
-        launchUrl = launchUrl || siteUrl + '/local/mobile/launch.php';
+        service = service || CoreConstants.CONFIG.wsservice;
+        launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
 
         const passport = Math.random() * 1000;
         let loginUrl = launchUrl + '?service=' + service;
@@ -895,10 +894,6 @@ export class CoreLoginHelperProvider {
         try {
             // Check authentication method.
             const result = await CoreSites.checkSite(siteUrl);
-
-            if (result.warning) {
-                CoreDomUtils.showErrorModal(result.warning, true, 4000);
-            }
 
             if (this.isSSOLoginNeeded(result.code)) {
                 // SSO. User needs to authenticate in a browser. Check if we need to display a message.

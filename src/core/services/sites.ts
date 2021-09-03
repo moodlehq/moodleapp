@@ -27,7 +27,6 @@ import { CoreConstants } from '@/core/constants';
 import {
     CoreSite,
     CoreSiteWSPreSets,
-    LocalMobileResponse,
     CoreSiteInfo,
     CoreSiteConfig,
     CoreSitePublicConfigResponse,
@@ -73,7 +72,6 @@ export class CoreSitesProvider {
     protected static readonly INVALID_VERSION = -1;
 
     protected logger: CoreLogger;
-    protected services = {};
     protected sessionRestored = false;
     protected currentSite?: CoreSite;
     protected sites: { [s: string]: CoreSite } = {};
@@ -182,8 +180,6 @@ export class CoreSitesProvider {
      * @return A promise resolved when the site is checked.
      */
     async checkSiteWithProtocol(siteUrl: string, protocol: string): Promise<CoreSiteCheckResponse> {
-        let publicConfig: CoreSitePublicConfigResponse | undefined;
-
         // Now, replace the siteUrl with the protocol.
         siteUrl = siteUrl.replace(/^https?:\/\//i, protocol);
 
@@ -222,82 +218,59 @@ export class CoreSitesProvider {
             }
         }
 
-        // Site exists. Create a temporary site to check if local_mobile is installed.
+        // Site exists. Create a temporary site to fetch its info.
         const temporarySite = CoreSitesFactory.makeSite(undefined, siteUrl);
-        let data: LocalMobileResponse;
+        let config: CoreSitePublicConfigResponse | undefined;
 
         try {
-            data = await temporarySite.checkLocalMobilePlugin();
+            config = await temporarySite.getPublicConfig();
+
+            // Check that the user can authenticate.
+            if (!config.enablewebservices) {
+                throw new CoreSiteError({
+                    message: Translate.instant('core.login.webservicesnotenabled'),
+                });
+            } else if (!config.enablemobilewebservice) {
+                throw new CoreSiteError({
+                    message: Translate.instant('core.login.mobileservicesnotenabled'),
+                });
+            } else if (config.maintenanceenabled) {
+                let message = Translate.instant('core.sitemaintenance');
+                if (config.maintenancemessage) {
+                    message += config.maintenancemessage;
+                }
+
+                throw new CoreSiteError({
+                    message,
+                });
+            }
         } catch (error) {
-            // Local mobile check returned an error. This only happens if the plugin is installed and it returns an error.
-            throw new CoreSiteError({
-                message: error.message,
-                critical: true,
-            });
-        }
+            // Error, check if not supported.
+            if (error.available === 1) {
+                // Service supported but an error happened. Return error.
+                if (error.errorcode == 'codingerror') {
+                    // This could be caused by a redirect. Check if it's the case.
+                    const redirect = await CoreUtils.checkRedirect(siteUrl);
 
-        data.service = data.service || CoreConstants.CONFIG.wsservice;
-        this.services[siteUrl] = data.service; // No need to store it in DB.
-
-        if (data.coreSupported || (data.code != CoreConstants.LOGIN_SSO_CODE && data.code != CoreConstants.LOGIN_SSO_INAPP_CODE)) {
-            // SSO using local_mobile not needed, try to get the site public config.
-            try {
-                const config = await temporarySite.getPublicConfig();
-
-                publicConfig = config;
-
-                // Check that the user can authenticate.
-                if (!config.enablewebservices) {
-                    throw new CoreSiteError({
-                        message: Translate.instant('core.login.webservicesnotenabled'),
-                    });
-                } else if (!config.enablemobilewebservice) {
-                    throw new CoreSiteError({
-                        message: Translate.instant('core.login.mobileservicesnotenabled'),
-                    });
-                } else if (config.maintenanceenabled) {
-                    let message = Translate.instant('core.sitemaintenance');
-                    if (config.maintenancemessage) {
-                        message += config.maintenancemessage;
+                    if (redirect) {
+                        error.error = Translate.instant('core.login.sitehasredirect');
+                    } else {
+                        // We can't be sure if there is a redirect or not. Display cannot connect error.
+                        error.error = Translate.instant('core.cannotconnecttrouble');
                     }
-
-                    throw new CoreSiteError({
-                        message,
-                    });
                 }
 
-                // Everything ok.
-                if (data.code === 0) {
-                    data.code = config.typeoflogin;
-                }
-            } catch (error) {
-                // Error, check if not supported.
-                if (error.available === 1) {
-                    // Service supported but an error happened. Return error.
-                    if (error.errorcode == 'codingerror') {
-                        // This could be caused by a redirect. Check if it's the case.
-                        const redirect = await CoreUtils.checkRedirect(siteUrl);
-
-                        if (redirect) {
-                            error.error = Translate.instant('core.login.sitehasredirect');
-                        } else {
-                            // We can't be sure if there is a redirect or not. Display cannot connect error.
-                            error.error = Translate.instant('core.cannotconnecttrouble');
-                        }
-                    }
-
-                    throw new CoreSiteError({
-                        message: error.error,
-                        errorcode: error.errorcode,
-                        critical: true,
-                    });
-                }
+                throw new CoreSiteError({
+                    message: error.error,
+                    errorcode: error.errorcode,
+                    critical: true,
+                });
             }
         }
 
         siteUrl = temporarySite.getURL();
 
-        return { siteUrl, code: data.code, warning: data.warning, service: data.service, config: publicConfig };
+        return { siteUrl, code: config?.typeoflogin || 0, service: CoreConstants.CONFIG.wsservice, config };
     }
 
     /**
@@ -367,10 +340,7 @@ export class CoreSitesProvider {
             throw new CoreNetworkError();
         }
 
-        if (!service) {
-            service = this.determineService(siteUrl);
-        }
-
+        service = service || CoreConstants.CONFIG.wsservice;
         const params = {
             username,
             password,
@@ -573,25 +543,10 @@ export class CoreSitesProvider {
     /**
      * Function for determine which service we should use (default or extended plugin).
      *
-     * @param siteUrl The site URL.
      * @return The service shortname.
+     * @deprecated since app 4.0
      */
-    determineService(siteUrl: string): string {
-        // We need to try siteUrl in both https or http (due to loginhttps setting).
-
-        // First http://
-        siteUrl = siteUrl.replace('https://', 'http://');
-        if (this.services[siteUrl]) {
-            return this.services[siteUrl];
-        }
-
-        // Now https://
-        siteUrl = siteUrl.replace('http://', 'https://');
-        if (this.services[siteUrl]) {
-            return this.services[siteUrl];
-        }
-
-        // Return default service.
+    determineService(): string {
         return CoreConstants.CONFIG.wsservice;
     }
 
@@ -839,37 +794,24 @@ export class CoreSitesProvider {
             return false;
         }
 
-        // Check if local_mobile was installed to Moodle.
+        let config: CoreSitePublicConfigResponse | undefined;
+
         try {
-            await site.checkIfLocalMobileInstalledAndNotUsed();
-
-            // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {
-                pageName,
-                options: pageOptions,
-            }, siteId);
-
-            return false;
+            config = await site.getPublicConfig();
         } catch (error) {
-            let config: CoreSitePublicConfigResponse | undefined;
+            // Error getting config, maybe the user is offline.
+        }
 
-            try {
-                config = await site.getPublicConfig();
-            } catch (error) {
-                // Error getting config, probably the site doesn't have the WS
-            }
+        try {
+            await this.checkApplication(config);
 
-            try {
-                await this.checkApplication(config);
+            this.login(siteId);
+            // Update site info. We don't block the UI.
+            this.updateSiteInfo(siteId);
 
-                this.login(siteId);
-                // Update site info. We don't block the UI.
-                this.updateSiteInfo(siteId);
-
-                return true;
-            } catch (error) {
-                return false;
-            }
+            return true;
+        } catch (error) {
+            return false;
         }
     }
 
@@ -1499,13 +1441,12 @@ export class CoreSitesProvider {
      * Check if a WS is available in the current site, if any.
      *
      * @param method WS name.
-     * @param checkPrefix When true also checks with the compatibility prefix.
      * @return Whether the WS is available.
      */
-    wsAvailableInCurrentSite(method: string, checkPrefix: boolean = true): boolean {
+    wsAvailableInCurrentSite(method: string): boolean {
         const site = this.getCurrentSite();
 
-        return site ? site.wsAvailable(method, checkPrefix) : false;
+        return site ? site.wsAvailable(method) : false;
     }
 
     /**
@@ -1744,7 +1685,7 @@ export type CoreSiteCheckResponse = {
     service: string;
 
     /**
-     * Code of the warning message to show to the user.
+     * Code of the warning message to show to the user. @deprecated since app 4.0
      */
     warning?: string;
 

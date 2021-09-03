@@ -32,7 +32,6 @@ export interface EnvironmentConfig {
     default_lang: string;
     languages: Record<string, string>;
     wsservice: string;
-    wsextservice: string;
     demo_sites: Record<string, CoreSitesDemoSiteData>;
     zoomlevels: Record<CoreZoomLevel, number>;
     customurlscheme: string;
