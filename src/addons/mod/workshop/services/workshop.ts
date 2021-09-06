@@ -225,19 +225,6 @@ export class AddonModWorkshopProvider {
     }
 
     /**
-     * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the workshop WS are available.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
-     */
-    async isPluginEnabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return site.wsAvailable('mod_workshop_get_workshops_by_courses') &&
-            site.wsAvailable('mod_workshop_get_workshop_access_information');
-    }
-
-    /**
      * Get a workshop with key=value. If more than one is found, only the first will be returned.
      *
      * @param courseId Course ID.
@@ -275,7 +262,7 @@ export class AddonModWorkshopProvider {
             throw new CoreError(Translate.instant('core.course.modulenotfound'));
         }
 
-        // Set submission types for Moodle 3.5 and older.
+        // Set submission types for Moodle 3.5.
         if (typeof workshop.submissiontypetext == 'undefined') {
             if (typeof workshop.nattachments != 'undefined' && workshop.nattachments > 0) {
                 workshop.submissiontypetext = AddonModWorkshopSubmissionType.SUBMISSION_TYPE_AVAILABLE;

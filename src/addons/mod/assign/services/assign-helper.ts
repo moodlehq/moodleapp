@@ -398,13 +398,9 @@ export class AddonModAssignHelperProvider {
         groupId?: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModAssignSubmissionFormatted[]> {
-        // Create new options including all existing ones.
-        const modOptions: CoreCourseCommonModWSOptions = { cmId: assign.cmid, ...options };
-
         const parts = await this.getParticipants(assign, groupId, options);
 
         const blind = assign.blindmarking && !assign.revealidentities;
-        const promises: Promise<void>[] = [];
         const result: AddonModAssignSubmissionFormatted[] = [];
         const participants: {[id: number]: AddonModAssignParticipant} = CoreUtils.arrayToObject(parts, 'id');
 
@@ -434,30 +430,11 @@ export class AddonModAssignHelperProvider {
                 submission.groupname = participant.groupname;
             }
 
-            let promise = Promise.resolve();
-            if (submission.userid && submission.userid > 0 && blind) {
-                // Blind but not blinded! (Moodle < 3.1.1, 3.2).
-                delete submission.userid;
-
-                promise = AddonModAssign.getAssignmentUserMappings(assign.id, submission.submitid, modOptions)
-                    .then((blindId) => {
-                        submission.blindid = blindId;
-
-                        return;
-                    });
+            // Add to the list.
+            if (submission.userfullname || submission.blindid) {
+                result.push(submission);
             }
-
-            promises.push(promise.then(() => {
-                // Add to the list.
-                if (submission.userfullname || submission.blindid) {
-                    result.push(submission);
-                }
-
-                return;
-            }));
         });
-
-        await Promise.all(promises);
 
         // Create a submission for each participant left in the list (the participants already treated were removed).
         CoreUtils.objectToArray(participants).forEach((participant: AddonModAssignParticipant) => {

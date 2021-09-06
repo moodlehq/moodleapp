@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
-import { AddonModData } from '../data';
 
 /**
  * Handler to treat links to data list page.
@@ -27,13 +26,6 @@ export class AddonModDataListLinkHandlerService extends CoreContentLinksModuleLi
 
     constructor() {
         super('AddonModData', 'data');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    isEnabled(siteId?: string): Promise<boolean> {
-        return AddonModData.isPluginEnabled(siteId);
     }
 
 }

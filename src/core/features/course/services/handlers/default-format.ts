@@ -127,9 +127,6 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
         if ('marker' in course) {
             // We already have it.
             marker = course.marker;
-        } else if (!CoreCourses.isGetCoursesByFieldAvailable()) {
-            // Cannot get the current section, return all of them.
-            return sections[0];
         } else {
             // Try to retrieve the marker.
             const courseData = await CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', course.id));

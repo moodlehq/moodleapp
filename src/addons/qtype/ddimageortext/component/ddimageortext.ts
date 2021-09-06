@@ -70,7 +70,7 @@ export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent 
         this.ddQuestion.readOnly = false;
 
         if (this.ddQuestion.initObjects) {
-            // Moodle version <= 3.5.
+            // Moodle version = 3.5.
             if (typeof this.ddQuestion.initObjects.drops != 'undefined') {
                 this.drops = <unknown[]> this.ddQuestion.initObjects.drops;
             }

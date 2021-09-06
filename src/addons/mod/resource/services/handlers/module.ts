@@ -156,7 +156,7 @@ export class AddonModResourceModuleHandlerService implements CoreCourseModuleHan
 
         if ('customdata' in module && typeof module.customdata != 'undefined') {
             options = CoreTextUtils.unserialize(CoreTextUtils.parseJSON(module.customdata));
-        } else if (AddonModResource.isGetResourceWSAvailable()) {
+        } else {
             // Get the resource data.
             promises.push(AddonModResource.getResourceData(courseId, module.id).then((info) => {
                 infoFiles = info.contentfiles;

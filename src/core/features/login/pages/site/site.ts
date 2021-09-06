@@ -339,10 +339,6 @@ export class CoreLoginSitePage implements OnInit {
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, true);
 
-            if (response.warning) {
-                CoreDomUtils.showErrorModal(response.warning, true, 4000);
-            }
-
             if (CoreLoginHelper.isSSOLoginNeeded(response.code)) {
                 // SSO. User needs to authenticate in a browser.
                 CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(

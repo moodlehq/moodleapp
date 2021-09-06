@@ -110,27 +110,21 @@ export class CoreUserProvider {
     /**
      * Check if WS to update profile picture is available in site.
      *
-     * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with boolean: whether it's available.
-     * @since 3.2
+     * @deprecated since app 4.0
      */
-    async canUpdatePicture(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return this.canUpdatePictureInSite(site);
+    async canUpdatePicture(): Promise<boolean> {
+        return true;
     }
 
     /**
      * Check if WS to search participants is available in site.
      *
-     * @param site Site. If not defined, current site.
      * @return Whether it's available.
-     * @since 3.2
+     * @deprecated since app 4.0
      */
-    canUpdatePictureInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!site?.wsAvailable('core_user_update_picture');
+    canUpdatePictureInSite(): boolean {
+        return true;
     }
 
     /**

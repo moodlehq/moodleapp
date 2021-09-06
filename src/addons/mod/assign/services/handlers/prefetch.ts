@@ -203,15 +203,6 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
-     */
-    async isEnabled(): Promise<boolean> {
-        return AddonModAssign.isPluginEnabled();
-    }
-
-    /**
      * @inheritdoc
      */
     prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
@@ -391,10 +382,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                     // Participiants already fetched, we don't need to ignore cache now.
                     const participants = await AddonModAssignHelper.getParticipants(assign, group.id, { siteId });
 
-                    // Fail silently (Moodle < 3.2).
-                    await CoreUtils.ignoreErrors(
-                        CoreUser.prefetchUserAvatars(participants, 'profileimageurl', siteId),
-                    );
+                    await CoreUser.prefetchUserAvatars(participants, 'profileimageurl', siteId);
 
                     return;
                 }));

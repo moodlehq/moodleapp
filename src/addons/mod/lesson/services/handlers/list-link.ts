@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
-import { AddonModLesson } from '../lesson';
 
 /**
  * Handler to treat links to lesson list page.
@@ -28,16 +27,6 @@ export class AddonModLessonListLinkHandlerService extends CoreContentLinksModule
 
     constructor() {
         super('AddonModLesson', 'lesson');
-    }
-
-    /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @return Promise resolved with boolean: whether or not the handler is enabled on a site level.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
-        return AddonModLesson.isPluginEnabled(siteId);
     }
 
 }

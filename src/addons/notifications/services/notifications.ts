@@ -19,7 +19,6 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUser } from '@features/user/services/user';
-import { AddonMessages, AddonMessagesMarkMessageReadResult } from '@addons/messages/services/messages';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreLogger } from '@singletons/logger';
 import { makeSingleton } from '@singletons';
@@ -201,7 +200,6 @@ export class AddonNotificationsProvider {
      * @param offset Position of the first notification to get.
      * @param options Other options.
      * @return Promise resolved with notifications and if can load more.
-     * @since 3.2
      */
     async getPopupNotifications(
         offset: number,
@@ -277,33 +275,19 @@ export class AddonNotificationsProvider {
     async getUnreadNotificationsCount(userId?: number, siteId?: string): Promise<number> {
         const site = await CoreSites.getSite(siteId);
 
-        // @since 3.2
-        if (site.wsAvailable('message_popup_get_unread_popup_notification_count')) {
-            userId = userId || site.getUserId();
-            const params: AddonNotificationsPopupGetUnreadPopupNotificationCountWSParams = {
-                useridto: userId,
-            };
-            const preSets: CoreSiteWSPreSets = {
-                getFromCache: false,
-                emergencyCache: false,
-                saveToCache: false,
-                typeExpected: 'number',
-            };
+        userId = userId || site.getUserId();
+        const params: AddonNotificationsPopupGetUnreadPopupNotificationCountWSParams = {
+            useridto: userId,
+        };
+        const preSets: CoreSiteWSPreSets = {
+            getFromCache: false,
+            emergencyCache: false,
+            saveToCache: false,
+            typeExpected: 'number',
+        };
 
-            try {
-                return await site.read<number>('message_popup_get_unread_popup_notification_count', params, preSets);
-            } catch {
-                // Return no messages if the call fails.
-                return 0;
-            }
-        }
-
-        // Fallback call
         try {
-            const unread = await this.getUnreadNotifications(0, { limit: AddonNotificationsProvider.LIST_LIMIT, siteId });
-
-            // The app used to add a + sign if needed, but 3.1 will be dropped soon so it's easier to always return a number.
-            return unread.length;
+            return await site.read<number>('message_popup_get_unread_popup_notification_count', params, preSets);
         } catch {
             // Return no messages if the call fails.
             return 0;
@@ -311,23 +295,9 @@ export class AddonNotificationsProvider {
     }
 
     /**
-     * Returns whether or not popup WS is available for a certain site.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if available, resolved with false or rejected otherwise.
-     * @since 3.2
-     */
-    async isPopupAvailable(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return site.wsAvailable('message_popup_get_popup_notifications');
-    }
-
-    /**
      * Mark all message notification as read.
      *
      * @return Resolved when done.
-     * @since 3.2
      */
     async markAllNotificationsAsRead(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -345,26 +315,20 @@ export class AddonNotificationsProvider {
      * @param notificationId ID of notification to mark as read
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
-     * @since 3.5
      */
     async markNotificationRead(
         notificationId: number,
         siteId?: string,
-    ): Promise<CoreMessageMarkNotificationReadWSResponse | AddonMessagesMarkMessageReadResult> {
+    ): Promise<CoreMessageMarkNotificationReadWSResponse> {
 
         const site = await CoreSites.getSite(siteId);
 
-        if (site.wsAvailable('core_message_mark_notification_read')) {
-            const params: CoreMessageMarkNotificationReadWSParams = {
-                notificationid: notificationId,
-                timeread: CoreTimeUtils.timestamp(),
-            };
+        const params: CoreMessageMarkNotificationReadWSParams = {
+            notificationid: notificationId,
+            timeread: CoreTimeUtils.timestamp(),
+        };
 
-            return site.write<CoreMessageMarkNotificationReadWSResponse>('core_message_mark_notification_read', params);
-        } else {
-            // Fallback for versions prior to 3.5.
-            return AddonMessages.markMessageRead(notificationId, site.id);
-        }
+        return site.write<CoreMessageMarkNotificationReadWSResponse>('core_message_mark_notification_read', params);
     }
 
     /**
@@ -389,36 +353,6 @@ export class AddonNotificationsProvider {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getNotificationsCacheKey());
-    }
-
-    /**
-     * Returns whether or not we can mark all notifications as read.
-     *
-     * @return True if enabled, false otherwise.
-     * @since 3.2
-     */
-    isMarkAllNotificationsAsReadEnabled(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('core_message_mark_all_notifications_as_read');
-    }
-
-    /**
-     * Returns whether or not we can count unread notifications precisely.
-     *
-     * @return True if enabled, false otherwise.
-     * @since 3.2
-     */
-    isPreciseNotificationCountEnabled(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('message_popup_get_unread_popup_notification_count');
-    }
-
-    /**
-     * Returns whether or not the notification preferences are enabled for the current site.
-     *
-     * @return True if enabled, false otherwise.
-     * @since 3.2
-     */
-    isNotificationPreferencesEnabled(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('core_message_get_user_notification_preferences');
     }
 
 }

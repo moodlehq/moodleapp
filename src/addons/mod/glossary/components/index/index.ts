@@ -162,7 +162,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             this.glossary = await AddonModGlossary.getGlossary(this.courseId, this.module.id);
 
             this.description = this.glossary.intro || this.description;
-            this.canAdd = (AddonModGlossary.isPluginEnabledForEditing() && !!this.glossary.canaddentry) || false;
+            this.canAdd = !!this.glossary.canaddentry || false;
 
             this.dataRetrieved.emit(this.glossary);
 

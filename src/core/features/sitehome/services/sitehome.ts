@@ -171,8 +171,8 @@ export class CoreSiteHomeProvider {
                 case FrontPageItemNames['LIST_OF_CATEGORIES']:
                 case FrontPageItemNames['COMBO_LIST']:
                 case FrontPageItemNames['LIST_OF_COURSE']:
-                    add = CoreCourses.isGetCoursesByFieldAvailable();
-                    if (add && itemNumber == FrontPageItemNames['COMBO_LIST']) {
+                    add = true;
+                    if (itemNumber == FrontPageItemNames['COMBO_LIST']) {
                         itemNumber = FrontPageItemNames['LIST_OF_CATEGORIES'];
                     }
                     break;

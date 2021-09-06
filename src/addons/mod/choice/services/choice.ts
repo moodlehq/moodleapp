@@ -484,7 +484,7 @@ export type AddonModChoiceChoice = {
     name: string; // Choice name.
     intro: string; // The choice intro.
     introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    introfiles?: CoreWSExternalFile[];
     publish?: boolean; // If choice is published.
     showresults?: number; // 0 never, 1 after answer, 2 after close, 3 always.
     display?: number; // Display mode (vertical, horizontal).

@@ -649,7 +649,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         this.gradeInfo = await CoreCourse.getModuleBasicGradeInfo(this.moduleId);
 
         if (!this.gradeInfo) {
-            // It won't get gradeinfo on 3.1.
             return;
         }
 
@@ -966,7 +965,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         // Treat outcomes.
-        if (this.gradeInfo.outcomes && AddonModAssign.isOutcomesEditEnabled()) {
+        if (this.gradeInfo.outcomes) {
             this.gradeInfo.outcomes.forEach((outcome) => {
                 if (outcome.scale) {
                     outcome.options =
@@ -981,8 +980,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         // Get grade items.
-        const grades = <CoreGradesFormattedItem[]>
-            await CoreGradesHelper.getGradeModuleItems(this.courseId, this.moduleId, this.submitId);
+        const grades = await CoreGradesHelper.getGradeModuleItems(this.courseId, this.moduleId, this.submitId);
 
         const outcomes: AddonModAssignGradeOutcome[] = [];
 
@@ -1091,16 +1089,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 submissionStatus.lastattempt.submissiongroupmemberswhoneedtosubmit
             ) {
                 submissionStatus.lastattempt.submissiongroupmemberswhoneedtosubmit.forEach((member) => {
-                    if (this.blindMarking) {
-                        // Users not blinded! (Moodle < 3.1.1, 3.2).
-                        promises.push(AddonModAssign.getAssignmentUserMappings(this.assign!.id, member, {
-                            cmId: this.moduleId,
-                        }).then((blindId) => {
-                            this.membersToSubmitBlind.push(blindId);
-
-                            return;
-                        }));
-                    } else {
+                    if (!this.blindMarking) {
                         promises.push(CoreUser.getProfile(member, this.courseId).then((profile) => {
                             this.membersToSubmit.push(profile);
 

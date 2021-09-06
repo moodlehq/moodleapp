@@ -207,16 +207,6 @@ export class AddonModUrlProvider {
     }
 
     /**
-     * Returns whether or not getUrl WS available or not.
-     *
-     * @return If WS is abalaible.
-     * @since 3.3
-     */
-    isGetUrlWSAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('mod_url_get_urls_by_courses');
-    }
-
-    /**
      * Report the url as being viewed.
      *
      * @param id Module ID.

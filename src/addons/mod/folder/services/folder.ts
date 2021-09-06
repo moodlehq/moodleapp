@@ -123,16 +123,6 @@ export class AddonModFolderProvider {
     }
 
     /**
-     * Returns whether or not getFolder WS available or not.
-     *
-     * @return If WS is available.
-     * @since 3.3
-     */
-    isGetFolderWSAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('mod_folder_get_folders_by_courses');
-    }
-
-    /**
      * Report a folder as being viewed.
      *
      * @param id Module ID.

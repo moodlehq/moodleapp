@@ -96,7 +96,7 @@
                     <h2 *ngIf="assign.teamsubmission">{{ 'addon.mod_assign.numberofteams' | translate }}</h2>
                     <h2 *ngIf="!assign.teamsubmission">{{ 'addon.mod_assign.numberofparticipants' | translate }}</h2>
                 </ion-label>
-                <ion-badge slot="end" *ngIf="showNumbers" color="primary">
+                <ion-badge slot="end" color="primary">
                     <span aria-hidden="true">{{ summary.participantcount }}</span>
                     <span class="sr-only" *ngIf="!assign.teamsubmission">
                         {{ 'addon.mod_assign.numberofparticipantscountdescription' | translate:{count: summary.participantcount} }}
@@ -109,12 +109,12 @@
 
             <!-- Summary of submissions with draft status. -->
             <ion-item class="ion-text-wrap" *ngIf="assign.submissiondrafts && summary && summary.submissionsenabled"
-                [class.hide-detail]="showNumbers && !summary.submissiondraftscount"
+                [class.hide-detail]="!summary.submissiondraftscount"
                 detail="true"
-                [button]="!showNumbers || summary.submissiondraftscount"
+                [button]="summary.submissiondraftscount"
                 (click)="goToSubmissionList(submissionStatusDraft, !!summary.submissiondraftscount)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</h2></ion-label>
-                <ion-badge slot="end" *ngIf="showNumbers" color="primary">
+                <ion-badge slot="end" color="primary">
                     <span aria-hidden="true">{{ summary.submissiondraftscount }}</span>
                     <span class="sr-only">
                         {{ 'addon.mod_assign.numberofdraftsubmissionscountdescription' | translate:
@@ -125,12 +125,12 @@
 
             <!-- Summary of submissions with submitted status. -->
             <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled"
-                [class.hide-detail]="showNumbers && !summary.submissionssubmittedcount"
+                [class.hide-detail]="!summary.submissionssubmittedcount"
                 detail="true"
-                [button]="!showNumbers || summary.submissionssubmittedcount"
+                [button]="summary.submissionssubmittedcount"
                 (click)="goToSubmissionList(submissionStatusSubmitted, !!summary.submissionssubmittedcount)">
                 <ion-label><h2>{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</h2></ion-label>
-                <ion-badge slot="end" *ngIf="showNumbers" color="primary">
+                <ion-badge slot="end" color="primary">
                     <span aria-hidden="true">{{ summary.submissionssubmittedcount }}</span>
                     <span class="sr-only">
                         {{ 'addon.mod_assign.numberofsubmittedassignmentscountdescription' | translate:
@@ -140,7 +140,7 @@
             </ion-item>
 
             <!-- Summary of submissions that need grading. -->
-            <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled && !assign.teamsubmission && showNumbers"
+            <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled && !assign.teamsubmission"
                 [class.hide-detail]="!needsGradingAvailable"
                 detail="true"
                 [button]="needsGradingAvailable"

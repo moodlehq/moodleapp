@@ -72,10 +72,10 @@ export class CoreCoursesProvider {
      * Whether current site supports getting course options.
      *
      * @return Whether current site supports getting course options.
+     * @deprecated since app 4.0
      */
     canGetAdminAndNavOptions(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('core_course_get_user_navigation_options') &&
-                CoreSites.wsAvailableInCurrentSite('core_course_get_user_administration_options');
+        return true;
     }
 
     /**
@@ -461,7 +461,6 @@ export class CoreCoursesProvider {
      * @param value The value to match.
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the first course.
-     * @since 3.2
      */
     async getCourseByField(field?: string, value?: string | number, siteId?: string): Promise<CoreCourseSearchedData> {
         const courses = await this.getCoursesByField(field, value, siteId);
@@ -485,7 +484,6 @@ export class CoreCoursesProvider {
      * @param value The value to match.
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the courses.
-     * @since 3.2
      */
     async getCoursesByField(
         field: string = '',
@@ -593,27 +591,21 @@ export class CoreCoursesProvider {
     /**
      * Check if get courses by field WS is available in a certain site.
      *
-     * @param site Site to check.
      * @return Whether get courses by field is available.
-     * @since 3.2
+     * @deprecated since app 4.0
      */
-    isGetCoursesByFieldAvailable(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!site && site.wsAvailable('core_course_get_courses_by_field');
+    isGetCoursesByFieldAvailable(): boolean {
+        return true;
     }
 
     /**
      * Check if get courses by field WS is available in a certain site, by site ID.
      *
-     * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with boolean: whether get courses by field is available.
-     * @since 3.2
+     * @deprecated since app 4.0
      */
-    async isGetCoursesByFieldAvailableInSite(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return this.isGetCoursesByFieldAvailable(site);
+    async isGetCoursesByFieldAvailableInSite(): Promise<boolean> {
+        return true;
     }
 
     /**
@@ -1069,8 +1061,7 @@ export class CoreCoursesProvider {
      * Check if WS to retrieve guest enrolment data is available.
      *
      * @return Whether guest WS is available.
-     * @since 3.1
-     * @deprecated Will always return true since it's available since 3.1.
+     * @deprecated since app 3.9.5
      */
     isGuestWSAvailable(): boolean {
         return true;

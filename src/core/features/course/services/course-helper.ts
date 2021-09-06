@@ -36,6 +36,8 @@ import {
     CoreCourseAnyCourseData,
     CoreCourseBasicData,
     CoreCourses,
+    CoreCourseSearchedData,
+    CoreEnrolledCourseData,
 } from '@features/courses/services/courses';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { CoreArray } from '@singletons/array';
@@ -280,7 +282,7 @@ export class CoreCourseHelperProvider {
         }
 
         sectionWithStatus.downloadStatus = result.status;
-        sectionWithStatus.canCheckUpdates = CoreCourseModulePrefetchDelegate.canCheckUpdates();
+        sectionWithStatus.canCheckUpdates = true;
 
         // Set this section data.
         if (result.status !== CoreConstants.DOWNLOADING) {
@@ -342,7 +344,7 @@ export class CoreCourseHelperProvider {
             if (allSectionsSection) {
                 // Set "All sections" data.
                 allSectionsSection.downloadStatus = allSectionsStatus;
-                allSectionsSection.canCheckUpdates = CoreCourseModulePrefetchDelegate.canCheckUpdates();
+                allSectionsSection.canCheckUpdates = true;
                 allSectionsSection.isDownloading = allSectionsStatus === CoreConstants.DOWNLOADING;
             }
 
@@ -1126,27 +1128,19 @@ export class CoreCourseHelperProvider {
     async getCourse(
         courseId: number,
         siteId?: string,
-    ): Promise<{ enrolled: boolean; course: CoreCourseAnyCourseData }> {
+    ): Promise<{ enrolled: boolean; course: CoreEnrolledCourseData | CoreCourseSearchedData }> {
         siteId = siteId || CoreSites.getCurrentSiteId();
-
-        let course: CoreCourseAnyCourseData;
 
         // Try with enrolled courses first.
         try {
-            course = await CoreCourses.getUserCourse(courseId, false, siteId);
+            const course = await CoreCourses.getUserCourse(courseId, false, siteId);
 
             return ({ enrolled: true, course: course });
         } catch {
             // Not enrolled or an error happened. Try to use another WebService.
         }
 
-        const available = await CoreCourses.isGetCoursesByFieldAvailableInSite(siteId);
-
-        if (available) {
-            course = await CoreCourses.getCourseByField('id', courseId, siteId);
-        } else {
-            course = await CoreCourses.getCourse(courseId, siteId);
-        }
+        const course = await CoreCourses.getCourseByField('id', courseId, siteId);
 
         return ({ enrolled: false, course: course });
     }
@@ -1186,7 +1180,7 @@ export class CoreCourseHelperProvider {
      * @param name Block name to search.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with true if the block exists or false otherwise.
-     * @since 3.3
+     * @since 3.7
      */
     async hasABlockNamed(courseId: number, name: string, siteId?: string): Promise<boolean> {
         try {
@@ -1483,9 +1477,6 @@ export class CoreCourseHelperProvider {
                 moduleInfo.statusIcon = CoreConstants.ICON_OUTDATED;
                 break;
             case CoreConstants.DOWNLOADED:
-                if (!CoreCourseModulePrefetchDelegate.canCheckUpdates()) {
-                    moduleInfo.statusIcon = CoreConstants.ICON_OUTDATED;
-                }
                 break;
             default:
                 moduleInfo.statusIcon = '';
@@ -1739,9 +1730,7 @@ export class CoreCourseHelperProvider {
             });
 
             // Prefetch other data needed to render the course.
-            if (CoreCourses.isGetCoursesByFieldAvailable()) {
-                promises.push(CoreCourses.getCoursesByField('id', course.id));
-            }
+            promises.push(CoreCourses.getCoursesByField('id', course.id));
 
             const sectionWithModules = sections.find((section) => section.modules && section.modules.length > 0);
             if (!sectionWithModules || typeof sectionWithModules.modules[0].completion == 'undefined') {
@@ -1850,7 +1839,7 @@ export class CoreCourseHelperProvider {
 
             // Set "All sections" data.
             section.downloadStatus = allSectionsStatus;
-            section.canCheckUpdates = CoreCourseModulePrefetchDelegate.canCheckUpdates();
+            section.canCheckUpdates = true;
             section.isDownloading = allSectionsStatus === CoreConstants.DOWNLOADING;
         } finally {
             section.isDownloading = false;
@@ -2092,7 +2081,7 @@ export type CoreCourseSection = Omit<CoreCourseWSSection, 'modules'> & {
  */
 export type CoreCourseSectionWithStatus = CoreCourseSection & {
     downloadStatus?: string; // Section status.
-    canCheckUpdates?: boolean; // Whether can check updates.
+    canCheckUpdates?: boolean; // Whether can check updates. @deprecated since app 4.0
     isDownloading?: boolean; // Whether section is being downloaded.
     total?: number; // Total of modules being downloaded.
     count?: number; // Number of downloaded modules.

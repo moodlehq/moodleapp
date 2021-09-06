@@ -20,7 +20,6 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModData } from '../data';
 import { AddonModDataModuleHandlerService } from './module';
 
 /**
@@ -72,7 +71,7 @@ export class AddonModDataEditLinkHandlerService extends CoreContentLinksHandlerB
             return false;
         }
 
-        return AddonModData.isPluginEnabled(siteId);
+        return true;
     }
 
 }

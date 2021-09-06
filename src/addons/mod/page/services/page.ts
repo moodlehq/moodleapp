@@ -125,16 +125,6 @@ export class AddonModPageProvider {
     }
 
     /**
-     * Returns whether or not getPage WS available or not.
-     *
-     * @return If WS is available.
-     * @since 3.3
-     */
-    isGetPageWSAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('mod_page_get_pages_by_courses');
-    }
-
-    /**
      * Return whether or not the plugin is enabled.
      *
      * @param siteId Site ID. If not defined, current site.

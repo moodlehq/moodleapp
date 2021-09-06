@@ -67,7 +67,7 @@ export class AddonNotificationsHelperProvider {
      */
     async getNotifications(
         notifications: AddonNotificationsAnyNotification[],
-        options?: AddonNotificationsGetNotificationsOptions,
+        options?: AddonNotificationsHelperGetNotificationsOptions,
     ): Promise<{notifications: AddonNotificationsAnyNotification[]; canLoadMore: boolean}> {
 
         notifications = notifications || [];
@@ -75,13 +75,11 @@ export class AddonNotificationsHelperProvider {
         options.limit = options.limit || AddonNotificationsProvider.LIST_LIMIT;
         options.siteId = options.siteId || CoreSites.getCurrentSiteId();
 
-        const available = await AddonNotifications.isPopupAvailable(options.siteId);
-
-        if (available) {
+        if (options.onlyPopupNotifications) {
             return AddonNotifications.getPopupNotifications(notifications.length, options);
         }
 
-        // Fallback to get_messages. We need 2 calls, one for read and the other one for unread.
+        // Use get_messages. We need 2 calls, one for read and the other one for unread.
         const unreadFrom = notifications.reduce((total, current) => total + (current.read ? 0 : 1), 0);
 
         const unread = await AddonNotifications.getUnreadNotifications(unreadFrom, options);
@@ -208,4 +206,11 @@ export type AddonNotificationsPreferencesNotificationFormatted = AddonNotificati
  */
 export type AddonNotificationsPreferencesProcessorFormatted = AddonNotificationsPreferencesProcessor & {
     supported?: boolean; // Calculated in the app. Whether the processor is supported in the app.
+};
+
+/**
+ * Options to pass to getNotifications.
+ */
+export type AddonNotificationsHelperGetNotificationsOptions = AddonNotificationsGetNotificationsOptions & {
+    onlyPopupNotifications?: boolean; // Whether to get only popup notifications.
 };

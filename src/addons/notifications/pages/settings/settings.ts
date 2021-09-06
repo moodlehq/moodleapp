@@ -54,14 +54,12 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
     currentProcessor?: AddonNotificationsPreferencesProcessor;
     preferencesLoaded = false;
     notificationSound = false;
-    notifPrefsEnabled: boolean;
     canChangeSound: boolean;
     processorHandlers: AddonMessageOutputHandlerData[] = [];
 
     protected updateTimeout?: number;
 
     constructor() {
-        this.notifPrefsEnabled = AddonNotifications.isNotificationPreferencesEnabled();
         this.canChangeSound = CoreLocalNotifications.canDisableSound();
     }
 
@@ -73,11 +71,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
             this.notificationSound = await CoreConfig.get<boolean>(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true);
         }
 
-        if (this.notifPrefsEnabled) {
-            this.fetchPreferences();
-        } else {
-            this.preferencesLoaded = true;
-        }
+        this.fetchPreferences();
     }
 
     /**

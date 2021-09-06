@@ -146,14 +146,6 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      * Upload a new file.
      */
     async uploadFile(): Promise<void> {
-        const canUpload = await AddonPrivateFiles.versionCanUploadFiles();
-
-        if (!canUpload) {
-            CoreDomUtils.showAlertTranslated('core.notice', 'addon.privatefiles.erroruploadnotworking');
-
-            return;
-        }
-
         if (!CoreApp.isOnline()) {
             CoreDomUtils.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
 
@@ -198,8 +190,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
                 this.files = await AddonPrivateFiles.getPrivateFiles();
 
-                if (this.showUpload && AddonPrivateFiles.canGetPrivateFilesInfo() && this.userQuota &&
-                    this.userQuota > 0) {
+                if (this.showUpload && this.userQuota && this.userQuota > 0) {
                     // Get the info to calculate the available size.
                     this.filesInfo = await AddonPrivateFiles.getPrivateFilesInfo();
 

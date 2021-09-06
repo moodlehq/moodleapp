@@ -35,10 +35,7 @@ export class AddonModFolderPrefetchHandlerService extends CoreCourseResourcePref
         const promises: Promise<unknown>[] = [];
 
         promises.push(super.downloadOrPrefetch(module, courseId, prefetch));
-
-        if (AddonModFolder.isGetFolderWSAvailable()) {
-            promises.push(AddonModFolder.getFolder(courseId, module.id));
-        }
+        promises.push(AddonModFolder.getFolder(courseId, module.id));
 
         await Promise.all(promises);
     }

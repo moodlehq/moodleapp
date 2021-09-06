@@ -292,11 +292,6 @@ export class CoreSitePluginsProvider {
     async getPlugins(siteId?: string): Promise<CoreSitePluginsPlugin[]> {
         const site = await CoreSites.getSite(siteId);
 
-        if (!CoreSitePlugins.isGetContentAvailable(site)) {
-            // Cannot load site plugins, so there's no point to fetch them.
-            return [];
-        }
-
         // Get the list of plugins. Try not to use cache.
         const data = await site.read<CoreSitePluginsGetPluginsSupportingMobileWSResponse>(
             'tool_mobile_get_plugins_supporting_mobile',
@@ -371,12 +366,10 @@ export class CoreSitePluginsProvider {
     /**
      * Check if the get content WS is available.
      *
-     * @param site The site to check. If not defined, current site.
+     * @deprecated since app 4.0
      */
-    isGetContentAvailable(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!site?.wsAvailable('tool_mobile_get_content');
+    isGetContentAvailable(): boolean {
+        return true;
     }
 
     /**

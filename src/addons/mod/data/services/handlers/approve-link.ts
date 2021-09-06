@@ -17,7 +17,6 @@ import { Params } from '@angular/router';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonModData } from '../data';
 import { AddonModDataHelper } from '../data-helper';
 
 /**
@@ -56,7 +55,7 @@ export class AddonModDataApproveLinkHandlerService extends CoreContentLinksHandl
             return false;
         }
 
-        return AddonModData.isPluginEnabled(siteId);
+        return true;
     }
 
 }

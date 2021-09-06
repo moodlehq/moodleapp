@@ -131,16 +131,6 @@ export class AddonModResourceProvider {
     }
 
     /**
-     * Returns whether or not getResource WS available or not.
-     *
-     * @return If WS is abalaible.
-     * @since 3.3
-     */
-    isGetResourceWSAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('mod_resource_get_resources_by_courses');
-    }
-
-    /**
      * Return whether or not the plugin is enabled.
      *
      * @param siteId Site ID. If not defined, current site.

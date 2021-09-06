@@ -45,7 +45,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
         title: 'addon.messages.messages',
         page: AddonMessagesMainMenuHandlerService.PAGE_NAME,
         class: 'addon-messages-handler',
-        showBadge: true, // Do not check isMessageCountEnabled because we'll use fallback it not enabled.
+        showBadge: true,
         badge: '',
         badgeA11yText: 'addon.messages.unreadconversations',
         loading: true,
@@ -199,8 +199,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
      * @return True if is a sync process, false otherwise.
      */
     isSync(): boolean {
-        // This is done to use only wifi if using the fallback function.
-        return !AddonMessages.isMessageCountEnabled() && !AddonMessages.isGroupMessagingEnabled();
+        return false;
     }
 
     /**

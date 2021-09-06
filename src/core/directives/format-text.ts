@@ -509,8 +509,6 @@ export class CoreFormatTextDirective implements OnChanges {
      * @return Promise resolved when done.
      */
     protected async treatHTMLElements(div: HTMLElement, site?: CoreSite): Promise<void> {
-        const canTreatVimeo = site?.isVersionGreaterEqualThan(['3.3.4', '3.4']) || false;
-
         const images = Array.from(div.querySelectorAll('img'));
         const anchors = Array.from(div.querySelectorAll('a'));
         const audios = Array.from(div.querySelectorAll('audio'));
@@ -561,7 +559,7 @@ export class CoreFormatTextDirective implements OnChanges {
         });
 
         iframes.forEach((iframe) => {
-            promises.push(this.treatIframe(iframe, site, canTreatVimeo));
+            promises.push(this.treatIframe(iframe, site));
         });
 
         svgImages.forEach((image) => {
@@ -704,13 +702,8 @@ export class CoreFormatTextDirective implements OnChanges {
      *
      * @param iframe Iframe to treat.
      * @param site Site instance.
-     * @param canTreatVimeo Whether Vimeo videos can be treated in the site.
      */
-    protected async treatIframe(
-        iframe: HTMLIFrameElement,
-        site: CoreSite | undefined,
-        canTreatVimeo: boolean,
-    ): Promise<void> {
+    protected async treatIframe(iframe: HTMLIFrameElement, site: CoreSite | undefined): Promise<void> {
         const src = iframe.src;
         const currentSite = CoreSites.getCurrentSite();
 
@@ -736,7 +729,7 @@ export class CoreFormatTextDirective implements OnChanges {
 
         await CoreIframeUtils.fixIframeCookies(src);
 
-        if (site && src && canTreatVimeo) {
+        if (site && src) {
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
             const matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)/);
             if (matches && matches[1]) {

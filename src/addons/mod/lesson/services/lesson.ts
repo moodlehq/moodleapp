@@ -2711,19 +2711,6 @@ export class AddonModLessonProvider {
     }
 
     /**
-     * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the lesson WS are available.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
-     */
-    async isPluginEnabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        // All WS were introduced at the same time so checking one is enough.
-        return site.wsAvailable('mod_lesson_get_lesson_access_information');
-    }
-
-    /**
      * Check if a page is a question page or a content page.
      *
      * @param type Type of the page.

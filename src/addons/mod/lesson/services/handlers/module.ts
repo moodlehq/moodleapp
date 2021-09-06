@@ -18,7 +18,6 @@ import { CoreConstants } from '@/core/constants';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreCourseModule } from '@features/course/services/course-helper';
-import { AddonModLesson } from '../lesson';
 import { AddonModLessonIndexComponent } from '../../components/index';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
@@ -52,8 +51,8 @@ export class AddonModLessonModuleHandlerService implements CoreCourseModuleHandl
      *
      * @return Promise resolved with boolean: whether or not the handler is enabled on a site level.
      */
-    isEnabled(): Promise<boolean> {
-        return AddonModLesson.isPluginEnabled();
+    async isEnabled(): Promise<boolean> {
+        return true;
     }
 
     /**

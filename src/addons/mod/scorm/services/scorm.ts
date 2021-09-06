@@ -1612,11 +1612,6 @@ export class AddonModScormProvider {
         };
         const wsFunction = 'mod_scorm_insert_scorm_tracks';
 
-        // Check if the method is available, use a prefixed version if possible.
-        if (!currentSite.wsAvailable(wsFunction, false)) {
-            return false;
-        }
-
         try {
             const response = CoreWS.syncCall<AddonModScormInsertScormTracksWSResponse>(wsFunction, params, preSets);
 

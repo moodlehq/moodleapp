@@ -126,36 +126,6 @@ export class AddonCalendarProvider {
     ];
 
     /**
-     * Check if a certain site allows deleting events.
-     *
-     * @param siteId Site Id. If not defined, use current site.
-     * @return Promise resolved with true if can delete.
-     * @since 3.3
-     */
-    async canDeleteEvents(siteId?: string): Promise<boolean> {
-        try {
-            const site = await CoreSites.getSite(siteId);
-
-            return this.canDeleteEventsInSite(site);
-        } catch {
-            return false;
-        }
-    }
-
-    /**
-     * Check if a certain site allows deleting events.
-     *
-     * @param site Site. If not defined, use current site.
-     * @return Whether events can be deleted.
-     * @since 3.3
-     */
-    canDeleteEventsInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!site?.wsAvailable('core_calendar_delete_calendar_events');
-    }
-
-    /**
      * Check if a certain site allows creating and editing events.
      *
      * @param siteId Site Id. If not defined, use current site.
@@ -184,67 +154,6 @@ export class AddonCalendarProvider {
 
         // The WS to create/edit events requires a fix that was integrated in 3.7.1.
         return !!site?.isVersionGreaterEqualThan('3.7.1');
-    }
-
-    /**
-     * Check if a certain site allows viewing events in monthly view.
-     *
-     * @param siteId Site Id. If not defined, use current site.
-     * @return Promise resolved with true if monthly view is supported.
-     * @since 3.4
-     */
-    async canViewMonth(siteId?: string): Promise<boolean> {
-        try {
-            const site = await CoreSites.getSite(siteId);
-
-            return this.canViewMonthInSite(site);
-        } catch {
-            return false;
-        }
-    }
-
-    /**
-     * Check if a certain site allows viewing events in monthly view.
-     *
-     * @param site Site. If not defined, use current site.
-     * @return Whether monthly view is supported.
-     * @since 3.4
-     */
-    canViewMonthInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!site?.wsAvailable('core_calendar_get_calendar_monthly_view');
-    }
-
-    /**
-     * Gets the site main calendar page path.
-     *
-     * @param site Site. If not defined, use current site.
-     * @return Main calendar page path of the site.
-     */
-    getMainCalendarPagePath(site?: CoreSite): string {
-        return AddonCalendarMainMenuHandlerService.PAGE_NAME + (this.canViewMonthInSite(site) ? '' : '/list');
-    }
-
-    /**
-     * Removes expired events from local DB.
-     *
-     * @param siteId ID of the site the event belongs to. If not defined, use current site.
-     * @return Promise resolved when done.
-     */
-    async cleanExpiredEvents(siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-        if (this.canViewMonthInSite(site)) {
-            // Site supports monthly view, don't clean expired events because user can see past events.
-            return;
-        }
-        const events = await site.getDb().getRecordsSelect<AddonCalendarEventDBRecord>(
-            EVENTS_TABLE,
-            'timestart + timeduration < ?',
-            [CoreTimeUtils.timestamp()],
-        );
-
-        await Promise.all(events.map((event) => this.deleteLocalEvent(event.id!, siteId)));
     }
 
     /**
@@ -367,12 +276,8 @@ export class AddonCalendarProvider {
                         return;
                     }
 
-                    // Check which page we should load.
-                    const site = await CoreSites.getSite(notification.siteId);
-                    const pageName = this.getMainCalendarPagePath(site);
-
                     CoreNavigator.navigateToSitePath(
-                        pageName,
+                        AddonCalendarMainMenuHandlerService.PAGE_NAME,
                         {
                             siteId: notification.siteId,
                             preferCurrentTab: false,
@@ -695,7 +600,6 @@ export class AddonCalendarProvider {
      * @param id Event ID.
      * @param siteId ID of the site. If not defined, use current site.
      * @return Promise resolved when the event data is retrieved.
-     * @since 3.4
      */
     async getEventById(id: number, siteId?: string): Promise<AddonCalendarEvent> {
         const site = await CoreSites.getSite(siteId);
@@ -741,10 +645,6 @@ export class AddonCalendarProvider {
         const site = await CoreSites.getSite(siteId);
         const record: AddonCalendarGetEventsEvent | AddonCalendarEvent | AddonCalendarEventDBRecord =
             await site.getDb().getRecord(EVENTS_TABLE, { id: id });
-
-        if (!this.isGetEventByIdAvailableInSite(site)) {
-            return record as AddonCalendarGetEventsEvent;
-        }
 
         const eventConverted = record as AddonCalendarEvent;
         const originalEvent = record as AddonCalendarGetEventsEvent;
@@ -994,10 +894,6 @@ export class AddonCalendarProvider {
         };
         const response: AddonCalendarGetCalendarEventsWSResponse =
             await site.read('core_calendar_get_calendar_events', params, preSets);
-        if (!this.canViewMonthInSite(site)) {
-            // Store events only in 3.1-3.3. In 3.4+ we'll use the new WS that return more info.
-            this.storeEventsInLocalDB(response.events, siteId);
-        }
 
         return response.events;
     }
@@ -1059,12 +955,8 @@ export class AddonCalendarProvider {
         const params: AddonCalendarGetCalendarMonthlyViewWSParams = {
             year: year,
             month: month,
+            mini: true, // Set mini to 1 to prevent returning the course selector HTML.
         };
-        // This parameter requires Moodle 3.5.
-        if (site.isVersionGreaterEqualThan('3.5')) {
-            // Set mini to 1 to prevent returning the course selector HTML.
-            params.mini = true;
-        }
         if (courseId) {
             params.courseid = courseId;
         }
@@ -1407,36 +1299,6 @@ export class AddonCalendarProvider {
     }
 
     /**
-     * Check if the get event by ID WS is available.
-     *
-     * @param siteId Site Id. If not defined, use current site.
-     * @return Promise resolved with true if available.
-     * @since 3.4
-     */
-    async isGetEventByIdAvailable(siteId?: string): Promise<boolean> {
-        try {
-            const site = await CoreSites.getSite(siteId);
-
-            return this.isGetEventByIdAvailableInSite(site);
-        } catch {
-            return false;
-        }
-    }
-
-    /**
-     * Check if the get event by ID WS is available in a certain site.
-     *
-     * @param site Site. If not defined, use current site.
-     * @return Whether it's available.
-     * @since 3.4
-     */
-    isGetEventByIdAvailableInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!site?.wsAvailable('core_calendar_get_calendar_event_by_id');
-    }
-
-    /**
      * Get the next events for all the sites and schedules their notifications.
      * If an event notification time is 0, cancel its scheduled notification (if any).
      * If local notification plugin is not enabled, resolve the promise.
@@ -1450,7 +1312,7 @@ export class AddonCalendarProvider {
 
         const siteIds = await CoreSites.getSitesIds();
 
-        const promises = siteIds.map((siteId: string) => this.cleanExpiredEvents(siteId).then(async() => {
+        const promises = siteIds.map((siteId: string) => async () => {
             if (notificationsEnabled) {
                 // Check if calendar is disabled for the site.
                 const disabled = await this.isDisabled(siteId);
@@ -1462,7 +1324,7 @@ export class AddonCalendarProvider {
             }
 
             return;
-        }));
+        });
 
         await Promise.all(promises);
     }
@@ -1995,7 +1857,7 @@ export type AddonCalendarMonth = {
     date: CoreWSDate;
     periodname: string; // Periodname.
     includenavigation: boolean; // Includenavigation.
-    initialeventsloaded: boolean; // @since 3.5. Initialeventsloaded.
+    initialeventsloaded: boolean; // Initialeventsloaded.
     previousperiod: CoreWSDate;
     previousperiodlink: string; // Previousperiodlink.
     previousperiodname: string; // Previousperiodname.
@@ -2151,7 +2013,7 @@ export type AddonCalendarGetEventsEvent = {
     description?: string; // Description.
     format: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     courseid: number; // Course id.
-    categoryid?: number; // @since 3.4. Category id (only for category events).
+    categoryid?: number; // Category id (only for category events).
     groupid: number; // Group id.
     userid: number; // User id.
     repeatid: number; // Repeat id.

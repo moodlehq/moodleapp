@@ -204,13 +204,6 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
     /**
      * @inheritdoc
      */
-    async isEnabled(): Promise<boolean> {
-        return AddonModWorkshop.isPluginEnabled();
-    }
-
-    /**
-     * @inheritdoc
-     */
     prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         return this.prefetchPackage(module, courseId, this.prefetchWorkshop.bind(this, module, courseId));
     }

@@ -36,7 +36,6 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
 
     component = AddonModUrlProvider.COMPONENT;
 
-    canGetUrl = false;
     url?: string;
     name?: string;
     shouldEmbed = false;
@@ -57,8 +56,6 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
-
-        this.canGetUrl = AddonModUrl.isGetUrlWSAvailable();
 
         await this.loadContent();
 
@@ -86,9 +83,6 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      */
     protected async fetchContent(refresh = false): Promise<void> {
         try {
-            if (!this.canGetUrl) {
-                throw null;
-            }
             // Fetch the module data.
             const url = await AddonModUrl.getUrl(this.courseId, this.module.id);
 
@@ -110,7 +104,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             await this.calculateDisplayOptions(url);
 
         } catch {
-            // Fallback in case is not prefetched or not available.
+            // Fallback in case is not prefetched.
             const mod =
                 await CoreCourse.getModule(this.module.id, this.courseId, undefined, false, false, undefined, 'url');
 

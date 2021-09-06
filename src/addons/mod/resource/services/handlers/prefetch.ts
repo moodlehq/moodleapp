@@ -67,10 +67,7 @@ export class AddonModResourcePrefetchHandlerService extends CoreCourseResourcePr
         const promises: Promise<unknown>[] = [];
 
         promises.push(super.downloadOrPrefetch(module, courseId, prefetch, dirPath));
-
-        if (AddonModResource.isGetResourceWSAvailable()) {
-            promises.push(AddonModResource.getResourceData(courseId, module.id));
-        }
+        promises.push(AddonModResource.getResourceData(courseId, module.id));
 
         await Promise.all(promises);
     }

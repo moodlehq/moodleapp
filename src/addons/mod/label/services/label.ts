@@ -136,32 +136,6 @@ export class AddonModLabelProvider {
         await CoreUtils.allPromises(promises);
     }
 
-    /**
-     * Check if the site has the WS to get label data.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether it's available.
-     * @since 3.3
-     */
-    async isGetLabelAvailable(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return site.wsAvailable('mod_label_get_labels_by_courses');
-    }
-
-    /**
-     * Check if the site has the WS to get label data.
-     *
-     * @param site Site. If not defined, current site.
-     * @return Whether it's available.
-     * @since 3.3
-     */
-    isGetLabelAvailableForSite(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!site?.wsAvailable('mod_label_get_labels_by_courses');
-    }
-
 }
 export const AddonModLabel = makeSingleton(AddonModLabelProvider);
 

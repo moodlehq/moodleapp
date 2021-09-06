@@ -96,7 +96,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             (!this.courseId || this.courseId == this.site.getSiteHomeId()) &&
             this.userId == this.site.getUserId() &&
             this.site.canUploadFiles() &&
-            CoreUser.canUpdatePictureInSite(this.site) &&
             !CoreUser.isUpdatePictureDisabledInSite(this.site);
 
         try {

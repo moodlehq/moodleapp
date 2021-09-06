@@ -109,8 +109,7 @@ export class CoreCoursesHelperProvider {
             return;
         }));
 
-        if (CoreCourses.isGetCoursesByFieldAvailable() && (loadCategoryNames ||
-                (typeof courses[0].overviewfiles == 'undefined' && typeof courses[0].displayname == 'undefined'))) {
+        if (loadCategoryNames || (courses[0].overviewfiles === undefined && courses[0].displayname === undefined)) {
             const courseIds = courses.map((course) => course.id).join(',');
 
             courseInfoAvailable = true;
@@ -196,17 +195,15 @@ export class CoreCoursesHelperProvider {
         const promises: Promise<void>[] = [];
         const courseIds = courses.map((course) => course.id);
 
-        if (CoreCourses.canGetAdminAndNavOptions()) {
-            // Load course options of the course.
-            promises.push(CoreCourses.getCoursesAdminAndNavOptions(courseIds).then((options) => {
-                courses.forEach((course) => {
-                    course.navOptions = options.navOptions[course.id];
-                    course.admOptions = options.admOptions[course.id];
-                });
+        // Load course options of the course.
+        promises.push(CoreCourses.getCoursesAdminAndNavOptions(courseIds).then((options) => {
+            courses.forEach((course) => {
+                course.navOptions = options.navOptions[course.id];
+                course.admOptions = options.admOptions[course.id];
+            });
 
-                return;
-            }));
-        }
+            return;
+        }));
 
         promises.push(this.loadCoursesExtraInfo(courses, loadCategoryNames));
 

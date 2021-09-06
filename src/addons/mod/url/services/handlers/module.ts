@@ -175,7 +175,7 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
             if (canHandle) {
                 // URL handled by the app, open it directly.
                 return true;
-            } else if (AddonModUrl.isGetUrlWSAvailable()) {
+            } else {
                 // Not handled by the app, check the display type.
                 const url = await CoreUtils.ignoreErrors(AddonModUrl.getUrl(courseId, module.id));
                 const displayType = AddonModUrl.getFinalDisplayType(url);
@@ -183,8 +183,6 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
                 return displayType == CoreConstants.RESOURCELIB_DISPLAY_OPEN ||
                     displayType == CoreConstants.RESOURCELIB_DISPLAY_POPUP;
             }
-
-            return false;
         } catch {
             return false;
         }

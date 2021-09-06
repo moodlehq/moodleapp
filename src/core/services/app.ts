@@ -677,7 +677,7 @@ export class CoreAppProvider {
     /**
      * Reset StatusBar color if any was set.
      *
-     * @deprecated Use setStatusBarColor passing the color of the new statusbar color loaded on remote theme or no color to reset.
+     * @deprecated since 3.9.5. Use setStatusBarColor passing the color of the new statusbar color, or no color to reset.
      */
     resetStatusBarColor(): void {
         this.setStatusBarColor();

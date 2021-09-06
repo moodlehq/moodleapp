@@ -65,14 +65,10 @@ export class CoreSite {
     static readonly WS_CACHE_TABLE = 'wscache_2';
     static readonly CONFIG_TABLE = 'core_site_config';
 
-    static readonly MINIMUM_MOODLE_VERSION = '3.1';
+    static readonly MINIMUM_MOODLE_VERSION = '3.5';
 
     // Versions of Moodle releases.
-    protected readonly MOODLE_RELEASES = {
-        '3.1': 2016052300,
-        '3.2': 2016120500,
-        '3.3': 2017051503,
-        '3.4': 2017111300,
+    static readonly MOODLE_RELEASES = {
         '3.5': 2018051700,
         '3.6': 2018120300,
         '3.7': 2019052000,
@@ -489,12 +485,16 @@ export class CoreSite {
      *
      * Caching is also implemented, when enabled this method will returned a cached version of the request if the
      * data hasn't expired.
-     *
-     * This method is smart which means that it will try to map the method to a compatibility one if need be, usually this
-     * means that it will fallback on the 'local_mobile_' prefixed function if it is available and the non-prefixed is not.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async request<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets, retrying?: boolean): Promise<T> {
+        if (this.isLoggedOut()) {
+            // Site is logged out, it cannot call WebServices.
+            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
+
+            throw new CoreError(Translate.instant('core.lostconnection'));
+        }
+
         const initialToken = this.token || '';
         data = data || {};
 
@@ -502,18 +502,12 @@ export class CoreSite {
             throw new CoreError(Translate.instant('core.errorofflinedisabled'));
         }
 
-        // Check if the method is available, use a prefixed version if possible.
+        // Check if the method is available.
         // We ignore this check when we do not have the site info, as the list of functions is not loaded yet.
-        if (this.getInfo() && !this.wsAvailable(method, false)) {
-            const compatibilityMethod = CoreConstants.WS_PREFIX + method;
-            if (this.wsAvailable(compatibilityMethod, false)) {
-                this.logger.info(`Using compatibility WS method '${compatibilityMethod}'`);
-                method = compatibilityMethod;
-            } else {
-                this.logger.error(`WS function '${method}' is not available, even in compatibility mode.`);
+        if (this.getInfo() && !this.wsAvailable(method)) {
+            this.logger.error(`WS function '${method}' is not available.`);
 
-                throw new CoreError(Translate.instant('core.wsfunctionnotavailable'));
-            }
+            throw new CoreError(Translate.instant('core.wsfunctionnotavailable'));
         }
 
         const wsPreSets: CoreWSPreSets = {
@@ -857,24 +851,10 @@ export class CoreSite {
      * Check if a WS is available in this site.
      *
      * @param method WS name.
-     * @param checkPrefix When true also checks with the compatibility prefix.
      * @return Whether the WS is available.
      */
-    wsAvailable(method: string, checkPrefix: boolean = true): boolean {
-        if (typeof this.infos == 'undefined') {
-            return false;
-        }
-
-        if (this.infos?.functionsByName?.[method]) {
-            return true;
-        }
-
-        // Let's try again with the compatibility prefix.
-        if (checkPrefix) {
-            return this.wsAvailable(CoreConstants.WS_PREFIX + method, false);
-        }
-
-        return false;
+    wsAvailable(method: string): boolean {
+        return !!this.infos?.functionsByName?.[method];
     }
 
     /**
@@ -1298,112 +1278,32 @@ export class CoreSite {
     /**
      * Check if the local_mobile plugin is installed in the Moodle site.
      *
-     * @param retrying True if we're retrying the check.
      * @return Promise resolved when the check is done.
+     * @deprecated since app 4.0
      */
-    async checkLocalMobilePlugin(retrying?: boolean): Promise<LocalMobileResponse> {
-        const checkUrl = this.siteUrl + '/local/mobile/check.php';
-        const service = CoreConstants.CONFIG.wsextservice;
-
-        if (!service) {
-            // External service not defined.
-            return { code: 0 };
-        }
-
-        let data;
-
-        try {
-            const response = await CoreWS.sendHTTPRequest(checkUrl, {
-                method: 'post',
-                data: { service },
-            });
-
-            data = response.body;
-        } catch (ex) {
-            return { code: 0 };
-        }
-
-        if (data === null) {
-            // This probably means that the server was configured to return null for non-existing URLs. Not installed.
-            return { code: 0 };
-        }
-
-        if (typeof data != 'undefined' && data.errorcode === 'requirecorrectaccess') {
-            if (!retrying) {
-                this.siteUrl = CoreUrlUtils.addOrRemoveWWW(this.siteUrl);
-
-                return this.checkLocalMobilePlugin(true);
-            } else {
-                throw new CoreWSError(data);
-            }
-        } else if (typeof data == 'undefined' || typeof data.code == 'undefined') {
-            // The local_mobile returned something we didn't expect. Let's assume it's not installed.
-            return { code: 0, warning: 'core.login.localmobileunexpectedresponse' };
-        }
-
-        const code = parseInt(data.code, 10);
-        if (data.error) {
-            switch (code) {
-                case 1:
-                    // Site in maintenance mode.
-                    throw new CoreError(Translate.instant('core.login.siteinmaintenance'));
-                case 2:
-                    // Web services not enabled.
-                    throw new CoreError(Translate.instant('core.login.webservicesnotenabled'));
-                case 3:
-                    // Extended service not enabled, but the official is enabled.
-                    return { code: 0 };
-                case 4:
-                    // Neither extended or official services enabled.
-                    throw new CoreError(Translate.instant('core.login.mobileservicesnotenabled'));
-                default:
-                    throw new CoreError(Translate.instant('core.unexpectederror'));
-            }
-        } else {
-            return { code, service, coreSupported: !!data.coresupported };
-        }
+    async checkLocalMobilePlugin(): Promise<LocalMobileResponse> {
+        // Not used anymore.
+        return { code: 0, coreSupported: true };
     }
 
     /**
      * Check if local_mobile has been installed in Moodle.
      *
      * @return Whether the App is able to use local_mobile plugin for this site.
+     * @deprecated since app 4.0
      */
     checkIfAppUsesLocalMobile(): boolean {
-        let appUsesLocalMobile = false;
-
-        if (!this.infos || !this.infos.functions) {
-            return appUsesLocalMobile;
-        }
-
-        this.infos.functions.forEach((func) => {
-            if (func.name.indexOf(CoreConstants.WS_PREFIX) != -1) {
-                appUsesLocalMobile = true;
-            }
-        });
-
-        return appUsesLocalMobile;
+        return false;
     }
 
     /**
      * Check if local_mobile has been installed in Moodle but the app is not using it.
      *
      * @return Promise resolved it local_mobile was added, rejected otherwise.
+     * @deprecated since app 4.0
      */
     async checkIfLocalMobileInstalledAndNotUsed(): Promise<void> {
-        const appUsesLocalMobile = this.checkIfAppUsesLocalMobile();
-
-        if (appUsesLocalMobile) {
-            // App already uses local_mobile, it wasn't added.
-            throw new CoreError('Already used.');
-        }
-
-        const data = await this.checkLocalMobilePlugin();
-
-        if (typeof data.service == 'undefined') {
-            // The local_mobile NOT installed. Reject.
-            throw new CoreError('Not installed.');
-        }
+        throw new CoreError('Deprecated.');
     }
 
     /**
@@ -1761,7 +1661,7 @@ export class CoreSite {
      * @return Promise resolved with the converted URL.
      */
     async getAutoLoginUrl(url: string, showModal: boolean = true): Promise<string> {
-        if (!this.privateToken || !this.wsAvailable('tool_mobile_get_autologin_key') || (this.lastAutoLogin &&
+        if (!this.privateToken || (this.lastAutoLogin &&
                 CoreTimeUtils.timestamp() - this.lastAutoLogin < CoreConstants.SECONDS_MINUTE * 6)) {
             // No private token, WS not available or last auto-login was less than 6 minutes ago. Don't change the URL.
             return url;
@@ -1812,12 +1712,12 @@ export class CoreSite {
             return 0;
         }
 
-        if (typeof this.MOODLE_RELEASES[data.major] == 'undefined') {
+        if (CoreSite.MOODLE_RELEASES[data.major] === undefined) {
             // Major version not found. Use the last one.
-            data.major = Object.keys(this.MOODLE_RELEASES).pop()!;
+            data.major = Object.keys(CoreSite.MOODLE_RELEASES).pop()!;
         }
 
-        return this.MOODLE_RELEASES[data.major] + data.minor;
+        return CoreSite.MOODLE_RELEASES[data.major] + data.minor;
     }
 
     /**
@@ -1847,7 +1747,7 @@ export class CoreSite {
      */
     protected getNextMajorVersionNumber(version: string): number {
         const data = this.getMajorAndMinor(version);
-        const releases = Object.keys(this.MOODLE_RELEASES);
+        const releases = Object.keys(CoreSite.MOODLE_RELEASES);
 
         if (!data) {
             // Invalid version.
@@ -1858,10 +1758,10 @@ export class CoreSite {
 
         if (position == -1 || position == releases.length - 1) {
             // Major version not found or it's the last one. Use the last one.
-            return this.MOODLE_RELEASES[releases[position]];
+            return CoreSite.MOODLE_RELEASES[releases[position]];
         }
 
-        return this.MOODLE_RELEASES[releases[position + 1]];
+        return CoreSite.MOODLE_RELEASES[releases[position + 1]];
     }
 
     /**
@@ -2075,6 +1975,8 @@ export type CoreSiteWSPreSets = {
 
 /**
  * Response of checking local_mobile status.
+ *
+ * @deprecated since app 4.0
  */
 export type LocalMobileResponse = {
     /**

@@ -177,7 +177,7 @@
         </ion-badge>
 
         <core-download-refresh [status]="section.downloadStatus" [enabled]="downloadEnabled" (action)="prefetch(section)"
-            [loading]="section.isDownloading || section.isCalculating" [canTrustDownload]="section.canCheckUpdates" size="small">
+            [loading]="section.isDownloading || section.isCalculating" [canTrustDownload]="true" size="small">
         </core-download-refresh>
     </div>
 </ng-template>

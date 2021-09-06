@@ -20,7 +20,6 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonModWorkshopIndexComponent } from '../../components/index';
-import { AddonModWorkshop } from '../workshop';
 
 /**
  * Handler to support workshop modules.
@@ -47,8 +46,8 @@ export class AddonModWorkshopModuleHandlerService implements CoreCourseModuleHan
     /**
      * @inheritdoc
      */
-    isEnabled(): Promise<boolean> {
-        return AddonModWorkshop.isPluginEnabled();
+    async isEnabled(): Promise<boolean> {
+        return true;
     }
 
     /**

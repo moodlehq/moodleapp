@@ -62,7 +62,6 @@
         "zh-tw": "正體中文"
     },
     "wsservice": "moodle_mobile_app",
-    "wsextservice": "local_mobile",
     "demo_sites": {
         "student": {
             "url": "https:\/\/school.moodledemo.net",

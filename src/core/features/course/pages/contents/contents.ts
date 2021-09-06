@@ -322,7 +322,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     protected async loadCourseFormatOptions(): Promise<void> {
 
         // Load the course format options when course completion is enabled to show completion progress on sections.
-        if (!this.course.enablecompletion || !CoreCourses.isGetCoursesByFieldAvailable()) {
+        if (!this.course.enablecompletion) {
             return;
         }
 

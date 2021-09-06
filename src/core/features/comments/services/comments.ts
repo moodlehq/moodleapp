@@ -536,7 +536,7 @@ export type CoreCommentsArea = {
     canpost: boolean; // Canpost.
     canview: boolean; // Canview.
     count: number; // Count.
-    collapsediconkey: string; // @since 3.3. Collapsediconkey.
+    collapsediconkey: string; // Collapsediconkey.
     displaytotalcount: boolean; // Displaytotalcount.
     displaycancel: boolean; // Displaycancel.
     fullwidth: boolean; // Fullwidth.

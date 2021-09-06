@@ -60,7 +60,7 @@
 
                 <div class="core-module-buttons-more">
                     <core-download-refresh [status]="downloadStatus" [enabled]="downloadEnabled"
-                        [canTrustDownload]="canCheckUpdates" [loading]="spinner || module.handlerData.spinner"
+                        [canTrustDownload]="true" [loading]="spinner || module.handlerData.spinner"
                         (action)="download($event)" size="small">
                     </core-download-refresh>
 

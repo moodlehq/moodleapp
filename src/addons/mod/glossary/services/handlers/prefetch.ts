@@ -19,7 +19,7 @@ import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/c
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreUser } from '@features/user/services/user';
 import { CoreFilepool } from '@services/filepool';
-import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -73,16 +73,12 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
     ): CoreWSFile[] {
         let files = this.getIntroFilesFromInstance(module, glossary);
 
-        const getInlineFiles = CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.2');
-
         // Get entries files.
         entries.forEach((entry) => {
             files = files.concat(entry.attachments || []);
 
-            if (getInlineFiles && entry.definitioninlinefiles && entry.definitioninlinefiles.length) {
+            if (entry.definitioninlinefiles && entry.definitioninlinefiles.length) {
                 files = files.concat(entry.definitioninlinefiles);
-            } else if (entry.definition && !getInlineFiles) {
-                files = files.concat(CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(entry.definition));
             }
         });
 

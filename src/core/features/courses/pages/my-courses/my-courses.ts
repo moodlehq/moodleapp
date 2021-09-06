@@ -105,13 +105,11 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
 
             await CoreCoursesHelper.loadCoursesExtraInfo(courses);
 
-            if (CoreCourses.canGetAdminAndNavOptions()) {
-                const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);
-                courses.forEach((course) => {
-                    course.navOptions = options.navOptions[course.id];
-                    course.admOptions = options.admOptions[course.id];
-                });
-            }
+            const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);
+            courses.forEach((course) => {
+                course.navOptions = options.navOptions[course.id];
+                course.admOptions = options.admOptions[course.id];
+            });
 
             this.courses = courses;
             this.filteredCourses = this.courses;

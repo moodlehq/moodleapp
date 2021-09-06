@@ -20,7 +20,6 @@ import { makeSingleton } from '@singletons';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
-import { AddonModAssign } from '../assign';
 
 /**
  * Handler to support assign modules.
@@ -54,7 +53,7 @@ export class AddonModAssignModuleHandlerService implements CoreCourseModuleHandl
      * @return Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
-        return AddonModAssign.isPluginEnabled();
+        return true;
     }
 
     /**

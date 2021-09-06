@@ -309,15 +309,6 @@ export class AddonModForumProvider {
     }
 
     /**
-     * There was a bug adding new discussions to All Participants (see MDL-57962). Check if it's fixed.
-     *
-     * @return True if fixed, false otherwise.
-     */
-    isAllParticipantsFixed(): boolean {
-        return !!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan(['3.1.5', '3.2.2']);
-    }
-
-    /**
      * Returns whether or not getDiscussionPost WS available or not.
      *
      * @return If WS is available.

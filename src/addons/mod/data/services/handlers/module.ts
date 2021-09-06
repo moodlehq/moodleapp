@@ -20,7 +20,6 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonModDataIndexComponent } from '../../components/index';
-import { AddonModData } from '../data';
 
 /**
  * Handler to support data modules.
@@ -50,8 +49,8 @@ export class AddonModDataModuleHandlerService implements CoreCourseModuleHandler
     /**
      * @inheritdoc
      */
-    isEnabled(): Promise<boolean> {
-        return AddonModData.isPluginEnabled();
+    async isEnabled(): Promise<boolean> {
+        return true;
     }
 
     /**

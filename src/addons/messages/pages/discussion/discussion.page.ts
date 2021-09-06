@@ -747,58 +747,37 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      */
     protected async markMessagesAsRead(forceMark: boolean): Promise<void> {
         let readChanged = false;
+        let messageUnreadFound = false;
 
-        if (AddonMessages.isMarkAllMessagesReadEnabled()) {
-            let messageUnreadFound = false;
-
-            // Mark all messages at a time if there is any unread message.
-            if (forceMark) {
-                messageUnreadFound = true;
-            } else if (this.groupMessagingEnabled) {
-                messageUnreadFound = !!((this.conversation?.unreadcount && this.conversation?.unreadcount > 0) &&
-                    (this.conversationId && this.conversationId > 0));
-            } else {
-                // If an unread message is found, mark all messages as read.
-                messageUnreadFound = this.messages.some((message) =>
-                    message.useridfrom != this.currentUserId && ('read' in message && !message.read));
-            }
-
-            if (messageUnreadFound) {
-                this.setUnreadLabelPosition();
-
-                if (this.groupMessagingEnabled) {
-                    await AddonMessages.markAllConversationMessagesRead(this.conversationId!);
-                } else {
-                    await AddonMessages.markAllMessagesRead(this.userId);
-
-                    // Mark all messages as read.
-                    this.messages.forEach((message) => {
-                        if ('read' in message) {
-                            message.read = true;
-                        }
-                    });
-                }
-
-                readChanged = true;
-            }
+        // Mark all messages at a time if there is any unread message.
+        if (forceMark) {
+            messageUnreadFound = true;
+        } else if (this.groupMessagingEnabled) {
+            messageUnreadFound = !!((this.conversation?.unreadcount && this.conversation?.unreadcount > 0) &&
+                (this.conversationId && this.conversationId > 0));
         } else {
+            // If an unread message is found, mark all messages as read.
+            messageUnreadFound = this.messages.some((message) =>
+                message.useridfrom != this.currentUserId && ('read' in message && !message.read));
+        }
+
+        if (messageUnreadFound) {
             this.setUnreadLabelPosition();
-            const promises: Promise<void>[] = [];
 
-            // Mark each message as read one by one.
-            this.messages.forEach((message) => {
-                // If the message is unread, call AddonMessages.markMessageRead.
-                if (message.useridfrom != this.currentUserId && 'read' in message && !message.read) {
-                    promises.push(AddonMessages.markMessageRead(message.id).then(() => {
-                        readChanged = true;
+            if (this.groupMessagingEnabled) {
+                await AddonMessages.markAllConversationMessagesRead(this.conversationId!);
+            } else {
+                await AddonMessages.markAllMessagesRead(this.userId);
+
+                // Mark all messages as read.
+                this.messages.forEach((message) => {
+                    if ('read' in message) {
                         message.read = true;
+                    }
+                });
+            }
 
-                        return;
-                    }));
-                }
-            });
-
-            await Promise.all(promises);
+            readChanged = true;
         }
 
         if (readChanged) {

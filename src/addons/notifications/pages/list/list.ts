@@ -89,7 +89,9 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
         this.loadMoreError = false;
 
         try {
-            const result = await AddonNotificationsHelper.getNotifications(refresh ? [] : this.notifications);
+            const result = await AddonNotificationsHelper.getNotifications(refresh ? [] : this.notifications, {
+                onlyPopupNotifications: true,
+            });
 
             const notifications = result.notifications.map((notification) => this.formatText(notification));
 
@@ -150,13 +152,7 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
             CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {}, CoreSites.getCurrentSiteId());
         }
 
-        // Check if mark all notifications as read is enabled and there are some to read.
-        if (!AddonNotifications.isMarkAllNotificationsAsReadEnabled()) {
-            this.canMarkAllNotificationsAsRead = false;
-
-            return;
-        }
-
+        // Check if mark all as read should be displayed (there are unread notifications).
         try {
             this.loadingMarkAllNotificationsAsRead = true;
 
