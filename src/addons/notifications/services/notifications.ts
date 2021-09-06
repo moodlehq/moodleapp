@@ -19,7 +19,6 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUser } from '@features/user/services/user';
-import { AddonMessages, AddonMessagesMarkMessageReadResult } from '@addons/messages/services/messages';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreLogger } from '@singletons/logger';
 import { makeSingleton } from '@singletons';
@@ -320,7 +319,7 @@ export class AddonNotificationsProvider {
     async markNotificationRead(
         notificationId: number,
         siteId?: string,
-    ): Promise<CoreMessageMarkNotificationReadWSResponse | AddonMessagesMarkMessageReadResult> {
+    ): Promise<CoreMessageMarkNotificationReadWSResponse> {
 
         const site = await CoreSites.getSite(siteId);
 

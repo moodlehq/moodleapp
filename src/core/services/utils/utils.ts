@@ -21,14 +21,13 @@ import { CoreApp } from '@services/app';
 import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreLang } from '@services/lang';
-import { CoreWS, CoreWSFile } from '@services/ws';
+import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, QRScanner, Translate, NgZone } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreViewerQRScannerComponent } from '@features/viewer/components/qr-scanner/qr-scanner';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreFileEntry } from '@services/file-helper';
@@ -1377,31 +1376,6 @@ export class CoreUtilsProvider {
         } else {
             return obj;
         }
-    }
-
-    /**
-     * Sum the filesizes from a list of files checking if the size will be partial or totally calculated.
-     *
-     * @param files List of files to sum its filesize.
-     * @return File size and a boolean to indicate if it is the total size or only partial.
-     * @deprecated since 3.8.0. Use CorePluginFileDelegate.getFilesSize instead.
-     */
-    sumFileSizes(files: CoreWSFile[]): CoreFileSizeSum {
-        const result = {
-            size: 0,
-            total: true,
-        };
-
-        files.forEach((file) => {
-            if (typeof file.filesize == 'undefined') {
-                // We don't have the file size, cannot calculate its total size.
-                result.total = false;
-            } else {
-                result.size += file.filesize;
-            }
-        });
-
-        return result;
     }
 
     /**

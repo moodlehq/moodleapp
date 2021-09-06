@@ -39,6 +39,8 @@ import { CoreFormFields, CoreForms } from '../../singletons/form';
 import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CoreErrorWithTitle } from '@classes/errors/errorwithtitle';
+import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/handlers/multilang';
+import { CoreSites } from '@services/sites';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -273,58 +275,6 @@ export class CoreDomUtilsProvider {
         });
 
         return newChanges;
-    }
-
-    /**
-     * Extract the downloadable URLs from an HTML code.
-     *
-     * @param html HTML code.
-     * @return List of file urls.
-     * @deprecated since 3.8. Use CoreFilepoolProvider.extractDownloadableFilesFromHtml instead.
-     */
-    extractDownloadableFilesFromHtml(html: string): string[] {
-        this.logger.error('The function extractDownloadableFilesFromHtml has been moved to CoreFilepoolProvider.' +
-                ' Please use that function instead of this one.');
-
-        const urls: string[] = [];
-
-        const element = this.convertToElement(html);
-        const elements: AnchorOrMediaElement[] = Array.from(element.querySelectorAll('a, img, audio, video, source, track'));
-
-        for (let i = 0; i < elements.length; i++) {
-            const element = elements[i];
-            let url = 'href' in element ? element.href : element.src;
-
-            if (url && CoreUrlUtils.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
-                urls.push(url);
-            }
-
-            // Treat video poster.
-            if (element.tagName == 'VIDEO' && element.getAttribute('poster')) {
-                url = element.getAttribute('poster') || '';
-                if (url && CoreUrlUtils.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
-                    urls.push(url);
-                }
-            }
-        }
-
-        return urls;
-    }
-
-    /**
-     * Extract the downloadable URLs from an HTML code and returns them in fake file objects.
-     *
-     * @param html HTML code.
-     * @return List of fake file objects with file URLs.
-     * @deprecated since 3.8. Use CoreFilepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects instead.
-     */
-    extractDownloadableFilesFromHtmlAsFakeFileObjects(html: string): {fileurl: string}[] {
-        const urls = this.extractDownloadableFilesFromHtml(html);
-
-        // Convert them to fake file objects.
-        return urls.map((url) => ({
-            fileurl: url,
-        }));
     }
 
     /**
@@ -1196,9 +1146,9 @@ export class CoreDomUtilsProvider {
     async showAlertWithOptions(options: AlertOptions = {}, autocloseTime?: number): Promise<HTMLIonAlertElement> {
         const hasHTMLTags = CoreTextUtils.hasHTMLTags(<string> options.message || '');
 
-        if (hasHTMLTags) {
-            // Format the text.
-            options.message = await CoreTextUtils.formatText(<string> options.message);
+        if (hasHTMLTags && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.7')) {
+            // Treat multilang.
+            options.message = await AddonFilterMultilangHandler.filter(<string> options.message);
         }
 
         const alertId = <string> Md5.hashAsciiStr((options.header || '') + '#' + (options.message || ''));
@@ -2045,9 +1995,6 @@ function fixMDPopoverPosition(baseEl: HTMLElement, ev?: Event): void {
 }
 
 export const CoreDomUtils = makeSingleton(CoreDomUtilsProvider);
-
-type AnchorOrMediaElement =
-    HTMLAnchorElement | HTMLImageElement | HTMLAudioElement | HTMLVideoElement | HTMLSourceElement | HTMLTrackElement;
 
 /**
  * Options for the openPopover function.

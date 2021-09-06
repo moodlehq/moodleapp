@@ -17,7 +17,6 @@ import { SafeUrl } from '@angular/platform-browser';
 import { ModalOptions } from '@ionic/core';
 
 import { CoreApp } from '@services/app';
-import { CoreLang } from '@services/lang';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { DomSanitizer, makeSingleton, Translate } from '@singletons';
 import { CoreWSFile } from '@services/ws';
@@ -508,33 +507,6 @@ export class CoreTextUtilsProvider {
     }
 
     /**
-     * Formats a text, treating multilang tags and cleaning HTML if needed.
-     *
-     * @param text Text to format.
-     * @param clean Whether HTML tags should be removed.
-     * @param singleLine Whether new lines should be removed. Only valid if clean is true.
-     * @param shortenLength Number of characters to shorten the text.
-     * @param highlight Text to highlight.
-     * @return Promise resolved with the formatted text.
-     * @deprecated since 3.8.0. Please use CoreFilterProvider.formatText instead.
-     */
-    formatText(text: string, clean?: boolean, singleLine?: boolean, shortenLength?: number, highlight?: string): Promise<string> {
-        return this.treatMultilangTags(text).then((formatted) => {
-            if (clean) {
-                formatted = this.cleanTags(formatted, singleLine);
-            }
-            if (shortenLength && shortenLength > 0) {
-                formatted = this.shortenText(formatted, shortenLength);
-            }
-            if (highlight) {
-                formatted = this.highlightText(formatted, highlight);
-            }
-
-            return formatted;
-        });
-    }
-
-    /**
      * Get the error message from an error object.
      *
      * @param error Error.
@@ -709,7 +681,7 @@ export class CoreTextUtilsProvider {
     }
 
     /**
-     * @deprecated Use CoreText instead.
+     * @deprecated since 3.9.5. Use CoreText instead.
      */
     removeEndingSlash(text?: string): string {
         return CoreText.removeEndingSlash(text);
@@ -995,43 +967,6 @@ export class CoreTextUtilsProvider {
         }
 
         return features;
-    }
-
-    /**
-     * Treat the multilang tags from a HTML code, leaving only the current language.
-     *
-     * @param text The text to be treated.
-     * @return Promise resolved with the formatted text.
-     * @deprecated since 3.8.0. Now this is handled by AddonFilterMultilangHandler.
-     */
-    treatMultilangTags(text: string): Promise<string> {
-        if (!text || typeof text != 'string') {
-            return Promise.resolve('');
-        }
-
-        return CoreLang.getCurrentLanguage().then((language) => {
-            // Match the current language.
-            const anyLangRegEx = /<(?:lang|span)[^>]+lang="[a-zA-Z0-9_-]+"[^>]*>(.*?)<\/(?:lang|span)>/g;
-            let currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)</(?:lang|span)>', 'g');
-
-            if (!text.match(currentLangRegEx)) {
-                // Current lang not found. Try to find the first language.
-                const matches = text.match(anyLangRegEx);
-                if (matches && matches[0]) {
-                    language = matches[0].match(/lang="([a-zA-Z0-9_-]+)"/)![1];
-                    currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)</(?:lang|span)>', 'g');
-                } else {
-                    // No multi-lang tag found, stop.
-                    return text;
-                }
-            }
-            // Extract contents of current language.
-            text = text.replace(currentLangRegEx, '$1');
-            // Delete the rest of languages
-            text = text.replace(anyLangRegEx, '');
-
-            return text;
-        });
     }
 
     /**

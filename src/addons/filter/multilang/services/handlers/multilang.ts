@@ -40,8 +40,8 @@ export class AddonFilterMultilangHandlerService extends CoreFilterDefaultHandler
      */
     async filter(
         text: string,
-        filter: CoreFilterFilter, // eslint-disable-line @typescript-eslint/no-unused-vars
-        options: CoreFilterFormatTextOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
+        filter?: CoreFilterFilter, // eslint-disable-line @typescript-eslint/no-unused-vars
+        options?: CoreFilterFormatTextOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
         siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<string> {
         let language = await CoreLang.getCurrentLanguage();

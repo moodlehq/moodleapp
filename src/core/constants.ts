@@ -59,7 +59,6 @@ export class CoreConstants {
     static readonly SETTINGS_NOTIFICATION_SOUND = 'CoreSettingsNotificationSound';
     static readonly SETTINGS_SYNC_ONLY_ON_WIFI = 'CoreSettingsSyncOnlyOnWifi';
     static readonly SETTINGS_DEBUG_DISPLAY = 'CoreSettingsDebugDisplay';
-    static readonly SETTINGS_REPORT_IN_BACKGROUND = 'CoreSettingsReportInBackground'; // @deprecated since 3.5.0
     static readonly SETTINGS_SEND_ON_ENTER = 'CoreSettingsSendOnEnter';
     static readonly SETTINGS_ZOOM_LEVEL = 'CoreSettingsZoomLevel';
     static readonly SETTINGS_COLOR_SCHEME = 'CoreSettingsColorScheme';
