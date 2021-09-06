@@ -149,7 +149,7 @@ Feature: Test basic usage of forum activity in app
 
     When I press "Edit" in the app
     And I set the field "Message" to "not sent reply edited" in the app
-    And I press "Post to forum" in the app
+    And I press "Save changes" in the app
     Then I should find "Not sent" in the app
     And I should find "This Discussion has offline data to be synchronised" in the app
 
