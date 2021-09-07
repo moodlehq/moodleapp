@@ -77,7 +77,8 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
                 // Ignore errors.
             }
 
-            AddonModUrlHelper.open(module.contents[0].fileurl);
+            const contents = await CoreCourse.getModuleContents(module, courseId);
+            AddonModUrlHelper.open(contents[0].fileurl);
         };
 
         const handlerData: CoreCourseModuleHandlerData = {
@@ -141,9 +142,9 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
      */
     protected async hideLinkButton(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
         try {
-            await CoreCourse.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
+            const contents = await CoreCourse.getModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
 
-            return !(module.contents && module.contents[0] && module.contents[0].fileurl);
+            return !(contents[0] && contents[0].fileurl);
         } catch {
             // Module contents could not be loaded, most probably device is offline.
             return true;
@@ -166,11 +167,10 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
      */
     protected async shouldOpenLink(module: CoreCourseModule, courseId: number): Promise<boolean> {
         try {
-            // First of all, make sure module contents are loaded.
-            await CoreCourse.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
+            const contents = await CoreCourse.getModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
 
             // Check if the URL can be handled by the app. If so, always open it directly.
-            const canHandle = await CoreContentLinksHelper.canHandleLink(module.contents[0].fileurl, courseId, undefined, true);
+            const canHandle = await CoreContentLinksHelper.canHandleLink(contents[0].fileurl, courseId, undefined, true);
 
             if (canHandle) {
                 // URL handled by the app, open it directly.

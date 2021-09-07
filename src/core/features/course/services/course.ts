@@ -885,7 +885,45 @@ export class CoreCourseProvider {
         }
 
         const mod = await this.getModule(module.id, courseId, sectionId, preferCache, ignoreCache, siteId, modName);
+
+        if (!mod.contents) {
+            throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        }
+
         module.contents = mod.contents;
+    }
+
+    /**
+     * Get module contents. If not present, this function will try to load them into module.contents.
+     * It will throw an error if contents cannot be loaded.
+     *
+     * @param module Module to get its contents.
+     * @param courseId The course ID. Recommended to speed up the process and minimize data usage.
+     * @param sectionId The section ID.
+     * @param preferCache True if shouldn't call WS if data is cached, false otherwise.
+     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
+     * @param siteId Site ID. If not defined, current site.
+     * @param modName If set, the app will retrieve all modules of this type with a single WS call. This reduces the
+     *                number of WS calls, but it isn't recommended for modules that can return a lot of contents.
+     * @return Promise resolved when loaded.
+     */
+    async getModuleContents(
+        module: CoreCourseAnyModuleData,
+        courseId?: number,
+        sectionId?: number,
+        preferCache?: boolean,
+        ignoreCache?: boolean,
+        siteId?: string,
+        modName?: string,
+    ): Promise<CoreCourseModuleContentFile[]> {
+        // Make sure contents are loaded.
+        await this.loadModuleContents(module, courseId, sectionId, preferCache, ignoreCache, siteId, modName);
+
+        if (!module.contents) {
+            throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        }
+
+        return module.contents;
     }
 
     /**
@@ -1450,7 +1488,7 @@ export type CoreCourseWSModule = {
     noviewlink?: boolean; // Whether the module has no view page.
     completion?: number; // Type of completion tracking: 0 means none, 1 manual, 2 automatic.
     completiondata?: CoreCourseModuleWSCompletionData; // Module completion data.
-    contents: CoreCourseModuleContentFile[];
+    contents?: CoreCourseModuleContentFile[];
     dates?: {
         label: string;
         timestamp: number;
@@ -1589,5 +1627,5 @@ type CoreCompletionUpdateActivityCompletionStatusManuallyWSParams = {
  * Any of the possible module WS data.
  */
 export type CoreCourseAnyModuleData = CoreCourseWSModule | CoreCourseModuleBasicInfo & {
-    contents?: CoreCourseModuleContentFile[]; // Calculated in the app in loadModuleContents.
+    contents?: CoreCourseModuleContentFile[]; // If needed, calculated in the app in loadModuleContents.
 };

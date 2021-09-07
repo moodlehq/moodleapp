@@ -390,7 +390,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             }
         }
 
-        if (!this.module.contents.length || (refresh && !contentsAlreadyLoaded)) {
+        if (!this.module.contents?.length || (refresh && !contentsAlreadyLoaded)) {
             // Try to load the contents.
             const ignoreCache = refresh && CoreApp.isOnline();
 
