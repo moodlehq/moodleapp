@@ -12,7 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnInit,
+    OnDestroy,
+    ElementRef,
+    ViewContainerRef,
+    ViewChild,
+    ComponentFactoryResolver,
+} from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
@@ -42,10 +51,12 @@ const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
  */
 @Component({
     selector: 'core-navbar-buttons',
-    template: '<ng-content></ng-content>',
+    template: '<ng-content></ng-content><template #contextMenuContainer></template>',
     styleUrls: ['navbar-buttons.scss'],
 })
 export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
+
+    @ViewChild('contextMenuContainer', { read: ViewContainerRef }) container?: ViewContainerRef;
 
     // If the hidden input is true, hide all buttons.
     // eslint-disable-next-line @angular-eslint/no-input-rename
@@ -63,8 +74,9 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
     protected logger: CoreLogger;
     protected movedChildren?: Node[];
     protected mergedContextMenu?: CoreContextMenuComponent;
+    protected createdMainContextMenuElement?: HTMLElement;
 
-    constructor(element: ElementRef) {
+    constructor(element: ElementRef, protected factoryResolver: ComponentFactoryResolver) {
         this.element = element.nativeElement;
         this.logger = CoreLogger.getInstance('CoreNavBarButtonsComponent');
 
@@ -99,6 +111,9 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
                     this.movedChildren = CoreDomUtils.moveChildren(this.element, buttonsContainer, prepend);
                     this.showHideAllElements();
 
+                    // Make sure that context-menu is always at the end of buttons if any.
+                    const contextMenu = buttonsContainer.querySelector('core-context-menu');
+                    contextMenu?.parentElement?.appendChild(contextMenu);
                 } else {
                     this.logger.warn('The header was found, but it didn\'t have the right ion-buttons.', selector);
                 }
@@ -127,19 +142,22 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      */
     protected mergeContextMenus(buttonsContainer: HTMLElement): void {
         // Check if both button containers have a context menu.
-        const mainContextMenu = buttonsContainer.querySelector('core-context-menu');
-        if (!mainContextMenu) {
-            return;
-        }
-
         const secondaryContextMenu = this.element.querySelector('core-context-menu');
         if (!secondaryContextMenu) {
             return;
         }
 
-        // Both containers have a context menu. Merge them to prevent having 2 menus at the same time.
-        const mainContextMenuInstance = CoreDomUtils.getInstanceByElement<CoreContextMenuComponent>(mainContextMenu);
+        const mainContextMenu = buttonsContainer.querySelector('core-context-menu');
         const secondaryContextMenuInstance = CoreDomUtils.getInstanceByElement<CoreContextMenuComponent>(secondaryContextMenu);
+        let mainContextMenuInstance: CoreContextMenuComponent | undefined;
+        if (mainContextMenu) {
+            // Both containers have a context menu. Merge them to prevent having 2 menus at the same time.
+            mainContextMenuInstance = CoreDomUtils.getInstanceByElement<CoreContextMenuComponent>(mainContextMenu);
+        } else {
+            // There is a context-menu in these buttons, but there is no main context menu in the header.
+            // Create one main context menu dynamically.
+            mainContextMenuInstance = this.createMainContextMenu();
+        }
 
         // Check that both context menus belong to the same core-tab. We shouldn't merge menus from different tabs.
         if (mainContextMenuInstance && secondaryContextMenuInstance) {
@@ -150,6 +168,20 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
             // Remove the empty context menu from the DOM.
             secondaryContextMenu.parentElement?.removeChild(secondaryContextMenu);
         }
+    }
+
+    /**
+     * Create a new and empty context menu to be used as a "parent".
+     *
+     * @return Created component.
+     */
+    protected createMainContextMenu(): CoreContextMenuComponent {
+        const factory = this.factoryResolver.resolveComponentFactory(CoreContextMenuComponent);
+        const componentRef = this.container!.createComponent<CoreContextMenuComponent>(factory);
+
+        this.createdMainContextMenuElement = componentRef.location.nativeElement;
+
+        return componentRef.instance;
     }
 
     /**
@@ -214,11 +246,9 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      */
     protected showHideAllElements(): void {
         // Show or hide all moved children.
-        if (this.movedChildren) {
-            this.movedChildren.forEach((child: Node) => {
-                this.showHideElement(child);
-            });
-        }
+        this.movedChildren?.forEach((child: Node) => {
+            this.showHideElement(child);
+        });
 
         // Show or hide all the context menu items that were merged to another context menu.
         if (this.mergedContextMenu) {
@@ -236,8 +266,8 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      * @param element Element to show or hide.
      */
     protected showHideElement(element: Node): void {
-        // Check if it's an HTML Element
-        if (element instanceof Element) {
+        // Check if it's an HTML Element and it's not a created context menu. Never hide created context menus.
+        if (element instanceof Element && element !== this.createdMainContextMenuElement) {
             element.classList.toggle(BUTTON_HIDDEN_CLASS, !!this.forceHidden || !!this.allButtonsHidden);
         }
     }
@@ -249,17 +279,13 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
         // This component was destroyed, remove all the buttons that were moved.
         // The buttons can be moved outside of the current page, that's why we need to manually destroy them.
         // There's no need to destroy context menu items that were merged because they weren't moved from their DOM position.
-        if (this.movedChildren) {
-            this.movedChildren.forEach((child) => {
-                if (child.parentElement) {
-                    child.parentElement.removeChild(child);
-                }
-            });
-        }
+        this.movedChildren?.forEach((child) => {
+            if (child.parentElement && child !== this.createdMainContextMenuElement) {
+                child.parentElement.removeChild(child);
+            }
+        });
 
-        if (this.mergedContextMenu) {
-            this.mergedContextMenu.removeMergedItems();
-        }
+        this.mergedContextMenu?.removeMergedItems();
     }
 
 }
