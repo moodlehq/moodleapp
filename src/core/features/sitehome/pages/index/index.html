@@ -70,7 +70,8 @@
 </ng-template>
 
 <ng-template #news>
-    <core-course-module class="core-sitehome-news" *ngIf="newsForumModule" [module]="newsForumModule" [courseId]="siteHomeId">
+    <core-course-module class="core-sitehome-news" *ngIf="newsForumModule" [module]="newsForumModule" [courseId]="siteHomeId"
+        [downloadEnabled]="downloadEnabled">
     </core-course-module>
 </ng-template>
 
