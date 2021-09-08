@@ -40,7 +40,11 @@
         <ion-item *ngIf="deviceInfo.fileSystemRoot" (longPress)="copyItemInfo($event)">
             <ion-label class="ion-text-wrap">
                 <h2>{{ 'core.settings.filesystemroot' | translate }}</h2>
-                <p><a *ngIf="fsClickable" [href]="deviceInfo.fileSystemRoot" core-link auto-login="no">{{ deviceInfo.fileSystemRoot }}</a></p>
+                <p>
+                    <a *ngIf="fsClickable" [href]="deviceInfo.fileSystemRoot" core-link auto-login="no">
+                        {{ deviceInfo.fileSystemRoot }}
+                    </a>
+                </p>
                 <p *ngIf="!fsClickable">{{ deviceInfo.fileSystemRoot }}</p>
             </ion-label>
         </ion-item>
