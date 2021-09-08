@@ -419,7 +419,7 @@ export class CoreH5PFramework {
                         'l1.patchversion AS patchVersion, l1.addto AS addTo, ' +
                         'l1.preloadedjs AS preloadedJs, l1.preloadedcss AS preloadedCss ' +
                     'FROM ' + LIBRARIES_TABLE_NAME + ' l1 ' +
-                    'JOIN ' + LIBRARIES_TABLE_NAME + ' l2 ON l1.machinename = l2.machinename AND (' +
+                    'LEFT JOIN ' + LIBRARIES_TABLE_NAME + ' l2 ON l1.machinename = l2.machinename AND (' +
                         'l1.majorversion < l2.majorversion OR (l1.majorversion = l2.majorversion AND ' +
                         'l1.minorversion < l2.minorversion)) ' +
                     'WHERE l1.addto IS NOT NULL AND l2.machinename IS NULL';

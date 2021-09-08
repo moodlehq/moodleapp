@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { FileEntry, DirectoryEntry } from '@ionic-native/file/ngx';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreH5PSemantics } from './content-validator';
