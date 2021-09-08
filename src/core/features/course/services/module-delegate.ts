@@ -345,9 +345,10 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @param modicon The mod icon string.
      * @return The icon src.
      */
-    getModuleIconSrc(modname: string, modicon?: string): string | undefined {
+    getModuleIconSrc(modname: string, modicon?: string): string {
         return this.executeFunctionOnEnabled<string>(modname, 'getIconSrc') ||
-            CoreCourse.getModuleIconSrc(modname, modicon);
+            CoreCourse.getModuleIconSrc(modname, modicon) ||
+            '';
     }
 
     /**

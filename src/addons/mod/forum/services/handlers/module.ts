@@ -14,9 +14,7 @@
 
 import { Injectable, Type } from '@angular/core';
 import { AddonModForum, AddonModForumProvider } from '../forum';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -24,17 +22,19 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreConstants } from '@/core/constants';
 import { AddonModForumIndexComponent } from '../../components/index';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 
 /**
  * Handler to support forum modules.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonModForumModuleHandlerService implements CoreCourseModuleHandler {
+export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     static readonly PAGE_NAME = 'mod_forum';
 
     name = 'AddonModForum';
     modName = 'forum';
+    protected pageName = AddonModForumModuleHandlerService.PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,
@@ -51,39 +51,10 @@ export class AddonModForumModuleHandlerService implements CoreCourseModuleHandle
     };
 
     /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @return Whether or not the handler is enabled on a site level.
-     */
-    isEnabled(): Promise<boolean> {
-        return Promise.resolve(true);
-    }
-
-    /**
-     * Get the data required to display the module in the course contents view.
-     *
-     * @param module The module object.
-     * @param courseId The course ID.
-     * @param sectionId The section ID.
-     * @return Data to render the module.
+     * @inheritdoc
      */
     getData(module: CoreCourseAnyModuleData, courseId: number): CoreCourseModuleHandlerData {
-        const data: CoreCourseModuleHandlerData = {
-            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
-            title: module.name,
-            class: 'addon-mod_forum-handler',
-            showDownloadButton: true,
-            action(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void {
-                options = options || {};
-                options.params = options.params || {};
-                Object.assign(options.params, { module });
-
-                CoreNavigator.navigateToSitePath(
-                    `${AddonModForumModuleHandlerService.PAGE_NAME}/${courseId}/${module.id}`,
-                    options,
-                );
-            },
-        };
+        const data = super.getData(module, courseId);
 
         if ('afterlink' in module && !!module.afterlink) {
             data.extraBadgeColor = '';
@@ -111,20 +82,14 @@ export class AddonModForumModuleHandlerService implements CoreCourseModuleHandle
     }
 
     /**
-     * Get the component to render the module. This is needed to support singleactivity course format.
-     * The component returned must implement CoreCourseModuleMainComponent.
-     *
-     * @return The component to use, undefined if not found.
+     * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown> | undefined> {
         return AddonModForumIndexComponent;
     }
 
     /**
-     * Whether to display the course refresher in single activity course format. If it returns false, a refresher must be
-     * included in the template that calls the doRefresh method of the component. Defaults to true.
-     *
-     * @return Whether the refresher should be displayed.
+     * @inheritdoc
      */
     displayRefresherInSingleActivity(): boolean {
         return false;
@@ -161,7 +126,7 @@ export class AddonModForumModuleHandlerService implements CoreCourseModuleHandle
                     { $a : forum.unreadpostscount },
                 )
                 : '';
-        } catch (error) {
+        } catch {
             // Ignore errors.
             data.extraBadgeColor = '';
             data.extraBadge = '';

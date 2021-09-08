@@ -14,10 +14,8 @@
 
 import { CoreConstants } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
+import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivityIndexComponent } from '../../components/index';
 import { AddonModH5PActivity } from '../h5pactivity';
@@ -26,12 +24,13 @@ import { AddonModH5PActivity } from '../h5pactivity';
  * Handler to support H5P activities.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonModH5PActivityModuleHandlerService implements CoreCourseModuleHandler {
+export class AddonModH5PActivityModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     static readonly PAGE_NAME = 'mod_h5pactivity';
 
     name = 'AddonModH5PActivity';
     modName = 'h5pactivity';
+    protected pageName = AddonModH5PActivityModuleHandlerService.PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,
@@ -50,27 +49,6 @@ export class AddonModH5PActivityModuleHandlerService implements CoreCourseModule
      */
     isEnabled(): Promise<boolean> {
         return AddonModH5PActivity.isPluginEnabled();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getData(module: CoreCourseAnyModuleData): CoreCourseModuleHandlerData {
-
-        return {
-            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
-            title: module.name,
-            class: 'addon-mod_h5pactivity-handler',
-            showDownloadButton: true,
-            action(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) {
-                options = options || {};
-                options.params = options.params || {};
-                Object.assign(options.params, { module });
-                const routeParams = '/' + courseId + '/' + module.id;
-
-                CoreNavigator.navigateToSitePath(AddonModH5PActivityModuleHandlerService.PAGE_NAME + routeParams, options);
-            },
-        };
     }
 
     /**

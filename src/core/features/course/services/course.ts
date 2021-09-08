@@ -633,9 +633,6 @@ export class CoreCourseProvider {
      * @return The IMG src.
      */
     getModuleIconSrc(moduleName: string, modicon?: string): string {
-        // @TODO: Check modicon url theme to apply other theme icons.
-
-        // Use default icon on core themes.
         if (this.CORE_MODULES.indexOf(moduleName) < 0) {
             if (modicon) {
                 return modicon;
@@ -644,6 +641,7 @@ export class CoreCourseProvider {
             moduleName = 'external-tool';
         }
 
+        // Use default icon on core modules.
         return 'assets/img/mod/' + moduleName + '.svg';
     }
 

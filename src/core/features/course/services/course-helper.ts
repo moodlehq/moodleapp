@@ -1616,7 +1616,7 @@ export class CoreCourseHelperProvider {
 
             this.logger.warn('navCtrl was not passed to navigateToModule by the link handler for ' + module.modname);
 
-            const params = {
+            const params: Params = {
                 course: { id: courseId },
                 module: module,
                 sectionId: sectionId,
