@@ -77,7 +77,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
     completedOffline = false;
 
     constructor() {
-        this.currentSite = CoreSites.getCurrentSite()!;
+        this.currentSite = CoreSites.getRequiredCurrentSite();
 
         // Refresh online status when changes.
         this.onlineObserver = Network.onChange().subscribe(() => {

@@ -23,6 +23,10 @@ import { AddonModWikiEditPage } from './pages/edit/edit';
 
 const routes: Routes = [
     {
+        path: ':courseId/:cmId',
+        redirectTo: ':courseId/:cmId/page/root',
+    },
+    {
         path: ':courseId/:cmId/page/:hash',
         component: AddonModWikiIndexPage,
     },

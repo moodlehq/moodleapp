@@ -15,10 +15,7 @@
 import { CoreConstants } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModWikiIndexComponent } from '../../components/index';
 
@@ -46,26 +43,6 @@ export class AddonModWikiModuleHandlerService extends CoreModuleHandlerBase impl
         [CoreConstants.FEATURE_RATE]: false,
         [CoreConstants.FEATURE_COMMENT]: true,
     };
-
-    /**
-     * @inheritdoc
-     */
-    getData(module: CoreCourseAnyModuleData): CoreCourseModuleHandlerData {
-        return {
-            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
-            title: module.name,
-            class: 'addon-mod_wiki-handler',
-            showDownloadButton: true,
-            action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
-                options = options || {};
-                options.params = options.params || {};
-                Object.assign(options.params, { module });
-                const routeParams = `/${courseId}/${module.id}/page/root`;
-
-                CoreNavigator.navigateToSitePath(AddonModWikiModuleHandlerService.PAGE_NAME + routeParams, options);
-            },
-        };
-    }
 
     /**
      * @inheritdoc

@@ -96,7 +96,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         protected fb: FormBuilder,
         @Optional() protected svComponent: CoreSplitViewComponent,
     ) {
-        this.currentSite = CoreSites.getCurrentSite()!;
+        this.currentSite = CoreSites.getRequiredCurrentSite();
         this.errors = {
             required: Translate.instant('core.required'),
         };

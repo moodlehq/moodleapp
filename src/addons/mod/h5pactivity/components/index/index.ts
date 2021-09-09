@@ -96,7 +96,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     ) {
         super('AddonModH5PActivityIndexComponent', content, courseContentsPage);
 
-        this.site = CoreSites.getCurrentSite()!;
+        this.site = CoreSites.getRequiredCurrentSite();
         this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.isOfflineDisabledInSite();
 
         // Listen for messages from the iframe.

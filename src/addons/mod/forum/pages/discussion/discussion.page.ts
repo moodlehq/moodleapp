@@ -298,7 +298,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      */
     protected async getUserSort(): Promise<SortType> {
         try {
-            const value = await CoreSites.getCurrentSite()!.getLocalSiteConfig<SortType>('AddonModForumDiscussionSort');
+            const value = await CoreSites.getRequiredCurrentSite().getLocalSiteConfig<SortType>('AddonModForumDiscussionSort');
 
             return value;
         } catch (error) {
@@ -656,7 +656,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     changeSort(type: SortType): Promise<void> {
         this.discussionLoaded = false;
         this.sort = type;
-        CoreSites.getCurrentSite()!.setLocalSiteConfig('AddonModForumDiscussionSort', this.sort);
+        CoreSites.getRequiredCurrentSite().setLocalSiteConfig('AddonModForumDiscussionSort', this.sort);
         this.content.scrollToTop();
 
         return this.fetchPosts();

@@ -305,7 +305,7 @@ export class CoreSitesProvider {
         if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
             throw new CoreSiteError({
                 errorcode: data.errorcode,
-                message: data.error!,
+                message: data.error ?? '',
             });
         }
 
@@ -816,11 +816,24 @@ export class CoreSitesProvider {
     }
 
     /**
-     * Get current site.
+     * Get current site or undefined if none.
+     *
+     * @return Current site or undefined if none.
+     */
+    getCurrentSite(): CoreSite | undefined {
+        return this.currentSite;
+    }
+
+    /**
+     * Get current site or fail if none.
      *
      * @return Current site.
      */
-    getCurrentSite(): CoreSite | undefined {
+    getRequiredCurrentSite(): CoreSite {
+        if (!this.currentSite) {
+            throw new CoreError('You aren\'t authenticated in any site.');
+        }
+
         return this.currentSite;
     }
 
@@ -1487,7 +1500,9 @@ export class CoreSitesProvider {
             return Promise.resolve();
         }
 
-        if (this.siteSchemasMigration[site.id]) {
+        const siteId = site.id;
+
+        if (this.siteSchemasMigration[site.id] !== undefined) {
             return this.siteSchemasMigration[site.id];
         }
 
@@ -1500,7 +1515,7 @@ export class CoreSitesProvider {
         this.siteSchemasMigration[site.id] = promise;
 
         return promise.finally(() => {
-            delete this.siteSchemasMigration[site.id!];
+            delete this.siteSchemasMigration[siteId];
         });
     }
 
