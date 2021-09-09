@@ -117,10 +117,18 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.assessment = CoreNavigator.getRouteParam<AddonModWorkshopSubmissionAssessmentWithFormData>('assessment')!;
-        this.submission = CoreNavigator.getRouteParam<AddonModWorkshopSubmissionData>('submission')!;
-        this.profile = CoreNavigator.getRouteParam<CoreUserProfile>('profile')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
+        try {
+            this.assessment = CoreNavigator.getRequiredRouteParam<AddonModWorkshopSubmissionAssessmentWithFormData>('assessment');
+            this.submission = CoreNavigator.getRequiredRouteParam<AddonModWorkshopSubmissionData>('submission');
+            this.profile = CoreNavigator.getRequiredRouteParam<CoreUserProfile>('profile');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         this.assessmentId = this.assessment.id;
         this.workshopId = this.submission.workshopid;

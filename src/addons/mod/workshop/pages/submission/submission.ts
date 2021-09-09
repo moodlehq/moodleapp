@@ -130,15 +130,22 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
+        try {
+            this.submissionId = CoreNavigator.getRequiredRouteNumberParam('submissionId');
+            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModule>('module');
+            this.workshop = CoreNavigator.getRequiredRouteParam<AddonModWorkshopData>('workshop');
+            this.access = CoreNavigator.getRequiredRouteParam<AddonModWorkshopGetWorkshopAccessInformationWSResponse>('access');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.profile = CoreNavigator.getRouteParam<CoreUserProfile>('profile');
+            this.submissionInfo = CoreNavigator.getRequiredRouteParam<AddonModWorkshopSubmissionDataWithOfflineData>('submission');
+            this.assessment = CoreNavigator.getRouteParam<AddonModWorkshopSubmissionAssessmentWithFormData>('assessment');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
 
-        this.submissionId = CoreNavigator.getRouteNumberParam('submissionId')!;
-        this.module = CoreNavigator.getRouteParam<CoreCourseModule>('module')!;
-        this.workshop = CoreNavigator.getRouteParam<AddonModWorkshopData>('workshop')!;
-        this.access = CoreNavigator.getRouteParam<AddonModWorkshopGetWorkshopAccessInformationWSResponse>('access')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.profile = CoreNavigator.getRouteParam<CoreUserProfile>('profile');
-        this.submissionInfo = CoreNavigator.getRouteParam<AddonModWorkshopSubmissionDataWithOfflineData>('submission')!;
-        this.assessment = CoreNavigator.getRouteParam<AddonModWorkshopSubmissionAssessmentWithFormData>('assessment');
+            CoreNavigator.back();
+
+            return;
+        }
 
         this.title = this.module.name;
         this.workshopId = this.module.instance || this.workshop.id;

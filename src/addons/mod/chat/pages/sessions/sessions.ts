@@ -53,10 +53,18 @@ export class AddonModChatSessionsPage implements AfterViewInit, OnDestroy {
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.chatId = CoreNavigator.getRouteNumberParam('chatId')!;
-        this.sessions.setChatId(this.chatId);
+        try {
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.chatId = CoreNavigator.getRequiredRouteNumberParam('chatId');
+            this.sessions.setChatId(this.chatId);
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         await this.fetchSessions();
 

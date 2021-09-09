@@ -30,6 +30,7 @@ import { makeSingleton, NavController, Router } from '@singletons';
 import { CoreScreen } from './screen';
 import { CoreApp } from './app';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
+import { CoreError } from '@classes/errors/error';
 
 const DEFAULT_MAIN_MENU_TAB = CoreMainMenuHomeHandlerService.PAGE_NAME;
 
@@ -269,7 +270,7 @@ export class CoreNavigatorService {
 
         const value = route.snapshot.queryParams[name] ?? route.snapshot.params[name];
 
-        if (typeof value != 'undefined') {
+        if (value !== undefined) {
             return value;
         }
 
@@ -300,7 +301,7 @@ export class CoreNavigatorService {
             value = routeOptions.params[name];
         }
 
-        if (typeof value == 'undefined') {
+        if (value === undefined) {
             return;
         }
 
@@ -345,7 +346,7 @@ export class CoreNavigatorService {
     getRouteBooleanParam(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): boolean | undefined {
         const value = this.getRouteParam<string>(name, routeOptions);
 
-        if (typeof value == 'undefined') {
+        if (value === undefined) {
             return value;
         }
 
@@ -358,6 +359,67 @@ export class CoreNavigatorService {
         }
 
         return Boolean(value);
+    }
+
+    /**
+     * Get a parameter for the current route.
+     * Please notice that objects can only be retrieved once. You must call this function only once per page and parameter,
+     * unless there's a new navigation to the page.
+     *
+     * This function will fail if parameter is not found.
+     *
+     * @param name Name of the parameter.
+     * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
+     * @return Value of the parameter, undefined if not found.
+     */
+    getRequiredRouteParam<T = unknown>(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): T {
+        const value = this.getRouteParam<T>(name, routeOptions);
+
+        if (value === undefined) {
+            throw new CoreError(`Required param '${name}' not found.`);
+        }
+
+        return value;
+    }
+
+    /**
+     * Get a number route param.
+     * Angular router automatically converts numbers to string, this function automatically converts it back to number.
+     *
+     * This function will fail if parameter is not found.
+     *
+     * @param name Name of the parameter.
+     * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
+     * @return Value of the parameter, undefined if not found.
+     */
+    getRequiredRouteNumberParam(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): number {
+        const value = this.getRouteNumberParam(name, routeOptions);
+
+        if (value === undefined) {
+            throw new CoreError(`Required number param '${name}' not found.`);
+        }
+
+        return value;
+    }
+
+    /**
+     * Get a boolean route param.
+     * Angular router automatically converts booleans to string, this function automatically converts it back to boolean.
+     *
+     * This function will fail if parameter is not found.
+     *
+     * @param name Name of the parameter.
+     * @param routeOptions Optional routeOptions to get the params or route value from. If missing, it will autodetect.
+     * @return Value of the parameter, undefined if not found.
+     */
+    getRequiredRouteBooleanParam(name: string, routeOptions: CoreNavigatorCurrentRouteOptions = {}): boolean {
+        const value = this.getRouteBooleanParam(name, routeOptions);
+
+        if (value === undefined) {
+            throw new CoreError(`Required boolean param '${name}' not found.`);
+        }
+
+        return value;
     }
 
     /**

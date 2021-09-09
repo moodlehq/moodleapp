@@ -78,12 +78,12 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.chatId = CoreNavigator.getRouteNumberParam('chatId')!;
-        this.title = CoreNavigator.getRouteParam('title') || '';
-
         try {
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.chatId = CoreNavigator.getRequiredRouteNumberParam('chatId');
+            this.title = CoreNavigator.getRouteParam('title') || '';
+
             await this.loginUser();
 
             await this.fetchMessages();

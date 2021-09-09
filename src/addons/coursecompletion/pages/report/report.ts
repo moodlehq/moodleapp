@@ -44,11 +44,15 @@ export class AddonCourseCompletionReportPage implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSiteUserId();
+        try {
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSiteUserId();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
 
-        if (!this.userId) {
-            this.userId = CoreSites.getCurrentSiteUserId();
+            CoreNavigator.back();
+
+            return;
         }
 
         this.fetchCompletion().finally(() => {

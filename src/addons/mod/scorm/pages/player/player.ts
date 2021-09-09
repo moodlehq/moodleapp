@@ -88,14 +88,22 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.mode = CoreNavigator.getRouteParam('mode') || AddonModScormProvider.MODENORMAL;
-        this.moduleUrl = CoreNavigator.getRouteParam('moduleUrl') || '';
-        this.newAttempt = !!CoreNavigator.getRouteBooleanParam('newAttempt');
-        this.organizationId = CoreNavigator.getRouteParam('organizationId');
-        this.initialScoId = CoreNavigator.getRouteNumberParam('scoId');
-        this.siteId = CoreSites.getCurrentSiteId();
+        try {
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.mode = CoreNavigator.getRouteParam('mode') || AddonModScormProvider.MODENORMAL;
+            this.moduleUrl = CoreNavigator.getRouteParam('moduleUrl') || '';
+            this.newAttempt = !!CoreNavigator.getRouteBooleanParam('newAttempt');
+            this.organizationId = CoreNavigator.getRouteParam('organizationId');
+            this.initialScoId = CoreNavigator.getRouteNumberParam('scoId');
+            this.siteId = CoreSites.getCurrentSiteId();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         try {
             // Fetch the SCORM data.

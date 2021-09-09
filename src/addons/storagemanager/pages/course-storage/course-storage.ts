@@ -42,7 +42,15 @@ export class AddonStorageManagerCourseStoragePage implements OnInit {
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
-        this.course = CoreNavigator.getRouteParam<CoreEnrolledCourseData>('course')!;
+        try {
+            this.course = CoreNavigator.getRequiredRouteParam<CoreEnrolledCourseData>('course');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         this.sections = await CoreCourse.getSections(this.course.id, false, true);
         CoreCourseHelper.addHandlerDataForModules(this.sections, this.course.id);

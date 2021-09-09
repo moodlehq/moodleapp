@@ -50,9 +50,17 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.attemptId = CoreNavigator.getRouteNumberParam('attemptId')!;
+        try {
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.attemptId = CoreNavigator.getRequiredRouteNumberParam('attemptId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         try {
             await this.fetchData();

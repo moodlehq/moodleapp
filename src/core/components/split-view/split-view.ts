@@ -66,14 +66,8 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
         this.disableScrollOnParent();
 
         this.subscriptions = [
-            this.contentOutlet.activateEvents.subscribe(() => {
-                this.updateClasses();
-                this.outletRouteSubject.next(this.contentOutlet.activatedRoute.snapshot);
-            }),
-            this.contentOutlet.deactivateEvents.subscribe(() => {
-                this.updateClasses();
-                this.outletRouteSubject.next(null);
-            }),
+            this.contentOutlet.activateEvents.subscribe(() => this.updateOutletRoute()),
+            this.contentOutlet.deactivateEvents.subscribe(() => this.updateOutletRoute()),
             CoreScreen.layoutObservable.subscribe(() => this.updateClasses()),
         ];
 
@@ -87,6 +81,17 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
         this.subscriptions?.forEach(subscription => subscription.unsubscribe());
 
         this.enableScrollOnParent();
+    }
+
+    /**
+     * Update outlet status.
+     */
+    private updateOutletRoute(): void {
+        const outletRoute = this.contentOutlet.isActivated ? this.contentOutlet.activatedRoute.snapshot : null;
+
+        this.updateClasses();
+
+        this.outletRouteSubject.next(outletRoute);
     }
 
     /**

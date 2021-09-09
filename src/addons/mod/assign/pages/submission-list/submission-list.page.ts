@@ -120,10 +120,18 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
      * Component being initialized.
      */
     ngAfterViewInit(): void {
-        this.moduleId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.groupId = CoreNavigator.getRouteNumberParam('groupId') || 0;
-        this.selectedStatus = CoreNavigator.getRouteParam('status');
+        try {
+            this.moduleId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.groupId = CoreNavigator.getRouteNumberParam('groupId') || 0;
+            this.selectedStatus = CoreNavigator.getRouteParam('status');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         if (this.selectedStatus) {
             if (this.selectedStatus == AddonModAssignProvider.NEED_GRADING) {

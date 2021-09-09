@@ -60,11 +60,19 @@ export class AddonCompetencyCompetencyPage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.competencyId = CoreNavigator.getRouteNumberParam('competencyId')!;
-        this.planId = CoreNavigator.getRouteNumberParam('planId');
-        if (!this.planId) {
-            this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-            this.userId = CoreNavigator.getRouteNumberParam('userId');
+        try {
+            this.competencyId = CoreNavigator.getRequiredRouteNumberParam('competencyId');
+            this.planId = CoreNavigator.getRouteNumberParam('planId');
+            if (!this.planId) {
+                this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+                this.userId = CoreNavigator.getRouteNumberParam('userId');
+            }
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
         }
 
         try {

@@ -49,9 +49,17 @@ export class AddonModFeedbackAttemptPage implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.attemptId = CoreNavigator.getRouteNumberParam('attemptId')!;
+        try {
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.attemptId = CoreNavigator.getRequiredRouteNumberParam('attemptId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         this.fetchData();
     }

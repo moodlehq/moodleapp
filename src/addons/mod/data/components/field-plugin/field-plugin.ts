@@ -53,7 +53,7 @@ export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
             return;
         }
 
-        try{
+        try {
             // Check if the plugin has defined its own component to render itself.
             this.fieldComponent = await AddonModDataFieldsDelegate.getComponentForField(this.field);
 

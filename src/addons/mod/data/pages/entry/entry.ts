@@ -132,11 +132,20 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.module = CoreNavigator.getRouteParam<CoreCourseModule>('module')!;
-        this.entryId = CoreNavigator.getRouteNumberParam('entryId') || undefined;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
-        this.offset = CoreNavigator.getRouteNumberParam('offset');
+        try {
+            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModule>('module');
+            this.entryId = CoreNavigator.getRouteNumberParam('entryId') || undefined;
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
+            this.offset = CoreNavigator.getRouteNumberParam('offset');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
+
         this.title = this.module.name;
 
         this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();

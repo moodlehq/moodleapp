@@ -78,9 +78,17 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.moduleId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.isBlind = !!CoreNavigator.getRouteNumberParam('blindId');
+        try {
+            this.moduleId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.isBlind = !!CoreNavigator.getRouteNumberParam('blindId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         this.fetchAssignment().finally(() => {
             this.loaded = true;

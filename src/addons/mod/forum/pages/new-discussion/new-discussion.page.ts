@@ -103,10 +103,18 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.forumId = CoreNavigator.getRouteNumberParam('forumId')!;
-        this.timeCreated = CoreNavigator.getRouteNumberParam('timeCreated')!;
+        try {
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.forumId = CoreNavigator.getRequiredRouteNumberParam('forumId');
+            this.timeCreated = CoreNavigator.getRequiredRouteNumberParam('timeCreated');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            this.goBack();
+
+            return;
+        }
 
         this.fetchDiscussionData().finally(() => {
             this.groupsLoaded = true;
@@ -593,6 +601,17 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     ionViewWillLeave(): void {
         this.syncObserver && this.syncObserver.off();
         delete this.syncObserver;
+    }
+
+    /**
+     * Helper function to go back.
+     */
+    protected goBack(): void {
+        if (this.splitView?.outletActivated) {
+            CoreNavigator.navigate('../../');
+        } else {
+            CoreNavigator.back();
+        }
     }
 
     /**

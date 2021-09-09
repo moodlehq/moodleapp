@@ -69,19 +69,27 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.root = CoreNavigator.getRouteParam('root');
-        const contextId = CoreNavigator.getRouteNumberParam('contextid');
+        try {
+            this.root = CoreNavigator.getRouteParam('root');
+            const contextId = CoreNavigator.getRouteNumberParam('contextid');
 
-        if (contextId) {
-            // Loading a certain folder.
-            this.path = {
-                contextid: contextId,
-                component: CoreNavigator.getRouteParam<string>('component')!,
-                filearea: CoreNavigator.getRouteParam<string>('filearea')!,
-                itemid: CoreNavigator.getRouteNumberParam('itemid')!,
-                filepath: CoreNavigator.getRouteParam<string>('filepath')!,
-                filename: CoreNavigator.getRouteParam<string>('filename')!,
-            };
+            if (contextId) {
+                // Loading a certain folder.
+                this.path = {
+                    contextid: contextId,
+                    component: CoreNavigator.getRequiredRouteParam<string>('component'),
+                    filearea: CoreNavigator.getRequiredRouteParam<string>('filearea'),
+                    itemid: CoreNavigator.getRequiredRouteNumberParam('itemid'),
+                    filepath: CoreNavigator.getRequiredRouteParam<string>('filepath'),
+                    filename: CoreNavigator.getRequiredRouteParam<string>('filename'),
+                };
+            }
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
         }
 
         this.title = this.path?.filename || Translate.instant('addon.privatefiles.files');

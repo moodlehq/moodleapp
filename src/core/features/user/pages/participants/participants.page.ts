@@ -33,7 +33,7 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestroy {
 
-    participants: CoreUserParticipantsManager;
+    participants!: CoreUserParticipantsManager;
     searchQuery: string | null = null;
     searchInProgress = false;
     searchEnabled = false;
@@ -43,7 +43,17 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     constructor() {
-        const courseId = CoreNavigator.getRouteNumberParam('courseId')!;
+        let courseId: number;
+
+        try {
+            courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         this.participants = new CoreUserParticipantsManager(CoreUserParticipantsPage, courseId);
     }

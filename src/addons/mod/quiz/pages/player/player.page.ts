@@ -106,9 +106,17 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.moduleUrl = CoreNavigator.getRouteParam('moduleUrl');
+        try {
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.moduleUrl = CoreNavigator.getRouteParam('moduleUrl');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         // Create the auto save instance.
         this.autoSave = new AddonModQuizAutoSave(
