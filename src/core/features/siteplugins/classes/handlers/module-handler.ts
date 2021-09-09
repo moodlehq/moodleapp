@@ -24,10 +24,13 @@ import {
     CoreSitePluginsContent,
     CoreSitePluginsCourseModuleHandlerData,
     CoreSitePluginsPlugin,
+    CoreSitePluginsProvider,
 } from '@features/siteplugins/services/siteplugins';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSitePluginsBaseHandler } from './base-handler';
+import { CoreEvents } from '@singletons/events';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Handler to support a module using a site plugin.
@@ -105,7 +108,15 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
 
         if (forCoursePage && this.handlerSchema.coursepagemethod && module.visibleoncoursepage !== 0) {
             // Call the method to get the course page template.
-            this.loadCoursePageTemplate(module, courseId, handlerData);
+            const method = this.handlerSchema.coursepagemethod;
+            this.loadCoursePageTemplate(module, courseId, handlerData, method);
+
+            // Allow updating the data via event.
+            CoreEvents.on(CoreSitePluginsProvider.UPDATE_COURSE_CONTENT, (data) => {
+                if (data.cmId === module.id) {
+                    this.loadCoursePageTemplate(module, courseId, handlerData, method, !data.alreadyFetched);
+                }
+            });
         }
 
         return handlerData;
@@ -152,12 +163,16 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      * @param module Module.
      * @param courseId Course ID.
      * @param handlerData Handler data.
+     * @param method Method to call.
+     * @param refresh Whether to refresh the data.
      * @return Promise resolved when done.
      */
     protected async loadCoursePageTemplate(
         module: CoreCourseAnyModuleData,
         courseId: number,
         handlerData: CoreCourseModuleHandlerData,
+        method: string,
+        refresh?: boolean,
     ): Promise<void> {
         // Call the method to get the course page template.
         handlerData.loading = true;
@@ -167,12 +182,12 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
             cmid: module.id,
         };
 
+        if (refresh) {
+            await CoreUtils.ignoreErrors(CoreSitePlugins.invalidateContent(this.plugin.component, method, args));
+        }
+
         try {
-            const result = await CoreSitePlugins.getContent(
-                this.plugin.component,
-                this.handlerSchema.coursepagemethod!,
-                args,
-            );
+            const result = await CoreSitePlugins.getContent(this.plugin.component, method, args);
 
             // Use the html returned.
             handlerData.title = result.templates[0]?.html ?? '';

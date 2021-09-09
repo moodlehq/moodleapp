@@ -18,9 +18,10 @@ import { Md5 } from 'ts-md5';
 
 import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
-import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
+import { CoreSitePlugins, CoreSitePluginsContent, CoreSitePluginsProvider } from '@features/siteplugins/services/siteplugins';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreEvents } from '@singletons/events';
 
 /**
  * Component to render a site plugin content.
@@ -111,6 +112,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
             this.jsData.openContent = this.openContent.bind(this);
             this.jsData.refreshContent = this.refreshContent.bind(this);
             this.jsData.updateContent = this.updateContent.bind(this);
+            this.jsData.updateModuleCourseContent = this.updateModuleCourseContent.bind(this);
 
             this.onContentLoaded.emit(refresh);
         } catch (error) {
@@ -222,6 +224,16 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      */
     callComponentFunction(name: string, params?: unknown[]): unknown | undefined {
         return this.compileComponent?.callComponentFunction(name, params);
+    }
+
+    /**
+     * Function only for module plugins using coursepagemethod. Update module data in course page content.
+     *
+     * @param cmId Module ID.
+     * @param alreadyFetched Whether course data has already been fetched (no need to fetch it again).
+     */
+    updateModuleCourseContent(cmId: number, alreadyFetched?: boolean): void {
+        CoreEvents.trigger(CoreSitePluginsProvider.UPDATE_COURSE_CONTENT, { cmId, alreadyFetched });
     }
 
 }
