@@ -18,30 +18,32 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <ion-item *ngFor="let site of sites" [attr.aria-current]="site.id == currentSiteId ? 'page' : 'false'">
-            <ion-label class="ion-text-wrap">
-                <p class="item-heading">
-                    <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>
+        <ion-list>
+            <ion-item *ngFor="let site of sites" [attr.aria-current]="site.id == currentSiteId ? 'page' : 'false'">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">
+                        <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>
+                    </p>
+                    <p class="ion-text-wrap">{{ site.fullName }}</p>
+                    <p>{{ site.siteUrl }}</p>
+                </ion-label>
+                <p *ngIf="site.spaceUsage !== undefined" slot="end">
+                    {{ site.spaceUsage | coreBytesToSize }}
                 </p>
-                <p class="ion-text-wrap">{{ site.fullName }}</p>
-                <p>{{ site.siteUrl }}</p>
-            </ion-label>
-            <p *ngIf="site.spaceUsage !== undefined" slot="end">
-                {{ site.spaceUsage | coreBytesToSize }}
-            </p>
-            <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage(site)"
-                [hidden]="site.spaceUsage! + site.cacheEntries! <= 0"
-                [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
-                <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
-            </ion-button>
-        </ion-item>
-        <ion-item-divider>
-            <ion-label>
-                <h2>{{ 'core.settings.total' | translate }}</h2>
-            </ion-label>
-            <p slot="end" class="ion-margin-end">
-                {{ totals.spaceUsage | coreBytesToSize }}
-            </p>
-        </ion-item-divider>
+                <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage(site)"
+                    [hidden]="site.spaceUsage! + site.cacheEntries! <= 0"
+                    [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
+                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </ion-item>
+            <ion-item-divider>
+                <ion-label>
+                    <h2>{{ 'core.settings.total' | translate }}</h2>
+                </ion-label>
+                <p slot="end" class="ion-margin-end">
+                    {{ totals.spaceUsage | coreBytesToSize }}
+                </p>
+            </ion-item-divider>
+        </ion-list>
     </core-loading>
 </ion-content>
