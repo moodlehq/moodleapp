@@ -730,13 +730,11 @@ export class CoreCourseHelperProvider {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (!files || !files.length) {
-            // Make sure that module contents are loaded.
-            await CoreCourse.loadModuleContents(module, courseId);
-
-            files = module.contents;
+            // Try to use module contents.
+            files = await CoreCourse.getModuleContents(module, courseId);
         }
 
-        if (!files || !files.length) {
+        if (!files.length) {
             throw new CoreError(Translate.instant('core.filenotfound'));
         }
 
@@ -1033,7 +1031,7 @@ export class CoreCourseHelperProvider {
         }
 
         // There's no prefetch handler for the module, just download the files.
-        files = files || module.contents;
+        files = files || module.contents || [];
 
         await CoreFilepool.downloadOrPrefetchFiles(siteId, files, false, false, component, componentId);
     }

@@ -26,7 +26,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModResource, AddonModResourceProvider } from './resource';
 
 /**
@@ -43,15 +43,17 @@ export class AddonModResourceHelperProvider {
      * @return Promise resolved with the HTML.
      */
     async getEmbeddedHtml(module: CoreCourseWSModule, courseId: number): Promise<string> {
+        const contents = await CoreCourse.getModuleContents(module, courseId);
+
         const result = await CoreCourseHelper.downloadModuleWithMainFileIfNeeded(
             module,
             courseId,
             AddonModResourceProvider.COMPONENT,
             module.id,
-            module.contents,
+            contents,
         );
 
-        return CoreMimetypeUtils.getEmbeddedHtml(module.contents[0], result.path);
+        return CoreMimetypeUtils.getEmbeddedHtml(contents[0], result.path);
     }
 
     /**
@@ -61,7 +63,7 @@ export class AddonModResourceHelperProvider {
      * @return Promise resolved with the iframe src.
      */
     async getIframeSrc(module: CoreCourseWSModule): Promise<string> {
-        if (!module.contents.length) {
+        if (!module.contents?.length) {
             throw new CoreError('No contents available in module');
         }
 
@@ -98,15 +100,19 @@ export class AddonModResourceHelperProvider {
     isDisplayedEmbedded(module: CoreCourseWSModule, display: number): boolean {
         const currentSite = CoreSites.getCurrentSite();
 
-        if ((!module.contents.length && !module.contentsinfo) ||
-            !CoreFile.isAvailable() ||
-            (currentSite && !currentSite.isVersionGreaterEqualThan('3.7') && this.isNextcloudFile(module))) {
+        if (!CoreFile.isAvailable() ||
+                (currentSite && !currentSite.isVersionGreaterEqualThan('3.7') && this.isNextcloudFile(module))) {
             return false;
         }
 
-        const ext = module.contentsinfo
-            ? CoreMimetypeUtils.getExtension(module.contentsinfo.mimetypes[0])
-            : CoreMimetypeUtils.getFileExtension(module.contents[0].filename);
+        let ext: string | undefined;
+        if (module.contentsinfo) {
+            ext = CoreMimetypeUtils.getExtension(module.contentsinfo.mimetypes[0]);
+        } else if (module.contents?.length) {
+            ext = CoreMimetypeUtils.getFileExtension(module.contents[0].filename);
+        } else {
+            return false;
+        }
 
         return (display == CoreConstants.RESOURCELIB_DISPLAY_EMBED || display == CoreConstants.RESOURCELIB_DISPLAY_AUTO) &&
             CoreMimetypeUtils.canBeEmbedded(ext);
@@ -144,10 +150,15 @@ export class AddonModResourceHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with boolean: whether main file is downloadable.
      */
-    isMainFileDownloadable(module: CoreCourseWSModule, siteId?: string): Promise<boolean> {
+    async isMainFileDownloadable(module: CoreCourseWSModule, siteId?: string): Promise<boolean> {
+        const contents = await CoreCourse.getModuleContents(module);
+        if (!contents.length) {
+            throw new CoreError(Translate.instant('core.filenotfound'));
+        }
+
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const mainFile = module.contents[0];
+        const mainFile = contents[0];
         const timemodified = CoreFileHelper.getFileTimemodified(mainFile);
 
         return CoreFilepool.isFileDownloadable(siteId, mainFile.fileurl, timemodified);

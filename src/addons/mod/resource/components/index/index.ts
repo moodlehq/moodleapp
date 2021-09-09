@@ -101,9 +101,9 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      */
     protected async fetchContent(refresh?: boolean): Promise<void> {
         // Load module contents if needed. Passing refresh is needed to force reloading contents.
-        await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, refresh);
+        const contents = await CoreCourse.getModuleContents(this.module, this.courseId, undefined, false, refresh);
 
-        if (!this.module.contents || !this.module.contents.length) {
+        if (!contents.length) {
             throw new CoreError(Translate.instant('core.filenotfound'));
         }
 
@@ -155,10 +155,10 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                 this.warning = '';
 
                 if (this.isIOS) {
-                    this.shouldOpenInBrowser = CoreFileHelper.shouldOpenInBrowser(this.module.contents[0]);
+                    this.shouldOpenInBrowser = CoreFileHelper.shouldOpenInBrowser(contents[0]);
                 }
 
-                const mimetype = await CoreUtils.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(this.module.contents[0]));
+                const mimetype = await CoreUtils.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(contents[0]));
 
                 this.isStreamedFile = CoreMimetypeUtils.isStreamedMimetype(mimetype);
             }

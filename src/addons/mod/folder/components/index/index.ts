@@ -95,12 +95,13 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     protected async fetchContent(refresh = false): Promise<void> {
         try {
             this.folderInstance = await AddonModFolder.getFolder(this.courseId, this.module.id);
-            await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, refresh);
+
+            const contents = await CoreCourse.getModuleContents(this.module, this.courseId, undefined, false, refresh);
 
             this.dataRetrieved.emit(this.folderInstance || this.module);
 
             this.description = this.folderInstance ? this.folderInstance.intro : this.module.description;
-            this.contents = AddonModFolderHelper.formatContents(this.module.contents);
+            this.contents = AddonModFolderHelper.formatContents(contents);
         } finally {
             this.fillContextMenu(refresh);
         }

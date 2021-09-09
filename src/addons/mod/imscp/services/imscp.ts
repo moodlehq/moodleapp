@@ -229,8 +229,10 @@ export class AddonModImscpProvider {
      * @return Promise resolved with the item src.
      */
     async getIframeSrc(module: CoreCourseModule, itemHref?: string): Promise<string> {
+        const contents = await CoreCourse.getModuleContents(module);
+
         if (!itemHref) {
-            const toc = this.getToc(module.contents);
+            const toc = this.getToc(contents);
             if (!toc.length) {
                 throw new CoreError('Empty TOC');
             }
@@ -246,7 +248,7 @@ export class AddonModImscpProvider {
         } catch (error) {
             // Error getting directory, there was an error downloading or we're in browser. Return online URL if connected.
             if (CoreApp.isOnline()) {
-                const indexUrl = this.getFileUrlFromContents(module.contents, itemHref);
+                const indexUrl = this.getFileUrlFromContents(contents, itemHref);
 
                 if (indexUrl) {
                     const site = await CoreSites.getSite(siteId);

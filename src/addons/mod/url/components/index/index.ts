@@ -95,11 +95,19 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
                 this.displayDescription = typeof unserialized.printintro == 'undefined' || !!unserialized.printintro;
             }
 
-            // Try to load module contents, it's needed to get the URL with parameters.
-            await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, refresh, undefined, 'url');
+            // Try to get module contents, it's needed to get the URL with parameters.
+            const contents = await CoreCourse.getModuleContents(
+                this.module,
+                this.courseId,
+                undefined,
+                false,
+                refresh,
+                undefined,
+                'url',
+            );
 
             // Always use the URL from the module because it already includes the parameters.
-            this.url = this.module.contents[0] && this.module.contents[0].fileurl ? this.module.contents[0].fileurl : undefined;
+            this.url = contents[0] && contents[0].fileurl ? contents[0].fileurl : undefined;
 
             await this.calculateDisplayOptions(url);
 
@@ -112,12 +120,12 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             this.description = mod.description;
             this.dataRetrieved.emit(mod);
 
-            if (!mod.contents.length) {
+            if (!mod.contents?.length) {
                 // If the data was cached maybe we don't have contents. Reject.
                 throw new CoreError('No contents found in module.');
             }
 
-            this.url = mod.contents && mod.contents[0] && mod.contents[0].fileurl ? mod.contents[0].fileurl : undefined;
+            this.url = mod.contents[0].fileurl ? mod.contents[0].fileurl : undefined;
         }
     }
 

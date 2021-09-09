@@ -126,7 +126,7 @@ const appConfig = {
                 ignoreParameters: true,
             },
         ],
-        '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'warn',
         '@typescript-eslint/no-redeclare': 'error',
         '@typescript-eslint/no-this-alias': 'error',
         '@typescript-eslint/no-unused-vars': 'error',

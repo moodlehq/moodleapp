@@ -133,8 +133,11 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
             await this.loadBookData();
 
-            this.contentsMap = AddonModBook.getContentsMap(this.module.contents);
-            this.chapters = AddonModBook.getTocList(this.module.contents);
+            // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
+            const contents = await CoreCourse.getModuleContents(this.module, this.courseId);
+
+            this.contentsMap = AddonModBook.getContentsMap(contents);
+            this.chapters = AddonModBook.getTocList(contents);
 
             if (typeof this.currentChapter == 'undefined' && typeof this.initialChapterId != 'undefined' && this.chapters) {
                 // Initial chapter set. Validate that the chapter exists.
