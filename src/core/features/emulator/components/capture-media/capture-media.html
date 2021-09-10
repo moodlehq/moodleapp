@@ -15,7 +15,9 @@
             <video *ngIf="!isAudio" [hidden]="hasCaptured" class="core-webcam-stream" autoplay #streamVideo></video>
 
             <!-- For video recording, use 2 videos and show/hide them because a CSS rule caused problems with the controls. -->
-            <video *ngIf="isVideo" [hidden]="!hasCaptured" class="core-webcam-video-captured" controls #previewVideo></video>
+            <video *ngIf="isVideo" [hidden]="!hasCaptured" class="core-webcam-video-captured" controls #previewVideo
+                controlsList="nodownload">
+            </video>
 
             <!-- Canvas to treat the image and an img to show the result. -->
             <canvas *ngIf="isImage" class="core-webcam-image-canvas" #imgCanvas></canvas>
@@ -35,7 +37,7 @@
                 </ion-button>
 
                 <!-- Audio player to listen to the result. -->
-                <audio [hidden]="!hasCaptured" class="core-audio-captured" controls #previewAudio></audio>
+                <audio [hidden]="!hasCaptured" class="core-audio-captured" controls #previewAudio controlsList="nodownload"></audio>
             </div>
         </div>
     </core-loading>
