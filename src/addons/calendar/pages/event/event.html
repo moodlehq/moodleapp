@@ -15,26 +15,23 @@
                 [contextInstanceId]="event.contextInstanceId"></core-format-text>
         </h1>
         <ion-buttons slot="end">
-            <!-- The context menu will be added in here. -->
+            <core-context-menu>
+                <core-context-menu-item [hidden]="!eventLoaded || (!hasOffline && event && !event.deleted) || !isOnline"
+                    [priority]="400" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event, true)"
+                    [iconAction]="syncIcon" [closeOnClick]="false">
+                </core-context-menu-item>
+                <core-context-menu-item [hidden]="!canEdit || !event || !event.canedit || event.deleted" [priority]="300"
+                    [content]="'core.edit' | translate" (action)="openEdit()" iconAction="fas-edit">
+                </core-context-menu-item>
+                <core-context-menu-item [hidden]="!event || !event.candelete || event.deleted" [priority]="200"
+                    [content]="'core.delete' | translate" (action)="deleteEvent()"
+                    iconAction="fas-trash"></core-context-menu-item>
+                <core-context-menu-item [hidden]="!event || !event.deleted" [priority]="200" [content]="'core.restore' | translate"
+                    (action)="undoDelete()" iconAction="fas-undo-alt"></core-context-menu-item>
+            </core-context-menu>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<core-navbar-buttons slot="end">
-    <core-context-menu>
-        <core-context-menu-item [hidden]="isSplitViewOn || !eventLoaded || (!hasOffline && event && !event.deleted) || !isOnline"
-            [priority]="400" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event, true)"
-            [iconAction]="syncIcon" [closeOnClick]="false">
-        </core-context-menu-item>
-        <core-context-menu-item [hidden]="!canEdit || !event || !event.canedit || event.deleted" [priority]="300"
-            [content]="'core.edit' | translate" (action)="openEdit()" iconAction="fas-edit">
-        </core-context-menu-item>
-        <core-context-menu-item [hidden]="!event || !event.candelete || event.deleted" [priority]="200"
-            [content]="'core.delete' | translate" (action)="deleteEvent()"
-            iconAction="fas-trash"></core-context-menu-item>
-        <core-context-menu-item [hidden]="!event || !event.deleted" [priority]="200" [content]="'core.restore' | translate"
-            (action)="undoDelete()" iconAction="fas-undo-alt"></core-context-menu-item>
-    </core-context-menu>
-</core-navbar-buttons>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!eventLoaded" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
@@ -50,33 +47,13 @@
 
         <ion-card>
             <ion-card-content *ngIf="event">
-                <ion-item class="ion-text-wrap" *ngIf="isSplitViewOn">
-                    <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" slot="start" alt="" role="presentation"
-                        class="core-module-icon">
-                    <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" slot="start" aria-hidden="true">
-                    </ion-icon>
-                    <ion-label>
-                        <span class="sr-only">
-                            {{ 'addon.calendar.type' + event.formattedType | translate }}
-                            <span class="sr-only" *ngIf="event.moduleIcon && event.iconTitle">{{ event.iconTitle }}</span>
-                        </span>
-                        <h2>{{ 'addon.calendar.eventname' | translate }}</h2>
-                        <p>
-                            <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
-                                [contextInstanceId]="event.contextInstanceId"></core-format-text>
-                        </p>
-                    </ion-label>
-                    <ion-note slot="end" *ngIf="event.deleted">
-                        <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> {{ 'core.deletedoffline' | translate }}
-                    </ion-note>
-                </ion-item>
                 <ion-item>
                     <ion-label>
                         <h2>{{ 'addon.calendar.when' | translate }}</h2>
                         <core-format-text [text]="event.formattedtime" [contextLevel]="event.contextLevel"
                         [contextInstanceId]="event.contextInstanceId"></core-format-text>
                     </ion-label>
-                    <ion-note slot="end" *ngIf="!isSplitViewOn && event.deleted">
+                    <ion-note slot="end" *ngIf="event.deleted">
                         <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> {{ 'core.deletedoffline' | translate }}
                     </ion-note>
                 </ion-item>
