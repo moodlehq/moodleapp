@@ -38,6 +38,7 @@ const ROOT_CACHE_KEY = 'CoreSitePlugins:';
 export class CoreSitePluginsProvider {
 
     static readonly COMPONENT = 'CoreSitePlugins';
+    static readonly UPDATE_COURSE_CONTENT = 'siteplugins_update_course_content';
 
     protected logger: CoreLogger;
     protected sitePlugins: {[name: string]: CoreSitePluginsHandler} = {}; // Site plugins registered.
@@ -922,3 +923,24 @@ export type CoreSitePluginsMainMenuHomeHandlerData = CoreSitePluginsHandlerCommo
     priority?: number;
     ptrenabled?: boolean;
 };
+
+/**
+ * Event to update course content data for plugins using coursepagemethod.
+ */
+export type CoreSitePluginsUpdateCourseContentEvent = {
+    cmId: number; // Module ID to update.
+    alreadyFetched?: boolean; // Whether course data has already been fetched (no need to fetch it again).
+};
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CoreSitePluginsProvider.UPDATE_COURSE_CONTENT]: CoreSitePluginsUpdateCourseContentEvent;
+    }
+
+}
