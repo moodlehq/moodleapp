@@ -229,7 +229,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @return Promise resolved when done.
      */
     protected async fetchContent(): Promise<void> {
-        const config = this.block.configsRecord || {};
+        const config = this.block.configsRecord;
 
         const showCategories = config?.displaycategories?.value == '1';
 
@@ -300,7 +300,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             false,
         );
         if (this.showFilters.custom == 'show') {
-            this.customFilter = CoreTextUtils.parseJSON(config?.customfieldsexport?.value, []);
+            this.customFilter = CoreTextUtils.parseJSON(config?.customfieldsexport?.value || '[]', []);
         } else {
             this.customFilter = [];
         }
