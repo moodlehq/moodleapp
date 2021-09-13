@@ -32,7 +32,7 @@
         <ion-item *ngIf="shouldEmbed">
             <ion-label>
                 <img *ngIf="isImage" [alt]="name" [src]="url">
-                <video *ngIf="isVideo" [title]="name" controls>
+                <video *ngIf="isVideo" [title]="name" controls controlsList="nodownload">
                     <source [src]="url" [type]="mimetype">
                 </video>
                 <audio *ngIf="isAudio" [title]="name" controls>

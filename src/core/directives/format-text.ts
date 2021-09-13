@@ -678,6 +678,18 @@ export class CoreFormatTextDirective implements OnChanges {
         this.addMediaAdaptClass(element);
         this.addExternalContent(element);
 
+        // Hide download button if not hidden already.
+        let controlsList = element.getAttribute('controlsList') || '';
+        if (!controlsList.includes('nodownload')) {
+            if (!controlsList.trim()) {
+                controlsList = 'nodownload';
+            } else {
+                controlsList = controlsList.split(' ').concat('nodownload').join(' ');
+            }
+
+            element.setAttribute('controlsList', controlsList);
+        }
+
         const sources = Array.from(element.querySelectorAll('source'));
         const tracks = Array.from(element.querySelectorAll('track'));
 
