@@ -96,10 +96,18 @@ export class AddonModDataEditPage implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.module = CoreNavigator.getRouteParam<CoreCourseModule>('module')!;
-        this.entryId = CoreNavigator.getRouteNumberParam('entryId') || undefined;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
+        try {
+            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModule>('module');
+            this.entryId = CoreNavigator.getRouteNumberParam('entryId') || undefined;
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         // If entryId is lower than 0 or null, it is a new entry or an offline entry.
         this.isEditing = typeof this.entryId != 'undefined' && this.entryId > 0;

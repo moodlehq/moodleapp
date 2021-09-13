@@ -119,12 +119,20 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.password = CoreNavigator.getRouteParam('password');
-        this.review = !!CoreNavigator.getRouteBooleanParam('review');
-        this.currentPage = CoreNavigator.getRouteNumberParam('pageId');
-        this.retakeToReview = CoreNavigator.getRouteNumberParam('retake');
+        try {
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.password = CoreNavigator.getRouteParam('password');
+            this.review = !!CoreNavigator.getRouteBooleanParam('review');
+            this.currentPage = CoreNavigator.getRouteNumberParam('pageId');
+            this.retakeToReview = CoreNavigator.getRouteNumberParam('retake');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         try {
             // Fetch the Lesson data.

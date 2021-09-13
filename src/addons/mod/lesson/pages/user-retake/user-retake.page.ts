@@ -64,10 +64,18 @@ export class AddonModLessonUserRetakePage implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSiteUserId();
-        this.retakeNumber = CoreNavigator.getRouteNumberParam('retake');
+        try {
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSiteUserId();
+            this.retakeNumber = CoreNavigator.getRouteNumberParam('retake');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         // Fetch the data.
         this.fetchData().finally(() => {

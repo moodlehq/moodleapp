@@ -14,10 +14,8 @@
 
 import { CoreConstants } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
+import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModImscpIndexComponent } from '../../components/index';
 import { AddonModImscp } from '../imscp';
@@ -26,12 +24,13 @@ import { AddonModImscp } from '../imscp';
  * Handler to support IMSCP modules.
  */
 @Injectable( { providedIn: 'root' })
-export class AddonModImscpModuleHandlerService implements CoreCourseModuleHandler {
+export class AddonModImscpModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     static readonly PAGE_NAME = 'mod_imscp';
 
     name = 'AddonModImscp';
     modName = 'imscp';
+    protected pageName = AddonModImscpModuleHandlerService.PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,
@@ -55,27 +54,7 @@ export class AddonModImscpModuleHandlerService implements CoreCourseModuleHandle
     /**
      * @inheritdoc
      */
-    getData(module: CoreCourseAnyModuleData): CoreCourseModuleHandlerData {
-        return {
-            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
-            title: module.name,
-            class: 'addon-mod_imscp-handler',
-            showDownloadButton: true,
-            action(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void {
-                options = options || {};
-                options.params = options.params || {};
-                Object.assign(options.params, { module });
-                const routeParams = '/' + courseId + '/' + module.id;
-
-                CoreNavigator.navigateToSitePath(AddonModImscpModuleHandlerService.PAGE_NAME + routeParams, options);
-            },
-        };
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async getMainComponent(): Promise<Type<unknown> | undefined> {
+    async getMainComponent(): Promise<Type<unknown>> {
         return AddonModImscpIndexComponent;
     }
 

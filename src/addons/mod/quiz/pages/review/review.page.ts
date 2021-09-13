@@ -83,11 +83,19 @@ export class AddonModQuizReviewPage implements OnInit {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.attemptId = CoreNavigator.getRouteNumberParam('attemptId')!;
-        this.currentPage = CoreNavigator.getRouteNumberParam('page') || -1;
-        this.showAll = this.currentPage == -1;
+        try {
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.attemptId = CoreNavigator.getRequiredRouteNumberParam('attemptId');
+            this.currentPage = CoreNavigator.getRouteNumberParam('page') || -1;
+            this.showAll = this.currentPage == -1;
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         try {
             await this.fetchData();

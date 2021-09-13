@@ -39,7 +39,15 @@ export class AddonCompetencyPlanPage implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.planId = CoreNavigator.getRouteNumberParam('planId')!;
+        try {
+            this.planId = CoreNavigator.getRequiredRouteNumberParam('planId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         this.fetchLearningPlan().finally(() => {
             this.loaded = true;

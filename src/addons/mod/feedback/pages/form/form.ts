@@ -77,7 +77,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
     completedOffline = false;
 
     constructor() {
-        this.currentSite = CoreSites.getCurrentSite()!;
+        this.currentSite = CoreSites.getRequiredCurrentSite();
 
         // Refresh online status when changes.
         this.onlineObserver = Network.onChange().subscribe(() => {
@@ -92,12 +92,20 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.currentPage = CoreNavigator.getRouteNumberParam('page');
-        this.title = CoreNavigator.getRouteParam('title');
-        this.preview = !!CoreNavigator.getRouteBooleanParam('preview');
-        this.fromIndex = !!CoreNavigator.getRouteBooleanParam('fromIndex');
+        try {
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.currentPage = CoreNavigator.getRouteNumberParam('page');
+            this.title = CoreNavigator.getRouteParam('title');
+            this.preview = !!CoreNavigator.getRouteBooleanParam('preview');
+            this.fromIndex = !!CoreNavigator.getRouteBooleanParam('fromIndex');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         await this.fetchData();
 

@@ -14,6 +14,7 @@
 
 import { CoreConstants } from '@/core/constants';
 import { Injectable } from '@angular/core';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseWSModule } from '@features/course/services/course';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
@@ -22,7 +23,7 @@ import { makeSingleton } from '@singletons';
  * Handler to support label modules.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonModLabelModuleHandlerService implements CoreCourseModuleHandler {
+export class AddonModLabelModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModLabel';
     modName = 'label';
@@ -43,13 +44,6 @@ export class AddonModLabelModuleHandlerService implements CoreCourseModuleHandle
     /**
      * @inheritdoc
      */
-    async isEnabled(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
     getData(module: CoreCourseWSModule): CoreCourseModuleHandlerData {
         // Remove the description from the module so it isn't rendered twice.
         const title = module.description || '';
@@ -57,7 +51,7 @@ export class AddonModLabelModuleHandlerService implements CoreCourseModuleHandle
 
         return {
             icon: '',
-            title: title,
+            title,
             a11yTitle: '',
             class: 'addon-mod-label-handler',
         };

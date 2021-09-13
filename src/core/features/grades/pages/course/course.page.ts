@@ -40,14 +40,26 @@ import { CoreNavigator } from '@services/navigator';
 })
 export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
-    grades: CoreGradesCourseManager;
+    grades!: CoreGradesCourseManager;
     splitViewMode?: CoreSplitViewMode;
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     constructor(protected route: ActivatedRoute) {
-        const courseId = CoreNavigator.getRouteNumberParam('courseId', { route })!;
-        const userId = CoreNavigator.getRouteNumberParam('userId', { route }) ?? CoreSites.getCurrentSiteUserId();
+        let courseId: number;
+        let userId: number;
+
+        try {
+            courseId = CoreNavigator.getRequiredRouteNumberParam('courseId', { route });
+            userId = CoreNavigator.getRouteNumberParam('userId', { route }) ?? CoreSites.getCurrentSiteUserId();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
+
         const useSplitView = route.snapshot.data.useSplitView ?? true;
         const outsideGradesTab = route.snapshot.data.outsideGradesTab ?? false;
 

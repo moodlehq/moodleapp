@@ -59,7 +59,7 @@ export class CoreCoursesCategoriesPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchCategories(): Promise<void> {
-        try{
+        try {
             const categories: CoreCategoryData[] = await CoreCourses.getCategories(this.categoryId, true);
 
             this.currentCategory = undefined;

@@ -57,10 +57,18 @@ export class AddonModGlossaryEntryPage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.entryId = CoreNavigator.getRouteNumberParam('entryId')!;
-        this.tagsEnabled = CoreTag.areTagsAvailableInSite();
-        this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
+        try {
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.entryId = CoreNavigator.getRequiredRouteNumberParam('entryId');
+            this.tagsEnabled = CoreTag.areTagsAvailableInSite();
+            this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         try {
             await this.fetchEntry();

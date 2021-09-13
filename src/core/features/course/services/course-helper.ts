@@ -78,17 +78,17 @@ export type CoreCourseModulePrefetchInfo = {
     /**
      * Downloaded size.
      */
-    size?: number;
+    size: number;
 
     /**
      * Downloadable size in a readable format.
      */
-    sizeReadable?: string;
+    sizeReadable: string;
 
     /**
      * Module status.
      */
-    status?: string;
+    status: string;
 
     /**
      * Icon's name of the module status.
@@ -98,12 +98,12 @@ export type CoreCourseModulePrefetchInfo = {
     /**
      * Time when the module was last downloaded.
      */
-    downloadTime?: number;
+    downloadTime: number;
 
     /**
      * Download time in a readable format.
      */
-    downloadTimeReadable?: string;
+    downloadTimeReadable: string;
 };
 
 /**
@@ -539,18 +539,14 @@ export class CoreCourseHelperProvider {
             total: true,
         };
 
-        if (!section && !sections) {
-            throw new CoreError('Either section or list of sections needs to be supplied.');
-        }
-
         // Calculate the size of the download.
         if (section && section.id != CoreCourseProvider.ALL_SECTIONS_ID) {
             sizeSum = await CoreCourseModulePrefetchDelegate.getDownloadSize(section.modules, courseId);
 
             // Check if the section has embedded files in the description.
             hasEmbeddedFiles = CoreFilepool.extractDownloadableFilesFromHtml(section.summary).length > 0;
-        } else {
-            await Promise.all(sections!.map(async (section) => {
+        } else if (sections) {
+            await Promise.all(sections.map(async (section) => {
                 if (section.id == CoreCourseProvider.ALL_SECTIONS_ID) {
                     return;
                 }
@@ -565,6 +561,8 @@ export class CoreCourseHelperProvider {
                     hasEmbeddedFiles = true;
                 }
             }));
+        } else {
+            throw new CoreError('Either section or list of sections needs to be supplied.');
         }
 
         if (hasEmbeddedFiles) {
@@ -1057,7 +1055,7 @@ export class CoreCourseHelperProvider {
 
         const moduleInfo = await this.getModulePrefetchInfo(module, courseId, invalidateCache, component);
 
-        instance.size = moduleInfo.size && moduleInfo.size > 0 ? moduleInfo.sizeReadable! : '';
+        instance.size = moduleInfo.sizeReadable;
         instance.prefetchStatusIcon = moduleInfo.statusIcon;
         instance.prefetchStatus = moduleInfo.status;
 
@@ -1443,7 +1441,7 @@ export class CoreCourseHelperProvider {
         invalidateCache?: boolean,
         component?: string,
     ): Promise<CoreCourseModulePrefetchInfo> {
-        const moduleInfo: CoreCourseModulePrefetchInfo = {};
+
         const siteId = CoreSites.getCurrentSiteId();
 
         if (invalidateCache) {
@@ -1459,45 +1457,59 @@ export class CoreCourseHelperProvider {
         ]);
 
         // Treat stored size.
-        moduleInfo.size = results[0];
-        moduleInfo.sizeReadable = CoreTextUtils.bytesToSize(results[0], 2);
+        const size = results[0];
+        const sizeReadable = CoreTextUtils.bytesToSize(results[0], 2);
 
         // Treat module status.
-        moduleInfo.status = results[1];
+        const status = results[1];
+        let statusIcon: string | undefined;
         switch (results[1]) {
             case CoreConstants.NOT_DOWNLOADED:
-                moduleInfo.statusIcon = CoreConstants.ICON_NOT_DOWNLOADED;
+                statusIcon = CoreConstants.ICON_NOT_DOWNLOADED;
                 break;
             case CoreConstants.DOWNLOADING:
-                moduleInfo.statusIcon = CoreConstants.ICON_DOWNLOADING;
+                statusIcon = CoreConstants.ICON_DOWNLOADING;
                 break;
             case CoreConstants.OUTDATED:
-                moduleInfo.statusIcon = CoreConstants.ICON_OUTDATED;
+                statusIcon = CoreConstants.ICON_OUTDATED;
                 break;
             case CoreConstants.DOWNLOADED:
                 break;
             default:
-                moduleInfo.statusIcon = '';
+                statusIcon = '';
                 break;
         }
 
         // Treat download time.
         if (!results[2] || !results[2].downloadTime || !CoreFileHelper.isStateDownloaded(results[2].status || '')) {
             // Not downloaded.
-            moduleInfo.downloadTime = 0;
-
-            return moduleInfo;
+            return {
+                size,
+                sizeReadable,
+                status,
+                statusIcon,
+                downloadTime: 0,
+                downloadTimeReadable: '',
+            };
         }
 
         const now = CoreTimeUtils.timestamp();
-        moduleInfo.downloadTime = results[2].downloadTime;
+        const downloadTime = results[2].downloadTime;
+        let downloadTimeReadable = '';
         if (now - results[2].downloadTime < 7 * 86400) {
-            moduleInfo.downloadTimeReadable = moment(results[2].downloadTime * 1000).fromNow();
+            downloadTimeReadable = moment(results[2].downloadTime * 1000).fromNow();
         } else {
-            moduleInfo.downloadTimeReadable = moment(results[2].downloadTime * 1000).calendar();
+            downloadTimeReadable = moment(results[2].downloadTime * 1000).calendar();
         }
 
-        return moduleInfo;
+        return {
+            size,
+            sizeReadable,
+            status,
+            statusIcon,
+            downloadTime,
+            downloadTimeReadable,
+        };
     }
 
     /**
@@ -1616,7 +1628,7 @@ export class CoreCourseHelperProvider {
 
             this.logger.warn('navCtrl was not passed to navigateToModule by the link handler for ' + module.modname);
 
-            const params = {
+            const params: Params = {
                 course: { id: courseId },
                 module: module,
                 sectionId: sectionId,
@@ -1690,20 +1702,20 @@ export class CoreCourseHelperProvider {
         courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[],
         siteId?: string,
     ): Promise<void> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
+        const requiredSiteId = siteId || CoreSites.getRequiredCurrentSite().getId();
 
-        if (this.courseDwnPromises[siteId] && this.courseDwnPromises[siteId][course.id]) {
+        if (this.courseDwnPromises[requiredSiteId] && this.courseDwnPromises[requiredSiteId][course.id] !== undefined) {
             // There's already a download ongoing for this course, return the promise.
-            return this.courseDwnPromises[siteId][course.id];
-        } else if (!this.courseDwnPromises[siteId]) {
-            this.courseDwnPromises[siteId] = {};
+            return this.courseDwnPromises[requiredSiteId][course.id];
+        } else if (!this.courseDwnPromises[requiredSiteId]) {
+            this.courseDwnPromises[requiredSiteId] = {};
         }
 
         // First of all, mark the course as being downloaded.
-        this.courseDwnPromises[siteId][course.id] = CoreCourse.setCourseStatus(
+        this.courseDwnPromises[requiredSiteId][course.id] = CoreCourse.setCourseStatus(
             course.id,
             CoreConstants.DOWNLOADING,
-            siteId,
+            requiredSiteId,
         ).then(async () => {
 
             const promises: Promise<unknown>[] = [];
@@ -1740,17 +1752,17 @@ export class CoreCourseHelperProvider {
             await CoreUtils.allPromises(promises);
 
             // Download success, mark the course as downloaded.
-            return CoreCourse.setCourseStatus(course.id, CoreConstants.DOWNLOADED, siteId);
+            return CoreCourse.setCourseStatus(course.id, CoreConstants.DOWNLOADED, requiredSiteId);
         }).catch(async (error) => {
             // Error, restore previous status.
-            await CoreCourse.setCoursePreviousStatus(course.id, siteId);
+            await CoreCourse.setCoursePreviousStatus(course.id, requiredSiteId);
 
             throw error;
         }).finally(() => {
-            delete this.courseDwnPromises[siteId!][course.id];
+            delete this.courseDwnPromises[requiredSiteId][course.id];
         });
 
-        return this.courseDwnPromises[siteId][course.id];
+        return this.courseDwnPromises[requiredSiteId][course.id];
     }
 
     /**

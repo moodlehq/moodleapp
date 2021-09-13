@@ -225,7 +225,7 @@ export class AddonModDataHelperProvider {
                 let render = '';
                 if (action == AddonModDataAction.MOREURL) {
                     // Render more url directly because it can be part of an HTML attribute.
-                    render = CoreSites.getCurrentSite()!.getURL() + '/mod/data/view.php?d={{database.id}}&rid=' + entry.id;
+                    render = CoreSites.getRequiredCurrentSite().getURL() + '/mod/data/view.php?d={{database.id}}&rid=' + entry.id;
                 } else if (action == 'approvalstatus') {
                     render = Translate.instant('addon.mod_data.' + (entry.approved ? 'approved' : 'notapproved'));
                 } else {

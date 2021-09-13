@@ -40,9 +40,17 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.competencyId = CoreNavigator.getRouteNumberParam('competencyId')!;
-        this.contextLevel = CoreNavigator.getRouteParam<ContextLevel>('contextLevel');
-        this.contextInstanceId = CoreNavigator.getRouteNumberParam('contextInstanceId');
+        try {
+            this.competencyId = CoreNavigator.getRequiredRouteNumberParam('competencyId');
+            this.contextLevel = CoreNavigator.getRouteParam<ContextLevel>('contextLevel');
+            this.contextInstanceId = CoreNavigator.getRouteNumberParam('contextInstanceId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         try {
             await this.fetchCompetency();

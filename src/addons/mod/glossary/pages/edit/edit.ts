@@ -73,7 +73,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
     };
 
     protected timecreated!: number;
-    protected concept?: string;
+    protected concept = '';
     protected syncId?: string;
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
@@ -86,11 +86,19 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.timecreated = CoreNavigator.getRouteNumberParam('timecreated')!;
-        this.concept = CoreNavigator.getRouteParam<string>('concept')!;
-        this.editorExtraParams.timecreated = this.timecreated;
+        try {
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.timecreated = CoreNavigator.getRequiredRouteNumberParam('timecreated');
+            this.concept = CoreNavigator.getRouteParam<string>('concept') || '';
+            this.editorExtraParams.timecreated = this.timecreated;
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            this.goBack();
+
+            return;
+        }
 
         this.fetchData();
     }
@@ -116,7 +124,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingglossary', true);
 
-            CoreNavigator.back();
+            this.goBack();
         }
     }
 
@@ -126,7 +134,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
      * @return Promise resolved when done.
      */
     protected async loadOfflineData(): Promise<void> {
-        const entry = await AddonModGlossaryOffline.getNewEntry(this.glossary!.id, this.concept || '', this.timecreated);
+        const entry = await AddonModGlossaryOffline.getNewEntry(this.glossary!.id, this.concept, this.timecreated);
 
         this.entry.concept = entry.concept || '';
         this.entry.definition = entry.definition || '';
@@ -364,6 +372,17 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
                 saveOffline: true,
                 attachmentsResult,
             };
+        }
+    }
+
+    /**
+     * Helper function to go back.
+     */
+    protected goBack(): void {
+        if (this.splitView?.outletActivated) {
+            CoreNavigator.navigate('../../');
+        } else {
+            CoreNavigator.back();
         }
     }
 

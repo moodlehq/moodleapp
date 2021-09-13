@@ -14,10 +14,8 @@
 
 import { CoreConstants } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
+import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModWikiIndexComponent } from '../../components/index';
 
@@ -25,12 +23,13 @@ import { AddonModWikiIndexComponent } from '../../components/index';
  * Handler to support wiki modules.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonModWikiModuleHandlerService implements CoreCourseModuleHandler {
+export class AddonModWikiModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     static readonly PAGE_NAME = 'mod_wiki';
 
     name = 'AddonModWiki';
     modName = 'wiki';
+    protected pageName = AddonModWikiModuleHandlerService.PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,
@@ -44,33 +43,6 @@ export class AddonModWikiModuleHandlerService implements CoreCourseModuleHandler
         [CoreConstants.FEATURE_RATE]: false,
         [CoreConstants.FEATURE_COMMENT]: true,
     };
-
-    /**
-     * @inheritdoc
-     */
-    async isEnabled(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getData(module: CoreCourseAnyModuleData): CoreCourseModuleHandlerData {
-        return {
-            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
-            title: module.name,
-            class: 'addon-mod_wiki-handler',
-            showDownloadButton: true,
-            action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
-                options = options || {};
-                options.params = options.params || {};
-                Object.assign(options.params, { module });
-                const routeParams = `/${courseId}/${module.id}/page/root`;
-
-                CoreNavigator.navigateToSitePath(AddonModWikiModuleHandlerService.PAGE_NAME + routeParams, options);
-            },
-        };
-    }
 
     /**
      * @inheritdoc

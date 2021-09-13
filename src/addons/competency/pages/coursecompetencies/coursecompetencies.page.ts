@@ -42,8 +42,16 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit {
      * View loaded.
      */
     ngOnInit(): void {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.userId = CoreNavigator.getRouteNumberParam('userId')!;
+        try {
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.userId = CoreNavigator.getRequiredRouteNumberParam('userId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         this.fetchCourseCompetencies().finally(() => {
             this.competenciesLoaded = true;

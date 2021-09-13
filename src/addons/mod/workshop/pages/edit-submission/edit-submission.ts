@@ -99,10 +99,18 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.module = CoreNavigator.getRouteParam<CoreCourseModule>('module')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.access = CoreNavigator.getRouteParam<AddonModWorkshopGetWorkshopAccessInformationWSResponse>('access')!;
-        this.submissionId = CoreNavigator.getRouteNumberParam('submissionId') || 0;
+        try {
+            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModule>('module');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.access = CoreNavigator.getRequiredRouteParam<AddonModWorkshopGetWorkshopAccessInformationWSResponse>('access');
+            this.submissionId = CoreNavigator.getRouteNumberParam('submissionId') || 0;
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         if (this.submissionId > 0) {
             this.editorExtraParams.id = this.submissionId;

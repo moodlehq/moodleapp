@@ -31,16 +31,24 @@ import { CoreNavigator } from '@services/navigator';
 })
 export class CoreGradesGradePage implements OnInit {
 
-    courseId: number;
-    userId: number;
-    gradeId: number;
+    courseId!: number;
+    userId!: number;
+    gradeId!: number;
     grade?: CoreGradesFormattedRow | null;
     gradeLoaded = false;
 
     constructor() {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.gradeId = CoreNavigator.getRouteNumberParam('gradeId')!;
-        this.userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
+        try {
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.gradeId = CoreNavigator.getRequiredRouteNumberParam('gradeId');
+            this.userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
     }
 
     /**

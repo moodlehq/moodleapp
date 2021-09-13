@@ -548,6 +548,10 @@ ion-card ion-item img.core-module-icon[slot="start"] {
     margin-right: 12px;
 }
 
+ion-card ion-item:only-child {
+    --inner-border-width: 0;
+}
+
 [dir=rtl] ion-item img.core-module-icon[slot="start"] {
     margin-right: unset;
     margin-left: 32px;

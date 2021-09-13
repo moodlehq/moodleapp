@@ -54,7 +54,7 @@ export class AddonMessagesSendMessageUserHandlerService implements CoreUserProfi
      * @return Promise resolved with true if enabled, resolved with false otherwise.
      */
     async isEnabledForUser(user: CoreUserProfile): Promise<boolean> {
-        const currentSite = CoreSites.getCurrentSite()!;
+        const currentSite = CoreSites.getRequiredCurrentSite();
 
         // From 3.7 you can send messages to yourself.
         return user.id != CoreSites.getCurrentSiteUserId() || currentSite.isVersionGreaterEqualThan('3.7');

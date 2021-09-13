@@ -15,6 +15,11 @@
             color: var(--color);
         }
     }
+
+    form div {
+        color: var(--color);
+    }
+
     ion-button.core-button-as-link {
         --color: var(--core-login-text-color);
         text-decoration-color: var(--core-login-text-color);

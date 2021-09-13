@@ -730,7 +730,7 @@ export class AddonModScormOfflineProvider {
         }
 
         const scoUserData = scoData?.userdata || {};
-        const db = CoreSites.getCurrentSite()!.getDb();
+        const db = CoreSites.getRequiredCurrentSite().getDb();
         let lessonStatusInserted = false;
 
         if (forceCompleted) {

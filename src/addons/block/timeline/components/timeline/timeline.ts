@@ -69,12 +69,12 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        this.currentSite = CoreSites.getCurrentSite();
+        this.currentSite = CoreSites.getRequiredCurrentSite();
 
-        this.filter = await this.currentSite!.getLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
+        this.filter = await this.currentSite.getLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
         this.switchFilter(this.filter);
 
-        this.sort = await this.currentSite!.getLocalSiteConfig('AddonBlockTimelineSort', this.sort);
+        this.sort = await this.currentSite.getLocalSiteConfig('AddonBlockTimelineSort', this.sort);
 
         super.ngOnInit();
     }

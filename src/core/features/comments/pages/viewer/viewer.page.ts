@@ -110,19 +110,28 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
+        try {
+            this.contextLevel = CoreNavigator.getRequiredRouteParam<ContextLevel>('contextLevel');
+            this.instanceId = CoreNavigator.getRequiredRouteNumberParam('instanceId');
+            this.componentName = CoreNavigator.getRequiredRouteParam<string>('componentName');
+            this.itemId = CoreNavigator.getRequiredRouteNumberParam('itemId');
+            this.area = CoreNavigator.getRouteParam('area') || '';
+            this.title = CoreNavigator.getRouteNumberParam('title') ||
+                Translate.instant('core.comments.comments');
+            this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
+
         // Is implicit the user can delete if he can add.
         this.addDeleteCommentsAvailable = await CoreComments.isAddCommentsAvailable();
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         this.commentsLoaded = false;
-        this.contextLevel = CoreNavigator.getRouteParam<ContextLevel>('contextLevel')!;
-        this.instanceId = CoreNavigator.getRouteNumberParam('instanceId')!;
-        this.componentName = CoreNavigator.getRouteParam<string>('componentName')!;
-        this.itemId = CoreNavigator.getRouteNumberParam('itemId')!;
-        this.area = CoreNavigator.getRouteParam('area') || '';
-        this.title = CoreNavigator.getRouteNumberParam('title') ||
-            Translate.instant('core.comments.comments');
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
 
         await this.fetchComments(true);
     }

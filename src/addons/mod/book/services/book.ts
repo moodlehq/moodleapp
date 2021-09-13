@@ -134,7 +134,7 @@ export class AddonModBookProvider {
 
         if (!CoreFile.isAvailable()) {
             // We return the live URL.
-            return CoreSites.getCurrentSite()!.checkAndFixPluginfileURL(indexUrl);
+            return CoreSites.getRequiredCurrentSite().checkAndFixPluginfileURL(indexUrl);
         }
 
         const siteId = CoreSites.getCurrentSiteId();

@@ -35,7 +35,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreForms } from '@singletons/form';
 
 /**
- * Page that displays a "splash screen" while the app is being initialized.
+ * Site (url) chooser when adding a new site.
  */
 @Component({
     selector: 'page-core-login-site',

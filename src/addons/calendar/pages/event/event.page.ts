@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { AlertOptions } from '@ionic/core';
 import {
@@ -32,14 +32,12 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreGroups } from '@services/groups';
-import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { Network, NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonCalendarReminderDBRecord } from '../../services/database/calendar';
 import { ActivatedRoute } from '@angular/router';
-import { CoreScreen } from '@services/screen';
 import { CoreConstants } from '@/core/constants';
 import { CoreLang } from '@services/lang';
 
@@ -81,18 +79,15 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     hasOffline = false;
     isOnline = false;
     syncIcon = CoreConstants.ICON_LOADING; // Sync icon.
-    isSplitViewOn = false;
     monthNames?: string[];
 
     constructor(
-        @Optional() protected svComponent: CoreSplitViewComponent,
         protected route: ActivatedRoute,
     ) {
 
         this.notificationsEnabled = CoreLocalNotifications.isAvailable();
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
         this.currentSiteId = CoreSites.getCurrentSiteId();
-        this.isSplitViewOn = this.svComponent?.outletActivated;
 
         // Check if site supports editing. No need to check allowed types, event.canedit already does it.
         this.canEdit = AddonCalendar.canEditEventsInSite();
@@ -147,7 +142,16 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * View loaded.
      */
     ngOnInit(): void {
-        this.eventId = CoreNavigator.getRouteNumberParam('id')!;
+        try {
+            this.eventId = CoreNavigator.getRequiredRouteNumberParam('id');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
+
         this.syncIcon = CoreConstants.ICON_LOADING;
 
         this.fetchEvent();
@@ -471,9 +475,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 CoreDomUtils.showToast('addon.calendar.eventcalendareventdeleted', true, 3000);
 
                 // Event deleted, close the view.
-                if (CoreScreen.isMobile) {
-                    CoreNavigator.back();
-                }
+                CoreNavigator.back();
             } else {
                 // Event deleted in offline, just mark it as deleted.
                 this.event.deleted = true;
@@ -528,9 +530,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             CoreDomUtils.showToast('addon.calendar.eventcalendareventdeleted', true, 3000);
 
             // Event was deleted, close the view.
-            if (CoreScreen.isMobile) {
-                CoreNavigator.back();
-            }
+            CoreNavigator.back();
         } else if (data.events && (!isManual || data.source != 'event')) {
             const event = data.events.find((ev) => ev.id == this.eventId);
 

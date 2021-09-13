@@ -52,7 +52,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
      */
     ngOnInit(): void {
         this.courseId = CoreNavigator.getRouteNumberParam('courseId') || this.courseId; // Use 0 for site badges.
-        this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSite()!.getUserId();
+        this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getRequiredCurrentSite().getUserId();
         this.badgeHash = CoreNavigator.getRouteParam('badgeHash') || '';
 
         this.fetchIssuedBadge().finally(() => {
