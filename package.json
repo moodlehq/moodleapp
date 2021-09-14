@@ -20,6 +20,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ionic serve --browser=$MOODLE_APP_BROWSER",
+    "serve:test": "NODE_ENV=testing ionic serve --no-open",
     "build": "ionic build",
     "build:prod": "NODE_ENV=production ionic build --prod",
     "build:test": "NODE_ENV=testing ionic build",
