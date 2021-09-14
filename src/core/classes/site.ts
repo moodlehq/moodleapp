@@ -1333,38 +1333,38 @@ export class CoreSite {
             siteUrl: this.siteUrl,
         };
 
-        let config: CoreSitePublicConfigResponse | undefined;
+        let config: CoreSitePublicConfigResponse;
 
         try {
-            config = await CoreWS.callAjax('tool_mobile_get_public_config', {}, preSets);
+            config = await CoreWS.callAjax<CoreSitePublicConfigResponse>('tool_mobile_get_public_config', {}, preSets);
         } catch (error) {
-            if ((!this.getInfo() || this.isVersionGreaterEqualThan('3.8')) && error && error.errorcode == 'codingerror') {
-                // This error probably means that there is a redirect in the site. Try to use a GET request.
-                preSets.noLogin = true;
-                preSets.useGet = true;
-
-                try {
-                    config = await CoreWS.callAjax('tool_mobile_get_public_config', {}, preSets);
-                } catch (error2) {
-                    if (this.getInfo() && this.isVersionGreaterEqualThan('3.8')) {
-                        // GET is supported, return the second error.
-                        throw error2;
-                    } else {
-                        // GET not supported or we don't know if it's supported. Return first error.
-                        throw error;
-                    }
-                }
+            if (!error || error.errorcode !== 'codingerror' || (this.getInfo() && !this.isVersionGreaterEqualThan('3.8'))) {
+                throw error;
             }
 
-            throw error;
+            // This error probably means that there is a redirect in the site. Try to use a GET request.
+            preSets.noLogin = true;
+            preSets.useGet = true;
+
+            try {
+                config = await CoreWS.callAjax<CoreSitePublicConfigResponse>('tool_mobile_get_public_config', {}, preSets);
+            } catch (error2) {
+                if (this.getInfo() && this.isVersionGreaterEqualThan('3.8')) {
+                    // GET is supported, return the second error.
+                    throw error2;
+                } else {
+                    // GET not supported or we don't know if it's supported. Return first error.
+                    throw error;
+                }
+            }
         }
 
         // Use the wwwroot returned by the server.
-        if (config!.httpswwwroot) {
-            this.siteUrl = CoreUrlUtils.removeUrlParams(config!.httpswwwroot); // Make sure the URL doesn't have params.
+        if (config.httpswwwroot) {
+            this.siteUrl = CoreUrlUtils.removeUrlParams(config.httpswwwroot); // Make sure the URL doesn't have params.
         }
 
-        return config!;
+        return config;
     }
 
     /**

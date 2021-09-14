@@ -245,27 +245,24 @@ export class CoreSitesProvider {
                 });
             }
         } catch (error) {
-            // Error, check if not supported.
-            if (error.available === 1) {
-                // Service supported but an error happened. Return error.
-                if (error.errorcode == 'codingerror') {
-                    // This could be caused by a redirect. Check if it's the case.
-                    const redirect = await CoreUtils.checkRedirect(siteUrl);
+            // Service supported but an error happened. Return error.
+            if (error.errorcode == 'codingerror') {
+                // This could be caused by a redirect. Check if it's the case.
+                const redirect = await CoreUtils.checkRedirect(siteUrl);
 
-                    if (redirect) {
-                        error.error = Translate.instant('core.login.sitehasredirect');
-                    } else {
-                        // We can't be sure if there is a redirect or not. Display cannot connect error.
-                        error.error = Translate.instant('core.cannotconnecttrouble');
-                    }
+                if (redirect) {
+                    error.message = Translate.instant('core.login.sitehasredirect');
+                } else {
+                    // We can't be sure if there is a redirect or not. Display cannot connect error.
+                    error.message = Translate.instant('core.cannotconnecttrouble');
                 }
-
-                throw new CoreSiteError({
-                    message: error.error,
-                    errorcode: error.errorcode,
-                    critical: true,
-                });
             }
+
+            throw new CoreSiteError({
+                message: error.message,
+                errorcode: error.errorcode,
+                critical: true,
+            });
         }
 
         siteUrl = temporarySite.getURL();
