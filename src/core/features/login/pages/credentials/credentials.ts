@@ -177,7 +177,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.siteName = CoreConstants.CONFIG.sitename ? CoreConstants.CONFIG.sitename : this.siteConfig.sitename;
             this.logoUrl = CoreLoginHelper.getLogoUrl(this.siteConfig);
             this.authInstructions = this.siteConfig.authinstructions || Translate.instant('core.login.loginsteps');
-            this.showScanQR = CoreLoginHelper.displayQRInCredentialsScreen();
+            this.showScanQR = CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
 
             const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
             this.identityProviders = CoreLoginHelper.getValidIdentityProviders(this.siteConfig, disabledFeatures);

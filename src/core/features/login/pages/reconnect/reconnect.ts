@@ -135,7 +135,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         }
 
         this.showScanQR = CoreLoginHelper.displayQRInSiteScreen() ||
-            CoreLoginHelper.displayQRInCredentialsScreen();
+            CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
 
         await CoreSites.checkApplication(this.siteConfig);
 

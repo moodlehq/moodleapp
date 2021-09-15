@@ -42,6 +42,15 @@ import { Translate } from '@singletons';
 import { CoreIonLoadingElement } from './ion-loading';
 
 /**
+ * QR Code type enumeration.
+ */
+export enum CoreSiteQRCodeType {
+    QR_CODE_DISABLED = 0, // QR code disabled value
+    QR_CODE_URL = 1, // QR code type URL value
+    QR_CODE_LOGIN = 2, // QR code type login value
+}
+
+/**
  * Class that represents a site (combination of site + user).
  * It will have all the site data and provide utility functions regarding a site.
  * To add tables to the site's database, please use registerSiteSchema exported in @services/sites.ts. This will make sure that
@@ -2122,6 +2131,7 @@ export type CoreSitePublicConfigResponse = {
     tool_mobile_androidappid?: string; // Android app's unique identifier.
     // eslint-disable-next-line @typescript-eslint/naming-convention
     tool_mobile_setuplink?: string; // App download page.
+    tool_mobile_qrcodetype?: CoreSiteQRCodeType; // eslint-disable-line @typescript-eslint/naming-convention
     warnings?: CoreWSExternalWarning[];
 };
 
