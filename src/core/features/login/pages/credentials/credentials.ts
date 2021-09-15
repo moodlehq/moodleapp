@@ -68,32 +68,32 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     /**
      * Initialize the component.
      */
-    ngOnInit(): void {
-        const siteUrl = CoreNavigator.getRouteParam<string>('siteUrl');
-        if (!siteUrl) {
-            CoreDomUtils.showErrorModal('Site URL not supplied.');
-            CoreNavigator.back();
+    async ngOnInit(): Promise<void> {
+        try {
+            this.siteUrl = CoreNavigator.getRequiredRouteParam<string>('siteUrl');
 
-            return;
+            this.siteName = CoreNavigator.getRouteParam('siteName');
+            this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && CoreNavigator.getRouteParam('logoUrl') || undefined;
+            this.siteConfig = CoreNavigator.getRouteParam('siteConfig');
+            this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            return CoreNavigator.back();
         }
-
-        this.siteUrl = siteUrl;
-        this.siteName = CoreNavigator.getRouteParam('siteName');
-        this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && CoreNavigator.getRouteParam('logoUrl') || undefined;
-        this.siteConfig = CoreNavigator.getRouteParam('siteConfig');
-        this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
-        this.showScanQR = CoreLoginHelper.displayQRInCredentialsScreen();
 
         this.credForm = this.fb.group({
             username: [CoreNavigator.getRouteParam<string>('username') || '', Validators.required],
             password: ['', Validators.required],
         });
 
-        this.treatSiteConfig();
+        if (this.siteConfig) {
+            this.treatSiteConfig();
+        }
         this.isFixedUrlSet = CoreLoginHelper.isFixedUrlSet();
 
-        if (this.isFixedUrlSet) {
-            // Fixed URL, we need to check if it uses browser SSO login.
+        if (this.isFixedUrlSet || !this.siteConfig) {
+            // Fixed URL or not siteConfig retrieved from params, we need to check if it uses browser SSO login.
             this.checkSite(this.siteUrl);
         } else {
             this.siteChecked = true;
@@ -177,6 +177,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.siteName = CoreConstants.CONFIG.sitename ? CoreConstants.CONFIG.sitename : this.siteConfig.sitename;
             this.logoUrl = CoreLoginHelper.getLogoUrl(this.siteConfig);
             this.authInstructions = this.siteConfig.authinstructions || Translate.instant('core.login.loginsteps');
+            this.showScanQR = CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
 
             const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
             this.identityProviders = CoreLoginHelper.getValidIdentityProviders(this.siteConfig, disabledFeatures);

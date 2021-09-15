@@ -26,7 +26,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlParams, CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
-import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse, CoreSiteQRCodeType } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
@@ -1237,15 +1237,22 @@ export class CoreLoginHelperProvider {
     /**
      * Check whether the QR reader should be displayed in credentials screen.
      *
+     * @param qrCodeType QR Code type from public config, assuming enabled if undefined.
      * @return Whether the QR reader should be displayed in credentials screen.
      */
-    displayQRInCredentialsScreen(): boolean {
+    displayQRInCredentialsScreen(qrCodeType = CoreSiteQRCodeType.QR_CODE_LOGIN): boolean {
         if (!CoreUtils.canScanQR()) {
             return false;
         }
 
-        return (CoreConstants.CONFIG.displayqroncredentialscreen === undefined && this.isFixedUrlSet()) ||
-            (CoreConstants.CONFIG.displayqroncredentialscreen !== undefined && !!CoreConstants.CONFIG.displayqroncredentialscreen);
+        if ((CoreConstants.CONFIG.displayqroncredentialscreen === undefined && this.isFixedUrlSet()) ||
+            (CoreConstants.CONFIG.displayqroncredentialscreen !== undefined &&
+                !!CoreConstants.CONFIG.displayqroncredentialscreen)) {
+
+            return qrCodeType == CoreSiteQRCodeType.QR_CODE_LOGIN;
+        }
+
+        return false;
     }
 
     /**
