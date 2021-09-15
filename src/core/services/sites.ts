@@ -948,9 +948,13 @@ export class CoreSitesProvider {
         } else {
             // Retrieve and create the site.
             const db = await this.appDB;
-            const data = await db.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { id: siteId });
+            try {
+                const data = await db.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { id: siteId });
 
-            return this.makeSiteFromSiteListEntry(data);
+                return this.makeSiteFromSiteListEntry(data);
+            } catch {
+                throw new CoreError('SiteId not found');
+            }
         }
     }
 
