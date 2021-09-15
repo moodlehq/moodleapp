@@ -491,7 +491,7 @@ export class CoreWSProvider {
                     message = Translate.instant('core.serverconnection');
             }
 
-            throw new CoreAjaxError(message);
+            throw new CoreAjaxError(message, 1, data.status);
         });
     }
 

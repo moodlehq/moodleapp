@@ -20,9 +20,12 @@ import { CoreError } from '@classes/errors/error';
 export class CoreAjaxError extends CoreError {
 
     available = 1; // @deprecated since app 4.0. AJAX endpoint should always be available in supported Moodle versions.
+    status?: number;
 
-    constructor(message: string) {
+    constructor(message: string, available?: number, status?: number) {
         super(message);
+
+        this.status = status;
     }
 
 }
