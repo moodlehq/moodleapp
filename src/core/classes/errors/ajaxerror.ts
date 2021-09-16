@@ -19,12 +19,13 @@ import { CoreError } from '@classes/errors/error';
  */
 export class CoreAjaxError extends CoreError {
 
-    available?: number; // Whether the AJAX call is available. 0 if unknown, 1 if available, -1 if not available.
+    available = 1; // @deprecated since app 4.0. AJAX endpoint should always be available in supported Moodle versions.
+    status?: number;
 
-    constructor(message: string, available?: number) {
+    constructor(message: string, available?: number, status?: number) {
         super(message);
 
-        this.available = typeof available == 'undefined' ? 0 : available;
+        this.status = status;
     }
 
 }

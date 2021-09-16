@@ -54,6 +54,8 @@ import { CoreSitesFactory } from './sites-factory';
 import { CoreText } from '@singletons/text';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreErrorWithTitle } from '@classes/errors/errorwithtitle';
+import { CoreAjaxError } from '@classes/errors/ajaxerror';
+import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 
@@ -183,33 +185,30 @@ export class CoreSitesProvider {
         // Now, replace the siteUrl with the protocol.
         siteUrl = siteUrl.replace(/^https?:\/\//i, protocol);
 
-        try {
-            await this.siteExists(siteUrl);
-        } catch (error) {
-            // Do not continue checking if WS are not enabled.
-            if (error.errorcode == 'enablewsdescription') {
-                error.critical = true;
+        // Create a temporary site to fetch site info.
+        let temporarySite = CoreSitesFactory.makeSite(undefined, siteUrl);
+        let config: CoreSitePublicConfigResponse | undefined;
 
-                throw error;
+        try {
+            config = await temporarySite.getPublicConfig();
+        } catch (error) {
+            const treatedError = await this.treatGetPublicConfigError(temporarySite.getURL(), error);
+            if (treatedError.critical) {
+                throw treatedError; // App received a WS error, stop.
             }
 
-            // Site doesn't exist. Try to add or remove 'www'.
-            const treatedUrl = CoreUrlUtils.addOrRemoveWWW(siteUrl);
+            // Try to add or remove 'www'.
+            temporarySite = CoreSitesFactory.makeSite(undefined, CoreUrlUtils.addOrRemoveWWW(siteUrl));
 
             try {
-                await this.siteExists(treatedUrl);
-
-                // Success, use this new URL as site url.
-                siteUrl = treatedUrl;
+                config = await temporarySite.getPublicConfig();
             } catch (secondError) {
-                // Do not continue checking if WS are not enabled.
-                if (secondError.errorcode == 'enablewsdescription') {
-                    secondError.critical = true;
-
-                    throw secondError;
+                const treatedSecondError = await this.treatGetPublicConfigError(temporarySite.getURL(), secondError);
+                if (treatedSecondError.critical) {
+                    throw treatedSecondError; // App received a WS error, stop.
                 }
 
-                // Return the error.
+                // App didn't receive a WS response, probably cannot connect. Prioritize first error if it's valid.
                 if (CoreTextUtils.getErrorMessageFromError(error)) {
                     throw error;
                 } else {
@@ -218,54 +217,27 @@ export class CoreSitesProvider {
             }
         }
 
-        // Site exists. Create a temporary site to fetch its info.
-        const temporarySite = CoreSitesFactory.makeSite(undefined, siteUrl);
-        let config: CoreSitePublicConfigResponse | undefined;
-
-        try {
-            config = await temporarySite.getPublicConfig();
-
-            // Check that the user can authenticate.
-            if (!config.enablewebservices) {
-                throw new CoreSiteError({
-                    message: Translate.instant('core.login.webservicesnotenabled'),
-                });
-            } else if (!config.enablemobilewebservice) {
-                throw new CoreSiteError({
-                    message: Translate.instant('core.login.mobileservicesnotenabled'),
-                });
-            } else if (config.maintenanceenabled) {
-                let message = Translate.instant('core.sitemaintenance');
-                if (config.maintenancemessage) {
-                    message += config.maintenancemessage;
-                }
-
-                throw new CoreSiteError({
-                    message,
-                });
+        // Check that the user can authenticate.
+        if (!config.enablewebservices) {
+            throw new CoreSiteError({
+                message: Translate.instant('core.login.webservicesnotenabled'),
+                critical: true,
+            });
+        } else if (!config.enablemobilewebservice) {
+            throw new CoreSiteError({
+                message: Translate.instant('core.login.mobileservicesnotenabled'),
+                critical: true,
+            });
+        } else if (config.maintenanceenabled) {
+            let message = Translate.instant('core.sitemaintenance');
+            if (config.maintenancemessage) {
+                message += config.maintenancemessage;
             }
-        } catch (error) {
-            // Error, check if not supported.
-            if (error.available === 1) {
-                // Service supported but an error happened. Return error.
-                if (error.errorcode == 'codingerror') {
-                    // This could be caused by a redirect. Check if it's the case.
-                    const redirect = await CoreUtils.checkRedirect(siteUrl);
 
-                    if (redirect) {
-                        error.error = Translate.instant('core.login.sitehasredirect');
-                    } else {
-                        // We can't be sure if there is a redirect or not. Display cannot connect error.
-                        error.error = Translate.instant('core.cannotconnecttrouble');
-                    }
-                }
-
-                throw new CoreSiteError({
-                    message: error.error,
-                    errorcode: error.errorcode,
-                    critical: true,
-                });
-            }
+            throw new CoreSiteError({
+                message,
+                critical: true,
+            });
         }
 
         siteUrl = temporarySite.getURL();
@@ -274,10 +246,47 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Treat an error returned by getPublicConfig in checkSiteWithProtocol. Converts the error to a CoreSiteError.
+     *
+     * @param siteUrl Site URL.
+     * @param error Error returned.
+     * @return Promise resolved with the treated error.
+     */
+    protected async treatGetPublicConfigError(siteUrl: string, error: CoreAjaxError | CoreAjaxWSError): Promise<CoreSiteError> {
+        if (!('errorcode' in error)) {
+            // The WS didn't return data, probably cannot connect.
+            return new CoreSiteError({
+                message: error.message || '',
+                critical: 'status' in error && error.status === -2, // Certificate error.
+            });
+        }
+
+        // Service supported but an error happened. Return error.
+        if (error.errorcode == 'codingerror') {
+            // This could be caused by a redirect. Check if it's the case.
+            const redirect = await CoreUtils.checkRedirect(siteUrl);
+
+            if (redirect) {
+                error.message = Translate.instant('core.login.sitehasredirect');
+            } else {
+                // We can't be sure if there is a redirect or not. Display cannot connect error.
+                error.message = Translate.instant('core.cannotconnecttrouble');
+            }
+        }
+
+        return new CoreSiteError({
+            message: error.message,
+            errorcode: error.errorcode,
+            critical: true,
+        });
+    }
+
+    /**
      * Check if a site exists.
      *
      * @param siteUrl URL of the site to check.
      * @return A promise to be resolved if the site exists.
+     * @deprecated since app 4.0. Now the app calls uses tool_mobile_get_public_config to check if site exists.
      */
     async siteExists(siteUrl: string): Promise<void> {
         let data: CoreSitesLoginTokenResponse;

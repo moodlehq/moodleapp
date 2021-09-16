@@ -37,6 +37,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 import { CoreNetworkError } from '@classes/errors/network-error';
+import { CoreSite } from '@classes/site';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -474,9 +475,23 @@ export class CoreWSProvider {
 
             return data.data;
         }, (data) => {
-            const available = data.status == 404 ? -1 : 0;
+            let message = '';
 
-            throw new CoreAjaxError(Translate.instant('core.serverconnection'), available);
+            switch (data.status) {
+                case -2: // Certificate error.
+                    message = this.getCertificateErrorMessage(data.error);
+                    break;
+                case 404: // AJAX endpoint not found.
+                    message = Translate.instant('core.ajaxendpointnotfound', {
+                        $a: CoreSite.MINIMUM_MOODLE_VERSION,
+                        whoisadmin: Translate.instant('core.whoissiteadmin'),
+                    });
+                    break;
+                default:
+                    message = Translate.instant('core.serverconnection');
+            }
+
+            throw new CoreAjaxError(message, 1, data.status);
         });
     }
 
@@ -675,10 +690,30 @@ export class CoreWSProvider {
                 }
 
                 return retryPromise;
+            } else if (error.status === -2) {
+                throw new CoreError(this.getCertificateErrorMessage(error.error));
             }
 
             throw new CoreError(Translate.instant('core.serverconnection'));
         });
+    }
+
+    /**
+     * Get error message about certificate error.
+     *
+     * @param error Exact error message.
+     * @return Certificate error message.
+     */
+    protected getCertificateErrorMessage(error?: string): string {
+        const message = Translate.instant('core.certificaterror', {
+            whoisadmin: Translate.instant('core.whoissiteadmin'),
+        });
+
+        if (error) {
+            return `${message}\n<p>${error}</p>`;
+        }
+
+        return message;
     }
 
     /**
