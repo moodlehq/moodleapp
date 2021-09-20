@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, Input, OnChanges, SimpleChange } from '@a
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData, CoreCourses } from '@features/courses/services/courses';
-import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
+import { CoreCourseSearchedDataWithExtraInfoAndOptions, CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
@@ -35,7 +35,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
     @Input() downloadEnabled = false;
 
-    courses: CoreEnrolledCourseDataWithOptions [] = [];
+    courses: CoreCourseSearchedDataWithExtraInfoAndOptions[] = [];
     prefetchCoursesData: CorePrefetchStatusInfo = {
         icon: '',
         statusTranslatable: 'core.loading',
@@ -112,7 +112,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCourses.invalidateUserCourses().finally(() =>
+        promises.push(CoreCourses.invalidateRecentCourses().finally(() =>
             // Invalidate course completion data.
             CoreUtils.allPromises(this.courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
@@ -136,7 +136,33 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         const showCategories = this.block.configsRecord && this.block.configsRecord.displaycategories &&
             this.block.configsRecord.displaycategories.value == '1';
 
-        this.courses = await CoreCoursesHelper.getUserCoursesWithOptions('lastaccess', 10, undefined, showCategories);
+        const recentCourses = await CoreCourses.getRecentCourses();
+        const courseIds = recentCourses.map((course) => course.id);
+
+        // Get the courses using getCoursesByField to get more info about each course.
+        const courses: CoreCourseSearchedDataWithExtraInfoAndOptions[] = await CoreCourses.getCoursesByField(
+            'ids',
+            courseIds.join(','),
+        );
+
+        // Sort them in the original order.
+        courses.sort((courseA, courseB) => courseIds.indexOf(courseA.id) - courseIds.indexOf(courseB.id));
+
+        // Get course options and extra info.
+        const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);
+        courses.forEach((course) => {
+            course.navOptions = options.navOptions[course.id];
+            course.admOptions = options.admOptions[course.id];
+
+            if (!showCategories) {
+                course.categoryname = '';
+            }
+        });
+
+        await CoreCoursesHelper.loadCoursesColorAndImage(courses);
+
+        this.courses = courses;
+
         this.initPrefetchCoursesIcons();
     }
 
@@ -148,11 +174,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     protected async refreshCourseList(): Promise<void> {
         CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
 
-        try {
-            await CoreCourses.invalidateUserCourses();
-        } catch (error) {
-            // Ignore errors.
-        }
+        await CoreUtils.ignoreErrors(CoreCourses.invalidateRecentCourses());
 
         await this.loadContent(true);
     }
