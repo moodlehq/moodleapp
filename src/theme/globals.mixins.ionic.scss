@@ -54,8 +54,8 @@
 
 // Mixes a color with white to create its tint.
 // --------------------------------------------------------------------------------------------
-@function get-color-tint($color) {
-  @return mix(#fff, $color, 10%);
+@function get-color-tint($color, $percent: 10%) {
+  @return mix(#fff, $color, $percent);
 }
 
 // Converts a color to a comma separated rgb.
@@ -65,7 +65,7 @@
 }
 
 
- // Ionic Colors
+// Ionic Colors
 // --------------------------------------------------
 // Generates the color classes and variables based on the
 // colors map
@@ -76,6 +76,7 @@
     $contrast: get_contrast_color($base);
     $shade: get-color-shade($base);
     $tint: get-color-tint($base);
+    $lighter: get-color-tint($base, 90%);
 
     --ion-color-#{$color-name}: var(--#{$color-name}, #{$base});
     --ion-color-#{$color-name}-base: var(--ion-color-#{$color-name});
@@ -84,6 +85,7 @@
     --ion-color-#{$color-name}-contrast-rgb: #{color-to-rgb-list($contrast)};
     --ion-color-#{$color-name}-shade: #{$shade};
     --ion-color-#{$color-name}-tint: #{$tint};
+    --ion-color-#{$color-name}-lighter: #{$lighter};
 
     .ion-color-#{$color-name} {
         --ion-color: var(--ion-color-#{$color-name});
@@ -93,6 +95,7 @@
         --ion-color-contrast-rgb: var(--ion-color-#{$color-name}-contrast-rgb);
         --ion-color-shade: var(--ion-color-#{$color-name}-shade);
         --ion-color-tint: var(--ion-color-#{$color-name}-tint);
+        --ion-color-lighter: var(--ion-color-#{$color-name}-lighter);
     }
 }
 

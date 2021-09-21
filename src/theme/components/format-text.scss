@@ -548,7 +548,7 @@ core-rich-text-editor .core-rte-editor {
             --color-base: var(--ion-color-#{$color-name});
             color: var(--color-base);
             border-color: var(--color-base);
-            background-color: var(--ion-color-#{$color-name}-tint);
+            background-color: var(--ion-color-#{$color-name}-lighter);
 
             .alert-link {
                 color: var(--ion-color-#{$color-name}-shade);
