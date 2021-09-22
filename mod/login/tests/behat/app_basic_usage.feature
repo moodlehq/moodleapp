@@ -39,7 +39,7 @@ Feature: Test basic usage of login in app
     And I set the field "Your site" to "Wrong Site Address" in the app
     And I press enter in the app
     Then I should find "Cannot connect" in the app
-    And I should find "Please check the address is correct." in the app
+    And I should find "Wrong Site Address" in the app
 
   Scenario: Delete a site
     When I enter the app
