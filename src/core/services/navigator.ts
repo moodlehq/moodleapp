@@ -532,10 +532,8 @@ export class CoreNavigatorService {
 
         const pathRoot = /^[^/]+/.exec(path)?.[0] ?? '';
         const currentMainMenuTab = this.getCurrentMainMenuTab();
-        const isMainMenuTab = await CoreUtils.ignoreErrors(
-            CoreMainMenu.isMainMenuTab(pathRoot),
-            false,
-        );
+        const isMainMenuTab = pathRoot === currentMainMenuTab || (!currentMainMenuTab && path === DEFAULT_MAIN_MENU_TAB) ||
+            await CoreUtils.ignoreErrors(CoreMainMenu.isMainMenuTab(pathRoot), false);
 
         if (!options.preferCurrentTab && isMainMenuTab) {
             return this.navigate(`/main/${path}`, options);

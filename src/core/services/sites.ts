@@ -722,10 +722,11 @@ export class CoreSitesProvider {
 
             const siteId = this.getCurrentSiteId();
             const downloadUrl = CoreApp.getAppStoreUrl(storesConfig);
+            let promise: Promise<unknown>;
 
             if (downloadUrl != null) {
                 // Do not block interface.
-                CoreDomUtils.showConfirm(
+                promise = CoreDomUtils.showConfirm(
                     Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
                     Translate.instant('core.updaterequired'),
                     Translate.instant('core.download'),
@@ -734,19 +735,20 @@ export class CoreSitesProvider {
                     // Do nothing.
                 });
             } else {
-                CoreDomUtils.showAlert(
+                // Do not block interface.
+                promise = CoreDomUtils.showAlert(
                     Translate.instant('core.updaterequired'),
                     Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
-                );
+                ).then((alert) => alert.onWillDismiss());
             }
 
-            if (siteId) {
-                // Logout the currentSite.
-                await this.logout();
-
-                // Always expire the token.
-                await this.setSiteLoggedOut(siteId, true);
-            }
+            promise.finally(() => {
+                if (siteId) {
+                    // Logout the currentSite and expire the token.
+                    this.logout();
+                    this.setSiteLoggedOut(siteId, true);
+                }
+            });
 
             throw new CoreError('Current app version is lower than required version.');
         }
@@ -803,24 +805,27 @@ export class CoreSitesProvider {
             return false;
         }
 
-        let config: CoreSitePublicConfigResponse | undefined;
+        this.login(siteId);
+        // Get some data in background, don't block the UI.
+        this.getPublicConfigAndCheckApplication(site);
+        this.updateSiteInfo(siteId);
 
-        try {
-            config = await site.getPublicConfig();
-        } catch (error) {
-            // Error getting config, maybe the user is offline.
-        }
+        return true;
+    }
 
+    /**
+     * Get site public config and check if app can access the site.
+     *
+     * @param site Site.
+     * @return Promise resolved when done.
+     */
+    protected async getPublicConfigAndCheckApplication(site: CoreSite): Promise<void> {
         try {
+            const config = await site.getPublicConfig();
+
             await this.checkApplication(config);
-
-            this.login(siteId);
-            // Update site info. We don't block the UI.
-            this.updateSiteInfo(siteId);
-
-            return true;
-        } catch (error) {
-            return false;
+        } catch {
+            // Ignore errors, maybe the user is offline.
         }
     }
 
