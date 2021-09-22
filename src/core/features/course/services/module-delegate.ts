@@ -52,7 +52,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @return Data to render the module.
      */
     getData(
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModule,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
@@ -279,7 +279,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      */
     async getModuleDataFor(
         modname: string,
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModule,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,

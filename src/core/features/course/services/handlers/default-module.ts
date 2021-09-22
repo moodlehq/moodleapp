@@ -16,7 +16,7 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../module-delegate';
-import { CoreCourse, CoreCourseAnyModuleData } from '../course';
+import { CoreCourse } from '../course';
 import { CoreCourseModule } from '../course-helper';
 import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
@@ -42,11 +42,11 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
      * @inheritdoc
      */
     async getData(
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModule,
     ): Promise<CoreCourseModuleHandlerData> {
         // Return the default data.
         const defaultData: CoreCourseModuleHandlerData = {
-            icon: await CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined),
+            icon: await CoreCourse.getModuleIconSrc(module.modname, module.modicon),
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
             action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {

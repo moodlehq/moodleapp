@@ -15,7 +15,7 @@
 import { CoreConstants } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
-import { CoreCourse, CoreCourseAnyModuleData, CoreCourseModuleContentFile } from '@features/course/services/course';
+import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
@@ -64,7 +64,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
      * @inheritdoc
      */
     async getData(
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModule,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
@@ -94,7 +94,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
         }];
 
         this.getResourceData(module, courseId, handlerData).then((data) => {
-            handlerData.icon = data.icon;
+            handlerData.icon = handlerData.icon || data.icon;
             handlerData.extraBadge = data.extra;
             handlerData.extraBadgeColor = 'light';
 
@@ -113,7 +113,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
      * @param courseId The course ID.
      * @return Resolved when done.
      */
-    protected async hideOpenButton(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
+    protected async hideOpenButton(module: CoreCourseModule, courseId: number): Promise<boolean> {
         if (!('contentsinfo' in module) || !module.contentsinfo) {
             await CoreCourse.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
         }
@@ -131,7 +131,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
      * @return Resource data.
      */
     protected async getResourceData(
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModule,
         courseId: number,
         handlerData: CoreCourseModuleHandlerData,
     ): Promise<AddonResourceHandlerData> {
@@ -233,7 +233,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
 
         // No previously set, just set the icon.
         if (resourceData.icon == '') {
-            resourceData.icon = await CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined);
+            resourceData.icon = await CoreCourse.getModuleIconSrc(module.modname, module.modicon);
         }
 
         return resourceData;

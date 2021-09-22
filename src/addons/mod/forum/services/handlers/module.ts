@@ -14,7 +14,6 @@
 
 import { Injectable, Type } from '@angular/core';
 import { AddonModForum, AddonModForumProvider } from '../forum';
-import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -23,6 +22,7 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/
 import { CoreConstants } from '@/core/constants';
 import { AddonModForumIndexComponent } from '../../components/index';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
+import { CoreCourseModule } from '@features/course/services/course-helper';
 
 /**
  * Handler to support forum modules.
@@ -53,7 +53,7 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
     /**
      * @inheritdoc
      */
-    async getData(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreCourseModuleHandlerData> {
+    async getData(module: CoreCourseModule, courseId: number): Promise<CoreCourseModuleHandlerData> {
         const data = await super.getData(module, courseId);
 
         if ('afterlink' in module && !!module.afterlink) {

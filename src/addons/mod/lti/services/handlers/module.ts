@@ -16,7 +16,6 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreConstants } from '@/core/constants';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
@@ -55,7 +54,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
      * @inheritdoc
      */
     async getData(
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModule,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
@@ -87,7 +86,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
      * @return Promise resolved when done.
      */
     protected async loadCustomIcon(
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModule,
         courseId: number,
         handlerData: CoreCourseModuleHandlerData,
     ): Promise<void> {
