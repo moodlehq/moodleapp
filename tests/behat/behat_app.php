@@ -85,19 +85,19 @@ class behat_app extends behat_base {
     /**
      * Opens the Moodle app in the browser.
      *
-     * @Given /^I launch the app$/
+     * @Given /^I launch the app( runtime)?$/
      * @throws DriverException Issue with configuration or feature file
      * @throws dml_exception Problem with Moodle setup
      * @throws ExpectationException Problem with resizing window
      */
-    public function i_launch_the_app() {
+    public function i_launch_the_app(string $runtime = '') {
         // Check the app tag was set.
         if (!$this->has_tag('app')) {
             throw new DriverException('Requires @app tag on scenario or feature.');
         }
 
         // Go to page and prepare browser for app.
-        $this->prepare_browser();
+        $this->prepare_browser(['skiponboarding' => empty($runtime)]);
     }
 
     /**
@@ -110,7 +110,7 @@ class behat_app extends behat_base {
         });
 
         // Prepare testing runtime again.
-        $this->prepare_browser(false);
+        $this->prepare_browser(['restart' => false]);
     }
 
     /**
@@ -360,7 +360,10 @@ class behat_app extends behat_base {
      * @param string $url App URL
      * @throws DriverException If the app fails to load properly
      */
-    protected function prepare_browser(bool $restart = true) {
+    protected function prepare_browser(array $options = []) {
+        $restart = $options['restart'] ?? true;
+        $skiponboarding = $options['skiponboarding'] ?? true;
+
         if ($restart) {
             // Restart the browser and set its size.
             $this->getSession()->restart();
@@ -406,11 +409,15 @@ class behat_app extends behat_base {
 
         if ($restart) {
             // Assert initial page.
-            $this->spin(function($context) {
+            $this->spin(function($context) use ($skiponboarding) {
                 $page = $context->getSession()->getPage();
                 $element = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
 
                 if ($element) {
+                    if (!$skiponboarding) {
+                        return true;
+                    }
+
                     // Wait for the onboarding modal to open, if any.
                     $this->wait_for_pending_js();
 
