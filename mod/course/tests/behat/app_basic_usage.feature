@@ -74,7 +74,7 @@ Feature: Test basic usage of one course in app
   Scenario: View course contents
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "Course 1" near "Course overview" in the app
     Then the header should be "Course 1" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
@@ -151,7 +151,7 @@ Feature: Test basic usage of one course in app
   Scenario: View section contents
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "Course 1" near "Course overview" in the app
     Then the header should be "Course 1" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
@@ -330,7 +330,7 @@ Feature: Test basic usage of one course in app
   Scenario: Navigation between sections using the bottom arrows
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "Course 1" near "Course overview" in the app
     Then the header should be "Course 1" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
@@ -409,7 +409,7 @@ Feature: Test basic usage of one course in app
   Scenario: Self enrol
     Given I enter the app
     And I log in as "teacher1"
-    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "Course 1" near "Course overview" in the app
     And I press "Display options" in the app
     And I press "Course summary" in the app
     And I press "Open in browser" in the app
@@ -449,7 +449,7 @@ Feature: Test basic usage of one course in app
   Scenario: Guest access
     Given I enter the app
     And I log in as "teacher1"
-    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "Course 1" near "Course overview" in the app
     And I press "Display options" in the app
     And I press "Course summary" in the app
     And I press "Open in browser" in the app
@@ -485,10 +485,11 @@ Feature: Test basic usage of one course in app
     And I should find "Test scorm name" in the app
     And I should find "Test workshop name" in the app
 
+  # TODO remove LMS UI steps in app tests
   Scenario: View blocks below/beside contents also when All sections selected
     Given I enter the app
     And I log in as "teacher1"
-    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "Course 1" near "Course overview" in the app
     And I press "Display options" in the app
     And I press "Course summary" in the app
     And I press "Open in browser" in the app
@@ -497,20 +498,20 @@ Feature: Test basic usage of one course in app
     And I press "Turn editing on"
     And I click on "Side panel" "button"
     And I follow "Add a block"
-    And I follow "HTML"
+    And I follow "Text"
     And I click on "#theme_boost-drawers-blocks [aria-label=\"Close drawer\"]" "css_element"
     And I click on "Side panel" "button"
     And I follow "Add a block"
     And I follow "Activities"
     And I click on "Actions menu" "icon" in the "#action-menu-toggle-0" "css_element"
-    And I follow "Configure (new HTML block) block"
-    And I set the field "HTML block title" to "HTML title test"
+    And I follow "Configure (new text block) block"
+    And I set the field "Text block title" to "HTML title test"
     And I set the field "Content" to "body test"
     And I press "Save changes"
     And I close the browser tab opened by the app
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Recently accessed courses" in the app
+    And I press "Course 1" near "Course overview" in the app
     Then the header should be "Course 1" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app

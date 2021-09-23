@@ -60,7 +60,7 @@ Feature: Test basic usage of courses in app
     And I should find "Course 2" in the app
     And I should find "Course 3" in the app
 
-    When I press "Course 1" near "Recently accessed courses" in the app
+    When I press "Course 1" near "Course overview" in the app
     Then I should find "Choice course 1" in the app
     And the header should be "Course 1" in the app
 
@@ -70,12 +70,12 @@ Feature: Test basic usage of courses in app
 
     When I press the back button in the app
     And I press the back button in the app
-    And I press "Course 2" near "Recently accessed courses" in the app
+    And I press "Course 2" near "Course overview" in the app
     Then I should find "Choice course 2" in the app
     And the header should be "Course 2" in the app
 
     When I press the back button in the app
-    And I press "Course 3" near "Recently accessed courses" in the app
+    And I press "Course 3" near "Course overview" in the app
     Then I should find "Choice course 3" in the app
     And the header should be "Course 3" in the app
 
@@ -100,20 +100,21 @@ Feature: Test basic usage of courses in app
     And I should find "Course 3" in the app
     And I should find "Course 4" in the app
 
+  # TODO remove LMS UI steps in app tests
   Scenario: Links to actions in Timeline work for teachers/students
     # Configure assignment as teacher
     When I enter the app
     And I log in as "teacher1"
     Then I should find "Timeline" in the app
 
-    Given I press "Course 1" near "Recently accessed courses" in the app
+    Given I press "Course 1" near "Course overview" in the app
     And I press "assignment" in the app
     And I press "Display options" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
     And I press "Actions menu"
-    And I follow "Edit settings"
+    And I follow "Settings"
     And I press "Expand all"
     And I click on "duedate[enabled]" "checkbox"
     And I click on "gradingduedate[enabled]" "checkbox"

@@ -174,6 +174,7 @@ Feature: Test basic usage of choice activity in app
     And I should find "Option 3: 0" in the app
     But I should not find "This Choice has offline data to be synchronised." in the app
 
+  # TODO remove LMS UI steps in app tests
   Scenario: Download students choice in text format
     # Submit answer as student
     Given the following "activities" exist:
@@ -199,6 +200,6 @@ Feature: Test basic usage of choice activity in app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
     And I press "Actions menu"
-    And I follow "View 1 responses"
+    And I follow "Responses"
     And I press "Download in text format"
     # TODO Then I should find "..." in the downloads folder
