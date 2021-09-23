@@ -39,7 +39,6 @@ import {
     CoreCourseSearchedData,
     CoreEnrolledCourseData,
 } from '@features/courses/services/courses';
-import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { CoreArray } from '@singletons/array';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCourseOffline } from './course-offline';
@@ -424,7 +423,7 @@ export class CoreCourseHelperProvider {
      * @return Resolved when downloaded, rejected if error or canceled.
      */
     async confirmAndPrefetchCourses(
-        courses: CoreEnrolledCourseDataWithExtraInfoAndOptions[],
+        courses: CoreCourseAnyCourseData[],
         options: CoreCourseConfirmPrefetchCoursesOptions = {},
     ): Promise<void> {
         const siteId = CoreSites.getCurrentSiteId();
@@ -1302,7 +1301,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when done.
      */
     async prefetchCourses(
-        courses: CoreEnrolledCourseDataWithExtraInfoAndOptions[],
+        courses: CoreCourseAnyCourseData[],
         prefetch: CorePrefetchStatusInfo,
         options: CoreCoursePrefetchCoursesOptions = {},
     ): Promise<void> {

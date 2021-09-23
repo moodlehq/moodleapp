@@ -15,7 +15,13 @@
 import { Injectable } from '@angular/core';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSites } from '@services/sites';
-import { CoreCourses, CoreCourseSearchedData, CoreCourseUserAdminOrNavOptionIndexed, CoreEnrolledCourseData } from './courses';
+import {
+    CoreCourseAnyCourseDataWithOptions,
+    CoreCourses,
+    CoreCourseSearchedData,
+    CoreCourseUserAdminOrNavOptionIndexed,
+    CoreEnrolledCourseData,
+} from './courses';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
@@ -81,6 +87,31 @@ export class CoreCoursesHelperProvider {
         }
 
         this.loadCourseColorAndImage(course, colors);
+    }
+
+    /**
+     * Given a list of courses returned by core_enrol_get_users_courses, load some extra data using the WebService
+     * core_course_get_courses_by_field if available.
+     *
+     * @param courses List of courses.
+     * @param loadCategoryNames Whether load category names or not.
+     * @return Promise resolved when done.
+     */
+    /**
+     * Loads the color of courses or the thumb image.
+     *
+     * @param courses List of courses.
+     * @return Promise resolved when done.
+     */
+    async loadCoursesColorAndImage(courses: CoreCourseSearchedData[]): Promise<void> {
+        if (!courses.length) {
+            return;
+        }
+        const colors = await this.loadCourseSiteColors();
+
+        courses.forEach((course) => {
+            this.loadCourseColorAndImage(course, colors);
+        });
     }
 
     /**
@@ -302,6 +333,26 @@ export type CoreEnrolledCourseDataWithOptions = CoreEnrolledCourseData & {
 };
 
 /**
+ * Course summary data with admin and navigation option availability.
+ */
+export type CoreCourseSearchedDataWithOptions = CoreCourseSearchedData & {
+    navOptions?: CoreCourseUserAdminOrNavOptionIndexed;
+    admOptions?: CoreCourseUserAdminOrNavOptionIndexed;
+};
+
+/**
  * Enrolled course data with admin and navigation option availability and extra rendering info.
  */
 export type CoreEnrolledCourseDataWithExtraInfoAndOptions = CoreEnrolledCourseDataWithExtraInfo & CoreEnrolledCourseDataWithOptions;
+
+/**
+ * Searched course data with admin and navigation option availability and extra rendering info.
+ */
+export type CoreCourseSearchedDataWithExtraInfoAndOptions = CoreCourseWithImageAndColor & CoreCourseSearchedDataWithOptions;
+
+/**
+ * Any course data with admin and navigation option availability and extra rendering info.
+ */
+export type CoreCourseAnyCourseDataWithExtraInfoAndOptions = CoreCourseWithImageAndColor & CoreCourseAnyCourseDataWithOptions & {
+    categoryname?: string; // Category name,
+};

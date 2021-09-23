@@ -5,7 +5,7 @@
     </div>
     <ion-item button lines="none" (click)="openCourse()" [attr.aria-label]="course.displayname || course.fullname"
         class="core-course-header" [class.item-disabled]="course.visible == 0"
-        [class.core-course-only-title]="!showAll || course.progress! < 0 && course.completionusertracked === false"
+        [class.core-course-only-title]="!showAll || progress < 0 && completionUserTracked === false"
         detail="false">
         <ion-label
             class="ion-text-wrap core-course-title"
@@ -26,9 +26,9 @@
                 </span>
             </p>
             <p class="item-heading">
-                <ion-icon name="fas-star" *ngIf="course.isfavourite" [attr.aria-label]="'core.courses.favourite' | translate">
+                <ion-icon name="fas-star" *ngIf="isFavourite" [attr.aria-label]="'core.courses.favourite' | translate">
                 </ion-icon>
-                <span class="sr-only" *ngIf="course.isfavourite">{{ 'core.courses.aria:favourite' | translate }}</span>
+                <span class="sr-only" *ngIf="isFavourite">{{ 'core.courses.aria:favourite' | translate }}</span>
                 <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
                 <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id"></core-format-text>
             </p>
@@ -61,10 +61,10 @@
             </ion-button>
         </div>
     </ion-item>
-    <ion-item *ngIf="showAll && course.progress! >= 0 && course.completionusertracked !== false" lines="none"
+    <ion-item *ngIf="showAll && progress >= 0 && completionUserTracked !== false" lines="none"
         class="core-course-progress">
         <ion-label>
-            <core-progress-bar [progress]="course.progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
+            <core-progress-bar [progress]="progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
         </ion-label>
     </ion-item>
     <ng-content></ng-content>
