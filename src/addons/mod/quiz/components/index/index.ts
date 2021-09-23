@@ -208,13 +208,15 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
                 await AddonModQuizSync.setSyncWarnings(quiz.id, []);
             }
 
-            if (AddonModQuiz.isQuizOffline(quiz) && sync) {
-                // Try to sync the quiz.
-                try {
-                    await this.syncActivity(showErrors);
-                } catch {
-                    // Ignore errors, keep getting data even if sync fails.
-                    this.autoReview = undefined;
+            if (AddonModQuiz.isQuizOffline(quiz)) {
+                if (sync) {
+                    // Try to sync the quiz.
+                    try {
+                        await this.syncActivity(showErrors);
+                    } catch {
+                        // Ignore errors, keep getting data even if sync fails.
+                        this.autoReview = undefined;
+                    }
                 }
             } else {
                 this.autoReview = undefined;
