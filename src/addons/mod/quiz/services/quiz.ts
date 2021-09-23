@@ -664,11 +664,21 @@ export class AddonModQuizProvider {
     /**
      * Given a list of attempts, returns the last finished attempt.
      *
-     * @param attempts Attempts.
+     * @param attempts Attempts sorted. First attempt should be the first on the list.
      * @return Last finished attempt.
      */
     getLastFinishedAttemptFromList(attempts?: AddonModQuizAttemptWSData[]): AddonModQuizAttemptWSData | undefined {
-        return attempts?.find(attempt => this.isAttemptFinished(attempt.state));
+        if (!attempts) {
+            return;
+        }
+
+        for (let i = attempts.length - 1; i >= 0; i--) {
+            const attempt = attempts[i];
+
+            if (this.isAttemptFinished(attempt.state)) {
+                return attempt;
+            }
+        }
     }
 
     /**
