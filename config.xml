@@ -48,6 +48,7 @@
     <preference name="iosScheme" value="moodleappfs" />
     <preference name="WKWebViewOnly" value="true" />
     <preference name="WKFullScreenEnabled" value="true" />
+    <preference name="AndroidXEnabled" value="true" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
