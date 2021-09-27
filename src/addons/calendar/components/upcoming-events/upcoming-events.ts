@@ -173,7 +173,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
     async fetchEvents(): Promise<void> {
         // Don't pass courseId and categoryId, we'll filter them locally.
         const result = await AddonCalendar.getUpcomingEvents();
-        this.onlineEvents = result.events.map((event) => AddonCalendarHelper.formatEventData(event));
+        this.onlineEvents = await Promise.all(result.events.map((event) => AddonCalendarHelper.formatEventData(event)));
         // Schedule notifications for the events retrieved.
         AddonCalendar.scheduleEventsNotifications(this.onlineEvents);
         // Merge the online events with offline data.

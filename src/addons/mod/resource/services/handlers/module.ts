@@ -63,12 +63,12 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
     /**
      * @inheritdoc
      */
-    getData(
+    async getData(
         module: CoreCourseAnyModuleData,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
-    ): CoreCourseModuleHandlerData {
+    ): Promise<CoreCourseModuleHandlerData> {
         const updateStatus = (status: string): void => {
             if (!handlerData.buttons) {
                 return;
@@ -79,7 +79,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
         };
         const openWithPicker = CoreFileHelper.defaultIsOpenWithPicker();
 
-        const handlerData = super.getData(module, courseId, sectionId, forCoursePage);
+        const handlerData = await super.getData(module, courseId, sectionId, forCoursePage);
         handlerData.updateStatus = updateStatus.bind(this);
         handlerData.buttons = [{
             hidden: true,
@@ -233,7 +233,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
 
         // No previously set, just set the icon.
         if (resourceData.icon == '') {
-            resourceData.icon = CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined);
+            resourceData.icon = await CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined);
         }
 
         return resourceData;

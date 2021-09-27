@@ -68,8 +68,8 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     isCurrentMonth = false;
     isPastMonth = false;
 
-    protected year?: number;
-    protected month?: number;
+    protected year: number;
+    protected month: number;
     protected categoriesRetrieved = false;
     protected categories: { [id: number]: CoreCategoryData } = {};
     protected currentSiteId: string;
@@ -121,16 +121,19 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         );
 
         this.differ = differs.find([]).create();
+
+        const now = new Date();
+
+        this.year = now.getFullYear();
+        this.month = now.getMonth() + 1;
     }
 
     /**
      * Component loaded.
      */
     ngOnInit(): void {
-        const now = new Date();
-
-        this.year = this.initialYear ? this.initialYear : now.getFullYear();
-        this.month = this.initialMonth ? this.initialMonth : now.getMonth() + 1;
+        this.year = this.initialYear ? this.initialYear : this.year;
+        this.month = this.initialMonth ? this.initialMonth : this.month;
 
         this.calculateIsCurrentMonth();
 
@@ -211,11 +214,11 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         // Don't pass courseId and categoryId, we'll filter them locally.
         let result: { daynames: Partial<AddonCalendarDayName>[]; weeks: Partial<AddonCalendarWeek>[] };
         try {
-            result = await AddonCalendar.getMonthlyEvents(this.year!, this.month!);
+            result = await AddonCalendar.getMonthlyEvents(this.year, this.month);
         } catch (error) {
             if (!CoreApp.isOnline()) {
                 // Allow navigating to non-cached months in offline (behave as if using emergency cache).
-                result = await AddonCalendarHelper.getOfflineMonthWeeks(this.year!, this.month!);
+                result = await AddonCalendarHelper.getOfflineMonthWeeks(this.year, this.month);
             } else {
                 throw error;
             }
@@ -223,27 +226,29 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
         // Calculate the period name. We don't use the one in result because it's in server's language.
         this.periodName = CoreTimeUtils.userDate(
-            new Date(this.year!, this.month! - 1).getTime(),
+            new Date(this.year, this.month - 1).getTime(),
             'core.strftimemonthyear',
         );
         this.weekDays = AddonCalendar.getWeekDays(result.daynames[0].dayno);
         this.weeks = result.weeks as AddonCalendarWeek[];
         this.calculateIsCurrentMonth();
 
-        this.weeks.forEach((week) => {
-            week.days.forEach((day) => {
+        await Promise.all(this.weeks.map(async (week) => {
+            await Promise.all(week.days.map(async (day) => {
                 day.periodName = CoreTimeUtils.userDate(
-                    new Date(this.year!, this.month! - 1, day.mday).getTime(),
+                    new Date(this.year, this.month - 1, day.mday).getTime(),
                     'core.strftimedaydate',
                 );
                 day.eventsFormated = day.eventsFormated || [];
                 day.filteredEvents = day.filteredEvents || [];
-                day.events.forEach((event) => {
-                    /// Format online events.
-                    day.eventsFormated!.push(AddonCalendarHelper.formatEventData(event));
-                });
-            });
-        });
+                // Format online events.
+                const onlineEventsFormatted = await Promise.all(
+                    day.events.map(async (event) => AddonCalendarHelper.formatEventData(event)),
+                );
+
+                day.eventsFormated = day.eventsFormated.concat(onlineEventsFormatted);
+            }));
+        }));
 
         if (this.isCurrentMonth) {
             const currentDay = new Date().getDate();
@@ -323,7 +328,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
         // Don't invalidate monthly events after a change, it has already been handled.
         if (!afterChange) {
-            promises.push(AddonCalendar.invalidateMonthlyEvents(this.year!, this.month!));
+            promises.push(AddonCalendar.invalidateMonthlyEvents(this.year, this.month));
         }
         promises.push(CoreCourses.invalidateCategories(0, true));
         promises.push(AddonCalendar.invalidateTimeFormat());
@@ -386,7 +391,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      * @param day Day.
      */
     dayClicked(day: number): void {
-        this.onDayClicked.emit({ day: day, month: this.month!, year: this.year! });
+        this.onDayClicked.emit({ day: day, month: this.month, year: this.year });
     }
 
     /**
@@ -398,7 +403,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         this.currentTime = CoreTimeUtils.timestamp();
 
         this.isCurrentMonth = this.year == now.getFullYear() && this.month == now.getMonth() + 1;
-        this.isPastMonth = this.year! < now.getFullYear() || (this.year == now.getFullYear() && this.month! < now.getMonth() + 1);
+        this.isPastMonth = this.year < now.getFullYear() || (this.year == now.getFullYear() && this.month < now.getMonth() + 1);
     }
 
     /**
@@ -432,9 +437,9 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     protected decreaseMonth(): void {
         if (this.month === 1) {
             this.month = 12;
-            this.year!--;
+            this.year--;
         } else {
-            this.month!--;
+            this.month--;
         }
     }
 
@@ -444,9 +449,9 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     protected increaseMonth(): void {
         if (this.month === 12) {
             this.month = 1;
-            this.year!++;
+            this.year++;
         } else {
-            this.month!++;
+            this.month++;
         }
     }
 
@@ -455,7 +460,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      */
     protected mergeEvents(): void {
         const monthOfflineEvents: { [day: number]: AddonCalendarEventToDisplay[] } =
-            this.offlineEvents[AddonCalendarHelper.getMonthId(this.year!, this.month!)];
+            this.offlineEvents[AddonCalendarHelper.getMonthId(this.year, this.month)];
 
         this.weeks.forEach((week) => {
             week.days.forEach((day) => {

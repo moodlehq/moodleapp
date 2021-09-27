@@ -53,8 +53,8 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
     /**
      * @inheritdoc
      */
-    getData(module: CoreCourseAnyModuleData, courseId: number): CoreCourseModuleHandlerData {
-        const data = super.getData(module, courseId);
+    async getData(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreCourseModuleHandlerData> {
+        const data = await super.getData(module, courseId);
 
         if ('afterlink' in module && !!module.afterlink) {
             data.extraBadgeColor = '';

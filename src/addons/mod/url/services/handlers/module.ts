@@ -54,7 +54,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
     /**
      * @inheritdoc
      */
-    getData(module: CoreCourseAnyModuleData, courseId: number): CoreCourseModuleHandlerData {
+    async getData(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreCourseModuleHandlerData> {
 
         /**
          * Open the URL.
@@ -77,7 +77,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
         };
 
         const handlerData: CoreCourseModuleHandlerData = {
-            icon: CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined),
+            icon: await CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined),
             title: module.name,
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
@@ -111,7 +111,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
             }],
         };
 
-        this.hideLinkButton(module, courseId).then((hideButton) => {
+        this.hideLinkButton(module, courseId).then(async (hideButton) => {
             if (!handlerData.buttons) {
                 return;
             }
@@ -121,7 +121,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
             if (module.contents && module.contents[0]) {
                 // Calculate the icon to use.
                 handlerData.icon = AddonModUrl.guessIcon(module.contents[0].fileurl) ||
-                    CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined);
+                    await CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined);
             }
 
             return;

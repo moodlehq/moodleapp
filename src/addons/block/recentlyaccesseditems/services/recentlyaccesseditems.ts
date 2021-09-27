@@ -52,14 +52,14 @@ export class AddonBlockRecentlyAccessedItemsProvider {
         const items: AddonBlockRecentlyAccessedItemsItem[] =
             await site.read('block_recentlyaccesseditems_get_recent_items', undefined, preSets);
 
-        return items.map((item) => {
+        return await Promise.all(items.map(async (item) => {
             const modicon = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'src');
 
-            item.iconUrl = CoreCourse.getModuleIconSrc(item.modname, modicon || undefined);
+            item.iconUrl = await CoreCourse.getModuleIconSrc(item.modname, modicon || undefined);
             item.iconTitle = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'title');
 
             return item;
-        });
+        }));
     }
 
     /**

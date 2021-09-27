@@ -34,14 +34,14 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
     /**
      * @inheritdoc
      */
-    getData(
+    async getData(
         module: CoreCourseAnyModuleData,
         courseId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         sectionId?: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         forCoursePage?: boolean, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): CoreCourseModuleHandlerData {
+    ): Promise<CoreCourseModuleHandlerData> {
         return {
-            icon: CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined),
+            icon: await CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined),
             title: module.name,
             class: 'addon-mod_' + module.modname + '-handler',
             showDownloadButton: true,

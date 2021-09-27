@@ -520,7 +520,7 @@ export class CoreCourseProvider {
         const params: CoreCourseGetCourseModuleWSParams = {
             cmid: moduleId,
         };
-        const preSets = {
+        const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getModuleCacheKey(moduleId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
         };
@@ -528,11 +528,9 @@ export class CoreCourseProvider {
 
         if (response.warnings && response.warnings.length) {
             throw new CoreWSError(response.warnings[0]);
-        } else if (response.cm) {
-            return response.cm;
         }
 
-        throw Error('WS core_course_get_course_module failed.');
+        return response.cm;
     }
 
     /**
@@ -632,7 +630,7 @@ export class CoreCourseProvider {
      * @param modicon The mod icon string to use in case we are not using a core activity.
      * @return The IMG src.
      */
-    getModuleIconSrc(moduleName: string, modicon?: string): string {
+    async getModuleIconSrc(moduleName: string, modicon?: string): Promise<string> {
         if (this.CORE_MODULES.indexOf(moduleName) < 0) {
             if (modicon) {
                 return modicon;

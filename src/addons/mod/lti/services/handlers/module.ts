@@ -54,13 +54,13 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
     /**
      * @inheritdoc
      */
-    getData(
+    async getData(
         module: CoreCourseAnyModuleData,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
-    ): CoreCourseModuleHandlerData {
-        const data = super.getData(module, courseId, sectionId, forCoursePage);
+    ): Promise<CoreCourseModuleHandlerData> {
+        const data = await super.getData(module, courseId, sectionId, forCoursePage);
         data.showDownloadButton = false;
 
         data.buttons = [{
