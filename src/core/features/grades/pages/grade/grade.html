@@ -17,8 +17,9 @@
             <ion-item *ngIf="grade.itemname && grade.link" class="ion-text-wrap" detail="true" [href]="grade.link" core-link
             capture="true">
                 <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" slot="start" [attr.aria-label]="grade.iconAlt"></ion-icon>
-                <img *ngIf="grade.image" [src]="grade.image" slot="start" class="core-module-icon"
-                    [alt]="grade.iconAlt">
+                <img *ngIf="grade.image && !grade.itemmodule" [src]="grade.image && grade.itemmodule" slot="start" [alt]="grade.iconAlt"/>
+                <core-mod-icon *ngIf="grade.image && grade.itemmodule" [modicon]="grade.image" slot="start" [modname]="grade.itemmodule">
+                </core-mod-icon>
                 <ion-label>
                     <h2><core-format-text [text]="grade.itemname" contextLevel="course" [contextInstanceId]="courseId">
                     </core-format-text></h2>
@@ -27,7 +28,9 @@
 
             <ion-item *ngIf="grade.itemname && !grade.link" class="ion-text-wrap" >
                 <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" slot="start" [attr.aria-label]="grade.iconAlt"></ion-icon>
-                <img *ngIf="grade.image" [src]="grade.image" slot="start" class="core-module-icon" [alt]="grade.iconAlt"/>
+                <img *ngIf="grade.image && !grade.itemmodule" [src]="grade.image" slot="start" [alt]="grade.iconAlt"/>
+                <core-mod-icon *ngIf="grade.image && grade.itemmodule" [modicon]="grade.image" slot="start" [modname]="grade.itemmodule">
+                </core-mod-icon>
                 <ion-label>
                     <h2><core-format-text [text]="grade.itemname" contextLevel="course" [contextInstanceId]="courseId">
                     </core-format-text></h2>

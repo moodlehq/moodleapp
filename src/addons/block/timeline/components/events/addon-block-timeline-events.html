@@ -5,10 +5,10 @@
     <ng-container *ngFor="let event of dayEvents.events">
         <ion-item class="ion-text-wrap core-course-module-handler item-media" detail="false" (click)="action($event, event.url)"
             [attr.aria-label]="event.name" button>
-            <img slot="start" [src]="event.iconUrl" alt="" role="presentation" *ngIf="event.iconUrl" class="core-module-icon">
+            <core-mod-icon *ngIf="event.iconUrl" slot="start" [modicon]="event.iconUrl" [componentId]="event.instance"
+                [modname]="event.modulename">
+            </core-mod-icon>
             <ion-label>
-                <!-- Add the icon title so accessibility tools read it. -->
-                <span class="sr-only" *ngIf="event.iconTitle">{{ event.iconTitle }}</span>
                 <p class="item-heading">
                     <core-format-text [text]="event.name" contextLevel="module" [contextInstanceId]="event.id"
                         [courseId]="event.course && event.course.id">

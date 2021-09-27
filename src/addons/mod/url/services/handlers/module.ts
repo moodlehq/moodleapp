@@ -119,9 +119,10 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
             handlerData.buttons[0].hidden = hideButton;
 
             if (module.contents && module.contents[0]) {
+                const icon = AddonModUrl.guessIcon(module.contents[0].fileurl);
+
                 // Calculate the icon to use.
-                handlerData.icon = await CoreCourse.getModuleIconSrc(module.modname, module.modicon) ||
-                    AddonModUrl.guessIcon(module.contents[0].fileurl);
+                handlerData.icon = await CoreCourse.getModuleIconSrc(module.modname, module.modicon, icon);
             }
 
             return;

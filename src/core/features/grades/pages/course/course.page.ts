@@ -114,7 +114,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      * Update the table of grades.
      */
     private async fetchGrades(): Promise<void> {
-        const table = await CoreGrades.getCourseGradesTable(this.grades.courseId!, this.grades.userId);
+        const table = await CoreGrades.getCourseGradesTable(this.grades.courseId, this.grades.userId);
         const formattedTable = await CoreGradesHelper.formatGradesTable(table);
 
         this.grades.setTable(formattedTable);
@@ -192,7 +192,7 @@ class CoreGradesCourseManager extends CorePageItemsListManager<CoreGradesFormatt
      * @inheritdoc
      */
     protected async logActivity(): Promise<void> {
-        await CoreGrades.logCourseGradesView(this.courseId!, this.userId!);
+        await CoreGrades.logCourseGradesView(this.courseId, this.userId);
     }
 
     /**

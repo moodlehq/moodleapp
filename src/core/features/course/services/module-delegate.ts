@@ -20,7 +20,7 @@ import { CoreSite } from '@classes/site';
 import { CoreCourseModuleDefaultHandler } from './handlers/default-module';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from './course';
+import { CoreCourse, CoreCourseWSModule } from './course';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModule } from './course-helper';

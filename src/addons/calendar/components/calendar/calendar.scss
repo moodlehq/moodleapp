@@ -144,15 +144,15 @@
         }
     }
 
-    .core-module-icon {
+    core-mod-icon {
         margin-right: 1px;
         margin-left: 1px;
         --size: 16px;
         display: inline-block;
         vertical-align: bottom;
-    }
-    .core-module-icon[slot="start"] {
-        padding: 6px;
+        ::ng-deep img {
+            display: block;
+        }
     }
 }
 

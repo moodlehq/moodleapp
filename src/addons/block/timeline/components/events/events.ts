@@ -104,7 +104,8 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
             return start <= event.timesort;
         }).map(async (event) => {
             event.iconUrl = await CoreCourse.getModuleIconSrc(event.icon.component);
-            event.iconTitle = event.modulename && CoreCourse.translateModuleName(event.modulename);
+            event.modulename = event.modulename || event.icon.component;
+            event.iconTitle = CoreCourse.translateModuleName(event.modulename);
 
             return event;
         }));

@@ -17,13 +17,8 @@ import { Injectable, Type } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModule } from '@features/course/services/course-helper';
-import { CoreApp } from '@services/app';
-import { CoreFilepool } from '@services/filepool';
-import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
-import { DomSanitizer, makeSingleton } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { AddonModLtiHelper } from '../lti-helper';
-import { AddonModLti, AddonModLtiProvider } from '../lti';
 import { AddonModLtiIndexComponent } from '../../components/index';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 
@@ -62,6 +57,9 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
         const data = await super.getData(module, courseId, sectionId, forCoursePage);
         data.showDownloadButton = false;
 
+        // Handle custom icons.
+        data.icon =  module.modicon;
+
         data.buttons = [{
             icon: 'fas-external-link-alt',
             label: 'addon.mod_lti.launchactivity',
@@ -71,47 +69,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
             },
         }];
 
-        // Handle custom icons.
-        CoreUtils.ignoreErrors(this.loadCustomIcon(module, courseId, data));
-
         return data;
-    }
-
-    /**
-     * Load the custom icon.
-     *
-     * @param module Module.
-     * @param courseId Course ID.
-     * @param data Handler data.
-     * @return Promise resolved when done.
-     */
-    protected async loadCustomIcon(
-        module: CoreCourseModule,
-        courseId: number,
-        handlerData: CoreCourseModuleHandlerData,
-    ): Promise<void> {
-        const lti = await AddonModLti.getLti(courseId, module.id);
-
-        const icon = lti.secureicon || lti.icon;
-        if (!icon) {
-            return;
-        }
-
-        const siteId = CoreSites.getCurrentSiteId();
-
-        try {
-            await CoreFilepool.downloadUrl(siteId, icon, false, AddonModLtiProvider.COMPONENT, module.id);
-
-            // Get the internal URL.
-            const url = await CoreFilepool.getSrcByUrl(siteId, icon, AddonModLtiProvider.COMPONENT, module.id);
-
-            handlerData.icon = DomSanitizer.bypassSecurityTrustUrl(url);
-        } catch {
-            // Error downloading. If we're online we'll set the online url.
-            if (CoreApp.isOnline()) {
-                handlerData.icon = DomSanitizer.bypassSecurityTrustUrl(icon);
-            }
-        }
     }
 
     /**

@@ -4,7 +4,8 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <h1 *ngIf="event">
-            <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" alt="" role="presentation" class="core-module-icon">
+            <core-mod-icon *ngIf="event.moduleIcon" [modicon]="event.moduleIcon" [showAlt]="false"
+                [modname]="event.modulename" [componentId]="event.instance"></core-mod-icon>
             <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" aria-hidden="true"></ion-icon>
             <!-- Add the icon title so accessibility tools read it. -->
             <span class="sr-only">
