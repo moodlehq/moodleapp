@@ -128,6 +128,8 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
+    "@angular-builders/custom-webpack": "^10.0.1",
+    "@angular-devkit/architect": "^0.1202.7",
     "@angular-devkit/build-angular": "~0.1000.8",
     "@angular-eslint/builder": "^4.2.0",
     "@angular-eslint/eslint-plugin": "^4.2.0",
@@ -169,6 +171,7 @@
     "jest-preset-angular": "^8.3.1",
     "jsonc-parser": "^2.3.1",
     "native-run": "^1.4.0",
+    "terser-webpack-plugin": "^4.2.3",
     "ts-jest": "^26.4.1",
     "ts-node": "~8.3.0",
     "typescript": "^3.9.9"
