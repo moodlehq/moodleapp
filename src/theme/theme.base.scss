@@ -384,6 +384,46 @@ ion-toolbar {
     }
 }
 
+// Iframe fullscreen manage.
+// Using router outlet to avoid changing styles on modals.
+body.core-iframe-fullscreen ion-router-outlet {
+
+    ion-tab-bar.mainmenu-tabs {
+        display: none;
+    }
+
+    --core-header-toolbar-height: 48px;
+    --core-header-toolbar-color: white;
+    --core-header-toolbar-background: black;
+    --core-header-toolbar-border-width: 0;
+
+    ion-header ion-toolbar {
+        h1, ion-back-button {
+            display: none;
+        }
+    }
+
+    @media screen and (orientation: landscape) {
+        // Place ion-header on the side and hide text
+        .ion-page {
+            flex-direction: row-reverse;
+            ion-header {
+                width: var(--core-header-toolbar-height);
+
+                ion-toolbar {
+                    height: 100%;
+                    --padding-start: 0;
+                    --padding-end: 0;
+                }
+
+                ion-buttons {
+                    flex-direction: column-reverse;
+                }
+            }
+        }
+    }
+}
+
 // Modals.
 .core-modal-fullscreen .modal-wrapper {
     position: absolute;

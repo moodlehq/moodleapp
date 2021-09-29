@@ -66,7 +66,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     protected moduleUrl!: string; // Module URL.
     protected newAttempt = false; // Whether to start a new attempt.
     protected organizationId?: string; // Organization ID to load.
-    protected attempt?: number; // The attempt number.
+    protected attempt = 0; // The attempt number.
     protected offline = false; // Whether it's offline mode.
     protected userData?: AddonModScormUserDataMap; // User data.
     protected initialScoId?: number; // Initial SCO ID to load.
@@ -96,7 +96,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             this.newAttempt = !!CoreNavigator.getRouteBooleanParam('newAttempt');
             this.organizationId = CoreNavigator.getRouteParam('organizationId');
             this.initialScoId = CoreNavigator.getRouteNumberParam('scoId');
-            this.siteId = CoreSites.getCurrentSiteId();
+            this.siteId = CoreSites.getRequiredCurrentSite().getId();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -150,14 +150,12 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         this.showToc = AddonModScorm.displayTocInPlayer(this.scorm);
 
         if (this.scorm.popup) {
-            this.mainMenuPage.changeVisibility(false);
-
             // If we receive a value > 100 we assume it's a fixed pixel size.
-            if (this.scorm.width! > 100) {
+            if (this.scorm.width && this.scorm.width > 100) {
                 this.scormWidth = this.scorm.width;
 
                 // Only get fixed size on height if width is also fixed.
-                if (this.scorm.height! > 100) {
+                if (this.scorm.height && this.scorm.height > 100) {
                     this.scormHeight = this.scorm.height;
                 }
             }
@@ -198,7 +196,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             // Wait a bit to prevent collisions between this store and SCORM API's store.
             setTimeout(async () => {
                 try {
-                    AddonModScormHelper.convertAttemptToOffline(this.scorm, this.attempt!);
+                    AddonModScormHelper.convertAttemptToOffline(this.scorm, this.attempt);
                 } catch (error) {
                     CoreDomUtils.instance.showErrorModalDefault(error, 'core.error', true);
                 }
@@ -292,7 +290,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             await this.determineAttemptAndMode(attemptsData);
 
             const [data, accessInfo] = await Promise.all([
-                AddonModScorm.getScormUserData(this.scorm.id, this.attempt!, {
+                AddonModScorm.getScormUserData(this.scorm.id, this.attempt, {
                     cmId: this.cmId,
                     offline: this.offline,
                 }),
@@ -319,13 +317,13 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
         try {
             // We need to check incomplete again: attempt number or status might have changed.
-            this.incomplete = await AddonModScorm.isAttemptIncomplete(this.scorm.id, this.attempt!, {
+            this.incomplete = await AddonModScorm.isAttemptIncomplete(this.scorm.id, this.attempt, {
                 offline: this.offline,
                 cmId: this.cmId,
             });
 
             // Get TOC.
-            this.toc = await AddonModScormHelper.getToc(this.scorm.id, this.attempt!, this.incomplete, {
+            this.toc = await AddonModScormHelper.getToc(this.scorm.id, this.attempt, this.incomplete, {
                 organization: this.organizationId,
                 offline: this.offline,
                 cmId: this.cmId,
@@ -351,7 +349,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             }
 
             // No SCO defined. Get the first valid one.
-            const sco = await AddonModScormHelper.getFirstSco(this.scorm.id, this.attempt!, {
+            const sco = await AddonModScormHelper.getFirstSco(this.scorm.id, this.attempt, {
                 toc: this.toc,
                 organization: this.organizationId,
                 mode: this.mode,
@@ -383,7 +381,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
                 this.siteId,
                 this.scorm,
                 sco.id,
-                this.attempt!,
+                this.attempt,
                 this.userData!,
                 this.mode,
                 this.offline,
@@ -446,14 +444,14 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         }];
 
         try {
-            AddonModScorm.saveTracks(sco.id, this.attempt!, tracks, this.scorm, this.offline);
+            AddonModScorm.saveTracks(sco.id, this.attempt, tracks, this.scorm, this.offline);
         } catch {
             // Error saving data. Go offline if needed.
             if (this.offline) {
                 return;
             }
 
-            const data = await AddonModScorm.getScormUserData(this.scorm.id, this.attempt!, {
+            const data = await AddonModScorm.getScormUserData(this.scorm.id, this.attempt, {
                 cmId: this.cmId,
             });
 
@@ -464,12 +462,12 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
             try {
                 // Go offline.
-                await AddonModScormHelper.convertAttemptToOffline(this.scorm, this.attempt!);
+                await AddonModScormHelper.convertAttemptToOffline(this.scorm, this.attempt);
 
                 this.offline = true;
                 this.dataModel?.setOffline(true);
 
-                await AddonModScorm.saveTracks(sco.id, this.attempt!, tracks, this.scorm, true);
+                await AddonModScorm.saveTracks(sco.id, this.attempt, tracks, this.scorm, true);
             } catch (error) {
                 CoreDomUtils.instance.showErrorModalDefault(error, 'core.error', true);
             }
@@ -528,7 +526,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             value: String(CoreTimeUtils.timestamp()),
         }];
 
-        await AddonModScorm.saveTracks(scoId, this.attempt!, tracks, this.scorm, this.offline);
+        await AddonModScorm.saveTracks(scoId, this.attempt, tracks, this.scorm, this.offline);
 
         if (this.offline) {
             return;
@@ -539,22 +537,6 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             cmId: this.cmId,
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
         }));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ionViewDidEnter(): void {
-        if (this.scorm && this.scorm.popup) {
-            this.mainMenuPage.changeVisibility(false);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ionViewWillLeave(): void {
-        this.mainMenuPage.changeVisibility(true);
     }
 
     /**
