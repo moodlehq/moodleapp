@@ -161,7 +161,11 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
      * Expand the description.
      */
     expandDescription(): void {
-        CoreTextUtils.viewText(Translate.instant('core.description'), this.description!, {
+        if (!this.description) {
+            return;
+        }
+
+        CoreTextUtils.viewText(Translate.instant('core.description'), this.description, {
             component: this.component,
             componentId: this.module.id,
             filter: true,

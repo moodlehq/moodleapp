@@ -28,6 +28,7 @@ import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
+import { CoreSitePluginsModuleHandler } from '../classes/handlers/module-handler';
 
 const ROOT_CACHE_KEY = 'CoreSitePlugins:';
 
@@ -44,6 +45,8 @@ export class CoreSitePluginsProvider {
     protected sitePlugins: {[name: string]: CoreSitePluginsHandler} = {}; // Site plugins registered.
     protected sitePluginPromises: {[name: string]: Promise<void>} = {}; // Promises of loading plugins.
     protected fetchPluginsDeferred: PromiseDefer<void>;
+    protected moduleHandlerInstances: Record<string, CoreSitePluginsModuleHandler> = {};
+
     hasSitePluginsLoaded = false;
     sitePluginsFinishedLoading = false;
 
@@ -262,7 +265,7 @@ export class CoreSitePluginsProvider {
         switch (paramName) {
             case 'courseids':
                 // The WS needs the list of course IDs. Create the list.
-                return [courseId!];
+                return [courseId || 0];
 
             case component + 'id':
                 // The WS needs the instance id.
@@ -540,10 +543,13 @@ export class CoreSitePluginsProvider {
             return;
         }
 
+        const siteInstance = site;
+        const offlineFunctions = handlerSchema.offlinefunctions;
+
         await Promise.all(Object.keys(handlerSchema.offlinefunctions).map(async(method) => {
-            if (site!.wsAvailable(method)) {
+            if (siteInstance.wsAvailable(method)) {
                 // The method is a WS.
-                const paramsList = handlerSchema.offlinefunctions![method];
+                const paramsList = offlineFunctions[method];
                 const cacheKey = this.getCallWSCacheKey(method, args);
                 let params: Record<string, unknown> = {};
 
@@ -584,7 +590,7 @@ export class CoreSitePluginsProvider {
             // Prefetch the files in the content.
             if (result.files.length) {
                 await CoreFilepool.downloadOrPrefetchFiles(
-                    site!.getId(),
+                    siteInstance.getId(),
                     result.files,
                     !!prefetch,
                     false,
@@ -655,6 +661,26 @@ export class CoreSitePluginsProvider {
      */
     waitFetchPlugins(): Promise<void> {
         return this.fetchPluginsDeferred.promise;
+    }
+
+    /**
+     * Get a module hander instance, if present.
+     *
+     * @param modName Mod name without "mod_".
+     * @return Handler instance, undefined if not found.
+     */
+    getModuleHandlerInstance(modName: string): CoreSitePluginsModuleHandler | undefined {
+        return this.moduleHandlerInstances[modName];
+    }
+
+    /**
+     * Set a module hander instance.
+     *
+     * @param modName Mod name.
+     * @param handler Handler instance.
+     */
+    setModuleHandlerInstance(modName: string, handler: CoreSitePluginsModuleHandler): void {
+        this.moduleHandlerInstances[modName] = handler;
     }
 
 }

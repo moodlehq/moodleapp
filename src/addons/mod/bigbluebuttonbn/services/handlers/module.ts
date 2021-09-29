@@ -17,6 +17,8 @@ import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
+import { CoreSitePluginsModuleHandler } from '@features/siteplugins/classes/handlers/module-handler';
+import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { makeSingleton } from '@singletons';
 import { AddonModBBBIndexComponent } from '../../components/index';
 import { AddonModBBB } from '../bigbluebuttonbn';
@@ -32,6 +34,7 @@ export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase imple
     name = 'AddonModBBB';
     modName = 'bigbluebuttonbn';
     protected pageName = ADDON_MOD_BBB_MAIN_MENU_PAGE_NAME;
+    protected sitePluginHandler?: CoreSitePluginsModuleHandler;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,
@@ -48,7 +51,21 @@ export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase imple
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return AddonModBBB.isPluginEnabled();
+        const enabled = await AddonModBBB.isPluginEnabled();
+
+        if (enabled) {
+            delete this.sitePluginHandler;
+            this.name = 'AddonModBBB';
+
+            return true;
+        }
+
+        // Native support not available in this site. Check if it's supported by site plugin.
+        this.sitePluginHandler = CoreSitePlugins.getModuleHandlerInstance(this.modName);
+        // Change the handler name to be able to retrieve the plugin data in component.
+        this.name = this.sitePluginHandler?.name || this.name;
+
+        return !!this.sitePluginHandler;
     }
 
     /**
@@ -60,6 +77,10 @@ export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase imple
         sectionId?: number,
         forCoursePage?: boolean,
     ): CoreCourseModuleHandlerData {
+        if (this.sitePluginHandler) {
+            return this.sitePluginHandler.getData(module, courseId, sectionId, forCoursePage);
+        }
+
         const data = super.getData(module, courseId, sectionId, forCoursePage);
 
         data.showDownloadButton = false;
@@ -71,6 +92,10 @@ export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase imple
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        if (this.sitePluginHandler) {
+            return this.sitePluginHandler.getMainComponent();
+        }
+
         return AddonModBBBIndexComponent;
     }
 
