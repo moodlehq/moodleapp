@@ -6,8 +6,8 @@
         <ng-container *ngFor="let event of filteredEvents">
             <ion-item class="ion-text-wrap addon-calendar-event" [attr.aria-label]="event.name" (click)="eventClicked(event)" button
                 [ngClass]="['addon-calendar-eventtype-'+event.eventtype]" detail="true">
-                <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" slot="start" class="core-module-icon" alt=""
-                    role="presentation">
+                <core-mod-icon *ngIf="event.moduleIcon" [modicon]="event.moduleIcon" slot="start" [modname]="event.modulename"
+                    [componentId]="event.instance" [showAlt]="false"></core-mod-icon>
                 <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" slot="start" aria-hidden="true">
                 </ion-icon>
                 <ion-label>

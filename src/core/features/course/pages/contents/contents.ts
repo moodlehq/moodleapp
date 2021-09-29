@@ -89,16 +89,16 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * Component being initialized.
      */
     async ngOnInit(): Promise<void> {
-        const course = CoreNavigator.getRouteParam<CoreCourseAnyCourseData>('course');
 
-        if (!course) {
-            CoreDomUtils.showErrorModal('Missing required course parameter.');
+        try {
+            this.course = CoreNavigator.getRequiredRouteParam<CoreCourseAnyCourseData>('course');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
             CoreNavigator.back();
 
             return;
         }
 
-        this.course = course;
         this.sectionId = CoreNavigator.getRouteNumberParam('sectionId');
         this.sectionNumber = CoreNavigator.getRouteNumberParam('sectionNumber');
         this.moduleId = CoreNavigator.getRouteNumberParam('moduleId');

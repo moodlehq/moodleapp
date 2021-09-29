@@ -51,8 +51,8 @@ jobs:
           echo "Found $found missing langkeys"
           exit 1
         fi
-    - name: Run Linter
-      run: npm run lint
+    - name: Run Linter (ignore warnings)
+      run: npm run lint -- --quiet
     - name: Run tests
       run: npm run test:ci
     - name: Production builds

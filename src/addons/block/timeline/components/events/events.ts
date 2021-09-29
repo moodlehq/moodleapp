@@ -51,12 +51,12 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+    async ngOnChanges(changes: {[name: string]: SimpleChange}): Promise<void> {
         this.showCourse = CoreUtils.isTrueOrOne(this.showCourse);
 
         if (changes.events || changes.from || changes.to) {
             if (this.events && this.events.length > 0) {
-                const filteredEvents = this.filterEventsByTime(this.from, this.to);
+                const filteredEvents = await this.filterEventsByTime(this.from, this.to);
                 this.empty = !filteredEvents || filteredEvents.length <= 0;
 
                 const eventsByDay: Record<number, AddonCalendarEvent[]> = {};
@@ -92,22 +92,23 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
      * @param end Number of days after the start.
      * @return Filtered events.
      */
-    protected filterEventsByTime(start: number, end?: number): AddonBlockTimelineEvent[] {
+    protected async filterEventsByTime(start: number, end?: number): Promise<AddonBlockTimelineEvent[]> {
         start = moment().add(start, 'days').startOf('day').unix();
         end = typeof end != 'undefined' ? moment().add(end, 'days').startOf('day').unix() : end;
 
-        return this.events.filter((event) => {
+        return await Promise.all(this.events.filter((event) => {
             if (end) {
                 return start <= event.timesort && event.timesort < end;
             }
 
             return start <= event.timesort;
-        }).map((event) => {
-            event.iconUrl = CoreCourse.getModuleIconSrc(event.icon.component);
-            event.iconTitle = event.modulename && CoreCourse.translateModuleName(event.modulename);
+        }).map(async (event) => {
+            event.iconUrl = await CoreCourse.getModuleIconSrc(event.icon.component);
+            event.modulename = event.modulename || event.icon.component;
+            event.iconTitle = CoreCourse.translateModuleName(event.modulename);
 
             return event;
-        });
+        }));
     }
 
     /**

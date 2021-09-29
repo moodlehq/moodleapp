@@ -83,7 +83,7 @@ export class CoreCourseProvider {
 
     static readonly COMPONENT = 'CoreCourse';
 
-    protected readonly CORE_MODULES = [
+    readonly CORE_MODULES = [
         'assign', 'assignment', 'book', 'chat', 'choice', 'data', 'database', 'date', 'external-tool',
         'feedback', 'file', 'folder', 'forum', 'glossary', 'ims', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz',
         'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop', 'h5pactivity',
@@ -402,15 +402,16 @@ export class CoreCourseProvider {
         ): Promise<CoreCourseWSSection[]> => {
             const params: CoreCourseGetContentsParams = {
                 courseid: courseId!,
-                options: [],
             };
+            params.options = [];
+
             const preSets: CoreSiteWSPreSets = {
                 omitExpires: preferCache,
                 updateFrequency: CoreSite.FREQUENCY_RARELY,
             };
 
             if (includeStealth) {
-                params.options!.push({
+                params.options.push({
                     name: 'includestealthmodules',
                     value: true,
                 });
@@ -418,13 +419,13 @@ export class CoreCourseProvider {
 
             // If modName is set, retrieve all modules of that type. Otherwise get only the module.
             if (modName) {
-                params.options!.push({
+                params.options.push({
                     name: 'modname',
                     value: modName,
                 });
                 preSets.cacheKey = this.getModuleByModNameCacheKey(modName);
             } else {
-                params.options!.push({
+                params.options.push({
                     name: 'cmid',
                     value: moduleId,
                 });
@@ -520,7 +521,7 @@ export class CoreCourseProvider {
         const params: CoreCourseGetCourseModuleWSParams = {
             cmid: moduleId,
         };
-        const preSets = {
+        const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getModuleCacheKey(moduleId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
         };
@@ -528,11 +529,9 @@ export class CoreCourseProvider {
 
         if (response.warnings && response.warnings.length) {
             throw new CoreWSError(response.warnings[0]);
-        } else if (response.cm) {
-            return response.cm;
         }
 
-        throw Error('WS core_course_get_course_module failed.');
+        return response.cm;
     }
 
     /**
@@ -632,7 +631,11 @@ export class CoreCourseProvider {
      * @param modicon The mod icon string to use in case we are not using a core activity.
      * @return The IMG src.
      */
-    getModuleIconSrc(moduleName: string, modicon?: string): string {
+    async getModuleIconSrc(moduleName: string, modicon?: string, mimetypeIcon = ''): Promise<string> {
+        if (mimetypeIcon) {
+            return mimetypeIcon;
+        }
+
         if (this.CORE_MODULES.indexOf(moduleName) < 0) {
             if (modicon) {
                 return modicon;
@@ -1491,7 +1494,7 @@ export type CoreCourseWSModule = {
         label: string;
         timestamp: number;
     }[]; // @since 3.11. Activity dates.
-    contentsinfo?: { // Contents summary information.
+    contentsinfo?: { // @since v3.7.6 Contents summary information.
         filescount: number; // Total number of files.
         filessize: number; // Total files size.
         lastmodified: number; // Last time files were modified.

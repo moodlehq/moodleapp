@@ -99,9 +99,9 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
             let icon: string;
 
             if (modName === 'resources') {
-                icon = CoreCourse.getModuleIconSrc('page', modIcons['page']);
+                icon = await CoreCourse.getModuleIconSrc('page', modIcons['page']);
             } else {
-                icon = CoreCourseModuleDelegate.getModuleIconSrc(modName, modIcons[modName]) || '';
+                icon = await CoreCourseModuleDelegate.getModuleIconSrc(modName, modIcons[modName]);
             }
 
             this.entries.push({

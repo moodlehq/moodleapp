@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
-import { CoreCourse, CoreCourseAnyModuleData } from '../services/course';
+import { CoreCourse } from '../services/course';
 import { CoreCourseModule } from '../services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../services/module-delegate';
 
@@ -34,14 +34,14 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
     /**
      * @inheritdoc
      */
-    getData(
-        module: CoreCourseAnyModuleData,
+    async getData(
+        module: CoreCourseModule,
         courseId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         sectionId?: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         forCoursePage?: boolean, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): CoreCourseModuleHandlerData {
+    ): Promise<CoreCourseModuleHandlerData> {
         return {
-            icon: CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined),
+            icon: await CoreCourse.getModuleIconSrc(module.modname, module.modicon),
             title: module.name,
             class: 'addon-mod_' + module.modname + '-handler',
             showDownloadButton: true,

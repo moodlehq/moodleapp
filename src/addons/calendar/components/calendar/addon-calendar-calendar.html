@@ -88,8 +88,9 @@
                                 <span class="addon-calendar-event-time">
                                     {{ event.timestart * 1000 | coreFormatDate: timeFormat }}
                                 </span>
-                                <img *ngIf="event.moduleIcon" src="{{event.moduleIcon}}" alt="" role="presentation"
-                                    class="core-module-icon">
+                                <core-mod-icon *ngIf="event.moduleIcon" [modicon]="event.moduleIcon" [showAlt]="false"
+                                    [modname]="event.modulename" [componentId]="event.instance">
+                                </core-mod-icon>
                                 <!-- Add the icon title so accessibility tools read it. -->
                                 <span class="sr-only">
                                     {{ 'addon.calendar.type' + event.formattedType | translate }}

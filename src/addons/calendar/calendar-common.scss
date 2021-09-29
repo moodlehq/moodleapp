@@ -9,6 +9,10 @@
             padding: 6px;
         }
 
+        > core-mod-icon {
+            padding: 6px;
+        }
+
         &.addon-calendar-eventtype-category > ion-icon {
             background-color: var(--addon-calendar-event-category-color);
         }
@@ -25,4 +29,5 @@
             background-color: var(--addon-calendar-event-site-color);
         }
     }
+
 }

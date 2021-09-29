@@ -190,8 +190,8 @@ export class CoreCourseHelperProvider {
 
             hasContent = true;
 
-            section.modules.forEach((module) => {
-                module.handlerData = CoreCourseModuleDelegate.getModuleDataFor(
+            section.modules.forEach(async (module) => {
+                module.handlerData = await CoreCourseModuleDelegate.getModuleDataFor(
                     module.modname,
                     module,
                     courseId,
@@ -1610,7 +1610,7 @@ export class CoreCourseHelperProvider {
 
             if (CoreSites.getCurrentSiteId() == site.getId()) {
                 // Try to use the module's handler to navigate cleanly.
-                module.handlerData = CoreCourseModuleDelegate.getModuleDataFor(
+                module.handlerData = await CoreCourseModuleDelegate.getModuleDataFor(
                     module.modname,
                     module,
                     courseId,
@@ -1664,9 +1664,9 @@ export class CoreCourseHelperProvider {
      * @param modParams Params to pass to the module
      * @param True if module can be opened, false otherwise.
      */
-    openModule(module: CoreCourseModule, courseId: number, sectionId?: number, modParams?: Params): boolean {
+    async openModule(module: CoreCourseModule, courseId: number, sectionId?: number, modParams?: Params): Promise<boolean> {
         if (!module.handlerData) {
-            module.handlerData = CoreCourseModuleDelegate.getModuleDataFor(
+            module.handlerData = await CoreCourseModuleDelegate.getModuleDataFor(
                 module.modname,
                 module,
                 courseId,

@@ -17,7 +17,7 @@ import { IonRefresher } from '@ionic/angular';
 import { Params } from '@angular/router';
 
 import { CoreSite, CoreSiteConfig } from '@classes/site';
-import { CoreCourse, CoreCourseModuleBasicInfo, CoreCourseWSSection } from '@features/course/services/course';
+import { CoreCourse, CoreCourseWSModule, CoreCourseWSSection } from '@features/course/services/course';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
@@ -48,7 +48,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     hasContent = false;
     items: string[] = [];
     siteHomeId = 1;
-    currentSite?: CoreSite;
+    currentSite!: CoreSite;
     searchEnabled = false;
     downloadEnabled = false;
     downloadCourseEnabled = false;
@@ -75,7 +75,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             this.switchDownload(this.downloadEnabled && this.downloadCourseEnabled && this.downloadCoursesEnabled);
         }, CoreSites.getCurrentSiteId());
 
-        this.currentSite = CoreSites.getCurrentSite()!;
+        this.currentSite = CoreSites.getRequiredCurrentSite();
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
 
         const module = CoreNavigator.getRouteParam<CoreCourseModule>('module');
@@ -97,7 +97,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     protected async loadContent(): Promise<void> {
         this.hasContent = false;
 
-        const config = this.currentSite!.getStoredConfig() || { numsections: 1, frontpageloggedin: undefined };
+        const config = this.currentSite.getStoredConfig() || { numsections: 1, frontpageloggedin: undefined };
 
         this.items = await CoreSiteHome.getFrontPageItems(config.frontpageloggedin);
         this.hasContent = this.items.length > 0;
@@ -105,13 +105,13 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         if (this.items.some((item) => item == 'NEWS_ITEMS')) {
             // Get the news forum.
             try {
-                const forum = await CoreSiteHome.getNewsForum();
-                this.newsForumModule = await CoreCourse.getModuleBasicInfo(forum.cmid);
-                this.newsForumModule.handlerData = CoreCourseModuleDelegate.getModuleDataFor(
+                const forum = await CoreSiteHome.getNewsForum(this.siteHomeId);
+                this.newsForumModule = await CoreCourse.getModule(forum.cmid, forum.course);
+                this.newsForumModule.handlerData = await CoreCourseModuleDelegate.getModuleDataFor(
                     this.newsForumModule.modname,
                     this.newsForumModule,
                     this.siteHomeId,
-                    this.newsForumModule.section,
+                    undefined,
                     true,
                 );
             } catch {
@@ -120,7 +120,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         }
 
         try {
-            const sections = await CoreCourse.getSections(this.siteHomeId!, false, true);
+            const sections = await CoreCourse.getSections(this.siteHomeId, false, true);
 
             // Check "Include a topic section" setting from numsections.
             this.section = config.numsections ? sections.find((section) => section.section == 1) : undefined;
@@ -137,10 +137,10 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
             // Add log in Moodle.
             CoreCourse.logView(
-                this.siteHomeId!,
+                this.siteHomeId,
                 undefined,
                 undefined,
-                this.currentSite!.getInfo()?.sitename,
+                this.currentSite.getInfo()?.sitename,
             ).catch(() => {
                 // Ignore errors.
             });
@@ -157,11 +157,11 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     doRefresh(refresher?: IonRefresher): void {
         const promises: Promise<unknown>[] = [];
 
-        promises.push(CoreCourse.invalidateSections(this.siteHomeId!));
-        promises.push(this.currentSite!.invalidateConfig().then(async () => {
+        promises.push(CoreCourse.invalidateSections(this.siteHomeId));
+        promises.push(this.currentSite.invalidateConfig().then(async () => {
             // Config invalidated, fetch it again.
-            const config: CoreSiteConfig = await this.currentSite!.getConfig();
-            this.currentSite!.setConfig(config);
+            const config: CoreSiteConfig = await this.currentSite.getConfig();
+            this.currentSite.setConfig(config);
 
             return;
         }));
@@ -251,6 +251,6 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
 }
 
-type NewsForum = CoreCourseModuleBasicInfo & {
+type NewsForum = CoreCourseWSModule & {
     handlerData?: CoreCourseModuleHandlerData;
 };

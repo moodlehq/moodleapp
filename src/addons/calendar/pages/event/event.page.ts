@@ -207,7 +207,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         try {
             // Get the event data.
             const event = await AddonCalendar.getEventById(this.eventId);
-            this.event = AddonCalendarHelper.formatEventData(event);
+            this.event = await AddonCalendarHelper.formatEventData(event);
 
             try {
                 const offlineEvent = AddonCalendarHelper.formatOfflineEventData(

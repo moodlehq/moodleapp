@@ -113,8 +113,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
      * Get the URL that should be handled and, if valid, handle it.
      */
     protected async checkAndHandleExternalContent(): Promise<void> {
-        const currentSite = CoreSites.getCurrentSite();
-        const siteId = this.siteId || currentSite?.getId();
+        const siteId = this.siteId || CoreSites.getRequiredCurrentSite().getId();
         const tagName = this.element.tagName.toUpperCase();
         let targetAttr;
         let url;

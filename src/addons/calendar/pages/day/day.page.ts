@@ -333,7 +333,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         try {
             // Don't pass courseId and categoryId, we'll filter them locally.
             result = await AddonCalendar.getDayEvents(this.year, this.month, this.day);
-            this.onlineEvents = result.events.map((event) => AddonCalendarHelper.formatEventData(event));
+            this.onlineEvents = await Promise.all(result.events.map((event) => AddonCalendarHelper.formatEventData(event)));
         } catch (error) {
             if (CoreApp.isOnline()) {
                 throw error;

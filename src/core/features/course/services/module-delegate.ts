@@ -20,7 +20,7 @@ import { CoreSite } from '@classes/site';
 import { CoreCourseModuleDefaultHandler } from './handlers/default-module';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from './course';
+import { CoreCourse, CoreCourseWSModule } from './course';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModule } from './course-helper';
@@ -52,11 +52,11 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @return Data to render the module.
      */
     getData(
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModule,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
-    ): CoreCourseModuleHandlerData;
+    ): Promise<CoreCourseModuleHandlerData> | CoreCourseModuleHandlerData;
 
     /**
      * Get the component to render the module. This is needed to support singleactivity course format.
@@ -82,7 +82,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      *
      * @return The icon src.
      */
-    getIconSrc?(): string | undefined;
+    getIconSrc?(module: CoreCourseWSModule): Promise<string> | string | undefined;
 
     /**
      * Check if this type of module supports a certain feature.
@@ -277,14 +277,14 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @param forCoursePage Whether the data will be used to render the course page.
      * @return Data to render the module.
      */
-    getModuleDataFor(
+    async getModuleDataFor(
         modname: string,
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModule,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
-    ): CoreCourseModuleHandlerData | undefined {
-        return this.executeFunctionOnEnabled<CoreCourseModuleHandlerData>(
+    ): Promise<CoreCourseModuleHandlerData | undefined> {
+        return await this.executeFunctionOnEnabled<CoreCourseModuleHandlerData>(
             modname,
             'getData',
             [module, courseId, sectionId, forCoursePage],
@@ -343,12 +343,12 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      *
      * @param modname The name of the module type.
      * @param modicon The mod icon string.
-     * @return The icon src.
+     * @return Promise resolved with the icon src.
      */
-    getModuleIconSrc(modname: string, modicon?: string): string {
-        return this.executeFunctionOnEnabled<string>(modname, 'getIconSrc') ||
-            CoreCourse.getModuleIconSrc(modname, modicon) ||
-            '';
+    async getModuleIconSrc(modname: string, modicon?: string): Promise<string> {
+        const icon = await this.executeFunctionOnEnabled<Promise<string>>(modname, 'getIconSrc');
+
+        return icon || await CoreCourse.getModuleIconSrc(modname, modicon) || '';
     }
 
     /**

@@ -79,3 +79,8 @@
     left: 0;
     right: unset;
 }
+
+:host-context(ion-item) {
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
