@@ -15,7 +15,7 @@
 import { CoreConstants } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
-import { CoreCourseAnyModuleData } from '@features/course/services/course';
+import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreSitePluginsModuleHandler } from '@features/siteplugins/classes/handlers/module-handler';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
@@ -71,17 +71,17 @@ export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase imple
     /**
      * @inheritdoc
      */
-    getData(
-        module: CoreCourseAnyModuleData,
+    async getData(
+        module: CoreCourseModule,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
-    ): CoreCourseModuleHandlerData {
+    ): Promise<CoreCourseModuleHandlerData> {
         if (this.sitePluginHandler) {
             return this.sitePluginHandler.getData(module, courseId, sectionId, forCoursePage);
         }
 
-        const data = super.getData(module, courseId, sectionId, forCoursePage);
+        const data = await super.getData(module, courseId, sectionId, forCoursePage);
 
         data.showDownloadButton = false;
 

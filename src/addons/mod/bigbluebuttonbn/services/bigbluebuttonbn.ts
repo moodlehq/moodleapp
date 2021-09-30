@@ -304,8 +304,8 @@ export type AddonModBBBMeetingInfoWSResponse = {
     userlimit: number; // User limit.
     bigbluebuttonbnid: string; // Bigbluebuttonbn instance id.
     meetingid: string; // Meeting id.
-    openingtime?: string; // Opening time.
-    closingtime?: string; // Closing time.
+    openingtime?: number; // Opening time.
+    closingtime?: number; // Closing time.
     statusrunning?: boolean; // Status running.
     statusclosed?: boolean; // Status closed.
     statusopen?: boolean; // Status open.

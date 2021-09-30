@@ -151,6 +151,7 @@ export class CoreGroupsProvider {
         const groupInfo: CoreGroupInfo = {
             groups: [],
             defaultGroupId: 0,
+            canAccessAllGroups: false,
         };
 
         const groupMode = await this.getActivityGroupMode(cmId, siteId, ignoreCache);
@@ -161,6 +162,8 @@ export class CoreGroupsProvider {
         let result: CoreGroupGetActivityAllowedGroupsWSResponse;
         if (groupInfo.separateGroups || groupInfo.visibleGroups) {
             result = await this.getActivityAllowedGroups(cmId, userId, siteId, ignoreCache);
+
+            groupInfo.canAccessAllGroups = !!result.canaccessallgroups;
         } else {
             result = {
                 groups: [],
@@ -471,6 +474,11 @@ export type CoreGroupInfo = {
      * The group ID to use by default. If all participants is visible, 0 will be used. First group ID otherwise.
      */
     defaultGroupId: number;
+
+    /**
+     * Whether the user has the capability to access all groups in the context.
+     */
+    canAccessAllGroups: boolean;
 };
 
 /**

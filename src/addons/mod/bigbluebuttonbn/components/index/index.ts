@@ -15,8 +15,13 @@
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
-import { AddonModBBBData, AddonModBBBService } from '../../services/bigbluebuttonbn';
+import { CoreGroupInfo, CoreGroups } from '@services/groups';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreUtils } from '@services/utils/utils';
+import { Translate } from '@singletons';
+import { AddonModBBB, AddonModBBBData, AddonModBBBMeetingInfoWSResponse, AddonModBBBService } from '../../services/bigbluebuttonbn';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -24,12 +29,16 @@ import { AddonModBBBData, AddonModBBBService } from '../../services/bigbluebutto
 @Component({
     selector: 'addon-mod-bbb-index',
     templateUrl: 'index.html',
+    styleUrls: ['index.scss'],
 })
 export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
     component = AddonModBBBService.COMPONENT;
     moduleName = 'bigbluebuttonbn';
     bbb?: AddonModBBBData;
+    groupInfo?: CoreGroupInfo;
+    groupId = 0;
+    meetingInfo?: AddonModBBBMeetingInfoWSResponse;
 
     constructor(
         protected content?: IonContent,
@@ -46,7 +55,17 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
 
         await this.loadContent();
 
-        // @todo
+        if (!this.bbb) {
+            return;
+        }
+
+        try {
+            await AddonModBBB.logView(this.bbb.id, this.bbb.name);
+
+            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+        } catch {
+            // Ignore errors.
+        }
     }
 
     /**
@@ -54,9 +73,107 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      */
     protected async fetchContent(refresh: boolean = false): Promise<void> {
         try {
-            // @todo
+            this.bbb = await AddonModBBB.getBBB(this.courseId, this.module.id);
+
+            this.description = this.bbb.intro;
+            this.dataRetrieved.emit(this.bbb);
+
+            this.groupInfo = await CoreGroups.getActivityGroupInfo(this.module.id, false);
+
+            this.groupId = CoreGroups.validateGroupId(this.groupId, this.groupInfo);
+
+            await this.fetchMeetingInfo();
         } finally {
             this.fillContextMenu(refresh);
+        }
+    }
+
+    /**
+     * Get meeting info.
+     *
+     * @return Promise resolved when done.
+     */
+    async fetchMeetingInfo(): Promise<void> {
+        if (!this.bbb) {
+            return;
+        }
+
+        this.meetingInfo = await AddonModBBB.getMeetingInfo(this.bbb.id, this.groupId);
+
+        if (this.meetingInfo.statusrunning && this.meetingInfo.userlimit > 0) {
+            const count = (this.meetingInfo.participantcount || 0) + (this.meetingInfo.moderatorcount || 0);
+            if (count === this.meetingInfo.userlimit) {
+                this.meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.userlimitreached');
+            }
+        }
+    }
+
+    /**
+     * Update meeting info.
+     *
+     * @return Promise resolved when done.
+     */
+    async updateMeetingInfo(): Promise<void> {
+        if (!this.bbb) {
+            return;
+        }
+
+        await AddonModBBB.invalidateAllGroupsMeetingInfo(this.bbb.id);
+
+        await this.fetchMeetingInfo();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async invalidateContent(): Promise<void> {
+        const promises: Promise<void>[] = [];
+
+        promises.push(AddonModBBB.invalidateBBBs(this.courseId));
+        promises.push(CoreGroups.invalidateActivityGroupInfo(this.module.id));
+
+        if (this.bbb) {
+            promises.push(AddonModBBB.invalidateAllGroupsMeetingInfo(this.bbb.id));
+        }
+
+        await Promise.all(promises);
+    }
+
+    /**
+     * Group changed, reload some data.
+     *
+     * @return Promise resolved when done.
+     */
+    async groupChanged(): Promise<void> {
+        this.loaded = false;
+
+        try {
+            await this.fetchMeetingInfo();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        } finally {
+            this.loaded = true;
+        }
+    }
+
+    /**
+     * Join the room.
+     *
+     * @return Promise resolved when done.
+     */
+    async joinRoom(): Promise<void> {
+        const modal = await CoreDomUtils.showModalLoading();
+
+        try {
+            const joinUrl = await AddonModBBB.getJoinUrl(this.module.id, this.groupId);
+
+            CoreUtils.openInBrowser(joinUrl);
+
+            this.updateMeetingInfo();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        } finally {
+            modal.dismiss();
         }
     }
 
