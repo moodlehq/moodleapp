@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ADDON_COMPETENCY_MAIN_PAGE_NAME } from '@addons/competency/competency.module';
 import { Injectable } from '@angular/core';
 import { CoreUserProfile } from '@features/user/services/user';
 import { CoreUserProfileHandler, CoreUserDelegateService, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonCompetency } from '../competency';
-import { AddonCompetencyMainMenuHandlerService } from './mainmenu';
 
 /**
  * Profile competencies handler.
@@ -69,7 +69,7 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
                     event.preventDefault();
                     event.stopPropagation();
                     CoreNavigator.navigateToSitePath(
-                        '/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/course/' + courseId,
+                        ADDON_COMPETENCY_MAIN_PAGE_NAME + '/course/' + courseId,
                         {
                             params: { userId: user.id },
                         },
@@ -85,7 +85,7 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
                 action: (event, user): void => {
                     event.preventDefault();
                     event.stopPropagation();
-                    CoreNavigator.navigateToSitePath('/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME, {
+                    CoreNavigator.navigateToSitePath(ADDON_COMPETENCY_MAIN_PAGE_NAME, {
                         params: { userId: user.id },
                     });
                 },

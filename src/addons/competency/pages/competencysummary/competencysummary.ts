@@ -19,7 +19,7 @@ import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { AddonCompetencyMainMenuHandlerService } from '@addons/competency/services/handlers/mainmenu';
+import { ADDON_COMPETENCY_MAIN_PAGE_NAME } from '@addons/competency/competency.module';
 
 /**
  * Page that displays the competency summary.
@@ -102,7 +102,7 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
      */
     openCompetencySummary(competencyId: number): void {
         CoreNavigator.navigateToSitePath(
-            '/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/summary/' + competencyId,
+            ADDON_COMPETENCY_MAIN_PAGE_NAME + '/summary/' + competencyId,
             {
                 params: { contextLevel: this.contextLevel, contextInstanceId: this.contextInstanceId },
             },

@@ -25,7 +25,7 @@ import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/service
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { ContextLevel } from '@/core/constants';
-import { AddonCompetencyMainMenuHandlerService } from './mainmenu';
+import { ADDON_COMPETENCY_MAIN_PAGE_NAME } from '@addons/competency/competency.module';
 
 /**
  * Course nav handler.
@@ -75,7 +75,7 @@ export class AddonCompetencyCourseOptionHandlerService implements CoreCourseOpti
         return {
             title: 'addon.competency.competencies',
             class: 'addon-competency-course-handler',
-            page: AddonCompetencyMainMenuHandlerService.PAGE_NAME,
+            page: ADDON_COMPETENCY_MAIN_PAGE_NAME,
         };
     }
 

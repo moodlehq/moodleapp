@@ -15,14 +15,12 @@
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
-import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonCompetencyProvider } from './services/competency';
 import { AddonCompetencyHelperProvider } from './services/competency-helper';
 import { AddonCompetencyCompetencyLinkHandler } from './services/handlers/competency-link';
 import { AddonCompetencyCourseOptionHandler } from './services/handlers/course-option';
-import { AddonCompetencyMainMenuHandler, AddonCompetencyMainMenuHandlerService } from './services/handlers/mainmenu';
 import { AddonCompetencyPlanLinkHandler } from './services/handlers/plan-link';
 import { AddonCompetencyPlansLinkHandler } from './services/handlers/plans-link';
 import { AddonCompetencyPushClickHandler } from './services/handlers/push-click';
@@ -39,16 +37,18 @@ export const ADDON_COMPETENCY_SERVICES: Type<unknown>[] = [
     AddonCompetencyHelperProvider,
 ];
 
+export const ADDON_COMPETENCY_MAIN_PAGE_NAME = 'competency';
+
 const mainMenuChildrenRoutes: Routes = [
     {
-        path: AddonCompetencyMainMenuHandlerService.PAGE_NAME,
+        path: ADDON_COMPETENCY_MAIN_PAGE_NAME,
         loadChildren: () => import('./competency-lazy.module').then(m => m.AddonCompetencyLazyModule),
     },
 ];
 
 const courseIndexRoutes: Routes = [
     {
-        path: AddonCompetencyMainMenuHandlerService.PAGE_NAME,
+        path: ADDON_COMPETENCY_MAIN_PAGE_NAME,
         loadChildren: () => import('@addons/competency/competency-course-lazy.module').then(m => m.AddonCompetencyCourseLazyModule),
     },
 ];
@@ -56,7 +56,6 @@ const courseIndexRoutes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(mainMenuChildrenRoutes),
-        CoreMainMenuRoutingModule.forChild({ children: mainMenuChildrenRoutes }),
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
     ],
     exports: [CoreMainMenuRoutingModule],
@@ -69,7 +68,6 @@ const courseIndexRoutes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonCompetencyPlanLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonCompetencyPlansLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonCompetencyUserCompetencyLinkHandler.instance);
-                CoreMainMenuDelegate.registerHandler(AddonCompetencyMainMenuHandler.instance);
                 CoreUserDelegate.registerHandler(AddonCompetencyUserHandler.instance);
                 CoreCourseOptionsDelegate.registerHandler(AddonCompetencyCourseOptionHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonCompetencyPushClickHandler.instance);
