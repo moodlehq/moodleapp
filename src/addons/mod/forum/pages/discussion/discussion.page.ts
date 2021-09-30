@@ -40,6 +40,8 @@ import {
     AddonModForumPost,
     AddonModForumProvider,
     AddonModForumPostFormData,
+    AddonModForumChangeDiscussionData,
+    AddonModForumReplyDiscussionData,
 } from '../../services/forum';
 import { AddonModForumHelper } from '../../services/forum-helper';
 import { AddonModForumOffline } from '../../services/forum-offline';
@@ -61,7 +63,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
     @ViewChild(IonContent) content!: IonContent;
 
-    courseId!: number;
+    courseId?: number;
     discussionId!: number;
     forum: Partial<AddonModForumData> = {};
     accessInfo: AddonModForumAccessInformation = {};
@@ -94,12 +96,12 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     syncIcon = CoreConstants.ICON_LOADING;
     discussionStr = '';
     component = AddonModForumProvider.COMPONENT;
-    cmId!: number;
+    cmId?: number;
     canPin = false;
     availabilityMessage: string | null = null;
     leavingPage = false;
 
-    protected forumId!: number;
+    protected forumId?: number;
     protected postId?: number;
     protected parent?: number;
     protected onlineObserver?: Subscription;
@@ -123,9 +125,9 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
     ngOnInit(): void {
         try {
-            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
-            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
-            this.forumId = CoreNavigator.getRequiredRouteNumberParam('forumId');
+            this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+            this.cmId = CoreNavigator.getRouteNumberParam('cmId');
+            this.forumId = CoreNavigator.getRouteNumberParam('forumId');
             this.discussion = CoreNavigator.getRouteParam<AddonModForumDiscussion>('discussion');
             this.discussionId = this.discussion
                 ? this.discussion.discussion
@@ -187,15 +189,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
         // The discussion object was not passed as parameter.
         if (!this.discussion) {
-            await this.loadDiscussion(this.forumId, this.cmId, this.discussionId);
-        }
-
-        if (!this.discussion) {
-            CoreDomUtils.showErrorModal('Cannot get the discussion');
-
-            this.goBack();
-
-            return;
+            await this.loadDiscussion(this.discussionId, this.forumId, this.cmId);
         }
 
         const discussion = this.discussion;
@@ -221,7 +215,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         }, CoreSites.getCurrentSiteId());
 
         // Invalidate discussion list if it was not read.
-        if (discussion.numunread > 0) {
+        if (this.forumId && discussion && discussion.numunread > 0) {
             AddonModForum.invalidateDiscussionsList(this.forumId);
         }
 
@@ -241,7 +235,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         });
 
         this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data => {
-            if ((this.forumId && this.forumId === data.forumId) || data.cmId === this.cmId) {
+            if (discussion && this.forumId && (this.forumId === data.forumId || data.cmId === this.cmId)) {
                 AddonModForum.invalidateDiscussionsList(this.forumId).finally(() => {
                     if (typeof data.locked != 'undefined') {
                         discussion.locked = data.locked;
@@ -289,6 +283,10 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * Helper function to go back.
      */
     protected goBack(): void {
+        if (this.leavingPage) {
+            return;
+        }
+
         if (this.splitView?.outletActivated) {
             CoreNavigator.navigate('../');
         } else {
@@ -420,7 +418,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                             offlineReplies.push(reply);
 
                             // Disable reply of the parent. Reply in offline to the same post is not allowed, edit instead.
-                            onlinePostsMap[reply.parentid!].capabilities.reply = false;
+                            reply.parentid && (onlinePostsMap[reply.parentid].capabilities.reply = false);
 
                             return;
                         }),
@@ -485,7 +483,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
                 // The discussion object was not passed as parameter and there is no starting post.
                 if (!this.discussion) {
-                    promises.push(this.loadDiscussion(this.forumId, this.cmId, this.discussionId));
+                    promises.push(this.loadDiscussion(this.discussionId, this.forumId, this.cmId));
                 }
 
                 await Promise.all(promises);
@@ -516,7 +514,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                     : {},
             );
 
-            if (AddonModForum.isSetPinStateAvailableForSite()) {
+            if (AddonModForum.isSetPinStateAvailableForSite() && this.forumId) {
                 // Use the canAddDiscussion WS to check if the user can pin discussions.
                 try {
                     const response = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
@@ -543,6 +541,10 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 AddonModForum.logDiscussionView(this.discussionId, this.forumId || -1, this.forum.name).catch(() => {
                     // Ignore errors.
                 }).finally(() => {
+                    if (!this.courseId || !this.cmId) {
+                        return;
+                    }
+
                     // Trigger mark read posts.
                     CoreEvents.trigger(AddonModForumProvider.MARK_READ_EVENT, {
                         courseId: this.courseId,
@@ -556,14 +558,14 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     /**
      * Convenience function to load discussion.
      *
+     * @param discussionId Discussion ID.
      * @param forumId Forum ID.
      * @param cmId Forum cmid.
-     * @param discussionId Discussion ID.
      * @return Promise resolved when done.
      */
-    protected async loadDiscussion(forumId: number, cmId: number, discussionId: number): Promise<void> {
+    protected async loadDiscussion(discussionId: number, forumId?: number, cmId?: number): Promise<void> {
         // Fetch the discussion if not passed as parameter.
-        if (this.discussion || !forumId) {
+        if (this.discussion || !forumId || ! cmId) {
             return;
         }
 
@@ -588,7 +590,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                         CoreDomUtils.showErrorModal(result.warnings[0]);
                     }
 
-                    if (result && result.updated) {
+                    if (result && result.updated && this.forumId) {
                         // Sync successful, send event.
                         CoreEvents.trigger(AddonModForumSyncProvider.MANUAL_SYNCED, {
                             forumId: this.forumId,
@@ -653,12 +655,12 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
 
-        const promises = [
-            AddonModForum.invalidateForumData(this.courseId),
-            AddonModForum.invalidateDiscussionPosts(this.discussionId, this.forumId),
-            AddonModForum.invalidateAccessInformation(this.forumId),
-            AddonModForum.invalidateCanAddDiscussion(this.forumId),
-        ];
+        const promises: Promise<void>[] = [];
+
+        this.courseId && promises.push(AddonModForum.invalidateForumData(this.courseId));
+        promises.push(AddonModForum.invalidateDiscussionPosts(this.discussionId, this.forumId));
+        this.forumId && promises.push(AddonModForum.invalidateAccessInformation(this.forumId));
+        this.forumId && promises.push(AddonModForum.invalidateCanAddDiscussion(this.forumId));
 
         await CoreUtils.ignoreErrors(CoreUtils.allPromises(promises));
 
@@ -686,7 +688,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @param locked True to lock the discussion, false to unlock.
      */
     async setLockState(locked: boolean): Promise<void> {
-        if (!this.discussion) {
+        if (!this.discussion || !this.forumId || !this.cmId) {
             return;
         }
 
@@ -696,7 +698,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             const response = await AddonModForum.setLockState(this.forumId, this.discussionId, locked);
             this.discussion.locked = response.locked;
 
-            const data = {
+            const data: AddonModForumChangeDiscussionData = {
                 forumId: this.forumId,
                 discussionId: this.discussionId,
                 cmId: this.cmId,
@@ -718,7 +720,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @param pinned True to pin the discussion, false to unpin it.
      */
     async setPinState(pinned: boolean): Promise<void> {
-        if (!this.discussion) {
+        if (!this.discussion || !this.forumId || !this.cmId) {
             return;
         }
 
@@ -729,7 +731,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
             this.discussion.pinned = pinned;
 
-            const data = {
+            const data: AddonModForumChangeDiscussionData = {
                 forumId: this.forumId,
                 discussionId: this.discussionId,
                 cmId: this.cmId,
@@ -751,7 +753,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @param starred True to star the discussion, false to unstar it.
      */
     async toggleFavouriteState(starred: boolean): Promise<void> {
-        if (!this.discussion) {
+        if (!this.discussion || !this.forumId || !this.cmId) {
             return;
         }
 
@@ -762,7 +764,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
             this.discussion.starred = starred;
 
-            const data = {
+            const data: AddonModForumChangeDiscussionData = {
                 forumId: this.forumId,
                 discussionId: this.discussionId,
                 cmId: this.cmId,
@@ -782,8 +784,12 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * New post added.
      */
     postListChanged(): void {
+        if (!this.forumId || !this.cmId) {
+            return;
+        }
+
         // Trigger an event to notify a new reply.
-        const data = {
+        const data: AddonModForumReplyDiscussionData = {
             forumId: this.forumId,
             discussionId: this.discussionId,
             cmId: this.cmId,

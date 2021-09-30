@@ -35,6 +35,10 @@ const mobileRoutes: Routes = [
         path: ':courseId/:cmId/:discussionId',
         loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
     },
+    {
+        path: 'discussion/:discussionId', // Only for discussion link handling.
+        loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+    },
 ];
 
 const tabletRoutes: Routes = [

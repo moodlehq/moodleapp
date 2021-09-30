@@ -55,10 +55,13 @@ export class AddonModForumDiscussionLinkHandlerService extends CoreContentLinksH
         return [{
             action: (siteId): void => {
                 const discussionId = parseInt(params.d, 10);
+                const cmId = data?.cmid && Number(data.cmid);
+                courseId = courseId || (params.courseid && Number(params.courseid)) || (params.cid && Number(params.cid));
+
                 const pageParams: Params = {
                     forumId: data?.instance && parseInt(data.instance, 10),
-                    cmId: data?.cmid && parseInt(data.cmid, 10),
-                    courseId: courseId || parseInt(params.courseid, 10) || parseInt(params.cid, 10),
+                    cmId,
+                    courseId,
                 };
 
                 if (data?.postid || params.urlHash) {
@@ -69,8 +72,12 @@ export class AddonModForumDiscussionLinkHandlerService extends CoreContentLinksH
                     pageParams.parent = parseInt(params.parent);
                 }
 
+                const path = cmId && courseId
+                    ? `${AddonModForumModuleHandlerService.PAGE_NAME}/${courseId}/${cmId}/${discussionId}`
+                    : `${AddonModForumModuleHandlerService.PAGE_NAME}/discussion/${discussionId}`;
+
                 CoreNavigator.navigateToSitePath(
-                    `${AddonModForumModuleHandlerService.PAGE_NAME}/discussion/${discussionId}`,
+                    path,
                     { siteId, params: pageParams },
                 );
             },
