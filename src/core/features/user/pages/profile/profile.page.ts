@@ -44,7 +44,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 
     protected courseId?: number;
     protected userId!: number;
-    protected site?: CoreSite;
+    protected site!: CoreSite;
     protected obsProfileRefreshed: CoreEventObserver;
     protected subscription?: Subscription;
 
@@ -75,25 +75,25 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      * On init.
      */
     async ngOnInit(): Promise<void> {
-        this.site = CoreSites.getCurrentSite();
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
-        const userId = CoreNavigator.getRouteNumberParam('userId');
-
-        if (!this.site) {
-            return;
-        }
-        if (userId === undefined) {
-            CoreDomUtils.showErrorModal('User ID not supplied');
+        try {
+            this.site = CoreSites.getRequiredCurrentSite();
+            this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+            this.userId = CoreNavigator.getRequiredRouteNumberParam('userId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
             CoreNavigator.back();
 
             return;
         }
 
-        this.userId = userId;
+        if (this.courseId === this.site.getSiteHomeId()) {
+            // Get site profile.
+            this.courseId = undefined;
+        }
 
         // Allow to change the profile image only in the app profile page.
         this.canChangeProfilePicture =
-            (!this.courseId || this.courseId == this.site.getSiteHomeId()) &&
+            !this.courseId &&
             this.userId == this.site.getUserId() &&
             this.site.canUploadFiles() &&
             !CoreUser.isUpdatePictureDisabledInSite(this.site);
@@ -101,8 +101,12 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
         try {
             await this.fetchUser();
 
+            if (!this.user) {
+                return;
+            }
+
             try {
-                await CoreUser.logView(this.userId, this.courseId, this.user!.fullname);
+                await CoreUser.logView(this.userId, this.courseId, this.user.fullname);
             } catch (error) {
                 this.isDeleted = error?.errorcode === 'userdeleted';
                 this.isEnrolled = error?.errorcode !== 'notenrolledprofile';
@@ -211,14 +215,14 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 
             modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
-            const profileImageURL = await CoreUser.changeProfilePicture(result.itemid, this.userId, this.site!.getId());
+            const profileImageURL = await CoreUser.changeProfilePicture(result.itemid, this.userId, this.site.getId());
 
             CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
                 picture: profileImageURL,
-            }, this.site!.getId());
+            }, this.site.getId());
 
-            CoreSites.updateSiteInfo(this.site!.getId());
+            CoreSites.updateSiteInfo(this.site.getId());
 
             this.refreshUser();
         } catch (error) {
@@ -273,7 +277,11 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      * @param handler Handler that was clicked.
      */
     handlerClicked(event: Event, handler: CoreUserProfileHandlerData): void {
-        handler.action(event, this.user!, this.courseId);
+        if (!this.user) {
+            return;
+        }
+
+        handler.action(event, this.user, this.courseId);
     }
 
     /**

@@ -39,8 +39,13 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     constructor() {
-        const courseId = CoreNavigator.getRouteNumberParam('courseId') ?? 0; // Use 0 for site badges.
+        let courseId = CoreNavigator.getRouteNumberParam('courseId') ?? 0; // Use 0 for site badges.
         const userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
+
+        if (courseId === CoreSites.getCurrentSiteHomeId()) {
+            // Use courseId 0 for site home, otherwise the site doesn't return site badges.
+            courseId = 0;
+        }
 
         this.badges = new AddonBadgesUserBadgesManager(AddonBadgesUserBadgesPage, courseId, userId);
     }
