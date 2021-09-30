@@ -35,6 +35,7 @@ Feature: It navigates properly using deep links.
     And I receive a push notification in the app for:
       | username | module | discussion  |
       | student2 | forum  | Forum topic |
+    And I wait the app to restart
     Then I should find "Reconnect" in the app
 
     When I set the field "Password" to "student2" in the app
@@ -54,6 +55,7 @@ Feature: It navigates properly using deep links.
       | discussion  |
       | Forum topic |
     And I log in as "student1"
+    And I wait loading to finish in the app
     Then I should find "Forum topic" in the app
     And I should find "Forum message" in the app
     But I should not find "Site home" in the app
