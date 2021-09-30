@@ -18,7 +18,7 @@ use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ExpectationException;
 
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
-require_once(__DIR__ . '/classes/measure_timing.php');
+require_once(__DIR__ . '/classes/performance_measure.php');
 
 /**
  * Behat step definitions to measure performance.
@@ -28,25 +28,25 @@ class behat_performance extends behat_base {
     /**
      * @var array
      */
-    private $timings = [];
+    private $measures = [];
 
     /**
-     * Start timing a performance measure.
+     * Start measuring performance.
      *
-     * @When /^I start timing "([^"]+)"$/
+     * @When /^I start measuring "([^"]+)"$/
      */
-    public function i_start_timing(string $measure) {
-        $this->timings[$measure] = new measure_timing($measure);
-        $this->timings[$measure]->start();
+    public function i_start_measuring(string $name) {
+        $this->measures[$name] = new performance_measure($name, $this->getSession()->getDriver());
+        $this->measures[$name]->start();
     }
 
     /**
-     * Stop timing a performance measure.
+     * Stop measuring performance.
      *
-     * @When /^I stop timing "([^"]+)"$/
+     * @When /^I stop measuring "([^"]+)"$/
      */
-    public function i_stop_timing(string $measure) {
-        $this->get_measure_timing($measure)->end();
+    public function i_stop_measuring(string $name) {
+        $this->get_performance_measure($name)->end();
     }
 
     /**
@@ -55,11 +55,11 @@ class behat_performance extends behat_base {
      * @Then /^"([^"]+)" should have taken (less than|more than|exactly) (\d+(?:\.\d+)? (?:seconds|milliseconds))$/
      */
     public function timing_should_have_taken(string $measure, Closure $comparison, float $expectedtime) {
-        $measuretiming = $this->get_measure_timing($measure);
+        $measuretiming = $this->get_performance_measure($measure);
 
         if (!call_user_func($comparison, $measuretiming->duration, $expectedtime)) {
             throw new ExpectationException(
-                "Expected timing for '$measure' measure failed! (took {$measuretiming->duration}ms)",
+                "Expected duration for '$measure' failed! (took {$measuretiming->duration}ms)",
                 $this->getSession()->getDriver()
             );
         }
@@ -112,17 +112,17 @@ class behat_performance extends behat_base {
     }
 
     /**
-     * Get measure timing by name.
+     * Get performance measure by name.
      *
-     * @param string $measure Measure timing name.
-     * @return measure_timing Measure timing.
+     * @param string $name Performance measure name.
+     * @return performance_measure Performance measure.
      */
-    private function get_measure_timing(string $measure): measure_timing {
-        if (!isset($this->timings[$measure])) {
-            throw new DriverException("Timing for '$measure' measure does not exist.");
+    private function get_performance_measure(string $name): performance_measure {
+        if (!isset($this->measures[$name])) {
+            throw new DriverException("'$name' performance measure does not exist.");
         }
 
-        return $this->timings[$measure];
+        return $this->measures[$name];
     }
 
 }
