@@ -35,6 +35,7 @@ Feature: Test basic usage of login in app
     And I log in as "student1"
     And I press the main menu button in the app
     And I press "Change site" in the app
+    And I wait the app to restart
     And I press "Add" in the app
     And I set the field "Your site" to "Wrong Site Address" in the app
     And I press enter in the app
@@ -46,6 +47,7 @@ Feature: Test basic usage of login in app
     And I log in as "student1"
     And I press the main menu button in the app
     And I press "Change site" in the app
+    And I wait the app to restart
     Then I should find "Acceptance test site" in the app
     And I press "Delete" in the app
     And I press "Delete" near "Acceptance test site" in the app
