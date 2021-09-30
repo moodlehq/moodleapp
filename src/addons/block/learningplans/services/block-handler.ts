@@ -17,7 +17,7 @@ import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockOnlyTitleComponent } from '@features/block/components/only-title-block/only-title-block';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
-import { AddonCompetencyMainMenuHandlerService } from '@addons/competency/services/handlers/mainmenu';
+import { ADDON_COMPETENCY_MAIN_PAGE_NAME } from '@addons/competency/competency.module';
 
 /**
  * Block handler.
@@ -38,7 +38,7 @@ export class AddonBlockLearningPlansHandlerService extends CoreBlockBaseHandler 
             title: 'addon.block_learningplans.pluginname',
             class: 'addon-block-learning-plans',
             component: CoreBlockOnlyTitleComponent,
-            link: AddonCompetencyMainMenuHandlerService.PAGE_NAME,
+            link: ADDON_COMPETENCY_MAIN_PAGE_NAME,
             navOptions: {
                 preferCurrentTab: false,
             },

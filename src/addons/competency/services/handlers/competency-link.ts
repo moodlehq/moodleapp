@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ADDON_COMPETENCY_MAIN_PAGE_NAME } from '@addons/competency/competency.module';
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonCompetency } from '../competency';
-import { AddonCompetencyMainMenuHandlerService } from './mainmenu';
 
 /**
  * Handler to treat links to a competency in a plan or in a course.
@@ -44,7 +44,7 @@ export class AddonCompetencyCompetencyLinkHandlerService extends CoreContentLink
                 };
 
                 CoreNavigator.navigateToSitePath(
-                    '/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/competencies/' + params.competencyid,
+                    ADDON_COMPETENCY_MAIN_PAGE_NAME + '/competencies/' + params.competencyid,
                     { params: pageParams, siteId },
                 );
 

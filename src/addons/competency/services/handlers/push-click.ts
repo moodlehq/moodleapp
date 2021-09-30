@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ADDON_COMPETENCY_MAIN_PAGE_NAME } from '@addons/competency/competency.module';
 import { Injectable } from '@angular/core';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
@@ -20,7 +21,6 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonCompetency } from '../competency';
-import { AddonCompetencyMainMenuHandlerService } from './mainmenu';
 
 /**
  * Handler for competencies push notifications clicks.
@@ -56,7 +56,7 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
 
             await CoreUtils.ignoreErrors(AddonCompetency.invalidateLearningPlan(planId, notification.site));
 
-            await CoreNavigator.navigateToSitePath('/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/' + planId, {
+            await CoreNavigator.navigateToSitePath(ADDON_COMPETENCY_MAIN_PAGE_NAME + '/' + planId, {
                 siteId: notification.site,
             });
 
@@ -72,7 +72,7 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
 
             await CoreUtils.ignoreErrors(AddonCompetency.invalidateCompetencyInPlan(planId, competencyId, notification.site));
             await CoreNavigator.navigateToSitePath(
-                '/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/competencies/' + competencyId,
+                ADDON_COMPETENCY_MAIN_PAGE_NAME + '/competencies/' + competencyId,
                 {
                     params: { planId, courseId, userId },
                     siteId: notification.site,
@@ -87,7 +87,7 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
 
         await CoreUtils.ignoreErrors(AddonCompetency.invalidateLearningPlans(userId, notification.site));
 
-        await CoreNavigator.navigateToSitePath('/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME, {
+        await CoreNavigator.navigateToSitePath(ADDON_COMPETENCY_MAIN_PAGE_NAME, {
             params: { userId },
             siteId: notification.site,
         });

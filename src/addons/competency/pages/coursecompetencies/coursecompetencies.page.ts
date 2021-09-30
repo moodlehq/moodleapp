@@ -19,8 +19,8 @@ import { CoreUserProfile } from '@features/user/services/user';
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { AddonCompetencyMainMenuHandlerService } from '@addons/competency/services/handlers/mainmenu';
 import { ContextLevel } from '@/core/constants';
+import { ADDON_COMPETENCY_MAIN_PAGE_NAME } from '@addons/competency/competency.module';
 
 /**
  * Page that displays the list of competencies of a course.
@@ -81,7 +81,7 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit {
      */
     openCompetency(competencyId: number): void {
         CoreNavigator.navigateToSitePath(
-            '/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/competencies/' + competencyId,
+            ADDON_COMPETENCY_MAIN_PAGE_NAME + '/competencies/' + competencyId,
             {
                 params: { courseId: this.courseId, userId: this.userId },
             },
@@ -94,7 +94,7 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit {
      * @param competencyId
      */
     openCompetencySummary(competencyId: number): void {
-        CoreNavigator.navigateToSitePath('/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/summary/' + competencyId, {
+        CoreNavigator.navigateToSitePath(ADDON_COMPETENCY_MAIN_PAGE_NAME + '/summary/' + competencyId, {
             params: {
                 contextLevel: ContextLevel.COURSE,
                 contextInstanceId: this.courseId,
