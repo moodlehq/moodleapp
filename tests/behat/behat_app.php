@@ -32,6 +32,23 @@ use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ExpectationException;
 
 /**
+ * Behat app listener.
+ */
+interface behat_app_listener {
+
+    /**
+     * Called when the app is loaded.
+     */
+    function on_app_load(): void;
+
+    /**
+     * Called before the app is unloaded.
+     */
+    function on_app_unload(): void;
+
+}
+
+/**
  * Mobile/desktop app steps definitions.
  *
  * @package core
@@ -43,11 +60,35 @@ class behat_app extends behat_base {
     /** @var stdClass Object with data about launched Ionic instance (if any) */
     protected static $ionicrunning = null;
 
+    /** @var array */
+    protected static $listeners = [];
+
     /** @var string URL for running Ionic server */
     protected $ionicurl = '';
 
+    /** @var bool Whether the app is running or not */
+    protected $apprunning = false;
+
     /** @var bool Checks whether the app is runing a legacy version (ionic 3) */
     protected $islegacy;
+
+    /**
+     * Register listener.
+     *
+     * @param behat_app_listener $listener Listener.
+     * @return Closure Unregister function.
+     */
+    public static function listen(behat_app_listener $listener): Closure {
+        self::$listeners[] = $listener;
+
+        return function () use ($listener) {
+            $index = array_search($listener, self::$listeners);
+
+            if ($index !== false) {
+                array_splice(self::$listeners, $index, 1);
+            }
+        };
+    }
 
     /**
      * Checks if the current OS is Windows, from the point of view of task-executing-and-killing.
@@ -365,6 +406,10 @@ class behat_app extends behat_base {
         $skiponboarding = $options['skiponboarding'] ?? true;
 
         if ($restart) {
+            if ($this->apprunning) {
+                $this->notify_unload();
+            }
+
             // Restart the browser and set its size.
             $this->getSession()->restart();
             $this->resize_window('360x720', true);
@@ -382,6 +427,9 @@ class behat_app extends behat_base {
 
             // Visit the Ionic URL.
             $this->getSession()->visit($this->ionicurl);
+            $this->notify_load();
+
+            $this->apprunning = true;
         }
 
         // Wait the application to load.
@@ -936,6 +984,24 @@ class behat_app extends behat_base {
         }
 
         return $text;
+    }
+
+    /**
+     * Notify to listeners that the app was just loaded.
+     */
+    private function notify_load(): void {
+        foreach (self::$listeners as $listener) {
+            $listener->on_app_load();
+        }
+    }
+
+    /**
+     * Notify to listeners that the app is about to be unloaded.
+     */
+    private function notify_unload(): void {
+        foreach (self::$listeners as $listener) {
+            $listener->on_app_unload();
+        }
     }
 
 }
