@@ -540,8 +540,12 @@ export class CoreFilepoolProvider {
         await site.getDb().deleteRecords(PACKAGES_TABLE_NAME);
 
         entries.forEach((entry) => {
+            if (!entry.component) {
+                return;
+            }
+
             // Trigger module status changed, setting it as not downloaded.
-            this.triggerPackageStatusChanged(siteId, CoreConstants.NOT_DOWNLOADED, entry.component!, entry.componentId);
+            this.triggerPackageStatusChanged(siteId, CoreConstants.NOT_DOWNLOADED, entry.component, entry.componentId);
         });
     }
 
@@ -680,7 +684,7 @@ export class CoreFilepoolProvider {
 
         const downloadId = this.getFileDownloadId(fileUrl, path);
 
-        if (this.filePromises[siteId] && this.filePromises[siteId][downloadId]) {
+        if (this.filePromises[siteId] && this.filePromises[siteId][downloadId] !== undefined) {
             // There's already a download ongoing for this file in this location, return the promise.
             return this.filePromises[siteId][downloadId];
         } else if (!this.filePromises[siteId]) {
@@ -753,11 +757,11 @@ export class CoreFilepoolProvider {
 
             if (dirPath) {
                 // Calculate the path to the file.
-                path = file.filename;
+                path = file.filename || '';
                 if (file.filepath && file.filepath !== '/') {
                     path = file.filepath.substr(1) + path;
                 }
-                path = CoreTextUtils.concatenatePaths(dirPath, path!);
+                path = CoreTextUtils.concatenatePaths(dirPath, path);
             }
 
             if (prefetch) {
@@ -806,7 +810,7 @@ export class CoreFilepoolProvider {
     ): Promise<void> {
         const packageId = this.getPackageId(component, componentId);
 
-        if (this.packagesPromises[siteId] && this.packagesPromises[siteId][packageId]) {
+        if (this.packagesPromises[siteId] && this.packagesPromises[siteId][packageId] !== undefined) {
             // There's already a download ongoing for this package, return the promise.
             return this.packagesPromises[siteId][packageId];
         } else if (!this.packagesPromises[siteId]) {
@@ -847,11 +851,11 @@ export class CoreFilepoolProvider {
 
                 if (dirPath) {
                     // Calculate the path to the file.
-                    path = file.filename;
+                    path = file.filename || '';
                     if (file.filepath && file.filepath !== '/') {
                         path = file.filepath.substr(1) + path;
                     }
-                    path = CoreTextUtils.concatenatePaths(dirPath, path!);
+                    path = CoreTextUtils.concatenatePaths(dirPath, path);
                 }
 
                 if (prefetch) {
@@ -1459,7 +1463,7 @@ export class CoreFilepoolProvider {
 
             const downloadId = this.getFileDownloadId(fileUrl, filePath);
 
-            if (this.filePromises[siteId] && this.filePromises[siteId][downloadId]) {
+            if (this.filePromises[siteId] && this.filePromises[siteId][downloadId] !== undefined) {
                 return CoreConstants.DOWNLOADING;
             }
 
@@ -1730,7 +1734,7 @@ export class CoreFilepoolProvider {
      */
     getPackageDownloadPromise(siteId: string, component: string, componentId?: string | number): Promise<void> | undefined {
         const packageId = this.getPackageId(component, componentId);
-        if (this.packagesPromises[siteId] && this.packagesPromises[siteId][packageId]) {
+        if (this.packagesPromises[siteId] && this.packagesPromises[siteId][packageId] !== undefined) {
             return this.packagesPromises[siteId][packageId];
         }
     }
@@ -2745,7 +2749,7 @@ export class CoreFilepoolProvider {
 
         await site.getDb().updateRecords(PACKAGES_TABLE_NAME, newData, { id: packageId });
         // Success updating, trigger event.
-        this.triggerPackageStatusChanged(site.id!, newData.status, component, componentId);
+        this.triggerPackageStatusChanged(site.getId(), newData.status, component, componentId);
 
         return newData.status;
     }
