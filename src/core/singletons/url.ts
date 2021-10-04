@@ -203,4 +203,32 @@ export class CoreUrl {
             && CoreText.removeEndingSlash(partsA?.path) === CoreText.removeEndingSlash(partsB?.path);
     }
 
+    /**
+     * Get the anchor of a URL. If there's more than one they'll all be returned, separated by #.
+     * E.g. myurl.com#foo=1#bar=2 will return #foo=1#bar=2.
+     *
+     * @param url URL.
+     * @return Anchor, undefined if no anchor.
+     */
+    static getUrlAnchor(url: string): string | undefined {
+        const firstAnchorIndex = url.indexOf('#');
+        if (firstAnchorIndex === -1) {
+            return;
+        }
+
+        return url.substr(firstAnchorIndex);
+    }
+
+    /**
+     * Remove the anchor from a URL.
+     *
+     * @param url URL.
+     * @return URL without anchor if any.
+     */
+    static removeUrlAnchor(url: string): string {
+        const urlAndAnchor = url.split('#');
+
+        return urlAndAnchor[0];
+    }
+
 }

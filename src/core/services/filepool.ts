@@ -47,6 +47,7 @@ import {
     CoreFilepoolQueueDBEntry,
 } from '@services/database/filepool';
 import { CoreFileHelper } from './file-helper';
+import { CoreUrl } from '@singletons/url';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -672,6 +673,13 @@ export class CoreFilepoolProvider {
         poolFileObject?: CoreFilepoolFileEntry,
     ): Promise<string> {
         const fileId = this.getFileIdByUrl(fileUrl);
+
+        // Extract the anchor from the URL (if any).
+        const anchor = CoreUrl.getUrlAnchor(fileUrl);
+        if (anchor) {
+            fileUrl = fileUrl.replace(anchor, '');
+        }
+
         const extension = CoreMimetypeUtils.guessExtensionFromUrl(fileUrl);
         const addExtension = typeof filePath == 'undefined';
         const path = filePath || (await this.getFilePath(siteId, fileId, extension));
@@ -712,7 +720,8 @@ export class CoreFilepoolProvider {
                 extension: fileEntry.extension,
             });
 
-            return fileEntry.toURL();
+            // Add the anchor again to the local URL.
+            return fileEntry.toURL() + (anchor || '');
         }).finally(() => {
             // Download finished, delete the promise.
             delete this.filePromises[siteId][downloadId];
@@ -1015,7 +1024,10 @@ export class CoreFilepoolProvider {
                 url = await this.getInternalUrlById(siteId, fileId);
             }
 
-            return finishSuccessfulDownload(url);
+            // Add the anchor to the local URL if any.
+            const anchor = CoreUrl.getUrlAnchor(fileUrl);
+
+            return finishSuccessfulDownload(url + (anchor || ''));
         } catch (error) {
             // The file is not downloaded or it's outdated.
             this.notifyFileDownloading(siteId, fileId, links);
@@ -1284,6 +1296,9 @@ export class CoreFilepoolProvider {
             });
         }
 
+        // Remove the anchor.
+        url = CoreUrl.removeUrlAnchor(url);
+
         // Try to guess the filename the target file should have.
         // We want to keep the original file name so people can easily identify the files after the download.
         const filename = this.guessFilenameFromUrl(url);
@@ -1446,7 +1461,7 @@ export class CoreFilepoolProvider {
             return CoreConstants.NOT_DOWNLOADABLE;
         }
 
-        fileUrl = CoreFileHelper.getFileUrl(file);
+        fileUrl = CoreUrl.removeUrlAnchor(CoreFileHelper.getFileUrl(file));
         timemodified = file.timemodified || timemodified;
         revision = revision || this.getRevisionFromUrl(fileUrl);
         const fileId = this.getFileIdByUrl(fileUrl);
@@ -1556,11 +1571,14 @@ export class CoreFilepoolProvider {
 
         try {
             // We found the file entry, now look for the file on disk.
-            if (mode === 'src') {
-                return await this.getInternalSrcById(siteId, fileId);
-            } else {
-                return await this.getInternalUrlById(siteId, fileId);
-            }
+            const path = mode === 'src' ?
+                await this.getInternalSrcById(siteId, fileId) :
+                await this.getInternalUrlById(siteId, fileId);
+
+            // Add the anchor to the local URL if any.
+            const anchor = CoreUrl.getUrlAnchor(fileUrl);
+
+            return path + (anchor || '');
         } catch (error) {
             // The file is not on disk.
             // We could not retrieve the file, delete the entries associated with that ID.
