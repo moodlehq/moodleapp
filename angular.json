@@ -66,6 +66,20 @@
                 }
               ]
             },
+            "testing": {
+              "optimization": {
+                "scripts": false,
+                "styles": true
+              },
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            },
             "ci": {
               "progress": false
             }
