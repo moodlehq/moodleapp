@@ -19,6 +19,7 @@ import { CoreSite, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@c
 import { CoreFilepoolComponentFileEventData } from '@services/filepool';
 import { CoreNavigationOptions } from '@services/navigator';
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
+import { CoreScreenOrientation } from '@services/screen';
 
 /**
  * Observer instance to stop listening to an event.
@@ -55,6 +56,7 @@ export interface CoreEventsData {
     [CoreEvents.COMPONENT_FILE_ACTION]: CoreFilepoolComponentFileEventData;
     [CoreEvents.FILE_SHARED]: CoreEventFileSharedData;
     [CoreEvents.APP_LAUNCHED_URL]: CoreEventAppLaunchedData;
+    [CoreEvents.ORIENTATION_CHANGE]: CoreEventOrientationData;
 }
 
 /*
@@ -386,4 +388,11 @@ export type CoreEventFileSharedData = {
  */
 export type CoreEventAppLaunchedData = {
     url: string;
+};
+
+/**
+ * Data passed to ORIENTATION_CHANGE event.
+ */
+export type CoreEventOrientationData = {
+    orientation: CoreScreenOrientation;
 };

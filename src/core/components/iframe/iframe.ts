@@ -22,7 +22,9 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreIframeUtils } from '@services/utils/iframe';
 import { CoreUtils } from '@services/utils/utils';
-import { DomSanitizer } from '@singletons';
+import { DomSanitizer, StatusBar } from '@singletons';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreScreen, CoreScreenOrientation } from '@services/screen';
 
 @Component({
     selector: 'core-iframe',
@@ -39,6 +41,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     @Input() iframeHeight?: string;
     @Input() allowFullscreen?: boolean | string;
     @Input() showFullscreenOnToolbar?: boolean | string;
+    @Input() autoFullscreenOnRotate?: boolean | string;
     @Output() loaded: EventEmitter<HTMLIFrameElement> = new EventEmitter<HTMLIFrameElement>();
 
     loading?: boolean;
@@ -49,6 +52,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     initialized = false;
 
     protected style?: HTMLStyleElement;
+    protected orientationObs?: CoreEventObserver;
 
     constructor() {
         this.loaded = new EventEmitter<HTMLIFrameElement>();
@@ -73,13 +77,22 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         this.iframeHeight = (this.iframeHeight && CoreDomUtils.formatPixelsSize(this.iframeHeight)) || '100%';
         this.allowFullscreen = CoreUtils.isTrueOrOne(this.allowFullscreen);
         this.showFullscreenOnToolbar = CoreUtils.isTrueOrOne(this.showFullscreenOnToolbar);
+        this.autoFullscreenOnRotate = CoreUtils.isTrueOrOne(this.autoFullscreenOnRotate);
 
-        if (this.showFullscreenOnToolbar) {
+        if (this.showFullscreenOnToolbar || this.autoFullscreenOnRotate) {
             const shadow =
                 iframe.closest('.ion-page')?.querySelector('ion-header ion-toolbar')?.shadowRoot;
             if (shadow) {
                 this.style = document.createElement('style');
                 shadow.appendChild(this.style);
+            }
+
+            if (this.autoFullscreenOnRotate) {
+                this.toggleFullscreen(CoreScreen.isLandscape);
+
+                this.orientationObs = CoreEvents.on(CoreEvents.ORIENTATION_CHANGE, (data) => {
+                    this.toggleFullscreen(data.orientation == CoreScreenOrientation.LANDSCAPE);
+                });
             }
         }
 
@@ -136,6 +149,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      */
     ngOnDestroy(): void {
         this.toggleFullscreen(false);
+        this.orientationObs?.off();
     }
 
     /**
@@ -147,6 +161,8 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         } else {
             this.fullscreen = !this.fullscreen;
         }
+
+        this.fullscreen ? StatusBar.hide() : StatusBar.show();
 
         if (this.style) {
             // Done this way because of the shadow DOM.

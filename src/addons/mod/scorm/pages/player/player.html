@@ -22,7 +22,7 @@
         <core-navigation-bar [previous]="previousSco" [next]="nextSco" (action)="loadSco($event)"></core-navigation-bar>
 
         <core-iframe *ngIf="loaded && src" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"
-            [showFullscreenOnToolbar]="true">
+            [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true">
         </core-iframe>
 
         <p *ngIf="!src && errorMessage">{{ errorMessage | translate }}</p>
