@@ -36,7 +36,7 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit {
     user?: CoreUserProfile;
     courseId!: number;
 
-    protected userId!: number;
+    protected userId?: number;
 
     /**
      * View loaded.
@@ -44,7 +44,7 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit {
     ngOnInit(): void {
         try {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
-            this.userId = CoreNavigator.getRequiredRouteNumberParam('userId');
+            this.userId = CoreNavigator.getRouteNumberParam('userId');
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
