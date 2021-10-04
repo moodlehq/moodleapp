@@ -495,7 +495,7 @@ Feature: Test basic usage of one course in app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
-    And I press "Turn editing on"
+    And I click on "Edit mode" "checkbox"
     And I click on "Side panel" "button"
     And I follow "Add a block"
     And I follow "Text"
