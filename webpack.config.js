@@ -25,6 +25,7 @@ module.exports = config => {
                 compress: {
                     toplevel: true,
                     pure_getters: true,
+                    side_effects: false,
                 },
                 keep_classnames: true,
                 keep_fnames: true,
