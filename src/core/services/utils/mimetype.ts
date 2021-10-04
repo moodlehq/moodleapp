@@ -313,6 +313,11 @@ export class CoreMimetypeUtilsProvider {
             if (position > -1) {
                 candidate = candidate.substr(0, position);
             }
+            // Remove anchor if any.
+            position = candidate.indexOf('#');
+            if (position > -1) {
+                candidate = candidate.substr(0, position);
+            }
 
             if (EXTENSION_REGEX.test(candidate)) {
                 extension = candidate;

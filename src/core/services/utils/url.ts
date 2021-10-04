@@ -58,6 +58,10 @@ export class CoreUrlUtilsProvider {
      * @return URL with params.
      */
     addParamsToUrl(url: string, params?: Record<string, unknown>, anchor?: string, boolToNumber?: boolean): string {
+        // Remove any existing anchor to add the params before it.
+        const urlAndAnchor = url.split('#');
+        url = urlAndAnchor[0];
+
         let separator = url.indexOf('?') != -1 ? '&' : '?';
 
         for (const key in params) {
@@ -73,6 +77,15 @@ export class CoreUrlUtilsProvider {
                 url += separator + key + '=' + value;
                 separator = '&';
             }
+        }
+
+        // Re-add the anchor if any.
+        if (urlAndAnchor.length > 1) {
+            // Remove the URL from the array.
+            urlAndAnchor.shift();
+
+            // Use a join in case there is more than one #.
+            url += '#' + urlAndAnchor.join('#');
         }
 
         if (anchor) {
