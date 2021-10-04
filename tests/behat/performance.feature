@@ -1,7 +1,7 @@
 @app @javascript @performance
 Feature: Measure performance.
 
-Scenario: First Contentful Paint
+  Scenario: First Contentful Paint
     Given I start measuring "First Contentful Paint"
     When I launch the app runtime
     Then I should find "Welcome to the Moodle App!" in the app
@@ -9,7 +9,7 @@ Scenario: First Contentful Paint
     When I stop measuring "First Contentful Paint"
     Then "First Contentful Paint" should have taken less than 6 seconds
 
-Scenario: Time to Interactive
+  Scenario: Time to Interactive
     Given I start measuring "Time to Interactive"
     When I launch the app runtime
     Then I should find "Welcome to the Moodle App!" in the app
@@ -21,7 +21,7 @@ Scenario: Time to Interactive
     When I stop measuring "Time to Interactive"
     Then "Time to Interactive" should have taken less than 7 seconds
 
-Scenario: Total Blocking Time
+  Scenario: Total Blocking Time
     Given I launch the app runtime
     Then I should find "Welcome to the Moodle App!" in the app
 
