@@ -849,7 +849,7 @@ class behat_app extends behat_base {
         );
 
         // Trigger Angular change detection
-        $session->executeScript($this->islegacy ? 'appRef.tick();' : 'changeDetector.detectChanges();');
+        $session->executeScript($this->islegacy ? 'appRef.tick();' : 'ngZone.run(() => {});');
     }
 
     /**
@@ -862,7 +862,7 @@ class behat_app extends behat_base {
 
         $this->spin(
             function() use ($session) {
-                $session->executeScript($this->islegacy ? 'appRef.tick();' : 'changeDetector.detectChanges();');
+                $session->executeScript($this->islegacy ? 'appRef.tick();' : 'ngZone.run(() => {});');
 
                 $nodes = $this->find_all('css', 'core-loading ion-spinner');
 
