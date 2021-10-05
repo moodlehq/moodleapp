@@ -12,17 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ApplicationRef } from '@angular/core';
+import { ApplicationRef, NgZone as NgZoneService } from '@angular/core';
 import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
-import { Application } from '@singletons';
+import { Application, NgZone } from '@singletons';
 
 type AutomatedTestsWindow = Window & {
     appRef?: ApplicationRef;
     appProvider?: CoreAppProvider;
     cronProvider?: CoreCronDelegateService;
+    ngZone?: NgZoneService;
     pushNotifications?: CorePushNotificationsProvider;
     urlSchemes?: CoreCustomURLSchemesProvider;
 };
@@ -31,6 +32,7 @@ function initializeAutomatedTestsWindow(window: AutomatedTestsWindow) {
     window.appRef = Application.instance;
     window.appProvider = CoreApp.instance;
     window.cronProvider = CoreCronDelegate.instance;
+    window.ngZone = NgZone.instance;
     window.pushNotifications = CorePushNotifications.instance;
     window.urlSchemes = CoreCustomURLSchemes.instance;
 }
