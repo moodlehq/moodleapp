@@ -161,7 +161,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
      * @param name Name of the selected processor.
      */
     changeProcessor(name: string): void {
-        const processor = this.preferences!.processors.find((processor) => processor.name == name);
+        const processor = this.preferences?.processors.find((processor) => processor.name == name);
 
         if (processor) {
             this.loadProcessor(processor);
@@ -246,6 +246,10 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async enableAll(enable?: boolean): Promise<void> {
+        if (!this.preferences) {
+            return;
+        }
+
         const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {
@@ -256,7 +260,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
         } catch (error) {
             // Show error and revert change.
             CoreDomUtils.showErrorModal(error);
-            this.preferences!.enableall = !this.preferences!.enableall;
+            this.preferences.enableall = !this.preferences.enableall;
         } finally {
             modal.dismiss();
         }

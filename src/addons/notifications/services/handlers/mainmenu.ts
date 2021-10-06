@@ -112,8 +112,9 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
         try {
             const unreadCount = await AddonNotifications.getUnreadNotificationsCount(undefined, siteId);
 
-            this.handlerData.badge = unreadCount > 0 ? String(unreadCount) : '';
-            CorePushNotifications.updateAddonCounter('AddonNotifications', unreadCount, siteId);
+            const unreadCountNumber = typeof unreadCount === 'string' ? parseInt(unreadCount) : unreadCount;
+            this.handlerData.badge = unreadCountNumber > 0 ? String(unreadCount) : '';
+            CorePushNotifications.updateAddonCounter('AddonNotifications', unreadCountNumber, siteId);
         } catch {
             this.handlerData.badge = '';
         } finally {

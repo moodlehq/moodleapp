@@ -21,8 +21,11 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
-import { AddonNotifications, AddonNotificationsAnyNotification, AddonNotificationsProvider } from '../../services/notifications';
-import { AddonNotificationsHelper } from '../../services/notifications-helper';
+import {
+    AddonNotifications,
+    AddonNotificationsNotificationMessageFormatted,
+    AddonNotificationsProvider,
+} from '../../services/notifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 
 /**
@@ -89,9 +92,7 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
         this.loadMoreError = false;
 
         try {
-            const result = await AddonNotificationsHelper.getNotifications(refresh ? [] : this.notifications, {
-                onlyPopupNotifications: true,
-            });
+            const result = await AddonNotifications.getNotifications(refresh ? [] : this.notifications);
 
             const notifications = result.notifications.map((notification) => this.formatText(notification));
 
@@ -156,8 +157,9 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
         try {
             this.loadingMarkAllNotificationsAsRead = true;
 
-            const unread = await AddonNotifications.getUnreadNotificationsCount();
+            let unread = await AddonNotifications.getUnreadNotificationsCount();
 
+            unread = typeof unread === 'string' ? parseInt(unread) : unread;
             this.canMarkAllNotificationsAsRead = unread > 0;
         } finally {
             this.loadingMarkAllNotificationsAsRead = false;
@@ -198,14 +200,14 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
      *
      * @param notification The notification object.
      */
-    protected formatText(notification: AddonNotificationsAnyNotification): FormattedNotification {
+    protected formatText(notification: AddonNotificationsNotificationMessageFormatted): FormattedNotification {
         const formattedNotification: FormattedNotification = notification;
         formattedNotification.displayfullhtml = this.shouldDisplayFullHtml(notification);
         formattedNotification.iconurl = formattedNotification.iconurl || undefined; // Make sure the property exists.
 
         formattedNotification.mobiletext = formattedNotification.displayfullhtml ?
             notification.fullmessagehtml :
-            CoreTextUtils.replaceNewLines(formattedNotification.mobiletext!.replace(/-{4,}/ig, ''), '<br>');
+            CoreTextUtils.replaceNewLines((formattedNotification.mobiletext || '').replace(/-{4,}/ig, ''), '<br>');
 
         return formattedNotification;
     }
@@ -253,7 +255,7 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
 
 }
 
-type FormattedNotification = AddonNotificationsAnyNotification & {
+type FormattedNotification = AddonNotificationsNotificationMessageFormatted & {
     displayfullhtml?: boolean; // Whether to display the full HTML of the notification.
     iconurl?: string;
 };
