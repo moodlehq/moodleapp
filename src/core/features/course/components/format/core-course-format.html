@@ -98,7 +98,7 @@
                 <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)"></core-infinite-loading>
             </div>
 
-            <ion-buttons class="ion-padding core-course-section-nav-buttons safe-padding-horizontal"
+            <ion-buttons class="ion-padding core-course-section-nav-buttons safe-area-padding-horizontal"
                 *ngIf="displaySectionSelector && sections?.length">
                 <ion-button *ngIf="previousSection" (click)="sectionChanged(previousSection)" fill="outline" color="primary"
                     [attr.aria-label]="('core.previous' | translate) + ': ' + previousSection.name">

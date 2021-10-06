@@ -60,7 +60,7 @@
     </core-navbar-buttons>
 </ion-header>
 <ion-content class="has-footer" (ionScroll)="scrollFunction()">
-    <core-loading [hideUntil]="loaded" class="safe-area-page">
+    <core-loading [hideUntil]="loaded" class="safe-area-padding-horizontal">
         <!-- Load previous messages. -->
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadPrevious($event)" position="top" [error]="loadMoreError">
         </core-infinite-loading>
@@ -138,8 +138,8 @@
         </ion-fab-button>
     </ion-fab>
 </ion-content>
-<ion-footer color="light" class="footer-adjustable" *ngIf="loaded && (!conversationId || conversation)">
-    <ion-toolbar color="light">
+<ion-footer class="footer-adjustable" *ngIf="loaded && (!conversationId || conversation)">
+    <ion-toolbar [color]="footerType == 'message' ? 'contrast' : 'light'">
         <p *ngIf="footerType == 'unable'" class="ion-text-center ion-margin-horizontal">
             {{ 'addon.messages.unabletomessage' | translate }}
         </p>

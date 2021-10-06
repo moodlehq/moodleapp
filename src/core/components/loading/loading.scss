@@ -74,6 +74,18 @@
             flex-direction: row;
         }
     }
+
+    &.safe-area-padding:not(.core-loading-inline) .core-loading-content,
+    &.safe-area-padding-horizontal:not(.core-loading-inline) .core-loading-content {
+        @include safe-area-padding-horizontal(0px, 0px);
+    }
+
+    &.safe-area-padding:not(.core-loading-inline) .core-loading-content {
+        padding-bottom: var(--ion-safe-area-bottom);
+        > * {
+            --ion-safe-area-bottom: 0px;
+        }
+    }
 }
 
 :host-context(ion-item) {

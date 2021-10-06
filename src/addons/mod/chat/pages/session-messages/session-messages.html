@@ -10,7 +10,7 @@
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshMessages($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="loaded" class="safe-area-page">
+    <core-loading [hideUntil]="loaded" class="safe-area-padding">
         <ion-list class="addon-messages-discussion-container">
             <ng-container *ngFor="let message of messages; index as index;">
 

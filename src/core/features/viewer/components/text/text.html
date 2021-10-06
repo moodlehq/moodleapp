@@ -18,7 +18,7 @@
         <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="componentId"></core-file>
     </ion-card>
 </ion-content>
-<ion-footer color="light" *ngIf="displayCopyButton">
+<ion-footer *ngIf="displayCopyButton">
     <ion-button expand="block" color="light" (click)="copyText()">
         <ion-icon name="fas-copy" aria-hidden="true" slot="start"></ion-icon>
         {{ 'core.copytoclipboard' | translate }}

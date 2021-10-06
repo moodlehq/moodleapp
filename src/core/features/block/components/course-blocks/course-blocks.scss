@@ -16,6 +16,8 @@
                 box-shadow: none !important;
                 flex-grow: 1;
                 max-width: 100%;
+
+                --ion-safe-area-right: 0px;
             }
 
             div.core-course-blocks-side {

@@ -15,7 +15,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content class="has-footer">
-    <core-loading [hideUntil]="loaded" class="safe-area-page">
+    <core-loading [hideUntil]="loaded" class="safe-area-padding">
         <ion-list class="addon-messages-discussion-container" aria-live="polite">
             <ng-container *ngFor="let message of messages; index as index; last as last">
 
@@ -109,8 +109,8 @@
         </core-empty-box>
     </core-loading>
 </ion-content>
-<ion-footer color="light" class="footer-adjustable">
-    <ion-toolbar color="light">
+<ion-footer class="footer-adjustable">
+    <ion-toolbar [color]="isOnline && polling && loaded ? 'contrast' : 'light'">
         <p class="ion-text-center" *ngIf="!isOnline">
             {{ 'addon.mod_chat.mustbeonlinetosendmessages' | translate }}
         </p>

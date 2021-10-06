@@ -21,7 +21,7 @@
         </core-horizontal-scroll-controls>
     </div>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" [fullscreen]="false" class="safe-area-page margin">
+<core-loading [hideUntil]="loaded" [fullscreen]="false">
     <core-empty-box *ngIf="courses.length == 0" image="assets/img/icons/courses.svg" inline="true"
         [message]="'addon.block_starredcourses.nocourses' | translate"></core-empty-box>
     <!-- List of courses. -->
@@ -32,10 +32,12 @@
         (scroll)="scrollControls.updateScrollPosition()"
     >
         <div (onResize)="scrollControls.updateScrollPosition()" class="flex-row">
+            <div class="safe-area-pseudo-padding-start"></div>
             <ng-container *ngFor="let course of courses">
                 <core-courses-course-progress [course]="course" class="core-block_starredcourses"
                     [showDownload]="downloadCourseEnabled && downloadEnabled"></core-courses-course-progress>
             </ng-container>
+            <div class="safe-area-pseudo-padding-end"></div>
         </div>
     </div>
 </core-loading>

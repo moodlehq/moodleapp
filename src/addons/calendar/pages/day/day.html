@@ -26,7 +26,7 @@
     </ion-refresher>
 
     <!-- Period name and arrows to navigate. -->
-    <ion-grid class="ion-no-padding safe-area-page">
+    <ion-grid class="ion-no-padding safe-area-padding">
         <ion-row class="ion-align-items-center">
             <ion-col class="ion-text-start" *ngIf="currentMoment">
                 <ion-button fill="clear" (click)="loadPrevious()" [attr.aria-label]="'addon.calendar.dayprev' | translate">
@@ -44,7 +44,7 @@
         </ion-row>
     </ion-grid>
 
-    <core-loading [hideUntil]="loaded" class="safe-area-page">
+    <core-loading [hideUntil]="loaded" class="safe-area-padding">
         <!-- There is data to be synchronized -->
         <ion-card class="core-warning-card" *ngIf="hasOffline">
             <ion-item>

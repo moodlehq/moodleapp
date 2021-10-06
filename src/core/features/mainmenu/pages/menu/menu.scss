@@ -51,11 +51,13 @@
         ion-tab-bar {
             order: -1;
             width: var(--menutabbar-size);
-            height: 100%;
+            height: calc(100% - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
             flex-direction: column;
             @include border-end(var(--border));
             box-shadow: 3px 0 3px rgba(var(--drop-shadow));
             border-top: 0;
+
+            @include padding(var(--ion-safe-area-top), 0px, var(--ion-safe-area-bottom), var(--ion-safe-area-left));
 
             ion-tab-button {
                 width: 100%;
@@ -68,6 +70,7 @@
     }
 
     .core-network-message {
+        --network-message-height: 16px;
         position: absolute;
         bottom: 0;
         left: 0;
@@ -80,6 +83,7 @@
         height: 0;
         transition: all 500ms ease-in-out;
         opacity: .8;
+        z-index: 12;
     }
 
     .core-online-message,
@@ -100,7 +104,8 @@
 
     .core-network-message {
         visibility: visible;
-        height: 16px;
+        height: var(--network-message-height);
+        padding-bottom: calc(var(--ion-safe-area-bottom, 0px) + var(--network-message-height));
         pointer-events: none;
     }
 }

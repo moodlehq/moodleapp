@@ -37,7 +37,7 @@
         <ion-searchbar #searchbar *ngIf="courses && courses.length > 5" [(ngModel)]="filter" (ionInput)="filterChanged($event)"
             (ionCancel)="filterChanged()" [placeholder]="'core.courses.filtermycourses' | translate">
         </ion-searchbar>
-        <ion-grid class="ion-no-padding safe-area-page">
+        <ion-grid class="ion-no-padding safe-area-padding">
             <ion-row class="ion-no-padding">
                 <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding"
                     size="12" size-sm="6" size-md="6" size-lg="4" size-xl="4">
