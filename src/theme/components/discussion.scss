@@ -39,8 +39,8 @@
         overflow: visible;
 
         &::part(native) {
-            --inner-border-width: 0;
-            --inner-padding-end: 0;
+            --inner-border-width: 0px;
+            --inner-padding-end: 0px;
             padding: 0;
             margin: 0;
         }
