@@ -388,8 +388,8 @@ export class CoreSettingsHelperProvider {
      */
     applyZoomLevel(zoomLevel: CoreZoomLevel): void {
         const zoom = CoreConstants.CONFIG.zoomlevels[zoomLevel];
-        // @todo MOBILE-3790 non-standard property, doesn't work everywhere.
-        document.documentElement.style.zoom = zoom + '%';
+
+        document.documentElement.style.setProperty('--zoom-level', zoom + '%');
     }
 
     /**
