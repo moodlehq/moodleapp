@@ -74,7 +74,7 @@ export class AddonModLtiHelperProvider {
                     module,
                 };
 
-                return site.openInBrowserWithAutoLogin(module.url!);
+                return site.openInBrowserWithAutoLogin(module.url || '');
             }
 
             // Open in app.

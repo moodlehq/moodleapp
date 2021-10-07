@@ -2,7 +2,7 @@
 <core-navbar-buttons slot="end">
     <core-context-menu>
         <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt">
+            [href]="externalUrl" iconAction="fas-external-link-alt" [showBrowserWarning]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
             (action)="expandDescription()" iconAction="fas-arrow-right">
@@ -185,7 +185,7 @@
                     <p class="text-danger">{{ errorMessage | translate }}</p>
                 </ion-label>
             </ion-item>
-            <ion-button class="ion-margin ion-text-wrap" expand="block" [href]="externalUrl" core-link>
+            <ion-button class="ion-margin ion-text-wrap" expand="block" [href]="externalUrl" core-link [showBrowserWarning]="false">
                 {{ 'core.openinbrowser' | translate }}
                 <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
             </ion-button>

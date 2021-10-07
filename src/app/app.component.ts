@@ -125,7 +125,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 const urlScheme = CoreUrlUtils.getUrlProtocol(url);
                 if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
                     // Open in browser should launch the right app if found and do nothing if not found.
-                    CoreUtils.openInBrowser(url);
+                    CoreUtils.openInBrowser(url, { showBrowserWarning: false });
 
                     // At this point the InAppBrowser is showing a "Webpage not available" error message.
                     // Try to navigate to last loaded URL so this error message isn't found.

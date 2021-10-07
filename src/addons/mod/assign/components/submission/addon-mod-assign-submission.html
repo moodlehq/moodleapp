@@ -353,7 +353,7 @@
                         <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                         <ion-label>
                             <p>{{ 'addon.mod_assign.cannotgradefromapp' | translate }}</p>
-                            <ion-button expand="block" *ngIf="gradeUrl" [href]="gradeUrl" core-link >
+                            <ion-button expand="block" *ngIf="gradeUrl" [href]="gradeUrl" core-link [showBrowserWarning]="false">
                                 {{ 'core.openinbrowser' | translate }}
                                 <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
                             </ion-button>

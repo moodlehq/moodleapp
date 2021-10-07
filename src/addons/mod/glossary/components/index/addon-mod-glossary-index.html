@@ -11,7 +11,7 @@
 
     <core-context-menu>
         <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt">
+            [href]="externalUrl" iconAction="fas-external-link-alt" [showBrowserWarning]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
             (action)="expandDescription()" iconAction="fas-arrow-right">

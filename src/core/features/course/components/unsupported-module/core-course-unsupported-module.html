@@ -17,7 +17,7 @@
 
     <div *ngIf="module && module.url">
         <p><strong>{{ 'core.course.useactivityonbrowser' | translate }}</strong></p>
-        <ion-button expand="block" [href]="module.url" core-link>
+        <ion-button expand="block" [href]="module.url" core-link [showBrowserWarning]="false">
             {{ 'core.openinbrowser' | translate }}
             <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
         </ion-button>

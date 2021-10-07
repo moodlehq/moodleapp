@@ -222,7 +222,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
                 try {
                     await CoreDomUtils.showConfirm(body);
 
-                    CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(url);
+                    CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(url, undefined, { showBrowserWarning: false });
                 } catch {
                     // User cancelled.
                 };

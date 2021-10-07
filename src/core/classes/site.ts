@@ -32,7 +32,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils, CoreUrlParams } from '@services/utils/url';
-import { CoreUtils, PromiseDefer } from '@services/utils/utils';
+import { CoreUtils, CoreUtilsOpenInBrowserOptions, PromiseDefer } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
@@ -1381,10 +1381,15 @@ export class CoreSite {
      *
      * @param url The URL to open.
      * @param alertMessage If defined, an alert will be shown before opening the browser.
+     * @param options Other options.
      * @return Promise resolved when done, rejected otherwise.
      */
-    async openInBrowserWithAutoLogin(url: string, alertMessage?: string): Promise<void> {
-        await this.openWithAutoLogin(false, url, undefined, alertMessage);
+    async openInBrowserWithAutoLogin(
+        url: string,
+        alertMessage?: string,
+        options: CoreUtilsOpenInBrowserOptions = {},
+    ): Promise<void> {
+        await this.openWithAutoLogin(false, url, options, alertMessage);
     }
 
     /**
@@ -1392,10 +1397,15 @@ export class CoreSite {
      *
      * @param url The URL to open.
      * @param alertMessage If defined, an alert will be shown before opening the browser.
+     * @param options Other options.
      * @return Promise resolved when done, rejected otherwise.
      */
-    async openInBrowserWithAutoLoginIfSameSite(url: string, alertMessage?: string): Promise<void> {
-        await this.openWithAutoLoginIfSameSite(false, url, undefined, alertMessage);
+    async openInBrowserWithAutoLoginIfSameSite(
+        url: string,
+        alertMessage?: string,
+        options: CoreUtilsOpenInBrowserOptions = {},
+    ): Promise<void> {
+        await this.openWithAutoLoginIfSameSite(false, url, options, alertMessage);
     }
 
     /**
@@ -1442,7 +1452,7 @@ export class CoreSite {
     async openWithAutoLogin(
         inApp: boolean,
         url: string,
-        options?: InAppBrowserOptions,
+        options: InAppBrowserOptions & CoreUtilsOpenInBrowserOptions = {},
         alertMessage?: string,
     ): Promise<InAppBrowserObject | void> {
         // Get the URL to open.
@@ -1458,13 +1468,14 @@ export class CoreSite {
             );
 
             await alert.onDidDismiss();
+            options.showBrowserWarning = false; // A warning already shown, no need to show another.
         }
 
         // Open the URL.
         if (inApp) {
             return CoreUtils.openInApp(url, options);
         } else {
-            return CoreUtils.openInBrowser(url);
+            return CoreUtils.openInBrowser(url, options);
         }
     }
 
@@ -1480,7 +1491,7 @@ export class CoreSite {
     async openWithAutoLoginIfSameSite(
         inApp: boolean,
         url: string,
-        options?: InAppBrowserOptions,
+        options: InAppBrowserOptions & CoreUtilsOpenInBrowserOptions = {},
         alertMessage?: string,
     ): Promise<InAppBrowserObject | void> {
         if (this.containsUrl(url)) {
@@ -1489,7 +1500,7 @@ export class CoreSite {
             if (inApp) {
                 return Promise.resolve(CoreUtils.openInApp(url, options));
             } else {
-                CoreUtils.openInBrowser(url);
+                CoreUtils.openInBrowser(url, options);
             }
         }
     }

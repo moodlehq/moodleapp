@@ -104,17 +104,20 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
                 case 'browser':
                     return CoreUtils.openInBrowser(url);
 
-                default:
-                    if (CoreContentLinksHelper.handleLink(url, undefined, undefined, true)) {
+                default: {
+                    const treated = await CoreContentLinksHelper.handleLink(url, undefined, undefined, true);
+                    if (treated) {
                         // Link treated, stop.
                         return;
                     }
+                }
             }
         }
 
         // No appurl or cannot be handled by the app. Try to handle the contexturl now.
         if (notification.contexturl) {
-            if (CoreContentLinksHelper.handleLink(notification.contexturl)) {
+            const treated = await CoreContentLinksHelper.handleLink(notification.contexturl);
+            if (treated) {
                 // Link treated, stop.
                 return;
             }

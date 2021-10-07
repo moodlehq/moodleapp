@@ -56,7 +56,7 @@ export class CoreUserProfileMailHandlerService implements CoreUserProfileHandler
                 event.preventDefault();
                 event.stopPropagation();
 
-                CoreUtils.openInBrowser('mailto:' + user.email);
+                CoreUtils.openInBrowser('mailto:' + user.email, { showBrowserWarning: false });
             },
         };
     }

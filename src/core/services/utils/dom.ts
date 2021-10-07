@@ -1440,7 +1440,7 @@ export class CoreDomUtilsProvider {
             buttons.push({
                 text: Translate.instant('core.download'),
                 handler: (): void => {
-                    CoreUtils.openInBrowser(link);
+                    CoreUtils.openInBrowser(link, { showBrowserWarning: false });
                 },
             });
         }
@@ -1465,28 +1465,32 @@ export class CoreDomUtilsProvider {
      *
      * @param message Modal message.
      * @param header Modal header.
-     * @param placeholder Placeholder of the input element. By default, "Password".
+     * @param placeholderOrLabel Placeholder (for textual/numeric inputs) or label (for radio/checkbox). By default, "Password".
      * @param type Type of the input element. By default, password.
      * @param options More options to pass to the alert.
-     * @return Promise resolved with the input data if the user clicks OK, rejected if cancels.
+     * @return Promise resolved with the input data (true for checkbox/radio) if the user clicks OK, rejected if cancels.
      */
     showPrompt(
         message: string,
         header?: string,
-        placeholder?: string,
+        placeholderOrLabel?: string,
         type: TextFieldTypes | 'checkbox' | 'radio' | 'textarea' = 'password',
     ): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
         return new Promise((resolve, reject) => {
-            placeholder = placeholder ?? Translate.instant('core.login.password');
+            placeholderOrLabel = placeholderOrLabel ?? Translate.instant('core.login.password');
 
+            const isCheckbox = type === 'checkbox';
+            const isRadio = type === 'radio';
             const options: AlertOptions = {
                 header,
                 message,
                 inputs: [
                     {
                         name: 'promptinput',
-                        placeholder: placeholder,
+                        placeholder: placeholderOrLabel,
+                        label: placeholderOrLabel,
                         type,
+                        value: (isCheckbox || isRadio) ? true : undefined,
                     },
                 ],
                 buttons: [
@@ -1500,7 +1504,13 @@ export class CoreDomUtilsProvider {
                     {
                         text: Translate.instant('core.ok'),
                         handler: (data) => {
-                            resolve(data.promptinput);
+                            if (isCheckbox) {
+                                resolve(data[0]);
+                            } else if (isRadio) {
+                                resolve(data);
+                            } else {
+                                resolve(data.promptinput);
+                            }
                         },
                     },
                 ],

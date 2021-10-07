@@ -731,7 +731,7 @@ export class CoreSitesProvider {
                     Translate.instant('core.updaterequired'),
                     Translate.instant('core.download'),
                     Translate.instant(siteId ? 'core.mainmenu.logout' : 'core.cancel'),
-                ).then(() => CoreUtils.openInBrowser(downloadUrl)).catch(() => {
+                ).then(() => CoreUtils.openInBrowser(downloadUrl, { showBrowserWarning: false })).catch(() => {
                     // Do nothing.
                 });
             } else {

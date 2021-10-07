@@ -43,6 +43,7 @@ export class CoreLinkDirective implements OnInit {
        "no" -> Never auto-login.
        "check" -> Auto-login only if it points to the current site. Default value. */
     @Input() autoLogin = 'check';
+    @Input() showBrowserWarning = true; // Whether to show a warning before opening browser. Defaults to true.
 
     protected element: Element;
 
@@ -199,33 +200,35 @@ export class CoreLinkDirective implements OnInit {
             if (this.inApp) {
                 CoreUtils.openInApp(href);
             } else {
-                CoreUtils.openInBrowser(href);
+                CoreUtils.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
             }
 
             return;
         }
 
+        const currentSite = CoreSites.getRequiredCurrentSite();
+
         // Check if URL does not have any protocol, so it's a relative URL.
         if (!CoreUrlUtils.isAbsoluteURL(href)) {
             // Add the site URL at the begining.
             if (href.charAt(0) == '/') {
-                href = CoreSites.getCurrentSite()!.getURL() + href;
+                href = currentSite.getURL() + href;
             } else {
-                href = CoreSites.getCurrentSite()!.getURL() + '/' + href;
+                href = currentSite.getURL() + '/' + href;
             }
         }
 
         if (this.autoLogin == 'yes') {
             if (this.inApp) {
-                await CoreSites.getCurrentSite()!.openInAppWithAutoLogin(href);
+                await currentSite.openInAppWithAutoLogin(href);
             } else {
-                await CoreSites.getCurrentSite()!.openInBrowserWithAutoLogin(href);
+                await currentSite.openInBrowserWithAutoLogin(href, undefined, { showBrowserWarning: this.showBrowserWarning });
             }
         } else if (this.autoLogin == 'no') {
             if (this.inApp) {
                 CoreUtils.openInApp(href);
             } else {
-                CoreUtils.openInBrowser(href);
+                CoreUtils.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
             }
         } else {
             // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > data-open-in HTML attribute.
@@ -239,9 +242,13 @@ export class CoreLinkDirective implements OnInit {
             }
 
             if (openInApp) {
-                await CoreSites.getCurrentSite()!.openInAppWithAutoLoginIfSameSite(href);
+                await currentSite.openInAppWithAutoLoginIfSameSite(href);
             } else {
-                await CoreSites.getCurrentSite()!.openInBrowserWithAutoLoginIfSameSite(href);
+                await currentSite.openInBrowserWithAutoLoginIfSameSite(
+                    href,
+                    undefined,
+                    { showBrowserWarning: this.showBrowserWarning },
+                );
             }
         }
     }

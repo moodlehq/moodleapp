@@ -51,6 +51,7 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     @Input() badgeClass?: number; // A class to set in the badge.
     @Input() badgeA11yText?: string; // Description for the badge, if needed.
     @Input() hidden?: boolean; // Whether the item should be hidden.
+    @Input() showBrowserWarning = true; // Whether to show a warning before opening browser (for links). Defaults to true.
     @Output() action?: EventEmitter<() => void>; // Will emit an event when the item clicked.
     @Output() onClosed?: EventEmitter<() => void>; // Will emit an event when the popover is closed because the item was clicked.
 

@@ -660,7 +660,7 @@ export class CoreLoginHelperProvider {
         });
 
         // Always open it in browser because the user might have the session stored in there.
-        CoreUtils.openInBrowser(loginUrl);
+        CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
         CoreApp.closeApp();
 
         return true;
@@ -692,7 +692,7 @@ export class CoreLoginHelperProvider {
                 closebuttoncaption: Translate.instant('core.login.cancel'),
             });
         } else {
-            CoreUtils.openInBrowser(loginUrl);
+            CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
             CoreApp.closeApp();
         }
     }

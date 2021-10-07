@@ -123,7 +123,8 @@
                 <ion-icon name="fas-briefcase" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label><h2>{{ 'core.course.contents' | translate }}</h2></ion-label>
             </ion-item>
-            <ion-item [href]="courseUrl" core-link [attr.aria-label]="course.fullname" button detail="false">
+            <ion-item [href]="courseUrl" core-link [attr.aria-label]="course.fullname" button detail="false"
+                [showBrowserWarning]="false">
                 <ion-icon name="fas-external-link-alt" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label><h2>{{ 'core.openinbrowser' | translate }}</h2></ion-label>
             </ion-item>
