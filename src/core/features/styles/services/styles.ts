@@ -330,9 +330,9 @@ export class CoreStylesService {
         (<any> element).disabled = !!disable; // eslint-disable-line @typescript-eslint/no-explicit-any
 
         if (disable) {
-            element.setAttribute('disabled', 'true');
+            element.setAttribute('media', 'disabled');
         } else {
-            element.removeAttribute('disabled');
+            element.removeAttribute('media');
         }
     }
 
