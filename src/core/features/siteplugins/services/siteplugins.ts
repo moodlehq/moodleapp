@@ -315,6 +315,15 @@ export class CoreSitePluginsProvider {
     }
 
     /**
+     * Get the current site plugin list.
+     *
+     * @return Plugin list ws info.
+     */
+    getCurrentSitePluginList(): CoreSitePluginsWSPlugin[] {
+        return CoreUtils.objectToArray(this.sitePlugins).map((plugin) => plugin.plugin);
+    }
+
+    /**
      * Invalidate all WS call to a certain method.
      *
      * @param method WS method to use.

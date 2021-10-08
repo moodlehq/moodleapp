@@ -49,8 +49,6 @@ export class CoreSettingsAboutPage {
      * @param page The component deeplink name you want to push onto the navigation stack.
      */
     openPage(page: string): void {
-        // const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
-        // navCtrl.push(page);
         CoreNavigator.navigate(page);
     }
 
