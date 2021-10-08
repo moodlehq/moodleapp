@@ -355,7 +355,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      *
      * @param task Task to be done.
      */
-    runTask(task: AddonModWorkshopPhaseTaskData): void {
+    async runTask(task: AddonModWorkshopPhaseTaskData): Promise<void> {
         if (task.code == 'submit') {
             this.gotoSubmit();
         } else if (task.link) {

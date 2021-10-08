@@ -28,7 +28,7 @@
                     {{ 'core.login.signuprequiredfieldnotsupported' | translate }}
                 </ion-label>
             </ion-item>
-            <ion-button expand="block" class="ion-margin" [href]="signupUrl" core-link autoLogin="no">
+            <ion-button expand="block" class="ion-margin" [href]="signupUrl" core-link autoLogin="no" [showBrowserWarning]="false">
                 {{ 'core.openinbrowser' | translate }}
             </ion-button>
         </ion-list>

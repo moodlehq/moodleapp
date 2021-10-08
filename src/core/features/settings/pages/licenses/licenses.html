@@ -30,8 +30,8 @@
                         </p>
                         <p>{{ 'core.settings.license' | translate }}{{ 'core.labelsep' | translate }} {{ license.licenses }}</p>
                         <p><a *ngIf="license.url" [href]="license.url" core-link auto-login="no">{{ license.url }}</a></p>
-                        <p><a *ngIf="license.email" [href]="'mailto:' + license.email" core-link
-                                auto-login="no">{{ license.email }}</a></p>
+                        <p><a *ngIf="license.email" [href]="'mailto:' + license.email" core-link auto-login="no"
+                            [showBrowserWarning]="false">{{ license.email }}</a></p>
                     </ion-label>
                     <ion-button *ngIf="license.licenseUrl" [href]="license.licenseUrl" target="_blank"
                         fill="clear" slot="end" core-link auto-login="no">{{ 'core.view' | translate }}</ion-button>

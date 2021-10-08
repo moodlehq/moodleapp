@@ -165,7 +165,8 @@
                 </ion-label>
             </ion-item>
 
-            <ion-button *ngIf="preventSubmitMessages.length" expand="block" [href]="moduleUrl" core-link>
+            <ion-button *ngIf="preventSubmitMessages.length" expand="block" [href]="moduleUrl" core-link
+                [showBrowserWarning]="false">
                 {{ 'core.openinbrowser' | translate }}
                 <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
             </ion-button>
@@ -182,7 +183,7 @@
             <ion-item class="ion-text-wrap">
                 <ion-label>{{ 'addon.mod_quiz.errorparsequestions' | translate }}</ion-label>
             </ion-item>
-            <ion-button expand="block" class="ion-margin" [href]="moduleUrl" core-link>
+            <ion-button expand="block" class="ion-margin" [href]="moduleUrl" core-link [showBrowserWarning]="false">
                 {{ 'core.openinbrowser' | translate }}
                 <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
             </ion-button>

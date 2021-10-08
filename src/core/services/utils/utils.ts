@@ -32,6 +32,7 @@ import { CoreViewerQRScannerComponent } from '@features/viewer/components/qr-sca
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreConstants } from '@/core/constants';
+import { CoreWindow } from '@singletons/window';
 
 type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -1047,8 +1048,17 @@ export class CoreUtilsProvider {
      * Do not use for files, refer to {@link openFile}.
      *
      * @param url The URL to open.
+     * @param options Options.
      */
-    openInBrowser(url: string): void {
+    async openInBrowser(url: string, options: CoreUtilsOpenInBrowserOptions = {}): Promise<void> {
+        if (options.showBrowserWarning || options.showBrowserWarning === undefined) {
+            try {
+                await CoreWindow.confirmOpenBrowserIfNeeded(url);
+            } catch (error) {
+                return; // Cancelled, stop.
+            }
+        }
+
         window.open(url, '_system');
     }
 
@@ -1725,6 +1735,13 @@ export type CoreMenuItem<T = number> = {
  */
 export type CoreUtilsOpenFileOptions = {
     iOSOpenFileAction?: OpenFileAction; // Action to do when opening a file.
+};
+
+/**
+ * Options for opening in browser.
+ */
+export type CoreUtilsOpenInBrowserOptions = {
+    showBrowserWarning?: boolean; // Whether to display a warning before opening in browser. Defaults to true.
 };
 
 /**

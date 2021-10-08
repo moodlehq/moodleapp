@@ -384,7 +384,10 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * Show contact information on site (we have to display again the age verification form).
      */
     showContactOnSite(): void {
-        CoreUtils.openInBrowser(CoreTextUtils.concatenatePaths(this.siteUrl, '/login/verify_age_location.php'));
+        CoreUtils.openInBrowser(
+            CoreTextUtils.concatenatePaths(this.siteUrl, '/login/verify_age_location.php'),
+            { showBrowserWarning: false },
+        );
     }
 
     /**
