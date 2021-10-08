@@ -5,7 +5,7 @@
     --loading-background-inline: var(--ion-background-color-rgb);
     --loading-spinner: var(--ion-color-primary);
     --loading-text-color: var(--ion-text-color);
-    --loading-inline-margin: 0;
+    --loading-inline-margin: 0px;
     --loading-inline-min-height: 28px;
     --internal-loading-inline-min-height: var(--loading-inline-min-height);
 
@@ -19,7 +19,7 @@
     }
 
     &.core-loading-loaded {
-        --internal-loading-inline-min-height: 0;
+        --internal-loading-inline-min-height: 0px;
     }
 
     ion-spinner {
@@ -72,6 +72,18 @@
 
         .core-loading-container {
             flex-direction: row;
+        }
+    }
+
+    &.safe-area-padding:not(.core-loading-inline) .core-loading-content,
+    &.safe-area-padding-horizontal:not(.core-loading-inline) .core-loading-content {
+        @include safe-area-padding-horizontal(0px, 0px);
+    }
+
+    &.safe-area-padding:not(.core-loading-inline) .core-loading-content {
+        padding-bottom: var(--ion-safe-area-bottom);
+        > * {
+            --ion-safe-area-bottom: 0px;
         }
     }
 }

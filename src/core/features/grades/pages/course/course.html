@@ -11,7 +11,7 @@
         <ion-refresher slot="fixed" [disabled]="!grades.loaded" (ionRefresh)="refreshGrades($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
-        <core-loading [hideUntil]="grades.loaded" class="safe-area-page">
+        <core-loading [hideUntil]="grades.loaded" class="safe-area-padding">
             <core-empty-box *ngIf="grades.empty" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate">
             </core-empty-box>
             <div *ngIf="!grades.empty" class="core-grades-container">

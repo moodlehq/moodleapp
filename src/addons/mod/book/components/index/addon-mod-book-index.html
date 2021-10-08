@@ -38,7 +38,7 @@
         </ion-item>
     </ion-card>
 
-    <div class="ion-padding safe-padding-horizontal">
+    <div class="ion-padding safe-area-padding-horizontal">
         <core-navigation-bar *ngIf="displayNavBar" [previous]="previousChapter?.id"
             [previousTitle]="previousNavBarTitle" [next]="nextChapter?.id" [nextTitle]="nextNavBarTitle"
             (action)="changeChapter($event)">

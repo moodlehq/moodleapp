@@ -64,18 +64,18 @@
 }
 
 :host(.menu-only) {
-    --menu-min-width: 0;
+    --menu-min-width: 0px;
     --menu-max-width: 100%;
     --content-display: none;
-    --menu-border-width: 0;
+    --menu-border-width: 0px;
     --menu-box-shadow: none;
-    --menu-z: 0;
+    --menu-z: 0px;
     --selected-item-color: transparent;
 }
 
 :host(.content-only) {
     --menu-display: none;
-    --menu-border-width: 0;
+    --menu-border-width: 0px;
 }
 
 :host(.outlet-activated) {

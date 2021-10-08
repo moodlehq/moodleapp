@@ -17,6 +17,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
 import { makeSingleton } from '@singletons';
+import { CoreEvents } from '@singletons/events';
 
 /**
  * Screen breakpoints.
@@ -46,6 +47,14 @@ const BREAKPOINT_WIDTHS: Record<Breakpoint, number> = {
 export enum CoreScreenLayout {
     MOBILE = 'mobile',
     TABLET = 'tablet',
+}
+
+/**
+ * Screen orientation.
+ */
+export enum CoreScreenOrientation {
+    LANDSCAPE = 'landscape',
+    PORTRAIT = 'portrait',
 }
 
 /**
@@ -91,6 +100,32 @@ export class CoreScreenService {
 
     get isTablet(): boolean {
         return this.layout === CoreScreenLayout.TABLET;
+    }
+
+    get orientation(): CoreScreenOrientation {
+        const mql = window.matchMedia('(orientation: portrait)');
+
+        return mql.matches ? CoreScreenOrientation.PORTRAIT : CoreScreenOrientation.LANDSCAPE;
+    }
+
+    get isPortrait(): boolean {
+        return this.orientation === CoreScreenOrientation.PORTRAIT;
+    }
+
+    get isLandscape(): boolean {
+        return this.orientation === CoreScreenOrientation.LANDSCAPE;
+    }
+
+    /**
+     * Watch orientation changes.
+     */
+    watchOrientation(): void {
+        // Listen media orientation CSS queries.
+        window.matchMedia('(orientation: portrait)').addEventListener('change', (m) => {
+            const orientation = m.matches ? CoreScreenOrientation.PORTRAIT : CoreScreenOrientation.LANDSCAPE;
+
+            CoreEvents.trigger(CoreEvents.ORIENTATION_CHANGE, { orientation });
+        });
     }
 
     /**

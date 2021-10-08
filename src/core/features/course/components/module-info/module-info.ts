@@ -21,6 +21,7 @@ import { CoreCourseModule, CoreCourseModuleCompletionData } from '@features/cour
 @Component({
     selector: 'core-course-module-info',
     templateUrl: 'core-course-module-info.html',
+    styleUrls: ['course-module-info.scss'],
 })
 export class CoreCourseModuleInfoComponent {
 

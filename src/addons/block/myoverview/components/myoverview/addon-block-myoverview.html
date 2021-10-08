@@ -39,8 +39,8 @@
         </core-context-menu>
     </div>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" [fullscreen]="false" class="margin">
-    <div class="safe-padding-horizontal" [hidden]="showFilter || !showSelectorFilter">
+<core-loading [hideUntil]="loaded" [fullscreen]="false">
+    <div class="safe-area-padding-horizontal" [hidden]="showFilter || !showSelectorFilter">
         <!-- "Time" selector. -->
         <core-combobox [label]="'core.show' | translate" [selection]="selectedFilter" (onChange)="selectedChanged($event)">
             <ion-select-option class="ion-text-wrap" value="allincludinghidden" *ngIf="showFilters.allincludinghidden != 'hidden'">
@@ -87,7 +87,7 @@
     </core-empty-box>
 
     <!-- List of courses. -->
-    <div class="safe-area-page">
+    <div class="safe-area-padding">
         <ion-grid class="ion-no-padding">
             <ion-row class="ion-no-padding">
                 <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding"

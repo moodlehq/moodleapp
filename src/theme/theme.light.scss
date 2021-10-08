@@ -61,6 +61,7 @@
     --a11y-min-target-size: 44px;
     --a11y-focus-color: var(--primary);
     --a11y-focus-width: 2px;
+    --zoom-level: 100%;
 
     --module-icon-size: 24px;
 
@@ -236,12 +237,17 @@
         --color: var(--subdued-text-color);
     }
 
+    ion-back-button {
+        --min-height: var(--a11y-min-target-size);
+        --min-width: var(--a11y-min-target-size);
+    }
+
     --core-combobox-background: var(--ion-item-background);
     --core-combobox-color: var(--black);
     --core-combobox-border-color: var(--primary);
     --core-combobox-border-width: 3px;
     --core-combobox-border-all-width: 0 0 var(--core-combobox-border-width) 0;
-    --core-combobox-radius: 0;
+    --core-combobox-radius: 0px;
     --core-combobox-box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
 
     --selected-item-color: var(--primary);

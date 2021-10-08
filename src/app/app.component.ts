@@ -63,7 +63,6 @@ export class AppComponent implements OnInit, AfterViewInit {
      * - IAB events listening.
      * - Platform pause/resume subscriptions.
      * - handleOpenURL and openWindowSafely.
-     * - Screen orientation events (probably it can be removed).
      * - Back button registering to close modal first.
      * - Note: HideKeyboardFormAccessoryBar has been moved to config.xml.
      */

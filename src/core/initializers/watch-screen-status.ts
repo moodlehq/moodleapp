@@ -16,4 +16,6 @@ import { CoreScreen } from '@services/screen';
 
 export default function(): void {
     CoreScreen.watchViewport();
+
+    CoreScreen.watchOrientation();
 }

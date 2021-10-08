@@ -1,7 +1,19 @@
 @import "./globals.scss";
 
+html.force-safe-area-margins {
+    --ion-safe-area-left: 40px;
+    --ion-safe-area-right: 40px;
+    --ion-safe-area-top: 40px;
+    --ion-safe-area-bottom: 40px;
+}
+
+// @todo MOBILE-3790 non-standard property, doesn't work everywhere.
+html {
+    zoom: var(--zoom-level);
+}
+
 body {
-    -webkit-text-size-adjust: auto;
+    -webkit-text-size-adjust: var(--zoom-level);
 }
 
 // Common styles.
@@ -234,6 +246,10 @@ ion-header ion-toolbar {
     }
 }
 
+ion-footer ion-toolbar.ion-color-contrast {
+    background-color: var(--contrast-background);
+}
+
 // Ionic icon.
 ion-icon {
     position: relative;
@@ -374,13 +390,108 @@ ion-list.list-md {
     padding: 0;
 }
 
+// Safe areas
+.safe-area-padding,
+.safe-area-padding-horizontal {
+    @include padding-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
+}
+
+.safe-area-margin,
+.safe-margin-horizontal {
+    @include margin-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
+}
+
+.ion-padding.safe-area-padding-horizontal {
+    @include safe-area-padding-horizontal(16px, 16px);
+}
+
+.ion-margin.safe-margin-horizontal {
+    @include safe-area-margin-horizontal(16px, 16px);
+}
+
+ion-tabs.placement-side .tabs-inner {
+    --ion-safe-area-left: 0px;
+}
+
+ion-tabs.placement-bottom .tabs-inner {
+    --ion-safe-area-bottom: 0px;
+}
+
+
+core-split-view.menu-and-content {
+    .menu {
+        --ion-safe-area-right: 0px;
+    }
+
+    .content-outlet {
+        --ion-safe-area-left: 0px;
+    }
+}
+
 // Header.
+ion-header {
+    z-index: 12; // To hide ion-slides on scroll.
+}
 ion-tabs.hide-header ion-header {
     display: none;
 }
 ion-toolbar {
     ion-spinner {
         margin: 10px;
+    }
+}
+
+// Iframe fullscreen manage.
+// Using router outlet to avoid changing styles on modals.
+body.core-iframe-fullscreen ion-router-outlet {
+
+    ion-tab-bar.mainmenu-tabs {
+        display: none;
+
+        // Restore original safe area.
+        .tabs-inner {
+            @supports (padding-left: constant(safe-area-inset-left)) {
+                --ion-safe-area-left: constant(safe-area-inset-left);
+            }
+            
+            @supports (padding-left: env(safe-area-inset-left)) {
+                --ion-safe-area-left: env(safe-area-inset-left);
+            }
+        }
+    }
+
+    --core-header-toolbar-height: 48px;
+    --core-header-toolbar-color: white;
+    --core-header-toolbar-background: black;
+    --core-header-toolbar-border-width: 0px;
+
+    ion-header ion-toolbar {
+        h1, ion-back-button {
+            display: none;
+        }
+    }
+
+    @media screen and (orientation: landscape) {
+        // Place ion-header on the side and hide text
+        .ion-page {
+            flex-direction: row-reverse;
+            ion-header {
+                width: calc(var(--core-header-toolbar-height), var(--ion-safe-area-right));
+                @include safe-area-padding-horizontal(null, 0px);
+                background: var(--core-header-toolbar-background);
+
+                ion-toolbar {
+                    padding: 0;
+                    height: 100%;
+                    --padding-start: 0px;
+                    --padding-end: 0px;
+                }
+
+                ion-buttons {
+                    flex-direction: column-reverse;
+                }
+            }
+        }
     }
 }
 
@@ -399,6 +510,8 @@ ion-toolbar {
 
 @media only screen and (min-height: 400px) and (min-width: 300px) {
     .core-modal-lateral {
+        --ion-safe-area-left: 0px;
+        --ion-safe-area-right: 0px;
 
         .modal-wrapper {
             position: absolute;
@@ -434,9 +547,14 @@ ion-toolbar {
 // Item styles
 [aria-current="page"],
 .item.item-current {
-    // TODO: Add safe area to border and RTL
-    --ion-safe-area-left: calc(-1 * var(--selected-item-border-width));
-    border-inline-start: var(--selected-item-border-width) solid var(--selected-item-color);
+    @include safe-area-border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
+    > * {
+        --ion-safe-area-left: 0px;
+    }
+
+    &::part(native) {
+        --ion-safe-area-left: 0px;
+    }
 }
 
 .item.item-file {
@@ -467,7 +585,7 @@ ion-toolbar {
         border-bottom: 3px solid var(--color-base);
 
         ion-item {
-            --inner-border-width: 0;
+            --inner-border-width: 0px;
         }
         ion-label {
             white-space: normal !important;
@@ -482,7 +600,7 @@ ion-toolbar {
 
         --border-width: 0 0 3px 0;
         --border-color: var(--color-base);
-        --inner-border-width: 0;
+        --inner-border-width: 0px;
         ion-icon {
             color: var(--color-base);
         }
@@ -528,7 +646,7 @@ img[core-external-content]:not([src]) {
 }
 
 ion-card ion-item:only-child {
-    --inner-border-width: 0;
+    --inner-border-width: 0px;
 }
 
 .core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation div {
@@ -686,10 +804,14 @@ core-block ion-item-divider .core-button-spinner {
 
 // Horizontal scrolling elements
 .core-horizontal-scroll {
-    display: flex;
-    flex-flow: nowrap;
+    display: block;
     overflow-x: scroll;
-    flex-direction: row;
+    .safe-area-pseudo-padding-start {
+        @include padding-horizontal(var(--ion-safe-area-left), 0px);
+    }
+    .safe-area-pseudo-padding-end {
+        @include padding-horizontal(0px, var(--ion-safe-area-right));
+    }
 }
 
 // Text formats.
@@ -950,6 +1072,11 @@ ion-item.item-input ion-input.has-focus {
     .item-highlight, .item-inner-highlight {
         position: unset;
     }
+}
+
+// Ionic set this value to 0 without px that provoked miscalculations.
+ion-item-divider {
+    --inner-padding-end: 0px;
 }
 
 // Change default outline.
