@@ -56,4 +56,5 @@ export interface EnvironmentConfig {
     iOSDefaultOpenFileAction?: OpenFileAction;
     customMainMenuItems?: CoreMainMenuLocalizedCustomItem[];
     feedbackFormUrl?: string | false;
+    a11yStatement?: string | false;
 }

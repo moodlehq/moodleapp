@@ -31,6 +31,7 @@ export class CoreSettingsAboutPage {
     versionName: string;
     privacyPolicy: string;
     feedbackFormUrl = CoreConstants.CONFIG.feedbackFormUrl ?? 'https://feedback.moodle.org/mobileapp';
+    a11yStatement = CoreConstants.CONFIG.a11yStatement ?? 'https://apps.moodle.com/admin/tool/policy/view.php?versionid=5';
 
     constructor() {
         const currentSite = CoreSites.getCurrentSite();
