@@ -44,7 +44,7 @@ const mainMenuHomeChildrenRoutes: Routes = [
     },
     {
         path: CoreCoursesMyCoursesHomeHandlerService.PAGE_NAME,
-        loadChildren: () => import('./pages/my-courses/my-courses.module').then(m => m.CoreCoursesMyCoursesPageModule),
+        loadChildren: () => import('./pages/list/list.module').then(m => m.CoreCoursesListPageModule),
     },
 ];
 

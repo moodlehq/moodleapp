@@ -15,8 +15,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CoreCourses, CoreCourseSearchedData } from '../../services/courses';
-import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '../../services/courses-helper';
+import { CoreSites } from '@services/sites';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreCourseListItem, CoreCourses } from '../../services/courses';
+import { CoreCoursesHelper } from '../../services/courses-helper';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -32,10 +35,7 @@ import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '../../services/c
 })
 export class CoreCoursesCourseListItemComponent implements OnInit {
 
-    @Input() course!: CoreCourseSearchedData & CoreCourseWithImageAndColor & {
-        completionusertracked?: boolean; // If the user is completion tracked.
-        progress?: number | null; // Progress percentage.
-    }; // The course to render.
+    @Input() course!: CoreCourseListItem; // The course to render.
 
     icons: CoreCoursesEnrolmentIcons[] = [];
     isEnrolled = false;
@@ -46,15 +46,21 @@ export class CoreCoursesCourseListItemComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         CoreCoursesHelper.loadCourseColorAndImage(this.course);
 
-        // Check if the user is enrolled in the course.
-        try {
-            const course = await CoreCourses.getUserCourse(this.course.id);
-            this.course.progress = course.progress;
-            this.course.completionusertracked = course.completionusertracked;
+        this.isEnrolled = this.course.progress !== undefined;
 
-            this.isEnrolled = true;
-        } catch {
-            this.isEnrolled = false;
+        if (!this.isEnrolled) {
+            try {
+                const course = await CoreCourses.getUserCourse(this.course.id);
+                this.course.progress = course.progress;
+                this.course.completionusertracked = course.completionusertracked;
+
+                this.isEnrolled = true;
+            } catch {
+                this.isEnrolled = false;
+            }
+        }
+
+        if (!this.isEnrolled) {
             this.icons = [];
 
             this.course.enrollmentmethods.forEach((instance) => {

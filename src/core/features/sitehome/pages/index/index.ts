@@ -223,7 +223,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * Go to my courses.
      */
     openMyCourses(): void {
-        CoreNavigator.navigateToSitePath('courses/my');
+        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'my' } });
     }
 
     /**

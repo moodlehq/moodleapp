@@ -13,14 +13,15 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfo } from '@features/courses/services/courses-helper';
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourseBasicSearchedData, CoreCourses } from '../../services/courses';
+import { CoreCourseBasicSearchedData, CoreCourses, CoreCoursesProvider } from '../../services/courses';
 
-type CoreCoursesListMode = 'search' | 'all';
+type CoreCoursesListMode = 'search' | 'all' | 'my';
 
 /**
  * Page that shows a list of courses.
@@ -31,31 +32,60 @@ type CoreCoursesListMode = 'search' | 'all';
 })
 export class CoreCoursesListPage implements OnInit, OnDestroy {
 
+    downloadAllCoursesEnabled = false;
+
     searchEnabled = false;
+    myCoursesEnabled = true;
     searchMode = false;
     searchCanLoadMore = false;
     searchLoadMoreError = false;
     searchTotal = 0;
 
-    mode: CoreCoursesListMode = 'all';
+    downloadEnabled = false;
+    downloadCourseEnabled = false;
+    downloadCoursesEnabled = false;
 
-    courses: CoreCourseBasicSearchedData[] = [];
+    mode: CoreCoursesListMode = 'my';
+
+    courses: (CoreCourseBasicSearchedData|CoreEnrolledCourseDataWithExtraInfo)[] = [];
     coursesLoaded = false;
+
+    showOnlyEnrolled = false;
 
     protected currentSiteId: string;
     protected frontpageCourseId: number;
     protected searchPage = 0;
     protected searchText = '';
+    protected myCoursesObserver: CoreEventObserver;
     protected siteUpdatedObserver: CoreEventObserver;
+    protected courseIds = '';
+    protected isDestroyed = false;
 
     constructor() {
         this.currentSiteId = CoreSites.getRequiredCurrentSite().getId();
         this.frontpageCourseId = CoreSites.getRequiredCurrentSite().getSiteHomeId();
 
+        // Update list if user enrols in a course.
+        this.myCoursesObserver = CoreEvents.on(
+            CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+            (data) => {
+
+                if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+                    this.fetchCourses();
+                }
+            },
+
+            this.currentSiteId,
+        );
+
         // Refresh the enabled flags if site is updated.
         this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
+            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+            this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
+            this.myCoursesEnabled = !CoreCourses.isMyCoursesDisabledInSite();
 
+            this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && this.downloadEnabled;
             if (!this.searchEnabled) {
                 this.searchMode = false;
 
@@ -68,10 +98,23 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnInit(): void {
+        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
+
         this.mode = CoreNavigator.getRouteParam<CoreCoursesListMode>('mode') || this.mode;
+
+        this.myCoursesEnabled = !CoreCourses.isMyCoursesDisabledInSite();
+        if (this.mode == 'my' && !this.myCoursesEnabled) {
+            this.mode = 'all';
+            this.showOnlyEnrolled = false;
+        }
 
         if (this.mode == 'search') {
             this.searchMode = true;
+        }
+
+        if (this.mode == 'my') {
+            this.showOnlyEnrolled = true;
         }
 
         this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
@@ -91,11 +134,31 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
         try {
             if (this.searchMode && this.searchText) {
                 await this.search(this.searchText);
+            } else if (this.showOnlyEnrolled) {
+                await this.loadMyCourses();
             } else {
                 await this.loadAvailableCourses();
             }
         } finally {
             this.coursesLoaded = true;
+        }
+    }
+
+    /**
+     * Fetch the user courses.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async loadMyCourses(): Promise<void> {
+        try {
+            const courses: CoreEnrolledCourseDataWithExtraInfo[] = await CoreCourses.getUserCourses();
+            this.courseIds = courses.map((course) => course.id).join(',');
+
+            await CoreCoursesHelper.loadCoursesExtraInfo(courses, true);
+
+            this.courses = courses;
+        } catch (error) {
+            !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
         }
     }
 
@@ -110,7 +173,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
             this.courses = courses.filter((course) => course.id != this.frontpageCourseId);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
+            !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
         }
     }
 
@@ -124,6 +187,9 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
         promises.push(CoreCourses.invalidateUserCourses());
         promises.push(CoreCourses.invalidateCoursesByField());
+        if (this.courseIds) {
+            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds));
+        }
 
         Promise.all(promises).finally(() => {
             this.fetchCourses().finally(() => {
@@ -145,7 +211,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
         this.searchTotal = 0;
 
         const modal = await CoreDomUtils.showModalLoading('core.searching', true);
-        this.searchCourses().finally(() => {
+        await this.searchCourses().finally(() => {
             modal.dismiss();
         });
     }
@@ -184,7 +250,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
         this.searchLoadMoreError = false;
 
         try {
-            const response = await CoreCourses.search(this.searchText, this.searchPage);
+            const response = await CoreCourses.search(this.searchText, this.searchPage, undefined, this.showOnlyEnrolled);
 
             if (this.searchPage === 0) {
                 this.courses = response.courses;
@@ -197,15 +263,34 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
             this.searchCanLoadMore = this.courses.length < this.searchTotal;
         } catch (error) {
             this.searchLoadMoreError = true; // Set to prevent infinite calls with infinite-loading.
-            CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorsearching', true);
+            !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorsearching', true);
         }
+    }
+
+    /**
+     * Toggle show only my courses.
+     */
+    toggleEnrolled(enabled: boolean): void {
+        this.coursesLoaded = false;
+        this.showOnlyEnrolled = enabled;
+
+        this.fetchCourses();
+    }
+
+    /**
+     * Toggle download enabled.
+     */
+    toggleDownload(enabled: boolean): void {
+        this.downloadEnabled = enabled;
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
+        this.myCoursesObserver?.off();
         this.siteUpdatedObserver?.off();
+        this.isDestroyed = true;
     }
 
 }

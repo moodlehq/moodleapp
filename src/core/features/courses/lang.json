@@ -40,6 +40,7 @@
     "selfenrolment": "Self enrolment",
     "sendpaymentbutton": "Send payment via PayPal",
     "show": "Restore to view",
+    "showonlyenrolled": "Show only my courses",
     "therearecourses": "There are {{$a}} courses",
     "totalcoursesearchresults": "Total courses: {{$a}}"
 }

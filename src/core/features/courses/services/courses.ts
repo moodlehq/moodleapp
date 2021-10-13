@@ -20,6 +20,7 @@ import { makeSingleton } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { CoreEvents } from '@singletons/events';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreCourseWithImageAndColor } from './courses-helper';
 
 const ROOT_CACHE_KEY = 'mmCourses:';
 
@@ -1121,6 +1122,7 @@ export class CoreCoursesProvider {
      * @param text Text to search.
      * @param page Page to get.
      * @param perPage Number of courses per page. Defaults to CoreCoursesProvider.SEARCH_PER_PAGE.
+     * @param limitToEnrolled Limit to enrolled courses.
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the courses and the total of matches.
      */
@@ -1128,6 +1130,7 @@ export class CoreCoursesProvider {
         text: string,
         page: number = 0,
         perPage: number = CoreCoursesProvider.SEARCH_PER_PAGE,
+        limitToEnrolled: boolean = false,
         siteId?: string,
     ): Promise<{ total: number; courses: CoreCourseBasicSearchedData[] }> {
         const site = await CoreSites.getSite(siteId);
@@ -1136,6 +1139,7 @@ export class CoreCoursesProvider {
             criteriavalue: text,
             page: page,
             perpage: perPage,
+            limittoenrolled: limitToEnrolled,
         };
         const preSets: CoreSiteWSPreSets = {
             getFromCache: false,
@@ -1356,6 +1360,14 @@ export type CoreCourseSearchedData = CoreCourseBasicSearchedData & {
         inheritedstate: number; // 1 or 0 to use when localstate is set to inherit.
     }[];
     courseformatoptions?: CoreCourseFormatOption[]; // Additional options for particular course format.
+};
+
+/**
+ * Course to render as list item.
+ */
+export type CoreCourseListItem = CoreCourseSearchedData & CoreCourseWithImageAndColor & {
+    completionusertracked?: boolean; // If the user is completion tracked.
+    progress?: number | null; // Progress percentage.
 };
 
 export type CoreCourseGetCoursesData = CoreEnrolledCourseBasicData & {
