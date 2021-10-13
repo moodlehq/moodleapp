@@ -64,7 +64,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
     dataLoaded = false;
     downloadEnabled = false;
-    downloadEnabledIcon = 'far-square'; // Disabled by default.
     downloadCourseEnabled = false;
     moduleId?: number;
     displayEnableDownload = false;
@@ -469,10 +468,11 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
 
     /**
      * Toggle download enabled.
+     *
+     * @param enable Whether enable or disable download enabled toggle.
      */
-    toggleDownload(): void {
-        this.downloadEnabled = !this.downloadEnabled;
-        this.downloadEnabledIcon = this.downloadEnabled ? 'far-check-square' : 'far-square';
+    toggleDownload(enable: boolean): void {
+        this.downloadEnabled = enable;
     }
 
     /**

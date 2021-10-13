@@ -1265,9 +1265,11 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
     /**
      * Toggles delete state.
+     *
+     * @param enabled Wether to enable or disable show delete toggle.
      */
-    toggleDelete(): void {
-        this.showDelete = !this.showDelete;
+    toggleDelete(enable: boolean): void {
+        this.showDelete = enable;
     }
 
     /**

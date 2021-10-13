@@ -40,7 +40,6 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     downloadEnabled = false;
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
-    downloadEnabledIcon = 'far-square';
     userId?: number;
     blocks: Partial<CoreCourseBlock>[] = [];
     loaded = false;
@@ -139,20 +138,12 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Toggle download enabled.
-     */
-    toggleDownload(): void {
-        this.switchDownload(!this.downloadEnabled);
-    }
-
-    /**
      * Convenience function to switch download enabled.
      *
      * @param enable If enable or disable.
      */
     protected switchDownload(enable: boolean): void {
         this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && enable;
-        this.downloadEnabledIcon = this.downloadEnabled ? 'far-check-square' : 'far-square';
         CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: this.downloadEnabled });
     }
 
