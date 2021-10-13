@@ -789,20 +789,38 @@ class behat_app extends behat_base {
     /**
      * Check that the app opened a new browser tab.
      *
-     * @Given /^the app should( not)? have opened a browser tab$/
+     * @Given /^the app should( not)? have opened a browser tab(?: with url "(?P<pattern>[^"]+)")?$/
      * @param bool $not
+     * @param string $urlpattern
      */
-    public function the_app_should_have_opened_a_browser_tab(bool $not = false) {
-        $this->spin(function() use ($not) {
-            $openedbrowsertab = count($this->getSession()->getWindowNames()) === 2;
+    public function the_app_should_have_opened_a_browser_tab(bool $not = false, ?string $urlpattern = null) {
+        $this->spin(function() use ($not, $urlpattern) {
+            $windownames = $this->getSession()->getWindowNames();
+            $openedbrowsertab = count($windownames) === 2;
 
-            if ($not === $openedbrowsertab) {
+            if ((!$not && !$openedbrowsertab) || ($not && $openedbrowsertab && is_null($urlpattern))) {
                 throw new ExpectationException(
                     $not
                         ? 'Did not expect the app to have opened a browser tab'
                         : 'Expected the app to have opened a browser tab',
                     $this->getSession()->getDriver()
                 );
+            }
+
+            if (!is_null($urlpattern)) {
+                $this->getSession()->switchToWindow($windownames[1]);
+                $windowurl = $this->getSession()->getCurrentUrl();
+                $windowhaspattern = preg_match("/$urlpattern/", $windowurl);
+                $this->getSession()->switchToWindow($windownames[0]);
+
+                if ($not === $windowhaspattern) {
+                    throw new ExpectationException(
+                        $not
+                            ? "Did not expect the app to have opened a browser tab with pattern '$urlpattern'"
+                            : "Browser tab url does not match pattern '$urlpattern', it is '$windowurl'",
+                        $this->getSession()->getDriver()
+                    );
+                }
             }
 
             return true;
@@ -895,6 +913,11 @@ class behat_app extends behat_base {
         if (count($names) !== 2) {
             throw new DriverException('Expected to see 2 tabs open, not ' . count($names));
         }
+        // Make sure the browser tab is selected.
+        if ($this->getSession()->getWindowName() !== $names[1]) {
+            $this->getSession()->switchToWindow($names[1]);
+        }
+
         $this->execute_script('window.close()');
         $this->getSession()->switchToWindow($names[0]);
     }

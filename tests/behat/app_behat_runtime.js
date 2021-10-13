@@ -518,6 +518,9 @@
                         near: { text: 'Notifications' },
                     })[0];
                     break;
+                case 'page menu':
+                    foundButton = findElementsBasedOnText({ text: 'Display options' })[0];
+                    break;
                 default:
                     return 'ERROR: Unsupported standard button type';
             }
