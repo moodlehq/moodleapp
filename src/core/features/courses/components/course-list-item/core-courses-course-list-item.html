@@ -34,4 +34,14 @@
             slot="end">
         </ion-icon>
     </ng-container>
+
+    <div class="core-button-spinner" *ngIf="isEnrolled && showDownload" slot="end">
+        <core-download-refresh
+            [status]="prefetchCourseData.status"
+            [statusTranslatable]="prefetchCourseData.statusTranslatable"
+            [enabled]="true"
+            canTrustDownload="false"
+            [loading]="prefetchCourseData.loading"
+            (action)="prefetchCourse()"></core-download-refresh>
+    </div>
 </ion-item>

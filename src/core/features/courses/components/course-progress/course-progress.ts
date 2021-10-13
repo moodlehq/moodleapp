@@ -48,8 +48,6 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy, On
     @Input() showAll = false; // If true, will show all actions, options, star and progress.
     @Input() showDownload = true; // If true, will show download button. Only works if the options menu is not shown.
 
-    courseStatus = CoreConstants.NOT_DOWNLOADED;
-    isDownloading = false;
     prefetchCourseData: CorePrefetchStatusInfo = {
         icon: '',
         statusTranslatable: 'core.loading',
@@ -64,6 +62,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy, On
     progress = -1;
     completionUserTracked: boolean | undefined = false;
 
+    protected courseStatus = CoreConstants.NOT_DOWNLOADED;
     protected isDestroyed = false;
     protected courseStatusObserver?: CoreEventObserver;
     protected siteUpdatedObserver?: CoreEventObserver;
@@ -109,7 +108,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy, On
      * Initialize prefetch course.
      */
     async initPrefetchCourse(): Promise<void> {
-        if (typeof this.courseStatusObserver != 'undefined') {
+        if (this.courseStatusObserver !== undefined) {
             // Already initialized.
             return;
         }
