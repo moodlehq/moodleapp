@@ -33,16 +33,10 @@ const routes: Routes = [
                 .then(m => m.CoreCoursesCategoriesPageModule),
     },
     {
-        path: 'all',
+        path: 'list',
         loadChildren: () =>
-            import('./pages/available-courses/available-courses.module')
-                .then(m => m.CoreCoursesAvailableCoursesPageModule),
-    },
-    {
-        path: 'search',
-        loadChildren: () =>
-            import('./pages/search/search.module')
-                .then(m => m.CoreCoursesSearchPageModule),
+            import('./pages/list/list.module')
+                .then(m => m.CoreCoursesListPageModule),
     },
     {
         path: 'my',

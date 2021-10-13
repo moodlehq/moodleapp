@@ -204,7 +204,7 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     openSearch(): void {
-        CoreNavigator.navigateToSitePath('courses/search');
+        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'search' } });
     }
 
     /**

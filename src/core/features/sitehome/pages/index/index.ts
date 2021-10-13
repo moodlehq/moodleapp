@@ -218,14 +218,14 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     openSearch(): void {
-        CoreNavigator.navigateToSitePath('courses/search');
+        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'search' } });
     }
 
     /**
      * Go to available courses.
      */
     openAvailableCourses(): void {
-        CoreNavigator.navigateToSitePath('courses/all');
+        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'all' } });
     }
 
     /**

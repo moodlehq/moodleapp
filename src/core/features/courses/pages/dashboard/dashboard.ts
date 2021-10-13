@@ -167,7 +167,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     async openSearch(): Promise<void> {
-        CoreNavigator.navigateToSitePath('/courses/search');
+        CoreNavigator.navigateToSitePath('/courses/list', { params : { mode: 'search' } });
     }
 
     /**

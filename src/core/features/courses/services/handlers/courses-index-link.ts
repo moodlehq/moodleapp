@@ -42,14 +42,17 @@ export class CoreCoursesIndexLinkHandlerService extends CoreContentLinksHandlerB
         return [{
             action: (siteId): void => {
                 let pageName = CoreCoursesMyCoursesHomeHandlerService.PAGE_NAME;
+                const pageParams: Params = {};
 
                 if (params.categoryid) {
                     pageName += '/categories/' + params.categoryid;
                 } else {
-                    pageName += '/all';
+                    pageName += '/list';
+                    pageParams.mode = 'all';
                 }
 
-                CoreNavigator.navigateToSitePath(pageName, { siteId });
+
+                CoreNavigator.navigateToSitePath(pageName, { params: pageParams, siteId });
             },
         }];
     }
