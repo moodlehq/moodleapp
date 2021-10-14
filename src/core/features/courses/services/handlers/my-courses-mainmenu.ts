@@ -13,39 +13,29 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
+import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreSiteHomeHomeHandler } from '@features/sitehome/services/handlers/sitehome-home';
+import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreCourses } from '../courses';
 import { CoreDashboardHomeHandler } from './dashboard-home';
 
 /**
- * Handler to add my courses into home page.
+ * Handler to add my courses into main menu.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreCoursesMyCoursesHomeHandlerService implements CoreMainMenuHomeHandler {
+export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuHandler {
 
     static readonly PAGE_NAME = 'courses';
 
     name = 'CoreCoursesMyCourses';
-    priority = 900;
+    priority = 850;
 
     /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @return Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
-    isEnabled(): Promise<boolean> {
-        return this.isEnabledForSite();
-    }
-
-    /**
-     * Check if the handler is enabled on a certain site.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @return Whether or not the handler is enabled on a site level.
-     */
-    async isEnabledForSite(siteId?: string): Promise<boolean> {
+    async isEnabled(): Promise<boolean> {
+        const siteId = CoreSites.getCurrentSiteId();
         const disabled = await CoreCourses.isMyCoursesDisabled(siteId);
 
         if (disabled) {
@@ -59,20 +49,17 @@ export class CoreCoursesMyCoursesHomeHandlerService implements CoreMainMenuHomeH
     }
 
     /**
-     * Returns the data needed to render the handler.
-     *
-     * @return Data needed to render the handler.
+     * @inheritdoc
      */
-    getDisplayData(): CoreMainMenuHomeHandlerToDisplay {
+    getDisplayData(): CoreMainMenuHandlerData {
         return {
             title: 'core.courses.mycourses',
-            page: CoreCoursesMyCoursesHomeHandlerService.PAGE_NAME,
+            page: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
             class: 'core-courses-my-courses-handler',
             icon: 'fas-graduation-cap',
-            selectPriority: 900,
         };
     }
 
 }
 
-export const CoreCoursesMyCoursesHomeHandler = makeSingleton(CoreCoursesMyCoursesHomeHandlerService);
+export const CoreCoursesMyCoursesHomeHandler = makeSingleton(CoreCoursesMyCoursesMainMenuHandlerService);
