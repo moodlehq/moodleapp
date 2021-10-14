@@ -40,6 +40,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreLogger } from '@singletons/logger';
 import { Translate } from '@singletons';
 import { CoreIonLoadingElement } from './ion-loading';
+import { CoreLang } from '@services/lang';
 
 /**
  * QR Code type enumeration.
@@ -574,9 +575,14 @@ export class CoreSite {
 
             // Call the WS.
             try {
+                // Send the language to use. Do it after checking cache to prevent losing offline data when changing language.
+                data.moodlewssettinglang = preSets.lang ?? await CoreLang.getCurrentLanguage();
+                data.moodlewssettinglang = data.moodlewssettinglang.replace('-', '_'); // Moodle uses underscore instead of dash.
+
                 const response = await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
 
                 if (preSets.saveToCache) {
+                    delete data.moodlewssettinglang;
                     this.saveToCache(method, data, response, preSets);
                 }
 
@@ -786,7 +792,8 @@ export class CoreSite {
             return;
         }
 
-        const requestsData = {
+        let lang: string | undefined;
+        const requestsData: Record<string, unknown> = {
             requests: requests.map((request) => {
                 const args = {};
                 const settings = {};
@@ -799,6 +806,11 @@ export class CoreSite {
                         if (match[1] == 'settingfilter' || match[1] == 'settingfileurl') {
                             // Undo special treatment of these settings in CoreWSProvider.convertValuesToString.
                             value = (value == 'true' ? '1' : '0');
+                        } else if (match[1] == 'settinglang') {
+                            // Use the lang globally to avoid exceptions with languages not installed.
+                            lang = value;
+
+                            return;
                         }
                         settings[match[1]] = value;
                     } else {
@@ -813,6 +825,7 @@ export class CoreSite {
                 };
             }),
         };
+        requestsData.moodlewssettinglang = lang;
 
         const wsPresets: CoreWSPreSets = {
             siteUrl: this.siteUrl,
@@ -1941,6 +1954,11 @@ export type CoreSiteWSPreSets = {
      * Whether to rewrite URLs (moodlewssettingfileurl). Defaults to true.
      */
     rewriteurls?: boolean;
+
+    /**
+     * Language to send to the WebService (moodlewssettinglang). Defaults to app's language.
+     */
+    lang?: string;
 
     /**
      * Defaults to true. Set to false when the expected response is null.
