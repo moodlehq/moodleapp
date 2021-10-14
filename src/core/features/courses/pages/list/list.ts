@@ -36,21 +36,22 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
     searchEnabled = false;
     searchMode = false;
-    searchCanLoadMore = false;
-    searchLoadMoreError = false;
     searchTotal = 0;
 
     downloadEnabled = false;
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
 
-    mode: CoreCoursesListMode = 'my';
-
     courses: (CoreCourseBasicSearchedData|CoreEnrolledCourseDataWithExtraInfo)[] = [];
-    coursesLoaded = false;
+    loaded = false;
+    coursesLoaded = 0;
+    canLoadMore = false;
+    loadMoreError = false;
 
     showOnlyEnrolled = false;
 
+    protected loadedCourses: (CoreCourseBasicSearchedData|CoreEnrolledCourseDataWithExtraInfo)[] = [];
+    protected loadCoursesPerPage = 20;
     protected currentSiteId: string;
     protected frontpageCourseId: number;
     protected searchPage = 0;
@@ -107,13 +108,13 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
         this.downloadEnabled =
             (this.downloadCourseEnabled || this.downloadCoursesEnabled) && CoreCourses.getCourseDownloadOptionsEnabled();
 
-        this.mode = CoreNavigator.getRouteParam<CoreCoursesListMode>('mode') || this.mode;
+        const mode = CoreNavigator.getRouteParam<CoreCoursesListMode>('mode') || 'my';
 
-        if (this.mode == 'search') {
+        if (mode == 'search') {
             this.searchMode = true;
         }
 
-        if (this.mode == 'my') {
+        if (mode == 'my') {
             this.showOnlyEnrolled = true;
         }
 
@@ -136,47 +137,50 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
                 if (this.searchText) {
                     await this.search(this.searchText);
                 }
-            } else if (this.showOnlyEnrolled) {
-                await this.loadMyCourses();
             } else {
-                await this.loadAvailableCourses();
+                await this.loadCourses(true);
             }
         } finally {
-            this.coursesLoaded = true;
+            this.loaded = true;
         }
     }
 
     /**
-     * Fetch the user courses.
+     * Fetch the courses.
      *
+     * @param clearTheList If list needs to be reloaded.
      * @return Promise resolved when done.
      */
-    protected async loadMyCourses(): Promise<void> {
+    protected async loadCourses(clearTheList = false): Promise<void> {
+        this.loadMoreError = false;
+
         try {
-            const courses: CoreEnrolledCourseDataWithExtraInfo[] = await CoreCourses.getUserCourses();
-            this.courseIds = courses.map((course) => course.id).join(',');
+            if (clearTheList) {
+                if (this.showOnlyEnrolled) {
+                    this.loadedCourses = await CoreCourses.getUserCourses();
+                } else {
+                    const courses = await CoreCourses.getCoursesByField();
+                    this.loadedCourses = courses.filter((course) => course.id != this.frontpageCourseId);
+                }
 
-            await CoreCoursesHelper.loadCoursesExtraInfo(courses, true);
+                this.coursesLoaded = 0;
+                this.courses = [];
+            }
 
-            this.courses = courses;
+            const addCourses = this.loadedCourses.slice(this.coursesLoaded, this.coursesLoaded + this.loadCoursesPerPage);
+            await CoreCoursesHelper.loadCoursesExtraInfo(addCourses, true);
+
+            this.courses = this.courses.concat(addCourses);
+
+            this.courseIds = this.courses.map((course) => course.id).join(',');
+
+            this.coursesLoaded = this.courses.length;
+            this.canLoadMore = this.loadedCourses.length > this.courses.length;
         } catch (error) {
+            this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
             !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
         }
-    }
 
-    /**
-     * Load the courses.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async loadAvailableCourses(): Promise<void> {
-        try {
-            const courses = await CoreCourses.getCoursesByField();
-
-            this.courses = courses.filter((course) => course.id != this.frontpageCourseId);
-        } catch (error) {
-            !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
-        }
     }
 
     /**
@@ -187,10 +191,16 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
     refreshCourses(refresher: IonRefresher): void {
         const promises: Promise<void>[] = [];
 
-        promises.push(CoreCourses.invalidateUserCourses());
-        promises.push(CoreCourses.invalidateCoursesByField());
-        if (this.courseIds) {
-            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds));
+        if (!this.searchMode) {
+            if (this.showOnlyEnrolled) {
+                promises.push(CoreCourses.invalidateUserCourses());
+            } else {
+                promises.push(CoreCourses.invalidateCoursesByField());
+            }
+
+            if (this.courseIds) {
+                promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds));
+            }
         }
 
         Promise.all(promises).finally(() => {
@@ -228,19 +238,25 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
         this.searchTotal = 0;
         this.searchMode = false;
 
-        this.coursesLoaded = false;
+        this.loaded = false;
         this.fetchCourses();
     }
 
     /**
-     * Load more results.
+     * Load more courses.
      *
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
      */
-    loadMoreResults(infiniteComplete?: () => void ): void {
-        this.searchCourses().finally(() => {
+    async loadMoreCourses(infiniteComplete?: () => void ): Promise<void> {
+        try {
+            if (this.searchMode) {
+                await this.searchCourses();
+            } else {
+                await this.loadCourses();
+            }
+        } finally {
             infiniteComplete && infiniteComplete();
-        });
+        }
     }
 
     /**
@@ -249,7 +265,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async searchCourses(): Promise<void> {
-        this.searchLoadMoreError = false;
+        this.loadMoreError = false;
 
         try {
             const response = await CoreCourses.search(this.searchText, this.searchPage, undefined, this.showOnlyEnrolled);
@@ -262,9 +278,9 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
             this.searchTotal = response.total;
 
             this.searchPage++;
-            this.searchCanLoadMore = this.courses.length < this.searchTotal;
+            this.canLoadMore = this.courses.length < this.searchTotal;
         } catch (error) {
-            this.searchLoadMoreError = true; // Set to prevent infinite calls with infinite-loading.
+            this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
             !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorsearching', true);
         }
     }
@@ -275,7 +291,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
      * @param enable If enable or disable.
      */
     toggleEnrolled(enable: boolean): void {
-        this.coursesLoaded = false;
+        this.loaded = false;
         this.showOnlyEnrolled = enable;
 
         this.fetchCourses();

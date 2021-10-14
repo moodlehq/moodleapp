@@ -19,7 +19,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!coursesLoaded" (ionRefresh)="refreshCourses($event.target)">
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshCourses($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     
@@ -27,7 +27,7 @@
         [placeholder]="'core.courses.search' | translate" [searchLabel]="'core.courses.search' | translate" [autoFocus]="searchMode"
         searchArea="CoreCoursesSearch"></core-search-box>
 
-    <core-loading [hideUntil]="coursesLoaded">
+    <core-loading [hideUntil]="loaded">
         <ng-container *ngIf="searchMode && searchTotal > 0">
             <ion-item-divider>
                 <ion-label><h2>{{ 'core.courses.totalcoursesearchresults' | translate:{$a: searchTotal} }}</h2></ion-label>
@@ -37,8 +37,10 @@
         <core-courses-course-list-item *ngFor="let course of courses" [course]="course" [showDownload]="downloadEnabled">
         </core-courses-course-list-item>
 
-        <core-infinite-loading [enabled]="searchMode && searchCanLoadMore" (action)="loadMoreResults($event)" [error]="searchLoadMoreError">
+        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreCourses($event)" [error]="loadMoreError">
         </core-infinite-loading>
+
+
         <core-empty-box *ngIf="searchMode && !courses.length" icon="fas-search" [message]="'core.courses.nosearchresults' | translate">
         </core-empty-box>
 
