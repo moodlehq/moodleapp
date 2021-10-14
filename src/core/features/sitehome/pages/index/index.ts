@@ -51,8 +51,6 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     currentSite!: CoreSite;
     searchEnabled = false;
     downloadEnabled = false;
-    downloadCourseEnabled = false;
-    downloadCoursesEnabled = false;
     newsForumModule?: NewsForum;
 
     protected updateSiteObserver?: CoreEventObserver;
@@ -62,16 +60,10 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
-        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
-            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-            this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-
-            this.switchDownload(this.downloadEnabled && this.downloadCourseEnabled && this.downloadCoursesEnabled);
         }, CoreSites.getCurrentSiteId());
 
         this.currentSite = CoreSites.getRequiredCurrentSite();
@@ -194,7 +186,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * @param enable If enable or disable.
      */
     protected switchDownload(enable: boolean): void {
-        this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && enable;
+        this.downloadEnabled = enable;
         CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: this.downloadEnabled });
     }
 
