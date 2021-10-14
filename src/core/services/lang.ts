@@ -403,11 +403,11 @@ export class CoreLangProvider {
 
         this.customStringsRaw = strings;
 
-        if (currentLangChanged) {
+        if (currentLangChanged && this.currentLanguage) {
             // Some lang strings have changed, emit an event to update the pipes.
             Translate.onLangChange.emit({
-                lang: this.currentLanguage!,
-                translations: Translate.translations[this.currentLanguage!],
+                lang: this.currentLanguage,
+                translations: Translate.translations[this.currentLanguage],
             });
         }
     }

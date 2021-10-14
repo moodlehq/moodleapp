@@ -309,10 +309,7 @@ export class CoreSite {
 
         // Index function by name to speed up wsAvailable method.
         if (infos?.functions) {
-            infos.functionsByName = {};
-            infos.functions.forEach((func) => {
-                infos.functionsByName![func.name] = func;
-            });
+            infos.functionsByName = CoreUtils.arrayToObject(infos.functions, 'name');
         }
     }
 
@@ -907,7 +904,8 @@ export class CoreSite {
         preSets: CoreSiteWSPreSets,
         emergency?: boolean,
     ): Promise<T> {
-        if (!this.db || !preSets.getFromCache) {
+        const db = this.db;
+        if (!db || !preSets.getFromCache) {
             throw new CoreError('Get from cache is disabled.');
         }
 
@@ -915,11 +913,11 @@ export class CoreSite {
         let entry: CoreSiteWSCacheRecord | undefined;
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
-            const entries = await this.db.getRecords<CoreSiteWSCacheRecord>(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey });
+            const entries = await db.getRecords<CoreSiteWSCacheRecord>(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey });
 
             if (!entries.length) {
                 // Cache key not found, get by params sent.
-                entry = await this.db!.getRecord(CoreSite.WS_CACHE_TABLE, { id });
+                entry = await db.getRecord(CoreSite.WS_CACHE_TABLE, { id });
             } else {
                 if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
@@ -931,7 +929,7 @@ export class CoreSite {
                 }
             }
         } else {
-            entry = await this.db!.getRecord(CoreSite.WS_CACHE_TABLE, { id });
+            entry = await db.getRecord(CoreSite.WS_CACHE_TABLE, { id });
         }
 
         if (typeof entry == 'undefined') {
@@ -946,7 +944,7 @@ export class CoreSite {
         if (!preSets.omitExpires) {
             expirationTime = entry.expirationTime + this.getExpirationDelay(preSets.updateFrequency);
 
-            if (now > expirationTime!) {
+            if (now > expirationTime) {
                 this.logger.debug('Cached element found, but it is expired');
 
                 throw new CoreError('Cache entry is expired.');
@@ -1747,7 +1745,12 @@ export class CoreSite {
 
         if (CoreSite.MOODLE_RELEASES[data.major] === undefined) {
             // Major version not found. Use the last one.
-            data.major = Object.keys(CoreSite.MOODLE_RELEASES).pop()!;
+            const major = Object.keys(CoreSite.MOODLE_RELEASES).pop();
+            if (!major) {
+                return 0;
+            }
+
+            data.major = major;
         }
 
         return CoreSite.MOODLE_RELEASES[data.major] + data.minor;

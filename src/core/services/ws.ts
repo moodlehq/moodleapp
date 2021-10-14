@@ -336,8 +336,9 @@ export class CoreWSProvider {
      * @return Promise resolved with the mimetype or '' if failure.
      */
     async getRemoteFileMimeType(url: string, ignoreCache?: boolean): Promise<string> {
-        if (this.mimeTypeCache[url] && !ignoreCache) {
-            return this.mimeTypeCache[url]!;
+        const cachedMimeType = this.mimeTypeCache[url];
+        if (cachedMimeType && !ignoreCache) {
+            return cachedMimeType;
         }
 
         try {
@@ -722,10 +723,12 @@ export class CoreWSProvider {
      */
     protected processRetryQueue(): void {
         if (this.retryCalls.length > 0 && this.retryTimeout == 0) {
-            const call = this.retryCalls.shift();
+            const call = this.retryCalls[0];
+            this.retryCalls.shift();
+
             // Add a delay between calls.
             setTimeout(() => {
-                call!.deferred.resolve(this.performPost(call!.method, call!.siteUrl, call!.data, call!.preSets));
+                call.deferred.resolve(this.performPost(call.method, call.siteUrl, call.data, call.preSets));
                 this.processRetryQueue();
             }, 200);
         } else {
