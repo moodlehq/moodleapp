@@ -50,21 +50,31 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     siteHomeId = 1;
     currentSite!: CoreSite;
     searchEnabled = false;
+    displayEnableDownload = false;
     downloadEnabled = false;
     newsForumModule?: NewsForum;
 
-    protected updateSiteObserver?: CoreEventObserver;
+    protected updateSiteObserver: CoreEventObserver;
+    protected downloadEnabledObserver: CoreEventObserver;
 
-    /**
-     * Page being initialized.
-     */
-    ngOnInit(): void {
-        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
-
+    constructor() {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
+
+            this.displayEnableDownload = !CoreSites.getRequiredCurrentSite().isOfflineDisabled();
         }, CoreSites.getCurrentSiteId());
+
+        this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
+            this.switchDownload(data.enabled);
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
 
         this.currentSite = CoreSites.getRequiredCurrentSite();
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
@@ -74,6 +84,9 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             const modParams = CoreNavigator.getRouteParam<Params>('modParams');
             CoreCourseHelper.openModule(module, this.siteHomeId, undefined, modParams);
         }
+
+        this.displayEnableDownload = !CoreSites.getRequiredCurrentSite().isOfflineDisabled();
+        this.downloadEnabled = CoreCourses.getCourseDownloadOptionsEnabled();
 
         this.loadContent().finally(() => {
             this.dataLoaded = true;
@@ -186,8 +199,8 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * @param enable If enable or disable.
      */
     protected switchDownload(enable: boolean): void {
-        this.downloadEnabled = enable;
-        CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: this.downloadEnabled });
+        this.downloadEnabled =
+            CoreCourses.setCourseDownloadOptionsEnabled(enable);
     }
 
     /**
@@ -229,7 +242,8 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * Component being destroyed.
      */
     ngOnDestroy(): void {
-        this.updateSiteObserver?.off();
+        this.updateSiteObserver.off();
+        this.downloadEnabledObserver.off();
     }
 
 }

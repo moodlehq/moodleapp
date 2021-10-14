@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLogger } from '@singletons/logger';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { makeSingleton } from '@singletons';
@@ -63,12 +62,9 @@ export class CoreCoursesProvider {
     static readonly STATE_HIDDEN = 'hidden';
     static readonly STATE_FAVOURITE = 'favourite';
 
-    protected logger: CoreLogger;
     protected userCoursesIds: { [id: number]: boolean } = {}; // Use an object to make it faster to search.
 
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreCoursesProvider');
-    }
+    protected downloadOptionsEnabled = false;
 
     /**
      * Whether current site supports getting course options.
@@ -1218,6 +1214,32 @@ export class CoreCoursesProvider {
         };
 
         return site.write('core_course_set_favourite_courses', params);
+    }
+
+    /**
+     * Get download options enabled option.
+     *
+     * @return True if enabled, false otherwise.
+     */
+    getCourseDownloadOptionsEnabled(): boolean {
+        return this.downloadOptionsEnabled;
+    }
+
+    /**
+     * Set trigger and save the download option.
+     *
+     * @param enable True to enable, false to disable.
+     * @return Current status.
+     */
+    setCourseDownloadOptionsEnabled(enable: boolean): boolean {
+        if (this.downloadOptionsEnabled == enable) {
+            return enable;
+        }
+
+        this.downloadOptionsEnabled = enable;
+        CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: enable });
+
+        return enable;
     }
 
 }

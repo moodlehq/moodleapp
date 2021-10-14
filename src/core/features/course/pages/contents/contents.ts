@@ -18,7 +18,7 @@ import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreCourses, CoreCourseAnyCourseData } from '@features/courses/services/courses';
+import { CoreCourses, CoreCourseAnyCourseData, CoreCoursesProvider } from '@features/courses/services/courses';
 import {
     CoreCourse,
     CoreCourseCompletionActivityStatus,
@@ -78,14 +78,34 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     protected formatOptions?: Record<string, unknown>;
     protected completionObserver?: CoreEventObserver;
     protected courseStatusObserver?: CoreEventObserver;
+    protected siteUpdatedObserver?: CoreEventObserver;
+    protected downloadEnabledObserver?: CoreEventObserver;
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected modulesHaveCompletion = false;
     protected isGuest?: boolean;
     protected debouncedUpdateCachedCompletion?: () => void; // Update the cached completion after a certain time.
 
+    constructor() {
+        // Refresh the enabled flags if site is updated.
+        this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
+            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+
+            this.displayEnableDownload = !CoreSites.getRequiredCurrentSite().isOfflineDisabled() &&
+                CoreCourseFormatDelegate.displayEnableDownload(this.course);
+
+            this.downloadEnabled = this.displayEnableDownload && this.downloadEnabled;
+
+            this.initListeners();
+        }, CoreSites.getCurrentSiteId());
+
+        this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
+            this.toggleDownload(data.enabled);
+        });
+    }
+
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
 
@@ -103,9 +123,11 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         this.moduleId = CoreNavigator.getRouteNumberParam('moduleId');
         this.isGuest = CoreNavigator.getRouteBooleanParam('isGuest');
 
-        this.displayEnableDownload = !CoreSites.getCurrentSite()?.isOfflineDisabled() &&
+        this.displayEnableDownload = !CoreSites.getRequiredCurrentSite().isOfflineDisabled() &&
             CoreCourseFormatDelegate.displayEnableDownload(this.course);
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+
+        this.downloadEnabled = this.displayEnableDownload && CoreCourses.getCourseDownloadOptionsEnabled();
 
         this.debouncedUpdateCachedCompletion = CoreUtils.debounce(() => {
             if (this.modulesHaveCompletion) {
@@ -137,7 +159,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async initListeners(): Promise<void> {
-        if (this.downloadCourseEnabled) {
+        if (this.downloadCourseEnabled && !this.courseStatusObserver) {
             // Listen for changes in course status.
             this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data) => {
                 if (data.courseId == this.course.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
@@ -152,26 +174,30 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.completionObserver = CoreEvents.on(
-            CoreEvents.COMPLETION_MODULE_VIEWED,
-            (data) => {
-                if (data && data.courseId == this.course.id) {
-                    this.refreshAfterCompletionChange(true);
+        if (!this.completionObserver) {
+            this.completionObserver = CoreEvents.on(
+                CoreEvents.COMPLETION_MODULE_VIEWED,
+                (data) => {
+                    if (data && data.courseId == this.course.id) {
+                        this.refreshAfterCompletionChange(true);
+                    }
+                },
+            );
+        }
+
+        if (!this.syncObserver) {
+            this.syncObserver = CoreEvents.on(CoreCourseSyncProvider.AUTO_SYNCED, (data) => {
+                if (!data || data.courseId != this.course.id) {
+                    return;
                 }
-            },
-        );
 
-        this.syncObserver = CoreEvents.on(CoreCourseSyncProvider.AUTO_SYNCED, (data) => {
-            if (!data || data.courseId != this.course.id) {
-                return;
-            }
+                this.refreshAfterCompletionChange(false);
 
-            this.refreshAfterCompletionChange(false);
-
-            if (data.warnings && data.warnings[0]) {
-                CoreDomUtils.showErrorModal(data.warnings[0]);
-            }
-        });
+                if (data.warnings && data.warnings[0]) {
+                    CoreDomUtils.showErrorModal(data.warnings[0]);
+                }
+            });
+        }
     }
 
     /**
@@ -472,7 +498,8 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @param enable Whether enable or disable download enabled toggle.
      */
     toggleDownload(enable: boolean): void {
-        this.downloadEnabled = enable;
+        this.downloadEnabled =
+            CoreCourses.setCourseDownloadOptionsEnabled(this.displayEnableDownload && enable);
     }
 
     /**
@@ -517,6 +544,8 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         this.completionObserver?.off();
         this.courseStatusObserver?.off();
         this.syncObserver?.off();
+        this.siteUpdatedObserver?.off();
+        this.downloadEnabledObserver?.off();
     }
 
     /**

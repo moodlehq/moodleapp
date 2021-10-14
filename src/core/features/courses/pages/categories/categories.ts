@@ -49,6 +49,7 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
     protected categoryId = 0;
     protected myCoursesObserver: CoreEventObserver;
     protected siteUpdatedObserver: CoreEventObserver;
+    protected downloadEnabledObserver: CoreEventObserver;
     protected isDestroyed = false;
 
     constructor() {
@@ -75,6 +76,10 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
 
             this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && this.downloadEnabled;
         }, this.currentSiteId);
+
+        this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
+            this.toggleDownload(data.enabled);
+        });
     }
 
     /**
@@ -87,6 +92,9 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
         this.myCoursesEnabled = !CoreCourses.isMyCoursesDisabledInSite();
+
+        this.downloadEnabled =
+            (this.downloadCourseEnabled || this.downloadCoursesEnabled) && CoreCourses.getCourseDownloadOptionsEnabled();
 
         this.fetchCategories().finally(() => {
             this.categoriesLoaded = true;
@@ -202,17 +210,21 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
 
     /**
      * Toggle download enabled.
+     *
+     * @param enable If enable or disable.
      */
-    toggleDownload(enabled: boolean): void {
-        this.downloadEnabled = enabled;
+    toggleDownload(enable: boolean): void {
+        this.downloadEnabled =
+            CoreCourses.setCourseDownloadOptionsEnabled((this.downloadCourseEnabled || this.downloadCoursesEnabled) && enable);
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.myCoursesObserver?.off();
-        this.siteUpdatedObserver?.off();
+        this.myCoursesObserver.off();
+        this.siteUpdatedObserver.off();
+        this.downloadEnabledObserver.off();
         this.isDestroyed = true;
     }
 

@@ -44,24 +44,34 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     blocks: Partial<CoreCourseBlock>[] = [];
     loaded = false;
 
-    protected updateSiteObserver?: CoreEventObserver;
+    protected updateSiteObserver: CoreEventObserver;
+    protected downloadEnabledObserver: CoreEventObserver;
 
-    /**
-     * Initialize the component.
-     */
-    ngOnInit(): void {
-        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
-        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-
+    constructor() {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
-            this.switchDownload(this.downloadEnabled && this.downloadCourseEnabled && this.downloadCoursesEnabled);
+            this.switchDownload(this.downloadEnabled);
         }, CoreSites.getCurrentSiteId());
+
+        this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
+            this.switchDownload(data.enabled);
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
+        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
+
+        this.downloadEnabled =
+            (this.downloadCourseEnabled || this.downloadCoursesEnabled) && CoreCourses.getCourseDownloadOptionsEnabled();
 
         this.loadContent();
     }
@@ -143,8 +153,8 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * @param enable If enable or disable.
      */
     protected switchDownload(enable: boolean): void {
-        this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && enable;
-        CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: this.downloadEnabled });
+        this.downloadEnabled =
+            CoreCourses.setCourseDownloadOptionsEnabled((this.downloadCourseEnabled || this.downloadCoursesEnabled) && enable);
     }
 
     /**
@@ -165,7 +175,8 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * Component being destroyed.
      */
     ngOnDestroy(): void {
-        this.updateSiteObserver?.off();
+        this.updateSiteObserver.off();
+        this.downloadEnabledObserver.off();
     }
 
 }
