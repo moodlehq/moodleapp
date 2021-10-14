@@ -194,11 +194,11 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Convenience function to switch download enabled.
+     * Switch download enabled.
      *
      * @param enable If enable or disable.
      */
-    protected switchDownload(enable: boolean): void {
+    switchDownload(enable: boolean): void {
         this.downloadEnabled =
             CoreCourses.setCourseDownloadOptionsEnabled(enable);
     }

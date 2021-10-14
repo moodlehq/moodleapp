@@ -36,7 +36,6 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
     categories: CoreCategoryData[] = [];
     courses: CoreCourseListItem[] = [];
     categoriesLoaded = false;
-    myCoursesEnabled = true;
 
     showOnlyEnrolled = false;
 
@@ -72,7 +71,6 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
         this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-            this.myCoursesEnabled = !CoreCourses.isMyCoursesDisabledInSite();
 
             this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && this.downloadEnabled;
         }, this.currentSiteId);
@@ -91,7 +89,6 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
 
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-        this.myCoursesEnabled = !CoreCourses.isMyCoursesDisabledInSite();
 
         this.downloadEnabled =
             (this.downloadCourseEnabled || this.downloadCoursesEnabled) && CoreCourses.getCourseDownloadOptionsEnabled();

@@ -35,7 +35,6 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
     downloadAllCoursesEnabled = false;
 
     searchEnabled = false;
-    myCoursesEnabled = true;
     searchMode = false;
     searchCanLoadMore = false;
     searchLoadMoreError = false;
@@ -84,7 +83,6 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-            this.myCoursesEnabled = !CoreCourses.isMyCoursesDisabledInSite();
 
             this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && this.downloadEnabled;
             if (!this.searchEnabled) {
@@ -111,12 +109,6 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
         this.mode = CoreNavigator.getRouteParam<CoreCoursesListMode>('mode') || this.mode;
 
-        this.myCoursesEnabled = !CoreCourses.isMyCoursesDisabledInSite();
-        if (this.mode == 'my' && !this.myCoursesEnabled) {
-            this.mode = 'all';
-            this.showOnlyEnrolled = false;
-        }
-
         if (this.mode == 'search') {
             this.searchMode = true;
         }
@@ -140,8 +132,10 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
      */
     protected async fetchCourses(): Promise<void> {
         try {
-            if (this.searchMode && this.searchText) {
-                await this.search(this.searchText);
+            if (this.searchMode) {
+                if (this.searchText) {
+                    await this.search(this.searchText);
+                }
             } else if (this.showOnlyEnrolled) {
                 await this.loadMyCourses();
             } else {

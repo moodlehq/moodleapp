@@ -11,7 +11,7 @@
                 <core-context-menu-item *ngIf="downloadCourseEnabled || downloadCoursesEnabled" [priority]="1000"
                     [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload(!downloadEnabled)"
                     iconAction="toggle" [toggle]="downloadEnabled"></core-context-menu-item>
-                <core-context-menu-item *ngIf="myCoursesEnabled" [priority]="900"
+                <core-context-menu-item [priority]="900"
                     [content]="'core.courses.showonlyenrolled' | translate" (action)="toggleEnrolled(!showOnlyEnrolled)"
                     iconAction="toggle" [toggle]="showOnlyEnrolled"></core-context-menu-item>   
             </core-context-menu>
