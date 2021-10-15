@@ -118,7 +118,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
                 try {
                     await this.setStartTime(this.currentSco.id);
                 } catch (error) {
-                    CoreDomUtils.instance.showErrorModalDefault(error, 'addon.mod_scorm.errorgetscorm', true);
+                    CoreDomUtils.showErrorModalDefault(error, 'addon.mod_scorm.errorgetscorm', true);
                 }
             }
 
@@ -198,7 +198,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
                 try {
                     AddonModScormHelper.convertAttemptToOffline(this.scorm, this.attempt);
                 } catch (error) {
-                    CoreDomUtils.instance.showErrorModalDefault(error, 'core.error', true);
+                    CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
                 }
 
                 this.refreshToc();
@@ -303,7 +303,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             this.userData = data;
             this.accessInfo = accessInfo;
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.mod_scorm.errorgetscorm', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_scorm.errorgetscorm', true);
         }
     }
 
@@ -469,7 +469,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
                 await AddonModScorm.saveTracks(sco.id, this.attempt, tracks, this.scorm, true);
             } catch (error) {
-                CoreDomUtils.instance.showErrorModalDefault(error, 'core.error', true);
+                CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
             }
         } finally {
             // Refresh TOC, some prerequisites might have changed.
@@ -510,7 +510,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
             await this.fetchToc();
         } catch (error) {
-            CoreDomUtils.instance.showErrorModalDefault(error, 'addon.mod_scorm.errorgetscorm', true);
+            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_scorm.errorgetscorm', true);
         }
     }
 
