@@ -40,6 +40,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreLogger } from '@singletons/logger';
 import { Translate } from '@singletons';
 import { CoreIonLoadingElement } from './ion-loading';
+import { CoreLang } from '@services/lang';
 
 /**
  * QR Code type enumeration.
@@ -308,10 +309,7 @@ export class CoreSite {
 
         // Index function by name to speed up wsAvailable method.
         if (infos?.functions) {
-            infos.functionsByName = {};
-            infos.functions.forEach((func) => {
-                infos.functionsByName![func.name] = func;
-            });
+            infos.functionsByName = CoreUtils.arrayToObject(infos.functions, 'name');
         }
     }
 
@@ -574,9 +572,14 @@ export class CoreSite {
 
             // Call the WS.
             try {
+                // Send the language to use. Do it after checking cache to prevent losing offline data when changing language.
+                data.moodlewssettinglang = preSets.lang ?? await CoreLang.getCurrentLanguage();
+                data.moodlewssettinglang = data.moodlewssettinglang.replace('-', '_'); // Moodle uses underscore instead of dash.
+
                 const response = await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
 
                 if (preSets.saveToCache) {
+                    delete data.moodlewssettinglang;
                     this.saveToCache(method, data, response, preSets);
                 }
 
@@ -786,7 +789,8 @@ export class CoreSite {
             return;
         }
 
-        const requestsData = {
+        let lang: string | undefined;
+        const requestsData: Record<string, unknown> = {
             requests: requests.map((request) => {
                 const args = {};
                 const settings = {};
@@ -799,6 +803,11 @@ export class CoreSite {
                         if (match[1] == 'settingfilter' || match[1] == 'settingfileurl') {
                             // Undo special treatment of these settings in CoreWSProvider.convertValuesToString.
                             value = (value == 'true' ? '1' : '0');
+                        } else if (match[1] == 'settinglang') {
+                            // Use the lang globally to avoid exceptions with languages not installed.
+                            lang = value;
+
+                            return;
                         }
                         settings[match[1]] = value;
                     } else {
@@ -813,6 +822,7 @@ export class CoreSite {
                 };
             }),
         };
+        requestsData.moodlewssettinglang = lang;
 
         const wsPresets: CoreWSPreSets = {
             siteUrl: this.siteUrl,
@@ -894,7 +904,8 @@ export class CoreSite {
         preSets: CoreSiteWSPreSets,
         emergency?: boolean,
     ): Promise<T> {
-        if (!this.db || !preSets.getFromCache) {
+        const db = this.db;
+        if (!db || !preSets.getFromCache) {
             throw new CoreError('Get from cache is disabled.');
         }
 
@@ -902,11 +913,11 @@ export class CoreSite {
         let entry: CoreSiteWSCacheRecord | undefined;
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
-            const entries = await this.db.getRecords<CoreSiteWSCacheRecord>(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey });
+            const entries = await db.getRecords<CoreSiteWSCacheRecord>(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey });
 
             if (!entries.length) {
                 // Cache key not found, get by params sent.
-                entry = await this.db!.getRecord(CoreSite.WS_CACHE_TABLE, { id });
+                entry = await db.getRecord(CoreSite.WS_CACHE_TABLE, { id });
             } else {
                 if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
@@ -918,7 +929,7 @@ export class CoreSite {
                 }
             }
         } else {
-            entry = await this.db!.getRecord(CoreSite.WS_CACHE_TABLE, { id });
+            entry = await db.getRecord(CoreSite.WS_CACHE_TABLE, { id });
         }
 
         if (typeof entry == 'undefined') {
@@ -933,7 +944,7 @@ export class CoreSite {
         if (!preSets.omitExpires) {
             expirationTime = entry.expirationTime + this.getExpirationDelay(preSets.updateFrequency);
 
-            if (now > expirationTime!) {
+            if (now > expirationTime) {
                 this.logger.debug('Cached element found, but it is expired');
 
                 throw new CoreError('Cache entry is expired.');
@@ -1734,7 +1745,12 @@ export class CoreSite {
 
         if (CoreSite.MOODLE_RELEASES[data.major] === undefined) {
             // Major version not found. Use the last one.
-            data.major = Object.keys(CoreSite.MOODLE_RELEASES).pop()!;
+            const major = Object.keys(CoreSite.MOODLE_RELEASES).pop();
+            if (!major) {
+                return 0;
+            }
+
+            data.major = major;
         }
 
         return CoreSite.MOODLE_RELEASES[data.major] + data.minor;
@@ -1941,6 +1957,11 @@ export type CoreSiteWSPreSets = {
      * Whether to rewrite URLs (moodlewssettingfileurl). Defaults to true.
      */
     rewriteurls?: boolean;
+
+    /**
+     * Language to send to the WebService (moodlewssettinglang). Defaults to app's language.
+     */
+    lang?: string;
 
     /**
      * Defaults to true. Set to false when the expected response is null.

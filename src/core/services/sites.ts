@@ -1146,6 +1146,17 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Get instances of all stored sites.
+     *
+     * @return Promise resolved when the sites are retrieved.
+     */
+    async getSitesInstances(): Promise<CoreSite[]> {
+        const siteIds = await this.getSitesIds();
+
+        return await Promise.all(siteIds.map(async (siteId) => await this.getSite(siteId)));
+    }
+
+    /**
      * Login the user in a site.
      *
      * @param siteid ID of the site the user is accessing.

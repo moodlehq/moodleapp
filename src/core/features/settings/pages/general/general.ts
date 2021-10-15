@@ -23,6 +23,8 @@ import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../servic
 import { CoreApp } from '@services/app';
 import { CoreIframeUtils } from '@services/utils/iframe';
 import { Diagnostic } from '@singletons';
+import { CoreSites } from '@services/sites';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Page that displays the general settings.
@@ -109,7 +111,11 @@ export class CoreSettingsGeneralPage {
      * Called when a new language is selected.
      */
     languageChanged(): void {
-        CoreLang.changeCurrentLanguage(this.selectedLanguage).finally(() => {
+        CoreLang.changeCurrentLanguage(this.selectedLanguage).finally(async () => {
+            // Invalidate cache for all sites to get the content in the right language.
+            const sites = await CoreSites.getSitesInstances();
+            await CoreUtils.ignoreErrors(Promise.all(sites.map((site) => site.invalidateWsCache())));
+
             CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, this.selectedLanguage);
         });
     }
