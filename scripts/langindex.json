@@ -2068,6 +2068,7 @@
   "core.sending": "chat",
   "core.serverconnection": "error",
   "core.settings.about": "local_moodlemobileapp",
+  "core.settings.accessibilitystatement": "local_moodlemobileapp",
   "core.settings.appsettings": "local_moodlemobileapp",
   "core.settings.appversion": "local_moodlemobileapp",
   "core.settings.cannotsyncloggedout": "local_moodlemobileapp",
