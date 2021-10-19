@@ -10,7 +10,7 @@ source "lang_functions.sh"
 forceLang=$1
 
 print_title 'Getting local mobile langs'
-git clone --depth 1 https://github.com/moodlehq/moodle-local_moodlemobileapp.git ../../moodle-local_moodlemobileapp
+git clone --branch integration --depth 1 https://github.com/moodlehq/moodle-local_moodlemobileapp.git ../../moodle-local_moodlemobileapp
 
 if [ -z $forceLang ]; then
     get_languages
