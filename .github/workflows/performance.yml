@@ -19,7 +19,7 @@ jobs:
     - name: Additional checkouts
       run: |
         git clone --branch master --depth 1 git://github.com/moodle/moodle $GITHUB_WORKSPACE/moodle
-        git clone --branch master --depth 1 git://github.com/moodlehq/moodle-local_moodlemobileapp $GITHUB_WORKSPACE/moodle/local/moodlemobileapp
+        git clone --branch integration --depth 1 git://github.com/moodlehq/moodle-local_moodlemobileapp $GITHUB_WORKSPACE/moodle/local/moodlemobileapp
         git clone --branch master --depth 1 git://github.com/moodlehq/moodle-docker $GITHUB_WORKSPACE/moodle-docker
     - name: Install npm packages
       run: npm ci
