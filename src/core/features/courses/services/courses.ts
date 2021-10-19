@@ -1229,17 +1229,14 @@ export class CoreCoursesProvider {
      * Set trigger and save the download option.
      *
      * @param enable True to enable, false to disable.
-     * @return Current status.
      */
-    setCourseDownloadOptionsEnabled(enable: boolean): boolean {
+    setCourseDownloadOptionsEnabled(enable: boolean): void {
         if (this.downloadOptionsEnabled == enable) {
-            return enable;
+            return;
         }
 
         this.downloadOptionsEnabled = enable;
         CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: enable });
-
-        return enable;
     }
 
 }

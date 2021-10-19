@@ -86,7 +86,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
             this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && this.downloadEnabled;
-            if (!this.searchEnabled) {
+            if (!this.searchEnabled && this.searchMode) {
                 this.searchMode = false;
 
                 this.fetchCourses();
@@ -94,7 +94,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
         }, this.currentSiteId);
 
         this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
-            this.toggleDownload(data.enabled);
+            this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && data.enabled;
         });
     }
 
@@ -287,24 +287,17 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
     /**
      * Toggle show only my courses.
-     *
-     * @param enable If enable or disable.
      */
-    toggleEnrolled(enable: boolean): void {
+    toggleEnrolled(): void {
         this.loaded = false;
-        this.showOnlyEnrolled = enable;
-
         this.fetchCourses();
     }
 
     /**
      * Toggle download enabled.
-     *
-     * @param enable If enable or disable.
      */
-    toggleDownload(enable: boolean): void {
-        this.downloadEnabled =
-            CoreCourses.setCourseDownloadOptionsEnabled((this.downloadCourseEnabled || this.downloadCoursesEnabled) && enable);
+    toggleDownload(): void {
+        CoreCourses.setCourseDownloadOptionsEnabled(this.downloadEnabled);
     }
 
     /**

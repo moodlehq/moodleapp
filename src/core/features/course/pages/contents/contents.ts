@@ -100,7 +100,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         }, CoreSites.getCurrentSiteId());
 
         this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
-            this.toggleDownload(data.enabled);
+            this.downloadEnabled = this.displayEnableDownload && data.enabled;
         });
     }
 
@@ -494,12 +494,9 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
 
     /**
      * Toggle download enabled.
-     *
-     * @param enable Whether enable or disable download enabled toggle.
      */
-    toggleDownload(enable: boolean): void {
-        this.downloadEnabled =
-            CoreCourses.setCourseDownloadOptionsEnabled(this.displayEnableDownload && enable);
+    toggleDownload(): void {
+        CoreCourses.setCourseDownloadOptionsEnabled(this.downloadEnabled);
     }
 
     /**

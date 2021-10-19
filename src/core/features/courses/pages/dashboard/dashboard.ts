@@ -54,11 +54,11 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
-            this.switchDownload(this.downloadEnabled);
+            this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && this.downloadEnabled;
         }, CoreSites.getCurrentSiteId());
 
         this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
-            this.switchDownload(data.enabled);
+            this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && data.enabled;
         });
     }
 
@@ -149,12 +149,9 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
     /**
      * Switch download enabled.
-     *
-     * @param enable If enable or disable.
      */
-    switchDownload(enable: boolean): void {
-        this.downloadEnabled =
-            CoreCourses.setCourseDownloadOptionsEnabled((this.downloadCourseEnabled || this.downloadCoursesEnabled) && enable);
+    switchDownload(): void {
+        CoreCourses.setCourseDownloadOptionsEnabled(this.downloadEnabled);
     }
 
     /**

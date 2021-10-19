@@ -66,7 +66,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         }, CoreSites.getCurrentSiteId());
 
         this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
-            this.switchDownload(data.enabled);
+            this.downloadEnabled = data.enabled;
         });
     }
 
@@ -195,12 +195,9 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
     /**
      * Switch download enabled.
-     *
-     * @param enable If enable or disable.
      */
-    switchDownload(enable: boolean): void {
-        this.downloadEnabled =
-            CoreCourses.setCourseDownloadOptionsEnabled(enable);
+    switchDownload(): void {
+        CoreCourses.setCourseDownloadOptionsEnabled(this.downloadEnabled);
     }
 
     /**

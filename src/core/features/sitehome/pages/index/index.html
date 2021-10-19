@@ -4,8 +4,8 @@
     </ion-button>
     <core-context-menu>
         <core-context-menu-item [priority]="1000" *ngIf="displayEnableDownload"
-            [content]="'core.settings.showdownloadoptions' | translate" (action)="switchDownload(!downloadEnabled)"
-            iconAction="toggle" [toggle]="downloadEnabled"></core-context-menu-item>
+            [content]="'core.settings.showdownloadoptions' | translate" (action)="switchDownload()"
+            iconAction="toggle" [(toggle)]="downloadEnabled"></core-context-menu-item>
         <core-context-menu-item [priority]="500"
             [content]="'addon.storagemanager.managestorage' | translate"
             (action)="manageCoursesStorage()" iconAction="fas-archive"></core-context-menu-item>

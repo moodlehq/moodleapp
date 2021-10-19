@@ -55,6 +55,12 @@ export class CoreContextMenuPopoverComponent {
      * @return Return true if success, false if error.
      */
     itemClicked(event: Event, item: CoreContextMenuItemComponent): boolean {
+        if (item.iconAction == 'toggle' && !event.defaultPrevented) {
+            event.preventDefault();
+            event.stopPropagation();
+            item.toggle = !item.toggle;
+        }
+
         if (!!item.action && item.action.observers.length > 0) {
             event.preventDefault();
             event.stopPropagation();

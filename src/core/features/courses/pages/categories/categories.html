@@ -10,11 +10,11 @@
         <ion-buttons slot="end">
             <core-context-menu>
                 <core-context-menu-item *ngIf="downloadCourseEnabled || downloadCoursesEnabled" [priority]="1000"
-                    [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload(!downloadEnabled)"
-                    iconAction="toggle" [toggle]="downloadEnabled"></core-context-menu-item>
+                    [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()"
+                    iconAction="toggle" [(toggle)]="downloadEnabled"></core-context-menu-item>
                 <core-context-menu-item [priority]="900"
-                    [content]="'core.courses.showonlyenrolled' | translate" (action)="toggleEnrolled(!showOnlyEnrolled)"
-                    iconAction="toggle" [toggle]="showOnlyEnrolled"></core-context-menu-item>   
+                    [content]="'core.courses.showonlyenrolled' | translate" (action)="filterEnrolled()"
+                    iconAction="toggle" [(toggle)]="showOnlyEnrolled"></core-context-menu-item>   
             </core-context-menu>
         </ion-buttons>
     </ion-toolbar>
