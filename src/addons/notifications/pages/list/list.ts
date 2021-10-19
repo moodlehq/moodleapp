@@ -157,10 +157,9 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
         try {
             this.loadingMarkAllNotificationsAsRead = true;
 
-            let unread = await AddonNotifications.getUnreadNotificationsCount();
+            const unreadCountData = await AddonNotifications.getUnreadNotificationsCount();
 
-            unread = typeof unread === 'string' ? parseInt(unread) : unread;
-            this.canMarkAllNotificationsAsRead = unread > 0;
+            this.canMarkAllNotificationsAsRead = unreadCountData.count > 0;
         } finally {
             this.loadingMarkAllNotificationsAsRead = false;
         }

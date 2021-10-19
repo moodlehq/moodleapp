@@ -266,31 +266,65 @@ export class AddonNotificationsProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the message notifications count.
      */
-    async getUnreadNotificationsCount(userId?: number, siteId?: string): Promise<number | string> {
+    async getUnreadNotificationsCount(userId?: number, siteId?: string): Promise<{ count: number; hasMore: boolean} > {
         const site = await CoreSites.getSite(siteId);
 
         // @since 4.0
         if (site.wsAvailable('core_message_get_unread_notification_count')) {
-            // @todo
+            const params: CoreMessageGetUnreadNotificationCountWSParams = {
+                useridto: userId || site.getUserId(),
+            };
+
+            const preSets: CoreSiteWSPreSets = {
+                cacheKey: this.getUnreadNotificationsCountCacheKey(params.useridto),
+                getFromCache: false, // Always try to get the latest number.
+                typeExpected: 'number',
+            };
+
+            try {
+                const count = await site.read<number>('core_message_get_unread_notification_count', params, preSets);
+
+                return {
+                    count,
+                    hasMore: false,
+                };
+            } catch {
+                // Return no notifications if the call fails.
+                return {
+                    count: 0,
+                    hasMore: false,
+                };
+            }
         }
 
         // Fallback call
         try {
             const unread = await this.getNotificationsWithStatus(AddonNotificationsGetReadType.UNREAD, {
-                limit: AddonNotificationsProvider.LIST_LIMIT,
+                limit: AddonNotificationsProvider.LIST_LIMIT + 1,
                 siteId,
             });
 
-            if (unread.length === AddonNotificationsProvider.LIST_LIMIT) {
-                // Maybe there are more notifications, include a '+';
-                return unread.length + '+';
-            }
-
-            return unread.length;
+            return {
+                count: Math.min(unread.length, AddonNotificationsProvider.LIST_LIMIT),
+                hasMore: unread.length > AddonNotificationsProvider.LIST_LIMIT,
+            };
         } catch {
-            // Return no messages if the call fails.
-            return 0;
+            // Return no notifications if the call fails.
+            return {
+                count: 0,
+                hasMore: false,
+            };
         }
+    }
+
+    /**
+     * Get cache key for unread notifications count WS calls.
+     *
+     * @param userId User ID.
+     * @return Cache key.
+     */
+    protected getUnreadNotificationsCountCacheKey(userId: number): string {
+        return `${ROOT_CACHE_KEY}count:${userId}`;
     }
 
     /**
@@ -518,6 +552,13 @@ export type CoreMessageMarkNotificationReadWSParams = {
 export type CoreMessageMarkNotificationReadWSResponse = {
     notificationid: number; // Id of the notification.
     warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Params of core_message_get_unread_notification_count WS.
+ */
+export type CoreMessageGetUnreadNotificationCountWSParams = {
+    useridto: number; // User id who received the notification, 0 for any user.
 };
 
 /**

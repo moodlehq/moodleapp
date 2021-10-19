@@ -110,11 +110,12 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
         }
 
         try {
-            const unreadCount = await AddonNotifications.getUnreadNotificationsCount(undefined, siteId);
+            const unreadCountData = await AddonNotifications.getUnreadNotificationsCount(undefined, siteId);
 
-            const unreadCountNumber = typeof unreadCount === 'string' ? parseInt(unreadCount) : unreadCount;
-            this.handlerData.badge = unreadCountNumber > 0 ? String(unreadCount) : '';
-            CorePushNotifications.updateAddonCounter('AddonNotifications', unreadCountNumber, siteId);
+            this.handlerData.badge = unreadCountData.count > 0 ?
+                unreadCountData.count + (unreadCountData.hasMore ? '+' : '') :
+                '';
+            CorePushNotifications.updateAddonCounter('AddonNotifications', unreadCountData.count, siteId);
         } catch {
             this.handlerData.badge = '';
         } finally {
