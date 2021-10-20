@@ -18,18 +18,39 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonMessageOutputDelegate } from '@addons/messageoutput/services/messageoutput-delegate';
 import {
+    AddonNotificationsNotificationMessageFormatted,
     AddonNotificationsPreferences,
     AddonNotificationsPreferencesComponent,
     AddonNotificationsPreferencesNotification,
     AddonNotificationsPreferencesNotificationProcessor,
     AddonNotificationsPreferencesProcessor,
 } from './notifications';
+import { CoreTextUtils } from '@services/utils/text';
 
 /**
  * Service that provides some helper functions for notifications.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonNotificationsHelperProvider {
+
+    /**
+     * Formats the text of a notification.
+     *
+     * @param notification The notification object.
+     */
+    formatNotificationText(
+        notification: AddonNotificationsNotificationMessageFormatted,
+    ): AddonNotificationsNotificationToRender {
+        const formattedNotification: AddonNotificationsNotificationToRender = notification;
+        formattedNotification.displayfullhtml = this.shouldDisplayFullHtml(notification);
+        formattedNotification.iconurl = formattedNotification.iconurl || undefined; // Make sure the property exists.
+
+        formattedNotification.mobiletext = formattedNotification.displayfullhtml ?
+            notification.fullmessagehtml :
+            CoreTextUtils.replaceNewLines((formattedNotification.mobiletext || '').replace(/-{4,}/ig, ''), '<br>');
+
+        return formattedNotification;
+    }
 
     /**
      * Format preferences data.
@@ -119,6 +140,16 @@ export class AddonNotificationsHelperProvider {
         return result;
     }
 
+    /**
+     * Check whether we should display full HTML of the notification.
+     *
+     * @param notification Notification.
+     * @return Whether to display full HTML.
+     */
+    protected shouldDisplayFullHtml(notification: AddonNotificationsNotificationToRender): boolean {
+        return notification.component == 'mod_forum' && notification.eventtype == 'digests';
+    }
+
 }
 
 export const AddonNotificationsHelper = makeSingleton(AddonNotificationsHelperProvider);
@@ -150,4 +181,12 @@ export type AddonNotificationsPreferencesNotificationFormatted = AddonNotificati
  */
 export type AddonNotificationsPreferencesProcessorFormatted = AddonNotificationsPreferencesProcessor & {
     supported?: boolean; // Calculated in the app. Whether the processor is supported in the app.
+};
+
+/**
+ * Notification with some calculated data to render it.
+ */
+export type AddonNotificationsNotificationToRender = AddonNotificationsNotificationMessageFormatted & {
+    displayfullhtml?: boolean; // Whether to display the full HTML of the notification.
+    iconurl?: string;
 };

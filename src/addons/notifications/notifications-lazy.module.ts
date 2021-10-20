@@ -27,6 +27,11 @@ function buildRoutes(injector: Injector): Routes {
             },
             loadChildren: () => import('./pages/list/list.module').then(m => m.AddonNotificationsListPageModule),
         },
+        {
+            path: 'notification',
+            loadChildren: () => import('./pages/notification/notification.module')
+                .then(m => m.AddonNotificationsNotificationPageModule),
+        },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'list',
             pathMatch: 'full',

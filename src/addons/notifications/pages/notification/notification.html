@@ -1,0 +1,30 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h2>{{ 'addon.notifications.notifications' | translate }}</h2>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <ion-item class="ion-text-wrap" lines="none" [attr.aria-label]="subject">
+            <core-user-avatar *ngIf="userIdFrom > 0" slot="start" [userId]="userIdFrom" [profileUrl]="profileImageUrlFrom"
+                [fullname]="userFromFullName" [extraIcon]="iconUrl"></core-user-avatar>
+
+            <img *ngIf="userIdFrom <= 0 && iconUrl" [src]="iconUrl" alt=""
+                role="presentation" class="core-notification-icon" slot="start">
+
+            <ion-label>
+                <p class="item-heading">{{ subject }}</p>
+                <p *ngIf="userIdFrom > 0">{{ userFromFullName }}</p>
+            </ion-label>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <core-format-text [text]="content | coreCreateLinks" contextLevel="system" [contextInstanceId]="0">
+                </core-format-text>
+            </ion-label>
+        </ion-item>
+    </core-loading>
+</ion-content>
