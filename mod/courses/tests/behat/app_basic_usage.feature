@@ -86,7 +86,7 @@ Feature: Test basic usage of courses in app
     And I set the field "Search" to "Course 4" in the app
     And I press "Search" "button" in the app
     Then I should find "Course 4" in the app
-    And the header should be "Search courses" in the app
+    And the header should be "Available courses" in the app
 
     When I press "Course 4" in the app
     Then I should find "Course 4" in the app
