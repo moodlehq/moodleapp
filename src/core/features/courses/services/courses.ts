@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLogger } from '@singletons/logger';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { makeSingleton } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { CoreEvents } from '@singletons/events';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreCourseWithImageAndColor } from './courses-helper';
 
 const ROOT_CACHE_KEY = 'mmCourses:';
 
@@ -62,12 +62,9 @@ export class CoreCoursesProvider {
     static readonly STATE_HIDDEN = 'hidden';
     static readonly STATE_FAVOURITE = 'favourite';
 
-    protected logger: CoreLogger;
     protected userCoursesIds: { [id: number]: boolean } = {}; // Use an object to make it faster to search.
 
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreCoursesProvider');
-    }
+    protected downloadOptionsEnabled = false;
 
     /**
      * Whether current site supports getting course options.
@@ -1121,6 +1118,7 @@ export class CoreCoursesProvider {
      * @param text Text to search.
      * @param page Page to get.
      * @param perPage Number of courses per page. Defaults to CoreCoursesProvider.SEARCH_PER_PAGE.
+     * @param limitToEnrolled Limit to enrolled courses.
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the courses and the total of matches.
      */
@@ -1128,6 +1126,7 @@ export class CoreCoursesProvider {
         text: string,
         page: number = 0,
         perPage: number = CoreCoursesProvider.SEARCH_PER_PAGE,
+        limitToEnrolled: boolean = false,
         siteId?: string,
     ): Promise<{ total: number; courses: CoreCourseBasicSearchedData[] }> {
         const site = await CoreSites.getSite(siteId);
@@ -1136,6 +1135,7 @@ export class CoreCoursesProvider {
             criteriavalue: text,
             page: page,
             perpage: perPage,
+            limittoenrolled: limitToEnrolled,
         };
         const preSets: CoreSiteWSPreSets = {
             getFromCache: false,
@@ -1214,6 +1214,29 @@ export class CoreCoursesProvider {
         };
 
         return site.write('core_course_set_favourite_courses', params);
+    }
+
+    /**
+     * Get download options enabled option.
+     *
+     * @return True if enabled, false otherwise.
+     */
+    getCourseDownloadOptionsEnabled(): boolean {
+        return this.downloadOptionsEnabled;
+    }
+
+    /**
+     * Set trigger and save the download option.
+     *
+     * @param enable True to enable, false to disable.
+     */
+    setCourseDownloadOptionsEnabled(enable: boolean): void {
+        if (this.downloadOptionsEnabled == enable) {
+            return;
+        }
+
+        this.downloadOptionsEnabled = enable;
+        CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: enable });
     }
 
 }
@@ -1356,6 +1379,14 @@ export type CoreCourseSearchedData = CoreCourseBasicSearchedData & {
         inheritedstate: number; // 1 or 0 to use when localstate is set to inherit.
     }[];
     courseformatoptions?: CoreCourseFormatOption[]; // Additional options for particular course format.
+};
+
+/**
+ * Course to render as list item.
+ */
+export type CoreCourseListItem = CoreCourseSearchedData & CoreCourseWithImageAndColor & {
+    completionusertracked?: boolean; // If the user is completion tracked.
+    progress?: number | null; // Progress percentage.
 };
 
 export type CoreCourseGetCoursesData = CoreEnrolledCourseBasicData & {

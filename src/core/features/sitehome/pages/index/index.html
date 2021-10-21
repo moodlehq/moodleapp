@@ -3,12 +3,12 @@
         <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
     <core-context-menu>
-        <core-context-menu-item *ngIf="(downloadCourseEnabled || downloadCoursesEnabled)" [priority]="1000"
-        [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()"
-        [iconAction]="downloadEnabledIcon"></core-context-menu-item>
-        <core-context-menu-item *ngIf="(downloadCourseEnabled || downloadCoursesEnabled)" [priority]="500"
-        [content]="'addon.storagemanager.managestorage' | translate"
-        (action)="manageCoursesStorage()" iconAction="fas-archive"></core-context-menu-item>
+        <core-context-menu-item [priority]="1000" *ngIf="displayEnableDownload"
+            [content]="'core.settings.showdownloadoptions' | translate" (action)="switchDownload()"
+            iconAction="toggle" [(toggle)]="downloadEnabled"></core-context-menu-item>
+        <core-context-menu-item [priority]="500"
+            [content]="'addon.storagemanager.managestorage' | translate"
+            (action)="manageCoursesStorage()" iconAction="fas-archive"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
 <ion-content>

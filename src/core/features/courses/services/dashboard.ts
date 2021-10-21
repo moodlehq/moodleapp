@@ -107,7 +107,7 @@ export class CoreCoursesDashboardProvider {
     }
 
     /**
-     * Check if Site Home is disabled in a certain site.
+     * Check if Dashboard is disabled in a certain site.
      *
      * @param site Site. If not defined, use current site.
      * @return Whether it's disabled.

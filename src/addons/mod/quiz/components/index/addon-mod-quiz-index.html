@@ -212,12 +212,12 @@
             </ion-item>
 
             <!-- Button to start/continue. -->
-            <ion-button *ngIf="buttonText && !showStatusSpinner" expand="block" (click)="attemptQuiz()" class="ion-margin">
+            <ion-button *ngIf="buttonText && !showStatusSpinner" expand="block" (click)="attemptQuiz()" class="ion-margin ion-text-wrap">
                 {{ buttonText | translate }}
             </ion-button>
 
             <!-- Button to open in browser if it cannot be attempted in the app. -->
-            <ion-button class="ion-margin" *ngIf="!buttonText && ((!hasSupportedQuestions && unsupportedQuestions.length) ||
+            <ion-button class="ion-text-wrap ion-margin" *ngIf="!buttonText && ((!hasSupportedQuestions && unsupportedQuestions.length) ||
                 unsupportedRules.length || behaviourSupported === false)" expand="block" [href]="externalUrl" core-link
                 [showBrowserWarning]="false">
                 {{ 'core.openinbrowser' | translate }}

@@ -18,7 +18,7 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
     {
         path: '',
-        redirectTo: 'my',
+        redirectTo: 'list',
         pathMatch: 'full',
     },
     {
@@ -33,22 +33,10 @@ const routes: Routes = [
                 .then(m => m.CoreCoursesCategoriesPageModule),
     },
     {
-        path: 'all',
+        path: 'list',
         loadChildren: () =>
-            import('./pages/available-courses/available-courses.module')
-                .then(m => m.CoreCoursesAvailableCoursesPageModule),
-    },
-    {
-        path: 'search',
-        loadChildren: () =>
-            import('./pages/search/search.module')
-                .then(m => m.CoreCoursesSearchPageModule),
-    },
-    {
-        path: 'my',
-        loadChildren: () =>
-            import('./pages/my-courses/my-courses.module')
-                .then(m => m.CoreCoursesMyCoursesPageModule),
+            import('./pages/list/list.module')
+                .then(m => m.CoreCoursesListPageModule),
     },
 ];
 

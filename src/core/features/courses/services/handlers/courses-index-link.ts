@@ -18,7 +18,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { CoreCoursesMyCoursesHomeHandlerService } from './my-courses-home';
+import { CoreCoursesMyCoursesMainMenuHandlerService } from './my-courses-mainmenu';
 
 /**
  * Handler to treat links to course index (list of courses).
@@ -31,25 +31,22 @@ export class CoreCoursesIndexLinkHandlerService extends CoreContentLinksHandlerB
     pattern = /\/course\/?(index\.php.*)?$/;
 
     /**
-     * Get the list of actions for a link (url).
-     *
-     * @param siteIds List of sites the URL belongs to.
-     * @param url The URL to treat.
-     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @return List of (or promise resolved with list of) actions.
+     * @inheritdoc
      */
     getActions(siteIds: string[], url: string, params: Params): CoreContentLinksAction[] {
         return [{
             action: (siteId): void => {
-                let pageName = CoreCoursesMyCoursesHomeHandlerService.PAGE_NAME;
+                let pageName = CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME;
+                const pageParams: Params = {};
 
                 if (params.categoryid) {
                     pageName += '/categories/' + params.categoryid;
                 } else {
-                    pageName += '/all';
+                    pageName += '/list';
+                    pageParams.mode = 'all';
                 }
 
-                CoreNavigator.navigateToSitePath(pageName, { siteId });
+                CoreNavigator.navigateToSitePath(pageName, { params: pageParams, siteId });
             },
         }];
     }

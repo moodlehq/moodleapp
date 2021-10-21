@@ -50,30 +50,31 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     siteHomeId = 1;
     currentSite!: CoreSite;
     searchEnabled = false;
+    displayEnableDownload = false;
     downloadEnabled = false;
-    downloadCourseEnabled = false;
-    downloadCoursesEnabled = false;
-    downloadEnabledIcon = 'far-square';
     newsForumModule?: NewsForum;
 
-    protected updateSiteObserver?: CoreEventObserver;
+    protected updateSiteObserver: CoreEventObserver;
+    protected downloadEnabledObserver: CoreEventObserver;
 
-    /**
-     * Page being initialized.
-     */
-    ngOnInit(): void {
-        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
-        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-
+    constructor() {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
-            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-            this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
-            this.switchDownload(this.downloadEnabled && this.downloadCourseEnabled && this.downloadCoursesEnabled);
+            this.displayEnableDownload = !CoreSites.getRequiredCurrentSite().isOfflineDisabled();
         }, CoreSites.getCurrentSiteId());
+
+        this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
+            this.downloadEnabled = data.enabled;
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
 
         this.currentSite = CoreSites.getRequiredCurrentSite();
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
@@ -83,6 +84,9 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             const modParams = CoreNavigator.getRouteParam<Params>('modParams');
             CoreCourseHelper.openModule(module, this.siteHomeId, undefined, modParams);
         }
+
+        this.displayEnableDownload = !CoreSites.getRequiredCurrentSite().isOfflineDisabled();
+        this.downloadEnabled = CoreCourses.getCourseDownloadOptionsEnabled();
 
         this.loadContent().finally(() => {
             this.dataLoaded = true;
@@ -190,21 +194,10 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Toggle download enabled.
+     * Switch download enabled.
      */
-    toggleDownload(): void {
-        this.switchDownload(!this.downloadEnabled);
-    }
-
-    /**
-     * Convenience function to switch download enabled.
-     *
-     * @param enable If enable or disable.
-     */
-    protected switchDownload(enable: boolean): void {
-        this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && enable;
-        this.downloadEnabledIcon = this.downloadEnabled ? 'far-check-square' : 'far-square';
-        CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: this.downloadEnabled });
+    switchDownload(): void {
+        CoreCourses.setCourseDownloadOptionsEnabled(this.downloadEnabled);
     }
 
     /**
@@ -218,21 +211,21 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     openSearch(): void {
-        CoreNavigator.navigateToSitePath('courses/search');
+        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'search' } });
     }
 
     /**
      * Go to available courses.
      */
     openAvailableCourses(): void {
-        CoreNavigator.navigateToSitePath('courses/all');
+        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'all' } });
     }
 
     /**
      * Go to my courses.
      */
     openMyCourses(): void {
-        CoreNavigator.navigateToSitePath('courses/my');
+        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'my' } });
     }
 
     /**
@@ -246,7 +239,8 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * Component being destroyed.
      */
     ngOnDestroy(): void {
-        this.updateSiteObserver?.off();
+        this.updateSiteObserver.off();
+        this.downloadEnabledObserver.off();
     }
 
 }

@@ -38,6 +38,7 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     @Input() iconDescription?: string; // Name of the icon to be shown on the left side of the item.
     @Input() iconAction?: string; // Name of the icon to show on the right side of the item. Represents the action to do on click.
     // If is "spinner" an spinner will be shown.
+    // If is "toggle" a toggle switch will be shown.
     // If no icon or spinner is selected, no action or link will work.
     // If href but no iconAction is provided arrow-right will be used.
     @Input() iconSlash?: boolean; // Display a red slash over the icon.
@@ -52,8 +53,10 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     @Input() badgeA11yText?: string; // Description for the badge, if needed.
     @Input() hidden?: boolean; // Whether the item should be hidden.
     @Input() showBrowserWarning = true; // Whether to show a warning before opening browser (for links). Defaults to true.
+    @Input() toggle = false; // Whether the toggle is on or off.
     @Output() action?: EventEmitter<() => void>; // Will emit an event when the item clicked.
     @Output() onClosed?: EventEmitter<() => void>; // Will emit an event when the popover is closed because the item was clicked.
+    @Output() toggleChange = new EventEmitter<boolean>();// Will emit an event when toggle changes to enable 2-way data binding.
 
     protected hasAction = false;
     protected destroyed = false;
@@ -85,6 +88,21 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
         if (!this.destroyed) {
             this.ctxtMenu.addItem(this);
         }
+    }
+
+    /**
+     * Toggle changed.
+     *
+     * @param event Event.
+     */
+    toggleChanged(event: Event): void {
+        if (this.toggle === undefined) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        this.toggleChange.emit(this.toggle);
     }
 
     /**

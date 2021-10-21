@@ -170,7 +170,7 @@ export class AddonBlogEntriesPage implements OnInit {
                     entry.contextInstanceId = entry.userid;
                 }
 
-                entry.summary = CoreTextUtils.instance.replacePluginfileUrls(entry.summary, entry.summaryfiles || []);
+                entry.summary = CoreTextUtils.replacePluginfileUrls(entry.summary, entry.summaryfiles || []);
 
                 return CoreUser.getProfile(entry.userid, entry.courseid, true).then((user) => {
                     entry.user = user;

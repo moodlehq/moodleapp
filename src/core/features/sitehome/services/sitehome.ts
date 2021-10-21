@@ -169,20 +169,12 @@ export class CoreSiteHomeProvider {
                     // Get number of news items to show.
                     add = !!CoreSites.getCurrentSite()?.getStoredConfig('newsitems');
                     break;
-                case FrontPageItemNames['LIST_OF_CATEGORIES']:
                 case FrontPageItemNames['COMBO_LIST']:
+                    itemNumber = FrontPageItemNames['LIST_OF_CATEGORIES']; // Do not break here.
+                case FrontPageItemNames['LIST_OF_CATEGORIES']:
                 case FrontPageItemNames['LIST_OF_COURSE']:
-                    add = true;
-                    if (itemNumber == FrontPageItemNames['COMBO_LIST']) {
-                        itemNumber = FrontPageItemNames['LIST_OF_CATEGORIES'];
-                    }
-                    break;
                 case FrontPageItemNames['ENROLLED_COURSES']:
-                    if (!CoreCourses.isMyCoursesDisabledInSite()) {
-                        const courses = await CoreCourses.getUserCourses();
-
-                        add = courses.length > 0;
-                    }
+                    add = true;
                     break;
                 case FrontPageItemNames['COURSE_SEARCH_BOX']:
                     add = !CoreCourses.isSearchCoursesDisabledInSite();

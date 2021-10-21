@@ -19,12 +19,12 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCoursesComponentsModule } from '../../components/components.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
-import { CoreCoursesSearchPage } from './search';
+import { CoreCoursesListPage } from './list';
 
 const routes: Routes = [
     {
         path: '',
-        component: CoreCoursesSearchPage,
+        component: CoreCoursesListPage,
     },
 ];
 
@@ -36,8 +36,8 @@ const routes: Routes = [
         CoreSearchComponentsModule,
     ],
     declarations: [
-        CoreCoursesSearchPage,
+        CoreCoursesListPage,
     ],
     exports: [RouterModule],
 })
-export class CoreCoursesSearchPageModule { }
+export class CoreCoursesListPageModule { }

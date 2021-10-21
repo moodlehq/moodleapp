@@ -17,7 +17,10 @@ import { Routes } from '@angular/router';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
+import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
 import { AddonStorageManagerCourseMenuHandler } from './services/handlers/course-menu';
+import { AddonStorageManagerSettingsHandler } from './services/handlers/settings';
 
 const routes: Routes = [
     {
@@ -30,6 +33,7 @@ const routes: Routes = [
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreMainMenuRoutingModule.forChild({ children: routes }),
+        CoreSitePreferencesRoutingModule.forChild(routes),
     ],
     exports: [CoreMainMenuRoutingModule],
     providers: [
@@ -38,6 +42,7 @@ const routes: Routes = [
             multi: true,
             useValue: () => {
                 CoreCourseOptionsDelegate.registerHandler(AddonStorageManagerCourseMenuHandler.instance);
+                CoreSettingsDelegate.registerHandler(AddonStorageManagerSettingsHandler.instance);
             },
         },
     ],

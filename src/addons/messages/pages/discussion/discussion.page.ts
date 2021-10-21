@@ -1264,13 +1264,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     }
 
     /**
-     * Toggles delete state.
-     */
-    toggleDelete(): void {
-        this.showDelete = !this.showDelete;
-    }
-
-    /**
      * View info. If it's an individual conversation, go to the user profile.
      * If it's a group conversation, view info about the group.
      */

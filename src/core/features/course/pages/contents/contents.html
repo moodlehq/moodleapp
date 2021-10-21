@@ -1,6 +1,6 @@
 <core-navbar-buttons slot="end">
     <core-context-menu>
-        <core-context-menu-item [hidden]="!displayEnableDownload" [priority]="2000" [iconAction]="downloadEnabledIcon"
+        <core-context-menu-item [hidden]="!displayEnableDownload" [priority]="2000" iconAction="toggle" [(toggle)]="downloadEnabled"
             [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!downloadCourseEnabled" [priority]="1900"

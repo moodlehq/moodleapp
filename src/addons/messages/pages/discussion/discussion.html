@@ -44,8 +44,8 @@
                 'addon.messages.muteconversation') | translate" (action)="changeMute($event)" [closeOnClick]="false"
                 [iconAction]="muteIcon"></core-context-menu-item>
             <core-context-menu-item [hidden]="!canDelete || !messages || !messages.length" [priority]="400"
-                [content]="'addon.messages.showdeletemessages' | translate" (action)="toggleDelete()"
-                [iconAction]="(showDelete ? 'far-check-square' : 'far-square')"></core-context-menu-item>
+                [content]="'addon.messages.showdeletemessages' | translate"
+                iconAction="toggle" [(toggle)]="showDelete"></core-context-menu-item>
             <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversationId || isGroup || !messages || !messages.length"
                 [priority]="200" [content]="'addon.messages.deleteconversation' | translate" (action)="deleteConversation($event)"
                 [closeOnClick]="false" [iconAction]="deleteIcon"></core-context-menu-item>

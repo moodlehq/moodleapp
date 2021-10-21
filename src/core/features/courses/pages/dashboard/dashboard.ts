@@ -40,29 +40,38 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     downloadEnabled = false;
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
-    downloadEnabledIcon = 'far-square';
     userId?: number;
     blocks: Partial<CoreCourseBlock>[] = [];
     loaded = false;
 
-    protected updateSiteObserver?: CoreEventObserver;
+    protected updateSiteObserver: CoreEventObserver;
+    protected downloadEnabledObserver: CoreEventObserver;
 
-    /**
-     * Initialize the component.
-     */
-    ngOnInit(): void {
-        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
-        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-
+    constructor() {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
-            this.switchDownload(this.downloadEnabled && this.downloadCourseEnabled && this.downloadCoursesEnabled);
+            this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && this.downloadEnabled;
         }, CoreSites.getCurrentSiteId());
+
+        this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
+            this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && data.enabled;
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
+        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
+
+        this.downloadEnabled =
+            (this.downloadCourseEnabled || this.downloadCoursesEnabled) && CoreCourses.getCourseDownloadOptionsEnabled();
 
         this.loadContent();
     }
@@ -139,21 +148,10 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Toggle download enabled.
+     * Switch download enabled.
      */
-    toggleDownload(): void {
-        this.switchDownload(!this.downloadEnabled);
-    }
-
-    /**
-     * Convenience function to switch download enabled.
-     *
-     * @param enable If enable or disable.
-     */
-    protected switchDownload(enable: boolean): void {
-        this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && enable;
-        this.downloadEnabledIcon = this.downloadEnabled ? 'far-check-square' : 'far-square';
-        CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: this.downloadEnabled });
+    switchDownload(): void {
+        CoreCourses.setCourseDownloadOptionsEnabled(this.downloadEnabled);
     }
 
     /**
@@ -167,14 +165,15 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * Go to search courses.
      */
     async openSearch(): Promise<void> {
-        CoreNavigator.navigateToSitePath('/courses/search');
+        CoreNavigator.navigateToSitePath('/courses/list', { params : { mode: 'search' } });
     }
 
     /**
      * Component being destroyed.
      */
     ngOnDestroy(): void {
-        this.updateSiteObserver?.off();
+        this.updateSiteObserver.off();
+        this.downloadEnabledObserver.off();
     }
 
 }

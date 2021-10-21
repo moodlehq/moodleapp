@@ -1551,6 +1551,7 @@
   "core.courses.selfenrolment": "local_moodlemobileapp",
   "core.courses.sendpaymentbutton": "enrol_paypal",
   "core.courses.show": "block_myoverview",
+  "core.courses.showonlyenrolled": "local_moodlemobileapp",
   "core.courses.therearecourses": "moodle",
   "core.courses.totalcoursesearchresults": "local_moodlemobileapp",
   "core.currentdevice": "local_moodlemobileapp",

@@ -119,7 +119,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 });
                 CoreUtils.closeInAppBrowser();
 
-            } else if (CoreApp.instance.isAndroid()) {
+            } else if (CoreApp.isAndroid()) {
                 // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
                 const urlScheme = CoreUrlUtils.getUrlProtocol(url);
                 if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {

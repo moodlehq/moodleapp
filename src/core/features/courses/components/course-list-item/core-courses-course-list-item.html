@@ -6,6 +6,10 @@
         <img [src]="course.courseImage" core-external-content alt=""/>
     </ion-avatar>
     <ion-label>
+        <h2>
+            <core-format-text [text]="course.displayname || course.fullname" contextLevel="course" [contextInstanceId]="course.id">
+            </core-format-text>
+        </h2>
         <p *ngIf="course.categoryname || (course.displayname && course.shortname && course.fullname != course.displayname)"
             class="core-course-additional-info">
             <span *ngIf="course.categoryname" class="core-course-category">
@@ -19,10 +23,6 @@
                 </core-format-text>
             </span>
         </p>
-        <h2>
-            <core-format-text [text]="course.displayname || course.fullname" contextLevel="course" [contextInstanceId]="course.id">
-            </core-format-text>
-        </h2>
         <p *ngIf="isEnrolled && course.progress! >= 0 && course.completionusertracked !== false">
             <core-progress-bar [progress]="course.progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
         </p>
@@ -34,4 +34,14 @@
             slot="end">
         </ion-icon>
     </ng-container>
+
+    <div class="core-button-spinner" *ngIf="isEnrolled && showDownload" slot="end">
+        <core-download-refresh
+            [status]="prefetchCourseData.status"
+            [statusTranslatable]="prefetchCourseData.statusTranslatable"
+            [enabled]="true"
+            canTrustDownload="false"
+            [loading]="prefetchCourseData.loading"
+            (action)="prefetchCourse()"></core-download-refresh>
+    </div>
 </ion-item>
