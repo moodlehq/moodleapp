@@ -1,22 +1,12 @@
-<ion-tabs #mainTabs [hidden]="!showTabs" [class]="'placement-' + tabsPlacement" [class.tabshidden]="hidden"
-    (ionTabsDidChange)="tabChanged($event)">
-    <ion-tab-bar slot="bottom" [hidden]="hidden" class="mainmenu-tabs">
+<ion-tabs #mainTabs [hidden]="!showTabs" [class]="'placement-' + tabsPlacement"
+    [class.tabshidden]="!isMainScreen && tabsPlacement == 'bottom'" (ionTabsDidChange)="tabChanged($event)">
+    <ion-tab-bar slot="bottom" class="mainmenu-tabs"
+        [@menuShowHideAnimation]="tabsPlacement == 'side' ? '' : (isMainScreen ? 'visible' : 'hidden')">
         <ion-spinner *ngIf="!loaded" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
 
-        <ion-tab-button
-            *ngFor="let tab of tabs"
-            (click)="tabClicked($event, tab.page)"
-            (keydown)="tabAction.keyDown($event)"
-            (keyup)="tabAction.keyUp(tab.page, $event)"
-            [hidden]="!loaded && tab.hide"
-            [tab]="tab.page"
-            [disabled]="tab.hide"
-            layout="label-hide"
-            class="{{tab.class}}"
-            [selected]="tab.page === selectedTab"
-            [tabindex]="selectedTab == tab.page ? 0 : -1"
-            [attr.aria-controls]="tab.id"
-        >
+        <ion-tab-button *ngFor="let tab of tabs" (keydown)="tabAction.keyDown($event)" (keyup)="tabAction.keyUp(tab.page, $event)"
+            [hidden]="!loaded && tab.hide" [tab]="tab.page" [disabled]="tab.hide" layout="label-hide" class="{{tab.class}}"
+            [selected]="tab.page === selectedTab" [tabindex]="selectedTab == tab.page ? 0 : -1" [attr.aria-controls]="tab.id">
             <ion-icon [name]="tab.icon" aria-hidden="true"></ion-icon>
             <ion-label aria-hidden="true">{{ tab.title | translate }}</ion-label>
             <ion-badge *ngIf="tab.badge" aria-hidden="true">{{ tab.badge }}</ion-badge>
@@ -26,16 +16,8 @@
             </span>
         </ion-tab-button>
 
-        <ion-tab-button
-            (click)="tabClicked($event, morePageName)"
-            (keydown)="tabAction.keyDown($event)"
-            (keyup)="tabAction.keyUp(morePageName, $event)"
-            [hidden]="!loaded"
-            [tab]="morePageName"
-            layout="label-hide"
-            [tabindex]="selectedTab == morePageName ? 0 : -1"
-            [attr.aria-controls]="morePageName"
-        >
+        <ion-tab-button (keydown)="tabAction.keyDown($event)" (keyup)="tabAction.keyUp(morePageName, $event)" [hidden]="!loaded"
+            [tab]="morePageName" layout="label-hide" [tabindex]="selectedTab == morePageName ? 0 : -1" [attr.aria-controls]="morePageName">
             <ion-icon name="fas-bars" aria-hidden="true"></ion-icon>
             <ion-label aria-hidden="true">{{ 'core.more' | translate }}</ion-label>
             <span class="sr-only">{{ 'core.more' | translate }}</span>

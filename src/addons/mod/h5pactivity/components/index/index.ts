@@ -46,7 +46,6 @@ import {
 import { CoreFileHelper } from '@services/file-helper';
 import { AddonModH5PActivityModuleHandlerService } from '../../services/handlers/module';
 import { CoreMainMenuPage } from '@features/mainmenu/pages/menu/menu';
-import { Platform } from '@singletons';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -81,13 +80,11 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     isOpeningPage = false;
     canViewAllAttempts = false;
 
-    protected listeningResize = false;
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
     protected syncEventName = AddonModH5PActivitySyncProvider.AUTO_SYNCED;
     protected site: CoreSite;
     protected observer?: CoreEventObserver;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
-    protected resizeFunction: () => void;
 
     constructor(
         protected mainMenuPage: CoreMainMenuPage,
@@ -102,7 +99,6 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         // Listen for messages from the iframe.
         this.messageListenerFunction = this.onIframeMessage.bind(this);
         window.addEventListener('message', this.messageListenerFunction);
-        this.resizeFunction = this.contentResized.bind(this);
     }
 
     /**
@@ -375,8 +371,6 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         AddonModH5PActivity.logView(this.h5pActivity!.id, this.h5pActivity!.name, this.siteId);
 
         CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-
-        this.setResizeListener();
     }
 
     /**
@@ -503,45 +497,6 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             await super.gotoBlog();
         } finally {
             this.isOpeningPage = false;
-        }
-    }
-
-    /**
-     * Set the resize listener if needed.
-     */
-    setResizeListener(): void {
-        if (!this.playing || this.listeningResize) {
-            return;
-        }
-
-        this.listeningResize = true;
-        window.addEventListener('resize', this.contentResized.bind(this));
-        this.contentResized();
-    }
-
-    /**
-     * On content resize, change visibility of the main menu: show on portrait and hide on landscape.
-     */
-    contentResized(): void {
-        this.mainMenuPage.changeVisibility(Platform.isPortrait());
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ionViewDidEnter(): void {
-        this.setResizeListener();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ionViewWillLeave(): void {
-        this.mainMenuPage.changeVisibility(true);
-
-        if (this.listeningResize) {
-            this.listeningResize = false;
-            window.removeEventListener('resize', this.resizeFunction);
         }
     }
 
