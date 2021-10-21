@@ -1274,9 +1274,11 @@ export class CoreFileProvider {
             return src;
         }
 
-        const scheme = CoreApp.isIOS() ? CoreConstants.CONFIG.ioswebviewscheme : 'http';
+        if (CoreApp.isIOS()) {
+            return src.replace(CoreConstants.CONFIG.ioswebviewscheme + '://localhost/_app_file_', 'file://');
+        }
 
-        return src.replace(scheme + '://localhost/_app_file_', 'file://');
+        return src.replace('http://localhost/_app_file_', 'file://');
     }
 
     /**
