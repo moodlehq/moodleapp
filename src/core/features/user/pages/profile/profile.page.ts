@@ -19,8 +19,6 @@ import { Subscription } from 'rxjs';
 import { CoreSite } from '@classes/site';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     CoreUser,
@@ -29,8 +27,6 @@ import {
 } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
 import { CoreUserDelegate, CoreUserDelegateService, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
-import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
-import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourses } from '@features/courses/services/courses';
@@ -54,7 +50,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     title?: string;
     isDeleted = false;
     isEnrolled = true;
-    canChangeProfilePicture = false;
     rolesFormatted?: string;
     actionHandlers: CoreUserProfileHandlerData[] = [];
     newPageHandlers: CoreUserProfileHandlerData[] = [];
@@ -72,7 +67,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     }
 
     /**
-     * On init.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
@@ -90,13 +85,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             // Get site profile.
             this.courseId = undefined;
         }
-
-        // Allow to change the profile image only in the app profile page.
-        this.canChangeProfilePicture =
-            !this.courseId &&
-            this.userId == this.site.getUserId() &&
-            this.site.canUploadFiles() &&
-            !CoreUser.isUpdatePictureDisabledInSite(this.site);
 
         try {
             await this.fetchUser();
@@ -154,81 +142,9 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
                 this.isLoadingHandlers = !CoreUserDelegate.areHandlersLoaded(user.id);
             });
 
-            await this.checkUserImageUpdated();
-
         } catch (error) {
             // Error is null for deleted users, do not show the modal.
             CoreDomUtils.showErrorModal(error);
-        }
-    }
-
-    /**
-     * Check if current user image has changed.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async checkUserImageUpdated(): Promise<void> {
-        if (!this.site || !this.site.getInfo() || !this.user) {
-            return;
-        }
-
-        if (this.userId != this.site.getUserId() || !this.isUserAvatarDirty()) {
-            // Not current user or hasn't changed.
-            return;
-        }
-
-        // The current user image received is different than the one stored in site info. Assume the image was updated.
-        // Update the site info to get the right avatar in there.
-        try {
-            await CoreSites.updateSiteInfo(this.site.getId());
-        } catch {
-            // Cannot update site info. Assume the profile image is the right one.
-            CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
-                userId: this.userId,
-                picture: this.user.profileimageurl,
-            }, this.site.getId());
-        }
-
-        if (this.isUserAvatarDirty()) {
-            // The image is still different, this means that the good one is the one in site info.
-            await this.refreshUser();
-        } else {
-            // Now they're the same, send event to use the right avatar in the rest of the app.
-            CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
-                userId: this.userId,
-                picture: this.user.profileimageurl,
-            }, this.site.getId());
-        }
-    }
-
-    /**
-     * Opens dialog to change profile picture.
-     */
-    async changeProfilePicture(): Promise<void> {
-        const maxSize = -1;
-        const title = Translate.instant('core.user.newpicture');
-        const mimetypes = CoreMimetypeUtils.getGroupMimeInfo('image', 'mimetypes');
-        let modal: CoreIonLoadingElement | undefined;
-
-        try {
-            const result = await CoreFileUploaderHelper.selectAndUploadFile(maxSize, title, mimetypes);
-
-            modal = await CoreDomUtils.showModalLoading('core.sending', true);
-
-            const profileImageURL = await CoreUser.changeProfilePicture(result.itemid, this.userId, this.site.getId());
-
-            CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
-                userId: this.userId,
-                picture: profileImageURL,
-            }, this.site.getId());
-
-            CoreSites.updateSiteInfo(this.site.getId());
-
-            this.refreshUser();
-        } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-        } finally {
-            modal?.dismiss();
         }
     }
 
@@ -285,48 +201,11 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.subscription?.unsubscribe();
         this.obsProfileRefreshed.off();
-    }
-
-    /**
-     * Check whether the user avatar is not up to date with site info.
-     *
-     * @return Whether the user avatar differs from site info cache.
-     */
-    private isUserAvatarDirty(): boolean {
-        if (!this.user || !this.site) {
-            return false;
-        }
-
-        const courseAvatarUrl = this.normalizeAvatarUrl(this.user.profileimageurl);
-        const siteAvatarUrl = this.normalizeAvatarUrl(this.site.getInfo()?.userpictureurl);
-
-        return courseAvatarUrl !== siteAvatarUrl;
-    }
-
-    /**
-     * Normalize an avatar url regardless of theme.
-     *
-     * Given that the default image is the only one that can be changed per theme, any other url will stay the same. Note that
-     * the values returned by this function may not be valid urls, given that they are intended for string comparison.
-     *
-     * @param avatarUrl Avatar url.
-     * @return Normalized avatar string (may not be a valid url).
-     */
-    private normalizeAvatarUrl(avatarUrl?: string): string {
-        if (!avatarUrl) {
-            return 'undefined';
-        }
-
-        if (avatarUrl.startsWith(`${this.site?.siteUrl}/theme/image.php`)) {
-            return 'default';
-        }
-
-        return avatarUrl;
     }
 
 }
