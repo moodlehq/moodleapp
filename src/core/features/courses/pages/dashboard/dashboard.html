@@ -1,4 +1,4 @@
-<core-navbar-buttons slot="end">
+<core-navbar-buttons slot="end" prepend>
     <ion-button *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
         <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>

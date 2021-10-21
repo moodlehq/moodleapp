@@ -5,20 +5,20 @@
         </ion-buttons>
         <h1 *ngIf="!showOnlyEnrolled">{{ 'core.courses.availablecourses' | translate }}</h1>
         <h1 *ngIf="showOnlyEnrolled">{{ 'core.courses.mycourses' | translate }}</h1>
-        <ion-buttons slot="end"></ion-buttons>
+        <ion-buttons slot="end">
+            <core-context-menu>
+                <core-context-menu-item *ngIf="downloadCourseEnabled || downloadCoursesEnabled" [priority]="1000"
+                    [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()"
+                    iconAction="toggle" [(toggle)]="downloadEnabled"></core-context-menu-item>
+                <core-context-menu-item [priority]="900"
+                    [content]="'core.courses.showonlyenrolled' | translate" (action)="toggleEnrolled()"
+                    iconAction="toggle" [(toggle)]="showOnlyEnrolled"></core-context-menu-item>   
+            </core-context-menu>
+            <core-user-menu-button></core-user-menu-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <core-navbar-buttons slot="end">
-        <core-context-menu>
-            <core-context-menu-item *ngIf="downloadCourseEnabled || downloadCoursesEnabled" [priority]="1000"
-                [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()"
-                iconAction="toggle" [(toggle)]="downloadEnabled"></core-context-menu-item>
-            <core-context-menu-item [priority]="900"
-                [content]="'core.courses.showonlyenrolled' | translate" (action)="toggleEnrolled()"
-                iconAction="toggle" [(toggle)]="showOnlyEnrolled"></core-context-menu-item>   
-        </core-context-menu>
-    </core-navbar-buttons>
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshCourses($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>

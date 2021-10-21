@@ -23,6 +23,7 @@ import { CoreSearchComponentsModule } from '@features/search/components/componen
 
 import { AddonMessagesDiscussions35Page } from './discussions.page';
 import { AddonMessagesMainMenuHandlerService } from '@addons/messages/services/handlers/mainmenu';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 const mobileRoutes: Routes = [
     {
@@ -58,6 +59,7 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         CoreSearchComponentsModule,
+        CoreMainMenuComponentsModule,
     ],
     declarations: [
         AddonMessagesDiscussions35Page,

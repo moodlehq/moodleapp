@@ -22,6 +22,7 @@ import { CoreCommentsComponentsModule } from '@features/comments/components/comp
 import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { AddonBlogMainMenuHandlerService } from './services/handlers/mainmenu';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 function buildRoutes(injector: Injector): Routes {
     return [
@@ -39,6 +40,7 @@ function buildRoutes(injector: Injector): Routes {
         CoreSharedModule,
         CoreCommentsComponentsModule,
         CoreTagComponentsModule,
+        CoreMainMenuComponentsModule,
     ],
     exports: [RouterModule],
     providers: [
