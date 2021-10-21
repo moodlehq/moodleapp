@@ -16,14 +16,14 @@ import { Injector, NgModule } from '@angular/core';
 import { RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { AddonPrivateFilesMainMenuHandlerService } from './services/handlers/mainmenu';
+import { AddonPrivateFilesUserHandlerService } from './services/handlers/user';
 
 function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: 'root',
             data: {
-                mainMenuTabRoot: AddonPrivateFilesMainMenuHandlerService.PAGE_NAME,
+                mainMenuTabRoot: AddonPrivateFilesUserHandlerService.PAGE_NAME,
             },
             loadChildren: () => import('./pages/index/index.module').then(m => m.AddonPrivateFilesIndexPageModule),
         },

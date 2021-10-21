@@ -14,44 +14,57 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { AddonPrivateFiles } from '@/addons/privatefiles/services/privatefiles';
 import { makeSingleton } from '@singletons';
+import { CoreUserDelegateService, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import { CoreUserProfile } from '@features/user/services/user';
+import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 
 /**
- * Handler to inject an option into main menu.
+ * Handler to inject an option into user menu.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonPrivateFilesMainMenuHandlerService implements CoreMainMenuHandler {
+export class AddonPrivateFilesUserHandlerService implements CoreUserProfileHandler {
 
     static readonly PAGE_NAME = 'private';
 
     name = 'AddonPrivateFiles';
-    priority = 400;
+    priority = 300;
+    type = CoreUserDelegateService.TYPE_NEW_PAGE;
+    cacheEnabled = true;
 
     /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @return Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return AddonPrivateFiles.isPluginEnabled();
     }
 
     /**
-     * Returns the data needed to render the handler.
-     *
-     * @return Data needed to render the handler.
+     * @inheritdoc
      */
-    getDisplayData(): CoreMainMenuHandlerData {
+    async isEnabledForUser(user: CoreUserProfile): Promise<boolean> {
+        // Private files only available for the current user.
+        return user.id == CoreSites.getCurrentSiteUserId();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getDisplayData(): CoreUserProfileHandlerData {
         return {
             icon: 'fas-folder',
             title: 'addon.privatefiles.files',
-            page: AddonPrivateFilesMainMenuHandlerService.PAGE_NAME,
             class: 'addon-privatefiles-handler',
+            action: (event): void => {
+                event.preventDefault();
+                event.stopPropagation();
+                CoreNavigator.navigateToSitePath(AddonPrivateFilesUserHandlerService.PAGE_NAME);
+            },
         };
     }
 
 }
 
-export const AddonPrivateFilesMainMenuHandler = makeSingleton(AddonPrivateFilesMainMenuHandlerService);
+export const AddonPrivateFilesUserHandler = makeSingleton(AddonPrivateFilesUserHandlerService);

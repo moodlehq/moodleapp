@@ -23,13 +23,13 @@ import { CoreGradesCoursePage } from './pages/course/course.page';
 import { CoreGradesCoursePageModule } from './pages/course/course.module';
 import { CoreGradesCoursesPage } from './pages/courses/courses.page';
 import { CoreGradesGradePage } from './pages/grade/grade.page';
-import { CoreGradesMainMenuHandlerService } from './services/handlers/mainmenu';
+import { CoreGradesUserHandlerService } from './services/handlers/user';
 
 const mobileRoutes: Routes = [
     {
         path: '',
         data: {
-            mainMenuTabRoot: CoreGradesMainMenuHandlerService.PAGE_NAME,
+            mainMenuTabRoot: CoreGradesUserHandlerService.PAGE_NAME,
         },
         component: CoreGradesCoursesPage,
     },
@@ -47,7 +47,7 @@ const tabletRoutes: Routes = [
     {
         path: '',
         data: {
-            mainMenuTabRoot: CoreGradesMainMenuHandlerService.PAGE_NAME,
+            mainMenuTabRoot: CoreGradesUserHandlerService.PAGE_NAME,
         },
         component: CoreGradesCoursesPage,
         children: [

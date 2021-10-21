@@ -15,12 +15,12 @@
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 
-import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
-import { AddonPrivateFilesMainMenuHandler, AddonPrivateFilesMainMenuHandlerService } from './services/handlers/mainmenu';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { AddonPrivateFilesProvider } from './services/privatefiles';
 import { AddonPrivateFilesHelperProvider } from './services/privatefiles-helper';
+import { CoreUserDelegate } from '@features/user/services/user-delegate';
+import { AddonPrivateFilesUserHandler, AddonPrivateFilesUserHandlerService } from './services/handlers/user';
 
 export const ADDON_PRIVATEFILES_SERVICES: Type<unknown>[] = [
     AddonPrivateFilesProvider,
@@ -29,7 +29,7 @@ export const ADDON_PRIVATEFILES_SERVICES: Type<unknown>[] = [
 
 const routes: Routes = [
     {
-        path: AddonPrivateFilesMainMenuHandlerService.PAGE_NAME,
+        path: AddonPrivateFilesUserHandlerService.PAGE_NAME,
         loadChildren: () => import('@/addons/privatefiles/privatefiles-lazy.module').then(m => m.AddonPrivateFilesLazyModule),
     },
 ];
@@ -45,7 +45,7 @@ const routes: Routes = [
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreMainMenuDelegate.registerHandler(AddonPrivateFilesMainMenuHandler.instance);
+                CoreUserDelegate.registerHandler(AddonPrivateFilesUserHandler.instance);
             },
         },
     ],
