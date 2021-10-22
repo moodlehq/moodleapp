@@ -56,13 +56,7 @@ export class AddonNotificationsProvider {
         const promises = notifications.map(async (notificationRaw) => {
             const notification = <AddonNotificationsNotificationMessageFormatted> notificationRaw;
 
-            // Set message to show.
-            if (notification.component && notification.component == 'mod_forum') {
-                notification.mobiletext = notification.smallmessage;
-            } else {
-                notification.mobiletext = notification.fullmessage;
-            }
-
+            notification.mobiletext = notification.fullmessagehtml || notification.fullmessage || notification.smallmessage;
             notification.moodlecomponent = notification.component;
             notification.notification = 1;
             notification.notif = 1;
@@ -171,7 +165,7 @@ export class AddonNotificationsProvider {
 
         // Request 1 more notification so we can know if there are more notifications.
         const originalLimit = options.limit;
-        options.limit + 1;
+        options.limit = options.limit + 1;
 
         const site = await CoreSites.getSite(options.siteId);
 

@@ -29,6 +29,7 @@ import { CoreUtils } from '@services/utils/utils';
 @Component({
     selector: 'page-addon-notifications-notification',
     templateUrl: 'notification.html',
+    styleUrls: ['../../notifications.scss'],
 })
 export class AddonNotificationsNotificationPage implements OnInit {
 
