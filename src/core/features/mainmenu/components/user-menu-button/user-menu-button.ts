@@ -47,8 +47,9 @@ export class CoreMainMenuUserButtonComponent {
         event.preventDefault();
         event.stopPropagation();
 
-        CoreDomUtils.openModal<void>({
+        CoreDomUtils.openSideModal<void>({
             component: CoreMainMenuUserMenuComponent,
+            cssClass: 'core-modal-lateral-sm',
         });
     }
 

@@ -508,7 +508,7 @@ body.core-iframe-fullscreen ion-router-outlet {
     z-index: 100000 !important;
 }
 
-@media only screen and (min-height: 400px) and (min-width: 300px) {
+@media only screen and (min-height: 400px) and (min-width: #{$modal-lateral-width}) {
     .core-modal-lateral {
         --ion-safe-area-left: 0px;
         --ion-safe-area-right: 0px;
@@ -519,13 +519,36 @@ body.core-iframe-fullscreen ion-router-outlet {
             display: block;
             height: 100% !important;
             width: auto;
-            min-width: 300px;
+            min-width: #{$modal-lateral-width};
             box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
         }
         ion-backdrop {
             visibility: visible;
         }
     }
+}
+
+@each $breakpoint, $width in $screen-breakpoints {
+    @media only screen and (min-height: 400px) and (min-width: #{$width}) {
+        .core-modal-lateral-#{$breakpoint} {
+            --ion-safe-area-left: 0px;
+            --ion-safe-area-right: 0px;
+    
+            .modal-wrapper {
+                position: absolute;
+                @include position(0 !important, 0 !important, 0 !important, unset !important);
+                display: block;
+                height: 100% !important;
+                width: auto;
+                min-width: #{$width};
+                box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+            }
+            ion-backdrop {
+                visibility: visible;
+            }
+        }
+    }
+    
 }
 
 // Hidden submit button.
