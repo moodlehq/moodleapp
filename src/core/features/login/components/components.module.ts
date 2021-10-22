@@ -14,22 +14,23 @@
 
 import { NgModule } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreMainMenuUserButtonComponent } from './user-menu-button/user-menu-button';
-import { CoreMainMenuUserMenuComponent } from './user-menu/user-menu';
-import { CoreLoginComponentsModule } from '@features/login/components/components.module';
+import { CoreLoginSiteOnboardingComponent } from './site-onboarding/site-onboarding';
+import { CoreLoginSiteHelpComponent } from './site-help/site-help';
+import { CoreLoginSitesComponent } from './sites/sites';
 
 @NgModule({
     declarations: [
-        CoreMainMenuUserButtonComponent,
-        CoreMainMenuUserMenuComponent,
+        CoreLoginSiteOnboardingComponent,
+        CoreLoginSiteHelpComponent,
+        CoreLoginSitesComponent,
     ],
     imports: [
         CoreSharedModule,
-        CoreLoginComponentsModule,
     ],
     exports: [
-        CoreMainMenuUserButtonComponent,
-        CoreMainMenuUserMenuComponent,
+        CoreLoginSiteOnboardingComponent,
+        CoreLoginSiteHelpComponent,
+        CoreLoginSitesComponent,
     ],
 })
-export class CoreMainMenuComponentsModule {}
+export class CoreLoginComponentsModule {}

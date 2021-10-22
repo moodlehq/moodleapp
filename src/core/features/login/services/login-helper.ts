@@ -19,7 +19,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { CoreApp, CoreStoreConfig } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreEvents, CoreEventSessionExpiredData, CoreEventSiteData } from '@singletons/events';
-import { CoreSites, CoreLoginSiteInfo } from '@services/sites';
+import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -35,6 +35,8 @@ import { CoreUrl } from '@singletons/url';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
+import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -311,7 +313,7 @@ export class CoreLoginHelperProvider {
         site = site || CoreSites.getCurrentSite();
         const config = site?.getStoredConfig();
 
-        return 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'changesite');
+        return 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'switchaccount');
     }
 
     /**
@@ -407,8 +409,25 @@ export class CoreLoginHelperProvider {
      * @param showKeyboard Whether to show keyboard in the new page. Only if no fixed URL set.
      * @return Promise resolved when done.
      */
-    async goToAddSite(setRoot?: boolean, showKeyboard?: boolean): Promise<void> {
-        const [path, params] = this.getAddSiteRouteInfo(showKeyboard);
+    async goToAddSite(setRoot = false, showKeyboard = false): Promise<void> {
+        let path = '/login/sites';
+        let params: Params = { openAddSite: true , showKeyboard };
+
+        if (CoreSites.isLoggedIn()) {
+
+            if (CoreSitePlugins.hasSitePluginsLoaded) {
+                // The site has site plugins so the app will be restarted. Store the data and logout.
+                CoreApp.storeRedirect(CoreConstants.NO_SITE_ID, path, { params });
+
+                await CoreSites.logout();
+
+                return;
+            }
+
+            await CoreSites.logout();
+        } else {
+            [path, params] = this.getAddSiteRouteInfo(showKeyboard);
+        }
 
         await CoreNavigator.navigate(path, { params, reset: setRoot });
     }
@@ -1317,43 +1336,121 @@ export class CoreLoginHelperProvider {
         }
     }
 
+    /**
+     * Get the accounts list classified per site.
+     *
+     * @param currentSiteId If loggedin, current Site Id.
+     * @return Promise resolved with account list.
+     */
+    async getAccountsList(currentSiteId?: string): Promise<CoreAccountsList> {
+        const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
+
+        const accountsList: CoreAccountsList = {
+            sameSite: [],
+            otherSites: [],
+            count: sites.length,
+        };
+
+        let siteUrl = '';
+
+        if (currentSiteId) {
+            const index = sites.findIndex((site) => site.id == currentSiteId);
+
+            accountsList.currentSite = sites.splice(index, 1)[0];
+            siteUrl = accountsList.currentSite.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
+            accountsList.currentSite.siteUrl = siteUrl;
+        }
+
+        const otherSites: Record<string, CoreSiteBasicInfo[]> = {};
+
+        // Add site counter and classify sites.
+        await Promise.all(sites.map(async (site) => {
+            site.siteUrl = site.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
+            site.badge = await CoreUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
+
+            if (site.siteUrl == siteUrl) {
+                accountsList.sameSite.push(site);
+            } else {
+                if (!otherSites[site.siteUrl]) {
+                    otherSites[site.siteUrl] = [];
+                }
+
+                otherSites[site.siteUrl].push(site);
+            }
+
+            return;
+        }));
+
+        accountsList.otherSites = CoreUtils.objectToArray(otherSites);
+
+        return accountsList;
+    }
+
+    /**
+     * Find and delete a site from the list of sites.
+     *
+     * @param accountsList Account list.
+     * @param site Site to be deleted.
+     * @return Resolved when done.
+     */
+    async deleteAccountFromList(accountsList: CoreAccountsList, site: CoreSiteBasicInfo): Promise<void> {
+        await CoreSites.deleteSite(site.id);
+
+        const siteUrl = site.siteUrl;
+        let index = 0;
+
+        // Found on same site.
+        if (accountsList.sameSite.length > 0 && accountsList.sameSite[0].siteUrl == siteUrl) {
+            index = accountsList.sameSite.findIndex((listedSite) => listedSite.id == site.id);
+            if (index >= 0) {
+                accountsList.sameSite.splice(index, 1);
+                accountsList.count--;
+            }
+
+            return;
+        }
+
+        const otherSiteIndex = accountsList.otherSites.findIndex((sites) => sites.length > 0 && sites[0].siteUrl == siteUrl);
+        if (otherSiteIndex < 0) {
+            // Site Url not found.
+            return;
+        }
+
+        index = accountsList.otherSites[otherSiteIndex].findIndex((listedSite) => listedSite.id == site.id);
+        if (index >= 0) {
+            accountsList.otherSites[otherSiteIndex].splice(index, 1);
+            accountsList.count--;
+        }
+
+        if (accountsList.otherSites[otherSiteIndex].length == 0) {
+            accountsList.otherSites.splice(otherSiteIndex, 1);
+        }
+    }
+
 }
 
 export const CoreLoginHelper = makeSingleton(CoreLoginHelperProvider);
 
 /**
+ * Accounts list for selecting sites interfaces.
+ */
+export type CoreAccountsList = {
+    currentSite?: CoreSiteBasicInfo; // If logged in, current site info.
+    sameSite: CoreSiteBasicInfo[]; // If logged in, accounts info on the same site.
+    otherSites: CoreSiteBasicInfo[][]; // Other accounts in other sites.
+    count: number; // Number of sites.
+};
+
+/**
  * Data related to a SSO authentication.
  */
 export interface CoreLoginSSOData {
-    /**
-     * The site's URL.
-     */
-    siteUrl: string;
-
-    /**
-     * User's token.
-     */
-    token?: string;
-
-    /**
-     * User's private token.
-     */
-    privateToken?: string;
-
-    /**
-     * Name of the page to go after authenticated.
-     */
-    pageName?: string;
-
-    /**
-     * Options of the navigation to the page.
-     */
-    pageOptions?: CoreNavigationOptions;
-
-    /**
-     * Other params added to the login url.
-     */
-    ssoUrlParams?: CoreUrlParams;
+    siteUrl: string; // The site's URL.
+    token?: string; // User's token.
+    privateToken?: string; // User's private token.
+    pageName?: string; // Name of the page to go after authenticated.
+    pageOptions?: CoreNavigationOptions; // Options of the navigation to the page.
+    ssoUrlParams?: CoreUrlParams; // Other params added to the login url.
 };
 
 /**

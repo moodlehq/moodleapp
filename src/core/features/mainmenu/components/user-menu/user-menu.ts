@@ -14,11 +14,13 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreSiteInfo } from '@classes/site';
+import { CoreLoginSitesComponent } from '@features/login/components/sites/sites';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreUserProfileHandlerData, CoreUserDelegate, CoreUserDelegateService } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
+import { CoreDomUtils } from '@services/utils/dom';
 import { ModalController } from '@singletons';
 import { Subscription } from 'rxjs';
 
@@ -34,11 +36,12 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     siteInfo?: CoreSiteInfo;
     siteName?: string;
-    logoutLabel = 'core.mainmenu.changesite';
     siteUrl?: string;
     handlers: CoreUserProfileHandlerData[] = [];
     handlersLoaded = false;
+    loaded = false;
     user?: CoreUserProfile;
+    moreSites = false;
 
     protected subscription!: Subscription;
 
@@ -46,13 +49,16 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        // Check if there are more sites to switch.
+        const sites = await CoreSites.getSites();
+        this.moreSites = sites.length > 1;
 
         const currentSite = CoreSites.getRequiredCurrentSite();
-
         this.siteInfo = currentSite.getInfo();
         this.siteName = currentSite.getSiteName();
         this.siteUrl = currentSite.getURL();
-        this.logoutLabel = CoreLoginHelper.getLogoutLabel(currentSite);
+
+        this.loaded = true;
 
         // Load the handlers.
         if (this.siteInfo) {
@@ -131,6 +137,38 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         await this.close(event);
 
         CoreSites.logout();
+    }
+
+    /**
+     * Show account selector.
+     *
+     * @param event Click event
+     */
+    async switchAccounts(event: Event): Promise<void> {
+        const thisModal = await ModalController.getTop();
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const closeAll = await CoreDomUtils.openSideModal<boolean>({
+            component: CoreLoginSitesComponent,
+            cssClass: 'core-modal-lateral-sm',
+        });
+
+        if (closeAll) {
+            await ModalController.dismiss(undefined, undefined, thisModal.id);
+        }
+    }
+
+    /**
+     * Add account.
+     *
+     * @param event Click event
+     */
+    async addAccount(event: Event): Promise<void> {
+        await this.close(event);
+
+        await CoreLoginHelper.goToAddSite(true, true);
     }
 
     /**

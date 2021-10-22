@@ -1095,7 +1095,7 @@ export class CoreSitesProvider {
     async getSortedSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
         const sites = await this.getSites(ids);
 
-        // Sort sites by url and ful lname.
+        // Sort sites by url and fullname.
         sites.sort((a, b) => {
             // First compare by site url without the protocol.
             const urlA = a.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
@@ -1754,40 +1754,13 @@ export type CoreSiteUserTokenResponse = {
  * Site's basic info.
  */
 export type CoreSiteBasicInfo = {
-    /**
-     * Site ID.
-     */
-    id: string;
-
-    /**
-     * Site URL.
-     */
-    siteUrl: string;
-
-    /**
-     * User's full name.
-     */
-    fullName?: string;
-
-    /**
-     * Site's name.
-     */
-    siteName?: string;
-
-    /**
-     * User's avatar.
-     */
-    avatar?: string;
-
-    /**
-     * Badge to display in the site.
-     */
-    badge?: number;
-
-    /**
-     * Site home ID.
-     */
-    siteHomeId?: number;
+    id: string; // Site ID.
+    siteUrl: string; // Site URL.
+    fullName?: string; // User's full name.
+    siteName?: string; // Site's name.
+    avatar?: string; // User's avatar.
+    badge?: number; // Badge to display in the site.
+    siteHomeId?: number; // Site home ID.
 };
 
 /**

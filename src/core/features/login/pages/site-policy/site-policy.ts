@@ -35,17 +35,17 @@ export class CoreLoginSitePolicyPage implements OnInit {
     showInline?: boolean;
     policyLoaded?: boolean;
     protected siteId?: string;
-    protected currentSite?: CoreSite;
+    protected currentSite!: CoreSite;
 
     /**
-     * Component initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
-
         this.siteId = CoreNavigator.getRouteParam('siteId');
-        this.currentSite = CoreSites.getCurrentSite();
 
-        if (!this.currentSite) {
+        try {
+            this.currentSite = CoreSites.getRequiredCurrentSite();
+        } catch {
             // Not logged in, stop.
             this.cancel();
 
@@ -86,7 +86,7 @@ export class CoreLoginSitePolicyPage implements OnInit {
 
             const extension = CoreMimetypeUtils.getExtension(mimeType, this.sitePolicy);
             this.showInline = extension == 'html' || extension == 'htm';
-        } catch (error) {
+        } catch {
             // Unable to get mime type, assume it's not supported.
             this.showInline = false;
         } finally {
@@ -118,7 +118,7 @@ export class CoreLoginSitePolicyPage implements OnInit {
 
             // Success accepting, go to site initial page.
             // Invalidate cache since some WS don't return error if site policy is not accepted.
-            await CoreUtils.ignoreErrors(this.currentSite!.invalidateWsCache());
+            await CoreUtils.ignoreErrors(this.currentSite.invalidateWsCache());
 
             await CoreNavigator.navigateToSiteHome();
         } catch (error) {
