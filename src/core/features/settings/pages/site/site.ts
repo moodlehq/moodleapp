@@ -22,7 +22,6 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../services/settings-helper';
 import { CoreApp } from '@services/app';
-import { CoreSiteInfo } from '@classes/site';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
@@ -43,9 +42,6 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
 
     isIOS: boolean;
     siteId: string;
-    siteInfo?: CoreSiteInfo;
-    siteName?: string;
-    siteUrl?: string;
     spaceUsage: CoreSiteSpaceUsage = {
         cacheEntries: 0,
         spaceUsage: 0,
@@ -60,11 +56,9 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
         this.siteId = CoreSites.getCurrentSiteId();
         this.handlers = new CoreSettingsSitePreferencesManager(CoreSitePreferencesPage);
 
-        this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, (data) => {
-            if (data.siteId == this.siteId) {
-                this.refreshData();
-            }
-        });
+        this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
+            this.refreshData();
+        }, this.siteId);
     }
 
     /**
@@ -93,11 +87,6 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
      */
     protected async fetchData(): Promise<void> {
         this.handlers.setItems(CoreSettingsDelegate.getHandlers());
-
-        const currentSite = CoreSites.getCurrentSite();
-        this.siteInfo = currentSite!.getInfo();
-        this.siteName = currentSite!.getSiteName();
-        this.siteUrl = currentSite!.getURL();
 
         this.spaceUsage = await CoreSettingsHelper.getSiteSpaceUsage(this.siteId);
     }
@@ -145,7 +134,9 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
      */
     async deleteSiteStorage(): Promise<void> {
         try {
-            this.spaceUsage = await CoreSettingsHelper.deleteSiteStorage(this.siteName || '', this.siteId);
+            const siteName = CoreSites.getRequiredCurrentSite().getSiteName();
+
+            this.spaceUsage = await CoreSettingsHelper.deleteSiteStorage(siteName, this.siteId);
         } catch {
             // Ignore cancelled confirmation modal.
         }

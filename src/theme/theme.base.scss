@@ -1039,6 +1039,10 @@ ion-item.item-multiple-inputs.only-links {
     }
 }
 
+a {
+    cursor: pointer;
+}
+
 // Case with ion-input + ion-select inside.
 ion-item.item-input.item-multiple-inputs {
     .flex-row {

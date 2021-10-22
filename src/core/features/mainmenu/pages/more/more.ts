@@ -17,7 +17,6 @@ import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSiteInfo } from '@classes/site';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../services/mainmenu-delegate';
 import { CoreMainMenu, CoreMainMenuCustomItem } from '../../services/mainmenu';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -28,7 +27,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { Translate } from '@singletons';
 
 /**
- * Page that displays the main menu of the app.
+ * Page that displays the more page of the app.
  */
 @Component({
     selector: 'page-core-mainmenu-more',
@@ -39,12 +38,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
 
     handlers?: CoreMainMenuHandlerData[];
     handlersLoaded = false;
-    siteInfo?: CoreSiteInfo;
-    siteName?: string;
     showScanQR: boolean;
-    showWeb?: boolean;
-    showHelp?: boolean;
-    docsUrl?: string;
     customItems?: CoreMainMenuCustomItem[];
 
     protected allHandlers?: CoreMainMenuHandlerData[];
@@ -53,14 +47,14 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
     protected updateSiteObserver: CoreEventObserver;
 
     constructor() {
+        this.langObserver = CoreEvents.on(CoreEvents.LANGUAGE_CHANGED, this.loadCustomMenuItems.bind(this));
 
-        this.langObserver = CoreEvents.on(CoreEvents.LANGUAGE_CHANGED, this.loadSiteInfo.bind(this));
-        this.updateSiteObserver = CoreEvents.on(
-            CoreEvents.SITE_UPDATED,
-            this.loadSiteInfo.bind(this),
-            CoreSites.getCurrentSiteId(),
-        );
-        this.loadSiteInfo();
+        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
+            this.customItems = await CoreMainMenu.getCustomMenuItems();
+        }, CoreSites.getCurrentSiteId());
+
+        this.loadCustomMenuItems();
+
         this.showScanQR = CoreUtils.canScanQR() &&
                 !CoreSites.getCurrentSite()?.isFeatureDisabled('CoreMainMenuDelegate_QrReader');
     }
@@ -109,18 +103,9 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
     }
 
     /**
-     * Load the site info required by the view.
+     * Load custom menu items.
      */
-    protected async loadSiteInfo(): Promise<void> {
-        const currentSite = CoreSites.getRequiredCurrentSite();
-
-        this.siteInfo = currentSite.getInfo();
-        this.siteName = currentSite.getSiteName();
-        this.showWeb = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_website');
-        this.showHelp = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_help');
-
-        this.docsUrl = await currentSite.getDocsUrl();
-
+    protected async loadCustomMenuItems(): Promise<void> {
         this.customItems = await CoreMainMenu.getCustomMenuItems();
     }
 

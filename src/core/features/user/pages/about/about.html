@@ -12,7 +12,7 @@
     </ion-refresher>
     <core-loading [hideUntil]="userLoaded">
         <ion-list *ngIf="user">
-            <ion-item class="ion-text-center core-user-profile-maininfo">
+            <ion-item class="ion-text-center core-user-profile-maininfo" lines="full">
                 <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true">
                         <ion-button
                             class="edit-avatar"
