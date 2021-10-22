@@ -18,7 +18,6 @@ import { Subscription } from 'rxjs';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSiteInfo } from '@classes/site';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../services/mainmenu-delegate';
 import { CoreMainMenu, CoreMainMenuCustomItem } from '../../services/mainmenu';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -39,19 +38,16 @@ import { Translate } from '@singletons';
 export class CoreMainMenuMorePage implements OnInit, OnDestroy {
 
     handlers?: CoreMainMenuHandlerData[];
-    allHandlers?: CoreMainMenuHandlerData[];
     handlersLoaded = false;
     siteInfo?: CoreSiteInfo;
     siteName?: string;
-    logoutLabel = 'core.mainmenu.changesite';
     showScanQR: boolean;
     showWeb?: boolean;
     showHelp?: boolean;
     docsUrl?: string;
     customItems?: CoreMainMenuCustomItem[];
-    siteUrl?: string;
-    loggedOut = false;
 
+    protected allHandlers?: CoreMainMenuHandlerData[];
     protected subscription!: Subscription;
     protected langObserver: CoreEventObserver;
     protected updateSiteObserver: CoreEventObserver;
@@ -70,7 +66,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
     }
 
     /**
-     * Initialize component.
+     * @inheritdoc
      */
     ngOnInit(): void {
         // Load the handlers.
@@ -84,7 +80,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         window.removeEventListener('resize', this.initHandlers.bind(this));
@@ -116,16 +112,10 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * Load the site info required by the view.
      */
     protected async loadSiteInfo(): Promise<void> {
-        const currentSite = CoreSites.getCurrentSite();
-
-        if (!currentSite) {
-            return;
-        }
+        const currentSite = CoreSites.getRequiredCurrentSite();
 
         this.siteInfo = currentSite.getInfo();
         this.siteName = currentSite.getSiteName();
-        this.siteUrl = currentSite.getURL();
-        this.logoutLabel = CoreLoginHelper.getLogoutLabel(currentSite);
         this.showWeb = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_website');
         this.showHelp = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_help');
 
@@ -152,13 +142,6 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      */
     openItem(item: CoreMainMenuCustomItem): void {
         CoreNavigator.navigateToSitePath('viewer/iframe', { params: { title: item.label, url: item.url } });
-    }
-
-    /**
-     * Open preferences.
-     */
-    openPreferences(): void {
-        CoreNavigator.navigateToSitePath('preferences');
     }
 
     /**
@@ -198,14 +181,6 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
                 displayCopyButton: true,
             });
         }
-    }
-
-    /**
-     * Logout the user.
-     */
-    logout(): void {
-        this.loggedOut = true;
-        CoreSites.logout();
     }
 
 }

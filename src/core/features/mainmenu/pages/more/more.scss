@@ -17,21 +17,3 @@ ion-item {
         color: var(--core-more-icon, inherit);
     }
 }
-
-@if ($core-more-hide-siteinfo) {
-    .core-moremenu-siteinfo {
-        display: none;
-    }
-}
-
-@if ($core-more-hide-sitename) {
-    .core-moremenu-sitename {
-        display: none;
-    }
-}
-
-@if ($core-more-hide-siteurl) {
-    .core-moremenu-siteurl {
-        display: none;
-    }
-}

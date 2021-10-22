@@ -19,10 +19,12 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuMorePage } from './more';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 @NgModule({
     imports: [
         CoreSharedModule,
+        CoreMainMenuComponentsModule,
     ],
     providers: [
         {

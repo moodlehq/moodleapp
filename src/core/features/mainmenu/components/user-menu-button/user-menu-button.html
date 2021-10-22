@@ -1,0 +1,9 @@
+<core-user-avatar
+    *ngIf="siteInfo"
+    [user]="siteInfo"
+    class="core-bar-button-image clickable"
+    [linkProfile]="false"
+    (ariaButtonClick)="openUserMenu($event)"
+    role="button"
+    tabindex="0"
+></core-user-avatar>

@@ -1,5 +1,6 @@
 {
     "address": "Address",
+    "account": "Account",
     "city": "City/town",
     "contact": "Contact",
     "country": "Country",
@@ -14,6 +15,7 @@
     "interests": "Interests",
     "lastname": "Surname",
     "manager": "Manager",
+    "myprofile": "My profile",
     "newpicture": "New picture",
     "noparticipants": "No participants found for this course",
     "participants": "Participants",

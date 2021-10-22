@@ -127,7 +127,15 @@ $core-login-loading-color-dark: $text-color-dark !default;
 $core-login-hide-forgot-password: false !default;
 $core-login-hide-need-help: false !default;
 
-// Configuration options for more page.
+// Configuration options for more page. (deprecated on 4.0)
 $core-more-hide-siteinfo: false !default;
 $core-more-hide-sitename: false !default;
 $core-more-hide-siteurl: false !default;
+
+// Configuration options for user page.
+$core-user-hide-siteinfo: $core-more-hide-siteinfo !default;
+$core-user-hide-sitename: $core-more-hide-sitename !default;
+$core-user-hide-siteurl: $core-more-hide-siteurl !default;
+
+
+

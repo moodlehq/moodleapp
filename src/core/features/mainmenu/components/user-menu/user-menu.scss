@@ -1,0 +1,38 @@
+@import "~theme/globals";
+
+:host {
+    .core-user-profile-maininfo::part(native) {
+        flex-direction: column;
+    }
+
+    ::ng-deep {
+        core-user-avatar {
+            display: block;
+            --core-avatar-size: var(--core-large-avatar-size);
+            height: calc(var(--core-avatar-size) + 16px);
+
+            img {
+                margin: 8px auto;
+            }
+        }
+    }
+}
+
+
+@if ($core-user-hide-siteinfo) {
+    .core-usermenu-siteinfo {
+        display: none;
+    }
+}
+
+@if ($core-user-hide-sitename) {
+    .core-usermenu-sitename {
+        display: none;
+    }
+}
+
+@if ($core-user-hide-siteurl) {
+    .core-usermenu-siteurl {
+        display: none;
+    }
+}
