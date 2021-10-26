@@ -295,19 +295,19 @@ export class CoreTimeUtilsProvider {
      * @return Readable date.
      */
     userDate(timestamp: number, format?: string, convert: boolean = true, fixDay: boolean = true, fixHour: boolean = true): string {
-        format = Translate.instant(format ? format : 'core.strftimedaydatetime');
+        format = Translate.instant(format ? format : 'core.strftimedaydatetime') as string;
 
         if (fixDay) {
-            format = format!.replace(/%d/g, '%e');
+            format = format.replace(/%d/g, '%e');
         }
 
         if (fixHour) {
-            format = format!.replace('%I', '%l');
+            format = format.replace('%I', '%l');
         }
 
         // Format could be in PHP format, convert it to moment.
         if (convert) {
-            format = this.convertPHPToMoment(format!);
+            format = this.convertPHPToMoment(format);
         }
 
         return moment(timestamp).format(format);
