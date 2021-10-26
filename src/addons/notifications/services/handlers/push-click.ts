@@ -127,10 +127,16 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
         await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList(notification.site));
 
         await CoreNavigator.navigateToSitePath(
-            AddonNotificationsMainMenuHandlerService.PAGE_NAME,
+            `${AddonNotificationsMainMenuHandlerService.PAGE_NAME}/list`,
             {
                 siteId: notification.site,
                 preferCurrentTab: false,
+                nextNavigation: {
+                    path: '../notification',
+                    options: {
+                        params: { notification },
+                    },
+                },
             },
         );
     }
@@ -139,7 +145,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
 
 export const AddonNotificationsPushClickHandler = makeSingleton(AddonNotificationsPushClickHandlerService);
 
-type AddonNotificationsNotificationData = CorePushNotificationsNotificationBasicData & {
+export type AddonNotificationsNotificationData = CorePushNotificationsNotificationBasicData & {
     contexturl?: string; // URL related to the notification.
     savedmessageid?: number; // Notification ID (optional).
     id?: number; // Notification ID (optional).

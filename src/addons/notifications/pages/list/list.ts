@@ -18,15 +18,17 @@ import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import {
     AddonNotifications,
-    AddonNotificationsNotificationMessageFormatted,
     AddonNotificationsProvider,
 } from '../../services/notifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
+import {
+    AddonNotificationsHelper,
+    AddonNotificationsNotificationToRender,
+} from '@addons/notifications/services/notifications-helper';
 
 /**
  * Page that displays the list of notifications.
@@ -38,7 +40,7 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 })
 export class AddonNotificationsListPage implements OnInit, OnDestroy {
 
-    notifications: FormattedNotification[] = [];
+    notifications: AddonNotificationsNotificationToRender[] = [];
     notificationsLoaded = false;
     canLoadMore = false;
     loadMoreError = false;
@@ -94,7 +96,8 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
         try {
             const result = await AddonNotifications.getNotifications(refresh ? [] : this.notifications);
 
-            const notifications = result.notifications.map((notification) => this.formatText(notification));
+            const notifications = result.notifications
+                .map((notification) => AddonNotificationsHelper.formatNotificationText(notification));
 
             if (refresh) {
                 this.notifications = notifications;
@@ -135,7 +138,7 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
      *
      * @param notifications Array of notification objects.
      */
-    protected async markNotificationsAsRead(notifications: FormattedNotification[]): Promise<void> {
+    protected async markNotificationsAsRead(notifications: AddonNotificationsNotificationToRender[]): Promise<void> {
         if (notifications.length > 0) {
             const promises = notifications.map(async (notification) => {
                 if (notification.read) {
@@ -195,33 +198,6 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Formats the text of a notification.
-     *
-     * @param notification The notification object.
-     */
-    protected formatText(notification: AddonNotificationsNotificationMessageFormatted): FormattedNotification {
-        const formattedNotification: FormattedNotification = notification;
-        formattedNotification.displayfullhtml = this.shouldDisplayFullHtml(notification);
-        formattedNotification.iconurl = formattedNotification.iconurl || undefined; // Make sure the property exists.
-
-        formattedNotification.mobiletext = formattedNotification.displayfullhtml ?
-            notification.fullmessagehtml :
-            CoreTextUtils.replaceNewLines((formattedNotification.mobiletext || '').replace(/-{4,}/ig, ''), '<br>');
-
-        return formattedNotification;
-    }
-
-    /**
-     * Check whether we should display full HTML of the notification.
-     *
-     * @param notification Notification.
-     * @return Whether to display full HTML.
-     */
-    protected shouldDisplayFullHtml(notification: FormattedNotification): boolean {
-        return notification.component == 'mod_forum' && notification.eventtype == 'digests';
-    }
-
-    /**
      * User entered the page.
      */
     ionViewDidEnter(): void {
@@ -253,8 +229,3 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
     }
 
 }
-
-type FormattedNotification = AddonNotificationsNotificationMessageFormatted & {
-    displayfullhtml?: boolean; // Whether to display the full HTML of the notification.
-    iconurl?: string;
-};

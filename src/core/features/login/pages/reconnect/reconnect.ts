@@ -209,7 +209,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
             // Go to the site initial page.
             this.page
-                ? await CoreNavigator.navigateToSitePath(this.page, { params: this.pageOptions })
+                ? await CoreNavigator.navigateToSitePath(this.page, this.pageOptions)
                 : await CoreNavigator.navigateToSiteHome();
         } catch (error) {
             CoreLoginHelper.treatUserTokenError(this.siteUrl, error, this.username, password);
