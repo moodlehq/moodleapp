@@ -27,6 +27,7 @@ import { CoreMainMenuUserMenuComponent } from '../user-menu/user-menu';
 @Component({
     selector: 'core-user-menu-button',
     templateUrl: 'user-menu-button.html',
+    styleUrls: ['user-menu-button.scss'],
 })
 export class CoreMainMenuUserButtonComponent implements OnInit {
 

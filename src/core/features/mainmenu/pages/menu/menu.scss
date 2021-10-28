@@ -71,7 +71,7 @@
 
             @include padding(var(--ion-safe-area-top), 0px, var(--ion-safe-area-bottom), var(--ion-safe-area-left));
 
-            ion-tab-button {
+            ion-tab-button, core-user-menu-button {
                 width: 100%;
                 min-height: var(--menutabbar-size);
                 flex: 0;
@@ -81,6 +81,12 @@
                 }
             }
         }
+    }
+
+    core-user-menu-button {
+        align-items: center;
+        display: flex;
+        justify-content: center;
     }
 
     .core-network-message {

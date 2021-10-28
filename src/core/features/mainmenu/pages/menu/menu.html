@@ -4,6 +4,8 @@
         [@menuShowHideAnimation]="tabsPlacement == 'side' ? '' : (isMainScreen ? 'visible' : 'hidden')">
         <ion-spinner *ngIf="!loaded" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
 
+        <core-user-menu-button *ngIf="loaded && tabsPlacement == 'side'"></core-user-menu-button>
+
         <ion-tab-button *ngFor="let tab of tabs" (keydown)="tabAction.keyDown($event)" (keyup)="tabAction.keyUp(tab.page, $event)"
             [hidden]="!loaded && tab.hide" [tab]="tab.page" [disabled]="tab.hide" layout="label-hide" class="{{tab.class}}"
             [selected]="tab.page === selectedTab" [tabindex]="selectedTab == tab.page ? 0 : -1" [attr.aria-controls]="tab.id">
