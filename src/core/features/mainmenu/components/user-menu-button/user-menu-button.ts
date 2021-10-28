@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreSiteInfo } from '@classes/site';
+import { IonRouterOutlet } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMainMenuUserMenuComponent } from '../user-menu/user-menu';
@@ -27,15 +28,22 @@ import { CoreMainMenuUserMenuComponent } from '../user-menu/user-menu';
     selector: 'core-user-menu-button',
     templateUrl: 'user-menu-button.html',
 })
-export class CoreMainMenuUserButtonComponent {
+export class CoreMainMenuUserButtonComponent implements OnInit {
 
     siteInfo?: CoreSiteInfo;
+    isMainScreen = false;
 
-    constructor() {
+    constructor(protected routerOutlet: IonRouterOutlet) {
         const currentSite = CoreSites.getRequiredCurrentSite();
 
-        // @TODO: Check if the page where I currently am is at level 0.
         this.siteInfo = currentSite.getInfo();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        this.isMainScreen = !this.routerOutlet.canGoBack();
     }
 
     /**
