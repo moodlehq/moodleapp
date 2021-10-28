@@ -428,7 +428,7 @@ export class CoreSitesProvider {
 
             const result = this.isValidMoodleVersion(info);
             if (result != CoreSitesProvider.VALID_VERSION) {
-                return this.treatInvalidAppVersion(result, siteUrl);
+                return this.treatInvalidAppVersion(result);
             }
 
             const siteId = this.createSiteID(info.siteurl, info.username);
@@ -492,7 +492,7 @@ export class CoreSitesProvider {
         } catch (error) {
             // Error invaliddevice is returned by Workplace server meaning the same as connecttoworkplaceapp.
             if (error && error.errorcode == 'invaliddevice') {
-                return this.treatInvalidAppVersion(CoreSitesProvider.WORKPLACE_APP, siteUrl);
+                return this.treatInvalidAppVersion(CoreSitesProvider.WORKPLACE_APP);
             }
 
             throw error;
@@ -503,14 +503,13 @@ export class CoreSitesProvider {
      * Having the result of isValidMoodleVersion, it treats the error message to be shown.
      *
      * @param result Result returned by isValidMoodleVersion function.
-     * @param siteUrl The site url.
      * @param siteId If site is already added, it will invalidate the token.
      * @return A promise rejected with the error info.
      */
-    protected async treatInvalidAppVersion(result: number, siteUrl: string, siteId?: string): Promise<never> {
+    protected async treatInvalidAppVersion(result: number, siteId?: string): Promise<never> {
         let errorCode: string | undefined;
         let errorKey: string | undefined;
-        let translateParams;
+        let translateParams = {};
 
         switch (result) {
             case CoreSitesProvider.MOODLE_APP:
@@ -528,7 +527,7 @@ export class CoreSitesProvider {
         }
 
         if (siteId) {
-            await this.setSiteLoggedOut(siteId, true);
+            await this.setSiteLoggedOut(siteId);
         }
 
         throw new CoreSiteError({
@@ -746,7 +745,7 @@ export class CoreSitesProvider {
                 if (siteId) {
                     // Logout the currentSite and expire the token.
                     this.logout();
-                    this.setSiteLoggedOut(siteId, true);
+                    this.setSiteLoggedOut(siteId);
                 }
             });
 
@@ -1191,7 +1190,7 @@ export class CoreSitesProvider {
         this.currentSite = undefined;
 
         if (siteConfig && siteConfig.tool_mobile_forcelogout == '1') {
-            promises.push(this.setSiteLoggedOut(siteId, true));
+            promises.push(this.setSiteLoggedOut(siteId));
         }
 
         promises.push(this.removeStoredCurrentSite());
@@ -1221,34 +1220,24 @@ export class CoreSitesProvider {
             this.logger.debug(`Restore session in site ${siteId}`);
 
             await this.loadSite(siteId);
-        } catch (err) {
+        } catch {
             // No current session.
         }
     }
 
     /**
-     * Mark or unmark a site as logged out so the user needs to authenticate again.
+     * Mark a site as logged out so the user needs to authenticate again.
      *
      * @param siteId ID of the site.
-     * @param loggedOut True to set the site as logged out, false otherwise.
      * @return Promise resolved when done.
      */
-    async setSiteLoggedOut(siteId: string, loggedOut: boolean): Promise<void> {
+    protected async setSiteLoggedOut(siteId: string): Promise<void> {
         const db = await this.appDB;
         const site = await this.getSite(siteId);
-        const newValues: Partial<SiteDBEntry> = {
-            loggedOut: loggedOut ? 1 : 0,
-        };
 
-        if (loggedOut) {
-            // Erase the token for security.
-            newValues.token = '';
-            site.token = '';
-        }
+        site.setLoggedOut(true);
 
-        site.setLoggedOut(loggedOut);
-
-        await db.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
+        await db.updateRecords(SITES_TABLE_NAME, { loggedOut: 1 }, { id: siteId });
     }
 
     /**
@@ -1315,7 +1304,7 @@ export class CoreSitesProvider {
             const versionCheck = this.isValidMoodleVersion(info);
             if (versionCheck != CoreSitesProvider.VALID_VERSION) {
                 // The Moodle version is not supported, reject.
-                return this.treatInvalidAppVersion(versionCheck, site.getURL(), site.getId());
+                return this.treatInvalidAppVersion(versionCheck, site.getId());
             }
 
             // Try to get the site config.
@@ -1344,7 +1333,7 @@ export class CoreSitesProvider {
             } finally {
                 CoreEvents.trigger(CoreEvents.SITE_UPDATED, info, siteId);
             }
-        } catch (error) {
+        } catch {
             // Ignore that we cannot fetch site info. Probably the auth token is invalid.
         }
     }
@@ -1417,7 +1406,7 @@ export class CoreSitesProvider {
             await Promise.all(promises);
 
             return ids;
-        } catch (error) {
+        } catch {
             // Shouldn't happen.
             return [];
         }
@@ -1475,8 +1464,10 @@ export class CoreSitesProvider {
      * @param siteId The site ID. If not defined, current site (if available).
      * @return Promise resolved with true if disabled.
      */
-    isFeatureDisabled(name: string, siteId?: string): Promise<boolean> {
-        return this.getSite(siteId).then((site) => site.isFeatureDisabled(name));
+    async isFeatureDisabled(name: string, siteId?: string): Promise<boolean> {
+        const site = await this.getSite(siteId);
+
+        return site.isFeatureDisabled(name);
     }
 
     /**
