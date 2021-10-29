@@ -26,7 +26,7 @@
                         <h2>
                             <core-format-text [text]="sites[0].siteName" clean="true" [siteId]="sites[0].id"></core-format-text>
                         </h2>
-                        <p><a [href]="sites[0].siteUrl" core-link autoLogin="no">{{ sites[0].siteUrl }}</a></p>
+                        <p><a [href]="sites[0].siteUrl" core-link autoLogin="no">{{ sites[0].siteUrlWithoutProtocol }}</a></p>
                     </ion-label>
                 </ion-item-divider>
 

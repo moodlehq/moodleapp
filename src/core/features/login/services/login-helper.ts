@@ -1357,25 +1357,23 @@ export class CoreLoginHelperProvider {
             const index = sites.findIndex((site) => site.id == currentSiteId);
 
             accountsList.currentSite = sites.splice(index, 1)[0];
-            siteUrl = accountsList.currentSite.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
-            accountsList.currentSite.siteUrl = siteUrl;
+            siteUrl = accountsList.currentSite.siteUrlWithoutProtocol;
         }
 
         const otherSites: Record<string, CoreSiteBasicInfo[]> = {};
 
         // Add site counter and classify sites.
         await Promise.all(sites.map(async (site) => {
-            site.siteUrl = site.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
             site.badge = await CoreUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
 
-            if (site.siteUrl == siteUrl) {
+            if (site.siteUrlWithoutProtocol == siteUrl) {
                 accountsList.sameSite.push(site);
             } else {
-                if (!otherSites[site.siteUrl]) {
-                    otherSites[site.siteUrl] = [];
+                if (!otherSites[site.siteUrlWithoutProtocol]) {
+                    otherSites[site.siteUrlWithoutProtocol] = [];
                 }
 
-                otherSites[site.siteUrl].push(site);
+                otherSites[site.siteUrlWithoutProtocol].push(site);
             }
 
             return;
@@ -1396,11 +1394,11 @@ export class CoreLoginHelperProvider {
     async deleteAccountFromList(accountsList: CoreAccountsList, site: CoreSiteBasicInfo): Promise<void> {
         await CoreSites.deleteSite(site.id);
 
-        const siteUrl = site.siteUrl;
+        const siteUrl = site.siteUrlWithoutProtocol;
         let index = 0;
 
         // Found on same site.
-        if (accountsList.sameSite.length > 0 && accountsList.sameSite[0].siteUrl == siteUrl) {
+        if (accountsList.sameSite.length > 0 && accountsList.sameSite[0].siteUrlWithoutProtocol == siteUrl) {
             index = accountsList.sameSite.findIndex((listedSite) => listedSite.id == site.id);
             if (index >= 0) {
                 accountsList.sameSite.splice(index, 1);
@@ -1410,7 +1408,8 @@ export class CoreLoginHelperProvider {
             return;
         }
 
-        const otherSiteIndex = accountsList.otherSites.findIndex((sites) => sites.length > 0 && sites[0].siteUrl == siteUrl);
+        const otherSiteIndex = accountsList.otherSites.findIndex((sites) =>
+            sites.length > 0 && sites[0].siteUrlWithoutProtocol == siteUrl);
         if (otherSiteIndex < 0) {
             // Site Url not found.
             return;

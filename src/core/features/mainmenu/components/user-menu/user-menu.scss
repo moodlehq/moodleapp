@@ -1,22 +1,6 @@
 @import "~theme/globals";
 
 :host {
-    .core-user-profile-maininfo::part(native) {
-        flex-direction: column;
-    }
-
-    ::ng-deep {
-        core-user-avatar {
-            display: block;
-            --core-avatar-size: var(--core-large-avatar-size);
-            height: calc(var(--core-avatar-size) + 16px);
-
-            img {
-                margin: 8px auto;
-            }
-        }
-    }
-
     .core-user-menu-preferences {
         --inner-border-width: 0;
         --border-width: 1px 0 0 0; 

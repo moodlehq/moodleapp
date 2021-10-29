@@ -25,7 +25,7 @@
                         <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>
                     </p>
                     <p class="ion-text-wrap">{{ site.fullName }}</p>
-                    <p>{{ site.siteUrl }}</p>
+                    <p>{{ site.siteUrlWithoutProtocol }}</p>
                 </ion-label>
                 <p *ngIf="site.spaceUsage !== undefined" slot="end">
                     {{ site.spaceUsage | coreBytesToSize }}

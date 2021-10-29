@@ -2255,6 +2255,7 @@
   "core.user.participants": "moodle",
   "core.user.phone1": "moodle",
   "core.user.phone2": "moodle",
+  "core.user.profile": "moodle",
   "core.user.roles": "moodle",
   "core.user.sendemail": "local_moodlemobileapp",
   "core.user.student": "moodle/defaultcoursestudent",

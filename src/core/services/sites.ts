@@ -1052,8 +1052,10 @@ export class CoreSitesProvider {
      * @param siteId The site ID. If not defined, current site (if available).
      * @return Promise resolved with site home ID.
      */
-    getSiteHomeId(siteId?: string): Promise<number> {
-        return this.getSite(siteId).then((site) => site.getSiteHomeId());
+    async getSiteHomeId(siteId?: string): Promise<number> {
+        const site = await this.getSite(siteId);
+
+        return site.getSiteHomeId();
     }
 
     /**
@@ -1074,6 +1076,7 @@ export class CoreSitesProvider {
                 const basicInfo: CoreSiteBasicInfo = {
                     id: site.id,
                     siteUrl: site.siteUrl,
+                    siteUrlWithoutProtocol: site.siteUrl.replace(/^https?:\/\//, '').toLowerCase(),
                     fullName: siteInfo?.fullname,
                     siteName: CoreConstants.CONFIG.sitename == '' ? siteInfo?.sitename: CoreConstants.CONFIG.sitename,
                     avatar: siteInfo?.userpictureurl,
@@ -1098,9 +1101,7 @@ export class CoreSitesProvider {
         // Sort sites by url and fullname.
         sites.sort((a, b) => {
             // First compare by site url without the protocol.
-            const urlA = a.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
-            const urlB = b.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
-            const compare = urlA.localeCompare(urlB);
+            const compare = a.siteUrlWithoutProtocol.localeCompare(b.siteUrlWithoutProtocol);
 
             if (compare !== 0) {
                 return compare;
@@ -1756,6 +1757,7 @@ export type CoreSiteUserTokenResponse = {
 export type CoreSiteBasicInfo = {
     id: string; // Site ID.
     siteUrl: string; // Site URL.
+    siteUrlWithoutProtocol: string; // Site URL without protocol.
     fullName?: string; // User's full name.
     siteName?: string; // Site's name.
     avatar?: string; // User's avatar.
