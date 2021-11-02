@@ -1439,8 +1439,6 @@
   "core.completion-alt-manual-y-override": "completion",
   "core.confirmcanceledit": "local_moodlemobileapp",
   "core.confirmdeletefile": "repository",
-  "core.confirmgotabroot": "local_moodlemobileapp",
-  "core.confirmgotabrootdefault": "local_moodlemobileapp",
   "core.confirmleaveunknownchanges": "local_moodlemobileapp",
   "core.confirmloss": "local_moodlemobileapp",
   "core.confirmopeninbrowser": "local_moodlemobileapp",

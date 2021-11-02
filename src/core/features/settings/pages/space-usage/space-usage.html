@@ -19,7 +19,7 @@
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <ion-list>
-            <ion-item *ngFor="let site of sites" [attr.aria-current]="site.id == currentSiteId ? 'page' : 'false'">
+            <ion-item *ngFor="let site of sites" [class.item-current]="site.id == currentSiteId">
                 <ion-label class="ion-text-wrap">
                     <p class="item-heading">
                         <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>

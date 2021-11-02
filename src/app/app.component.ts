@@ -297,6 +297,9 @@ export class AppComponent implements OnInit, AfterViewInit {
             });
         });
 
+        const isOnline = CoreApp.isOnline();
+        document.body.classList.toggle('core-offline', !isOnline);
+
         // Set StatusBar properties.
         CoreApp.setStatusBarColor();
     }

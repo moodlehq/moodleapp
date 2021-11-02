@@ -63,7 +63,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     ) {
 
         this.logger = CoreLogger.getInstance('CoreH5PIframeComponent');
-        this.site = CoreSites.getCurrentSite()!;
+        this.site = CoreSites.getRequiredCurrentSite();
         this.siteId = this.site.getId();
         this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.isOfflineDisabledInSite();
 

@@ -254,7 +254,7 @@ export class CoreTextUtilsProvider {
         // First, we use a regexpr.
         text = text.replace(/(<([^>]+)>)/ig, '');
         // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
-        text = this.convertToElement(text).textContent!;
+        text = this.convertToElement(text).textContent || '';
         // Recover or remove new lines.
         text = this.replaceNewLines(text, singleLine ? ' ' : '<br>');
 
@@ -370,7 +370,7 @@ export class CoreTextUtilsProvider {
      */
     decodeHTMLEntities(text: string): string {
         if (text) {
-            text = this.convertToElement(text).textContent!;
+            text = this.convertToElement(text).textContent || '';
         }
 
         return text;

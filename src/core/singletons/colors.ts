@@ -64,7 +64,12 @@ export class CoreColors {
         document.body.appendChild(d);
 
         // Color in RGB .
-        const rgba = getComputedStyle(d).color.match(/\d+/g)!.map((a) => parseInt(a, 10));
+        const matches = getComputedStyle(d).color.match(/\d+/g) || [];
+        if (matches.length == 0) {
+            return '';
+        }
+
+        const rgba = matches.map((a) => parseInt(a, 10));
 
         const hex = [0,1,2].map(
             (idx) => this.componentToHex(rgba[idx]),
@@ -72,7 +77,7 @@ export class CoreColors {
 
         document.body.removeChild(d);
 
-        return '#'+hex;
+        return '#' + hex;
     }
 
     /**

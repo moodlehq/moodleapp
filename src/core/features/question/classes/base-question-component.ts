@@ -97,6 +97,7 @@ export class CoreQuestionBaseComponent {
             const radioEl = radios[i];
             const option: AddonModQuizQuestionRadioOption = {
                 id: radioEl.id,
+                class: '',
                 name: radioEl.name,
                 value: radioEl.value,
                 checked: radioEl.checked,
@@ -621,6 +622,7 @@ export class CoreQuestionBaseComponent {
             const element = options[i];
             const option: AddonModQuizQuestionRadioOption = {
                 id: element.id,
+                class: '',
                 name: element.name,
                 value: element.value,
                 checked: element.checked,
@@ -643,6 +645,7 @@ export class CoreQuestionBaseComponent {
                 // Not found, use the old format.
                 label = questionEl.querySelector('label[for="' + option.id + '"]');
             }
+            option.class = label?.className || option.class;
 
             // Check that we were able to successfully extract options required data.
             if (!label || option.name === undefined || option.value === undefined) {
@@ -736,6 +739,7 @@ export type AddonModQuizQuestionSelectOption = {
 export type AddonModQuizQuestionRadioOption = {
     id: string;
     name: string;
+    class: string;
     value: string;
     disabled: boolean;
     checked: boolean;

@@ -47,8 +47,6 @@
     "completion-alt-manual-y-override": "Completed: {{$a.modname}} (set by {{$a.overrideuser}}). Select to mark as not complete.",
     "confirmcanceledit": "Are you sure you want to leave this page? All changes will be lost.",
     "confirmdeletefile": "Are you sure you want to delete this file?",
-    "confirmgotabroot": "Are you sure you want to go back to {{name}}?",
-    "confirmgotabrootdefault": "Are you sure you want to go to the initial page of the current tab?",
     "confirmleaveunknownchanges": "Are you sure you want to leave this page? If you have unsaved changes they will be lost.",
     "confirmloss": "Are you sure? All changes will be lost.",
     "confirmopeninbrowser": "Do you want to open it in a web browser?",

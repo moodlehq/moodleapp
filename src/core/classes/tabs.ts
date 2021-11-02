@@ -74,7 +74,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     protected tabsElement?: HTMLElement; // The tabs parent element. It's the element that will be "scrolled" to hide tabs.
     protected tabBarElement?: HTMLIonTabBarElement; // The top tab bar element.
     protected tabsShown = true;
-    protected resizeFunction?: EventListenerOrEventListenerObject;
+    protected resizeFunction: EventListenerOrEventListenerObject;
     protected isDestroyed = false;
     protected isCurrentView = true;
     protected shouldSlideToInitial = false; // Whether we need to slide to the initial slide because it's out of view.
@@ -97,6 +97,8 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         protected element: ElementRef,
     ) {
         this.backButtonFunction = this.backButtonClicked.bind(this);
+        this.resizeFunction = this.windowResized.bind(this);
+
         this.tabAction = new CoreTabsRoleTab(this);
     }
 
@@ -130,9 +132,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             await this.initializeTabs();
         }
 
-        this.resizeFunction = this.windowResized.bind(this);
-
-        window.addEventListener('resize', this.resizeFunction!);
+        window.addEventListener('resize', this.resizeFunction);
     }
 
     /**
@@ -162,17 +162,17 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
 
         if (showTabs) {
             // Smooth translation.
-            this.tabBarElement!.classList.remove('tabs-hidden');
+            this.tabBarElement.classList.remove('tabs-hidden');
             if (scroll === 0) {
-                this.tabBarElement!.style.height = '';
+                this.tabBarElement.style.height = '';
                 this.previousLastScroll = this.lastScroll;
                 this.lastScroll = 0;
             } else if (scroll !== undefined) {
-                this.tabBarElement!.style.height = (this.tabBarHeight - scroll) + 'px';
+                this.tabBarElement.style.height = (this.tabBarHeight - scroll) + 'px';
             }
         } else {
-            this.tabBarElement!.classList.add('tabs-hidden');
-            this.tabBarElement!.style.height = '';
+            this.tabBarElement.classList.add('tabs-hidden');
+            this.tabBarElement.style.height = '';
         }
 
         this.tabsShown = showTabs;

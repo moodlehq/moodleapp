@@ -9,9 +9,20 @@
     }
 
     @if ($core-always-show-main-menu) {
-        ion-tab-bar[hidden] {
-            display: flex !important;
+        ion-tabs.placement-bottom ion-tab-bar {
+            height: var(--menutabbar-size) !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
         }
+    } @else {
+        ion-tabs.tabshidden.placement-bottom ion-tab-bar {
+            pointer-events: none;
+    
+            ion-tab-button {
+                height: auto;
+            }
+        }
+
     }
 
     ion-tab-button ion-icon {
@@ -56,12 +67,15 @@
             @include border-end(var(--border));
             box-shadow: 3px 0 3px rgba(var(--drop-shadow));
             border-top: 0;
+            justify-content: flex-start;
 
             @include padding(var(--ion-safe-area-top), 0px, var(--ion-safe-area-bottom), var(--ion-safe-area-left));
 
             ion-tab-button {
                 width: 100%;
-                height: auto;
+                min-height: var(--menutabbar-size);
+                flex: 0;
+
                 ion-badge {
                     top: calc(50% - 20px);
                 }
