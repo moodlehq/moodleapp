@@ -1707,14 +1707,19 @@ export type AddonCalendarEventBase = {
     userid?: number; // Userid.
     repeatid?: number; // Repeatid.
     eventcount?: number; // Eventcount.
+    component?: string; // Component.
     modulename?: string; // Modulename.
+    activityname?: string; // Activityname.
+    activitystr?: string; // Activitystr.
     instance?: number; // Instance.
     eventtype: AddonCalendarEventType; // Eventtype.
     timestart: number; // Timestart.
     timeduration: number; // Timeduration.
     timesort: number; // Timesort.
+    timeusermidnight: number; // Timeusermidnight.
     visible: number; // Visible.
     timemodified: number; // Timemodified.
+    overdue?: boolean; // Overdue.
     icon: {
         key: string; // Key.
         component: string; // Component.

@@ -788,6 +788,13 @@ ion-select::part(icon) {
     opacity: 1;
 }
 
+ion-select-popover ion-item.core-select-option-title {
+    cursor: pointer;
+    ion-radio {
+        display: none;
+    }
+}
+
 ion-searchbar {
     .searchbar-search-icon.ios {
         top: 4px;

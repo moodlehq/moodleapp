@@ -17,11 +17,11 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreCourse } from '@features/course/services/course';
 import moment from 'moment';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { AddonCalendarEvent } from '@addons/calendar/services/calendar';
+import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 
 /**
  * Directive to render a list of events in course overview.
@@ -34,34 +34,37 @@ import { AddonCalendarEvent } from '@addons/calendar/services/calendar';
 export class AddonBlockTimelineEventsComponent implements OnChanges {
 
     @Input() events: AddonBlockTimelineEvent[] = []; // The events to render.
-    @Input() showCourse?: boolean | string; // Whether to show the course name.
+    @Input() course?: CoreEnrolledCourseDataWithOptions; // Whether to show the course name.
     @Input() from = 0; // Number of days from today to offset the events.
     @Input() to?: number; // Number of days from today to limit the events to. If not defined, no limit.
-    @Input() canLoadMore?: boolean; // Whether more events can be loaded.
-    @Output() loadMore: EventEmitter<void>; // Notify that more events should be loaded.
+    @Input() canLoadMore = false; // Whether more events can be loaded.
+    @Output() loadMore = new EventEmitter(); // Notify that more events should be loaded.
 
+    showCourse = false; // Whether to show the course name.
     empty = true;
     loadingMore = false;
     filteredEvents: AddonBlockTimelineEventFilteredEvent[] = [];
 
-    constructor() {
-        this.loadMore = new EventEmitter();
-    }
-
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     async ngOnChanges(changes: {[name: string]: SimpleChange}): Promise<void> {
-        this.showCourse = CoreUtils.isTrueOrOne(this.showCourse);
+        this.showCourse = !this.course;
 
         if (changes.events || changes.from || changes.to) {
             if (this.events && this.events.length > 0) {
                 const filteredEvents = await this.filterEventsByTime(this.from, this.to);
                 this.empty = !filteredEvents || filteredEvents.length <= 0;
 
+                const now = CoreTimeUtils.timestamp();
+
                 const eventsByDay: Record<number, AddonCalendarEvent[]> = {};
                 filteredEvents.forEach((event) => {
                     const dayTimestamp = CoreTimeUtils.getMidnightForTimestamp(event.timesort);
+
+                    // Already calculated on 4.0 onwards but this will be live.
+                    event.overdue = event.timesort < now;
+
                     if (eventsByDay[dayTimestamp]) {
                         eventsByDay[dayTimestamp].push(event);
                     } else {
@@ -69,15 +72,13 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
                     }
                 });
 
-                const todaysMidnight = CoreTimeUtils.getMidnightForTimestamp();
-                this.filteredEvents = [];
-                Object.keys(eventsByDay).forEach((key) => {
+                this.filteredEvents =  Object.keys(eventsByDay).map((key) => {
                     const dayTimestamp = parseInt(key);
-                    this.filteredEvents.push({
-                        color: dayTimestamp < todaysMidnight ? 'danger' : 'light',
+
+                    return {
                         dayTimestamp,
                         events: eventsByDay[dayTimestamp],
-                    });
+                    };
                 });
             } else {
                 this.empty = true;
@@ -94,7 +95,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
      */
     protected async filterEventsByTime(start: number, end?: number): Promise<AddonBlockTimelineEvent[]> {
         start = moment().add(start, 'days').startOf('day').unix();
-        end = typeof end != 'undefined' ? moment().add(end, 'days').startOf('day').unix() : end;
+        end = end !== undefined ? moment().add(end, 'days').startOf('day').unix() : end;
 
         return await Promise.all(this.events.filter((event) => {
             if (end) {
@@ -122,12 +123,12 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
     /**
      * Action clicked.
      *
-     * @param e Click event.
+     * @param event Click event.
      * @param url Url of the action.
      */
-    async action(e: Event, url: string): Promise<void> {
-        e.preventDefault();
-        e.stopPropagation();
+    async action(event: Event, url: string): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
 
         // Fix URL format.
         url = CoreTextUtils.decodeHTMLEntities(url);
@@ -137,7 +138,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
         try {
             const treated = await CoreContentLinksHelper.handleLink(url);
             if (!treated) {
-                return CoreSites.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(url);
+                return CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLoginIfSameSite(url);
             }
         } finally {
             modal.dismiss();
@@ -154,5 +155,4 @@ type AddonBlockTimelineEvent = AddonCalendarEvent & {
 type AddonBlockTimelineEventFilteredEvent = {
     events: AddonBlockTimelineEvent[];
     dayTimestamp: number;
-    color: string;
 };
