@@ -36,7 +36,7 @@ import {
 @Component({
     selector: 'page-addon-notifications-list',
     templateUrl: 'list.html',
-    styleUrls: ['list.scss'],
+    styleUrls: ['../../notifications.scss'],
 })
 export class AddonNotificationsListPage implements OnInit, OnDestroy {
 
