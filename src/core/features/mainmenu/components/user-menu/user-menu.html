@@ -45,6 +45,14 @@
             <ion-label>
                 <p class="item-heading">{{ handler.title | translate }}</p>
             </ion-label>
+            <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
+                {{handler.badge}}
+            </ion-badge>
+            <span *ngIf="handler.showBadge && handler.badge && handler.badgeA11yText" class="sr-only">
+                {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+            </span>
+            <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading" [attr.aria-label]="'core.loading' | translate">
+            </ion-spinner>
         </ion-item>
 
         <ion-item button (click)="openPreferences($event)" [attr.aria-label]="'core.settings.preferences' | translate" detail="true"

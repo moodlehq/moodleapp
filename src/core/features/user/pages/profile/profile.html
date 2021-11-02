@@ -17,7 +17,9 @@
                 </core-user-avatar>
                 <ion-label>
                     <h2>{{ user.fullname }}</h2>
-                    <p *ngIf="user.address"><ion-icon name="fas-map-marker-alt" [attr.aria-hidden]="true"></ion-icon> {{ user.address }}</p>
+                    <p *ngIf="user.address">
+                        <ion-icon name="fas-map-marker-alt" [attr.aria-hidden]="true"></ion-icon> {{ user.address }}
+                    </p>
                     <p *ngIf="rolesFormatted" class="ion-text-wrap">
                         <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
                         {{ rolesFormatted }}
@@ -51,7 +53,9 @@
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-center core-loading-handlers" *ngIf="isLoadingHandlers">
-                <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
+                <ion-label>
+                    <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                </ion-label>
             </ion-item>
 
             <ion-item button *ngFor="let handler of newPageHandlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
@@ -61,6 +65,14 @@
                 <ion-label>
                     <p class="item-heading">{{ handler.title | translate }}</p>
                 </ion-label>
+                <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
+                    {{handler.badge}}
+                </ion-badge>
+                <span *ngIf="handler.showBadge && handler.badge && handler.badgeA11yText" class="sr-only">
+                    {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+                </span>
+                <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading" [attr.aria-label]="'core.loading' | translate">
+                </ion-spinner>
             </ion-item>
 
             <ion-item *ngIf="actionHandlers && actionHandlers.length">
@@ -76,8 +88,7 @@
             </ion-item>
         </ion-list>
 
-        <core-empty-box *ngIf="!user && !isDeleted && isEnrolled" icon="far-user"
-            [message]=" 'core.user.detailsnotavailable' | translate">
+        <core-empty-box *ngIf="!user && !isDeleted && isEnrolled" icon="far-user" [message]=" 'core.user.detailsnotavailable' | translate">
         </core-empty-box>
         <core-empty-box *ngIf="isDeleted" icon="far-user" [message]="'core.userdeleted' | translate"></core-empty-box>
         <core-empty-box *ngIf="!isEnrolled" icon="far-user" [message]="'core.notenrolledprofile' | translate"></core-empty-box>
