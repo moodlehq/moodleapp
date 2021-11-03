@@ -63,8 +63,3 @@ Feature: Attempt a quiz in app
     And I press "Submit all and finish" in the app
     And I press "OK" near "Once you submit" in the app
     And I should find "Review" in the app
-    And I press "Home" in the app
-    And I should find "Are you sure" in the app
-    And I should find "OK" in the app
-    And I press "OK" in the app
-    And I should find "Acceptance test site" in the app

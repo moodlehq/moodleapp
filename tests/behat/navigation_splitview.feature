@@ -24,12 +24,12 @@ Feature: It navigates properly in pages with a split-view component.
 
   Scenario: Navigate in grades tab on mobile
 
-    # Open more tab
+    # Open accounts menu
     Given I enter the app
     And I log in as "student1"
-    And I press the main menu button in the app
+    And I press the accounts menu button in the app
 
-    # Open grades tab
+    # Open grades page
     When I press "Grades" in the app
     Then the header should be "Grades" in the app
     And I should find "Course 1" in the app
@@ -51,7 +51,7 @@ Feature: It navigates properly in pages with a split-view component.
     Then the header should be "Grades" in the app
     And I should find "Grade category C1" in the app
 
-    # Go back to grades tab
+    # Go back to grades page
     When I press the back button in the app
     Then the header should be "Grades" in the app
     And I should find "Course 1" in the app
@@ -73,26 +73,27 @@ Feature: It navigates properly in pages with a split-view component.
     Then the header should be "Grades" in the app
     And I should find "Grade category C2" in the app
 
-    # Go back to grades tab
+    # Go back to grades page
     When I press the back button in the app
     Then the header should be "Grades" in the app
     And I should find "Course 1" in the app
     And I should find "Course 2" in the app
 
-    # Go back to more tab
+    # Go back to main page
     When I press the back button in the app
-    Then I should find "Grades" in the app
-    And I should find "App settings" in the app
+    Then I should find "Acceptance test site" in the app
+    And I should find "Account" in the app
     But I should not find "Back" in the app
 
   Scenario: Navigate in grades tab on tablet
 
-    # Open more tab
+    # Open accounts menu
     Given I enter the app
     And I change viewport size to "1200x640"
     And I log in as "student1"
+    And I press the accounts menu button in the app
 
-    # Open grades tab
+    # Open grades page
     When I press "Grades" in the app
     Then the header should be "Grades" in the app
     And I should find "Course 1" in the app
@@ -106,7 +107,7 @@ Feature: It navigates properly in pages with a split-view component.
     And I should find "20" near "Range" in the app
     And I should find "40" near "Range" in the app
 
-    # Go back to grades tab
+    # Go back to grades page
     When I press the back button in the app
     Then the header should be "Grades" in the app
     And I should find "Course 1" in the app
@@ -125,9 +126,15 @@ Feature: It navigates properly in pages with a split-view component.
     And I should find "60" near "Range" in the app
     And I should find "80" near "Range" in the app
 
-    # Go back to grades tab
+    # Go back to grades page
     When I press the back button in the app
     Then the header should be "Grades" in the app
     And I should find "Course 1" in the app
     And I should find "Course 2" in the app
+    And I should find "Back" in the app
+
+    # Go back to main page
+    When I press the back button in the app
+    Then I should find "Acceptance test site" in the app
+    And I should find "Account" in the app
     But I should not find "Back" in the app

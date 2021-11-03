@@ -17,7 +17,7 @@ Feature: Test basic usage of login in app
       | student2 | C1     | student        |
       | teacher1 | C1     | editingteacher |
 
-  Scenario: Add a new site in the app & Site name in displayed when adding a new site
+  Scenario: Add a new account in the app & Site name in displayed when adding a new account
     When I enter the app
     And I press the back button in the app
     And I set the field "Your site" to "$WWWROOT" in the app
@@ -30,28 +30,40 @@ Feature: Test basic usage of login in app
     Then I should find "Acceptance test site" in the app
     But I should not find "Log in" in the app
 
-  Scenario: Add a non existing site
+  Scenario: Add a non existing account
     When I enter the app
     And I log in as "student1"
-    And I press the main menu button in the app
-    And I press "Change site" in the app
+    And I press the accounts menu button in the app
+    And I press "Log out" in the app
     And I wait the app to restart
-    And I press "Add" in the app
+    And I press "Add a new account" in the app
     And I set the field "Your site" to "Wrong Site Address" in the app
     And I press enter in the app
     Then I should find "Cannot connect" in the app
     And I should find "Wrong Site Address" in the app
 
-  Scenario: Delete a site
+  Scenario: Add a non existing account from accounts switcher
     When I enter the app
     And I log in as "student1"
-    And I press the main menu button in the app
-    And I press "Change site" in the app
+    And I press the accounts menu button in the app
+    And I press "Switch account" in the app
+    And I press "Add a new account" in the app
+    And I wait the app to restart
+    And I set the field "Your site" to "Wrong Site Address" in the app
+    And I press enter in the app
+    Then I should find "Cannot connect" in the app
+    And I should find "Wrong Site Address" in the app
+
+  Scenario: Delete an account
+    When I enter the app
+    And I log in as "student1"
+    And I press the accounts menu button in the app
+    And I press "Log out" in the app
     And I wait the app to restart
     Then I should find "Acceptance test site" in the app
-    And I press "Delete" in the app
-    And I press "Delete" near "Acceptance test site" in the app
-    And I press "Delete" near "Are you sure you want to delete the site Acceptance test site?" in the app
+    And I press "Edit accounts list" in the app
+    And I press "Remove account" near "Acceptance test site" in the app
+    And I press "Delete" near "Are you sure you want to remove the account on Acceptance test site?" in the app
     Then I should find "Connect to Moodle" in the app
     But I should not find "Acceptance test site" in the app
 
