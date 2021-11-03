@@ -514,9 +514,12 @@
                     break;
                 case 'main menu':
                     foundButton = findElementsBasedOnText({
-                        text: 'more',
+                        text: 'More',
                         near: { text: 'Notifications' },
                     })[0];
+                    break;
+                case 'accounts menu' :
+                    foundButton = findElementsBasedOnText({ text: 'Account' })[0];
                     break;
                 case 'page menu':
                     foundButton = findElementsBasedOnText({ text: 'Display options' })[0];
