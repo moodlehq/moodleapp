@@ -550,8 +550,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         }
 
         const elements = Array.from(this.editorElement.querySelectorAll('img'));
+        const site = CoreSites.getCurrentSite();
         const siteId = CoreSites.getCurrentSiteId();
-        const canDownloadFiles = CoreSites.getCurrentSite()!.canDownloadFiles();
+        const canDownloadFiles = !site || site.canDownloadFiles();
         elements.forEach(async (el) => {
             if (el.getAttribute('data-original-src')) {
                 // Already treated.
@@ -560,8 +561,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
             const url = el.src;
 
-            if (!url || !CoreUrlUtils.isDownloadableUrl(url) ||
-                    (!canDownloadFiles && CoreUrlUtils.isPluginFileUrl(url))) {
+            if (!url || !CoreUrlUtils.isDownloadableUrl(url) || (!canDownloadFiles && site?.isSitePluginFileUrl(url))) {
                 // Nothing to treat.
                 return;
             }
