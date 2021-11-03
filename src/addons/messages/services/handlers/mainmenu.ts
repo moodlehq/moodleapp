@@ -23,11 +23,11 @@ import { CoreSites } from '@services/sites';
 import { CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
 import {
-    CorePushNotifications,
     CorePushNotificationsNotificationBasicData,
 } from '@features/pushnotifications/services/pushnotifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { makeSingleton } from '@singletons';
+import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
 
 /**
  * Handler to inject an option into main menu.
@@ -90,7 +90,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
         );
 
         // Register Badge counter.
-        CorePushNotificationsDelegate.registerCounterHandler('AddonMessages');
+        CorePushNotificationsDelegate.registerCounterHandler(AddonMessagesMainMenuHandlerService.name);
     }
 
     /**
@@ -162,7 +162,14 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
         }
 
         // Update push notifications badge.
-        CorePushNotifications.updateAddonCounter('AddonMessages', totalCount, siteId);
+        CoreEvents.trigger(
+            CoreMainMenuProvider.MAIN_MENU_HANDLER_BADGE_UPDATED,
+            {
+                handler: AddonMessagesMainMenuHandlerService.name,
+                value: totalCount,
+            },
+            siteId,
+        );
     }
 
     /**
