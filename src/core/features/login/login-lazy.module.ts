@@ -16,9 +16,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreLoginSiteHelpComponent } from './components/site-help/site-help';
-import { CoreLoginSiteOnboardingComponent } from './components/site-onboarding/site-onboarding';
 import { CoreLoginHasSitesGuard } from './guards/has-sites';
+import { CoreLoginComponentsModule } from './components/components.module';
 
 const routes: Routes = [
     {
@@ -67,11 +66,8 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreSharedModule,
+        CoreLoginComponentsModule,
         RouterModule.forChild(routes),
-    ],
-    declarations: [
-        CoreLoginSiteHelpComponent,
-        CoreLoginSiteOnboardingComponent,
     ],
 })
 export class CoreLoginLazyModule {}

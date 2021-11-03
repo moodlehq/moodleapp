@@ -1,0 +1,26 @@
+@import "~theme/globals";
+
+:host {
+    .core-user-menu-preferences {
+        --inner-border-width: 0;
+        --border-width: 1px 0 0 0; 
+    }
+}
+
+@if ($core-user-hide-siteinfo) {
+    .core-usermenu-siteinfo {
+        display: none;
+    }
+}
+
+@if ($core-user-hide-sitename) {
+    .core-usermenu-sitename {
+        display: none;
+    }
+}
+
+@if ($core-user-hide-siteurl) {
+    .core-usermenu-siteurl {
+        display: none;
+    }
+}

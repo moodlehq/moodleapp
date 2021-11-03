@@ -35,7 +35,9 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
-    imports: [AppRoutingModule.forChild(appRoutes)],
+    imports: [
+        AppRoutingModule.forChild(appRoutes),
+    ],
     providers: [
         {
             provide: APP_INITIALIZER,

@@ -1677,13 +1677,13 @@ export class CoreDomUtilsProvider {
         modalOptions: ModalOptions,
     ): Promise<T | undefined> {
 
-        modalOptions = Object.assign(modalOptions, {
+        modalOptions = Object.assign({
             cssClass: 'core-modal-lateral',
             showBackdrop: true,
             backdropDismiss: true,
             enterAnimation: CoreModalLateralTransitionEnter,
             leaveAnimation: CoreModalLateralTransitionLeave,
-        });
+        }, modalOptions);
 
         return await this.openModal<T>(modalOptions);
     }

@@ -112,6 +112,26 @@ export interface CoreUserProfileHandlerData {
     spinner?: boolean;
 
     /**
+     * If the handler has badge to show or not. Only for TYPE_NEW_PAGE.
+     */
+    showBadge?: boolean;
+
+    /**
+     * Text to display on the badge. Only used if showBadge is true and only for TYPE_NEW_PAGE.
+     */
+    badge?: string;
+
+    /**
+     * Accessibility text to add on the badge. Only used if showBadge is true and only for TYPE_NEW_PAGE.
+     */
+    badgeA11yText?: string;
+
+    /**
+     * If true, the badge number is being loaded. Only used if showBadge is true and only for TYPE_NEW_PAGE.
+     */
+    loading?: boolean;
+
+    /**
      * Action to do when clicked.
      *
      * @param event Click event.

@@ -20,16 +20,17 @@ import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/logi
 import { CoreNavigator } from '@services/navigator';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreAnimations } from '@components/animations';
+import { ModalController } from '@singletons';
 
 /**
- * Page that displays a "splash screen" while the app is being initialized.
+ * Component that displays a "splash screen" while the app is being initialized.
  */
 @Component({
-    selector: 'page-core-login-sites',
+    selector: 'core-login-sites',
     templateUrl: 'sites.html',
     animations: [CoreAnimations.SLIDE_IN_OUT, CoreAnimations.SHOW_HIDE],
 })
-export class CoreLoginSitesPage implements OnInit {
+export class CoreLoginSitesComponent implements OnInit {
 
     accountsList: CoreAccountsList = {
         sameSite: [],
@@ -38,29 +39,30 @@ export class CoreLoginSitesPage implements OnInit {
     };
 
     showDelete = false;
+    currentSiteId: string;
     loaded = false;
+
+    constructor() {
+        this.currentSiteId = CoreSites.getRequiredCurrentSite().getId();
+    }
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        if (CoreNavigator.getRouteBooleanParam('openAddSite')) {
-            this.add();
-        }
-
-        this.accountsList = await CoreLoginHelper.getAccountsList();
+        this.accountsList = await CoreLoginHelper.getAccountsList(this.currentSiteId);
         this.loaded = true;
-
-        if (this.accountsList.count == 0) {
-            this.add();
-        }
     }
 
     /**
      * Go to the page to add a site.
+     *
+     * @param event Click event.
      */
-    add(): void {
-        CoreLoginHelper.goToAddSite(false, true);
+    async add(event: Event): Promise<void> {
+        await this.close(event, true);
+
+        await CoreLoginHelper.goToAddSite(true, true);
     }
 
     /**
@@ -79,7 +81,7 @@ export class CoreLoginSitesPage implements OnInit {
 
         try {
             await CoreDomUtils.showDeleteConfirm('core.login.confirmdeletesite', { sitename: siteName });
-        } catch (error) {
+        } catch {
             // User cancelled, stop.
             return;
         }
@@ -88,11 +90,6 @@ export class CoreLoginSitesPage implements OnInit {
             await CoreLoginHelper.deleteAccountFromList(this.accountsList, site);
 
             this.showDelete = false;
-
-            // If there are no sites left, go to add site.
-            if (this.accountsList.count == 0) {
-                CoreLoginHelper.goToAddSite(true, true);
-            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.login.errordeletesite', true);
         }
@@ -106,24 +103,10 @@ export class CoreLoginSitesPage implements OnInit {
      * @return Promise resolved when done.
      */
     async login(event: Event, siteId: string): Promise<void> {
-        event.preventDefault();
-        event.stopPropagation();
+        await this.close(event, true);
 
-        const modal = await CoreDomUtils.showModalLoading();
-
-        try {
-            const loggedIn = await CoreSites.loadSite(siteId);
-
-            if (loggedIn) {
-                await CoreNavigator.navigateToSiteHome();
-
-                return;
-            }
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading site.');
-        } finally {
-            modal.dismiss();
-        }
+        // This navigation will logout and navigate to the site home.
+        await CoreNavigator.navigateToSiteHome({ preferCurrentTab: false , siteId });
     }
 
     /**
@@ -134,10 +117,15 @@ export class CoreLoginSitesPage implements OnInit {
     }
 
     /**
-     * Open settings page.
+     * Close modal.
+     *
+     * @param event Click event.
      */
-    openSettings(): void {
-        CoreNavigator.navigate('/settings');
+    async close(event: Event, closeAll = false): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
+        await ModalController.dismiss(closeAll);
     }
 
 }

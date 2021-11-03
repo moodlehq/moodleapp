@@ -13,31 +13,23 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonCalendarComponentsModule } from '../../components/components.module';
-
-import { AddonCalendarIndexPage } from './index.page';
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
-
-const routes: Routes = [
-    {
-        path: '',
-        component: AddonCalendarIndexPage,
-    },
-];
+import { CoreMainMenuUserButtonComponent } from './user-menu-button/user-menu-button';
+import { CoreMainMenuUserMenuComponent } from './user-menu/user-menu';
+import { CoreLoginComponentsModule } from '@features/login/components/components.module';
 
 @NgModule({
-    imports: [
-        RouterModule.forChild(routes),
-        CoreSharedModule,
-        AddonCalendarComponentsModule,
-        CoreMainMenuComponentsModule,
-    ],
     declarations: [
-        AddonCalendarIndexPage,
+        CoreMainMenuUserButtonComponent,
+        CoreMainMenuUserMenuComponent,
     ],
-    exports: [RouterModule],
+    imports: [
+        CoreSharedModule,
+        CoreLoginComponentsModule,
+    ],
+    exports: [
+        CoreMainMenuUserButtonComponent,
+        CoreMainMenuUserMenuComponent,
+    ],
 })
-export class AddonCalendarIndexPageModule {}
+export class CoreMainMenuComponentsModule {}

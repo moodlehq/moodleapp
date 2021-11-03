@@ -19,6 +19,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 import { CoreTagSearchPage } from './search.page';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 const routes: Routes = [
     {
@@ -34,6 +35,7 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         CoreSearchComponentsModule,
+        CoreMainMenuComponentsModule,
     ],
     exports: [RouterModule],
 })

@@ -22,6 +22,7 @@ import {
     CoreUserProfileHandlerData,
 } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 
@@ -30,6 +31,8 @@ import { makeSingleton } from '@singletons';
  */
 @Injectable({ providedIn: 'root' })
 export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
+
+    static readonly PAGE_NAME = 'grades';
 
     name = 'CoreGrades:viewGrades';
     priority = 400;
@@ -47,32 +50,54 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
      * @inheritdoc
      */
     async isEnabledForCourse(courseId?: number): Promise<boolean> {
-        return CoreUtils.ignoreErrors(CoreGrades.isPluginEnabledForCourse(courseId), false);
+        if (courseId) {
+            return CoreUtils.ignoreErrors(CoreGrades.isPluginEnabledForCourse(courseId), false);
+        } else {
+            return CoreGrades.isCourseGradesEnabled();
+        }
     }
 
     /**
      * @inheritdoc
      */
     async isEnabledForUser(user: CoreUserProfile, courseId?: number): Promise<boolean> {
-        return CoreUtils.promiseWorks(CoreGrades.getCourseGradesTable(courseId!, user.id));
+        if (courseId) {
+            return CoreUtils.promiseWorks(CoreGrades.getCourseGradesTable(courseId, user.id));
+        }
+
+        // All course grades only available for the current user.
+        return user.id == CoreSites.getCurrentSiteUserId();
     }
 
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreUserProfileHandlerData {
-        return {
-            icon: 'fas-chart-bar',
-            title: 'core.grades.grades',
-            class: 'core-grades-user-handler',
-            action: (event, user, courseId): void => {
-                event.preventDefault();
-                event.stopPropagation();
-                CoreNavigator.navigateToSitePath(`/user-grades/${courseId}`, {
-                    params: { userId: user.id },
-                });
-            },
-        };
+    getDisplayData(user: CoreUserProfile, courseId?: number): CoreUserProfileHandlerData {
+        if (courseId) {
+            return {
+                icon: 'fas-chart-bar',
+                title: 'core.grades.grades',
+                class: 'core-grades-user-handler',
+                action: (event, user, courseId): void => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    CoreNavigator.navigateToSitePath(`/user-grades/${courseId}`, {
+                        params: { userId: user.id },
+                    });
+                },
+            };
+        } else {
+            return {
+                icon: 'fas-chart-bar',
+                title: 'core.grades.grades',
+                class: 'core-grades-coursesgrades-handler',
+                action: (event): void => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    CoreNavigator.navigateToSitePath(CoreGradesUserHandlerService.PAGE_NAME);
+                },
+            };
+        }
     }
 
 }

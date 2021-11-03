@@ -428,7 +428,7 @@ export class CoreSitesProvider {
 
             const result = this.isValidMoodleVersion(info);
             if (result != CoreSitesProvider.VALID_VERSION) {
-                return this.treatInvalidAppVersion(result, siteUrl);
+                return this.treatInvalidAppVersion(result);
             }
 
             const siteId = this.createSiteID(info.siteurl, info.username);
@@ -492,7 +492,7 @@ export class CoreSitesProvider {
         } catch (error) {
             // Error invaliddevice is returned by Workplace server meaning the same as connecttoworkplaceapp.
             if (error && error.errorcode == 'invaliddevice') {
-                return this.treatInvalidAppVersion(CoreSitesProvider.WORKPLACE_APP, siteUrl);
+                return this.treatInvalidAppVersion(CoreSitesProvider.WORKPLACE_APP);
             }
 
             throw error;
@@ -503,14 +503,13 @@ export class CoreSitesProvider {
      * Having the result of isValidMoodleVersion, it treats the error message to be shown.
      *
      * @param result Result returned by isValidMoodleVersion function.
-     * @param siteUrl The site url.
      * @param siteId If site is already added, it will invalidate the token.
      * @return A promise rejected with the error info.
      */
-    protected async treatInvalidAppVersion(result: number, siteUrl: string, siteId?: string): Promise<never> {
+    protected async treatInvalidAppVersion(result: number, siteId?: string): Promise<never> {
         let errorCode: string | undefined;
         let errorKey: string | undefined;
-        let translateParams;
+        let translateParams = {};
 
         switch (result) {
             case CoreSitesProvider.MOODLE_APP:
@@ -528,7 +527,7 @@ export class CoreSitesProvider {
         }
 
         if (siteId) {
-            await this.setSiteLoggedOut(siteId, true);
+            await this.setSiteLoggedOut(siteId);
         }
 
         throw new CoreSiteError({
@@ -746,7 +745,7 @@ export class CoreSitesProvider {
                 if (siteId) {
                     // Logout the currentSite and expire the token.
                     this.logout();
-                    this.setSiteLoggedOut(siteId, true);
+                    this.setSiteLoggedOut(siteId);
                 }
             });
 
@@ -1053,8 +1052,10 @@ export class CoreSitesProvider {
      * @param siteId The site ID. If not defined, current site (if available).
      * @return Promise resolved with site home ID.
      */
-    getSiteHomeId(siteId?: string): Promise<number> {
-        return this.getSite(siteId).then((site) => site.getSiteHomeId());
+    async getSiteHomeId(siteId?: string): Promise<number> {
+        const site = await this.getSite(siteId);
+
+        return site.getSiteHomeId();
     }
 
     /**
@@ -1075,6 +1076,7 @@ export class CoreSitesProvider {
                 const basicInfo: CoreSiteBasicInfo = {
                     id: site.id,
                     siteUrl: site.siteUrl,
+                    siteUrlWithoutProtocol: site.siteUrl.replace(/^https?:\/\//, '').toLowerCase(),
                     fullName: siteInfo?.fullname,
                     siteName: CoreConstants.CONFIG.sitename == '' ? siteInfo?.sitename: CoreConstants.CONFIG.sitename,
                     avatar: siteInfo?.userpictureurl,
@@ -1096,12 +1098,10 @@ export class CoreSitesProvider {
     async getSortedSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
         const sites = await this.getSites(ids);
 
-        // Sort sites by url and ful lname.
+        // Sort sites by url and fullname.
         sites.sort((a, b) => {
             // First compare by site url without the protocol.
-            const urlA = a.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
-            const urlB = b.siteUrl.replace(/^https?:\/\//, '').toLowerCase();
-            const compare = urlA.localeCompare(urlB);
+            const compare = a.siteUrlWithoutProtocol.localeCompare(b.siteUrlWithoutProtocol);
 
             if (compare !== 0) {
                 return compare;
@@ -1191,7 +1191,7 @@ export class CoreSitesProvider {
         this.currentSite = undefined;
 
         if (siteConfig && siteConfig.tool_mobile_forcelogout == '1') {
-            promises.push(this.setSiteLoggedOut(siteId, true));
+            promises.push(this.setSiteLoggedOut(siteId));
         }
 
         promises.push(this.removeStoredCurrentSite());
@@ -1221,34 +1221,24 @@ export class CoreSitesProvider {
             this.logger.debug(`Restore session in site ${siteId}`);
 
             await this.loadSite(siteId);
-        } catch (err) {
+        } catch {
             // No current session.
         }
     }
 
     /**
-     * Mark or unmark a site as logged out so the user needs to authenticate again.
+     * Mark a site as logged out so the user needs to authenticate again.
      *
      * @param siteId ID of the site.
-     * @param loggedOut True to set the site as logged out, false otherwise.
      * @return Promise resolved when done.
      */
-    async setSiteLoggedOut(siteId: string, loggedOut: boolean): Promise<void> {
+    protected async setSiteLoggedOut(siteId: string): Promise<void> {
         const db = await this.appDB;
         const site = await this.getSite(siteId);
-        const newValues: Partial<SiteDBEntry> = {
-            loggedOut: loggedOut ? 1 : 0,
-        };
 
-        if (loggedOut) {
-            // Erase the token for security.
-            newValues.token = '';
-            site.token = '';
-        }
+        site.setLoggedOut(true);
 
-        site.setLoggedOut(loggedOut);
-
-        await db.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
+        await db.updateRecords(SITES_TABLE_NAME, { loggedOut: 1 }, { id: siteId });
     }
 
     /**
@@ -1315,7 +1305,7 @@ export class CoreSitesProvider {
             const versionCheck = this.isValidMoodleVersion(info);
             if (versionCheck != CoreSitesProvider.VALID_VERSION) {
                 // The Moodle version is not supported, reject.
-                return this.treatInvalidAppVersion(versionCheck, site.getURL(), site.getId());
+                return this.treatInvalidAppVersion(versionCheck, site.getId());
             }
 
             // Try to get the site config.
@@ -1344,7 +1334,7 @@ export class CoreSitesProvider {
             } finally {
                 CoreEvents.trigger(CoreEvents.SITE_UPDATED, info, siteId);
             }
-        } catch (error) {
+        } catch {
             // Ignore that we cannot fetch site info. Probably the auth token is invalid.
         }
     }
@@ -1417,7 +1407,7 @@ export class CoreSitesProvider {
             await Promise.all(promises);
 
             return ids;
-        } catch (error) {
+        } catch {
             // Shouldn't happen.
             return [];
         }
@@ -1475,8 +1465,10 @@ export class CoreSitesProvider {
      * @param siteId The site ID. If not defined, current site (if available).
      * @return Promise resolved with true if disabled.
      */
-    isFeatureDisabled(name: string, siteId?: string): Promise<boolean> {
-        return this.getSite(siteId).then((site) => site.isFeatureDisabled(name));
+    async isFeatureDisabled(name: string, siteId?: string): Promise<boolean> {
+        const site = await this.getSite(siteId);
+
+        return site.isFeatureDisabled(name);
     }
 
     /**
@@ -1763,40 +1755,14 @@ export type CoreSiteUserTokenResponse = {
  * Site's basic info.
  */
 export type CoreSiteBasicInfo = {
-    /**
-     * Site ID.
-     */
-    id: string;
-
-    /**
-     * Site URL.
-     */
-    siteUrl: string;
-
-    /**
-     * User's full name.
-     */
-    fullName?: string;
-
-    /**
-     * Site's name.
-     */
-    siteName?: string;
-
-    /**
-     * User's avatar.
-     */
-    avatar?: string;
-
-    /**
-     * Badge to display in the site.
-     */
-    badge?: number;
-
-    /**
-     * Site home ID.
-     */
-    siteHomeId?: number;
+    id: string; // Site ID.
+    siteUrl: string; // Site URL.
+    siteUrlWithoutProtocol: string; // Site URL without protocol.
+    fullName?: string; // User's full name.
+    siteName?: string; // Site's name.
+    avatar?: string; // User's avatar.
+    badge?: number; // Badge to display in the site.
+    siteHomeId?: number; // Site home ID.
 };
 
 /**

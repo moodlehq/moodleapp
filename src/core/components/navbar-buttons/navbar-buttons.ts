@@ -56,7 +56,7 @@ const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
 })
 export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
 
-    @ViewChild('contextMenuContainer', { read: ViewContainerRef }) container?: ViewContainerRef;
+    @ViewChild('contextMenuContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
 
     // If the hidden input is true, hide all buttons.
     // eslint-disable-next-line @angular-eslint/no-input-rename
@@ -113,7 +113,13 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
 
                     // Make sure that context-menu is always at the end of buttons if any.
                     const contextMenu = buttonsContainer.querySelector('core-context-menu');
-                    contextMenu?.parentElement?.appendChild(contextMenu);
+                    const userMenu = buttonsContainer.querySelector('core-user-menu-button');
+
+                    if (userMenu) {
+                        contextMenu?.parentElement?.insertBefore(contextMenu, userMenu);
+                    } else {
+                        contextMenu?.parentElement?.appendChild(contextMenu);
+                    }
                 } else {
                     this.logger.warn('The header was found, but it didn\'t have the right ion-buttons.', selector);
                 }
@@ -177,7 +183,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      */
     protected createMainContextMenu(): CoreContextMenuComponent {
         const factory = this.factoryResolver.resolveComponentFactory(CoreContextMenuComponent);
-        const componentRef = this.container!.createComponent<CoreContextMenuComponent>(factory);
+        const componentRef = this.container.createComponent<CoreContextMenuComponent>(factory);
 
         this.createdMainContextMenuElement = componentRef.location.nativeElement;
 

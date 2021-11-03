@@ -20,6 +20,7 @@ import { CoreCoursesComponentsModule } from '../../components/components.module'
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 import { CoreCoursesListPage } from './list';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 const routes: Routes = [
     {
@@ -34,6 +35,7 @@ const routes: Routes = [
         CoreSharedModule,
         CoreCoursesComponentsModule,
         CoreSearchComponentsModule,
+        CoreMainMenuComponentsModule,
     ],
     declarations: [
         CoreCoursesListPage,

@@ -606,7 +606,7 @@ export class CoreAppProvider {
             };
 
             localStorage.setItem('CoreRedirect', JSON.stringify(redirect));
-        } catch (ex) {
+        } catch {
             // Ignore errors.
         }
     }

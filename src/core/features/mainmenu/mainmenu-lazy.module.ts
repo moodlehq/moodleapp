@@ -22,6 +22,7 @@ import { MAIN_MENU_ROUTES } from './mainmenu-routing.module';
 import { CoreMainMenuPage } from './pages/menu/menu';
 import { CoreMainMenuHomeHandlerService } from './services/handlers/mainmenu';
 import { CoreMainMenuProvider } from './services/mainmenu';
+import { CoreMainMenuComponentsModule } from './components/components.module';
 
 function buildRoutes(injector: Injector): Routes {
     const routes = resolveModuleRoutes(injector, MAIN_MENU_ROUTES);
@@ -54,6 +55,7 @@ function buildRoutes(injector: Injector): Routes {
 @NgModule({
     imports: [
         CoreSharedModule,
+        CoreMainMenuComponentsModule,
     ],
     declarations: [
         CoreMainMenuPage,
