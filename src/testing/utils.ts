@@ -126,16 +126,25 @@ export interface RenderConfig {
 
 export type WrapperComponentFixture<T> = ComponentFixture<WrapperComponent<T>>;
 
-export function mock<T>(instance?: Record<string, unknown>): T;
-export function mock<T>(methods: string[], instance?: Record<string, unknown>): T;
+/**
+ * Mock a certain class, converting its methods to Mock functions and overriding the specified properties and methods.
+ *
+ * @param instance Instance to mock.
+ * @param overrides Object with the properties or methods to override, or a list of methods to override with an empty function.
+ * @return Mock instance.
+ */
+export function mock<T>(instance?: T, overrides?: string[] | Record<string, unknown>): T;
+export function mock<T>(instance?: Partial<T>, overrides?: string[] | Record<string, unknown>): Partial<T>;
 export function mock<T>(
-    methodsOrInstance: string[] | Record<string, unknown> = [],
-    instance: Record<string, unknown> = {},
-): T {
-    instance = Array.isArray(methodsOrInstance) ? instance : methodsOrInstance;
+    instance: T | Partial<T> = {},
+    overrides: string[] | Record<string, unknown> = {},
+): T | Partial<T> {
+    // If overrides is an object, apply them to the instance.
+    if (!Array.isArray(overrides)) {
+        Object.assign(instance, overrides);
+    }
 
-    const methods = Array.isArray(methodsOrInstance) ? methodsOrInstance : [];
-
+    // Convert instance functions to jest functions.
     for (const property of Object.getOwnPropertyNames(instance)) {
         const value = instance[property];
 
@@ -146,11 +155,14 @@ export function mock<T>(
         instance[property] = jest.fn((...args) => value.call(instance, ...args));
     }
 
-    for (const method of methods) {
-        instance[method] = jest.fn();
+    // If overrides is a list of methods, add them now.
+    if (Array.isArray(overrides)) {
+        for (const method of overrides) {
+            instance[method] = jest.fn();
+        }
     }
 
-    return instance as T;
+    return instance;
 }
 
 export function mockSingleton<T>(singletonClass: CoreSingletonProxy<T>, instance: T): T;
@@ -168,8 +180,8 @@ export function mockSingleton<T>(
     properties = Array.isArray(methodsOrProperties) ? properties : methodsOrProperties;
 
     const methods = Array.isArray(methodsOrProperties) ? methodsOrProperties : [];
-    const instance = getServiceInstance(singleton.injectionToken);
-    const mockInstance = mock<T>(methods, instance);
+    const instance = getServiceInstance(singleton.injectionToken) as T;
+    const mockInstance = mock(instance, methods);
 
     Object.assign(mockInstance, properties);
 
