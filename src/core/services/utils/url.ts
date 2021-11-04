@@ -409,7 +409,7 @@ export class CoreUrlUtilsProvider {
      * @return Whether the URL is downloadable.
      */
     isDownloadableUrl(url: string): boolean {
-        return this.isPluginFileUrl(url) || this.isThemeImageUrl(url) || this.isGravatarUrl(url);
+        return this.isPluginFileUrl(url) || this.isTokenPluginFileUrl(url) || this.isThemeImageUrl(url) || this.isGravatarUrl(url);
     }
 
     /**
@@ -470,7 +470,17 @@ export class CoreUrlUtilsProvider {
      * @return Whether the URL is a pluginfile URL.
      */
     isPluginFileUrl(url: string): boolean {
-        return url?.indexOf('/pluginfile.php') !== -1;
+        return url.indexOf('/pluginfile.php') !== -1;
+    }
+
+    /**
+     * Returns if a URL is a tokenpluginfile URL.
+     *
+     * @param url The URL to test.
+     * @return Whether the URL is a tokenpluginfile URL.
+     */
+    isTokenPluginFileUrl(url: string): boolean {
+        return url.indexOf('/tokenpluginfile.php') !== -1;
     }
 
     /**

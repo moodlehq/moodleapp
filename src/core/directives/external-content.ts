@@ -213,8 +213,11 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
 
         }
 
+        const site = await CoreSites.getSite(siteId);
+        const isSiteFile = site.isSitePluginFileUrl(url);
+
         if (!url || !url.match(/^https?:\/\//i) || CoreUrlUtils.isLocalFileUrl(url) ||
-                (tagName === 'A' && !CoreUrlUtils.isDownloadableUrl(url))) {
+                (tagName === 'A' && !(isSiteFile || site.isSiteThemeImageUrl(url) || CoreUrlUtils.isGravatarUrl(url)))) {
 
             this.logger.debug('Ignoring non-downloadable URL: ' + url);
             if (tagName === 'SOURCE') {
@@ -225,9 +228,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             throw new CoreError('Non-downloadable URL');
         }
 
-        const site = await CoreSites.getSite(siteId);
-
-        if (!site.canDownloadFiles() && CoreUrlUtils.isPluginFileUrl(url)) {
+        if (!site.canDownloadFiles() && isSiteFile) {
             this.element.parentElement?.removeChild(this.element); // Remove element since it'll be broken.
 
             throw new CoreError('Site doesn\'t allow downloading files.');
@@ -329,7 +330,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             return;
         }
 
-        let inlineStyles = this.element.getAttribute('style');
+        let inlineStyles = this.element.getAttribute('style') || '';
 
         if (!inlineStyles) {
             return;
@@ -346,7 +347,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             const finalUrl = await CoreFilepool.getUrlByUrl(siteId, url, this.component, this.componentId, 0, true, true);
 
             this.logger.debug('Using URL ' + finalUrl + ' for ' + url + ' in inline styles');
-            inlineStyles = inlineStyles!.replace(new RegExp(url, 'gi'), finalUrl);
+            inlineStyles = inlineStyles.replace(new RegExp(url, 'gi'), finalUrl);
         });
 
         try {

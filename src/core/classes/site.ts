@@ -1893,6 +1893,35 @@ export class CoreSite {
         return this.tokenPluginFileWorksPromise;
     }
 
+    /**
+     * Check if a URL to a file belongs to the site and uses the pluginfileurl or tokenpluginfileurl endpoints.
+     *
+     * @param url File URL to check.
+     * @return Whether it's a site file URL.
+     */
+    isSitePluginFileUrl(url: string): boolean {
+        const isPluginFileUrl = CoreUrlUtils.isPluginFileUrl(url) || CoreUrlUtils.isTokenPluginFileUrl(url);
+        if (!isPluginFileUrl) {
+            return false;
+        }
+
+        return this.containsUrl(url);
+    }
+
+    /**
+     * Check if a URL to a file belongs to the site and is a theme image file.
+     *
+     * @param url File URL to check.
+     * @return Whether it's a site theme image URL.
+     */
+    isSiteThemeImageUrl(url: string): boolean {
+        if (!CoreUrlUtils.isThemeImageUrl(url)) {
+            return false;
+        }
+
+        return this.containsUrl(url);
+    }
+
 }
 
 /**

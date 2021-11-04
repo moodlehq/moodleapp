@@ -125,6 +125,7 @@ describe('CoreFormatTextDirective', () => {
             getId: () => '42',
             canDownloadFiles: () => true,
             isVersionGreaterEqualThan: () => true,
+            isSitePluginFileUrl: () => false,
         });
 
         // @todo this is done because we cannot mock image being loaded, we should find an alternative...

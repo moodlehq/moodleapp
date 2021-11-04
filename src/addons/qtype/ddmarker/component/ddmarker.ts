@@ -19,7 +19,6 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUrlUtils } from '@services/utils/url';
 import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
 
 /**
@@ -142,9 +141,9 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
         let imgSrc = this.imgSrc;
         const site = CoreSites.getCurrentSite();
 
-        if (this.imgSrc && site?.canDownloadFiles() && CoreUrlUtils.isPluginFileUrl(this.imgSrc)) {
+        if (this.imgSrc && site?.canDownloadFiles() && site.isSitePluginFileUrl(this.imgSrc)) {
             imgSrc = await CoreFilepool.getSrcByUrl(
-                site.id!,
+                site.getId(),
                 this.imgSrc,
                 this.component,
                 this.componentId,
