@@ -21,6 +21,7 @@ import {
 } from '@features/course/services/course-options-delegate';
 import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
+import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
 import { makeSingleton } from '@singletons';
 import { CoreUser } from '../user';
 
@@ -89,7 +90,7 @@ export class CoreUserCourseOptionHandlerService implements CoreCourseOptionsHand
         return {
             title: 'core.user.participants',
             class: 'core-user-participants-handler',
-            page: 'participants',
+            page: PARTICIPANTS_PAGE_NAME,
         };
     }
 

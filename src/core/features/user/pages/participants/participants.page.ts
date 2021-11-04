@@ -19,7 +19,6 @@ import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
-import { CoreScreen } from '@services/screen';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreUser, CoreUserProvider, CoreUserParticipant, CoreUserData } from '@features/user/services/user';
 import { CoreUtils } from '@services/utils/utils';
@@ -211,22 +210,6 @@ class CoreUserParticipantsManager extends CorePageItemsListManager<CoreUserParti
         super(pageComponent);
 
         this.courseId = courseId;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async select(participant: CoreUserParticipant | CoreUserData): Promise<void> {
-        if (CoreScreen.isMobile) {
-            await CoreNavigator.navigateToSitePath(
-                '/user/profile',
-                { params: { userId: participant.id, courseId: this.courseId } },
-            );
-
-            return;
-        }
-
-        return super.select(participant);
     }
 
     /**
