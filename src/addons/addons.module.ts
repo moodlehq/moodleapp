@@ -30,6 +30,7 @@ import { AddonPrivateFilesModule } from './privatefiles/privatefiles.module';
 import { AddonQbehaviourModule } from './qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from './qtype/qtype.module';
 import { AddonRemoteThemesModule } from './remotethemes/remotethemes.module';
+import { AddonReportModule } from './report/report.module';
 import { AddonStorageManagerModule } from './storagemanager/storagemanager.module';
 import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield.module';
 
@@ -51,6 +52,7 @@ import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield
         AddonQbehaviourModule,
         AddonQtypeModule,
         AddonRemoteThemesModule,
+        AddonReportModule,
         AddonStorageManagerModule,
         AddonUserProfileFieldModule,
     ],
