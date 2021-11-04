@@ -33,6 +33,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services/urlschemes';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreForms } from '@singletons/form';
+import { AlertButton } from '@ionic/core';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -386,9 +387,10 @@ export class CoreLoginSitePage implements OnInit {
             message += '<p padding><a href="' + fullUrl + '" core-link>' + url + '</a></p>';
         }
 
-        const buttons = [
+        const buttons: AlertButton[] = [
             {
                 text: Translate.instant('core.needhelp'),
+                cssClass: 'core-login-need-help',
                 handler: (): void => {
                     this.showHelp();
                 },

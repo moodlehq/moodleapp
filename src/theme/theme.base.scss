@@ -1149,3 +1149,9 @@ iframe {
     max-width: 100%;
     background-color: var(--ion-background-color);
 }
+
+@if ($core-login-hide-need-help) {
+    .core-login-need-help {
+        display: none !important;
+    }
+}

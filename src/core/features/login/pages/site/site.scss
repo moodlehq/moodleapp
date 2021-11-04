@@ -15,12 +15,6 @@
     }
 }
 
-@if ($core-login-hide-need-help) {
-    .core-login-need-help {
-        display: none;
-    }
-}
-
 .core-login-site-connect {
     margin-top: 1.4rem;
 }
