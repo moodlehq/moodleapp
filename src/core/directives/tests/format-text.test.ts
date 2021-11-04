@@ -26,6 +26,7 @@ import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 
 import { mock, mockSingleton, RenderConfig, renderTemplate, renderWrapperComponent } from '@/testing/utils';
+import { CoreDB } from '@services/db';
 
 describe('CoreFormatTextDirective', () => {
 
@@ -121,11 +122,13 @@ describe('CoreFormatTextDirective', () => {
 
     it('should use external-content directive on images', async () => {
         // Arrange
-        const site = mock<CoreSite>({
-            getId: () => '42',
+        mockSingleton(CoreDB, {
+            getDB: () => undefined,
+        });
+
+        let site = new CoreSite('42', 'https://mysite.com', 'token');
+        site = mock(site, {
             canDownloadFiles: () => true,
-            isVersionGreaterEqualThan: () => true,
-            isSitePluginFileUrl: () => false,
         });
 
         // @todo this is done because we cannot mock image being loaded, we should find an alternative...
