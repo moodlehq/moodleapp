@@ -264,14 +264,16 @@ export class CoreNavigatorService {
      * @return Value of the parameter, undefined if not found.
      */
     protected getRouteSnapshotParam<T = unknown>(name: string, route?: ActivatedRoute): T | undefined {
-        if (!route?.snapshot) {
+        if (!route) {
             return;
         }
 
-        const value = route.snapshot.queryParams[name] ?? route.snapshot.params[name];
+        if (route.snapshot) {
+            const value = route.snapshot.queryParams[name] ?? route.snapshot.params[name];
 
-        if (value !== undefined) {
-            return value;
+            if (value !== undefined) {
+                return value;
+            }
         }
 
         return this.getRouteSnapshotParam(name, route.parent || undefined);
