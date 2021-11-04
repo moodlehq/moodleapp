@@ -284,15 +284,15 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
         } catch (error) {
             modal.dismiss();
 
-            if (error && error.code === CoreCoursesProvider.ENROL_INVALID_KEY) {
+            if (error && error.errorcode === CoreCoursesProvider.ENROL_INVALID_KEY) {
                 // Invalid password. Allow the user to input password.
                 const title = Translate.instant('core.courses.selfenrolment');
-                const body = ' '; // Empty message.
+                let body = ' '; // Empty message.
                 const placeholder = Translate.instant('core.courses.password');
 
                 if (typeof password != 'undefined') {
                     // The user attempted a password. Show an error message.
-                    CoreDomUtils.showErrorModal(error);
+                    body = CoreTextUtils.getErrorMessageFromError(error) || body;
                 }
 
                 password = await CoreDomUtils.showPrompt(body, title, placeholder);
