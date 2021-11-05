@@ -16,6 +16,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { CoreEvents } from '@singletons/events';
 import { CoreDelegate, CoreDelegateDisplayHandler, CoreDelegateToDisplay } from './delegate';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreSites } from '@services/sites';
 
 /**
  * Superclass to help creating sorted delegates.
@@ -39,6 +40,12 @@ export class CoreSortedDelegate<
         super(delegateName, true);
 
         CoreEvents.on(CoreEvents.LOGOUT, this.clearSortedHandlers.bind(this));
+        CoreEvents.on(CoreEvents.SITE_POLICY_AGREED, (data) => {
+            if (data.siteId === CoreSites.getCurrentSiteId()) {
+                // Clear loaded handlers when policy is agreed. The CoreDelegate class will load them again.
+                this.clearSortedHandlers();
+            }
+        });
     }
 
     /**

@@ -67,6 +67,7 @@ export class CoreEvents {
     static readonly SESSION_EXPIRED = 'session_expired';
     static readonly PASSWORD_CHANGE_FORCED = 'password_change_forced';
     static readonly USER_NOT_FULLY_SETUP = 'user_not_fully_setup';
+    static readonly SITE_POLICY_AGREED = 'site_policy_agreed';
     static readonly SITE_POLICY_NOT_AGREED = 'site_policy_not_agreed';
     static readonly LOGIN = 'login';
     static readonly LOGOUT = 'logout';
