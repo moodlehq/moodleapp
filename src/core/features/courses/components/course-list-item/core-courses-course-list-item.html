@@ -9,7 +9,7 @@
     </ion-avatar>
     <ion-label>
         <ion-row>
-            <ion-col>
+            <ion-col class="ion-align-self-center">
                 <p *ngIf="course.categoryname || (course.displayname && course.shortname && course.fullname != course.displayname)"
                     class="core-course-additional-info">
                     <span *ngIf="course.categoryname" class="core-course-category">
@@ -32,7 +32,7 @@
                     </core-format-text>
                 </p>
             </ion-col>
-            <ion-col size="auto">
+            <ion-col size="auto" class="ion-align-self-center">
                 <ng-container *ngIf="!isEnrolled">
                     <ion-icon *ngFor="let icon of enrolmentIcons" color="dark" size="small" [name]="icon.icon"
                         [title]="icon.label | translate" [attr.aria-label]="icon.label | translate">
