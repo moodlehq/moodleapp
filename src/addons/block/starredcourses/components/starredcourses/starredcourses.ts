@@ -52,7 +52,6 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     protected isDestroyed = false;
     protected coursesObserver?: CoreEventObserver;
     protected updateSiteObserver?: CoreEventObserver;
-    protected courseIds: number[] = [];
     protected fetchContentDefaultError = 'Error getting starred courses data.';
 
     constructor() {
@@ -60,7 +59,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         // Generate unique id for scroll element.
@@ -76,17 +75,12 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-
         }, CoreSites.getCurrentSiteId());
 
         this.coursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
             (data) => {
-
-                if (this.shouldRefreshOnUpdatedEvent(data)) {
-                    this.refreshCourseList();
-                }
-                this.refreshContent();
+                this.refreshCourseList(data);
             },
 
             CoreSites.getCurrentSiteId(),
@@ -96,7 +90,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         if (changes.downloadEnabled && !changes.downloadEnabled.previousValue && this.downloadEnabled && this.loaded) {
@@ -106,21 +100,35 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     }
 
     /**
-     * Perform the invalidate content function.
-     *
-     * @return Resolved when done.
+     * @inheritdoc
      */
     protected async invalidateContent(): Promise<void> {
+        const courseIds = this.courses.map((course) => course.id);
+
+        await this.invalidateCourses(courseIds);
+    }
+
+    /**
+     * Helper function to invalidate only selected courses.
+     *
+     * @param courseIds Course Id array.
+     * @return Promise resolved when done.
+     */
+    protected async invalidateCourses(courseIds: number[]): Promise<void> {
         const promises: Promise<void>[] = [];
 
+        // Invalidate course completion data.
         promises.push(CoreCourses.invalidateUserCourses().finally(() =>
-            // Invalidate course completion data.
-            CoreUtils.allPromises(this.courseIds.map((courseId) =>
+            CoreUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
-        promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
-        if (this.courseIds.length > 0) {
-            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds.join(',')));
+        if (courseIds.length  == 1) {
+            promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions(courseIds[0]));
+        } else {
+            promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
+        }
+        if (courseIds.length > 0) {
+            promises.push(CoreCourses.invalidateCoursesByField('ids', courseIds.join(',')));
         }
 
         await CoreUtils.allPromises(promises).finally(() => {
@@ -129,54 +137,54 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     }
 
     /**
-     * Fetch the courses.
-     *
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
     protected async fetchContent(): Promise<void> {
         const showCategories = this.block.configsRecord && this.block.configsRecord.displaycategories &&
             this.block.configsRecord.displaycategories.value == '1';
 
+        // @TODO: Sort won't coincide with website because timemodified is not informed.
         this.courses = await CoreCoursesHelper.getUserCoursesWithOptions('timemodified', 0, 'isfavourite', showCategories);
+
         this.initPrefetchCoursesIcons();
     }
 
     /**
-     * Refresh the list of courses.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async refreshCourseList(): Promise<void> {
-        CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
-
-        try {
-            await CoreCourses.invalidateUserCourses();
-        } catch (error) {
-            // Ignore errors.
-        }
-
-        await this.loadContent(true);
-    }
-
-    /**
-     * Whether list should be refreshed based on a EVENT_MY_COURSES_UPDATED event.
+     * Refresh course list based on a EVENT_MY_COURSES_UPDATED event.
      *
      * @param data Event data.
-     * @return Whether to refresh.
+     * @return Promise resolved when done.
      */
-    protected shouldRefreshOnUpdatedEvent(data: CoreCoursesMyCoursesUpdatedEventData): boolean {
+    protected async refreshCourseList(data: CoreCoursesMyCoursesUpdatedEventData): Promise<void> {
         if (data.action == CoreCoursesProvider.ACTION_ENROL) {
             // Always update if user enrolled in a course.
             // New courses shouldn't be favourite by default, but just in case.
-            return true;
+            return await this.refreshContent();
         }
 
         if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED && data.state == CoreCoursesProvider.STATE_FAVOURITE) {
-            // Update list when making a course favourite or not.
-            return true;
-        }
+            const courseIndex = this.courses.findIndex((course) => course.id == data.courseId);
+            if (courseIndex < 0) {
+                // Not found, use WS update. Usually new favourite.
+                return await this.refreshContent();
+            }
 
-        return false;
+            const course = this.courses[courseIndex];
+            if (data.value === false) {
+                // Unfavourite, just remove.
+                this.courses.splice(courseIndex, 1);
+            } else {
+                // List is not synced, favourite course and place it at the begining.
+                course.isfavourite = !!data.value;
+
+                this.courses.splice(courseIndex, 1);
+                this.courses.unshift(course);
+            }
+
+            await this.invalidateCourses([course.id]);
+            this.initPrefetchCoursesIcons();
+
+        }
     }
 
     /**
@@ -212,7 +220,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
