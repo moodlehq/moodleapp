@@ -1,13 +1,12 @@
 @import "~theme/globals";
 
-:host {
+.core-course-list-item {
     .course-icon {
         color: white;
         background: var(--gray-light);
         padding: 8px;
         font-size: 24px;
         border-radius: 50%;
-        margin-inline-end: 16px;
         -webkit-transition: all 50ms ease-in-out;
         transition: all 50ms ease-in-out;
     }
@@ -21,5 +20,178 @@
     ion-avatar {
         -webkit-transition: all 50ms ease-in-out;
         transition: all 50ms ease-in-out;
+    }
+
+    .core-course-thumb {
+        @include margin(12px, 16px, 12px, null);
+        align-self: flex-start;
+    }
+
+    .core-course-summary {
+        margin-top: 12px;
+    }
+}
+
+.item-heading ion-icon {
+    margin-right: 4px;
+    color: var(--core-star-color);
+}
+
+ion-card {
+    --vertical-margin: 12px;
+
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    height: calc(100% - var(--vertical-margin) - var(--vertical-margin));
+    margin-top: var(--vertical-margin);
+    margin-bottom: var(--vertical-margin);
+
+    @for $i from 0 to length($core-course-image-background) {
+        &[course-color="#{$i}"] .core-course-thumb {
+            background: var(--core-course-color-#{$i});
+        }
+    }
+
+    ion-row {
+        min-height: var(--a11y-min-target-size);
+        ion-col .core-button-spinner {
+            min-width: calc(var(--a11y-min-target-size) + 16px);
+        }
+    }
+
+    .core-course-thumb {
+        padding-top: 40%;
+        width: 100%;
+        overflow: hidden;
+        cursor: pointer;
+        pointer-events: auto;
+        position: relative;
+        background-position: center;
+        background-size: cover;
+        -webkit-transition: all 50ms ease-in-out;
+        transition: all 50ms ease-in-out;
+
+        &.core-course-color-img {
+            background: var(--ion-item-background);
+        }
+
+        img {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            margin: auto;
+        }
+    }
+
+    @if ($core-course-hide-thumb-on-cards) {
+        .core-course-thumb {
+            display: none;
+        }
+    }
+
+    @if ($core-course-thumb-on-cards-background) {
+        .core-course-thumb {
+            background: $core-course-thumb-on-cards-background !important;
+        }
+    }
+
+    .core-course-additional-info {
+        margin-bottom: 8px;
+    }
+
+    .core-course-header {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+
+        --inner-padding-end: 0px;
+
+        &::part(native) {
+            flex-grow: 1;
+            align-items: self-start;
+        }
+
+        &.core-course-only-title {
+            &::part(native) {
+                flex-grow: 1;
+            }
+
+        }
+
+        .core-course-title {
+            margin: 12px 0;
+            flex-grow: 1;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .core-button-spinner {
+            margin: 0;
+        }
+        .core-button-spinner ion-spinner {
+            vertical-align: top; // the better option for most scenarios
+            vertical-align: -webkit-baseline-middle; // the best for those that support it
+        }
+
+        .core-button-spinner .core-icon-downloaded {
+            font-size: 28.8px;
+            margin-top: 8px;
+            vertical-align: top;
+        }
+
+        .item-button[icon-only] {
+            min-width: 50px;
+            width: 50px;
+        }
+    }
+
+    @if ($core-course-hide-progress-on-cards) {
+        .core-course-progress {
+            display: none;
+        }
+    }
+}
+
+button {
+    z-index: 1;
+}
+
+:host-context(.core-horizontal-scroll) {
+    @include horizontal_scroll_item(80%, 250px, 300px);
+    
+    ion-card {
+        .core-course-thumb {
+            padding-top: 30%;
+        }
+
+        ion-item.core-course-header {
+            --padding-start: 4px;
+            
+            .core-course-title {
+                margin: 7px 0;
+
+                .item-heading ion-icon {
+                    margin-right: 2px;
+                }
+            }
+            .core-button-spinner {
+                min-height: 40px;
+                min-width: 40px;
+
+                ion-spinner {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+            .item-button[icon-only] {
+                min-width: 40px;
+                width: 40px;
+                padding: 8px;
+            }
+
+        }
     }
 }

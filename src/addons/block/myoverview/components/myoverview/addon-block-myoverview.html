@@ -90,11 +90,11 @@
     <div class="safe-area-padding">
         <ion-grid class="ion-no-padding">
             <ion-row class="ion-no-padding">
-                <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding"
-                    size="12" size-sm="6" size-md="6" size-lg="4" size-xl="3">
-                    <core-courses-course-progress [course]="course" class="core-courseoverview" showAll="true"
-                        [showDownload]="downloadCourseEnabled && downloadEnabled">
-                    </core-courses-course-progress>
+                <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding" size="12" size-sm="6" size-md="6" size-lg="4"
+                    size-xl="3">
+                    <core-courses-course-list-item [course]="course" class="core-courseoverview"
+                        [showDownload]="downloadCourseEnabled && downloadEnabled" [layout]="selectedLayout">
+                    </core-courses-course-list-item>
                 </ion-col>
             </ion-row>
         </ion-grid>

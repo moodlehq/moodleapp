@@ -8,13 +8,13 @@
                 (click)="prefetchCourses()" [attr.aria-label]="'core.courses.downloadcourses' | translate">
                 <ion-icon [name]="prefetchCoursesData.icon" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
-            <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData.badge"
-                role="progressbar" [attr.aria-valuemax]="prefetchCoursesData.total"
-                [attr.aria-valuenow]="prefetchCoursesData.count" [attr.aria-valuetext]="prefetchCoursesData.badgeA11yText">
+            <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData.badge" role="progressbar"
+                [attr.aria-valuemax]="prefetchCoursesData.total" [attr.aria-valuenow]="prefetchCoursesData.count"
+                [attr.aria-valuetext]="prefetchCoursesData.badgeA11yText">
                 {{prefetchCoursesData.badge}}
             </ion-badge>
-            <ion-spinner *ngIf="!prefetchCoursesData.icon || prefetchCoursesData.loading"
-                [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+            <ion-spinner *ngIf="!prefetchCoursesData.icon || prefetchCoursesData.loading" [attr.aria-label]="'core.loading' | translate">
+            </ion-spinner>
         </div>
 
         <core-horizontal-scroll-controls #scrollControls [aria-controls]="scrollElementId">
@@ -25,16 +25,12 @@
     <core-empty-box *ngIf="courses.length == 0" image="assets/img/icons/courses.svg" inline="true"
         [message]="'addon.block_recentlyaccessedcourses.nocourses' | translate"></core-empty-box>
     <!-- List of courses. -->
-    <div
-        [id]="scrollElementId"
-        class="core-horizontal-scroll"
-        (scroll)="scrollControls.updateScrollPosition()"
-    >
+    <div [id]="scrollElementId" class="core-horizontal-scroll" (scroll)="scrollControls.updateScrollPosition()">
         <div (onResize)="scrollControls.updateScrollPosition()" class="flex-row">
             <div class="safe-area-pseudo-padding-start"></div>
             <ng-container *ngFor="let course of courses">
-                <core-courses-course-progress [course]="course" class="core-recentlyaccessedcourses"
-                    [showDownload]="downloadCourseEnabled && downloadEnabled"></core-courses-course-progress>
+                <core-courses-course-list-item [course]="course" class="core-recentlyaccessedcourses" layout="summarycard"
+                    [showDownload]="downloadCourseEnabled && downloadEnabled"></core-courses-course-list-item>
             </ng-container>
             <div class="safe-area-pseudo-padding-end"></div>
         </div>

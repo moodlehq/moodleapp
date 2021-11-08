@@ -12,15 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourseProvider, CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
+import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
+import { Translate } from '@singletons';
 import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourseListItem, CoreCourses } from '../../services/courses';
-import { CoreCoursesHelper } from '../../services/courses-helper';
+import { CoreCourseListItem, CoreCourses, CoreCoursesProvider } from '../../services/courses';
+import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
+import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/course-options-menu';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -37,10 +41,10 @@ import { CoreCoursesHelper } from '../../services/courses-helper';
 export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, OnChanges {
 
     @Input() course!: CoreCourseListItem; // The course to render.
-
     @Input() showDownload = false; // If true, will show download button.
+    @Input() layout: 'listwithenrol'|'summarycard'|'list'|'card' = 'listwithenrol';
 
-    icons: CoreCoursesEnrolmentIcons[] = [];
+    enrolmentIcons: CoreCoursesEnrolmentIcons[] = [];
     isEnrolled = false;
     prefetchCourseData: CorePrefetchStatusInfo = {
         icon: '',
@@ -49,8 +53,16 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         loading: true,
     };
 
-    protected courseStatusObserver?: CoreEventObserver;
+    showSpinner = false;
+    downloadCourseEnabled = false;
+    courseOptionMenuEnabled = false;
+    progress = -1;
+    completionUserTracked: boolean | undefined = false;
+
+    protected courseStatus = CoreConstants.NOT_DOWNLOADED;
     protected isDestroyed = false;
+    protected courseStatusObserver?: CoreEventObserver;
+    protected siteUpdatedObserver?: CoreEventObserver;
 
     /**
      * @inheritdoc
@@ -58,48 +70,71 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     async ngOnInit(): Promise<void> {
         CoreCoursesHelper.loadCourseColorAndImage(this.course);
 
-        this.isEnrolled = this.course.progress !== undefined;
+        // Assume is enroled if mode is not listwithenrol.
+        this.isEnrolled = this.layout != 'listwithenrol' || this.course.progress !== undefined;
 
         if (!this.isEnrolled) {
             try {
                 const course = await CoreCourses.getUserCourse(this.course.id);
-                this.course.progress = course.progress;
-                this.course.completionusertracked = course.completionusertracked;
+                this.course = Object.assign(this.course, course);
+                this.updateCourseFields();
 
                 this.isEnrolled = true;
-
-                if (this.showDownload) {
-                    this.initPrefetchCourse();
-                }
             } catch {
                 this.isEnrolled = false;
             }
         }
 
-        if (!this.isEnrolled) {
-            this.icons = [];
+        if (this.isEnrolled) {
+            if (this.showDownload) {
+                this.initPrefetchCourse();
+            }
+
+            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+
+            if (this.downloadCourseEnabled) {
+                this.initPrefetchCourse();
+            }
+
+            // This field is only available from 3.6 onwards.
+            this.courseOptionMenuEnabled = (this.layout != 'listwithenrol' && this.layout != 'summarycard') &&
+                this.course.isfavourite !== undefined;
+
+            // Refresh the enabled flag if site is updated.
+            this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
+                const wasEnabled = this.downloadCourseEnabled;
+
+                this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
+
+                if (!wasEnabled && this.downloadCourseEnabled) {
+                    // Download course is enabled now, initialize it.
+                    this.initPrefetchCourse();
+                }
+            }, CoreSites.getCurrentSiteId());
+        } else if ('enrollmentmethods' in this.course) {
+            this.enrolmentIcons = [];
 
             this.course.enrollmentmethods.forEach((instance) => {
                 if (instance === 'self') {
-                    this.icons.push({
+                    this.enrolmentIcons.push({
                         label: 'core.courses.selfenrolment',
                         icon: 'fas-key',
                     });
                 } else if (instance === 'guest') {
-                    this.icons.push({
+                    this.enrolmentIcons.push({
                         label: 'core.courses.allowguests',
                         icon: 'fas-unlock',
                     });
                 } else if (instance === 'paypal') {
-                    this.icons.push({
+                    this.enrolmentIcons.push({
                         label: 'core.courses.paypalaccepted',
                         icon: 'fab-paypal',
                     });
                 }
             });
 
-            if (this.icons.length == 0) {
-                this.icons.push({
+            if (this.enrolmentIcons.length == 0) {
+                this.enrolmentIcons.push({
                     label: 'core.courses.notenrollable',
                     icon: 'fas-lock',
                 });
@@ -114,6 +149,16 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         if (this.showDownload && this.isEnrolled) {
             this.initPrefetchCourse();
         }
+
+        this.updateCourseFields();
+    }
+
+    /**
+     * Helper function to update course fields.
+     */
+    protected updateCourseFields(): void {
+        this.progress = 'progress' in this.course ? this.course.progress || -1 : -1;
+        this.completionUserTracked = 'completionusertracked' in this.course && this.course.completionusertracked;
     }
 
     /**
@@ -179,6 +224,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     protected updateCourseStatus(status: string): void {
         const statusData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
 
+        this.courseStatus = status;
         this.prefetchCourseData.status = statusData.status;
         this.prefetchCourseData.icon = statusData.icon;
         this.prefetchCourseData.statusTranslatable = statusData.statusTranslatable;
@@ -188,11 +234,11 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     /**
      * Prefetch the course.
      *
-     * @param e Click event.
+     * @param event Click event.
      */
-    async prefetchCourse(e?: Event): Promise<void> {
-        e?.preventDefault();
-        e?.stopPropagation();
+    async prefetchCourse(event?: Event): Promise<void> {
+        event?.preventDefault();
+        event?.stopPropagation();
 
         try {
             await CoreCourseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course);
@@ -204,11 +250,148 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     }
 
     /**
+     * Delete the course.
+     */
+    async deleteCourse(): Promise<void> {
+        try {
+            await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
+        } catch (error) {
+            if (CoreDomUtils.isCanceledError(error)) {
+                throw error;
+            }
+
+            return;
+        }
+
+        const modal = await CoreDomUtils.showModalLoading();
+
+        try {
+            await CoreCourseHelper.deleteCourseFiles(this.course.id);
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, Translate.instant('core.errordeletefile'));
+        } finally {
+            modal.dismiss();
+        }
+    }
+
+    /**
+     * Show the context menu.
+     *
+     * @param event Click Event.
+     */
+    async showCourseOptionsMenu(event: Event): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const popoverData = await CoreDomUtils.openPopover<string>({
+            component: CoreCoursesCourseOptionsMenuComponent,
+            componentProps: {
+                course: this.course,
+                prefetch: this.prefetchCourseData,
+            },
+            event: event,
+        });
+
+        switch (popoverData) {
+            case 'download':
+                if (!this.prefetchCourseData.loading) {
+                    this.prefetchCourse(event);
+                }
+                break;
+            case 'delete':
+                if (this.courseStatus == 'downloaded' || this.courseStatus == 'outdated') {
+                    this.deleteCourse();
+                }
+                break;
+            case 'hide':
+                this.setCourseHidden(true);
+                break;
+            case 'show':
+                this.setCourseHidden(false);
+                break;
+            case 'favourite':
+                this.setCourseFavourite(true);
+                break;
+            case 'unfavourite':
+                this.setCourseFavourite(false);
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    /**
+     * Hide/Unhide the course from the course list.
+     *
+     * @param hide True to hide and false to show.
+     */
+    protected async setCourseHidden(hide: boolean): Promise<void> {
+        this.showSpinner = true;
+
+        // We should use null to unset the preference.
+        try {
+            await CoreUser.updateUserPreference(
+                'block_myoverview_hidden_course_' + this.course.id,
+                hide ? '1' : undefined,
+            );
+
+            this.course.hidden = hide;
+
+            (<CoreEnrolledCourseDataWithExtraInfoAndOptions> this.course).hidden = hide;
+            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+                courseId: this.course.id,
+                course: this.course,
+                action: CoreCoursesProvider.ACTION_STATE_CHANGED,
+                state: CoreCoursesProvider.STATE_HIDDEN,
+                value: hide,
+            }, CoreSites.getCurrentSiteId());
+
+        } catch (error) {
+            if (!this.isDestroyed) {
+                CoreDomUtils.showErrorModalDefault(error, 'Error changing course visibility.');
+            }
+        } finally {
+            this.showSpinner = false;
+        }
+    }
+
+    /**
+     * Favourite/Unfavourite the course from the course list.
+     *
+     * @param favourite True to favourite and false to unfavourite.
+     */
+    protected async setCourseFavourite(favourite: boolean): Promise<void> {
+        this.showSpinner = true;
+
+        try {
+            await CoreCourses.setFavouriteCourse(this.course.id, favourite);
+
+            this.course.isfavourite = favourite;
+            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+                courseId: this.course.id,
+                course: this.course,
+                action: CoreCoursesProvider.ACTION_STATE_CHANGED,
+                state: CoreCoursesProvider.STATE_FAVOURITE,
+                value: favourite,
+            }, CoreSites.getCurrentSiteId());
+
+        } catch (error) {
+            if (!this.isDestroyed) {
+                CoreDomUtils.showErrorModalDefault(error, 'Error changing course favourite attribute.');
+            }
+        } finally {
+            this.showSpinner = false;
+        }
+    }
+
+    /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.courseStatusObserver?.off();
+        this.siteUpdatedObserver?.off();
     }
 
 }

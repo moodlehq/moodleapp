@@ -221,7 +221,6 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy, On
             component: CoreCoursesCourseOptionsMenuComponent,
             componentProps: {
                 course: this.course,
-                courseStatus: this.courseStatus,
                 prefetch: this.prefetchCourseData,
             },
             event: e,
