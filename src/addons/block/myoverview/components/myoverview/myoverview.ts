@@ -59,54 +59,54 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         value: string;
     }[] = [];
 
-    selectedFilter = 'inprogress';
+    timeSelectorFilter = 'inprogress';
     sort = 'fullname';
     currentSite?: CoreSite;
     filteredCourses: CoreEnrolledCourseDataWithOptions[] = [];
-    prefetchCoursesData = {
-        all: <CorePrefetchStatusInfo> {
+    prefetchCoursesData: Record<string, CorePrefetchStatusInfo> = {
+        all: {
             icon: '',
             statusTranslatable: 'core.loading',
             status: '',
             loading: true,
         },
-        allincludinghidden: <CorePrefetchStatusInfo> {
+        allincludinghidden: {
             icon: '',
             statusTranslatable: 'core.loading',
             status: '',
             loading: true,
         },
-        inprogress: <CorePrefetchStatusInfo> {
+        inprogress: {
             icon: '',
             statusTranslatable: 'core.loading',
             status: '',
             loading: true,
         },
-        past: <CorePrefetchStatusInfo> {
+        past: {
             icon: '',
             statusTranslatable: 'core.loading',
             status: '',
             loading: true,
         },
-        future: <CorePrefetchStatusInfo> {
+        future: {
             icon: '',
             statusTranslatable: 'core.loading',
             status: '',
             loading: true,
         },
-        favourite: <CorePrefetchStatusInfo> {
+        favourite: {
             icon: '',
             statusTranslatable: 'core.loading',
             status: '',
             loading: true,
         },
-        hidden: <CorePrefetchStatusInfo> {
+        hidden: {
             icon: '',
             statusTranslatable: 'core.loading',
             status: '',
             loading: true,
         },
-        custom: <CorePrefetchStatusInfo> {
+        custom: {
             icon: '',
             statusTranslatable: '',
             status: '',
@@ -126,11 +126,14 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     };
 
     showFilter = false;
-    showSelectorFilter = false;
+    showTimeSelectorFilter = false;
     showSortFilter = false;
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
     showSortByShortName = false;
+
+    layouts: AddonBlockMyOverviewLayouts[] = [];
+    selectedLayout: AddonBlockMyOverviewLayouts = 'card';
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed = false;
@@ -169,21 +172,31 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             CoreSites.getCurrentSiteId(),
         );
 
-        this.currentSite = CoreSites.getCurrentSite();
+        this.currentSite = CoreSites.getRequiredCurrentSite();
 
         const promises: Promise<void>[] = [];
-        if (this.currentSite) {
-            promises.push(this.currentSite.getLocalSiteConfig('AddonBlockMyOverviewSort', this.sort).then((value) => {
-                this.sort = value;
+        promises.push(this.currentSite.getLocalSiteConfig('AddonBlockMyOverviewSort', this.sort).then((value) => {
+            this.sort = value;
 
-                return;
-            }));
-            promises.push(this.currentSite.getLocalSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter).then((value) => {
-                this.selectedFilter = value;
+            return;
+        }));
+        promises.push(this.currentSite.getLocalSiteConfig(
+            'AddonBlockMyOverviewFilter',
+            this.timeSelectorFilter,
+        ).then((value) => {
+            this.timeSelectorFilter = value;
 
-                return;
-            }));
-        }
+            return;
+        }));
+
+        promises.push(this.currentSite.getLocalSiteConfig(
+            'AddonBlockMyOverviewLayout',
+            this.selectedLayout,
+        ).then((value) => {
+            this.selectedLayout = value;
+
+            return;
+        }));
 
         Promise.all(promises).finally(() => {
             super.ngOnInit();
@@ -228,6 +241,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      */
     protected async fetchContent(refresh?: boolean): Promise<void> {
         const config = this.block.configsRecord;
+
+        this.loadLayouts(config?.layouts?.value.split(','));
 
         const showCategories = config?.displaycategories?.value == '1';
 
@@ -280,23 +295,23 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             this.courses.future.length === 0,
         );
 
-        this.showSelectorFilter = courses.length > 0 && (this.courses.past.length > 0 || this.courses.future.length > 0 ||
+        this.showTimeSelectorFilter = courses.length > 0 && (this.courses.past.length > 0 || this.courses.future.length > 0 ||
                 typeof courses[0].enddate != 'undefined');
 
         this.showFilters.hidden = this.getShowFilterValue(
-            this.showSelectorFilter && typeof courses[0].hidden != 'undefined' &&
+            this.showTimeSelectorFilter && typeof courses[0].hidden != 'undefined' &&
                 (!config || config.displaygroupinghidden?.value == '1'),
             this.courses.hidden.length === 0,
         );
 
         this.showFilters.favourite = this.getShowFilterValue(
-            this.showSelectorFilter && typeof courses[0].isfavourite != 'undefined' &&
+            this.showTimeSelectorFilter && typeof courses[0].isfavourite != 'undefined' &&
                 (!config || config.displaygroupingstarred?.value == '1' || config.displaygroupingfavourites?.value == '1'),
             this.courses.favourite.length === 0,
         );
 
         this.showFilters.custom = this.getShowFilterValue(
-            this.showSelectorFilter && config?.displaygroupingcustomfield?.value == '1' && !!config?.customfieldsexport?.value,
+            this.showTimeSelectorFilter && config?.displaygroupingcustomfield?.value == '1' && !!config?.customfieldsexport?.value,
             false,
         );
         if (this.showFilters.custom == 'show') {
@@ -305,23 +320,52 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             this.customFilter = [];
         }
 
-        if (this.showSelectorFilter) {
+        if (this.showTimeSelectorFilter) {
             // Check if any selector is shown and not disabled.
-            this.showSelectorFilter = Object.keys(this.showFilters).some((key) => this.showFilters[key] == 'show');
+            this.showTimeSelectorFilter = Object.keys(this.showFilters).some((key) => this.showFilters[key] == 'show');
 
-            if (!this.showSelectorFilter) {
+            if (!this.showTimeSelectorFilter) {
                 // All filters disabled, display all the courses.
                 this.showFilters.all = 'show';
             }
         }
 
-        if (!this.showSelectorFilter) {
+        if (!this.showTimeSelectorFilter) {
             // No selector, display all the courses.
-            this.selectedFilter = 'all';
+            this.timeSelectorFilter = 'all';
         }
-        this.setCourseFilter(this.selectedFilter);
+        this.setCourseFilter(this.timeSelectorFilter);
 
         this.initPrefetchCoursesIcons();
+    }
+
+    /**
+     * Load block layouts.
+     *
+     * @param layouts Config available layouts.
+     */
+    protected loadLayouts(layouts: string[] = []): void {
+        this.layouts = [];
+
+        layouts.forEach((layout) => {
+            if (layout == '') {
+                return;
+            }
+
+            const validLayout: AddonBlockMyOverviewLayouts = layout == 'summary' ? 'list' : layout as AddonBlockMyOverviewLayouts;
+            if (!this.layouts.includes(validLayout)) {
+                this.layouts.push(validLayout);
+            }
+        });
+
+        // If no layout is available use card.
+        if (this.layouts.length == 0) {
+            this.layouts = ['card'];
+        }
+
+        if (!this.layouts.includes(this.selectedLayout)) {
+            this.selectedLayout = this.layouts[0];
+        }
     }
 
     /**
@@ -417,7 +461,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @return Promise resolved when done.
      */
     async prefetchCourses(): Promise<void> {
-        const selected = this.selectedFilter;
+        const selected = this.timeSelectorFilter;
         const initialIcon = this.prefetchCoursesData[selected].icon;
 
         try {
@@ -442,13 +486,14 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * The selected courses filter have changed.
+     * The layout have changed.
      *
-     * @param filter New filter
+     * @param layout New layout.
      */
-    selectedChanged(filter: string): void {
-        this.selectedFilter = filter;
-        this.setCourseFilter(this.selectedFilter);
+    layoutChanged(layout: AddonBlockMyOverviewLayouts): void {
+        this.selectedLayout = layout;
+
+        this.currentSite?.setLocalSiteConfig('AddonBlockMyOverviewLayout', layout);
     }
 
     /**
@@ -457,7 +502,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @param filter Filter name to set.
      */
     protected async setCourseFilter(filter: string): Promise<void> {
-        this.selectedFilter = filter;
+        this.timeSelectorFilter = filter;
 
         if (this.showFilters.custom == 'show' && filter.startsWith('custom-') &&
             typeof this.customFilter[filter.substr(7)] != 'undefined') {
@@ -495,6 +540,16 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 this.setCourseFilter(activeFilter);
             }
         }
+    }
+
+    /**
+     * The time selector courses filter have changed.
+     *
+     * @param filter New filter
+     */
+    timeSelectorChanged(filter: string): void {
+        this.timeSelectorFilter = filter;
+        this.setCourseFilter(this.timeSelectorFilter);
     }
 
     /**
@@ -556,7 +611,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             }
         });
 
-        this.setCourseFilter(this.selectedFilter);
+        this.setCourseFilter(this.timeSelectorFilter);
     }
 
     /**
@@ -580,7 +635,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         if (this.showFilter) {
             this.filteredCourses = this.courses.allincludinghidden;
         } else {
-            this.setCourseFilter(this.selectedFilter);
+            this.setCourseFilter(this.timeSelectorFilter);
         }
     }
 
@@ -614,3 +669,5 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
 }
+
+type AddonBlockMyOverviewLayouts = 'card'|'list';

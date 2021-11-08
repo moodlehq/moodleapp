@@ -4,20 +4,19 @@
     </ion-label>
     <div slot="end" class="flex-row">
         <!-- Download all courses. -->
-        <div *ngIf="downloadCoursesEnabled && downloadEnabled && filteredCourses.length > 1 && !showFilter"
-            class="core-button-spinner">
-            <ion-button *ngIf="!prefetchCoursesData[selectedFilter].loading" fill="clear" color="dark" (click)="prefetchCourses()"
+        <div *ngIf="downloadCoursesEnabled && downloadEnabled && filteredCourses.length > 1 && !showFilter" class="core-button-spinner">
+            <ion-button *ngIf="!prefetchCoursesData[timeSelectorFilter].loading" fill="clear" color="dark" (click)="prefetchCourses()"
                 [attr.aria-label]="'core.courses.downloadcourses' | translate">
-                <ion-icon [name]="prefetchCoursesData[selectedFilter].icon" slot="icon-only" aria-hidden="true">
+                <ion-icon [name]="prefetchCoursesData[timeSelectorFilter].icon" slot="icon-only" aria-hidden="true">
                 </ion-icon>
             </ion-button>
-            <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge"
-                role="progressbar" [attr.aria-valuemax]="prefetchCoursesData[selectedFilter].total"
-                [attr.aria-valuenow]="prefetchCoursesData[selectedFilter].count"
-                [attr.aria-valuetext]="prefetchCoursesData[selectedFilter].badgeA11yText">
-                {{prefetchCoursesData[selectedFilter].badge}}
+            <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[timeSelectorFilter].badge"
+                role="progressbar" [attr.aria-valuemax]="prefetchCoursesData[timeSelectorFilter].total"
+                [attr.aria-valuenow]="prefetchCoursesData[timeSelectorFilter].count"
+                [attr.aria-valuetext]="prefetchCoursesData[timeSelectorFilter].badgeA11yText">
+                {{prefetchCoursesData[timeSelectorFilter].badge}}
             </ion-badge>
-            <ion-spinner *ngIf="prefetchCoursesData[selectedFilter].loading" [attr.aria-label]="'core.loading' | translate">
+            <ion-spinner *ngIf="prefetchCoursesData[timeSelectorFilter].loading" [attr.aria-label]="'core.loading' | translate">
             </ion-spinner>
         </div>
         <core-context-menu>
@@ -40,9 +39,9 @@
     </div>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" [fullscreen]="false">
-    <div class="safe-area-padding-horizontal" [hidden]="showFilter || !showSelectorFilter">
+    <div class="safe-area-padding-horizontal" [hidden]="showFilter || !showTimeSelectorFilter">
         <!-- "Time" selector. -->
-        <core-combobox [label]="'core.show' | translate" [selection]="selectedFilter" (onChange)="selectedChanged($event)">
+        <core-combobox [label]="'core.show' | translate" [selection]="timeSelectorFilter" (onChange)="timeSelectorChanged($event)">
             <ion-select-option class="ion-text-wrap" value="allincludinghidden" *ngIf="showFilters.allincludinghidden != 'hidden'">
                 {{ 'addon.block_myoverview.allincludinghidden' | translate }}
             </ion-select-option>
@@ -77,6 +76,16 @@
         </core-combobox>
     </div>
 
+    <div class="safe-area-padding-horizontal" [hidden]="showFilter || layouts.length <= 1">
+        <!-- "Layouts" selector. -->
+        <core-combobox [label]="'core.show' | translate" [selection]="selectedLayout" (onChange)="layoutChanged($event)">
+            <ng-container *ngFor="let layout of layouts">
+                <ion-select-option class="ion-text-wrap" [value]="layout">{{ 'addon.block_myoverview.'+layout | translate }}
+                </ion-select-option>
+            </ng-container>
+        </core-combobox>
+    </div>
+
     <!-- Filter courses. -->
     <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="courses.filter" (ionInput)="filterChanged($event)"
         (ionCancel)="filterChanged($event)" [placeholder]="'core.courses.filtermycourses' | translate">
@@ -88,7 +97,7 @@
 
     <!-- List of courses. -->
     <div class="safe-area-padding">
-        <ion-grid class="ion-no-padding">
+        <ion-grid class="ion-no-padding" [class.core-no-grid]="selectedLayout != 'card'">
             <ion-row class="ion-no-padding">
                 <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding" size="12" size-sm="6" size-md="6" size-lg="4"
                     size-xl="3">
