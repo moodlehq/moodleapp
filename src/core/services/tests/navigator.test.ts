@@ -21,6 +21,7 @@ import { NavController, Router } from '@singletons';
 import { ActivatedRoute, RouterState } from '@angular/router';
 import { CoreSites } from '@services/sites';
 import { CoreMainMenu } from '@features/mainmenu/services/mainmenu';
+import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 
 describe('CoreNavigator', () => {
 
@@ -118,7 +119,7 @@ describe('CoreNavigator', () => {
         });
     });
 
-    it('navigates to site paths ussing different path formats', async () => {
+    it('navigates to site paths using different path formats', async () => {
         currentMainMenuHandlers.push('users');
 
         const assertNavigation = async (currentPath, sitePath, expectedPath) => {
@@ -136,11 +137,23 @@ describe('CoreNavigator', () => {
         await assertNavigation('/main/home', '/users/user/42', '/main/users/user/42');
     });
 
-    it('navigates to site home', async () => {
+    it('navigates to site home: no handlers loaded', async () => {
         const success = await navigator.navigateToSiteHome();
 
         expect(success).toBe(true);
-        expect(navControllerMock.navigateRoot).toHaveBeenCalledWith(['/main/home'], {});
+        expect(navControllerMock.navigateRoot).toHaveBeenCalledWith(['/main'], {});
+    });
+
+    it('navigates to site home: handlers loaded', async () => {
+        mockSingleton(CoreMainMenuDelegate, {
+            areHandlersLoaded: () => true,
+            getHandlers: () => [{ title: 'Test', page: 'initialpage', icon: '' }],
+        });
+
+        const success = await navigator.navigateToSiteHome();
+
+        expect(success).toBe(true);
+        expect(navControllerMock.navigateRoot).toHaveBeenCalledWith(['/main/initialpage'], {});
     });
 
     it.todo('navigates to a different site');

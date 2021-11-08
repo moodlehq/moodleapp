@@ -26,6 +26,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 
 /**
  * Page that displays the Home.
@@ -96,7 +97,7 @@ export class CoreMainMenuHomePage implements OnInit {
             }
 
             return {
-                page: `/main/home/${handler.page}`,
+                page: `/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${handler.page}`,
                 pageParams: handler.pageParams,
                 title: handler.title,
                 class: handler.class,

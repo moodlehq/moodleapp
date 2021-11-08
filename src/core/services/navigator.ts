@@ -20,7 +20,6 @@ import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 import { CoreConstants } from '@/core/constants';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMainMenu } from '@features/mainmenu/services/mainmenu';
-import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 import { CoreObject } from '@singletons/object';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -31,8 +30,8 @@ import { CoreScreen } from './screen';
 import { CoreApp } from './app';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreError } from '@classes/errors/error';
-
-const DEFAULT_MAIN_MENU_TAB = CoreMainMenuHomeHandlerService.PAGE_NAME;
+import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
+import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 
 /**
  * Redirect payload.
@@ -184,9 +183,12 @@ export class CoreNavigatorService {
      * @return Whether navigation suceeded.
      */
     async navigateToSiteHome(options: Omit<CoreNavigationOptions, 'reset'> & { siteId?: string } = {}): Promise<boolean> {
-        return this.navigateToSitePath(DEFAULT_MAIN_MENU_TAB, {
+        const landingPagePath = this.getLandingTabPage();
+
+        return this.navigateToSitePath(landingPagePath, {
             ...options,
             reset: true,
+            preferCurrentTab: false,
         });
     }
 
@@ -535,8 +537,13 @@ export class CoreNavigatorService {
         path = path.replace(/^(\.|\/main)?\//, '');
 
         const pathRoot = /^[^/]+/.exec(path)?.[0] ?? '';
+        if (!pathRoot) {
+            // No path root, going to the site home.
+            return this.navigate('/main', options);
+        }
+
         const currentMainMenuTab = this.getCurrentMainMenuTab();
-        const isMainMenuTab = pathRoot === currentMainMenuTab || (!currentMainMenuTab && path === DEFAULT_MAIN_MENU_TAB) ||
+        const isMainMenuTab = pathRoot === currentMainMenuTab || (!currentMainMenuTab && path === this.getLandingTabPage()) ||
             await CoreUtils.ignoreErrors(CoreMainMenu.isMainMenuTab(pathRoot), false);
 
         if (!options.preferCurrentTab && isMainMenuTab) {
@@ -553,14 +560,30 @@ export class CoreNavigatorService {
             return this.navigate(`/main/${path}`, options);
         }
 
-        // Open the path within the default main tab.
-        return this.navigate(`/main/${DEFAULT_MAIN_MENU_TAB}`, {
+        // Open the path within the home tab.
+        return this.navigate(`/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}`, {
             ...options,
             params: {
-                redirectPath: `/main/${DEFAULT_MAIN_MENU_TAB}/${path}`,
+                redirectPath: `/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${path}`,
                 redirectOptions: options.params || options.nextNavigation ? options : undefined,
             } as CoreRedirectPayload,
         });
+    }
+
+    /**
+     * Get the first page path using priority.
+     *
+     * @return Landing page path.
+     */
+    protected getLandingTabPage(): string {
+        if (!CoreMainMenuDelegate.areHandlersLoaded()) {
+            // Handlers not loaded yet, landing page is the root page.
+            return '';
+        }
+
+        const handlers = CoreMainMenuDelegate.getHandlers();
+
+        return handlers[0]?.page || '';
     }
 
     /**

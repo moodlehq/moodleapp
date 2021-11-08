@@ -35,7 +35,6 @@ function buildRoutes(injector: Injector): Routes {
                 {
                     path: '',
                     pathMatch: 'full',
-                    redirectTo: CoreMainMenuHomeHandlerService.PAGE_NAME,
                 },
                 {
                     path: CoreMainMenuHomeHandlerService.PAGE_NAME,

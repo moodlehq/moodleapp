@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CanActivate, CanLoad, UrlTree } from '@angular/router';
+import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 import { CoreApp } from '@services/app';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -59,7 +60,7 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
                 redirect.page,
                 redirect.options,
             );
-            const route = Router.parseUrl('/main/home');
+            const route = Router.parseUrl(`/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}`);
 
             route.queryParams = {
                 redirectPath: redirect.page,

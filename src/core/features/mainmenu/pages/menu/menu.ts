@@ -173,6 +173,10 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
         this.loaded = CoreMainMenuDelegate.areHandlersLoaded();
 
+        if (this.loaded && this.tabs[0] && !CoreNavigator.getCurrentMainMenuTab()) {
+            // No tab selected, select the first one.
+            this.mainTabs?.select(this.tabs[0].page);
+        }
     }
 
     /**
