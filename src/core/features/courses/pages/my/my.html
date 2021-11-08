@@ -1,0 +1,32 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <h1>{{ 'core.courses.mycourses' | translate }}</h1>
+        <ion-buttons slot="end">
+            <ion-button *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
+                <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+            <core-context-menu>
+                <core-context-menu-item *ngIf="(downloadCourseEnabled || downloadCoursesEnabled)" [priority]="1000"
+                    [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()" iconAction="toggle"
+                    [(toggle)]="downloadEnabled"></core-context-menu-item>
+                <core-context-menu-item [priority]="500" [content]="'addon.storagemanager.managestorage' | translate"
+                    (action)="manageCoursesStorage()" iconAction="fas-archive"></core-context-menu-item>
+            </core-context-menu>
+            <core-user-menu-button></core-user-menu-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="refresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <ion-list>
+        <!-- My courses blocks. -->
+        <core-block [block]="{name: 'myoverview', visible: true}" contextLevel="user" [instanceId]="userId"
+            [extraData]="{'downloadEnabled': downloadEnabled}">
+        </core-block>
+    </ion-list>
+</ion-content>

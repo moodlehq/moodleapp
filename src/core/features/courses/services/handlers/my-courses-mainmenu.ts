@@ -26,7 +26,7 @@ import { CoreDashboardHomeHandler } from './dashboard-home';
 @Injectable({ providedIn: 'root' })
 export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuHandler {
 
-    static readonly PAGE_NAME = 'courses';
+    static readonly PAGE_NAME = 'my';
 
     name = 'CoreCoursesMyCourses';
     priority = 900;
@@ -35,13 +35,20 @@ export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuH
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        const siteId = CoreSites.getCurrentSiteId();
+        const site = CoreSites.getRequiredCurrentSite();
+
+        const siteId = site.getId();
         const disabled = await CoreCourses.isMyCoursesDisabled(siteId);
 
         if (disabled) {
             return false;
         }
 
+        if (site.isVersionGreaterEqualThan('4.0')) {
+            return true;
+        }
+
+        // Dashboard cannot be disabled on 3.5 or 3.6 so it will never show this tab.
         const dashboardEnabled = await CoreDashboardHomeHandler.isEnabledForSite(siteId);
         const siteHomeEnabled = await CoreSiteHomeHomeHandler.isEnabledForSite(siteId);
 

@@ -60,7 +60,7 @@ const mainMenuHomeSiblingRoutes: Routes = [
 const mainMenuTabRoutes: Routes = [
     {
         path: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('./pages/list/list.module').then(m => m.CoreCoursesListPageModule),
+        loadChildren: () => import('./pages/my/my.module').then(m => m.CoreCoursesMyCoursesPageModule),
     },
 ];
 
