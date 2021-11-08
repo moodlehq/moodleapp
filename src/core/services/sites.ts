@@ -1090,7 +1090,7 @@ export class CoreSitesProvider {
     }
 
     /**
-     * Get the list of sites stored, sorted by URL and full name.
+     * Get the list of sites stored, sorted by sitename, URL and fullname.
      *
      * @param ids IDs of the sites to get. If not defined, return all sites.
      * @return Promise resolved when the sites are retrieved.
@@ -1098,24 +1098,28 @@ export class CoreSitesProvider {
     async getSortedSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
         const sites = await this.getSites(ids);
 
-        // Sort sites by url and fullname.
+        // Sort sites by site name, url and then fullname.
         sites.sort((a, b) => {
-            // First compare by site url without the protocol.
-            const compare = a.siteUrlWithoutProtocol.localeCompare(b.siteUrlWithoutProtocol);
+            // First compare by site name.
+            let textA = CoreTextUtils.cleanTags(a.siteName).toLowerCase().trim();
+            let textB = CoreTextUtils.cleanTags(b.siteName).toLowerCase().trim();
 
+            let compare = textA.localeCompare(textB);
             if (compare !== 0) {
                 return compare;
             }
 
-            // If site url is the same, use fullname instead.
-            const fullNameA = a.fullName?.toLowerCase().trim();
-            const fullNameB = b.fullName?.toLowerCase().trim();
-
-            if (!fullNameA || !fullNameB) {
-                return 0;
+            // If site name is the same, use site url without the protocol.
+            compare = a.siteUrlWithoutProtocol.localeCompare(b.siteUrlWithoutProtocol);
+            if (compare !== 0) {
+                return compare;
             }
 
-            return fullNameA.localeCompare(fullNameB);
+            // Finally use fullname.
+            textA = a.fullName?.toLowerCase().trim() || '';
+            textB = b.fullName?.toLowerCase().trim() || '';
+
+            return textA.localeCompare(textB);
         });
 
         return sites;
