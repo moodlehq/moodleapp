@@ -98,6 +98,11 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
             CoreEvents.on(CoreEvents.LOGIN, this.updateHandlers.bind(this));
             CoreEvents.on(CoreEvents.SITE_UPDATED, this.updateHandlers.bind(this));
             CoreEvents.on(CoreEvents.SITE_PLUGINS_LOADED, this.updateHandlers.bind(this));
+            CoreEvents.on(CoreEvents.SITE_POLICY_AGREED, (data) => {
+                if (data.siteId === CoreSites.getCurrentSiteId()) {
+                    this.updateHandlers();
+                }
+            });
         }
     }
 
@@ -245,14 +250,14 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
         const currentSite = CoreSites.getCurrentSite();
         let promise: Promise<boolean>;
 
-        if (this.updatePromises[siteId] && this.updatePromises[siteId][handler.name]) {
+        if (this.updatePromises[siteId] && this.updatePromises[siteId][handler.name] !== undefined) {
             // There's already an update ongoing for this handler, return the promise.
             return this.updatePromises[siteId][handler.name];
         } else if (!this.updatePromises[siteId]) {
             this.updatePromises[siteId] = {};
         }
 
-        if (!CoreSites.isLoggedIn() || this.isFeatureDisabled(handler, currentSite!)) {
+        if (!currentSite || this.isFeatureDisabled(handler, currentSite)) {
             promise = Promise.resolve(false);
         } else {
             promise = Promise.resolve(handler.isEnabled()).catch(() => false);
