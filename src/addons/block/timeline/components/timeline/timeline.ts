@@ -176,9 +176,15 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
 
             const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(this.courseIds);
 
-            this.timelineCourses.courses.forEach((course) => {
+            this.timelineCourses.courses = this.timelineCourses.courses.filter((course) => {
+                if (courseEvents[course.id].events.length == 0) {
+                    return false;
+                }
+
                 course.events = courseEvents[course.id].events;
                 course.canLoadMore = courseEvents[course.id].canLoadMore;
+
+                return true;
             });
         }
     }

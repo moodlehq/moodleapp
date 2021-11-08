@@ -47,6 +47,6 @@
                 [course]="course" [from]="dataFrom" [to]="dataTo"></addon-block-timeline-events>
         </ng-container>
         <core-empty-box *ngIf="timelineCourses.courses.length == 0" image="assets/img/icons/courses.svg" inline="true"
-            [message]="'addon.block_timeline.nocoursesinprogress' | translate"></core-empty-box>
+            [message]="'addon.block_timeline.noevents' | translate"></core-empty-box>
     </core-loading>
 </core-loading>
