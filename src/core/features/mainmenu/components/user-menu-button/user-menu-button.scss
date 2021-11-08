@@ -1,3 +1,12 @@
-:host-context(ion-tabs.placement-side div.tabs-inner) {
+core-user-avatar {
+    padding: 0;
+}
+
+:host-context(ion-tabs.placement-side ion-toolbar) {
     display: none;
+}
+
+:host-context(ion-toolbar) core-user-avatar ::ng-deep img {
+    padding: 2px !important;
+    border: 1px solid var(--color);
 }
