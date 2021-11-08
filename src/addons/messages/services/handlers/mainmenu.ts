@@ -38,7 +38,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
     static readonly PAGE_NAME = 'messages';
 
     name = 'AddonMessages';
-    priority = 800;
+    priority = 700;
 
     protected handler: CoreMainMenuHandlerToDisplay = {
         icon: 'fas-comments',

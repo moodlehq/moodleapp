@@ -33,7 +33,7 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
     static readonly PAGE_NAME = 'notifications';
 
     name = 'AddonNotifications';
-    priority = 700;
+    priority = 600;
 
     protected handlerData: CoreMainMenuHandlerData = {
         icon: 'fas-bell',

@@ -27,7 +27,7 @@ export class CoreTagMainMenuHandlerService implements CoreMainMenuHandler {
     static readonly PAGE_NAME = 'tag';
 
     name = 'CoreTag';
-    priority = 300;
+    priority = 400;
 
     /**
      * Check if the handler is enabled on a site level.
