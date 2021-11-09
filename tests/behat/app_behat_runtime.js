@@ -352,7 +352,7 @@
             }
         }
 
-        return [...uniqueElements];
+        return Array.from(uniqueElements);
     };
 
     /**
@@ -793,6 +793,23 @@
         return 'OK';
     };
 
+    /**
+     * Get an Angular component instance.
+     *
+     * @param {string} selector Element selector
+     * @param {string} className Constructor class name
+     * @return {object} Component instance
+     */
+    var behatGetComponentInstance = function(selector, className) {
+        const activeElement = Array.from(document.querySelectorAll(`.ion-page:not(.ion-page-hidden) ${selector}`)).pop();
+
+        if (!activeElement || !activeElement.__ngContext__) {
+            return null;
+        }
+
+        return activeElement.__ngContext__.find(node => node?.constructor?.name === className);
+    };
+
     // Make some functions publicly available for Behat to call.
     window.behat = {
         pressStandard : behatPressStandard,
@@ -802,5 +819,6 @@
         press : behatPress,
         setField : behatSetField,
         getHeader : behatGetHeader,
+        getComponentInstance: behatGetComponentInstance,
     };
 })();
