@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRoute, ActivatedRouteSnapshot, Params, UrlSegment } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, UrlSegment } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -20,27 +20,26 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreUtils } from '@services/utils/utils';
 
-/**
- * Helper class to manage the state and routing of a list of items in a page, for example on pages using a split view.
- *
- * @deprecated use CoreListItemsManager instead.
- */
-export abstract class CorePageItemsListManager<Item> {
+import { CoreItemsManager } from './items-manager';
+import { CoreItemsManagerSource } from './items-manager-source';
 
-    protected itemsList: Item[] | null = null;
-    protected itemsMap: Record<string, Item> | null = null;
-    protected hasMoreItems = true;
-    protected selectedItem: Item | null = null;
+/**
+ * Helper class to manage the state and routing of a list of items in a page.
+ */
+export abstract class CoreListItemsManager<Item = unknown> extends CoreItemsManager<Item> {
+
     protected pageRouteLocator?: unknown | ActivatedRoute;
     protected splitView?: CoreSplitViewComponent;
     protected splitViewOutletSubscription?: Subscription;
 
-    constructor(pageRouteLocator: unknown | ActivatedRoute) {
+    constructor(source: CoreItemsManagerSource<Item>, pageRouteLocator: unknown | ActivatedRoute) {
+        super(source);
+
         this.pageRouteLocator = pageRouteLocator;
     }
 
     get items(): Item[] {
-        return this.itemsList || [];
+        return this.getSource().getItems() || [];
     }
 
     get loaded(): boolean {
@@ -48,11 +47,13 @@ export abstract class CorePageItemsListManager<Item> {
     }
 
     get completed(): boolean {
-        return !this.hasMoreItems;
+        return this.getSource().isCompleted();
     }
 
     get empty(): boolean {
-        return this.itemsList === null || this.itemsList.length === 0;
+        const items = this.getSource().getItems();
+
+        return items === null || items.length === 0;
     }
 
     /**
@@ -64,8 +65,7 @@ export abstract class CorePageItemsListManager<Item> {
         this.watchSplitViewOutlet(splitView);
 
         // Calculate current selected item.
-        const route = this.getCurrentPageRoute();
-        this.updateSelectedItem(route?.snapshot ?? null);
+        this.updateSelectedItem();
 
         // Select default item if none is selected on a non-mobile layout.
         if (!CoreScreen.isMobile && this.selectedItem === null && !splitView.isNested) {
@@ -84,6 +84,7 @@ export abstract class CorePageItemsListManager<Item> {
      * Process page destroyed operations.
      */
     destroy(): void {
+        super.destroy();
         this.splitViewOutletSubscription?.unsubscribe();
     }
 
@@ -99,16 +100,6 @@ export abstract class CorePageItemsListManager<Item> {
         );
 
         this.updateSelectedItem(this.getPageRouteFromSplitViewOutlet(splitView.outletRoute) ?? null);
-    }
-
-    /**
-     * Reset items data.
-     */
-    resetItems(): void {
-        this.itemsList = null;
-        this.itemsMap = null;
-        this.hasMoreItems = true;
-        this.selectedItem = null;
     }
 
     /**
@@ -137,65 +128,35 @@ export abstract class CorePageItemsListManager<Item> {
      * @param item Item.
      */
     async select(item: Item): Promise<void> {
-        // Get current route in the page.
-        const route = this.getCurrentPageRoute();
-
-        if (route === null) {
-            return;
-        }
-
-        // If this item is already selected, do nothing.
-        const itemPath = this.getItemPath(item);
-        const selectedItemPath = this.getSelectedItemPath(route.snapshot);
-
-        if (selectedItemPath === itemPath) {
-            return;
-        }
-
-        // Navigate to item.
-        const params = this.getItemQueryParams(item);
-        const reset = this.resetNavigation();
-        const pathPrefix = selectedItemPath ? selectedItemPath.split('/').fill('../').join('') : '';
-
-        await CoreNavigator.navigate(pathPrefix + itemPath, { params, reset });
+        await this.navigateToItem(item, { reset: this.resetNavigation() });
     }
 
     /**
-     * Set the list of items.
-     *
-     * @param items Items.
-     * @param hasMoreItems Whether the list has more items that haven't been loaded.
+     * Reset the list of items.
      */
-    setItems(items: Item[], hasMoreItems: boolean = false): void {
-        this.hasMoreItems = hasMoreItems;
-        this.itemsList = items.slice(0);
-        this.itemsMap = items.reduce((map, item) => {
-            map[this.getItemPath(item)] = item;
+    reset(): void {
+        this.getSource().reset();
+    }
 
-            return map;
-        }, {});
+    /**
+     * Reload the list of items.
+     */
+    async reload(): Promise<void> {
+        await this.getSource().reload();
+    }
 
-        this.updateSelectedItem(this.getPageRouteFromSplitViewOutlet(this.splitView?.outletRoute ?? null));
+    /**
+     * Load items for the next page, if any.
+     */
+    async loadNextPage(): Promise<void> {
+        await this.getSource().loadNextPage();
     }
 
     /**
      * Log activity when the page starts.
      */
     protected async logActivity(): Promise<void> {
-        //
-    }
-
-    /**
-     * Update the selected item given the current route.
-     *
-     * @param route Current route.
-     */
-    protected updateSelectedItem(route: ActivatedRouteSnapshot | null): void {
-        const selectedItemPath = this.getSelectedItemPath(route);
-
-        this.selectedItem = selectedItemPath
-            ? this.itemsMap?.[selectedItemPath] ?? null
-            : null;
+        // Override to log activity.
     }
 
     /**
@@ -215,33 +176,22 @@ export abstract class CorePageItemsListManager<Item> {
      * Get the item that should be selected by default.
      */
     protected getDefaultItem(): Item | null {
-        return this.itemsList?.[0] || null;
+        return this.items[0] || null;
     }
 
     /**
-     * Get the query parameters to use when navigating to an item page.
-     *
-     * @param item Item.
-     * @return Query parameters to use when navigating to the item page.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected getItemQueryParams(item: Item): Params {
-        return {};
+    protected getCurrentPageRoute(): ActivatedRoute | null {
+        if (this.pageRouteLocator instanceof ActivatedRoute) {
+            return CoreNavigator.isRouteActive(this.pageRouteLocator) ? this.pageRouteLocator : null;
+        }
+
+        return CoreNavigator.getCurrentRoute({ pageComponent: this.pageRouteLocator });
     }
 
     /**
-     * Get the path to use when navigating to an item page.
-     *
-     * @param item Item.
-     * @return Path to use when navigating to the item page.
-     */
-    protected abstract getItemPath(item: Item): string;
-
-    /**
-     * Get the path of the selected item given the current route.
-     *
-     * @param route Page route.
-     * @return Path of the selected item in the given route.
+     * @inheritdoc
      */
     protected getSelectedItemPath(route?: ActivatedRouteSnapshot | null): string | null {
         const segments: UrlSegment[] = [];
@@ -251,19 +201,6 @@ export abstract class CorePageItemsListManager<Item> {
         }
 
         return segments.map(segment => segment.path).join('/').replace(/\/+/, '/').trim() || null;
-    }
-
-    /**
-     * Get page route.
-     *
-     * @returns Current page route, if any.
-     */
-    private getCurrentPageRoute(): ActivatedRoute | null {
-        if (this.pageRouteLocator instanceof ActivatedRoute) {
-            return CoreNavigator.isRouteActive(this.pageRouteLocator) ? this.pageRouteLocator : null;
-        }
-
-        return CoreNavigator.getCurrentRoute({ pageComponent: this.pageRouteLocator });
     }
 
     /**

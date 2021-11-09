@@ -60,6 +60,9 @@ const routes: Routes = [
         {
             path: `${COURSE_PAGE_NAME}/${COURSE_INDEX_PATH}/${PARTICIPANTS_PAGE_NAME}/:userId`,
             loadChildren: () => import('@features/user/pages/profile/profile.module').then(m => m.CoreUserProfilePageModule),
+            data: {
+                swipeManagerSource: 'participants',
+            },
         },
     ], () => CoreScreen.isMobile),
 ];

@@ -48,6 +48,7 @@ export type CoreRedirectPayload = {
 export type CoreNavigationOptions = Pick<NavigationOptions, 'animated'|'animation'|'animationDirection'> & {
     params?: Params;
     reset?: boolean;
+    replace?: boolean;
     preferCurrentTab?: boolean; // Default true.
     nextNavigation?: {
         path: string;
@@ -137,6 +138,7 @@ export class CoreNavigatorService {
             animationDirection: options.animationDirection,
             queryParams: CoreObject.isEmpty(options.params ?? {}) ? null : CoreObject.withoutEmpty(options.params),
             relativeTo: path.startsWith('/') ? null : this.getCurrentRoute(),
+            replaceUrl: options.replace,
         });
 
         // Remove objects from queryParams and replace them with an ID.

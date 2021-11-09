@@ -50,6 +50,7 @@ import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
 import { CoreSplitViewComponent } from './split-view/split-view';
 import { CoreStyleComponent } from './style/style';
+import { CoreSwipeNavigationComponent } from './swipe-navigation/swipe-navigation';
 import { CoreTabComponent } from './tabs/tab';
 import { CoreTabsComponent } from './tabs/tabs';
 import { CoreTabsOutletComponent } from './tabs-outlet/tabs-outlet';
@@ -92,6 +93,7 @@ import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-wit
         CoreSitePickerComponent,
         CoreSplitViewComponent,
         CoreStyleComponent,
+        CoreSwipeNavigationComponent,
         CoreTabComponent,
         CoreTabsComponent,
         CoreTabsOutletComponent,
@@ -140,6 +142,7 @@ import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-wit
         CoreSitePickerComponent,
         CoreSplitViewComponent,
         CoreStyleComponent,
+        CoreSwipeNavigationComponent,
         CoreTabComponent,
         CoreTabsComponent,
         CoreTabsOutletComponent,

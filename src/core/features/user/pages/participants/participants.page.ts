@@ -13,15 +13,18 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Params } from '@angular/router';
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
-import { CorePageItemsListManager } from '@classes/page-items-list-manager';
+import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreUser, CoreUserProvider, CoreUserParticipant, CoreUserData } from '@features/user/services/user';
+import { CoreUser, CoreUserParticipant, CoreUserData } from '@features/user/services/user';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreUserParticipantsSource } from '@features/user/classes/participants-source';
+import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
 
 /**
  * Page that displays the list of course participants.
@@ -32,6 +35,7 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestroy {
 
+    courseId!: number;
     participants!: CoreUserParticipantsManager;
     searchQuery: string | null = null;
     searchInProgress = false;
@@ -42,10 +46,12 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     constructor() {
-        let courseId: number;
-
         try {
-            courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.participants = new CoreUserParticipantsManager(
+                CoreItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId]),
+                this,
+            );
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -54,7 +60,6 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
             return;
         }
 
-        this.participants = new CoreUserParticipantsManager(CoreUserParticipantsPage, courseId);
     }
 
     /**
@@ -103,9 +108,11 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
             return;
         }
 
+        const newSource = CoreItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId]);
+
         this.searchQuery = null;
         this.searchInProgress = false;
-        this.participants.resetItems();
+        this.participants.setSource(newSource);
 
         await this.fetchInitialParticipants();
     }
@@ -118,9 +125,11 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
     async search(query: string): Promise<void> {
         CoreApp.closeKeyboard();
 
+        const newSource = CoreItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId, query]);
+
         this.searchInProgress = true;
         this.searchQuery = query;
-        this.participants.resetItems();
+        this.participants.setSource(newSource);
 
         await this.fetchInitialParticipants();
 
@@ -133,8 +142,8 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
      * @param refresher Refresher.
      */
     async refreshParticipants(refresher: IonRefresher): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreUser.invalidateParticipantsList(this.participants.courseId));
-        await CoreUtils.ignoreErrors(this.fetchParticipants());
+        await CoreUtils.ignoreErrors(CoreUser.invalidateParticipantsList(this.courseId));
+        await CoreUtils.ignoreErrors(this.fetchParticipants(true));
 
         refresher?.complete();
     }
@@ -146,7 +155,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
      */
     async fetchMoreParticipants(complete: () => void): Promise<void> {
         try {
-            await this.fetchParticipants(this.participants.items);
+            await this.fetchParticipants(false);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading more participants');
 
@@ -161,38 +170,23 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
      */
     private async fetchInitialParticipants(): Promise<void> {
         try {
-            await this.fetchParticipants();
+            await this.fetchParticipants(true);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading participants');
 
-            this.participants.setItems([]);
+            this.participants.reset();
         }
     }
 
     /**
      * Update the list of participants.
      *
-     * @param loadedParticipants Participants list to continue loading from.
+     * @param reload Whether to reload the list or load the next page.
      */
-    private async fetchParticipants(loadedParticipants: CoreUserParticipant[] | CoreUserData[] = []): Promise<void> {
-        if (this.searchQuery) {
-            const { participants, canLoadMore } = await CoreUser.searchParticipants(
-                this.participants.courseId,
-                this.searchQuery,
-                true,
-                Math.ceil(loadedParticipants.length / CoreUserProvider.PARTICIPANTS_LIST_LIMIT),
-                CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
-            );
-
-            this.participants.setItems((loadedParticipants as CoreUserData[]).concat(participants), canLoadMore);
-        } else {
-            const { participants, canLoadMore } = await CoreUser.getParticipants(
-                this.participants.courseId,
-                loadedParticipants.length,
-            );
-
-            this.participants.setItems((loadedParticipants as CoreUserParticipant[]).concat(participants), canLoadMore);
-        }
+    private async fetchParticipants(reload: boolean): Promise<void> {
+        reload
+            ? await this.participants.reload()
+            : await this.participants.loadNextPage();
 
         this.fetchMoreParticipantsFailed = false;
     }
@@ -202,14 +196,14 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
 /**
  * Helper to manage the list of participants.
  */
-class CoreUserParticipantsManager extends CorePageItemsListManager<CoreUserParticipant | CoreUserData> {
+class CoreUserParticipantsManager extends CoreListItemsManager<CoreUserParticipant | CoreUserData> {
 
-    courseId: number;
+    page: CoreUserParticipantsPage;
 
-    constructor(pageComponent: unknown, courseId: number) {
-        super(pageComponent);
+    constructor(source: CoreUserParticipantsSource, page: CoreUserParticipantsPage) {
+        super(source, CoreUserParticipantsPage);
 
-        this.courseId = courseId;
+        this.page = page;
     }
 
     /**
@@ -222,8 +216,15 @@ class CoreUserParticipantsManager extends CorePageItemsListManager<CoreUserParti
     /**
      * @inheritdoc
      */
+    protected getItemQueryParams(): Params {
+        return { search: this.page.searchQuery };
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected async logActivity(): Promise<void> {
-        await CoreUser.logParticipantsView(this.courseId);
+        await CoreUser.logParticipantsView(this.page.courseId);
     }
 
 }
