@@ -13,9 +13,16 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { AddonCalendar, AddonCalendarProvider } from '../../services/calendar';
+import {
+    AddonCalendar,
+    AddonCalendarProvider,
+    AddonCalendarReminderUnits,
+    AddonCalendarValueAndUnit,
+} from '../../services/calendar';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
+import { CoreDomUtils } from '@services/utils/dom';
+import { AddonCalendarReminderTimeModalComponent } from '@addons/calendar/components/reminder-time-modal/reminder-time-modal';
 
 /**
  * Page that displays the calendar settings.
@@ -26,13 +33,51 @@ import { CoreSites } from '@services/sites';
 })
 export class AddonCalendarSettingsPage implements OnInit {
 
-    defaultTime = -1;
+    defaultTimeLabel = '';
+
+    protected defaultTime: AddonCalendarValueAndUnit = {
+        value: 0,
+        unit: AddonCalendarReminderUnits.MINUTE,
+    };
 
     /**
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
-        this.defaultTime = await AddonCalendar.getDefaultNotificationTime();
+        const defaultTime = await AddonCalendar.getDefaultNotificationTime();
+
+        this.defaultTime = AddonCalendarProvider.convertSecondsToValueAndUnit(defaultTime);
+        this.defaultTimeLabel = AddonCalendar.getUnitValueLabel(this.defaultTime.value, this.defaultTime.unit);
+    }
+
+    /**
+     * Change default time.
+     *
+     * @param e Event.
+     * @return Promise resolved when done.
+     */
+    async changeDefaultTime(e: Event): Promise<void> {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        e.preventDefault();
+
+        const reminderTime = await CoreDomUtils.openModal<number>({
+            component: AddonCalendarReminderTimeModalComponent,
+            componentProps: {
+                initialValue: this.defaultTime,
+                allowDisable: true,
+            },
+        });
+
+        if (reminderTime === undefined) {
+            // User canceled.
+            return;
+        }
+
+        this.defaultTime = AddonCalendarProvider.convertSecondsToValueAndUnit(reminderTime);
+        this.defaultTimeLabel = AddonCalendar.getUnitValueLabel(this.defaultTime.value, this.defaultTime.unit);
+
+        this.updateDefaultTime(reminderTime);
     }
 
     /**

@@ -123,34 +123,26 @@
                 </ion-label>
             </ion-item>
             <ng-container *ngFor="let reminder of reminders">
-                <ion-item *ngIf="reminder.time > 0 || defaultTime > 0" class="ion-text-wrap"
-                    [class.item-dimmed]="(reminder.time == -1 ? (event.timestart - defaultTime) : reminder.time) <= currentTime!">
+                <ion-item *ngIf="reminder.timestamp > 0" class="ion-text-wrap"
+                    [class.item-dimmed]="reminder.timestamp <= currentTime">
                     <ion-label>
-                        <p *ngIf="reminder.time == -1">
-                            {{ 'core.defaultvalue' | translate :{$a: ((event.timestart - defaultTime) * 1000) | coreFormatDate } }}
-                        </p>
-                        <p *ngIf="reminder.time > 0">{{ reminder.time * 1000 | coreFormatDate }}</p>
+                        <p>{{ reminder.label }}</p>
                     </ion-label>
                     <ion-button fill="clear" (click)="cancelNotification(reminder.id, $event)"
-                        [attr.aria-label]="'core.delete' | translate" slot="end"
-                        *ngIf="(reminder.time == -1 ? (event.timestart - defaultTime) : reminder.time) > currentTime!">
+                        [attr.aria-label]="'core.delete' | translate" slot="end" *ngIf="reminder.timestamp > currentTime">
                         <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </ion-item>
             </ng-container>
 
-            <ng-container *ngIf="event.timestart + event.timeduration > currentTime!">
+            <ng-container *ngIf="event.timestart > currentTime">
                 <ion-item>
                     <ion-label>
-                        <ion-button expand="block" color="primary" (click)="notificationPicker.open()">
+                        <ion-button expand="block" color="primary" (click)="addReminder()">
                             {{ 'addon.calendar.setnewreminder' | translate }}
                         </ion-button>
                     </ion-label>
                 </ion-item>
-                <ion-datetime #notificationPicker hidden [(ngModel)]="notificationTimeText"
-                    [displayFormat]="notificationFormat" [min]="notificationMin" [max]="notificationMax"
-                    [doneText]="'core.add' | translate" (ionChange)="addNotificationTime()" [monthNames]="monthNames">
-                </ion-datetime>
             </ng-container>
         </ion-card>
     </core-loading>

@@ -23,6 +23,7 @@ import {
     AddonCalendarEventType,
     AddonCalendarGetEventsEvent,
     AddonCalendarProvider,
+    AddonCalendarReminderUnits,
     AddonCalendarWeek,
     AddonCalendarWeekDay,
 } from './calendar';
@@ -35,6 +36,7 @@ import { makeSingleton } from '@singletons';
 import { AddonCalendarSyncInvalidateEvent } from './calendar-sync';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { CoreCategoryData } from '@features/courses/services/courses';
+import { AddonCalendarReminderDBRecord } from './database/calendar';
 
 /**
  * Context levels enumeration.
@@ -280,6 +282,55 @@ export class AddonCalendarHelperProvider {
             eventFormatted.contextLevel = ContextLevel.USER;
             eventFormatted.contextInstanceId = eventFormatted.userid;
         }
+    }
+
+    /**
+     * Format reminders, adding calculated data.
+     *
+     * @param reminders Reminders.
+     * @param timestart Event timestart.
+     * @param siteId Site ID.
+     * @return Formatted reminders.
+     */
+    async formatReminders(
+        reminders: AddonCalendarReminderDBRecord[],
+        timestart: number,
+        siteId?: string,
+    ): Promise<AddonCalendarEventReminder[]> {
+        const defaultTime = await AddonCalendar.getDefaultNotificationTime(siteId);
+
+        const formattedReminders = <AddonCalendarEventReminder[]> reminders;
+        const eventTimestart = timestart;
+        let defaultTimeValue: number | undefined;
+        let defaultTimeUnit: AddonCalendarReminderUnits | undefined;
+
+        if (defaultTime > 0) {
+            const data = AddonCalendarProvider.convertSecondsToValueAndUnit(defaultTime);
+            defaultTimeValue = data.value;
+            defaultTimeUnit = data.unit;
+        }
+
+        return formattedReminders.map((reminder) => {
+            if (reminder.time === null) {
+                // Default time. Check if default notifications are disabled.
+                if (defaultTimeValue !== undefined && defaultTimeUnit) {
+                    reminder.value = defaultTimeValue;
+                    reminder.unit = defaultTimeUnit;
+                    reminder.timestamp = eventTimestart - reminder.value * reminder.unit;
+                }
+            } else {
+                const data = AddonCalendarProvider.convertSecondsToValueAndUnit(reminder.time);
+                reminder.value = data.value;
+                reminder.unit = data.unit;
+                reminder.timestamp = eventTimestart - reminder.time;
+            }
+
+            if (reminder.value && reminder.unit) {
+                reminder.label = AddonCalendar.getUnitValueLabel(reminder.value, reminder.unit, reminder.time === null);
+            }
+
+            return reminder;
+        });
     }
 
     /**
@@ -724,4 +775,14 @@ export type AddonCalendarFilter = {
 export type AddonCalendarEventTypeOption = {
     name: string;
     value: AddonCalendarEventType;
+};
+
+/**
+ * Formatted event reminder.
+ */
+export type AddonCalendarEventReminder = AddonCalendarReminderDBRecord & {
+    value?: number; // Amount of time.
+    unit?: AddonCalendarReminderUnits; // Units.
+    timestamp?: number; // Timestamp (in seconds).
+    label?: string; // Label to represent the reminder.
 };

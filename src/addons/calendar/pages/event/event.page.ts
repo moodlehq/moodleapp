@@ -20,7 +20,7 @@ import {
     AddonCalendarEventToDisplay,
     AddonCalendarProvider,
 } from '../../services/calendar';
-import { AddonCalendarHelper } from '../../services/calendar-helper';
+import { AddonCalendarEventReminder, AddonCalendarHelper } from '../../services/calendar-helper';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarSync, AddonCalendarSyncEvents, AddonCalendarSyncProvider } from '../../services/calendar-sync';
 import { CoreApp } from '@services/app';
@@ -36,10 +36,9 @@ import { Network, NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
-import { AddonCalendarReminderDBRecord } from '../../services/database/calendar';
 import { ActivatedRoute } from '@angular/router';
 import { CoreConstants } from '@/core/constants';
-import { CoreLang } from '@services/lang';
+import { AddonCalendarReminderTimeModalComponent } from '@addons/calendar/components/reminder-time-modal/reminder-time-modal';
 
 /**
  * Page that displays a single calendar event.
@@ -57,13 +56,11 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     protected syncObserver: CoreEventObserver;
     protected manualSyncObserver: CoreEventObserver;
     protected onlineObserver: Subscription;
+    protected defaultTimeChangedObserver: CoreEventObserver;
     protected currentSiteId: string;
+    protected updateCurrentTime?: number;
 
     eventLoaded = false;
-    notificationFormat?: string;
-    notificationMin?: string;
-    notificationMax?: string;
-    notificationTimeText?: string;
     event?: AddonCalendarEventToDisplay;
     courseId?: number;
     courseName = '';
@@ -72,19 +69,16 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     notificationsEnabled = false;
     moduleUrl = '';
     categoryPath = '';
-    currentTime?: number;
-    defaultTime = 0;
-    reminders: AddonCalendarReminderDBRecord[] = [];
+    currentTime = -1;
+    reminders: AddonCalendarEventReminder[] = [];
     canEdit = false;
     hasOffline = false;
     isOnline = false;
     syncIcon = CoreConstants.ICON_LOADING; // Sync icon.
-    monthNames?: string[];
 
     constructor(
         protected route: ActivatedRoute,
     ) {
-
         this.notificationsEnabled = CoreLocalNotifications.isAvailable();
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
         this.currentSiteId = CoreSites.getCurrentSiteId();
@@ -121,21 +115,35 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 this.isOnline = CoreApp.isOnline();
             });
         });
+
+        // Reload reminders if default notification time changes.
+        this.defaultTimeChangedObserver = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
+            this.loadReminders();
+
+            if (this.event) {
+                AddonCalendar.scheduleEventsNotifications([this.event]);
+            }
+        }, this.currentSiteId);
+
+        // Set and update current time. Use a 5 seconds error margin.
+        this.currentTime = CoreTimeUtils.timestamp();
+        this.updateCurrentTime = window.setInterval(() => {
+            this.currentTime = CoreTimeUtils.timestamp();
+        }, 5000);
     }
 
-    protected async initReminders(): Promise<void> {
-        if (this.notificationsEnabled) {
-            this.monthNames = CoreLang.getMonthNames();
-
-            this.reminders = await AddonCalendar.getEventReminders(this.eventId);
-            this.defaultTime = await AddonCalendar.getDefaultNotificationTime() * 60;
-
-            // Calculate format to use.
-            this.notificationFormat =
-                CoreTimeUtils.fixFormatForDatetime(CoreTimeUtils.convertPHPToMoment(
-                    Translate.instant('core.strftimedatetime'),
-                ));
+    /**
+     * Load reminders.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async loadReminders(): Promise<void> {
+        if (!this.notificationsEnabled || !this.event) {
+            return;
         }
+
+        const reminders = await AddonCalendar.getEventReminders(this.eventId, this.currentSiteId);
+        this.reminders = await AddonCalendarHelper.formatReminders(reminders, this.event.timestart, this.currentSiteId);
     }
 
     /**
@@ -155,7 +163,6 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         this.syncIcon = CoreConstants.ICON_LOADING;
 
         this.fetchEvent();
-        this.initReminders();
     }
 
     /**
@@ -209,6 +216,10 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             const event = await AddonCalendar.getEventById(this.eventId);
             this.event = await AddonCalendarHelper.formatEventData(event);
 
+            // Load reminders, and re-schedule them if needed (maybe the event time has changed).
+            this.loadReminders();
+            AddonCalendar.scheduleEventsNotifications([this.event]);
+
             try {
                 const offlineEvent = AddonCalendarHelper.formatOfflineEventData(
                     await AddonCalendarOffline.getEvent(this.eventId),
@@ -223,29 +234,21 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 this.hasOffline = false;
             }
 
-            this.currentTime = CoreTimeUtils.timestamp();
-            this.notificationMin = CoreTimeUtils.userDate(this.currentTime * 1000, 'YYYY-MM-DDTHH:mm', false);
-            this.notificationMax = CoreTimeUtils.userDate(
-                (this.event!.timestart + this.event!.timeduration) * 1000,
-                'YYYY-MM-DDTHH:mm',
-                false,
-            );
-
             // Reset some of the calculated data.
             this.categoryPath = '';
             this.courseName = '';
             this.courseUrl = '';
             this.moduleUrl = '';
 
-            if (this.event!.moduleIcon) {
+            if (this.event.moduleIcon) {
                 // It's a module event, translate the module name to the current language.
-                const name = CoreCourse.translateModuleName(this.event!.modulename || '');
+                const name = CoreCourse.translateModuleName(this.event.modulename || '');
                 if (name.indexOf('core.mod_') === -1) {
-                    this.event!.modulename = name;
+                    this.event.modulename = name;
                 }
 
                 // Get the module URL.
-                this.moduleUrl = this.event!.url || '';
+                this.moduleUrl = this.event.url || '';
             }
 
             const promises: Promise<void>[] = [];
@@ -310,22 +313,23 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     /**
      * Add a reminder for this event.
      */
-    async addNotificationTime(): Promise<void> {
-        if (this.notificationTimeText && this.event && this.event.id) {
-            let notificationTime = CoreTimeUtils.convertToTimestamp(this.notificationTimeText);
-
-            const currentTime = CoreTimeUtils.timestamp();
-            const minute = Math.floor(currentTime / 60) * 60;
-
-            // Check if the notification time is in the same minute as we are, so the notification is triggered.
-            if (notificationTime >= minute && notificationTime < minute + 60) {
-                notificationTime = currentTime + 1;
-            }
-
-            await AddonCalendar.addEventReminder(this.event, notificationTime);
-            this.reminders = await AddonCalendar.getEventReminders(this.eventId);
-            this.notificationTimeText = undefined;
+    async addReminder(): Promise<void> {
+        if (!this.event || !this.event.id) {
+            return;
         }
+
+        const reminderTime = await CoreDomUtils.openModal<number>({
+            component: AddonCalendarReminderTimeModalComponent,
+        });
+
+        if (reminderTime === undefined) {
+            // User canceled.
+            return;
+        }
+
+        await AddonCalendar.addEventReminder(this.event, reminderTime, this.currentSiteId);
+
+        await this.loadReminders();
     }
 
     /**
@@ -345,7 +349,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             try {
                 await AddonCalendar.deleteEventReminder(id);
-                this.reminders = await AddonCalendar.getEventReminders(this.eventId);
+                await this.loadReminders();
             } catch (error) {
                 CoreDomUtils.showErrorModalDefault(error, 'Error deleting reminder');
             } finally {
@@ -549,6 +553,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         this.syncObserver?.off();
         this.manualSyncObserver?.off();
         this.onlineObserver?.unsubscribe();
+        clearInterval(this.updateCurrentTime);
     }
 
 }
