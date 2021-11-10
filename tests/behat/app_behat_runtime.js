@@ -98,15 +98,20 @@
         var index = requestIndex++;
         var key = 'httprequest-' + index;
 
-        // Add to the list of pending requests.
-        addPending(key);
+        try {
+            // Add to the list of pending requests.
+            addPending(key);
 
-        // Detect when it finishes and remove it from the list.
-        this.addEventListener('loadend', function() {
+            // Detect when it finishes and remove it from the list.
+            this.addEventListener('loadend', function() {
+                removePending(key);
+            });
+
+            return realOpen.apply(this, arguments);
+        } catch (e) {
             removePending(key);
-        });
-
-        return realOpen.apply(this, arguments);
+            throw e;
+        }
     };
 
     var waitingBlocked = false;
