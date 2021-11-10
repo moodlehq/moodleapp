@@ -28,6 +28,7 @@ import { CoreNavigator } from '@services/navigator';
 import { filter } from 'rxjs/operators';
 import { NavigationEnd } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { CoreSites } from '@services/sites';
 
 /**
  * Page that displays the main menu of the app.
@@ -66,10 +67,12 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     morePageName = CoreMainMenuProvider.MORE_PAGE_NAME;
     selectedTab?: string;
     isMainScreen = false;
+    moreBadge = false;
 
     protected subscription?: Subscription;
     protected navSubscription?: Subscription;
     protected keyboardObserver?: CoreEventObserver;
+    protected badgeUpdateObserver?: CoreEventObserver;
     protected resizeFunction: () => void;
     protected backButtonFunction: (event: BackButtonEvent) => void;
     protected selectHistory: string[] = [];
@@ -102,9 +105,15 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
         this.subscription = CoreMainMenuDelegate.getHandlersObservable().subscribe((handlers) => {
             // Remove the handlers that should only appear in the More menu.
-            this.allHandlers = handlers.filter((handler) => !handler.onlyInMore);
+            this.allHandlers = handlers;
 
             this.initHandlers();
+        });
+
+        this.badgeUpdateObserver = CoreEvents.on(CoreMainMenuProvider.MAIN_MENU_HANDLER_BADGE_UPDATED, (data) => {
+            if (data.siteId == CoreSites.getCurrentSiteId()) {
+                this.updateMoreBadge();
+            }
         });
 
         window.addEventListener('resize', this.resizeFunction);
@@ -130,34 +139,52 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
      * Init handlers on change (size or handlers).
      */
     initHandlers(): void {
-        if (this.allHandlers) {
-            this.tabsPlacement = CoreMainMenu.getTabPlacement();
-
-            const handlers = this.allHandlers.slice(0, CoreMainMenu.getNumItems()); // Get main handlers.
-
-            // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.
-            const newTabs: CoreMainMenuHandlerToDisplay[] = [];
-
-            for (let i = 0; i < handlers.length; i++) {
-                const handler = handlers[i];
-
-                // Check if the handler is already in the tabs list. If so, use it.
-                const tab = this.tabs.find((tab) => tab.page == handler.page);
-
-                tab ? tab.hide = false : null;
-                handler.hide = false;
-                handler.id = handler.id || 'core-mainmenu-' + CoreUtils.getUniqueId('CoreMainMenuPage');
-
-                newTabs.push(tab || handler);
-            }
-
-            this.tabs = newTabs;
-
-            // Sort them by priority so new handlers are in the right position.
-            this.tabs.sort((a, b) => (b.priority || 0) - (a.priority || 0));
-
-            this.loaded = CoreMainMenuDelegate.areHandlersLoaded();
+        if (!this.allHandlers) {
+            return;
         }
+        this.tabsPlacement = CoreMainMenu.getTabPlacement();
+
+        const handlers = this.allHandlers
+            .filter((handler) => !handler.onlyInMore)
+            .slice(0, CoreMainMenu.getNumItems()); // Get main handlers.
+
+        // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.
+        const newTabs: CoreMainMenuHandlerToDisplay[] = [];
+
+        for (let i = 0; i < handlers.length; i++) {
+            const handler = handlers[i];
+
+            // Check if the handler is already in the tabs list. If so, use it.
+            const tab = this.tabs.find((tab) => tab.page == handler.page);
+
+            tab ? tab.hide = false : null;
+            handler.hide = false;
+            handler.id = handler.id || 'core-mainmenu-' + CoreUtils.getUniqueId('CoreMainMenuPage');
+
+            newTabs.push(tab || handler);
+        }
+
+        this.tabs = newTabs;
+
+        // Sort them by priority so new handlers are in the right position.
+        this.tabs.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+
+        this.updateMoreBadge();
+
+        this.loaded = CoreMainMenuDelegate.areHandlersLoaded();
+
+    }
+
+    /**
+     * Check all non visible tab handlers for any badge text or number.
+     */
+    updateMoreBadge(): void {
+        if (!this.allHandlers) {
+            return;
+        }
+
+        const numItems = CoreMainMenu.getNumItems();
+        this.moreBadge = this.allHandlers.some((handler, index) => (handler.onlyInMore || index >= numItems) && !!handler.badge);
     }
 
     /**
@@ -169,6 +196,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         window.removeEventListener('resize', this.resizeFunction);
         document.removeEventListener('ionBackButton', this.backButtonFunction);
         this.keyboardObserver?.off();
+        this.badgeUpdateObserver?.off();
     }
 
     /**

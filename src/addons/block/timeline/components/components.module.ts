@@ -15,8 +15,6 @@
 import { NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 import { AddonBlockTimelineComponent } from './timeline/timeline';
 import { AddonBlockTimelineEventsComponent } from './events/events';
@@ -28,8 +26,6 @@ import { AddonBlockTimelineEventsComponent } from './events/events';
     ],
     imports: [
         CoreSharedModule,
-        CoreCoursesComponentsModule,
-        CoreCourseComponentsModule,
     ],
     exports: [
         AddonBlockTimelineComponent,

@@ -23,6 +23,19 @@ import { Device, makeSingleton } from '@singletons';
 import { CoreArray } from '@singletons/array';
 import { CoreTextUtils } from '@services/utils/text';
 
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CoreMainMenuProvider.MAIN_MENU_HANDLER_BADGE_UPDATED]: CoreMainMenuHandlerBadgeUpdatedEventData;
+    }
+
+}
+
 /**
  * Service that provides some features regarding Main Menu.
  */
@@ -32,6 +45,7 @@ export class CoreMainMenuProvider {
     static readonly NUM_MAIN_HANDLERS = 4;
     static readonly ITEM_MIN_WIDTH = 72; // Min with of every item, based on 5 items on a 360 pixel wide screen.
     static readonly MORE_PAGE_NAME = 'more';
+    static readonly MAIN_MENU_HANDLER_BADGE_UPDATED = 'main_menu_handler_badge_updated';
 
     protected tablet = false;
 
@@ -339,3 +353,8 @@ type CustomMenuItemsMap = Record<string, {
         };
     };
 }>;
+
+export type CoreMainMenuHandlerBadgeUpdatedEventData = {
+    handler: string; // Handler name.
+    value: number; // New counter value.
+};

@@ -25,17 +25,17 @@
 
     }
 
-    ion-tab-button ion-icon {
+    ion-tab-button ion-icon.core-tab-icon {
         text-overflow: unset;
         overflow: visible;
         text-align: center;
     }
 
-    ion-tab-button.ios ion-icon {
+    ion-tab-button.ios ion-icon.core-tab-icon {
         font-size: 25px;
     }
 
-    ion-tab-button.md ion-badge {
+    ion-tab-button.md ion-badge.core-tab-badge {
         font-size: 12px;
         font-weight: bold;
         border-radius: 10px;
@@ -48,11 +48,29 @@
         background: var(--background-selected);
     }
 
+    ion-icon.core-tab-badge {
+        color: var(--core-bottom-tabs-badge-color);
+        padding: 3px 6px 2px;
+        @include position(8px, null, null, calc(50% + 6px));
+        min-width: 12px;
+        font-size: 8px;
+        font-weight: normal;
+        box-sizing: border-box;
+        position: absolute;
+        z-index: 1;
+    }
+
+    ion-badge.core-tab-badge {
+        --background: var(--core-bottom-tabs-badge-color);
+        --color: var(--core-bottom-tabs-badge-text-color);
+    }
+
     ion-tabs.placement-bottom ion-tab-button {
-        ion-icon {
+        ion-icon.core-tab-icon {
             transition: margin 500ms ease-in-out, transform 300ms ease-in-out;
         }
-        ion-badge {
+        ion-icon.core-tab-badge,
+        ion-badge.core-tab-badge {
             top: 8px;
         }
     }
@@ -76,7 +94,8 @@
                 min-height: var(--menutabbar-size);
                 flex: 0;
 
-                ion-badge {
+                ion-icon.core-tab-badge,
+                ion-badge.core-tab-badge {
                     top: calc(50% - 20px);
                 }
             }
@@ -114,11 +133,11 @@
 
 :host-context(.core-online),
 :host-context(.core-offline) {
-    ion-tabs.placement-bottom ion-tab-button ion-icon {
+    ion-tabs.placement-bottom ion-tab-button ion-icon.core-tab-icon {
         margin-bottom: 8px;
     }
 
-    ion-tabs.placement-bottom ion-tab-button.ios ion-icon {
+    ion-tabs.placement-bottom ion-tab-button.ios ion-icon.core-tab-icon {
         margin-bottom: 14px;
     }
 

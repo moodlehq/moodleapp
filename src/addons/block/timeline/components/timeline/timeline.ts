@@ -24,6 +24,7 @@ import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/
 import { CoreSite } from '@classes/site';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Component to render a timeline block.
@@ -36,7 +37,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
 
     sort = 'sortbydates';
     filter = 'next30days';
-    currentSite?: CoreSite;
+    currentSite!: CoreSite;
     timeline: {
         events: AddonCalendarEvent[];
         loaded: boolean;
@@ -66,10 +67,18 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.currentSite = CoreSites.getRequiredCurrentSite();
+        try {
+            this.currentSite = CoreSites.getRequiredCurrentSite();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         this.filter = await this.currentSite.getLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
         this.switchFilter(this.filter);
@@ -119,26 +128,19 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
 
     /**
      * Load more events.
-     */
-    async loadMoreTimeline(): Promise<void> {
-        try {
-            await this.fetchMyOverviewTimeline(this.timeline.canLoadMore);
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
-        }
-    }
-
-    /**
-     * Load more events.
      *
-     * @param course Course.
+     * @param course Course. If defined, it will update the course events, timeline otherwise.
      * @return Promise resolved when done.
      */
-    async loadMoreCourse(course: AddonBlockTimelineCourse): Promise<void> {
+    async loadMore(course?: AddonBlockTimelineCourse): Promise<void> {
         try {
-            const courseEvents = await AddonBlockTimeline.getActionEventsByCourse(course.id, course.canLoadMore);
-            course.events = course.events?.concat(courseEvents.events);
-            course.canLoadMore = courseEvents.canLoadMore;
+            if (course) {
+                const courseEvents = await AddonBlockTimeline.getActionEventsByCourse(course.id, course.canLoadMore);
+                course.events = course.events?.concat(courseEvents.events);
+                course.canLoadMore = courseEvents.canLoadMore;
+            } else {
+                await this.fetchMyOverviewTimeline(this.timeline.canLoadMore);
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
         }
@@ -188,12 +190,12 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      */
     switchFilter(filter: string): void {
         this.filter = filter;
-        this.currentSite?.setLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
+        this.currentSite.setLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
 
         switch (this.filter) {
             case 'overdue':
                 this.dataFrom = -14;
-                this.dataTo = 0;
+                this.dataTo = 1;
                 break;
             case 'next7days':
                 this.dataFrom = 0;
@@ -226,7 +228,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      */
     switchSort(sort: string): void {
         this.sort = sort;
-        this.currentSite?.setLocalSiteConfig('AddonBlockTimelineSort', this.sort);
+        this.currentSite.setLocalSiteConfig('AddonBlockTimelineSort', this.sort);
 
         if (!this.timeline.loaded && this.sort == 'sortbydates') {
             this.fetchContent();
@@ -237,7 +239,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
 
 }
 
-type AddonBlockTimelineCourse = CoreEnrolledCourseDataWithOptions & {
+export type AddonBlockTimelineCourse = CoreEnrolledCourseDataWithOptions & {
     events?: AddonCalendarEvent[];
     canLoadMore?: number;
 };
