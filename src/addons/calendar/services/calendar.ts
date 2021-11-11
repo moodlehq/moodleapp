@@ -366,7 +366,7 @@ export class AddonCalendarProvider {
      */
     async formatEventTime(
         event: AddonCalendarEventToDisplay,
-        format: string,
+        format?: string,
         useCommonWords = true,
         seenDay?: number,
         showTime = 0,
@@ -716,18 +716,18 @@ export class AddonCalendarProvider {
         eventConverted.iscategoryevent = originalEvent.eventtype == AddonCalendarEventType.CATEGORY;
         eventConverted.normalisedeventtype = this.getEventType(recordAsRecord);
         try {
-            eventConverted.category = CoreTextUtils.parseJSON(recordAsRecord.category!);
+            eventConverted.category = CoreTextUtils.parseJSON(recordAsRecord.category || '');
         } catch {
             // Ignore errors.
         }
 
         try {
-            eventConverted.course = CoreTextUtils.parseJSON(recordAsRecord.course!);
+            eventConverted.course = CoreTextUtils.parseJSON(recordAsRecord.course || '');
         } catch {
             // Ignore errors.
         }
         try {
-            eventConverted.subscription = CoreTextUtils.parseJSON(recordAsRecord.subscription!);
+            eventConverted.subscription = CoreTextUtils.parseJSON(recordAsRecord.subscription || '');
         } catch {
             // Ignore errors.
         }
@@ -918,6 +918,10 @@ export class AddonCalendarProvider {
         const start = initialTime + (CoreConstants.SECONDS_DAY * daysToStart);
         const end = start + (CoreConstants.SECONDS_DAY * daysInterval) - 1;
 
+        const events = {
+            courseids: <number[]> [],
+            groupids: <number[]> [],
+        };
         const params: AddonCalendarGetCalendarEventsWSParams = {
             options: {
                 userevents: true,
@@ -925,23 +929,20 @@ export class AddonCalendarProvider {
                 timestart: start,
                 timeend: end,
             },
-            events: {
-                courseids: [],
-                groupids: [],
-            },
+            events: events,
         };
 
         const promises: Promise<void>[] = [];
 
         promises.push(CoreCourses.getUserCourses(false, siteId).then((courses) => {
-            params.events!.courseids = courses.map((course) => course.id);
-            params.events!.courseids.push(site.getSiteHomeId()); // Add front page.
+            events.courseids = courses.map((course) => course.id);
+            events.courseids.push(site.getSiteHomeId()); // Add front page.
 
             return;
         }));
 
         promises.push(CoreGroups.getAllUserGroups(siteId).then((groups) => {
-            params.events!.groupids = groups.map((group) => group.id);
+            events.groupids = groups.map((group) => group.id);
 
             return;
         }));
@@ -1697,6 +1698,7 @@ export class AddonCalendarProvider {
         siteId?: string,
     ): Promise<AddonCalendarEvent> {
         const site = await CoreSites.getSite(siteId);
+
         // Add data that is "hidden" in web.
         formData.id = eventId;
         formData.userid = site.getUserId();
@@ -1707,12 +1709,14 @@ export class AddonCalendarProvider {
         } else {
             formData['_qf__core_calendar_local_event_forms_create'] = 1;
         }
+
         const params: AddonCalendarSubmitCreateUpdateFormWSParams = {
             formdata: CoreUtils.objectToGetParams(formData),
         };
         const result =
             await site.write<AddonCalendarSubmitCreateUpdateFormWSResponse>('core_calendar_submit_create_update_form', params);
-        if (result.validationerror) {
+
+        if (result.validationerror || !result.event) {
             // Simulate a WS error.
             throw new CoreWSError({
                 message: Translate.instant('core.invalidformdata'),
@@ -1720,7 +1724,7 @@ export class AddonCalendarProvider {
             });
         }
 
-        return result.event!;
+        return result.event;
     }
 
 }
@@ -2180,7 +2184,8 @@ type AddonCalendarSubmitCreateUpdateFormWSParams = {
 /**
  * Form data on AddonCalendarSubmitCreateUpdateFormWSParams.
  */
-export type AddonCalendarSubmitCreateUpdateFormDataWSParams = Omit<AddonCalendarOfflineEventDBRecord, 'description'> & {
+export type AddonCalendarSubmitCreateUpdateFormDataWSParams = Omit<AddonCalendarOfflineEventDBRecord, 'id'|'description'> & {
+    id?: number;
     description?: {
         text: string;
         format: number;

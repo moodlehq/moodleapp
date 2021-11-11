@@ -110,7 +110,7 @@ export class AddonCalendarOfflineProvider {
     async getAllEditedEventsIds(siteId?: string): Promise<number[]> {
         const events = await this.getAllEditedEvents(siteId);
 
-        return events.map((event) => event.id!);
+        return events.map((event) => event.id);
     }
 
     /**

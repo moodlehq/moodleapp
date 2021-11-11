@@ -117,9 +117,10 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
     async syncCourse(courseId: number, siteId?: string): Promise<CoreCourseSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (this.isSyncing(courseId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(courseId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this discussion, return the promise.
-            return this.getOngoingSync(courseId, siteId)!;
+            return currentSyncPromise;
         }
 
         this.logger.debug(`Try to sync course '${courseId}'`);

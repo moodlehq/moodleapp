@@ -100,9 +100,10 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
     async syncEvents(siteId?: string): Promise<AddonCalendarSyncEvents> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (this.isSyncing(AddonCalendarSyncProvider.SYNC_ID, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(AddonCalendarSyncProvider.SYNC_ID, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this site, return the promise.
-            return this.getOngoingSync(AddonCalendarSyncProvider.SYNC_ID, siteId)!;
+            return currentSyncPromise;
         }
 
         this.logger.debug('Try to sync calendar events for site ' + siteId);
@@ -272,7 +273,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             });
 
             // Event sent, delete the offline data.
-            return AddonCalendarOffline.deleteEvent(event.id!, siteId);
+            return AddonCalendarOffline.deleteEvent(event.id, siteId);
 
         } catch (error) {
             if (!CoreUtils.isWebServiceError(error)) {
@@ -283,7 +284,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             // The WebService has thrown an error, this means that the event cannot be created. Delete it.
             result.updated = true;
 
-            await AddonCalendarOffline.deleteEvent(event.id!, siteId);
+            await AddonCalendarOffline.deleteEvent(event.id, siteId);
 
             // Event deleted, add a warning.
             this.addOfflineDataDeletedWarning(result.warnings, event.name, error);

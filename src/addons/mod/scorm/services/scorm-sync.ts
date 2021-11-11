@@ -579,9 +579,10 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
     syncScorm(scorm: AddonModScormScorm, siteId?: string): Promise<AddonModScormSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (this.isSyncing(scorm.id, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(scorm.id, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this SCORM, return the promise.
-            return this.getOngoingSync(scorm.id, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that SCORM isn't blocked.

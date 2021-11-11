@@ -129,9 +129,10 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
     syncWorkshop(workshopId: number, siteId?: string): Promise<AddonModWorkshopSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (this.isSyncing(workshopId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(workshopId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this discussion, return the promise.
-            return this.getOngoingSync(workshopId, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that workshop isn't blocked.

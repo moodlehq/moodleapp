@@ -222,7 +222,7 @@ export class AddonCalendarHelperProvider {
     formatOfflineEventData(event: AddonCalendarOfflineEventDBRecord): AddonCalendarEventToDisplay {
 
         const eventFormatted: AddonCalendarEventToDisplay = {
-            id: event.id!,
+            id: event.id,
             name: event.name,
             timestart: event.timestart,
             eventtype: event.eventtype,
@@ -386,7 +386,7 @@ export class AddonCalendarHelperProvider {
         year: number,
         month: number,
         siteId?: string,
-    ): Promise<{ daynames: Partial<AddonCalendarDayName>[]; weeks: Partial<AddonCalendarWeek>[] }> {
+    ): Promise<{ daynames: Partial<AddonCalendarDayName>[]; weeks: AddonCalendarWeek[] }> {
         const site = await CoreSites.getSite(siteId);
         // Get starting week day user preference, fallback to site configuration.
         let startWeekDayStr = site.getStoredConfig('calendar_startwday');
@@ -395,7 +395,7 @@ export class AddonCalendarHelperProvider {
 
         const today = moment();
         const isCurrentMonth = today.year() == year && today.month() == month - 1;
-        const weeks: Partial<AddonCalendarWeek>[] = [];
+        const weeks: AddonCalendarWeek[] = [];
 
         let date = moment({ year, month: month - 1, date: 1 });
         for (let mday = 1; mday <= date.daysInMonth(); mday++) {
@@ -422,7 +422,7 @@ export class AddonCalendarHelperProvider {
             }
 
             // Add day to current week.
-            weeks[weeks.length - 1].days!.push({
+            weeks[weeks.length - 1].days.push({
                 events: [],
                 hasevents: false,
                 mday: date.date(),
@@ -501,11 +501,11 @@ export class AddonCalendarHelperProvider {
      */
     getFilteredEvents(
         events: AddonCalendarEventToDisplay[],
-        filter: AddonCalendarFilter,
+        filter: AddonCalendarFilter | undefined,
         categories: { [id: number]: CoreCategoryData },
     ): AddonCalendarEventToDisplay[] {
         // Do not filter.
-        if (!filter.filtered) {
+        if (!filter || !filter.filtered) {
             return events;
         }
 
@@ -526,9 +526,9 @@ export class AddonCalendarHelperProvider {
      * Check if an event should be displayed based on the filter.
      *
      * @param event Event object.
+     * @param categories Categories indexed by ID.
      * @param courseId Course ID to filter.
      * @param categoryId Category ID the course belongs to.
-     * @param categories Categories indexed by ID.
      * @return Whether it should be displayed.
      */
     protected shouldDisplayEvent(
@@ -543,7 +543,7 @@ export class AddonCalendarHelperProvider {
         }
 
         if (event.eventtype == 'category' && categories) {
-            if (!event.categoryid || !Object.keys(categories).length) {
+            if (!event.categoryid || !Object.keys(categories).length || !categoryId) {
                 // We can't tell if the course belongs to the category, display them all.
                 return true;
             }
@@ -554,7 +554,7 @@ export class AddonCalendarHelperProvider {
             }
 
             // Check parent categories.
-            let category = categories[categoryId!];
+            let category = categories[categoryId];
             while (category) {
                 if (!category.parent) {
                     // Category doesn't have parent, stop.
@@ -618,7 +618,7 @@ export class AddonCalendarHelperProvider {
                     await AddonCalendar.getLocalEventsByRepeatIdFromLocalDb(eventData.repeatid, site.id);
 
                 await CoreUtils.allPromises(repeatedEvents.map((event) =>
-                    AddonCalendar.invalidateEvent(event.id!)));
+                    AddonCalendar.invalidateEvent(event.id)));
 
                 return;
             }
@@ -721,7 +721,7 @@ export class AddonCalendarHelperProvider {
      */
     refreshAfterChangeEvent(
         event: {
-            id?: number;
+            id: number;
             repeatid?: number;
             timestart: number;
         },
@@ -730,7 +730,7 @@ export class AddonCalendarHelperProvider {
     ): Promise<void> {
         return this.refreshAfterChangeEvents(
             [{
-                id: event.id!,
+                id: event.id,
                 repeatid: event.repeatid,
                 timestart: event.timestart,
                 repeated: repeated,

@@ -147,9 +147,10 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
 
         const syncId = this.getSyncId(conversationId, userId);
 
-        if (this.isSyncing(syncId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(syncId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this conversation, return the promise.
-            return this.getOngoingSync(syncId, siteId)!;
+            return currentSyncPromise;
         }
 
         return this.addOngoingSync(syncId, this.performSyncDiscussion(conversationId, userId, siteId), siteId);

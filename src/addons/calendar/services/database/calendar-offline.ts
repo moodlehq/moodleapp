@@ -135,7 +135,7 @@ export const CALENDAR_OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
 };
 
 export type AddonCalendarOfflineEventDBRecord = {
-    id?: number; // Negative for offline entries.
+    id: number; // Negative for offline entries.
     name: string;
     timestart: number;
     eventtype: AddonCalendarEventType;

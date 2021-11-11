@@ -171,17 +171,19 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
             if (this.eventId && !this.gotEventData) {
                 // Editing an event, get the event data. Wait for sync first.
+                const eventId = this.eventId;
+
                 promises.push(AddonCalendarSync.waitForSync(AddonCalendarSyncProvider.SYNC_ID).then(async () => {
                     // Do not block if the scope is already destroyed.
                     if (!this.isDestroyed && this.eventId) {
-                        CoreSync.blockOperation(AddonCalendarProvider.COMPONENT, this.eventId);
+                        CoreSync.blockOperation(AddonCalendarProvider.COMPONENT, eventId);
                     }
 
                     let eventForm: AddonCalendarEvent | AddonCalendarOfflineEventDBRecord | undefined;
 
                     // Get the event offline data if there's any.
                     try {
-                        eventForm = await AddonCalendarOffline.getEvent(this.eventId!);
+                        eventForm = await AddonCalendarOffline.getEvent(eventId);
 
                         this.hasOffline = true;
                     } catch {
@@ -189,9 +191,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
                         this.hasOffline = false;
                     }
 
-                    if (this.eventId! > 0) {
+                    if (eventId > 0) {
                         // It's an online event. get its data from server.
-                        const event = await AddonCalendar.getEventById(this.eventId!);
+                        const event = await AddonCalendar.getEventById(eventId);
 
                         if (!eventForm) {
                             eventForm = event; // Use offline data first.
@@ -562,7 +564,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             if (event) {
                 CoreEvents.trigger(
                     AddonCalendarProvider.NEW_EVENT_EVENT,
-                    { eventId: event.id! },
+                    { eventId: event.id },
                     this.currentSite.getId(),
                 );
             } else {
@@ -578,10 +580,15 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      * Discard an offline saved discussion.
      */
     async discard(): Promise<void> {
+        if (!this.eventId) {
+            return;
+        }
+
         try {
             await CoreDomUtils.showConfirm(Translate.instant('core.areyousure'));
+
             try {
-                await AddonCalendarOffline.deleteEvent(this.eventId!);
+                await AddonCalendarOffline.deleteEvent(this.eventId);
 
                 CoreForms.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
 

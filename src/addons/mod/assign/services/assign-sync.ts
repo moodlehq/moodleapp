@@ -163,9 +163,10 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
     async syncAssign(assignId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (this.isSyncing(assignId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(assignId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this assign, return the promise.
-            return this.getOngoingSync(assignId, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that assign isn't blocked.

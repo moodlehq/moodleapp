@@ -198,10 +198,11 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = this.getForumSyncId(forumId, userId);
+        const currentSyncPromise = this.getOngoingSync(syncId, siteId);
 
-        if (this.isSyncing(syncId, siteId)) {
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this discussion, return the promise.
-            return this.getOngoingSync(syncId, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that forum isn't blocked.
@@ -429,10 +430,11 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = this.getDiscussionSyncId(discussionId, userId);
+        const currentSyncPromise = this.getOngoingSync(syncId, siteId);
 
-        if (this.isSyncing(syncId, siteId)) {
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this discussion, return the promise.
-            return this.getOngoingSync(syncId, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that forum isn't blocked.

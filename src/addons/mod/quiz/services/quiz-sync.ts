@@ -263,9 +263,10 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
     syncQuiz(quiz: AddonModQuizQuizWSData, askPreflight?: boolean, siteId?: string): Promise<AddonModQuizSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (this.isSyncing(quiz.id, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(quiz.id, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this quiz, return the promise.
-            return this.getOngoingSync(quiz.id, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that quiz isn't blocked.

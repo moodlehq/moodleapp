@@ -258,7 +258,7 @@ export const CALENDAR_SITE_SCHEMA: CoreSiteSchema = {
 };
 
 export type AddonCalendarEventDBRecord = {
-    id?: number;
+    id: number;
     name: string;
     description: string;
     eventtype: AddonCalendarEventType;

@@ -124,10 +124,11 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
         userId = userId || site.getUserId();
 
         const syncId = this.getSyncId(surveyId, userId);
+        const currentSyncPromise = this.getOngoingSync(syncId, siteId);
 
-        if (this.isSyncing(syncId, siteId)) {
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this site, return the promise.
-            return this.getOngoingSync(syncId, siteId)!;
+            return currentSyncPromise;
         }
 
         this.logger.debug(`Try to sync survey '${surveyId}' for user '${userId}'`);

@@ -214,7 +214,8 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         try {
             // Get the event data.
             const event = await AddonCalendar.getEventById(this.eventId);
-            this.event = await AddonCalendarHelper.formatEventData(event);
+            const formattedEvent = await AddonCalendarHelper.formatEventData(event);
+            this.event = formattedEvent;
 
             // Load reminders, and re-schedule them if needed (maybe the event time has changed).
             this.loadReminders();
@@ -266,7 +267,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             // If it's a group event, get the name of the group.
             if (courseId && this.event.groupid) {
                 promises.push(CoreGroups.getUserGroupsInCourse(courseId).then((groups) => {
-                    const group = groups.find((group) => group.id == this.event!.groupid);
+                    const group = groups.find((group) => group.id == formattedEvent.groupid);
 
                     this.groupName = group ? group.name : '';
 
@@ -289,14 +290,14 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             // Check if event was deleted in offine.
             promises.push(AddonCalendarOffline.isEventDeleted(this.eventId).then((deleted) => {
-                this.event!.deleted = deleted;
+                formattedEvent.deleted = deleted;
 
                 return;
             }));
 
             // Re-calculate the formatted time so it uses the device date.
             promises.push(AddonCalendar.getCalendarTimeFormat().then(async (timeFormat) => {
-                this.event!.formattedtime = await AddonCalendar.formatEventTime(this.event!, timeFormat);
+                formattedEvent.formattedtime = await AddonCalendar.formatEventTime(formattedEvent, timeFormat);
 
                 return;
             }));
