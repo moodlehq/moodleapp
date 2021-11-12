@@ -20,6 +20,7 @@ import { CoreBlockHelper } from '../../services/block-helper';
 import { CoreBlockComponent } from '../block/block';
 import { CoreUtils } from '@services/utils/utils';
 import { IonRefresher } from '@ionic/angular';
+import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 
 /**
  * Component that displays the list of side blocks.
@@ -30,7 +31,7 @@ import { IonRefresher } from '@ionic/angular';
 })
 export class CoreBlockSideBlocksComponent implements OnInit {
 
-    @Input() courseId!: number;
+    @Input() courseId?: number;
     @Input() downloadEnabled = false;
 
     @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
@@ -55,8 +56,10 @@ export class CoreBlockSideBlocksComponent implements OnInit {
     async invalidateBlocks(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        if (CoreBlockHelper.canGetCourseBlocks()) {
+        if (this.courseId) {
             promises.push(CoreCourse.invalidateCourseBlocks(this.courseId));
+        } else {
+            promises.push(CoreCoursesDashboard.invalidateDashboardBlocks());
         }
 
         // Invalidate the blocks.
@@ -76,7 +79,13 @@ export class CoreBlockSideBlocksComponent implements OnInit {
      */
     async loadContent(): Promise<void> {
         try {
-            this.blocks = await CoreBlockHelper.getCourseBlocks(this.courseId);
+            if (this.courseId) {
+                this.blocks = await CoreBlockHelper.getCourseBlocks(this.courseId);
+            } else {
+                const blocks = await CoreCoursesDashboard.getDashboardBlocks();
+
+                this.blocks = blocks.sideBlocks;
+            }
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 

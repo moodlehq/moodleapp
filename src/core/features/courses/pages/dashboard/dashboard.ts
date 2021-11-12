@@ -23,6 +23,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreBlockComponent } from '@features/block/components/block/block';
 import { CoreNavigator } from '@services/navigator';
+import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 
 /**
  * Page that displays the dashboard page.
@@ -36,6 +37,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
     @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
 
+    hasSideBlocks = false;
     searchEnabled = false;
     downloadEnabled = false;
     downloadCourseEnabled = false;
@@ -88,7 +90,11 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
             this.userId = CoreSites.getCurrentSiteUserId();
 
             try {
-                this.blocks = await CoreCoursesDashboard.getDashboardBlocks();
+                const blocks = await CoreCoursesDashboard.getDashboardBlocks();
+
+                this.blocks = blocks.mainBlocks;
+
+                this.hasSideBlocks = CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
             } catch (error) {
                 CoreDomUtils.showErrorModal(error);
 

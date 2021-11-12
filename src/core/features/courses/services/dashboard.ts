@@ -38,14 +38,14 @@ export class CoreCoursesDashboardProvider {
     }
 
     /**
-     * Get dashboard blocks.
+     * Get dashboard blocks from WS.
      *
      * @param userId User ID. Default, current user.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the list of blocks.
      * @since 3.6
      */
-    async getDashboardBlocks(userId?: number, siteId?: string): Promise<CoreCourseBlock[]> {
+    protected async getDashboardBlocksFromWS(userId?: number, siteId?: string): Promise<CoreCourseBlock[]> {
         const site = await CoreSites.getSite(siteId);
 
         const params: CoreBlockGetDashboardBlocksWSParams = {
@@ -61,6 +61,44 @@ export class CoreCoursesDashboardProvider {
         const result = await site.read<CoreBlockGetDashboardBlocksWSResponse>('core_block_get_dashboard_blocks', params, preSets);
 
         return result.blocks || [];
+    }
+
+    /**
+     * Get dashboard blocks.
+     *
+     * @param userId User ID. Default, current user.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of blocks.
+     */
+    async getDashboardBlocks(userId?: number, siteId?: string): Promise<CoreCoursesDashboardBlocks> {
+        const blocks = await CoreCoursesDashboard.getDashboardBlocksFromWS(userId, siteId);
+
+        let mainBlocks: CoreCourseBlock[] = [];
+        let sideBlocks: CoreCourseBlock[] = [];
+
+        blocks.forEach((block) => {
+            if (block.region == 'content' || block.region == 'main') {
+                mainBlocks.push(block);
+            } else {
+                sideBlocks.push(block);
+            }
+        });
+
+        if (mainBlocks.length == 0) {
+            mainBlocks = [];
+            sideBlocks = [];
+
+            blocks.forEach((block) => {
+                if (block.region.match('side')) {
+                    sideBlocks.push(block);
+                } else {
+                    mainBlocks.push(block);
+                }
+            });
+        }
+
+        return { mainBlocks, sideBlocks };
+
     }
 
     /**
@@ -121,6 +159,11 @@ export class CoreCoursesDashboardProvider {
 }
 
 export const CoreCoursesDashboard = makeSingleton(CoreCoursesDashboardProvider);
+
+export type CoreCoursesDashboardBlocks = {
+    mainBlocks: CoreCourseBlock[];
+    sideBlocks: CoreCourseBlock[];
+};
 
 /**
  * Params of core_block_get_dashboard_blocks WS.

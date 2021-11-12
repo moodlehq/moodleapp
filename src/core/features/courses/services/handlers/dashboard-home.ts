@@ -68,7 +68,7 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
         if (dashboardAvailable && blocksEnabled) {
             const blocks = await CoreCoursesDashboard.getDashboardBlocks(undefined, siteId);
 
-            return CoreBlockDelegate.hasSupportedBlock(blocks);
+            return CoreBlockDelegate.hasSupportedBlock(blocks.mainBlocks) || CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
         }
 
         // Check if my overview is enabled. If it's enabled we will fake enabled blocks.
