@@ -1,3 +1,5 @@
 {
-    "blocks": "Blocks"
+    "blocks": "Blocks",
+    "noblocks": "No blocks found!",
+    "opendrawerblocks": "Open block drawer"
 }
