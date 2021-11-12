@@ -483,6 +483,10 @@ export class CoreH5PFramework {
         if (!params.metadata) {
             params.metadata = {};
         }
+        // Add title to metadata.
+        if (typeof params.title === 'string' && !params.metadata.title) {
+            params.metadata.title = params.title;
+        }
         content.metadata = params.metadata;
         content.params = JSON.stringify(typeof params.params != 'undefined' && params.params != null ? params.params : params);
 
@@ -834,6 +838,14 @@ export class CoreH5PFramework {
             content.library.libraryId = mainLibrary.id;
         }
 
+        // Add title to 'params' to be able to add it to metadata later.
+        if (typeof content.title === 'string') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const params = CoreTextUtils.parseJSON<any>(content.params || '{}');
+            params.title = content.title;
+            content.params = JSON.stringify(params);
+        }
+
         const data: Partial<CoreH5PContentDBRecord> = {
             id: undefined,
             jsoncontent: content.params,
@@ -844,23 +856,26 @@ export class CoreH5PFramework {
             fileurl: fileUrl,
             timecreated: undefined,
         };
+        let contentId: number | undefined;
 
         if (typeof content.id != 'undefined') {
             data.id = content.id;
+            contentId = content.id;
         } else {
             data.timecreated = data.timemodified;
         }
 
         await db.insertRecord(CONTENT_TABLE_NAME, data);
 
-        if (!data.id) {
+        if (!contentId) {
             // New content. Get its ID.
             const entry = await db.getRecord<CoreH5PContentDBRecord>(CONTENT_TABLE_NAME, data);
 
             content.id = entry.id;
+            contentId = content.id;
         }
 
-        return content.id!;
+        return contentId;
     }
 
     /**

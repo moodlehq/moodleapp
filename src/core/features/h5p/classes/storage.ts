@@ -173,6 +173,11 @@ export class CoreH5PStorage {
 
         const content: CoreH5PContentBeingSaved = {};
 
+        // Add the 'title' if exists from 'h5p.json' data to be able to add it to metadata later.
+        if (typeof data.mainJsonData.title === 'string') {
+            content.title = data.mainJsonData.title;
+        }
+
         if (!skipContent) {
             // Find main library version.
             if (data.mainJsonData.preloadedDependencies) {
@@ -226,6 +231,7 @@ export type CoreH5PContentBeingSaved = {
     id?: number;
     params?: string;
     library?: CoreH5PContentLibrary;
+    title?: string;
 };
 
 export type CoreH5PContentLibrary = CoreH5PLibraryBasicData & {
