@@ -183,6 +183,18 @@ class behat_app extends behat_base {
     }
 
     /**
+     * Trigger swipe gesture.
+     *
+     * @When /^I swipe to the (left|right) in the app$/
+     * @param string $direction
+     */
+    public function i_swipe_in_the_app(string $direction) {
+        $method = 'swipe' . ucwords($direction);
+
+        $this->evaluate_script("behat.getComponentInstance('core-swipe-navigation', 'CoreSwipeNavigationComponent').$method()");
+    }
+
+    /**
      * Check if elements are selected in the app.
      *
      * @Then /^(".+") should( not)? be selected in the app$/
