@@ -15,6 +15,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { Http } from '@singletons';
+import { IonSearchbar } from '@ionic/angular';
 
 /**
  * Defines license info
@@ -22,7 +23,7 @@ import { Http } from '@singletons';
 interface CoreSettingsLicense {
     name: string;
     version: string;
-    licenses: string;
+    licenses: string | string[];
     repository?: string;
     publisher?: string;
     url?: string;
@@ -44,38 +45,47 @@ export class CoreSettingsLicensesPage implements OnInit {
     loaded = false;
     licenses: CoreSettingsLicense[] = [];
     error = false;
+    textFilter = '';
+    appLicenseVersion: string;
+
+    protected allLicenses: CoreSettingsLicense[] = [];
 
     constructor() {
-        let version = 'v' + CoreConstants.CONFIG.versionname;
-        if (version.indexOf('-') > 0) {
-            version = 'integration';
-        }
+        this.appLicenseVersion = CoreConstants.CONFIG.versionname.indexOf('-') > 0
+            ? 'integration'
+            : 'v' + CoreConstants.CONFIG.versionname;
 
-        this.licensesUrl = 'https://raw.githubusercontent.com/moodlehq/moodleapp/' + version + '/licenses.json';
+        this.licensesUrl = 'https://raw.githubusercontent.com/moodlehq/moodleapp/' + this.appLicenseVersion + '/licenses.json';
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
             const licenses = await Http.get(this.licensesUrl).toPromise();
-            this.licenses = Object.keys(licenses).map((name) => {
+            this.allLicenses = Object.keys(licenses).map((name) => {
                 const license = licenses[name];
 
                 const nameSplit = name.lastIndexOf('@');
                 license.name = name.substring(0, nameSplit);
                 license.version = name.substring(nameSplit + 1);
+                if (Array.isArray(license.licenses)) {
+                    license.licenses = license.licenses.join(', ');
+                }
 
                 if (license.repository) {
                     license.repository = license.repository.replace('git://', 'https://');
                     if (license.repository.indexOf('github.com') > 0) {
-                        license.licenseUrl = license.repository + '/blob/' + license.version + '/' + license.licenseFile;
+                        const version = license.name == 'moodlemobile' ? this.appLicenseVersion : license.version;
+                        license.licenseUrl = license.repository + '/blob/' + version + '/' + license.licenseFile;
                     }
                 }
 
                 return license;
             });
+
+            this.filterLicenses();
 
             this.error = false;
         } catch {
@@ -83,6 +93,38 @@ export class CoreSettingsLicensesPage implements OnInit {
         }
 
         this.loaded = true;
+    }
+
+    /**
+     * Filter licenses using filter text.
+     */
+    filterLicenses(): void {
+        const filter = this.textFilter.trim().toLowerCase();
+
+        if (filter == '') {
+            this.licenses = this.allLicenses;
+
+            return;
+        }
+
+        this.licenses = this.allLicenses.filter((license) => license.name.toLowerCase().indexOf(filter) >=0 ||
+            license.version.toLowerCase().indexOf(filter) >=0 ||
+            typeof license.licenses == 'string' && license.licenses.toLowerCase().indexOf(filter) >=0 ||
+            license.repository && license.repository.toLowerCase().indexOf(filter) >=0 ||
+            license.publisher && license.publisher.toLowerCase().indexOf(filter) >=0 ||
+            license.url && license.url.toLowerCase().indexOf(filter) >=0 ||
+            license.email && license.email.toLowerCase().indexOf(filter) >=0);
+    }
+
+    /**
+     * Text filter changed.
+     *
+     * @param target Searchbar element.
+     */
+    filterChanged(target: IonSearchbar): void {
+        this.textFilter = target.value || '';
+
+        this.filterLicenses();
     }
 
 }
