@@ -245,6 +245,8 @@ export class AddonCalendarHelperProvider {
             format: 1,
             visible: 1,
             offline: true,
+            canedit: event.id < 0,
+            candelete: event.id < 0,
             timeduration: 0,
         };
 

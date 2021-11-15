@@ -521,12 +521,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * @param eventId Event to load.
      */
     gotoEvent(eventId: number): void {
-        if (eventId < 0) {
-            // It's an offline event, go to the edit page.
-            this.openEdit(eventId);
-        } else {
-            CoreNavigator.navigateToSitePath(`/calendar/event/${eventId}`);
-        }
+        CoreNavigator.navigateToSitePath(`/calendar/event/${eventId}`);
     }
 
     /**

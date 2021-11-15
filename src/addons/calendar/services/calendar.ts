@@ -1687,7 +1687,7 @@ export class AddonCalendarProvider {
     /**
      * Submit an event, either to create it or to edit it. It will fail if offline or cannot connect.
      *
-     * @param eventId ID of the event. If undefined/null, create a new event.
+     * @param eventId ID of the event. If undefined/null or negative number, create a new event.
      * @param formData Form data.
      * @param siteId Site ID. If not provided, current site.
      * @return Promise resolved when done.
@@ -1700,7 +1700,7 @@ export class AddonCalendarProvider {
         const site = await CoreSites.getSite(siteId);
 
         // Add data that is "hidden" in web.
-        formData.id = eventId;
+        formData.id = eventId > 0 ? eventId : 0;
         formData.userid = site.getUserId();
         formData.visible = 1;
         formData.instance = 0;
@@ -1722,6 +1722,13 @@ export class AddonCalendarProvider {
                 message: Translate.instant('core.invalidformdata'),
                 errorcode: 'validationerror',
             });
+        }
+
+        if (eventId < 0) {
+            // Offline event has been sent. Change reminders eventid if any.
+            await CoreUtils.ignoreErrors(
+                site.getDb().updateRecords(REMINDERS_TABLE, { eventid: result.event.id }, { eventid: eventId }),
+            );
         }
 
         return result.event;
@@ -2240,6 +2247,7 @@ export type AddonCalendarEventToDisplay = Partial<AddonCalendarCalendarEvent> & 
  */
 export type AddonCalendarUpdatedEventEvent = {
     eventId: number;
+    oldEventId?: number; // Old event ID. Used when an offline event is sent.
     sent?: boolean;
 };
 

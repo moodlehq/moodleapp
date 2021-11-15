@@ -124,6 +124,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
         const result: AddonCalendarSyncEvents = {
             warnings: [],
             events: [],
+            offlineIdMap: {},
             deleted: [],
             toinvalidate: [],
             updated: false,
@@ -256,10 +257,13 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
         ); // Clone the object because it will be modified in the submit function.
 
         try {
-            const newEvent = await AddonCalendar.submitEventOnline(eventId > 0 ? eventId : 0, data, siteId);
+            const newEvent = await AddonCalendar.submitEventOnline(eventId, data, siteId);
 
             result.updated = true;
             result.events.push(newEvent);
+            if (eventId < 0) {
+                result.offlineIdMap[eventId] = newEvent.id;
+            }
 
             // Add data to invalidate.
             const numberOfRepetitions = data.repeat ? data.repeats :
@@ -298,6 +302,7 @@ export const AddonCalendarSync = makeSingleton(AddonCalendarSyncProvider);
 export type AddonCalendarSyncEvents = {
     warnings: string[];
     events: AddonCalendarEvent[];
+    offlineIdMap: Record<number, number>; // Map offline ID with online ID for created events.
     deleted: number[];
     toinvalidate: AddonCalendarSyncInvalidateEvent[];
     updated: boolean;

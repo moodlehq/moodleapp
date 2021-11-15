@@ -564,7 +564,10 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             if (event) {
                 CoreEvents.trigger(
                     AddonCalendarProvider.NEW_EVENT_EVENT,
-                    { eventId: event.id },
+                    {
+                        eventId: event.id,
+                        oldEventId: this.eventId,
+                    },
                     this.currentSite.getId(),
                 );
             } else {
