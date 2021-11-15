@@ -15,7 +15,12 @@
 import { Component, OnInit, OnDestroy, Input, OnChanges, SimpleChange } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData, CoreCourses } from '@features/courses/services/courses';
+import {
+    CoreCoursesProvider,
+    CoreCoursesMyCoursesUpdatedEventData,
+    CoreCourses,
+    CoreCourseSummaryData,
+} from '@features/courses/services/courses';
 import { CoreCourseSearchedDataWithExtraInfoAndOptions, CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
@@ -35,7 +40,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
     @Input() downloadEnabled = false;
 
-    courses: CoreCourseSearchedDataWithExtraInfoAndOptions[] = [];
+    courses: (Omit<CoreCourseSummaryData, 'visible'> & CoreCourseSearchedDataWithExtraInfoAndOptions)[] = [];
     prefetchCoursesData: CorePrefetchStatusInfo = {
         icon: '',
         statusTranslatable: 'core.loading',
@@ -52,7 +57,6 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     protected isDestroyed = false;
     protected coursesObserver?: CoreEventObserver;
     protected updateSiteObserver?: CoreEventObserver;
-    protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting recent courses data.';
 
     constructor() {
@@ -60,7 +64,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         // Generate unique id for scroll element.
@@ -82,12 +86,8 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         this.coursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
             (data) => {
-
-                if (this.shouldRefreshOnUpdatedEvent(data)) {
-                    this.refreshCourseList();
-                }
+                this.refreshCourseList(data);
             },
-
             CoreSites.getCurrentSiteId(),
         );
 
@@ -95,7 +95,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         if (changes.downloadEnabled && !changes.downloadEnabled.previousValue && this.downloadEnabled && this.loaded) {
@@ -105,21 +105,35 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     }
 
     /**
-     * Perform the invalidate content function.
-     *
-     * @return Resolved when done.
+     * @inheritdoc
      */
     protected async invalidateContent(): Promise<void> {
+        const courseIds = this.courses.map((course) => course.id);
+
+        await this.invalidateCourses(courseIds);
+    }
+
+    /**
+     * Helper function to invalidate only selected courses.
+     *
+     * @param courseIds Course Id array.
+     * @return Promise resolved when done.
+     */
+    protected async invalidateCourses(courseIds: number[]): Promise<void> {
         const promises: Promise<void>[] = [];
 
+        // Invalidate course completion data.
         promises.push(CoreCourses.invalidateRecentCourses().finally(() =>
-            // Invalidate course completion data.
-            CoreUtils.allPromises(this.courseIds.map((courseId) =>
+            CoreUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
-        promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
-        if (this.courseIds.length > 0) {
-            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds.join(',')));
+        if (courseIds.length  == 1) {
+            promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions(courseIds[0]));
+        } else {
+            promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
+        }
+        if (courseIds.length > 0) {
+            promises.push(CoreCourses.invalidateCoursesByField('ids', courseIds.join(',')));
         }
 
         await CoreUtils.allPromises(promises).finally(() => {
@@ -128,9 +142,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     }
 
     /**
-     * Fetch the courses for recent courses.
-     *
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
     protected async fetchContent(): Promise<void> {
         const showCategories = this.block.configsRecord && this.block.configsRecord.displaycategories &&
@@ -140,17 +152,17 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         const courseIds = recentCourses.map((course) => course.id);
 
         // Get the courses using getCoursesByField to get more info about each course.
-        const courses: CoreCourseSearchedDataWithExtraInfoAndOptions[] = await CoreCourses.getCoursesByField(
-            'ids',
-            courseIds.join(','),
-        );
+        const courses = await CoreCourses.getCoursesByField('ids', courseIds.join(','));
 
-        // Sort them in the original order.
-        courses.sort((courseA, courseB) => courseIds.indexOf(courseA.id) - courseIds.indexOf(courseB.id));
+        this.courses = recentCourses.map((recentCourse) => {
+            const course = courses.find((course) => recentCourse.id == course.id);
+
+            return Object.assign(recentCourse, course);
+        });
 
         // Get course options and extra info.
         const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);
-        courses.forEach((course) => {
+        this.courses.forEach((course) => {
             course.navOptions = options.navOptions[course.id];
             course.admOptions = options.admOptions[course.id];
 
@@ -161,22 +173,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
         await CoreCoursesHelper.loadCoursesColorAndImage(courses);
 
-        this.courses = courses;
-
         this.initPrefetchCoursesIcons();
-    }
-
-    /**
-     * Refresh the list of courses.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async refreshCourseList(): Promise<void> {
-        CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
-
-        await CoreUtils.ignoreErrors(CoreCourses.invalidateRecentCourses());
-
-        await this.loadContent(true);
     }
 
     /**
@@ -194,44 +191,39 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     }
 
     /**
-     * Whether list should be refreshed based on a EVENT_MY_COURSES_UPDATED event.
+     * Refresh course list based on a EVENT_MY_COURSES_UPDATED event.
      *
      * @param data Event data.
-     * @return Whether to refresh.
+     * @return Promise resolved when done.
      */
-    protected shouldRefreshOnUpdatedEvent(data: CoreCoursesMyCoursesUpdatedEventData): boolean {
+    protected async refreshCourseList(data: CoreCoursesMyCoursesUpdatedEventData): Promise<void> {
         if (data.action == CoreCoursesProvider.ACTION_ENROL) {
             // Always update if user enrolled in a course.
-            return true;
+            return await this.refreshContent();
         }
 
-        if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.getCurrentSiteHomeId() &&
-                this.courses[0] && data.courseId != this.courses[0].id) {
-            // Update list if user viewed a course that isn't the most recent one and isn't site home.
-            return true;
+        const courseIndex = this.courses.findIndex((course) => course.id == data.courseId);
+        const course = this.courses[courseIndex];
+        if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.getCurrentSiteHomeId()) {
+            if (!course) {
+                // Not found, use WS update.
+                return await this.refreshContent();
+            }
+
+            // Place at the begining.
+            this.courses.splice(courseIndex, 1);
+            this.courses.unshift(course);
+
+            await this.invalidateCourses([course.id]);
         }
 
-        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED && data.state == CoreCoursesProvider.STATE_FAVOURITE &&
-                data.courseId && this.hasCourse(data.courseId)) {
-            // Update list if a visible course is now favourite or unfavourite.
-            return true;
+        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED &&
+            data.state == CoreCoursesProvider.STATE_FAVOURITE && course) {
+            course.isfavourite = !!data.value;
+            await this.invalidateCourses([course.id]);
+
+            this.initPrefetchCoursesIcons();
         }
-
-        return false;
-    }
-
-    /**
-     * Check if a certain course is in the list of courses.
-     *
-     * @param courseId Course ID to search.
-     * @return Whether it's in the list.
-     */
-    protected hasCourse(courseId: number): boolean {
-        if (!this.courses) {
-            return false;
-        }
-
-        return !!this.courses.find((course) => course.id == courseId);
     }
 
     /**
@@ -253,7 +245,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;

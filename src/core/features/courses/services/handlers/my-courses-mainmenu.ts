@@ -29,7 +29,7 @@ export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuH
     static readonly PAGE_NAME = 'courses';
 
     name = 'CoreCoursesMyCourses';
-    priority = 850;
+    priority = 900;
 
     /**
      * @inheritdoc
