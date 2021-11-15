@@ -653,9 +653,19 @@ export class CoreLocalNotificationsProvider {
      */
     async trigger(notification: ILocalNotification): Promise<number> {
         const db = await this.appDB;
+        let time = Date.now();
+        if (notification.trigger?.at) {
+            // The type says "at" is a Date, but in Android we can receive timestamps instead.
+            if (typeof notification.trigger.at === 'number') {
+                time = <number> notification.trigger.at;
+            } else {
+                time = notification.trigger.at.getTime();
+            }
+        }
+
         const entry = {
             id: notification.id,
-            at: notification.trigger && notification.trigger.at ? notification.trigger.at.getTime() : Date.now(),
+            at: time,
         };
 
         return db.insertRecord(TRIGGERED_TABLE_NAME, entry);

@@ -225,6 +225,32 @@
                         </ion-item>
                     </ion-radio-group>
                 </div>
+
+                <!-- Reminders. Right now, only allow adding them here for new events. -->
+                <ng-container *ngIf="notificationsEnabled && !eventId">
+                    <ion-item-divider class="addon-calendar-reminders-title">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.calendar.reminders' | translate }}</p>
+                        </ion-label>
+                    </ion-item-divider>
+                    <ion-item *ngFor="let reminder of reminders" class="ion-text-wrap">
+                        <ion-label>
+                            <p>{{ reminder.label }}</p>
+                        </ion-label>
+                        <ion-button fill="clear" (click)="removeReminder(reminder)" [attr.aria-label]="'core.delete' | translate"
+                            slot="end">
+                            <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true"></ion-icon>
+                        </ion-button>
+                    </ion-item>
+
+                    <ion-item>
+                        <ion-label>
+                            <ion-button expand="block" color="light" (click)="addReminder()">
+                                {{ 'addon.calendar.setnewreminder' | translate }}
+                            </ion-button>
+                        </ion-label>
+                    </ion-item>
+                </ng-container>
             </div>
 
             <ion-item>

@@ -33,7 +33,7 @@ import {
     AddonCalendarSubmitCreateUpdateFormDataWSParams,
 } from '../../services/calendar';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
-import { AddonCalendarEventTypeOption, AddonCalendarHelper } from '../../services/calendar-helper';
+import { AddonCalendarEventReminder, AddonCalendarEventTypeOption, AddonCalendarHelper } from '../../services/calendar-helper';
 import { AddonCalendarSync, AddonCalendarSyncProvider } from '../../services/calendar-sync';
 import { CoreSite } from '@classes/site';
 import { Translate } from '@singletons';
@@ -43,6 +43,8 @@ import { CoreError } from '@classes/errors/error';
 import { CoreNavigator } from '@services/navigator';
 import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
+import { CoreLocalNotifications } from '@services/local-notifications';
+import { AddonCalendarReminderTimeModalComponent } from '@addons/calendar/components/reminder-time-modal/reminder-time-modal';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -83,6 +85,10 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     groupControl: FormControl;
     descriptionControl: FormControl;
 
+    // Reminders.
+    notificationsEnabled = false;
+    reminders: AddonCalendarEventCandidateReminder[] = [];
+
     protected courseId!: number;
     protected originalData?: AddonCalendarOfflineEventDBRecord;
     protected currentSite: CoreSite;
@@ -95,6 +101,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         protected fb: FormBuilder,
     ) {
         this.currentSite = CoreSites.getRequiredCurrentSite();
+        this.notificationsEnabled = CoreLocalNotifications.isAvailable();
         this.errors = {
             required: Translate.instant('core.required'),
         };
@@ -140,6 +147,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         this.form.addControl('timedurationuntil', this.fb.control(currentDate));
         this.form.addControl('courseid', this.fb.control(this.courseId));
 
+        this.initReminders();
         this.fetchData().finally(() => {
             this.originalData = CoreUtils.clone(this.form.value);
             this.loaded = true;
@@ -519,7 +527,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         let event: AddonCalendarEvent | AddonCalendarOfflineEventDBRecord;
 
         try {
-            const result = await AddonCalendar.submitEvent(this.eventId, data);
+            const result = await AddonCalendar.submitEvent(this.eventId, data, {
+                reminders: this.reminders,
+            });
             event = result.event;
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, result.sent, this.currentSite.getId());
@@ -631,6 +641,69 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
+     * Init reminders.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async initReminders(): Promise<void> {
+        if (!this.notificationsEnabled) {
+            return;
+        }
+
+        // Check if default reminders are enabled.
+        const defaultTime = await AddonCalendar.getDefaultNotificationTime(this.currentSite.getId());
+        if (defaultTime === 0) {
+            return;
+        }
+
+        const data = AddonCalendarProvider.convertSecondsToValueAndUnit(defaultTime);
+
+        // Add default reminder.
+        this.reminders.push({
+            time: null,
+            value: data.value,
+            unit: data.unit,
+            label: AddonCalendar.getUnitValueLabel(data.value, data.unit, true),
+        });
+    }
+
+    /**
+     * Add a reminder.
+     */
+    async addReminder(): Promise<void> {
+        const reminderTime = await CoreDomUtils.openModal<number>({
+            component: AddonCalendarReminderTimeModalComponent,
+        });
+
+        if (reminderTime === undefined) {
+            // User canceled.
+            return;
+        }
+
+        const data = AddonCalendarProvider.convertSecondsToValueAndUnit(reminderTime);
+
+        // Add reminder.
+        this.reminders.push({
+            time: reminderTime,
+            value: data.value,
+            unit: data.unit,
+            label: AddonCalendar.getUnitValueLabel(data.value, data.unit),
+        });
+    }
+
+    /**
+     * Remove a reminder.
+     *
+     * @param reminder The reminder to remove.
+     */
+    removeReminder(reminder: AddonCalendarEventCandidateReminder): void {
+        const index = this.reminders.indexOf(reminder);
+        if (index != -1) {
+            this.reminders.splice(index, 1);
+        }
+    }
+
+    /**
      * Page destroyed.
      */
     ngOnDestroy(): void {
@@ -639,3 +712,5 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     }
 
 }
+
+type AddonCalendarEventCandidateReminder = Omit<AddonCalendarEventReminder, 'id'|'eventid'>;
