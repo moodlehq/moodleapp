@@ -524,7 +524,13 @@ export class CorePushNotificationsProvider {
         try {
             response = await site.write<CoreUserRemoveUserDeviceWSResponse>('core_user_remove_user_device', data);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreUtils.isWebServiceError(error) || CoreUtils.isExpiredTokenError(error)) {
+                // Cannot unregister. Don't try again.
+                await CoreUtils.ignoreErrors(db.deleteRecords(PENDING_UNREGISTER_TABLE_NAME, {
+                    token: site.getToken(),
+                    siteid: site.getId(),
+                }));
+
                 throw error;
             }
 

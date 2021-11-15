@@ -591,8 +591,7 @@ export class CoreSite {
 
                 return response;
             } catch (error) {
-                if (error.errorcode == 'invalidtoken' ||
-                    (error.errorcode == 'accessexception' && error.message.indexOf('Invalid token - token expired') > -1)) {
+                if (CoreUtils.isExpiredTokenError(error)) {
                     if (initialToken !== this.token && !retrying) {
                         // Token has changed, retry with the new token.
                         preSets.getFromCache = false; // Don't check cache now. Also, it will skip ongoingRequests.
