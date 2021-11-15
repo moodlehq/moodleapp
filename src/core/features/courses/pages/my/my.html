@@ -9,9 +9,13 @@
                 <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <core-context-menu>
-                <core-context-menu-item *ngIf="(downloadCourseEnabled || downloadCoursesEnabled)" [priority]="1000"
-                    [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()" iconAction="toggle"
-                    [(toggle)]="downloadEnabled"></core-context-menu-item>
+                <core-context-menu-item *ngIf="downloadCoursesEnabled && myOverviewBlock && myOverviewBlock.filteredCourses.length > 1"
+                    [priority]="1000" [content]="myOverviewBlock?.prefetchCoursesData.statusTranslatable | translate"
+                    (action)="myOverviewBlock?.prefetchCourses()"
+                    [iconAction]="myOverviewBlock?.prefetchCoursesData.loading ? 'spinner' : myOverviewBlock?.prefetchCoursesData.icon"
+                    [badge]="myOverviewBlock?.prefetchCoursesData.badge"
+                    [badgeA11yText]="myOverviewBlock?.prefetchCoursesData.badgeA11yText">
+                </core-context-menu-item>
                 <core-context-menu-item [priority]="500" [content]="'addon.storagemanager.managestorage' | translate"
                     (action)="manageCoursesStorage()" iconAction="fas-archive"></core-context-menu-item>
             </core-context-menu>
@@ -26,7 +30,7 @@
     <ion-list>
         <!-- My courses blocks. -->
         <core-block [block]="{name: 'myoverview', visible: true}" contextLevel="user" [instanceId]="userId"
-            [extraData]="{'downloadEnabled': downloadEnabled}">
+            [extraData]="{'downloadEnabled': true}">
         </core-block>
     </ion-list>
 </ion-content>

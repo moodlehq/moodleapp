@@ -6,7 +6,7 @@
         <!-- Download all courses. -->
         <div *ngIf="downloadCoursesEnabled && downloadEnabled && filteredCourses.length > 1" class="core-button-spinner">
             <ion-button *ngIf="!prefetchCoursesData.loading" fill="clear" color="dark" (click)="prefetchCourses()"
-                [attr.aria-label]="'core.courses.downloadcourses' | translate">
+                [attr.aria-label]="prefetchCoursesData.statusTranslatable | translate">
                 <ion-icon [name]="prefetchCoursesData.icon" slot="icon-only" aria-hidden="true">
                 </ion-icon>
             </ion-button>

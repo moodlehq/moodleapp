@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { AddonBlockMyOverviewComponent } from '@addons/block/myoverview/components/myoverview/myoverview';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreBlockComponent } from '@features/block/components/block/block';
 import { IonRefresher } from '@ionic/angular';
@@ -19,7 +20,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourses, CoreCoursesProvider } from '../../services/courses';
+import { CoreCourses } from '../../services/courses';
 
 /**
  * Page that shows a my courses.
@@ -34,27 +35,18 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
     @ViewChild(CoreBlockComponent) block!: CoreBlockComponent;
 
     searchEnabled = false;
-    downloadEnabled = false;
-    downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
     userId: number;
+    myOverviewBlock?: AddonBlockMyOverviewComponent;
 
     protected updateSiteObserver: CoreEventObserver;
-    protected downloadEnabledObserver: CoreEventObserver;
 
     constructor() {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
-            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-
-            this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && this.downloadEnabled;
         }, CoreSites.getCurrentSiteId());
-
-        this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
-            this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && data.enabled;
-        });
 
         this.userId = CoreSites.getCurrentSiteUserId();
     }
@@ -64,19 +56,23 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
-        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
-        this.downloadEnabled =
-            (this.downloadCourseEnabled || this.downloadCoursesEnabled) && CoreCourses.getCourseDownloadOptionsEnabled();
+        this.loadBlock();
 
     }
 
     /**
-     * Switch download enabled.
+     * Load my overview block instance.
      */
-    switchDownload(): void {
-        CoreCourses.setCourseDownloadOptionsEnabled(this.downloadEnabled);
+    protected loadBlock(): void {
+        setTimeout(() => {
+            if (!this.block) {
+                return this.loadBlock();
+            }
+
+            this.myOverviewBlock = this.block?.dynamicComponent?.instance as AddonBlockMyOverviewComponent;
+        }, 500);
     }
 
     /**
@@ -111,7 +107,6 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.updateSiteObserver?.off();
-        this.downloadEnabledObserver?.off();
     }
 
 }

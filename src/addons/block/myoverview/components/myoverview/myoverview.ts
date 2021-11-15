@@ -415,7 +415,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      *
      * @return Promise resolved when done.
      */
-    protected async initPrefetchCoursesIcons(): Promise<void> {
+    async initPrefetchCoursesIcons(): Promise<void> {
         if (this.prefetchIconsInitialized || !this.downloadEnabled) {
             // Already initialized.
             return;
