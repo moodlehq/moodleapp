@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input, OnChanges, SimpleChange } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -22,12 +22,10 @@ import {
     CoreCourseSummaryData,
 } from '@features/courses/services/courses';
 import { CoreCourseSearchedDataWithExtraInfoAndOptions, CoreCoursesHelper } from '@features/courses/services/courses-helper';
-import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Component to render a recent courses block.
@@ -36,24 +34,15 @@ import { CoreDomUtils } from '@services/utils/dom';
     selector: 'addon-block-recentlyaccessedcourses',
     templateUrl: 'addon-block-recentlyaccessedcourses.html',
 })
-export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnChanges, OnDestroy {
+export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
 
     @Input() downloadEnabled = false;
 
     courses: (Omit<CoreCourseSummaryData, 'visible'> & CoreCourseSearchedDataWithExtraInfoAndOptions)[] = [];
-    prefetchCoursesData: CorePrefetchStatusInfo = {
-        icon: '',
-        statusTranslatable: 'core.loading',
-        status: '',
-        loading: true,
-        badge: '',
-    };
 
     downloadCourseEnabled = false;
-    downloadCoursesEnabled = false;
     scrollElementId!: string;
 
-    protected prefetchIconsInitialized = false;
     protected isDestroyed = false;
     protected coursesObserver?: CoreEventObserver;
     protected updateSiteObserver?: CoreEventObserver;
@@ -74,12 +63,10 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
         // Refresh the enabled flags if enabled.
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-            this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
         }, CoreSites.getCurrentSiteId());
 
@@ -92,16 +79,6 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         );
 
         super.ngOnInit();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        if (changes.downloadEnabled && !changes.downloadEnabled.previousValue && this.downloadEnabled && this.loaded) {
-            // Download all courses is enabled now, initialize it.
-            this.initPrefetchCoursesIcons();
-        }
     }
 
     /**
@@ -136,9 +113,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
             promises.push(CoreCourses.invalidateCoursesByField('ids', courseIds.join(',')));
         }
 
-        await CoreUtils.allPromises(promises).finally(() => {
-            this.prefetchIconsInitialized = false;
-        });
+        await CoreUtils.allPromises(promises);
     }
 
     /**
@@ -172,22 +147,6 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         });
 
         await CoreCoursesHelper.loadCoursesColorAndImage(courses);
-
-        this.initPrefetchCoursesIcons();
-    }
-
-    /**
-     * Initialize the prefetch icon for selected courses.
-     */
-    protected async initPrefetchCoursesIcons(): Promise<void> {
-        if (this.prefetchIconsInitialized || !this.downloadEnabled) {
-            // Already initialized.
-            return;
-        }
-
-        this.prefetchIconsInitialized = true;
-
-        this.prefetchCoursesData = await CoreCourseHelper.initPrefetchCoursesIcons(this.courses, this.prefetchCoursesData);
     }
 
     /**
@@ -221,26 +180,6 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
             data.state == CoreCoursesProvider.STATE_FAVOURITE && course) {
             course.isfavourite = !!data.value;
             await this.invalidateCourses([course.id]);
-
-            this.initPrefetchCoursesIcons();
-        }
-    }
-
-    /**
-     * Prefetch all the shown courses.
-     *
-     * @return Promise resolved when done.
-     */
-    async prefetchCourses(): Promise<void> {
-        const initialIcon = this.prefetchCoursesData.icon;
-
-        try {
-            await CoreCourseHelper.prefetchCourses(this.courses, this.prefetchCoursesData);
-        } catch (error) {
-            if (!this.isDestroyed) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-                this.prefetchCoursesData.icon = initialIcon;
-            }
         }
     }
 
