@@ -20,6 +20,8 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { IonRefresher } from '@ionic/angular';
 import { CoreCourseModuleCompletionData, CoreCourseSectionWithStatus } from '@features/course/services/course-helper';
+import { CoreBlockHelper } from '@features/block/services/block-helper';
+import { CoreCourse } from '@features/course/services/course';
 
 /**
  * Component to display single activity format. It will determine the right component to use and instantiate it.
@@ -44,18 +46,21 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
 
     componentClass?: Type<unknown>; // The class of the component to render.
     data: Record<string | number, unknown> = {}; // Data to pass to the component.
+    hasBlocks = false;
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     async ngOnChanges(changes: { [name: string]: SimpleChange }): Promise<void> {
-        if (!changes.course || !changes.sections) {
+        if (!changes.course && !changes.sections) {
             return;
         }
 
         if (!this.course || !this.sections || !this.sections.length) {
             return;
         }
+
+        this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(this.course.id);
 
         // In single activity the module should only have 1 section and 1 module. Get the module.
         const module = this.sections?.[0].modules?.[0];
@@ -85,6 +90,15 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
         }
 
         await this.dynamicComponent?.callComponentFunction('doRefresh', [refresher, done]);
+
+        if (this.course) {
+            const courseId = this.course.id;
+            await CoreCourse.invalidateCourseBlocks(courseId).then(async () => {
+                this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(courseId);
+
+                return;
+            });
+        }
     }
 
     /**

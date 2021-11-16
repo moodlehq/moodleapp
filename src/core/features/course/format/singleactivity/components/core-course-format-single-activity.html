@@ -1,1 +1,4 @@
 <core-dynamic-component [component]="componentClass" [data]="data"></core-dynamic-component>
+
+<core-block-side-blocks-button *ngIf="course && hasBlocks" [courseId]="course.id" [downloadEnabled]="downloadEnabled">
+</core-block-side-blocks-button>
