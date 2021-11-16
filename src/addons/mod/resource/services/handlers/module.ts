@@ -15,7 +15,7 @@
 import { CoreConstants } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
@@ -224,6 +224,32 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
             icon: await CoreCourse.getModuleIconSrc(module.modname, module.modicon, mimetypeIcon),
             extra: extra.join(' '),
         };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getIconSrc(module?: CoreCourseWSModule): Promise<string | undefined> {
+        if (!module) {
+            return;
+        }
+        let mimetypeIcon = '';
+
+        if ('contentsinfo' in module && module.contentsinfo) {
+            // No need to use the list of files.
+            const mimetype = module.contentsinfo.mimetypes[0];
+            if (mimetype) {
+                mimetypeIcon = CoreMimetypeUtils.getMimetypeIcon(mimetype);
+            }
+
+        } else if (module.contents && module.contents[0]) {
+            const files = module.contents;
+            const file = files[0];
+
+            mimetypeIcon = CoreMimetypeUtils.getFileIcon(file.filename || '');
+        }
+
+        return await CoreCourse.getModuleIconSrc(module.modname, module.modicon, mimetypeIcon);
     }
 
     /**
