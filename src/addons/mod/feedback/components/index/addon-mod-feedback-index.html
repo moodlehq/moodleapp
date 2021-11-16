@@ -1,14 +1,14 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt" [showBrowserWarning]="false">
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
+            iconAction="fas-external-link-alt" [showBrowserWarning]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
             (action)="expandDescription()" iconAction="fas-arrow-right">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
-            iconAction="far-newspaper" (action)="gotoBlog()">
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" iconAction="far-newspaper"
+            (action)="gotoBlog()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
             (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
@@ -29,13 +29,9 @@
 <core-loading [hideUntil]="loaded">
 
     <!-- Activity info. -->
-    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
-        (completionChanged)="onCompletionChange()">
+    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
+        [component]="component" [componentId]="componentId" [courseId]="courseId">
     </core-course-module-info>
-
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
-        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-    </core-course-module-description>
 
     <core-tabs [hideUntil]="tabsReady" [selectedIndex]="firstSelectedTab">
         <core-tab [title]="'addon.mod_feedback.overview' | translate" id="overview" (ionSelect)="tabChanged('overview')">
@@ -43,8 +39,8 @@
                 <ng-container *ngTemplateOutlet="tabOverview"></ng-container>
             </ng-template>
         </core-tab>
-        <core-tab *ngIf="showAnalysis && access && access.canviewreports" id="analysis"
-            [title]="'addon.mod_feedback.analysis' | translate" (ionSelect)="tabChanged('analysis')">
+        <core-tab *ngIf="showAnalysis && access && access.canviewreports" id="analysis" [title]="'addon.mod_feedback.analysis' | translate"
+            (ionSelect)="tabChanged('analysis')">
             <ng-template>
                 <ng-container *ngTemplateOutlet="tabAnalysis"></ng-container>
             </ng-template>
@@ -73,10 +69,8 @@
                 </ion-select-option>
             </ion-select>
         </ion-item>
-        <ion-item class="ion-text-wrap" (click)="openRespondents()"
-            [class.hide-detail]="!(access.canviewreports && completedCount > 0)"
-            detail="true"
-            [button]="access.canviewreports && completedCount > 0">
+        <ion-item class="ion-text-wrap" (click)="openRespondents()" [class.hide-detail]="!(access.canviewreports && completedCount > 0)"
+            detail="true" [button]="access.canviewreports && completedCount > 0">
             <ion-label>
                 <h2>{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</h2>
             </ion-label>
@@ -87,8 +81,8 @@
                 </span>
             </ion-badge>
         </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="!access.isanonymous && access.canviewreports" (click)="openNonRespondents()"
-            detail="true" button>
+        <ion-item class="ion-text-wrap" *ngIf="!access.isanonymous && access.canviewreports" (click)="openNonRespondents()" detail="true"
+            button>
             <ion-label>
                 <h2>{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</h2>
             </ion-label>
@@ -208,12 +202,12 @@
                     <ion-label>
                         <p class="item-heading">
                             {{item.num}}. <core-format-text [component]="component" [componentId]="componentId" [text]="item.name"
-                            contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                             </core-format-text>
                         </p>
                         <p>
-                            <core-format-text [component]="component" [componentId]="componentId" [text]="item.label"
-                                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                            <core-format-text [component]="component" [componentId]="componentId" [text]="item.label" contextLevel="module"
+                                [contextInstanceId]="module.id" [courseId]="courseId">
                             </core-format-text>
                         </p>
                         <ng-container [ngSwitch]="item.templateName">
@@ -232,8 +226,7 @@
                             </ng-container>
                             <ng-container *ngSwitchCase="'chart'">
                                 <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300"
-                                    contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true"
-                                    [courseId]="courseId">
+                                    contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true" [courseId]="courseId">
                                 </core-chart>
                                 <p *ngIf="item.average">
                                     {{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}

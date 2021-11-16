@@ -28,7 +28,9 @@ import { Component, Input } from '@angular/core';
  *
  * Example usage:
  *
- * <core-course-module-description [description]="myDescription"></core-course-module-description
+ * <core-course-module-description [description]="myDescription"></core-course-module-description>
+ *
+ * @deprecated since 4.0 use core-course-module-info
  */
 @Component({
     selector: 'core-course-module-description',

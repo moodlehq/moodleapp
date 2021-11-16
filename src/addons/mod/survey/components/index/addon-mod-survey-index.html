@@ -1,21 +1,21 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt" [showBrowserWarning]="false">
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
+            iconAction="fas-external-link-alt" [showBrowserWarning]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
             (action)="expandDescription()" iconAction="fas-arrow-right">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
-            iconAction="far-newspaper" (action)="gotoBlog()">
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" iconAction="far-newspaper"
+            (action)="gotoBlog()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
             (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && hasOffline && isOnline" [priority]="600"
-            [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)"
-            [iconAction]="syncIcon" [closeOnClick]="false">
+            [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon"
+            [closeOnClick]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)"
             [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
@@ -30,14 +30,10 @@
 <core-loading [hideUntil]="loaded" class="safe-area-padding">
 
     <!-- Activity info. -->
-    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
-        (completionChanged)="onCompletionChange()">
+    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()"
+        [description]="survey && !survey.surveydone && !hasOffline && description" [component]="component"
+        [componentId]="componentId" [courseId]="courseId">
     </core-course-module-info>
-
-    <core-course-module-description *ngIf="survey && !survey.surveydone && !hasOffline" [description]="description"
-        [component]="component" [componentId]="componentId" contextLevel="module" [contextInstanceId]="module.id"
-        [courseId]="courseId">
-    </core-course-module-description>
 
     <!-- Survey already done -->
     <ion-card class="ion-padding" *ngIf="survey && survey.surveydone">
@@ -63,7 +59,7 @@
             <ng-container *ngFor="let question of questions; let questionIndex=index; let isEven=even;"
                 class="ion-no-padding ion-text-wrap">
                 <!-- Parent question (Category header) -->
-                <ng-container *ngIf="question.multiArray?.length" >
+                <ng-container *ngIf="question.multiArray?.length">
                     <h3 class="ion-padding-horizontal" [class.ion-padding-top]="questionIndex == 1">{{ question.text }}</h3>
                     <ion-row class="ion-align-items-center ion-hide-md-down ion-padding">
                         <ion-col size="7" class="ion-padding">{{ 'addon.mod_survey.responses' | translate }}</ion-col>
@@ -73,15 +69,16 @@
                         </ion-col>
                     </ion-row>
                     <ion-item class="ion-text-wrap addon-mod_survey-question" [class.even]="isEven" lines="full">
-                        <ion-label><p>{{ question.intro }}</p></ion-label>
+                        <ion-label>
+                            <p>{{ question.intro }}</p>
+                        </ion-label>
                     </ion-item>
                 </ng-container>
 
                 <!-- Subquestion -->
                 <ng-container *ngIf="question.parent !== 0">
                     <ion-radio-group [(ngModel)]="answers[question.name]" [required]="question.required" [name]="question.name">
-                        <ion-row *ngIf="question.parent !== 0" class="ion-align-items-center ion-padding-horizontal"
-                            [class.even]="isEven">
+                        <ion-row *ngIf="question.parent !== 0" class="ion-align-items-center ion-padding-horizontal" [class.even]="isEven">
 
                             <ion-col size="7">
                                 <ion-label id="addon-mod_survey-{{question.id}}">
@@ -93,19 +90,17 @@
 
                             <!-- Tablet view: radio buttons -->
                             <ion-col class="ion-hide-md-down ion-text-center" size="1"
-                                *ngFor="let option of question.optionsArray; let value=index;"
-                                >
+                                *ngFor="let option of question.optionsArray; let value=index;">
                                 <!-- Empty slot to avoid errors on migration tslint checks -->
                                 <ion-radio [value]="value + 1" [attr.aria-label]="question.num + '. '+question.text + ': ' + option">
                                 </ion-radio>
                             </ion-col>
                             <ion-col class="ion-hide-md-up" size="5">
                                 <ion-select class="ion-padding" [(ngModel)]="answers[question.name]" [required]="question.required"
-                                    [attr.aria-labelledby]="'addon-mod_survey-'+question.id" interface="action-sheet"
-                                    [name]="question.name" [interfaceOptions]="{header: question.text}">
+                                    [attr.aria-labelledby]="'addon-mod_survey-'+question.id" interface="action-sheet" [name]="question.name"
+                                    [interfaceOptions]="{header: question.text}">
                                     <ion-select-option value="-1" selected disabled>{{ 'core.choose' | translate }}</ion-select-option>
-                                    <ion-select-option *ngFor="let option of question.optionsArray; let value=index;"
-                                        [value]="value +1">
+                                    <ion-select-option *ngFor="let option of question.optionsArray; let value=index;" [value]="value +1">
                                         {{option}}
                                     </ion-select-option>
                                 </ion-select>
@@ -126,8 +121,8 @@
                         </ion-col>
                         <ion-col size="5">
                             <ion-select class="ion-padding" [(ngModel)]="answers[question.name]" [required]="question.required"
-                                [attr.aria-labelledby]="'addon-mod_survey-'+question.id" interface="action-sheet"
-                                [name]="question.name" [interfaceOptions]="{header: question.text}">
+                                [attr.aria-labelledby]="'addon-mod_survey-'+question.id" interface="action-sheet" [name]="question.name"
+                                [interfaceOptions]="{header: question.text}">
                                 <ion-select-option *ngFor="let option of question.optionsArray; let value=index;" [value]="value">
                                     {{option}}
                                 </ion-select-option>

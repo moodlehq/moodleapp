@@ -1,18 +1,37 @@
-<ion-card *ngIf="module.dates?.length || (module.completiondata && (module.completiondata.isautomatic || showManualCompletion))">
-    <ion-item class="ion-text-wrap">
-        <ion-label>
-            <!-- Activity dates. -->
-            <div *ngIf="module.dates && module.dates.length" class="core-module-dates">
-                <p *ngFor="let date of module.dates">
-                    <strong>{{ date.label }}</strong> {{ date.timestamp * 1000 | coreFormatDate:'strftimedatetime' }}
-                </p>
-            </div>
+<ion-item class="ion-text-wrap" lines="none">
+    <core-mod-icon slot="start" [modicon]="modicon" [modname]="module.modname" [componentId]="module.instance">
+    </core-mod-icon>
+    <ion-label>
+        <h2>
+            <core-format-text [text]="module.name" contextLevel="module" [component]="component" [componentId]="componentId"
+                [contextInstanceId]="module.id" [courseId]="courseId">
+            </core-format-text>
+        </h2>
+        <ng-content select="[title]"></ng-content>
+    </ion-label>
+</ion-item>
+<ion-item class="ion-text-wrap" *ngIf="description" lines="none">
+    <ion-label>
+        <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
+            [contextInstanceId]="module.id" [courseId]="courseId" maxHeight="120">
+        </core-format-text>
+    </ion-label>
+</ion-item>
+<ng-content select="[description]"></ng-content>
+<ion-item class="ion-text-wrap" lines="none" *ngIf="showCompletion && (module.dates?.length || module.completiondata)">
+    <ion-label>
+        <!-- Activity dates. -->
+        <div *ngIf="module.dates && module.dates.length" class="core-module-dates">
+            <p *ngFor="let date of module.dates">
+                <strong>{{ date.label }}</strong> {{ date.timestamp * 1000 | coreFormatDate:'strftimedatetime' }}
+            </p>
+        </div>
 
-            <!-- Module completion. -->
-            <core-course-module-completion *ngIf="module.completiondata" [completion]="module.completiondata"
-                [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="true"
-                [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)">
-            </core-course-module-completion>
-        </ion-label>
-    </ion-item>
-</ion-card>
+        <!-- Module completion. -->
+        <core-course-module-completion *ngIf="module.completiondata" [completion]="module.completiondata" [moduleName]="module.name"
+            [moduleId]="module.id" [showCompletionConditions]="true" [showManualCompletion]="true"
+            (completionChanged)="completionChanged.emit($event)">
+        </core-course-module-completion>
+    </ion-label>
+</ion-item>
+<ng-content></ng-content>

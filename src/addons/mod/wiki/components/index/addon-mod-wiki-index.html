@@ -1,8 +1,8 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <!-- Select subwiki. -->
-    <ion-button *ngIf="subwikiData.count > 1" (click)="showSubwikiPicker($event)"
-        [attr.aria-label]="'addon.mod_wiki.subwiki' | translate" aria-haspopup="true">
+    <ion-button *ngIf="subwikiData.count > 1" (click)="showSubwikiPicker($event)" [attr.aria-label]="'addon.mod_wiki.subwiki' | translate"
+        aria-haspopup="true">
         <ion-icon *ngIf="!groupWiki" name="fas-user" aria-hidden="true"></ion-icon>
         <ion-icon *ngIf="groupWiki" name="fas-users" aria-hidden="true"></ion-icon>
     </ion-button>
@@ -13,18 +13,17 @@
     </ion-button>
 
     <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt" [showBrowserWarning]="false">
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
+            iconAction="fas-external-link-alt" [showBrowserWarning]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
             (action)="expandDescription()" iconAction="fas-arrow-right">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
-            iconAction="far-newspaper" (action)="gotoBlog()">
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" iconAction="far-newspaper"
+            (action)="gotoBlog()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline && !pageIsOffline" [priority]="700"
-            [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon"
-            [closeOnClick]="false">
+            [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && isOnline && (hasOffline || pageIsOffline)" [priority]="600"
             [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon"
@@ -33,8 +32,8 @@
         <core-context-menu-item *ngIf="canEdit && (isOnline || pageIsOffline)" [priority]="590" [content]="'core.edit' | translate"
             iconAction="fas-edit" (action)="goToEditPage()">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="canEdit" [priority]="580" [content]="'addon.mod_wiki.createpage' | translate"
-            iconAction="fas-plus" (action)="goToNewPage()">
+        <core-context-menu-item *ngIf="canEdit" [priority]="580" [content]="'addon.mod_wiki.createpage' | translate" iconAction="fas-plus"
+            (action)="goToNewPage()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)"
             [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
@@ -49,15 +48,12 @@
 <core-loading [hideUntil]="loaded">
 
     <!-- Activity info. -->
-    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
-        (completionChanged)="onCompletionChange()">
+    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
+        [component]="component" [componentId]="componentId" [courseId]="courseId">
+        <h3 *ngIf="pageTitle" title>{{pageTitle}}</h3>
     </core-course-module-info>
 
-    <div *ngIf="description || pageIsOffline || hasOffline || pageWarning">
-        <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
-            contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-        </core-course-module-description>
-
+    <div *ngIf="pageIsOffline || hasOffline || pageWarning">
         <!-- Wiki has something offline. -->
         <ion-card class="core-warning-card" *ngIf="pageIsOffline || hasOffline">
             <ion-item>
@@ -82,8 +78,7 @@
             <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"
                 contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
             </core-format-text>
-            <core-empty-box *ngIf="!pageContent" icon="fas-file-alt" [message]="'addon.mod_wiki.nocontent' | translate"
-                inline="true">
+            <core-empty-box *ngIf="!pageContent" icon="fas-file-alt" [message]="'addon.mod_wiki.nocontent' | translate" inline="true">
             </core-empty-box>
         </article>
 

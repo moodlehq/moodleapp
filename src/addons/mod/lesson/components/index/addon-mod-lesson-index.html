@@ -1,14 +1,14 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt" [showBrowserWarning]="false">
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
+            iconAction="fas-external-link-alt" [showBrowserWarning]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
             (action)="expandDescription()" iconAction="fas-arrow-right">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
-            iconAction="far-newspaper" (action)="gotoBlog()">
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" iconAction="far-newspaper"
+            (action)="gotoBlog()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
             (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
@@ -33,13 +33,9 @@
             <ng-template>
 
                 <!-- Activity info. -->
-                <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
-                    (completionChanged)="onCompletionChange()">
+                <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
+                    [component]="component" [componentId]="componentId" [courseId]="courseId">
                 </core-course-module-info>
-
-                <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
-                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-                </core-course-module-description>
 
                 <!-- Prevent access messages. Only show the first one. -->
                 <ion-card class="core-info-card" *ngIf="lesson && preventReasons.length">
@@ -132,13 +128,11 @@
 
                             <ng-container *ngIf="!leftDuringTimed && !finishedOffline">
                                 <!-- User hasn't left during the session, show a start button. -->
-                                <ion-button class="ion-text-wrap ion-margin" expand="block" *ngIf="!canManage"
-                                    (click)="start(false)">
+                                <ion-button class="ion-text-wrap ion-margin" expand="block" *ngIf="!canManage" (click)="start(false)">
                                     {{ 'core.start' | translate }}
                                     <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
                                 </ion-button>
-                                <ion-button class="ion-text-wrap ion-margin" expand="block" *ngIf="canManage"
-                                    (click)="start(false)">
+                                <ion-button class="ion-text-wrap ion-margin" expand="block" *ngIf="canManage" (click)="start(false)">
                                     {{ 'addon.mod_lesson.preview' | translate }}
                                     <ion-icon name="fas-search" slot="end" aria-hidden="true"></ion-icon>
                                 </ion-button>
@@ -295,8 +289,8 @@
                             <ion-card-title>{{ 'addon.mod_lesson.overview' | translate }}</ion-card-title>
                         </ion-card-header>
 
-                        <ion-item class="ion-text-wrap" *ngFor="let student of overview.students" button
-                            (click)="openRetake(student.id)" detail="true">
+                        <ion-item class="ion-text-wrap" *ngFor="let student of overview.students" button (click)="openRetake(student.id)"
+                            detail="true">
                             <core-user-avatar [user]="student" slot="start" [userId]="student.id" [courseId]="courseId">
                             </core-user-avatar>
                             <ion-label>

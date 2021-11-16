@@ -2,5 +2,9 @@
 
 :host {
     display: block;
+    box-shadow: 0px 3px 3px rgba(var(--drop-shadow));
+    margin-bottom: 8px;
+    background-color: var(--contrast-background);
+    
     @include padding-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
 }

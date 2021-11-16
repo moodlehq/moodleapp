@@ -4,14 +4,14 @@
         <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
     <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt" [showBrowserWarning]="false">
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
+            iconAction="fas-external-link-alt" [showBrowserWarning]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
             (action)="expandDescription()" iconAction="fas-arrow-right">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
-            iconAction="far-newspaper" (action)="gotoBlog()">
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" iconAction="far-newspaper"
+            (action)="gotoBlog()">
         </core-context-menu-item>
         <core-context-menu-item [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)"
             [iconAction]="refreshIcon" [closeOnClick]="false">
@@ -29,8 +29,7 @@
 <core-loading [hideUntil]="loaded" class="safe-area-padding">
 
     <!-- Activity info. -->
-    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
-        (completionChanged)="onCompletionChange()">
+    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()">
     </core-course-module-info>
 
     <ion-card class="core-warning-card" *ngIf="warning">

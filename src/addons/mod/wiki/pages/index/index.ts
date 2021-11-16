@@ -52,9 +52,7 @@ export class AddonModWikiIndexPage extends CoreCourseModuleMainActivityPage<Addo
     }
 
     /**
-     * Update some data based on the data received.
-     *
-     * @param data The data received.
+     * @inheritdoc
      */
     updateData(data: { name: string } | string): void {
         if (typeof data == 'string') {

@@ -1,14 +1,14 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt" [showBrowserWarning]="false">
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
+            iconAction="fas-external-link-alt" [showBrowserWarning]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
             (action)="expandDescription()" iconAction="fas-arrow-right">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
-            iconAction="far-newspaper" (action)="gotoBlog()">
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" iconAction="far-newspaper"
+            (action)="gotoBlog()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
             (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
@@ -22,15 +22,15 @@
         </core-context-menu-item>
         <core-context-menu-item *ngIf="size" [priority]="200" [content]="'core.clearstoreddata' | translate:{$a: size}"
             iconDescription="fas-archive" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
-        </core-context-menu-item>    </core-context-menu>
+        </core-context-menu-item>
+    </core-context-menu>
 </core-navbar-buttons>
 
 <!-- Content. -->
 <core-loading [hideUntil]="loaded">
 
     <!-- Activity info. -->
-    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
-        (completionChanged)="onCompletionChange()">
+    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()">
     </core-course-module-info>
 
     <ion-card *ngIf="phases">
@@ -87,9 +87,8 @@
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <h2>{{ 'addon.mod_workshop.conclusion' | translate }}</h2>
-                        <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id"
-                            [text]="workshop!.conclusion" contextLevel="module" [contextInstanceId]="module.id"
-                            [courseId]="courseId">
+                        <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id" [text]="workshop!.conclusion"
+                            contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                         </core-format-text>
                     </ion-label>
                 </ion-item>
@@ -97,7 +96,9 @@
 
             <ion-card *ngIf="userGrades">
                 <ion-item-divider class="ion-text-wrap">
-                    <ion-label><h2>{{ 'addon.mod_workshop.yourgrades' | translate }}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ 'addon.mod_workshop.yourgrades' | translate }}</h2>
+                    </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngIf="userGrades.submissionlongstrgrade">
                     <ion-label>
@@ -120,8 +121,7 @@
                 <ion-label>
                     <h2>{{ 'addon.mod_workshop.areainstructauthors' | translate }}</h2>
                     <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id"
-                        [text]="workshop!.instructauthors" contextLevel="module" [contextInstanceId]="module.id"
-                        [courseId]="courseId">
+                        [text]="workshop!.instructauthors" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                     </core-format-text>
                 </ion-label>
             </ion-item>
@@ -166,7 +166,9 @@
         <ng-container *ngIf="workshop!.phase >= PHASE_CLOSED">
             <ion-card *ngIf="publishedSubmissions && publishedSubmissions.length">
                 <ion-item-divider class="ion-text-wrap">
-                    <ion-label><h2>{{ 'addon.mod_workshop.publishedsubmissions' | translate }}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ 'addon.mod_workshop.publishedsubmissions' | translate }}</h2>
+                    </ion-label>
                 </ion-item-divider>
                 <ng-container *ngFor="let submission of publishedSubmissions">
                     <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop!.course" [module]="module"
@@ -192,10 +194,14 @@
 
             <ion-card *ngIf="canAssess">
                 <ion-item-divider class="ion-text-wrap">
-                    <ion-label><h2>{{ 'addon.mod_workshop.assignedassessments' | translate }}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ 'addon.mod_workshop.assignedassessments' | translate }}</h2>
+                    </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngIf="!assessments || !assessments.length">
-                    <ion-label><p>{{ 'addon.mod_workshop.assignedassessmentsnone' | translate }}</p></ion-label>
+                    <ion-label>
+                        <p>{{ 'addon.mod_workshop.assignedassessmentsnone' | translate }}</p>
+                    </ion-label>
                 </ion-item>
                 <ng-container *ngFor="let assessment of (assessments || [])">
                     <addon-mod-workshop-submission [submission]="assessment.submission" [assessment]="assessment"
@@ -203,7 +209,7 @@
                         class="core-as-item">
                     </addon-mod-workshop-submission>
                 </ng-container>
-            </ion-card >
+            </ion-card>
         </ng-container>
 
         <!-- MULTIPLE PHASES SUBMISSION OR GREATER only teachers -->

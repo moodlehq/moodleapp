@@ -1,15 +1,14 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt" [showBrowserWarning]="false">
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
+            iconAction="fas-external-link-alt" [showBrowserWarning]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="assign && (description || (assign.introattachments && assign.introattachments.length))"
-            [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()"
-            iconAction="fas-arrow-right">
+            [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" iconAction="fas-arrow-right">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
-            iconAction="far-newspaper" (action)="gotoBlog()">
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" iconAction="far-newspaper"
+            (action)="gotoBlog()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
             (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
@@ -31,26 +30,15 @@
 <core-loading [hideUntil]="loaded">
 
     <!-- Activity info. -->
-    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
-        (completionChanged)="onCompletionChange()">
+    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
+        [component]="component" [componentId]="componentId" [courseId]="courseId">
+        <ion-list inset="true" description *ngIf="assign && assign.introattachments && assign.introattachments.length">
+            <core-file *ngFor="let file of assign.introattachments" [file]="file" [component]="component" [componentId]="componentId">
+            </core-file>
+        </ion-list>
     </core-course-module-info>
 
-    <!-- Description and intro attachments. -->
-    <ion-card *ngIf="description">
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <core-format-text [text]="description" [component]="component" [componentId]="componentId" maxHeight="120"
-                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"
-                    (onClick)="expandDescription($event)">
-                </core-format-text>
-            </ion-label>
-        </ion-item>
-    </ion-card>
 
-    <ion-card *ngIf="assign && assign.introattachments && assign.introattachments.length">
-        <core-file *ngFor="let file of assign.introattachments" [file]="file" [component]="component" [componentId]="componentId">
-        </core-file>
-    </ion-card>
 
     <!-- Assign has something offline. -->
     <ion-card class="core-warning-card" *ngIf="hasOffline">
@@ -90,8 +78,7 @@
             </ion-item>
 
             <!-- Summary of all submissions. -->
-            <ion-item class="ion-text-wrap" *ngIf="summary && summary.participantcount" (click)="goToSubmissionList()" detail="true"
-                button>
+            <ion-item class="ion-text-wrap" *ngIf="summary && summary.participantcount" (click)="goToSubmissionList()" detail="true" button>
                 <ion-label>
                     <h2 *ngIf="assign.teamsubmission">{{ 'addon.mod_assign.numberofteams' | translate }}</h2>
                     <h2 *ngIf="!assign.teamsubmission">{{ 'addon.mod_assign.numberofparticipants' | translate }}</h2>
@@ -109,48 +96,48 @@
 
             <!-- Summary of submissions with draft status. -->
             <ion-item class="ion-text-wrap" *ngIf="assign.submissiondrafts && summary && summary.submissionsenabled"
-                [class.hide-detail]="!summary.submissiondraftscount"
-                detail="true"
-                [button]="summary.submissiondraftscount"
+                [class.hide-detail]="!summary.submissiondraftscount" detail="true" [button]="summary.submissiondraftscount"
                 (click)="goToSubmissionList(submissionStatusDraft, !!summary.submissiondraftscount)">
-                <ion-label><h2>{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</h2></ion-label>
+                <ion-label>
+                    <h2>{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</h2>
+                </ion-label>
                 <ion-badge slot="end" color="primary">
                     <span aria-hidden="true">{{ summary.submissiondraftscount }}</span>
                     <span class="sr-only">
                         {{ 'addon.mod_assign.numberofdraftsubmissionscountdescription' | translate:
-                            {count: summary.submissiondraftscount} }}
+                        {count: summary.submissiondraftscount} }}
                     </span>
                 </ion-badge>
             </ion-item>
 
             <!-- Summary of submissions with submitted status. -->
             <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled"
-                [class.hide-detail]="!summary.submissionssubmittedcount"
-                detail="true"
-                [button]="summary.submissionssubmittedcount"
+                [class.hide-detail]="!summary.submissionssubmittedcount" detail="true" [button]="summary.submissionssubmittedcount"
                 (click)="goToSubmissionList(submissionStatusSubmitted, !!summary.submissionssubmittedcount)">
-                <ion-label><h2>{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</h2></ion-label>
+                <ion-label>
+                    <h2>{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</h2>
+                </ion-label>
                 <ion-badge slot="end" color="primary">
                     <span aria-hidden="true">{{ summary.submissionssubmittedcount }}</span>
                     <span class="sr-only">
                         {{ 'addon.mod_assign.numberofsubmittedassignmentscountdescription' | translate:
-                            {count: summary.submissionssubmittedcount} }}
+                        {count: summary.submissionssubmittedcount} }}
                     </span>
                 </ion-badge>
             </ion-item>
 
             <!-- Summary of submissions that need grading. -->
             <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled && !assign.teamsubmission"
-                [class.hide-detail]="!needsGradingAvailable"
-                detail="true"
-                [button]="needsGradingAvailable"
+                [class.hide-detail]="!needsGradingAvailable" detail="true" [button]="needsGradingAvailable"
                 (click)="goToSubmissionList(needGrading, needsGradingAvailable)">
-                <ion-label><h2>{{ 'addon.mod_assign.numberofsubmissionsneedgrading' | translate }}</h2></ion-label>
+                <ion-label>
+                    <h2>{{ 'addon.mod_assign.numberofsubmissionsneedgrading' | translate }}</h2>
+                </ion-label>
                 <ion-badge slot="end" color="primary">
                     <span aria-hidden="true">{{ summary.submissionsneedgradingcount }}</span>
                     <span class="sr-only">
                         {{ 'addon.mod_assign.numberofsubmissionsneedgradingcountdescription' | translate:
-                            {count: summary.submissionsneedgradingcount} }}
+                        {count: summary.submissionsneedgradingcount} }}
                     </span>
                 </ion-badge>
             </ion-item>
