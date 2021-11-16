@@ -183,8 +183,13 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             return;
         }
 
-        const numItems = CoreMainMenu.getNumItems();
-        this.moreBadge = this.allHandlers.some((handler, index) => (handler.onlyInMore || index >= numItems) && !!handler.badge);
+        // Calculate the main handlers not to display them in this view.
+        const mainHandlers = this.allHandlers
+            .filter((handler) => !handler.onlyInMore)
+            .slice(0, CoreMainMenu.getNumItems());
+
+        // Use only the handlers that don't appear in the main view.
+        this.moreBadge = this.allHandlers.some((handler) => mainHandlers.indexOf(handler) == -1 && !!handler.badge);
     }
 
     /**
