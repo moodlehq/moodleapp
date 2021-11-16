@@ -24,7 +24,6 @@ import {
     ViewChildren,
     QueryList,
     Type,
-    ViewChild,
     ElementRef,
 } from '@angular/core';
 import { ModalOptions } from '@ionic/core';
@@ -48,8 +47,8 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
-import { CoreBlockCourseBlocksComponent } from '@features/block/components/course-blocks/course-blocks';
 import { CoreCourseSectionSelectorComponent } from '../section-selector/section-selector';
+import { CoreBlockHelper } from '@features/block/services/block-helper';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -79,7 +78,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when any module completion changes.
 
     @ViewChildren(CoreDynamicComponent) dynamicComponents?: QueryList<CoreDynamicComponent>;
-    @ViewChild(CoreBlockCourseBlocksComponent) courseBlocksComponent?: CoreBlockCourseBlocksComponent;
 
     // All the possible component classes.
     courseFormatComponent?: Type<unknown>;
@@ -92,8 +90,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     showSectionId = 0;
     data: Record<string, unknown> = {}; // Data to pass to the components.
 
-    displaySectionSelector?: boolean;
-    displayBlocks?: boolean;
+    displaySectionSelector = false;
+    displayBlocks = false;
+    hasBlocks = false;
     selectedSection?: CoreCourseSection;
     previousSection?: CoreCourseSection;
     nextSection?: CoreCourseSection;
@@ -180,7 +179,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Detect changes on input properties.
      */
-    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
+    async ngOnChanges(changes: { [name: string]: SimpleChange }): Promise<void> {
         this.setInputData();
         this.sectionSelectorModalOptions.componentProps!.course = this.course;
         this.sectionSelectorModalOptions.componentProps!.sections = this.sections;
@@ -191,6 +190,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             this.displaySectionSelector = CoreCourseFormatDelegate.displaySectionSelector(this.course);
             this.displayBlocks = CoreCourseFormatDelegate.displayBlocks(this.course);
+
+            this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(this.course.id);
+
             this.updateProgress();
 
             if ('overviewfiles' in this.course) {
@@ -498,8 +500,13 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             await component.callComponentFunction('doRefresh', [refresher, done, afterCompletionChange]);
         }) || [];
 
-        if (this.courseBlocksComponent) {
-            promises.push(this.courseBlocksComponent.doRefresh());
+        if (this.course) {
+            const courseId = this.course.id;
+            promises.push(CoreCourse.invalidateCourseBlocks(courseId).then(async () => {
+                this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(courseId);
+
+                return;
+            }));
         }
 
         await Promise.all(promises);

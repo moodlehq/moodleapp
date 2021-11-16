@@ -54,6 +54,22 @@ export class CoreBlockHelperProvider {
         return blocks;
     }
 
+    /**
+     * Returns if the course has any block.
+     *
+     * @param courseId Course ID.
+     * @return Wether course has blocks.
+     */
+    async hasCourseBlocks(courseId: number): Promise<boolean> {
+        try {
+            const blocks = await this.getCourseBlocks(courseId);
+
+            return blocks.length > 0;
+        } catch {
+            return false;
+        }
+    }
+
 }
 
 export const CoreBlockHelper = makeSingleton(CoreBlockHelperProvider);

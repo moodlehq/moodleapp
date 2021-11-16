@@ -29,7 +29,15 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { CoreSilentError } from '@classes/errors/silenterror';
-import { makeSingleton, Translate, AlertController, ToastController, PopoverController, ModalController } from '@singletons';
+import {
+    makeSingleton,
+    Translate,
+    AlertController,
+    ToastController,
+    PopoverController,
+    ModalController,
+    Router,
+} from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreNetworkError } from '@classes/errors/network-error';
@@ -41,6 +49,9 @@ import { CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CoreErrorWithTitle } from '@classes/errors/errorwithtitle';
 import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/handlers/multilang';
 import { CoreSites } from '@services/sites';
+import { NavigationStart } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -1651,18 +1662,32 @@ export class CoreDomUtilsProvider {
     /**
      * Opens a Modal.
      *
-     * @param modalOptions Modal Options.
+     * @param options Modal Options.
      */
     async openModal<T = unknown>(
-        modalOptions: ModalOptions,
+        options: OpenModalOptions,
     ): Promise<T | undefined> {
+
+        const { waitForDismissCompleted, closeOnNavigate, ...modalOptions } = options;
+        const listenCloseEvents = closeOnNavigate ?? true; // Default to true.
 
         const modal = await ModalController.create(modalOptions);
 
+        let navSubscription: Subscription | undefined;
+        if (listenCloseEvents) {
+            // Listen navigation events to close modals.
+            navSubscription = Router.events
+                .pipe(filter(event => event instanceof NavigationStart))
+                .subscribe(async () => {
+                    modal.dismiss();
+                });
+        }
+
         await modal.present();
 
-        // If onDidDismiss is nedded we can add a new param to the function to wait one function or the other.
-        const result = await modal.onWillDismiss<T>();
+        const result = waitForDismissCompleted ? await modal.onDidDismiss<T>() : await modal.onWillDismiss<T>();
+        navSubscription?.unsubscribe();
+
         if (result?.data) {
             return result?.data;
         }
@@ -1671,21 +1696,21 @@ export class CoreDomUtilsProvider {
     /**
      * Opens a side Modal.
      *
-     * @param modalOptions Modal Options.
+     * @param options Modal Options.
      */
     async openSideModal<T = unknown>(
-        modalOptions: ModalOptions,
+        options: OpenModalOptions,
     ): Promise<T | undefined> {
 
-        modalOptions = Object.assign({
+        options = Object.assign({
             cssClass: 'core-modal-lateral',
             showBackdrop: true,
             backdropDismiss: true,
             enterAnimation: CoreModalLateralTransitionEnter,
             leaveAnimation: CoreModalLateralTransitionLeave,
-        }, modalOptions);
+        }, options);
 
-        return await this.openModal<T>(modalOptions);
+        return await this.openModal<T>(options);
     }
 
     /**
@@ -2011,4 +2036,12 @@ export const CoreDomUtils = makeSingleton(CoreDomUtilsProvider);
  */
 export type OpenPopoverOptions = PopoverOptions & {
     waitForDismissCompleted?: boolean;
+};
+
+/**
+ * Options for the openModal function.
+ */
+export type OpenModalOptions = ModalOptions & {
+    waitForDismissCompleted?: boolean;
+    closeOnNavigate?: boolean; // Default true.
 };

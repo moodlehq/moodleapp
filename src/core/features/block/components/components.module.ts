@@ -16,15 +16,17 @@ import { NgModule } from '@angular/core';
 import { CoreBlockComponent } from './block/block';
 import { CoreBlockOnlyTitleComponent } from './only-title-block/only-title-block';
 import { CoreBlockPreRenderedComponent } from './pre-rendered-block/pre-rendered-block';
-import { CoreBlockCourseBlocksComponent } from './course-blocks/course-blocks';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreBlockSideBlocksComponent } from './side-blocks/side-blocks';
+import { CoreBlockSideBlocksButtonComponent } from './side-blocks-button/side-blocks-button';
 
 @NgModule({
     declarations: [
         CoreBlockComponent,
         CoreBlockOnlyTitleComponent,
         CoreBlockPreRenderedComponent,
-        CoreBlockCourseBlocksComponent,
+        CoreBlockSideBlocksComponent,
+        CoreBlockSideBlocksButtonComponent,
     ],
     imports: [
         CoreSharedModule,
@@ -33,7 +35,8 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreBlockComponent,
         CoreBlockOnlyTitleComponent,
         CoreBlockPreRenderedComponent,
-        CoreBlockCourseBlocksComponent,
+        CoreBlockSideBlocksComponent,
+        CoreBlockSideBlocksButtonComponent,
     ],
 })
 export class CoreBlockComponentsModule {}

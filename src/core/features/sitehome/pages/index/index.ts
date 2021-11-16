@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { Params } from '@angular/router';
 
@@ -24,10 +24,11 @@ import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreCourses, CoreCoursesProvider } from '@features//courses/services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseHelper, CoreCourseModule } from '@features/course/services/course-helper';
-import { CoreBlockCourseBlocksComponent } from '@features/block/components/course-blocks/course-blocks';
 import { CoreCourseModuleDelegate, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreNavigator } from '@services/navigator';
+import { CoreBlockHelper } from '@features/block/services/block-helper';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Page that displays site home index.
@@ -38,14 +39,13 @@ import { CoreNavigator } from '@services/navigator';
 })
 export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreBlockCourseBlocksComponent) courseBlocksComponent?: CoreBlockCourseBlocksComponent;
-
     dataLoaded = false;
     section?: CoreCourseWSSection & {
         hasContent?: boolean;
     };
 
     hasContent = false;
+    hasBlocks = false;
     items: string[] = [];
     siteHomeId = 1;
     currentSite!: CoreSite;
@@ -106,8 +106,8 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         this.items = await CoreSiteHome.getFrontPageItems(config.frontpageloggedin);
         this.hasContent = this.items.length > 0;
 
-        if (this.items.some((item) => item == 'NEWS_ITEMS')) {
-            // Get the news forum.
+        // Get the news forum.
+        if (this.items.includes('NEWS_ITEMS')) {
             try {
                 const forum = await CoreSiteHome.getNewsForum(this.siteHomeId);
                 this.newsForumModule = await CoreCourse.getModule(forum.cmid, forum.course);
@@ -140,17 +140,17 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             }
 
             // Add log in Moodle.
-            CoreCourse.logView(
+            CoreUtils.ignoreErrors(CoreCourse.logView(
                 this.siteHomeId,
                 undefined,
                 undefined,
                 this.currentSite.getInfo()?.sitename,
-            ).catch(() => {
-                // Ignore errors.
-            });
+            ));
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
         }
+
+        this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(this.siteHomeId);
     }
 
     /**
@@ -170,24 +170,15 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             return;
         }));
 
+        promises.push(CoreCourse.invalidateCourseBlocks(this.siteHomeId));
+
         if (this.section && this.section.modules) {
             // Invalidate modules prefetch data.
             promises.push(CoreCourseModulePrefetchDelegate.invalidateModules(this.section.modules, this.siteHomeId));
         }
 
-        if (this.courseBlocksComponent) {
-            promises.push(this.courseBlocksComponent.invalidateBlocks());
-        }
-
         Promise.all(promises).finally(async () => {
-            const p2: Promise<unknown>[] = [];
-
-            p2.push(this.loadContent());
-            if (this.courseBlocksComponent) {
-                p2.push(this.courseBlocksComponent.loadContent());
-            }
-
-            await Promise.all(p2).finally(() => {
+            await this.loadContent().finally(() => {
                 refresher?.complete();
             });
         });

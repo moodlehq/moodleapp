@@ -1399,6 +1399,8 @@
   "core.areyousure": "moodle",
   "core.back": "moodle",
   "core.block.blocks": "moodle",
+  "core.block.noblocks": "error",
+  "core.block.opendrawerblocks": "moodle",
   "core.browser": "local_moodlemobileapp",
   "core.cancel": "moodle",
   "core.cannotconnect": "local_moodlemobileapp",

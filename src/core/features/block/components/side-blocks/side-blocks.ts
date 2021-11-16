@@ -12,50 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChildren, Input, OnInit, QueryList, ElementRef } from '@angular/core';
-import { IonContent } from '@ionic/angular';
+import { Component, ViewChildren, Input, OnInit, QueryList } from '@angular/core';
+import { ModalController } from '@singletons';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse, CoreCourseBlock } from '@features/course/services/course';
 import { CoreBlockHelper } from '../../services/block-helper';
 import { CoreBlockComponent } from '../block/block';
 import { CoreUtils } from '@services/utils/utils';
+import { IonRefresher } from '@ionic/angular';
+import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 
 /**
- * Component that displays the list of course blocks.
+ * Component that displays the list of side blocks.
  */
 @Component({
-    selector: 'core-block-course-blocks',
-    templateUrl: 'core-block-course-blocks.html',
-    styleUrls: ['course-blocks.scss'],
+    selector: 'core-block-side-blocks',
+    templateUrl: 'side-blocks.html',
 })
-export class CoreBlockCourseBlocksComponent implements OnInit {
+export class CoreBlockSideBlocksComponent implements OnInit {
 
-    @Input() courseId!: number;
-    @Input() hideBlocks = false;
-    @Input() hideBottomBlocks = false;
+    @Input() courseId?: number;
     @Input() downloadEnabled = false;
 
     @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
 
-    dataLoaded = false;
+    loaded = false;
     blocks: CoreCourseBlock[] = [];
 
-    protected element: HTMLElement;
-
-    constructor(
-        element: ElementRef,
-        protected content: IonContent,
-    ) {
-        this.element = element.nativeElement;
-    }
-
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.element.classList.add('core-no-blocks');
         this.loadContent().finally(() => {
-            this.dataLoaded = true;
+            this.loaded = true;
         });
     }
 
@@ -67,8 +56,10 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
     async invalidateBlocks(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        if (CoreBlockHelper.canGetCourseBlocks()) {
+        if (this.courseId) {
             promises.push(CoreCourse.invalidateCourseBlocks(this.courseId));
+        } else {
+            promises.push(CoreCoursesDashboard.invalidateDashboardBlocks());
         }
 
         // Invalidate the blocks.
@@ -87,37 +78,39 @@ export class CoreBlockCourseBlocksComponent implements OnInit {
      * @return Promise resolved when done.
      */
     async loadContent(): Promise<void> {
-
         try {
-            this.blocks = await CoreBlockHelper.getCourseBlocks(this.courseId);
+            if (this.courseId) {
+                this.blocks = await CoreBlockHelper.getCourseBlocks(this.courseId);
+            } else {
+                const blocks = await CoreCoursesDashboard.getDashboardBlocks();
+
+                this.blocks = blocks.sideBlocks;
+            }
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
             this.blocks = [];
         }
-
-        const scrollElement = await this.content.getScrollElement();
-        if (!this.hideBlocks && this.blocks.length > 0) {
-            this.element.classList.add('core-has-blocks');
-            this.element.classList.remove('core-no-blocks');
-
-            scrollElement.classList.add('core-course-block-with-blocks');
-        } else {
-            this.element.classList.remove('core-has-blocks');
-            this.element.classList.add('core-no-blocks');
-            scrollElement.classList.remove('core-course-block-with-blocks');
-        }
     }
 
     /**
-     * Refresh data.
+     * Refresh the data.
      *
-     * @return Promise resolved when done.
+     * @param refresher Refresher.
      */
-    async doRefresh(): Promise<void> {
+    async doRefresh(refresher?: IonRefresher): Promise<void> {
         await CoreUtils.ignoreErrors(this.invalidateBlocks());
 
-        await this.loadContent();
+        await this.loadContent().finally(() => {
+            refresher?.complete();
+        });
+    }
+
+    /**
+     * Close modal.
+     */
+    closeModal(): void {
+        ModalController.dismiss();
     }
 
 }

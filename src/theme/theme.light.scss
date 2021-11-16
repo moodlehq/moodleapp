@@ -197,13 +197,6 @@
         --background: var(--core-progressbar-background);
     }
 
-    --core-side-blocks-max-width: 30%;
-    --core-side-blocks-min-width: 280px;
-    core-block-course-blocks {
-        --side-blocks-max-width: var(--core-side-blocks-max-width);
-        --side-blocks-min-width: var(--core-side-blocks-min-width);
-    }
-
     --ion-item-background:        #{$ion-item-background};
     --ion-item-detail-icon-color: var(--gray-darker);
     --ion-item-detail-icon-font-size: 20px;
