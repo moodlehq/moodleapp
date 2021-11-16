@@ -48,8 +48,8 @@ export class CoreH5PProvider {
     constructor() {
         this.queueRunner = new CoreQueueRunner(1);
 
-        this.h5pValidator = new CoreH5PValidator();
         this.h5pFramework = new CoreH5PFramework();
+        this.h5pValidator = new CoreH5PValidator(this.h5pFramework);
         this.h5pCore = new CoreH5PCore(this.h5pFramework);
         this.h5pStorage = new CoreH5PStorage(this.h5pCore, this.h5pFramework);
         this.h5pPlayer = new CoreH5PPlayer(this.h5pCore, this.h5pStorage);

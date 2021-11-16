@@ -246,6 +246,7 @@ function build_lang($lang, $keys) {
         }
 
         if ($value->file != 'local_moodlemobileapp') {
+            $text = str_replace('$a->@', '$a.', $text);
             $text = str_replace('$a->', '$a.', $text);
             $text = str_replace('{$a', '{{$a', $text);
             $text = str_replace('}', '}}', $text);

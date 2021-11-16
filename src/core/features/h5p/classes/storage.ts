@@ -119,24 +119,26 @@ export class CoreH5PStorage {
                 return;
             }
 
-            const libId = libraryData.libraryId;
-
-            libraryIds.push(libId);
+            libraryIds.push(libraryData.libraryId);
 
             // Remove any old dependencies.
-            await this.h5pFramework.deleteLibraryDependencies(libId, siteId);
+            await this.h5pFramework.deleteLibraryDependencies(libraryData.libraryId, siteId);
 
             // Insert the different new ones.
             const promises: Promise<void>[] = [];
 
             if (typeof libraryData.preloadedDependencies != 'undefined') {
-                promises.push(this.h5pFramework.saveLibraryDependencies(libId, libraryData.preloadedDependencies, 'preloaded'));
+                promises.push(this.h5pFramework.saveLibraryDependencies(
+                    libraryData,
+                    libraryData.preloadedDependencies,
+                    'preloaded',
+                ));
             }
             if (typeof libraryData.dynamicDependencies != 'undefined') {
-                promises.push(this.h5pFramework.saveLibraryDependencies(libId, libraryData.dynamicDependencies, 'dynamic'));
+                promises.push(this.h5pFramework.saveLibraryDependencies(libraryData, libraryData.dynamicDependencies, 'dynamic'));
             }
             if (typeof libraryData.editorDependencies != 'undefined') {
-                promises.push(this.h5pFramework.saveLibraryDependencies(libId, libraryData.editorDependencies, 'editor'));
+                promises.push(this.h5pFramework.saveLibraryDependencies(libraryData, libraryData.editorDependencies, 'editor'));
             }
 
             await Promise.all(promises);

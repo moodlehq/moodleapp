@@ -12,16 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreError } from '@classes/errors/error';
 import { FileEntry, DirectoryEntry } from '@ionic-native/file/ngx';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { CoreTextUtils } from '@services/utils/text';
+import { Translate } from '@singletons';
 import { CoreH5PSemantics } from './content-validator';
-import { CoreH5PCore, CoreH5PLibraryBasicData } from './core';
+import { CoreH5PCore, CoreH5PLibraryBasicData, CoreH5PMissingLibrary } from './core';
+import { CoreH5PFramework } from './framework';
 
 /**
  * Equivalent to H5P's H5PValidator class.
  */
 export class CoreH5PValidator {
+
+    constructor(public h5pFramework: CoreH5PFramework) {
+    }
 
     /**
      * Get library data.
@@ -47,6 +53,57 @@ export class CoreH5PValidator {
         libraryData.hasIcon = results[3];
 
         return libraryData;
+    }
+
+    /**
+     * Use the dependency declarations to find any missing libraries.
+     *
+     * @param libraries Libraries to check.
+     * @return Promise resolved with the missing dependencies.
+     */
+    protected getMissingLibraries(libraries: CoreH5PLibrariesJsonData): Record<string, CoreH5PMissingLibrary> {
+        const missing: Record<string, CoreH5PMissingLibrary> = {};
+
+        Object.values(libraries).forEach((library) => {
+            if (typeof library.preloadedDependencies !== 'undefined') {
+                Object.assign(missing, this.getMissingDependencies(library.preloadedDependencies, library, libraries));
+            }
+            if (typeof library.dynamicDependencies !== 'undefined') {
+                Object.assign(missing, this.getMissingDependencies(library.dynamicDependencies, library, libraries));
+            }
+            if (typeof library.editorDependencies !== 'undefined') {
+                Object.assign(missing, this.getMissingDependencies(library.editorDependencies, library, libraries));
+            }
+        });
+
+        return missing;
+    }
+
+    /**
+     * Helper function for getMissingLibraries, searches for dependency required libraries in the provided list of libraries.
+     *
+     * @param dependencies Dependencies to check.
+     * @param library Library that has these dependencies.
+     * @param libraries Libraries.
+     * @return Promise resolved with missing dependencies.
+     */
+    protected getMissingDependencies(
+        dependencies: CoreH5PLibraryBasicData[],
+        library: CoreH5PLibraryJsonData,
+        libraries: CoreH5PLibrariesJsonData,
+    ): Record<string, CoreH5PLibraryBasicData> {
+        const missing: Record<string, CoreH5PMissingLibrary> = {};
+
+        dependencies.forEach((dependency) => {
+            const libString  = CoreH5PCore.libraryToString(dependency);
+            if (!libraries[libString]) {
+                missing[libString] = Object.assign(dependency, {
+                    libString: CoreH5PCore.libraryToString(library),
+                });
+            }
+        });
+
+        return missing;
     }
 
     /**
@@ -106,9 +163,14 @@ export class CoreH5PValidator {
      *
      * @param packagePath The path to the package folder.
      * @param entries List of files and directories in the root of the package folder.
+     * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async processH5PFiles(packagePath: string, entries: (DirectoryEntry | FileEntry)[]): Promise<CoreH5PMainJSONFilesData> {
+    async processH5PFiles(
+        packagePath: string,
+        entries: (DirectoryEntry | FileEntry)[],
+        siteId?: string,
+    ): Promise<CoreH5PMainJSONFilesData> {
 
         // Read the needed files.
         const results = await Promise.all([
@@ -116,6 +178,31 @@ export class CoreH5PValidator {
             this.readH5PContentJsonFile(packagePath),
             this.getPackageLibrariesData(packagePath, entries),
         ]);
+
+        // Check if there are missing libraries.
+        const missingLibraries = this.getMissingLibraries(results[2]);
+
+        // Check if the missing libraries are already installed in the app.
+        await Promise.all(Object.keys(missingLibraries).map(async (libString) => {
+            const dependency = missingLibraries[libString];
+            const dependencyId = await this.h5pFramework.getLibraryIdByData(dependency, siteId);
+
+            if (dependencyId) {
+                // Lib is installed.
+                delete missingLibraries[libString];
+            }
+        }));
+
+        if (Object.keys(missingLibraries).length > 0) {
+            // Missing library, throw error.
+            const libString = Object.keys(missingLibraries)[0];
+            const missingLibrary = missingLibraries[libString];
+
+            throw new CoreError(Translate.instant('core.h5p.missingdependency', { $a: {
+                lib: missingLibrary.libString,
+                dep: libString,
+            } }));
+        }
 
         return {
             librariesJsonData: results[2],

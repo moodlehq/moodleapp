@@ -1749,6 +1749,7 @@
   "core.h5p.licensee": "h5p",
   "core.h5p.licenseextras": "h5p",
   "core.h5p.licenseversion": "h5p",
+  "core.h5p.missingdependency": "h5p",
   "core.h5p.nocopyright": "h5p",
   "core.h5p.offlineDialogBody": "h5p",
   "core.h5p.offlineDialogHeader": "h5p",

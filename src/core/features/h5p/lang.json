@@ -59,6 +59,7 @@
     "licensee": "Licensee",
     "licenseextras": "Licence extras",
     "licenseversion": "Licence version",
+    "missingdependency": "Missing dependency {{$a.dep}} required by {{$a.lib}}.",
     "nocopyright": "No copyright information available for this content.",
     "offlineDialogBody": "We were unable to send information about your completion of this task. Please check your internet connection.",
     "offlineDialogHeader": "Your connection to the server was lost",
