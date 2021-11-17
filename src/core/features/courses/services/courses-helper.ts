@@ -32,6 +32,8 @@ import { AddonCourseCompletion } from '@/addons/coursecompletion/services/course
 @Injectable({ providedIn: 'root' })
 export class CoreCoursesHelperProvider {
 
+    protected courseSiteColors: Record<string, (string | undefined)[]> = {};
+
     /**
      * Get the courses to display the course picker popover. If a courseId is specified, it will also return its categoryId.
      *
@@ -72,11 +74,10 @@ export class CoreCoursesHelperProvider {
      * @param courseByField Course returned by core_course_get_courses_by_field.
      * @param addCategoryName Whether add category name or not.
      */
-    loadCourseExtraInfo(
+    protected loadCourseExtraInfo(
         course: CoreEnrolledCourseDataWithExtraInfo,
         courseByField: CoreCourseSearchedData,
         addCategoryName: boolean = false,
-        colors?: (string | undefined)[],
     ): void {
         if (courseByField) {
             course.displayname = courseByField.displayname;
@@ -85,18 +86,8 @@ export class CoreCoursesHelperProvider {
         } else {
             delete course.displayname;
         }
-
-        this.loadCourseColorAndImage(course, colors);
     }
 
-    /**
-     * Given a list of courses returned by core_enrol_get_users_courses, load some extra data using the WebService
-     * core_course_get_courses_by_field if available.
-     *
-     * @param courses List of courses.
-     * @param loadCategoryNames Whether load category names or not.
-     * @return Promise resolved when done.
-     */
     /**
      * Loads the color of courses or the thumb image.
      *
@@ -107,11 +98,8 @@ export class CoreCoursesHelperProvider {
         if (!courses.length) {
             return;
         }
-        const colors = await this.loadCourseSiteColors();
 
-        courses.forEach((course) => {
-            this.loadCourseColorAndImage(course, colors);
-        });
+        await Promise.all(courses.map((course) => this.loadCourseColorAndImage(course)));
     }
 
     /**
@@ -131,32 +119,19 @@ export class CoreCoursesHelperProvider {
         let coursesInfo = {};
         let courseInfoAvailable = false;
 
-        const promises: Promise<void>[] = [];
-        let colors: (string | undefined)[] = [];
-
-        promises.push(this.loadCourseSiteColors().then((loadedColors) => {
-            colors = loadedColors;
-
-            return;
-        }));
-
         if (loadCategoryNames || (courses[0].overviewfiles === undefined && courses[0].displayname === undefined)) {
             const courseIds = courses.map((course) => course.id).join(',');
 
             courseInfoAvailable = true;
 
             // Get the extra data for the courses.
-            promises.push(CoreCourses.getCoursesByField('ids', courseIds).then((coursesInfos) => {
-                coursesInfo = CoreUtils.arrayToObject(coursesInfos, 'id');
+            const coursesInfosArray = await CoreCourses.getCoursesByField('ids', courseIds);
 
-                return;
-            }));
+            coursesInfo = CoreUtils.arrayToObject(coursesInfosArray, 'id');
         }
 
-        await Promise.all(promises);
-
         courses.forEach((course) => {
-            this.loadCourseExtraInfo(course, courseInfoAvailable ? coursesInfo[course.id] : course, loadCategoryNames, colors);
+            this.loadCourseExtraInfo(course, courseInfoAvailable ? coursesInfo[course.id] : course, loadCategoryNames);
         });
     }
 
@@ -166,18 +141,30 @@ export class CoreCoursesHelperProvider {
      * @return course colors RGB.
      */
     protected async loadCourseSiteColors(): Promise<(string | undefined)[]> {
-        const site = CoreSites.getCurrentSite();
+        const site = CoreSites.getRequiredCurrentSite();
+        const siteId = site.getId();
+
+        if (this.courseSiteColors[siteId] !== undefined) {
+            return this.courseSiteColors[siteId];
+        }
+
+        if (!site.isVersionGreaterEqualThan('3.8')) {
+            this.courseSiteColors[siteId] = [];
+
+            return [];
+        }
+
         const colors: (string | undefined)[] = [];
 
-        if (site?.isVersionGreaterEqualThan('3.8')) {
-            try {
-                const configs = await site.getConfig();
-                for (let x = 0; x < 10; x++) {
-                    colors[x] = configs['core_admin_coursecolor' + (x + 1)] || undefined;
-                }
-            } catch {
-                // Ignore errors.
+        try {
+            const configs = await site.getConfig();
+            for (let x = 0; x < 10; x++) {
+                colors[x] = configs['core_admin_coursecolor' + (x + 1)] || undefined;
             }
+
+            this.courseSiteColors[siteId] = colors;
+        } catch {
+            // Ignore errors.
         }
 
         return colors;
@@ -187,19 +174,18 @@ export class CoreCoursesHelperProvider {
      * Loads the color of the course or the thumb image.
      *
      * @param course Course data.
-     * @param colors Colors loaded.
      */
-    async loadCourseColorAndImage(course: CoreCourseWithImageAndColor, colors?: (string | undefined)[]): Promise<void> {
-        if (!colors) {
-            colors = await this.loadCourseSiteColors();
-        }
-
+    async loadCourseColorAndImage(course: CoreCourseWithImageAndColor): Promise<void> {
         if (course.overviewfiles && course.overviewfiles[0]) {
             course.courseImage = course.overviewfiles[0].fileurl;
-        } else {
-            course.colorNumber = course.id % 10;
-            course.color = colors.length ? colors[course.colorNumber] : undefined;
+
+            return;
         }
+
+        const colors = await this.loadCourseSiteColors();
+
+        course.colorNumber = course.id % 10;
+        course.color = colors.length ? colors[course.colorNumber] : undefined;
     }
 
     /**

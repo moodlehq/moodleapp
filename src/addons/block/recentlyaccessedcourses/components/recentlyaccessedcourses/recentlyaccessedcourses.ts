@@ -21,7 +21,7 @@ import {
     CoreCourses,
     CoreCourseSummaryData,
 } from '@features/courses/services/courses';
-import { CoreCourseSearchedDataWithExtraInfoAndOptions, CoreCoursesHelper } from '@features/courses/services/courses-helper';
+import { CoreCourseSearchedDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
@@ -145,8 +145,6 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
                 course.categoryname = '';
             }
         });
-
-        await CoreCoursesHelper.loadCoursesColorAndImage(courses);
     }
 
     /**
