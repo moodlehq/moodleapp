@@ -51,6 +51,11 @@ export enum CoreSiteQRCodeType {
     QR_CODE_LOGIN = 2, // QR code type login value
 }
 
+// WS that we allow to call even if the site is logged out.
+const ALLOWED_LOGGEDOUT_WS = [
+    'core_user_remove_user_device',
+];
+
 /**
  * Class that represents a site (combination of site + user).
  * It will have all the site data and provide utility functions regarding a site.
@@ -496,7 +501,7 @@ export class CoreSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async request<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets, retrying?: boolean): Promise<T> {
-        if (this.isLoggedOut()) {
+        if (this.isLoggedOut() && !ALLOWED_LOGGEDOUT_WS.includes(method)) {
             // Site is logged out, it cannot call WebServices.
             CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
 

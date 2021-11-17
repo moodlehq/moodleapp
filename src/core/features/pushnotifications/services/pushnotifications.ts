@@ -519,20 +519,10 @@ export class CorePushNotificationsProvider {
             appid: CoreConstants.CONFIG.app_id,
             uuid:  Device.uuid,
         };
+        let response: CoreUserRemoveUserDeviceWSResponse;
 
         try {
-            const response = await site.write<CoreUserRemoveUserDeviceWSResponse>('core_user_remove_user_device', data);
-
-            if (!response || !response.removed) {
-                throw new CoreError('Cannot unregister device');
-            }
-
-            await CoreUtils.ignoreErrors(Promise.all([
-                // Remove the device from the local DB.
-                site.getDb().deleteRecords(REGISTERED_DEVICES_TABLE_NAME, this.getRegisterData()),
-                // Remove pending unregisters for this site.
-                db.deleteRecords(PENDING_UNREGISTER_TABLE_NAME, { siteid: site.getId() }),
-            ]));
+            response = await site.write<CoreUserRemoveUserDeviceWSResponse>('core_user_remove_user_device', data);
         } catch (error) {
             if (CoreUtils.isWebServiceError(error)) {
                 throw error;
@@ -546,7 +536,20 @@ export class CorePushNotificationsProvider {
                 info: JSON.stringify(site.getInfo()),
             };
             await db.insertRecord(PENDING_UNREGISTER_TABLE_NAME, entry);
+
+            return;
         }
+
+        if (!response.removed) {
+            throw new CoreError('Cannot unregister device');
+        }
+
+        await CoreUtils.ignoreErrors(Promise.all([
+            // Remove the device from the local DB.
+            site.getDb().deleteRecords(REGISTERED_DEVICES_TABLE_NAME, this.getRegisterData()),
+            // Remove pending unregisters for this site.
+            db.deleteRecords(PENDING_UNREGISTER_TABLE_NAME, { siteid: site.getId() }),
+        ]));
     }
 
     /**
