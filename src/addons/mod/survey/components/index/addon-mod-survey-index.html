@@ -31,8 +31,8 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()"
-        [description]="survey && !survey.surveydone && !hasOffline && description" [component]="component"
-        [componentId]="componentId" [courseId]="courseId">
+        [description]="survey && !survey.surveydone && !hasOffline && description" [component]="component" [componentId]="componentId"
+        [courseId]="courseId" [hasDataToSync]="hasOffline">
     </core-course-module-info>
 
     <!-- Survey already done -->
@@ -42,14 +42,6 @@
             <ion-icon name="fas-external-link-alt" slot="start" aria-hidden="true"></ion-icon>
             {{ 'addon.mod_survey.results' | translate }}
         </ion-button>
-    </ion-card>
-
-    <!-- Survey done in offline but not synchronized -->
-    <ion-card class="core-warning-card" *ngIf="hasOffline">
-        <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
-        </ion-item>
     </ion-card>
 
     <!-- Survey questions -->

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModule, CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
@@ -42,16 +43,21 @@ export class CoreCourseModuleInfoComponent implements OnInit {
 
     @Input() description?: string | false; // The description to display. If false, no description will be shown.
 
+    @Input() hasDataToSync = false; // If the activity has any data to be synced.
+
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when completion changes.
 
     modicon = '';
     showCompletion = false; // Whether to show completion.
+    moduleNameTranslated = '';
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.modicon = await CoreCourseModuleDelegate.getModuleIconSrc(this.module.modname, this.module.modicon, this.module);
+
+        this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname || '');
 
         this.showCompletion = CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
     }

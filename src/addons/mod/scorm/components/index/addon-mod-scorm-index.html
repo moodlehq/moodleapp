@@ -30,7 +30,7 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
-        [component]="component" [componentId]="componentId" [courseId]="courseId">
+        [component]="component" [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="!errorMessage && hasOffline">
     </core-course-module-info>
 
     <!-- Warning message. -->
@@ -111,14 +111,6 @@
                     </ion-label>
                 </ion-item>
             </ion-list>
-        </ion-card>
-
-        <!-- Synchronization warning. -->
-        <ion-card class="core-warning-card" *ngIf="!errorMessage && hasOffline">
-            <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
-            </ion-item>
         </ion-card>
 
         <!-- TOC. -->

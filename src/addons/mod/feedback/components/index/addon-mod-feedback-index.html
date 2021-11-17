@@ -30,7 +30,7 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
-        [component]="component" [componentId]="componentId" [courseId]="courseId">
+        [component]="component" [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline">
     </core-course-module-info>
 
     <core-tabs [hideUntil]="tabsReady" [selectedIndex]="firstSelectedTab">
@@ -105,14 +105,6 @@
 <ng-template #tabOverview>
     <core-loading [hideUntil]="tabsLoaded.overview">
         <ng-container *ngTemplateOutlet="basicInfo"></ng-container>
-
-        <!-- Feedback done in offline but not synchronized -->
-        <ion-card class="core-warning-card" *ngIf="hasOffline">
-            <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</ion-label>
-            </ion-item>
-        </ion-card>
 
         <ion-card class="core-info-card" *ngIf="access && access.cancomplete && !access.isopen">
             <ion-item>

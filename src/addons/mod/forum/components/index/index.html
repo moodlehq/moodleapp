@@ -39,22 +39,14 @@
     <core-loading [hideUntil]="discussions.loaded">
         <!-- Activity info. -->
         <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()"
-            [description]="forum && forum.type != 'single' && description" [component]="component"
-            [componentId]="componentId" [courseId]="courseId">
+            [description]="forum && forum.type != 'single' && description" [component]="component" [componentId]="componentId"
+            [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings">
             <ion-item>
                 <ion-label>
                     {{descriptionNote}}
                 </ion-label>
             </ion-item>
         </core-course-module-info>
-
-        <!-- Forum discussions found to be synchronized -->
-        <ion-card class="core-warning-card" *ngIf="hasOffline || hasOfflineRatings">
-            <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</ion-label>
-            </ion-item>
-        </ion-card>
 
         <!-- Cut-off date or due date message -->
         <ion-card class="core-info-card" *ngIf="availabilityMessage">

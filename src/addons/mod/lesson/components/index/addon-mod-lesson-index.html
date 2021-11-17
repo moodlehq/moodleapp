@@ -34,7 +34,7 @@
 
                 <!-- Activity info. -->
                 <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
-                    [component]="component" [componentId]="componentId" [courseId]="courseId">
+                    [component]="component" [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline">
                 </core-course-module-info>
 
                 <!-- Prevent access messages. Only show the first one. -->
@@ -42,14 +42,6 @@
                     <ion-item>
                         <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
                         <ion-label [innerHTML]="preventReasons[0].message"></ion-label>
-                    </ion-item>
-                </ion-card>
-
-                <!-- Lesson has data to be synchronized -->
-                <ion-card class="core-warning-card" *ngIf="hasOffline">
-                    <ion-item>
-                        <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-                        <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
                     </ion-item>
                 </ion-card>
 

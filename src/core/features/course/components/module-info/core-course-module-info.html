@@ -35,3 +35,11 @@
     </ion-label>
 </ion-item>
 <ng-content></ng-content>
+
+<!-- Activity has something offline. -->
+<ion-card class="core-warning-card" *ngIf="hasDataToSync">
+    <ion-item>
+        <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+        <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleNameTranslated} }}</ion-label>
+    </ion-item>
+</ion-card>

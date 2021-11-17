@@ -31,22 +31,12 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
-        [component]="component" [componentId]="componentId" [courseId]="courseId">
+        [component]="component" [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline">
         <ion-list inset="true" description *ngIf="assign && assign.introattachments && assign.introattachments.length">
             <core-file *ngFor="let file of assign.introattachments" [file]="file" [component]="component" [componentId]="componentId">
             </core-file>
         </ion-list>
     </core-course-module-info>
-
-
-
-    <!-- Assign has something offline. -->
-    <ion-card class="core-warning-card" *ngIf="hasOffline">
-        <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
-        </ion-item>
-    </ion-card>
 
     <!-- User can view all submissions (teacher). -->
     <ng-container *ngIf="assign && canViewAllSubmissions">

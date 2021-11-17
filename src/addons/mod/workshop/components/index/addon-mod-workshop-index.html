@@ -30,7 +30,7 @@
 <core-loading [hideUntil]="loaded">
 
     <!-- Activity info. -->
-    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()">
+    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [hasDataToSync]="hasOffline">
     </core-course-module-info>
 
     <ion-card *ngIf="phases">
@@ -58,14 +58,6 @@
                 </ion-icon>
             </ion-item>
         </ng-container>
-    </ion-card>
-
-    <!-- Has something offline. -->
-    <ion-card class="core-warning-card" *ngIf="hasOffline">
-        <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
-        </ion-item>
     </ion-card>
 
     <!-- Description (setup phase only) -->
