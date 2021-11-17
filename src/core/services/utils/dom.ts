@@ -71,6 +71,7 @@ export class CoreDomUtilsProvider {
     protected instances: WeakMap<Element, unknown> = new WeakMap(); // Store component/directive instances indexed by element.
     protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
     protected displayedAlerts: Record<string, HTMLIonAlertElement> = {}; // To prevent duplicated alerts.
+    protected displayedModals: Record<string, HTMLIonModalElement> = {}; // To prevent duplicated modals.
     protected activeLoadingModals: CoreIonLoadingElement[] = [];
     protected logger: CoreLogger;
 
@@ -1690,26 +1691,37 @@ export class CoreDomUtilsProvider {
     async openModal<T = unknown>(
         options: OpenModalOptions,
     ): Promise<T | undefined> {
-
         const { waitForDismissCompleted, closeOnNavigate, ...modalOptions } = options;
         const listenCloseEvents = closeOnNavigate ?? true; // Default to true.
 
-        const modal = await ModalController.create(modalOptions);
+        // TODO: Improve this if we need two modals with same component open at the same time.
+        const modalId = <string> Md5.hashAsciiStr(options.component?.toString() || '');
+
+        const modal = this.displayedModals[modalId]
+            ? this.displayedModals[modalId]
+            : await ModalController.create(modalOptions);
 
         let navSubscription: Subscription | undefined;
-        if (listenCloseEvents) {
-            // Listen navigation events to close modals.
-            navSubscription = Router.events
-                .pipe(filter(event => event instanceof NavigationStart))
-                .subscribe(async () => {
-                    modal.dismiss();
-                });
-        }
 
-        await modal.present();
+        if (!this.displayedModals[modalId]) {
+            // Store the modal and remove it when dismissed.
+            this.displayedModals[modalId] = modal;
+
+            if (listenCloseEvents) {
+                // Listen navigation events to close modals.
+                navSubscription = Router.events
+                    .pipe(filter(event => event instanceof NavigationStart))
+                    .subscribe(async () => {
+                        modal.dismiss();
+                    });
+            }
+
+            await modal.present();
+        }
 
         const result = waitForDismissCompleted ? await modal.onDidDismiss<T>() : await modal.onWillDismiss<T>();
         navSubscription?.unsubscribe();
+        delete this.displayedModals[modalId];
 
         if (result?.data) {
             return result?.data;
