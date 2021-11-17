@@ -58,7 +58,7 @@ export class CoreItemsManagerSourcesTracker {
         const constructorInstances = this.getConstructorInstances(source.constructor as SourceConstructor);
         const instanceId = this.instanceIds.get(source);
 
-        if (!instanceId) {
+        if (instanceId === undefined) {
             return;
         }
 
@@ -83,7 +83,7 @@ export class CoreItemsManagerSourcesTracker {
         const instanceId = this.instanceIds.get(source);
         const index = constructorInstances?.[instanceId ?? '']?.references.indexOf(reference) ?? -1;
 
-        if (!constructorInstances || !instanceId || index === -1) {
+        if (!constructorInstances || instanceId === undefined || index === -1) {
             return;
         }
 

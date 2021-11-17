@@ -19,10 +19,12 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { Params } from '@angular/router';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
+import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { AddonBadgesUserBadgesSource } from '@addons/badges/classes/user-badges-source';
+import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
 
 /**
  * Page that displays the list of calendar events.
@@ -34,7 +36,7 @@ import { CoreNavigator } from '@services/navigator';
 export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
     currentTime = 0;
-    badges: AddonBadgesUserBadgesManager;
+    badges: AddonBadgesUserBadgesListManager;
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
@@ -47,7 +49,10 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
             courseId = 0;
         }
 
-        this.badges = new AddonBadgesUserBadgesManager(AddonBadgesUserBadgesPage, courseId, userId);
+        this.badges = new AddonBadgesUserBadgesListManager(
+            CoreItemsManagerSourcesTracker.getOrCreateSource(AddonBadgesUserBadgesSource, [courseId, userId]),
+            AddonBadgesUserBadgesPage,
+        );
     }
 
     /**
@@ -72,8 +77,13 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
      * @param refresher Refresher.
      */
     async refreshBadges(refresher?: IonRefresher): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonBadges.invalidateUserBadges(this.badges.courseId, this.badges.userId));
-        await CoreUtils.ignoreErrors(this.fetchBadges());
+        await CoreUtils.ignoreErrors(
+            AddonBadges.invalidateUserBadges(
+                this.badges.getSource().COURSE_ID,
+                this.badges.getSource().USER_ID,
+            ),
+        );
+        await CoreUtils.ignoreErrors(this.badges.reload());
 
         refresher?.complete();
     }
@@ -85,39 +95,20 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
         this.currentTime = CoreTimeUtils.timestamp();
 
         try {
-            await this.fetchBadges();
+            await this.badges.reload();
         } catch (message) {
             CoreDomUtils.showErrorModalDefault(message, 'Error loading badges');
 
-            this.badges.setItems([]);
+            this.badges.reset();
         }
-    }
-
-    /**
-     * Update the list of badges.
-     */
-    private async fetchBadges(): Promise<void> {
-        const badges = await AddonBadges.getUserBadges(this.badges.courseId, this.badges.userId);
-
-        this.badges.setItems(badges);
     }
 
 }
 
 /**
- * Helper class to manage badges.
+ * Helper class to manage badges list.
  */
-class AddonBadgesUserBadgesManager extends CorePageItemsListManager<AddonBadgesUserBadge> {
-
-    courseId: number;
-    userId: number;
-
-    constructor(pageComponent: unknown, courseId: number, userId: number) {
-        super(pageComponent);
-
-        this.courseId = courseId;
-        this.userId = userId;
-    }
+class AddonBadgesUserBadgesListManager extends CoreListItemsManager<AddonBadgesUserBadge, AddonBadgesUserBadgesSource> {
 
     /**
      * @inheritdoc
@@ -131,8 +122,8 @@ class AddonBadgesUserBadgesManager extends CorePageItemsListManager<AddonBadgesU
      */
     protected getItemQueryParams(): Params {
         return {
-            courseId: this.courseId,
-            userId: this.userId,
+            courseId: this.getSource().COURSE_ID,
+            userId: this.getSource().USER_ID,
         };
     }
 
