@@ -1,17 +1,12 @@
 <ng-container *ngIf="module.handlerData && module.visibleoncoursepage !== 0">
     <ng-container *ngIf="!module.handlerData.loading">
-        <ion-item
-            id="core-course-module-{{module.id}}"
+        <ion-item id="core-course-module-{{module.id}}"
             class="ion-text-wrap core-course-module-handler core-module-main-item {{module.handlerData.class}}"
-            (click)="moduleClicked($event)"
-            [attr.aria-label]="module.handlerData.a11yTitle"
-            [ngClass]="{
+            (click)="moduleClicked($event)" [attr.aria-label]="module.handlerData.a11yTitle" [ngClass]="{
                 'has-module-info': hasInfo,
                 'item-media': module.handlerData.icon,
                 'item-dimmed': module.visible === 0 || module.uservisible === false
-            }"
-            [button]="module.handlerData.action && module.uservisible"
-            detail="false">
+            }" [button]="module.handlerData.action && module.uservisible" detail="false">
 
             <core-mod-icon slot="start" *ngIf="module.handlerData.icon" [modicon]="module.handlerData.icon" [modname]="module.modname"
                 [componentId]="module.instance">
@@ -23,11 +18,8 @@
                         [courseId]="courseId" [attr.aria-label]="module.handlerData.a11yTitle + ', ' + modNameTranslated">
                     </core-format-text>
                 </p>
-                <ion-badge
-                    *ngIf="module.handlerData.extraBadge"
-                    [color]="module.handlerData.extraBadgeColor"
-                    class="ion-text-wrap ion-text-start"
-                >
+                <ion-badge *ngIf="module.handlerData.extraBadge" [color]="module.handlerData.extraBadgeColor"
+                    class="ion-text-wrap ion-text-start">
                     <span [innerHTML]="module.handlerData.extraBadge"></span>
                 </ion-badge>
                 <ion-badge *ngIf="module.visible === 0 && (!section || section.visible)" class="ion-text-wrap">
@@ -47,12 +39,8 @@
                 </ion-badge>
             </ion-label>
             <!-- Buttons. -->
-            <div
-                slot="end"
-                *ngIf="module.uservisible !== false"
-                class="buttons core-module-buttons"
-                [ngClass]="{'core-button-completion': module.completiondata && showLegacyCompletion}"
-            >
+            <div slot="end" *ngIf="module.uservisible !== false" class="buttons core-module-buttons"
+                [ngClass]="{'core-button-completion': module.completiondata && showLegacyCompletion}">
                 <!-- Module completion (legacy). -->
                 <core-course-module-completion-legacy *ngIf="module.completiondata && showLegacyCompletion"
                     [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
@@ -60,31 +48,24 @@
                 </core-course-module-completion-legacy>
 
                 <div class="core-module-buttons-more">
-                    <core-download-refresh [status]="downloadStatus" [enabled]="downloadEnabled"
-                        [canTrustDownload]="true" [loading]="spinner || module.handlerData.spinner"
-                        (action)="download($event)" size="small">
+                    <core-download-refresh [status]="downloadStatus" [enabled]="downloadEnabled" [canTrustDownload]="true"
+                        [loading]="spinner || module.handlerData.spinner" (action)="download($event)" size="small">
                     </core-download-refresh>
 
                     <!-- Buttons defined by the module handler. -->
                     <ion-button fill="clear" *ngFor="let button of module.handlerData.buttons" color="dark" size="small"
                         [hidden]="button.hidden || spinner || module.handlerData.spinner" class="core-animate-show-hide"
-                        (click)="buttonClicked($event, button)"
-                        [attr.aria-label]="button.label | translate:{$a: module.handlerData.title}">
+                        (click)="buttonClicked($event, button)" [attr.aria-label]="button.label | translate:{$a: module.handlerData.title}">
                         <ion-icon [name]="button.icon" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </div>
             </div>
         </ion-item>
-        <ion-item
-            *ngIf="hasInfo"
-            id="core-course-module-{{module.id}}-info"
-            class="ion-text-wrap core-course-module-handler core-module-module-info {{module.handlerData.class}}"
-            [ngClass]="{
+        <ion-item *ngIf="hasInfo" id="core-course-module-{{module.id}}-info"
+            class="ion-text-wrap core-course-module-handler core-module-module-info {{module.handlerData.class}}" [ngClass]="{
                 'item-media': module.handlerData.icon,
                 'item-dimmed': module.visible === 0 || module.uservisible === false
-            }"
-            detail="false"
-        >
+            }" detail="false">
             <ion-label>
                 <!-- Activity dates. -->
                 <div *ngIf="showActivityDates && module.dates && module.dates.length" class="core-module-dates">
@@ -94,12 +75,12 @@
                 </div>
 
                 <!-- Module completion. -->
-                <core-course-module-completion *ngIf="module.completiondata" [completion]="module.completiondata"
-                    [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions"
+                <core-course-module-completion *ngIf="module.completiondata" [completion]="module.completiondata" [moduleName]="module.name"
+                    [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions"
                     [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)">
                 </core-course-module-completion>
 
-                <core-format-text class="core-module-description" *ngIf="module.description" maxHeight="80" [text]="module.description"
+                <core-format-text class="core-module-description" *ngIf="module.description" [maxHeight]="80" [text]="module.description"
                     contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                 </core-format-text>
             </ion-label>
@@ -107,14 +88,11 @@
     </ng-container>
 
     <!-- Loading. -->
-    <ion-item *ngIf="module.handlerData.loading"
-        role="status"
-        class="ion-text-wrap"
-        id="core-course-module-{{module.id}}"
+    <ion-item *ngIf="module.handlerData.loading" role="status" class="ion-text-wrap" id="core-course-module-{{module.id}}"
         [attr.aria-label]="module.handlerData.a11yTitle"
-        [ngClass]="['core-course-module-handler', 'core-module-loading', module.handlerData.class]"
-        detail="false"
-    >
-        <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
+        [ngClass]="['core-course-module-handler', 'core-module-loading', module.handlerData.class]" detail="false">
+        <ion-label>
+            <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+        </ion-label>
     </ion-item>
 </ng-container>

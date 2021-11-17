@@ -87,7 +87,7 @@
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <h2>{{ 'addon.mod_workshop.conclusion' | translate }}</h2>
-                        <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id" [text]="workshop!.conclusion"
+                        <core-format-text [maxHeight]="120" [component]="component" [componentId]="module.id" [text]="workshop!.conclusion"
                             contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                         </core-format-text>
                     </ion-label>
@@ -120,8 +120,8 @@
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <h2>{{ 'addon.mod_workshop.areainstructauthors' | translate }}</h2>
-                    <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id"
-                        [text]="workshop!.instructauthors" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                    <core-format-text [maxHeight]="120" [component]="component" [componentId]="module.id" [text]="workshop!.instructauthors"
+                        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                     </core-format-text>
                 </ion-label>
             </ion-item>
@@ -184,7 +184,7 @@
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <h2>{{ 'addon.mod_workshop.areainstructreviewers' | translate }}</h2>
-                        <core-format-text fullOnClick="true" [component]="component" [componentId]="module.id"
+                        <core-format-text [maxHeight]="120" [component]="component" [componentId]="module.id"
                             [text]="workshop!.instructreviewers" contextLevel="module" [contextInstanceId]="module.id"
                             [courseId]="courseId">
                         </core-format-text>

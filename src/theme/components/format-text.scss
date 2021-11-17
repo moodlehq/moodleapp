@@ -51,9 +51,13 @@ core-format-text {
             display: inline;
         }
 
-        .core-show-more {
+        .core-format-text-toggle {
             display: none !important;
         }
+    }
+
+    .core-format-text-toggle {
+        display: none;
     }
 
     .core-format-text-content {
@@ -84,30 +88,45 @@ core-format-text {
             cursor: pointer;
             pointer-events: auto;
 
-            .core-show-more {
-                display: none;
+            .core-format-text-toggle {
+                display: block;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                text-align: center;
+                z-index: 7;
+                text-transform: none;
+                text-align: end;
+                font-size: 14px;
+                background-color: var(--core-format-text-background);
+                color: var(--text-color);
+                margin: 0;
+
+                
+                .core-format-text-arrow {
+                    width: var(--a11y-min-target-size);
+                    height: var(--a11y-min-target-size);
+
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: 14px 14px;
+                    @include core-transition(transform, 500ms);
+
+                    @include push-arrow-color(626262, true);
+
+                    @include darkmode() {
+                        @include push-arrow-color(ffffff, true);
+                    }
+                }
             }
 
-            &:not(.core-shortened) {
-                max-height: none !important;
-            }
-
-            &.core-shortened {
+            &.core-text-format-collapsed {
                 overflow: hidden;
                 min-height: 50px;
 
-                .core-show-more {
-                    text-transform: none;
-                    text-align: end;
-                    font-size: 14px;
-                    display: block;
-                    position: absolute;
-                    @include position(null, 0, 0, null);
-                    z-index: 7;
-                    background-color: var(--core-format-text-background);
-                    color: var(--text-color);
-                    @include padding(null, null, null, 10px);
-                    margin: 0;
+                .core-format-text-arrow {
+                    transform: rotate(90deg);
                 }
 
                 &:before {
@@ -115,26 +134,19 @@ core-format-text {
                     height: 100%;
                     position: absolute;
                     @include position(null, 0, 0, 0);
-                    background: -webkit-linear-gradient(top, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 50px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 15px));
-                    background: linear-gradient(to bottom, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 50px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 15px));
+                    background: -webkit-linear-gradient(top, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 60px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 40px));
+                    background: linear-gradient(to bottom, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 60px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 40px));
                     z-index: 6;
                 }
             }
-        }
 
-        &.core-expand-in-fullview {
-            cursor: pointer;
+            &.core-text-format-expanded {
+                max-height: none !important;
 
-            .core-show-more {
-                @include push-arrow-color(626262, true);
-                @include padding-horizontal(null, 5px);
-                @include background-position(end, 5px, center);
+                padding-bottom: 50px; // So the Show less button can fit.
 
-                background-repeat: no-repeat;
-                background-size: 14px 14px;
-
-                @include darkmode() {
-                    @include push-arrow-color(ffffff, true);
+                .core-format-text-arrow {
+                    transform: rotate(-90deg);
                 }
             }
         }
@@ -143,10 +155,10 @@ core-format-text {
     @if ($core-format-text-never-shorten) {
         &[maxHeight],
         &[ng-reflect-max-height] {
-            &.core-text-formatted.core-shortened {
+            &.core-text-formatted.core-text-format-expanded {
                 max-height: none !important;
 
-                .core-show-more {
+                .core-format-text-toggle {
                     display: none !important;
                 }
 
@@ -354,7 +366,7 @@ core-rich-text-editor .core-rte-editor {
         height: 30px;
         display: inline-block;
         border: 1px solid var(--gray-dark);
-        background: var(--background-contrast);
+        background: var(--contrast-background);
         padding: 6px 8px;
         border-radius: 4px;
         margin-left: 2px;
@@ -363,7 +375,7 @@ core-rich-text-editor .core-rte-editor {
     }
 
     select {
-        background-color: var(--background-contrast);
+        background-color: var(--contrast-background);
         background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
         background-repeat: no-repeat, repeat;
         background-position: right .7em top 50%, 0 0;
