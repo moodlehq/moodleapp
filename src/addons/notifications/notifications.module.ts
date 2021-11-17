@@ -26,7 +26,7 @@ import { AddonNotificationsCronHandler } from './services/handlers/cron';
 import { AddonNotificationsPushClickHandler } from './services/handlers/push-click';
 import { AddonNotificationsSettingsHandler, AddonNotificationsSettingsHandlerService } from './services/handlers/settings';
 import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
-import { AddonNotificationsProvider } from './services/notifications';
+import { AddonNotifications, AddonNotificationsProvider } from './services/notifications';
 import { AddonNotificationsHelperProvider } from './services/notifications-helper';
 
 export const ADDON_NOTIFICATIONS_SERVICES: Type<unknown>[] = [
@@ -65,6 +65,7 @@ const preferencesRoutes: Routes = [
                 CoreSettingsDelegate.registerHandler(AddonNotificationsSettingsHandler.instance);
 
                 AddonNotificationsMainMenuHandler.initialize();
+                AddonNotifications.initialize();
             },
         },
     ],

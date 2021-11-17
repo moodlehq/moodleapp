@@ -123,6 +123,7 @@
     "fulllistofcourses": "All courses",
     "fullnameandsitename": "{{fullname}} ({{sitename}})",
     "fullscreen": "Fullscreen",
+    "goto": "Go to {{$a}}",
     "group": "Group",
     "groupsseparate": "Separate groups",
     "groupsvisible": "Visible groups",
