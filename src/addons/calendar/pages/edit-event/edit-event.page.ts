@@ -70,7 +70,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     groups: CoreGroup[] = [];
     loadingGroups = false;
     courseGroupSet = false;
-    advanced = false;
     errors: Record<string, string>;
     error = false;
     eventRepeatId?: number;
@@ -439,13 +438,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         } finally {
             this.loadingGroups = false;
         }
-    }
-
-    /**
-     * Show or hide advanced form fields.
-     */
-    toggleAdvanced(): void {
-        this.advanced = !this.advanced;
     }
 
     selectDuration(duration: string): void {
