@@ -14,6 +14,7 @@
 
 import { Component, Input } from '@angular/core';
 import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
+import { CoreScreen } from '@services/screen';
 
 @Component({
     selector: 'core-swipe-navigation',
@@ -24,10 +25,18 @@ export class CoreSwipeNavigationComponent {
 
     @Input() manager?: CoreSwipeItemsManager;
 
+    get enabled(): boolean {
+        return CoreScreen.isMobile && !!this.manager;
+    }
+
     /**
      * Swipe to previous item.
      */
     swipeLeft(): void {
+        if (!this.enabled) {
+            return;
+        }
+
         this.manager?.navigateToPreviousItem();
     }
 
@@ -35,6 +44,10 @@ export class CoreSwipeNavigationComponent {
      * Swipe to next item.
      */
     swipeRight(): void {
+        if (!this.enabled) {
+            return;
+        }
+
         this.manager?.navigateToNextItem();
     }
 
