@@ -52,30 +52,28 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
         let langKey: string | undefined;
         let image: string | undefined;
 
-        if (this.completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL &&
-                this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE) {
-            image = 'completion-manual-n';
-            langKey = 'core.completion-alt-manual-n';
-        } else if (this.completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL &&
-                this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
-            image = 'completion-manual-y';
-            langKey = 'core.completion-alt-manual-y';
-        } else if (this.completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC &&
-                this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE) {
-            image = 'completion-auto-n';
-            langKey = 'core.completion-alt-auto-n';
-        } else if (this.completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC &&
-                this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
-            image = 'completion-auto-y';
-            langKey = 'core.completion-alt-auto-y';
-        } else if (this.completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC &&
-                this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_PASS) {
-            image = 'completion-auto-pass';
-            langKey = 'core.completion-alt-auto-pass';
-        } else if (this.completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC &&
-                this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_FAIL) {
-            image = 'completion-auto-fail';
-            langKey = 'core.completion-alt-auto-fail';
+        if (this.completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL) {
+            if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE) {
+                image = 'completion-manual-n';
+                langKey = 'core.completion-alt-manual-n';
+            } else if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
+                image = 'completion-manual-y';
+                langKey = 'core.completion-alt-manual-y';
+            }
+        } else if (this.completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC) {
+            if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE) {
+                image = 'completion-auto-n';
+                langKey = 'core.completion-alt-auto-n';
+            } else if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
+                image = 'completion-auto-y';
+                langKey = 'core.completion-alt-auto-y';
+            } else if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_PASS) {
+                image = 'completion-auto-pass';
+                langKey = 'core.completion-alt-auto-pass';
+            } else if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_FAIL) {
+                image = 'completion-auto-fail';
+                langKey = 'core.completion-alt-auto-fail';
+            }
         }
 
         if (image) {

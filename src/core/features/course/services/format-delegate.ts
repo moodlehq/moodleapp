@@ -126,15 +126,6 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
     getCourseSummaryComponent?(course: CoreCourseAnyCourseData): Promise<Type<unknown> | undefined>;
 
     /**
-     * Return the Component to use to display the section selector inside the default course format.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @param course The course to render.
-     * @return Promise resolved with component to use, undefined if not found.
-     */
-    getSectionSelectorComponent?(course: CoreCourseAnyCourseData): Promise<Type<unknown> | undefined>;
-
-    /**
      * Return the Component to use to display a single section. This component will only be used if the user is viewing a
      * single section. If all the sections are displayed at once then it won't be used.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
@@ -299,20 +290,6 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
         } catch {
             // This function should never fail. Just return the first section (usually, "All sections").
             return sections[0];
-        }
-    }
-
-    /**
-     * Get the component to use to display the section selector inside the default course format.
-     *
-     * @param course The course to render.
-     * @return Promise resolved with component to use, undefined if not found.
-     */
-    async getSectionSelectorComponent(course: CoreCourseAnyCourseData): Promise<Type<unknown> | undefined> {
-        try {
-            return await this.executeFunctionOnEnabled<Type<unknown>>(course.format || '', 'getSectionSelectorComponent', [course]);
-        } catch (error) {
-            this.logger.error('Error getting section selector component', error);
         }
     }
 

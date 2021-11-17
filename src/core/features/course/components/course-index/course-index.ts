@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 
-import { CoreCourseSection } from '@features/course/services/course-helper';
+import { CoreCourseModuleData, CoreCourseSection, CoreCourseSectionWithStatus } from '@features/course/services/course-helper';
 import {
     CoreCourseModuleCompletionStatus,
     CoreCourseModuleCompletionTracking,
@@ -25,14 +25,14 @@ import { CoreUtils } from '@services/utils/utils';
 import { ModalController } from '@singletons';
 
 /**
- * Component to display course section selector in a modal.
+ * Component to display course index modal.
  */
 @Component({
-    selector: 'core-course-section-selector',
-    templateUrl: 'section-selector.html',
-    styleUrls: ['section-selector.scss'],
+    selector: 'core-course-course-index',
+    templateUrl: 'course-index.html',
+    styleUrls: ['course-index.scss'],
 })
-export class CoreCourseSectionSelectorComponent implements OnInit {
+export class CoreCourseCourseIndexComponent implements OnInit {
 
     @Input() sections?: SectionWithProgress[];
     @Input() selected?: CoreCourseSection;
@@ -41,7 +41,7 @@ export class CoreCourseSectionSelectorComponent implements OnInit {
     stealthModulesSectionId = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
 
@@ -52,7 +52,7 @@ export class CoreCourseSectionSelectorComponent implements OnInit {
 
         const formatOptions = CoreUtils.objectToKeyValueMap(this.course.courseformatoptions, 'name', 'value');
 
-        if (!formatOptions || formatOptions.coursedisplay != 1 || formatOptions.completionusertracked === false) {
+        if (!formatOptions || formatOptions.completionusertracked === false) {
             return;
         }
 
@@ -60,10 +60,15 @@ export class CoreCourseSectionSelectorComponent implements OnInit {
             let complete = 0;
             let total = 0;
             section.modules.forEach((module) => {
+                console.error(module);
                 if (!module.uservisible || module.completiondata === undefined ||
                         module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE) {
+                    module.completionStatus = undefined;
+
                     return;
                 }
+
+                module.completionStatus = module.completiondata.state;
 
                 total++;
                 if (module.completiondata.state == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE ||
@@ -98,6 +103,9 @@ export class CoreCourseSectionSelectorComponent implements OnInit {
 
 }
 
-type SectionWithProgress = CoreCourseSection & {
+type SectionWithProgress = Omit<CoreCourseSectionWithStatus, 'modules'> & {
     progress?: number;
+    modules: (CoreCourseModuleData & {
+        completionStatus?: CoreCourseModuleCompletionStatus;
+    })[];
 };

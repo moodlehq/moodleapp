@@ -26,6 +26,7 @@
     "confirmdownloadzerosize": "You are about to start downloading.{{availableSpace}} Are you sure you want to continue?",
     "confirmpartialdownloadsize": "You are about to download <strong>at least</strong> {{size}}.{{availableSpace}} Are you sure you want to continue?",
     "confirmlimiteddownload": "You are not currently connected to Wi-Fi. ",
+    "courseindex": "Course index",
     "gotonextactivity": "Continue to next activity",
     "gotonextactivitynotfound": "Next activity not found. It's possible that it has been hidden or deleted.",
     "gotopreviousactivity": "Continue to previous activity",
@@ -49,7 +50,6 @@
     "overriddennotice": "Your final grade from this activity was manually adjusted.",
     "refreshcourse": "Refresh course",
     "section": "Section",
-    "sections": "Sections",
     "useactivityonbrowser": "You can still use it using your device's web browser.",
     "warningmanualcompletionmodified": "The manual completion of an activity was modified on the site.",
     "warningofflinemanualcompletiondeleted": "Some offline manual completion of course '{{name}}' has been deleted. {{error}}"

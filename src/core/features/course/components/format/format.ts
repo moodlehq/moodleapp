@@ -26,7 +26,6 @@ import {
     Type,
     ElementRef,
 } from '@angular/core';
-import { ModalOptions } from '@ionic/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
@@ -45,7 +44,7 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreCourseSectionSelectorComponent } from '../section-selector/section-selector';
+import { CoreCourseCourseIndexComponent } from '../course-index/course-index';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreNavigator } from '@services/navigator';
 
@@ -80,7 +79,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     // All the possible component classes.
     courseFormatComponent?: Type<unknown>;
     courseSummaryComponent?: Type<unknown>;
-    sectionSelectorComponent?: Type<unknown>;
     singleSectionComponent?: Type<unknown>;
     allSectionsComponent?: Type<unknown>;
 
@@ -88,7 +86,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     showSectionId = 0;
     data: Record<string, unknown> = {}; // Data to pass to the components.
 
-    displaySectionSelector = false;
+    displayCourseIndex = false;
     displayBlocks = false;
     hasBlocks = false;
     selectedSection?: CoreCourseSection;
@@ -97,17 +95,11 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     allSectionsId: number = CoreCourseProvider.ALL_SECTIONS_ID;
     stealthModulesSectionId: number = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     loaded = false;
-    hasSeveralSections?: boolean;
     imageThumb?: string;
     progress?: number;
-    sectionSelectorModalOptions: ModalOptions = {
-        component: CoreCourseSectionSelectorComponent,
-        componentProps: {},
-    };
 
     protected selectTabObserver?: CoreEventObserver;
     protected lastCourseFormat?: string;
-    protected sectionSelectorExpanded = false;
 
     constructor(
         protected content: IonContent,
@@ -154,14 +146,12 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     async ngOnChanges(changes: { [name: string]: SimpleChange }): Promise<void> {
         this.setInputData();
-        this.sectionSelectorModalOptions.componentProps!.course = this.course;
-        this.sectionSelectorModalOptions.componentProps!.sections = this.sections;
 
         if (changes.course && this.course) {
             // Course has changed, try to get the components.
             this.getComponents();
 
-            this.displaySectionSelector = CoreCourseFormatDelegate.displaySectionSelector(this.course);
+            this.displayCourseIndex = CoreCourseFormatDelegate.displaySectionSelector(this.course);
             this.displayBlocks = CoreCourseFormatDelegate.displayBlocks(this.course);
 
             this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(this.course.id);
@@ -174,7 +164,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (changes.sections && this.sections) {
-            this.sectionSelectorModalOptions.componentProps!.sections = this.sections;
             this.treatSections(this.sections);
         }
     }
@@ -205,7 +194,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         await Promise.all([
             this.loadCourseFormatComponent(),
             this.loadCourseSummaryComponent(),
-            this.loadSectionSelectorComponent(),
             this.loadSingleSectionComponent(),
             this.loadAllSectionsComponent(),
         ]);
@@ -227,15 +215,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     protected async loadCourseSummaryComponent(): Promise<void> {
         this.courseSummaryComponent = await CoreCourseFormatDelegate.getCourseSummaryComponent(this.course);
-    }
-
-    /**
-     * Load section selector component.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async loadSectionSelectorComponent(): Promise<void> {
-        this.sectionSelectorComponent = await CoreCourseFormatDelegate.getSectionSelectorComponent(this.course);
     }
 
     /**
@@ -264,7 +243,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     protected async treatSections(sections: CoreCourseSection[]): Promise<void> {
         const hasAllSections = sections[0].id == CoreCourseProvider.ALL_SECTIONS_ID;
-        this.hasSeveralSections = sections.length > 2 || (sections.length == 2 && !hasAllSections);
+        const hasSeveralSections = sections.length > 2 || (sections.length == 2 && !hasAllSections);
 
         if (this.selectedSection) {
             // We have a selected section, but the list has changed. Search the section in the list.
@@ -281,7 +260,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         // There is no selected section yet, calculate which one to load.
-        if (!this.hasSeveralSections) {
+        if (!hasSeveralSections) {
             // Always load "All sections" to display the section title. If it isn't there just load the section.
             this.loaded = true;
             this.sectionChanged(sections[0]);
@@ -309,18 +288,18 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Display the section selector modal.
+     * Display the course index modal.
      */
-    async showSectionSelector(): Promise<void> {
-        if (this.sectionSelectorExpanded) {
-            return;
-        }
+    async openCourseIndex(): Promise<void> {
+        const data = await CoreDomUtils.openModal<CoreCourseSection>({
+            component: CoreCourseCourseIndexComponent,
+            componentProps: {
+                course: this.course,
+                sections: this.sections,
+                selected: this.selectedSection,
+            },
+        });
 
-        this.sectionSelectorExpanded = true;
-
-        const data = await CoreDomUtils.openModal<CoreCourseSection>(this.sectionSelectorModalOptions);
-
-        this.sectionSelectorExpanded = false;
         if (data) {
             this.sectionChanged(data);
         }
@@ -334,7 +313,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     sectionChanged(newSection: CoreCourseSection): void {
         const previousValue = this.selectedSection;
         this.selectedSection = newSection;
-        this.sectionSelectorModalOptions.componentProps!.selected = this.selectedSection;
         this.data.section = this.selectedSection;
 
         if (newSection.id != this.allSectionsId) {

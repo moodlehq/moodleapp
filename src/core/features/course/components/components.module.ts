@@ -20,7 +20,7 @@ import { CoreCourseFormatComponent } from './format/format';
 import { CoreCourseModuleComponent } from './module/module';
 import { CoreCourseModuleCompletionComponent } from './module-completion/module-completion';
 import { CoreCourseModuleDescriptionComponent } from './module-description/module-description';
-import { CoreCourseSectionSelectorComponent } from './section-selector/section-selector';
+import { CoreCourseCourseIndexComponent } from './course-index/course-index';
 import { CoreCourseTagAreaComponent } from './tag-area/tag-area';
 import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsupported-module';
 import { CoreCourseModuleCompletionLegacyComponent } from './module-completion-legacy/module-completion-legacy';
@@ -37,7 +37,7 @@ import { CoreCourseModuleNavigationComponent } from './module-navigation/module-
         CoreCourseModuleDescriptionComponent,
         CoreCourseModuleInfoComponent,
         CoreCourseModuleManualCompletionComponent,
-        CoreCourseSectionSelectorComponent,
+        CoreCourseCourseIndexComponent,
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,
@@ -54,7 +54,7 @@ import { CoreCourseModuleNavigationComponent } from './module-navigation/module-
         CoreCourseModuleDescriptionComponent,
         CoreCourseModuleInfoComponent,
         CoreCourseModuleManualCompletionComponent,
-        CoreCourseSectionSelectorComponent,
+        CoreCourseCourseIndexComponent,
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,

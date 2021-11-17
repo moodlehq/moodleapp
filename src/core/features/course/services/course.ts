@@ -62,7 +62,7 @@ declare module '@singletons/events' {
 }
 
 /**
- * Completion status valid values.
+ * Course Module completion status enumeration.
  */
 export enum CoreCourseModuleCompletionStatus {
     COMPLETION_INCOMPLETE = 0,
