@@ -1,6 +1,20 @@
 @app @javascript @performance
 Feature: Measure performance.
 
+  Background:
+    Given the following "users" exist:
+      | username |
+      | student1 |
+    And the following "courses" exist:
+      | fullname | shortname | category |
+      | Course 1 | C1        | 0        |
+    And the following "course enrolments" exist:
+      | user     | course | role    |
+      | student1 | C1     | student |
+    And the following "activities" exist:
+      | activity | name            | intro                   | course | idnumber | option                       | section |
+      | choice   | Choice course 1 | Test choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 1       |
+
   Scenario: First Contentful Paint
     Given I start measuring "First Contentful Paint"
     When I launch the app runtime
@@ -32,3 +46,39 @@ Feature: Measure performance.
 
     When I stop measuring "Total Blocking Time"
     Then "Total Blocking Time" should have taken less than 2 seconds
+
+  Scenario: Login
+    When I launch the app
+    Then I should see "Connect to Moodle"
+    But I should not see "Welcome to the Moodle App!"
+
+    When I start measuring "Login"
+    And I set the field "Your site" to "$WWWROOT" in the app
+    And I press "Connect to your site" in the app
+    And I log in as "student1"
+    Then I should find "Course 1" in the app
+
+    When I stop measuring "Login"
+    Then "Login" should have taken less than 10 seconds
+
+  Scenario: Open Activity
+    When I launch the app
+    Then I should see "Connect to Moodle"
+    But I should not see "Welcome to the Moodle App!"
+
+    And I set the field "Your site" to "$WWWROOT" in the app
+    And I press "Connect to your site" in the app
+    And I log in as "student1"
+    Then I should find "Course 1" in the app
+
+    When I reload the page
+    And I start measuring "Open Activity"
+    And I wait the app to restart
+    Then I should find "Course 1" in the app
+
+    When I press "Course 1" in the app
+    And I press "Choice course 1" in the app
+    Then I should find "Option 1" in the app
+
+    When I stop measuring "Open Activity"
+    Then "Open Activity" should have taken less than 7 seconds
