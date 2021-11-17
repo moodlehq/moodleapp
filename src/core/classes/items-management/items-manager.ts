@@ -21,13 +21,13 @@ import { CoreItemsManagerSourcesTracker } from './items-manager-sources-tracker'
 /**
  * Helper to manage a collection of items in a page.
  */
-export abstract class CoreItemsManager<Item = unknown> {
+export abstract class CoreItemsManager<Item = unknown, Source extends CoreItemsManagerSource<Item> = CoreItemsManagerSource<Item>> {
 
-    protected source?: { instance: CoreItemsManagerSource<Item>; unsubscribe: () => void };
+    protected source?: { instance: Source; unsubscribe: () => void };
     protected itemsMap: Record<string, Item> | null = null;
     protected selectedItem: Item | null = null;
 
-    constructor(source: CoreItemsManagerSource<Item>) {
+    constructor(source: Source) {
         this.setSource(source);
     }
 
@@ -36,7 +36,7 @@ export abstract class CoreItemsManager<Item = unknown> {
      *
      * @returns Source.
      */
-    getSource(): CoreItemsManagerSource<Item> {
+    getSource(): Source {
         if (!this.source) {
             throw new Error('Source is missing from items manager');
         }
@@ -49,7 +49,7 @@ export abstract class CoreItemsManager<Item = unknown> {
      *
      * @param newSource New source.
      */
-    setSource(newSource: CoreItemsManagerSource<Item> | null): void {
+    setSource(newSource: Source | null): void {
         if (this.source) {
             CoreItemsManagerSourcesTracker.removeReference(this.source.instance, this);
 

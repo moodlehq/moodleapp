@@ -26,13 +26,16 @@ import { CoreItemsManagerSource } from './items-manager-source';
 /**
  * Helper class to manage the state and routing of a list of items in a page.
  */
-export abstract class CoreListItemsManager<Item = unknown> extends CoreItemsManager<Item> {
+export abstract class CoreListItemsManager<
+    Item = unknown,
+    Source extends CoreItemsManagerSource<Item> = CoreItemsManagerSource<Item>
+> extends CoreItemsManager<Item, Source> {
 
     protected pageRouteLocator?: unknown | ActivatedRoute;
     protected splitView?: CoreSplitViewComponent;
     protected splitViewOutletSubscription?: Subscription;
 
-    constructor(source: CoreItemsManagerSource<Item>, pageRouteLocator: unknown | ActivatedRoute) {
+    constructor(source: Source, pageRouteLocator: unknown | ActivatedRoute) {
         super(source);
 
         this.pageRouteLocator = pageRouteLocator;

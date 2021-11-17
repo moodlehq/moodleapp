@@ -17,11 +17,16 @@ import { ActivatedRoute } from '@angular/router';
 import { CoreNavigator } from '@services/navigator';
 
 import { CoreItemsManager } from './items-manager';
+import { CoreItemsManagerSource } from './items-manager-source';
 
 /**
  * Helper class to manage the state and routing of a swipeable page.
  */
-export abstract class CoreSwipeItemsManager<Item = unknown> extends CoreItemsManager<Item> {
+export abstract class CoreSwipeItemsManager<
+    Item = unknown,
+    Source extends CoreItemsManagerSource<Item> = CoreItemsManagerSource<Item>
+>
+    extends CoreItemsManager<Item, Source> {
 
     /**
      * Process page started operations.
