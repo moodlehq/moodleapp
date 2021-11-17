@@ -76,7 +76,12 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
             return 0;
         }
 
-        return Math.ceil(this.items.length / this.getPageLength());
+        const pageLength = this.getPageLength();
+        if (pageLength === null) {
+            return 1;
+        }
+
+        return Math.ceil(this.items.length / pageLength);
     }
 
     /**
@@ -149,9 +154,11 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
     /**
      * Get the length of each page in the collection.
      *
-     * @return Page length.
+     * @return Page length; null for collections that don't support pagination.
      */
-    protected abstract getPageLength(): number;
+    protected getPageLength(): number | null {
+        return null;
+    }
 
     /**
      * Update the collection items.
