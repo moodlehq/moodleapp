@@ -14,15 +14,18 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
+import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUser } from '@features/user/services/user';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreLogger } from '@singletons/logger';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
+import { CoreEvents } from '@singletons/events';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreUtils } from '@services/utils/utils';
 
 const ROOT_CACHE_KEY = 'mmaNotifications:';
 
@@ -41,6 +44,15 @@ export class AddonNotificationsProvider {
 
     constructor() {
         this.logger = CoreLogger.getInstance('AddonNotificationsProvider');
+    }
+
+    /**
+     * Initialize the service.
+     */
+    initialize(): void {
+        CoreEvents.on(CoreEvents.LOGIN, (data) => {
+            this.warnPushDisabledForAdmin(data.siteId);
+        });
     }
 
     /**
@@ -115,16 +127,17 @@ export class AddonNotificationsProvider {
     /**
      * Get notification preferences.
      *
-     * @param siteId Site ID. If not defined, use current site.
+     * @param options Options.
      * @return Promise resolved with the notification preferences.
      */
-    async getNotificationPreferences(siteId?: string): Promise<AddonNotificationsPreferences> {
+    async getNotificationPreferences(options: CoreSitesCommonWSOptions = {}): Promise<AddonNotificationsPreferences> {
         this.logger.debug('Get notification preferences');
 
-        const site = await CoreSites.getSite(siteId);
+        const site = await CoreSites.getSite(options.siteId);
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getNotificationPreferencesCacheKey(),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
         const data = await site.read<AddonNotificationsGetUserNotificationPreferencesResult>(
@@ -380,6 +393,80 @@ export class AddonNotificationsProvider {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getNotificationsCacheKey());
+    }
+
+    /**
+     * Is user is an admin and push are disabled, notify him.
+     *
+     * @param siteId Site ID.
+     * @return Promise resolved when done.
+     */
+    protected async warnPushDisabledForAdmin(siteId?: string): Promise<void> {
+        if (!siteId) {
+            return;
+        }
+
+        try {
+            const site = await CoreSites.getSite(siteId);
+
+            if (!site.getInfo()?.userissiteadmin) {
+                // Not an admin or we don't know, stop.
+                return;
+            }
+
+            // Check if the admin already asked not to be reminded.
+            const dontAsk = await site.getLocalSiteConfig('AddonNotificationsDontRemindPushDisabled', 0);
+            if (dontAsk) {
+                return;
+            }
+
+            // Check if push are disabled.
+            const preferences = await this.getNotificationPreferences({
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+                siteId,
+            });
+
+            const processor = preferences.processors.find(processor => processor.name === 'airnotifier');
+            if (processor) {
+                // Enabled.
+                return;
+            }
+
+            // Warn the admin.
+            const dontShowAgain = await CoreDomUtils.showPrompt(
+                Translate.instant('addon.notifications.pushdisabledwarning'),
+                undefined,
+                Translate.instant('core.dontshowagain'),
+                'checkbox',
+                [
+                    {
+                        text: Translate.instant('core.ok'),
+                    },
+                    {
+                        text: Translate.instant('core.goto', { $a: Translate.instant('core.settings.settings') }),
+                        handler: (data, resolve) => {
+                            resolve(data[0]);
+
+                            const url = CoreTextUtils.concatenatePaths(
+                                site.getURL(),
+                                site.isVersionGreaterEqualThan('3.11') ?
+                                    'message/output/airnotifier/checkconfiguration.php' :
+                                    'admin/message.php',
+                            );
+
+                            // Don't try auto-login, admins cannot use it.
+                            CoreUtils.openInBrowser(url);
+                        },
+                    },
+                ],
+            );
+
+            if (dontShowAgain) {
+                await site.setLocalSiteConfig('AddonNotificationsDontRemindPushDisabled', 1);
+            }
+        } catch {
+            // Ignore errors.
+        }
     }
 
 }

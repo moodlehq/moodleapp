@@ -1478,7 +1478,7 @@ export class CoreDomUtilsProvider {
      * @param header Modal header.
      * @param placeholderOrLabel Placeholder (for textual/numeric inputs) or label (for radio/checkbox). By default, "Password".
      * @param type Type of the input element. By default, password.
-     * @param options More options to pass to the alert.
+     * @param buttons Buttons. If not provided, OK and Cancel buttons will be displayed.
      * @return Promise resolved with the input data (true for checkbox/radio) if the user clicks OK, rejected if cancels.
      */
     showPrompt(
@@ -1486,12 +1486,25 @@ export class CoreDomUtilsProvider {
         header?: string,
         placeholderOrLabel?: string,
         type: TextFieldTypes | 'checkbox' | 'radio' | 'textarea' = 'password',
+        buttons?: PromptButton[],
     ): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
         return new Promise((resolve, reject) => {
             placeholderOrLabel = placeholderOrLabel ?? Translate.instant('core.login.password');
 
             const isCheckbox = type === 'checkbox';
             const isRadio = type === 'radio';
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const resolvePromise = (data: any) => {
+                if (isCheckbox) {
+                    resolve(data[0]);
+                } else if (isRadio) {
+                    resolve(data);
+                } else {
+                    resolve(data.promptinput);
+                }
+            };
+
             const options: AlertOptions = {
                 header,
                 message,
@@ -1504,7 +1517,25 @@ export class CoreDomUtilsProvider {
                         value: (isCheckbox || isRadio) ? true : undefined,
                     },
                 ],
-                buttons: [
+            };
+
+            if (buttons?.length) {
+                options.buttons = buttons.map((button) => ({
+                    ...button,
+                    handler: (data) => {
+                        if (!button.handler) {
+                            // Just resolve the promise.
+                            resolvePromise(data);
+
+                            return;
+                        }
+
+                        button.handler(data, resolve, reject);
+                    },
+                }));
+            } else {
+                // Default buttons.
+                options.buttons = [
                     {
                         text: Translate.instant('core.cancel'),
                         role: 'cancel',
@@ -1514,18 +1545,10 @@ export class CoreDomUtilsProvider {
                     },
                     {
                         text: Translate.instant('core.ok'),
-                        handler: (data) => {
-                            if (isCheckbox) {
-                                resolve(data[0]);
-                            } else if (isRadio) {
-                                resolve(data);
-                            } else {
-                                resolve(data.promptinput);
-                            }
-                        },
+                        handler: resolvePromise,
                     },
-                ],
-            };
+                ];
+            }
 
             this.showAlertWithOptions(options);
         });
@@ -2044,4 +2067,12 @@ export type OpenPopoverOptions = PopoverOptions & {
 export type OpenModalOptions = ModalOptions & {
     waitForDismissCompleted?: boolean;
     closeOnNavigate?: boolean; // Default true.
+};
+
+/**
+ * Buttons for prompt alert.
+ */
+export type PromptButton = Omit<AlertButton, 'handler'> & {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    handler?: (value: any, resolve: (value: any) => void, reject: (reason: any) => void) => void;
 };
