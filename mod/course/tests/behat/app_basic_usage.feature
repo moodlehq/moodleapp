@@ -486,7 +486,7 @@ Feature: Test basic usage of one course in app
     And I should find "Test workshop name" in the app
 
   # TODO remove LMS UI steps in app tests
-  Scenario: View blocks below/beside contents also when All sections selected
+  Scenario: View blocks on drawer
     Given I enter the app
     And I log in as "teacher1"
     And I press "Course 1" near "Course overview" in the app
@@ -527,6 +527,7 @@ Feature: Test basic usage of one course in app
     And I should find "Test lesson name" in the app
     And I should find "Test scorm name" in the app
     And I should find "Test workshop name" in the app
+    Then I press "Open block drawer" in the app
     And I should find "HTML title test" in the app
     And I should find "body test" in the app
     And I should find "Activities" in the app
