@@ -26,9 +26,8 @@
 <core-loading [hideUntil]="loaded">
 
     <!-- Activity info. -->
-    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
+    <core-course-module-info *ngIf="!subfolder" [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
         [component]="component" [componentId]="componentId" [courseId]="courseId">
-        <h3 *ngIf="subfolder" title>{{subfolder.filename}}</h3>
     </core-course-module-info>
 
     <ion-list *ngIf="contents && (contents.files.length + contents.folders.length > 0)">

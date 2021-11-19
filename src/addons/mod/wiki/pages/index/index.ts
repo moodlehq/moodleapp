@@ -47,8 +47,6 @@ export class AddonModWikiIndexPage extends CoreCourseModuleMainActivityPage<Addo
         this.subwikiId = CoreNavigator.getRouteNumberParam('subwikiId');
         this.userId = CoreNavigator.getRouteNumberParam('userId');
         this.groupId = CoreNavigator.getRouteNumberParam('groupId');
-
-        this.title = this.pageTitle || this.module.name;
     }
 
     /**
@@ -57,10 +55,9 @@ export class AddonModWikiIndexPage extends CoreCourseModuleMainActivityPage<Addo
     updateData(data: { name: string } | string): void {
         if (typeof data == 'string') {
             // We received the title to display.
-            this.title = data;
+            this.pageTitle = data;
         } else {
-            // We received a wiki instance.
-            this.title = this.pageTitle || data.name || this.title;
+            super.updateData(data);
         }
     }
 

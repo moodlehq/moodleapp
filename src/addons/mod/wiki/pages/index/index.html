@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header collapsible>
     <ion-toolbar>
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
@@ -7,6 +7,10 @@
             <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId">
             </core-format-text>
         </h1>
+        <p>
+            <core-format-text [text]="pageTitle" contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId">
+            </core-format-text>
+        </p>
 
         <ion-buttons slot="end">
             <!-- The buttons defined by the component will be added in here. -->

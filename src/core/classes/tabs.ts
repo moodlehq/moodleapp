@@ -26,7 +26,7 @@ import {
     SimpleChange,
 } from '@angular/core';
 import { IonSlides } from '@ionic/angular';
-import { BackButtonEvent } from '@ionic/core';
+import { BackButtonEvent, ScrollDetail } from '@ionic/core';
 import { Subscription } from 'rxjs';
 
 import { Platform, Translate } from '@singletons';
@@ -625,8 +625,8 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
 
         content.scrollEvents = true;
         this.scrollElements[id] = scroll;
-        content.addEventListener('ionScroll', (e: CustomEvent): void => {
-            this.showHideTabs(parseInt(e.detail.scrollTop, 10), scroll);
+        content.addEventListener('ionScroll', (e: CustomEvent<ScrollDetail>): void => {
+            this.showHideTabs(e.detail.scrollTop, scroll);
         });
     }
 
