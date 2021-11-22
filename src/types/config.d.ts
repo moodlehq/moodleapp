@@ -57,4 +57,5 @@ export interface EnvironmentConfig {
     customMainMenuItems?: CoreMainMenuLocalizedCustomItem[];
     feedbackFormUrl?: string | false;
     a11yStatement?: string | false;
+    iabToolbarColors?: 'auto' | { background: string; text?: string } | null;
 }

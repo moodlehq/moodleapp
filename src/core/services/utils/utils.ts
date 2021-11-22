@@ -33,6 +33,7 @@ import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreConstants } from '@/core/constants';
 import { CoreWindow } from '@singletons/window';
+import { CoreColors } from '@singletons/colors';
 
 type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -993,20 +994,16 @@ export class CoreUtilsProvider {
 
         options = options || {};
         options.usewkwebview = 'yes'; // Force WKWebView in iOS.
-
-        if (!options.enableViewPortScale) {
-            options.enableViewPortScale = 'yes'; // Enable zoom on iOS.
-        }
-
-        if (!options.allowInlineMediaPlayback) {
-            options.allowInlineMediaPlayback = 'yes'; // Allow playing inline videos in iOS.
-        }
+        options.enableViewPortScale = options.enableViewPortScale ?? 'yes'; // Enable zoom on iOS by default.
+        options.allowInlineMediaPlayback = options.allowInlineMediaPlayback ?? 'yes'; // Allow playing inline videos in iOS.
 
         if (!options.location && CoreApp.isIOS() && url.indexOf('file://') === 0) {
             // The URL uses file protocol, don't show it on iOS.
             // In Android we keep it because otherwise we lose the whole toolbar.
             options.location = 'no';
         }
+
+        this.setInAppBrowserToolbarColors(options);
 
         this.iabInstance = InAppBrowser.create(url, '_blank', options);
 
@@ -1053,6 +1050,49 @@ export class CoreUtilsProvider {
         }
 
         return this.iabInstance;
+    }
+
+    /**
+     * Given some IAB options, set the toolbar colors properties to the right values.
+     *
+     * @param options Options to change.
+     * @return Changed options.
+     */
+    protected setInAppBrowserToolbarColors(options: InAppBrowserOptions): InAppBrowserOptions {
+        if (options.toolbarcolor) {
+            // Color already set.
+            return options;
+        }
+
+        // Color not set. Check if it needs to be changed automatically.
+        let bgColor: string | undefined;
+        let textColor: string | undefined;
+
+        if (CoreConstants.CONFIG.iabToolbarColors === 'auto') {
+            bgColor = CoreColors.getToolbarBackgroundColor();
+        } else if (CoreConstants.CONFIG.iabToolbarColors && typeof CoreConstants.CONFIG.iabToolbarColors === 'object') {
+            bgColor = CoreConstants.CONFIG.iabToolbarColors.background;
+            textColor = CoreConstants.CONFIG.iabToolbarColors.text;
+        }
+
+        if (!bgColor) {
+            // Use default color. In iOS, use black background color since the default is transparent and doesn't look good.
+            options.locationcolor = '#000000';
+
+            return options;
+        }
+
+        if (!textColor) {
+            textColor = CoreColors.isWhiteContrastingBetter(bgColor) ? '#ffffff' : '#000000';
+        }
+
+        options.toolbarcolor = bgColor;
+        options.closebuttoncolor = textColor;
+        options.navigationbuttoncolor = textColor;
+        options.locationcolor = bgColor;
+        options.locationtextcolor = textColor;
+
+        return options;
     }
 
     /**
