@@ -16,10 +16,10 @@
 
 <ion-content>
     <core-split-view>
-        <ion-refresher slot="fixed" [disabled]="!loaded || !submissions.loaded" (ionRefresh)="refreshList($event.target)">
+        <ion-refresher slot="fixed" [disabled]="!submissions.loaded" (ionRefresh)="refreshList($event.target)">
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
-        <core-loading [hideUntil]="loaded && submissions.loaded">
+        <core-loading [hideUntil]="submissions.loaded">
             <core-empty-box *ngIf="!submissions || submissions.empty" icon="fas-file-signature"
                 [message]="'addon.mod_assign.submissionstatus_' | translate">
             </core-empty-box>
@@ -32,7 +32,7 @@
                     <ion-label id="addon-assign-groupslabel" *ngIf="groupInfo.visibleGroups">
                         {{ 'core.groupsvisible' | translate }}
                     </ion-label>
-                    <ion-select [(ngModel)]="groupId" (ionChange)="setGroup(groupId)" aria-labelledby="addon-assign-groupslabel"
+                    <ion-select [(ngModel)]="groupId" (ionChange)="reloadSubmissions()" aria-labelledby="addon-assign-groupslabel"
                         interface="action-sheet" slot="end" [interfaceOptions]="{header: 'core.group' | translate}">
                         <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
                             {{groupOpt.name}}

@@ -16,8 +16,8 @@
  * Updates listener.
  */
 export interface CoreItemsListSourceListener<Item> {
-    onItemsUpdated(items: Item[], hasMoreItems: boolean): void;
-    onReset(): void;
+    onItemsUpdated?(items: Item[], hasMoreItems: boolean): void;
+    onReset?(): void;
 }
 
 /**
@@ -91,7 +91,7 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
         this.items = null;
         this.hasMoreItems = true;
 
-        this.listeners.forEach(listener => listener.onReset());
+        this.listeners.forEach(listener => listener.onReset?.call(listener));
     }
 
     /**
@@ -170,7 +170,7 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
         this.items = items;
         this.hasMoreItems = hasMoreItems;
 
-        this.listeners.forEach(listener => listener.onItemsUpdated(items, hasMoreItems));
+        this.listeners.forEach(listener => listener.onItemsUpdated?.call(listener, items, hasMoreItems));
     }
 
 }

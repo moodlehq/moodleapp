@@ -70,15 +70,6 @@ export abstract class CoreListItemsManager<
         // Calculate current selected item.
         this.updateSelectedItem();
 
-        // Select default item if none is selected on a non-mobile layout.
-        if (!CoreScreen.isMobile && this.selectedItem === null && !splitView.isNested) {
-            const defaultItem = this.getDefaultItem();
-
-            if (defaultItem) {
-                this.select(defaultItem);
-            }
-        }
-
         // Log activity.
         await CoreUtils.ignoreErrors(this.logActivity());
     }
@@ -173,6 +164,25 @@ export abstract class CoreListItemsManager<
         }
 
         return !!this.splitView && !this.splitView?.isNested;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected updateSelectedItem(route: ActivatedRouteSnapshot | null = null): void {
+        super.updateSelectedItem(route);
+
+        if (CoreScreen.isMobile || this.selectedItem !== null || this.splitView?.isNested) {
+            return;
+        }
+
+        const defaultItem = this.getDefaultItem();
+
+        if (!defaultItem) {
+            return;
+        }
+
+        this.select(defaultItem);
     }
 
     /**

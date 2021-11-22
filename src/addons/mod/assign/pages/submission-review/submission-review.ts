@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
+import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
+import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
 import { CoreCourse } from '@features/course/services/course';
 import { CanLeave } from '@guards/can-leave';
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreDomUtils } from '@services/utils/dom';
+import { AddonModAssignSubmissionForList, AddonModAssignSubmissionsSource } from '../../classes/submissions-source';
 import { AddonModAssignSubmissionComponent } from '../../components/submission/submission';
 import { AddonModAssign, AddonModAssignAssign } from '../../services/assign';
 
@@ -30,11 +33,12 @@ import { AddonModAssign, AddonModAssignAssign } from '../../services/assign';
     selector: 'page-addon-mod-assign-submission-review',
     templateUrl: 'submission-review.html',
 })
-export class AddonModAssignSubmissionReviewPage implements OnInit, CanLeave {
+export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
 
     title = ''; // Title to display.
+    submissions?: AddonModAssignSubmissionSwipeItemsManager;
     moduleId!: number; // Module ID the submission belongs to.
     courseId!: number; // Course ID the assignment belongs to.
     submitId!: number; // User that did the submission.
@@ -46,9 +50,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, CanLeave {
     protected blindMarking = false; // Whether it uses blind marking.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) { }
+    constructor(protected route: ActivatedRoute) { }
 
     /**
      * Component being initialized.
@@ -60,6 +62,19 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, CanLeave {
                 this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
                 this.submitId = CoreNavigator.getRouteNumberParam('submitId') || 0;
                 this.blindId = CoreNavigator.getRouteNumberParam('blindId', { params });
+                const groupId = CoreNavigator.getRequiredRouteNumberParam('groupId');
+                const selectedStatus = CoreNavigator.getRouteParam('selectedStatus');
+                const submissionsSource = CoreItemsManagerSourcesTracker.getOrCreateSource(
+                    AddonModAssignSubmissionsSource,
+                    [this.courseId, this.moduleId, selectedStatus],
+                );
+
+                this.submissions?.destroy();
+
+                submissionsSource.groupId = groupId;
+                this.submissions = new AddonModAssignSubmissionSwipeItemsManager(submissionsSource);
+
+                this.submissions.start();
             } catch (error) {
                 CoreDomUtils.showErrorModal(error);
 
@@ -72,6 +87,13 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, CanLeave {
                 this.loaded = true;
             });
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.submissions?.destroy();
     }
 
     /**
@@ -187,6 +209,39 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, CanLeave {
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
         }
+    }
+
+}
+
+/**
+ * Helper to manage swiping within a collection of submissions.
+ */
+class AddonModAssignSubmissionSwipeItemsManager
+    extends CoreSwipeItemsManager<AddonModAssignSubmissionForList, AddonModAssignSubmissionsSource> {
+
+    /**
+     * @inheritdoc
+     */
+    protected getItemPath(submission: AddonModAssignSubmissionForList): string {
+        return String(submission.submitid);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getItemQueryParams(submission: AddonModAssignSubmissionForList): Params {
+        return {
+            blindId: submission.blindid,
+            groupId: this.getSource().groupId,
+            selectedStatus: this.getSource().SELECTED_STATUS,
+        };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
+        return route.params.submitId;
     }
 
 }
