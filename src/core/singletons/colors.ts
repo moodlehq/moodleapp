@@ -140,4 +140,23 @@ export class CoreColors {
         return ('0' + c.toString(16)).slice(-2);
     }
 
+    /**
+     * Get the toolbar's current background color.
+     *
+     * @return Color in hex format.
+     */
+    static getToolbarBackgroundColor(): string {
+        const element = document.querySelector('ion-header ion-toolbar');
+        let color: string;
+
+        if (element) {
+            color = getComputedStyle(element).getPropertyValue('--background').trim();
+        } else {
+            // Fallback, it won't always work.
+            color = getComputedStyle(document.body).getPropertyValue('--core-header-toolbar-background').trim();
+        }
+
+        return CoreColors.getColorHex(color);
+    }
+
 }

@@ -638,15 +638,7 @@ export class CoreAppProvider {
 
         if (!color) {
             // Get the default color to change it.
-            const element = document.querySelector('ion-header ion-toolbar');
-            if (element) {
-                color = getComputedStyle(element).getPropertyValue('--background').trim();
-            } else {
-                // Fallback, it won't always work.
-                color = getComputedStyle(document.body).getPropertyValue('--core-header-toolbar-background').trim();
-            }
-
-            color = CoreColors.getColorHex(color);
+            color = CoreColors.getToolbarBackgroundColor();
         }
 
         // Make darker on Android, except white.
