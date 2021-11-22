@@ -101,10 +101,10 @@ export abstract class CoreItemsManager<Item = unknown, Source extends CoreItemsM
     protected abstract getItemPath(item: Item): string;
 
     /**
-     * Get the path of the selected item given the current route.
+     * Get the path of the selected item.
      *
-     * @param route Page route.
-     * @return Path of the selected item in the given route.
+     * @param route Page route, if any.
+     * @return Path of the selected item.
      */
     protected abstract getSelectedItemPath(route?: ActivatedRouteSnapshot | null): string | null;
 

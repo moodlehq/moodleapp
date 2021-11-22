@@ -127,7 +127,7 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
     async reload(): Promise<void> {
         const { items, hasMoreItems } = await this.loadPageItems(0);
 
-        this.setItems(items, hasMoreItems);
+        this.setItems(items, hasMoreItems ?? false);
     }
 
     /**
@@ -140,7 +140,7 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
 
         const { items, hasMoreItems } = await this.loadPageItems(this.getPagesLoaded());
 
-        this.setItems((this.items ?? []).concat(items), hasMoreItems);
+        this.setItems((this.items ?? []).concat(items), hasMoreItems ?? false);
     }
 
     /**
@@ -149,7 +149,7 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
      * @param page Page number (starting at 0).
      * @return Page items data.
      */
-    protected abstract loadPageItems(page: number): Promise<{ items: Item[]; hasMoreItems: boolean }>;
+    protected abstract loadPageItems(page: number): Promise<{ items: Item[]; hasMoreItems?: boolean }>;
 
     /**
      * Get the length of each page in the collection.

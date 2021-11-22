@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 
 import { CoreNavigator } from '@services/navigator';
 
@@ -50,10 +50,29 @@ export abstract class CoreSwipeItemsManager<
     }
 
     /**
+     * Get the path of the selected item given the current route.
+     *
+     * @param route Page route.
+     * @return Path of the selected item in the given route.
+     */
+    protected abstract getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null;
+
+    /**
      * @inheritdoc
      */
     protected getCurrentPageRoute(): ActivatedRoute | null {
         return CoreNavigator.getCurrentRoute();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPath(route?: ActivatedRouteSnapshot | null): string | null {
+        if (!route) {
+            return null;
+        }
+
+        return this.getSelectedItemPathFromRoute(route);
     }
 
     /**

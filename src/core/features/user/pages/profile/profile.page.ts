@@ -254,11 +254,7 @@ class CoreUserSwipeItemsManager extends CoreSwipeItemsManager<CoreUserBasicData>
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPath(route?: ActivatedRouteSnapshot | null): string | null {
-        if (!route) {
-            return null;
-        }
-
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
         return route.params.userId;
     }
 

@@ -33,10 +33,10 @@ export class AddonBadgesUserBadgesSource extends CoreItemsManagerSource<AddonBad
     /**
      * @inheritdoc
      */
-    protected async loadPageItems(): Promise<{ items: AddonBadgesUserBadge[]; hasMoreItems: boolean }> {
+    protected async loadPageItems(): Promise<{ items: AddonBadgesUserBadge[] }> {
         const badges = await AddonBadges.getUserBadges(this.COURSE_ID, this.USER_ID);
 
-        return { items: badges, hasMoreItems: false };
+        return { items: badges };
     }
 
 }

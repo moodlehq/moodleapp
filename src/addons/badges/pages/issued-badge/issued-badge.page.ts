@@ -143,11 +143,7 @@ class AddonBadgesUserBadgesSwipeManager extends CoreSwipeItemsManager<AddonBadge
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPath(route?: ActivatedRouteSnapshot | null): string | null {
-        if (!route) {
-            return null;
-        }
-
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
         return route.params.badgeHash;
     }
 
