@@ -157,9 +157,10 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider<CoreRatingSyncI
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = this.getItemSetSyncId(component, ratingArea, contextLevel, instanceId, itemSetId);
-        if (this.isSyncing(syncId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(syncId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this item set, return the promise.
-            return this.getOngoingSync(syncId, siteId)!;
+            return currentSyncPromise;
         }
 
         this.logger.debug(`Try to sync ratings of component '${component}' rating area '${ratingArea}'` +

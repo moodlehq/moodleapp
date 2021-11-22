@@ -108,9 +108,10 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
             throw new CoreNetworkError();
         }
 
-        if (this.isSyncing(contextId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(contextId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this discussion, return the promise.
-            return this.getOngoingSync(contextId, siteId)!;
+            return currentSyncPromise;
         }
 
         return this.addOngoingSync(contextId, this.syncActivityData(contextId, siteId), siteId);

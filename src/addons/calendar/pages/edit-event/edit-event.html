@@ -113,119 +113,128 @@
                 </ion-item>
             </ng-container>
 
-            <!-- Advanced options. -->
-            <ion-item button class="ion-text-wrap divider" (click)="toggleAdvanced()" detail="false">
-                <ion-icon *ngIf="!advanced" name="fas-caret-right" flip-rtl slot="start" aria-hidden="true"></ion-icon>
-                <ion-icon *ngIf="advanced" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label>
-                    <p class="item-heading" *ngIf="!advanced">{{ 'core.showmore' | translate }}</p>
-                    <p class="item-heading" *ngIf="advanced">{{ 'core.showless' | translate }}</p>
-                </ion-label>
-            </ion-item>
-
-            <div [hidden]="!advanced">
-                <!-- Description. -->
-                <ion-item class="ion-text-wrap">
-                    <ion-label position="stacked">
-                        <p class="item-heading">{{ 'core.description' | translate }}</p>
+            <!-- Reminders. Right now, only allow adding them here for new events. -->
+            <ng-container *ngIf="notificationsEnabled && !eventId">
+                <ion-item-divider class="addon-calendar-reminders-title">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.calendar.reminders' | translate }}</p>
                     </ion-label>
-                    <core-rich-text-editor [control]="descriptionControl" [attr.aria-label]="'core.description' | translate"
-                        [placeholder]="'core.description' | translate" name="description" [component]="component"
-                        [componentId]="eventId" [autoSave]="false"></core-rich-text-editor>
+                    <ion-button fill="clear" color="dark" (click)="addReminder()" slot="end"
+                        [attr.aria-label]="'addon.calendar.setnewreminder' | translate">
+                        <ion-icon name="fas-plus" slot="icon-only" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                </ion-item-divider>
+                <ion-item *ngFor="let reminder of reminders" class="ion-text-wrap">
+                    <ion-label>
+                        <p>{{ reminder.label }}</p>
+                    </ion-label>
+                    <ion-button fill="clear" (click)="removeReminder(reminder)" [attr.aria-label]="'core.delete' | translate"
+                        slot="end">
+                        <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true"></ion-icon>
+                    </ion-button>
                 </ion-item>
+            </ng-container>
 
-                <!-- Location. -->
+            <!-- Duration. -->
+            <div class="ion-text-wrap addon-calendar-radio-container">
+                <ion-radio-group formControlName="duration">
+                    <ion-item-divider class="addon-calendar-radio-title">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.calendar.eventduration' | translate }}</p>
+                        </ion-label>
+                    </ion-item-divider>
+                    <ion-item>
+                        <ion-label>
+                            <p>{{ 'addon.calendar.durationnone' | translate }}</p>
+                        </ion-label>
+                        <ion-radio slot="end" [value]="0"></ion-radio>
+                    </ion-item>
+                    <ion-item lines="none">
+                        <ion-label>
+                            <p>{{ 'addon.calendar.durationuntil' | translate }}</p>
+                        </ion-label>
+                        <ion-radio slot="end" [value]="1"></ion-radio>
+                    </ion-item>
+                    <ion-item *ngIf="form.controls.duration.value === 1">
+                        <ion-label position="stacked"></ion-label>
+                        <ion-datetime formControlName="timedurationuntil" [max]="maxDate" [min]="minDate"
+                            [placeholder]="'addon.calendar.durationuntil' | translate"
+                            [displayFormat]="dateFormat" display-timezone="utc">
+                        </ion-datetime>
+                    </ion-item>
+                    <ion-item lines="none">
+                        <ion-label>
+                            <p>{{ 'addon.calendar.durationminutes' | translate }}</p>
+                        </ion-label>
+                        <ion-radio slot="end" [value]="2"></ion-radio>
+                    </ion-item>
+                    <ion-item *ngIf="form.controls.duration.value === 2">
+                        <ion-label class="sr-only">{{ 'addon.calendar.durationminutes' | translate }}</ion-label>
+                        <ion-input type="number" name="timedurationminutes" slot="end"
+                            [placeholder]="'addon.calendar.durationminutes' | translate"
+                            formControlName="timedurationminutes"></ion-input>
+                    </ion-item>
+                </ion-radio-group>
+            </div>
+
+            <!-- Repeat (for new events). -->
+            <ng-container *ngIf="!eventId || eventId < 0">
+                <ion-item class="ion-text-wrap divider" lines="none">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.calendar.repeatevent' | translate }}</p>
+                    </ion-label>
+                    <ion-checkbox slot="end" formControlName="repeat"></ion-checkbox>
+                </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label position="stacked">
-                        <p class="item-heading">{{ 'core.location' | translate }}</p>
+                        <p>{{ 'addon.calendar.repeatweeksl' | translate }}</p>
                     </ion-label>
-                    <ion-input type="text" name="location" [placeholder]="'core.location' | translate" formControlName="location">
+                    <ion-input type="number" name="repeats" formControlName="repeats" [disabled]="!form.controls.repeat.value">
                     </ion-input>
                 </ion-item>
+            </ng-container>
 
-                <!-- Duration. -->
-                <div class="ion-text-wrap addon-calendar-radio-container">
-                    <ion-radio-group formControlName="duration">
-                        <ion-item-divider class="addon-calendar-radio-title">
-                            <ion-label>
-                                <p class="item-heading">{{ 'addon.calendar.eventduration' | translate }}</p>
-                            </ion-label>
-                        </ion-item-divider>
-                        <ion-item>
-                            <ion-label>
-                                <p>{{ 'addon.calendar.durationnone' | translate }}</p>
-                            </ion-label>
-                            <ion-radio slot="end" [value]="0"></ion-radio>
-                        </ion-item>
-                        <ion-item lines="none">
-                            <ion-label>
-                                <p>{{ 'addon.calendar.durationuntil' | translate }}</p>
-                            </ion-label>
-                            <ion-radio slot="end" [value]="1"></ion-radio>
-                        </ion-item>
-                        <ion-item>
-                            <ion-label position="stacked"></ion-label>
-                            <ion-datetime formControlName="timedurationuntil" [max]="maxDate" [min]="minDate"
-                                [placeholder]="'addon.calendar.durationuntil' | translate"
-                                [displayFormat]="dateFormat" [disabled]="form.controls.duration.value != 1"
-                                display-timezone="utc">
-                            </ion-datetime>
-                        </ion-item>
-                        <ion-item lines="none">
-                            <ion-label>
-                                <p>{{ 'addon.calendar.durationminutes' | translate }}</p>
-                            </ion-label>
-                            <ion-radio slot="end" [value]="2"></ion-radio>
-                        </ion-item>
-                        <ion-item>
-                            <ion-label class="sr-only">{{ 'addon.calendar.durationminutes' | translate }}</ion-label>
-                            <ion-input type="number" name="timedurationminutes" slot="end"
-                                [placeholder]="'addon.calendar.durationminutes' | translate"
-                                formControlName="timedurationminutes" [disabled]="form.controls.duration.value != 2"></ion-input>
-                        </ion-item>
-                    </ion-radio-group>
-                </div>
-
-                <!-- Repeat (for new events). -->
-                <ng-container *ngIf="!eventId || eventId < 0">
-                    <ion-item class="ion-text-wrap divider" lines="none">
+            <!-- Apply to all events or just this one (editing repeated events). -->
+            <div *ngIf="eventRepeatId" class="ion-text-wrap addon-calendar-radio-container">
+                <ion-radio-group formControlName="repeateditall">
+                    <ion-item-divider class="addon-calendar-radio-title">
                         <ion-label>
-                            <p class="item-heading">{{ 'addon.calendar.repeatevent' | translate }}</p>
+                            <p class="item-heading">{{ 'addon.calendar.repeatedevents' | translate }}</p>
                         </ion-label>
-                        <ion-checkbox slot="end" formControlName="repeat"></ion-checkbox>
-                    </ion-item>
-                    <ion-item class="ion-text-wrap">
-                        <ion-label position="stacked">
-                            <p>{{ 'addon.calendar.repeatweeksl' | translate }}</p>
+                    </ion-item-divider>
+                    <ion-item>
+                        <ion-label>
+                            <p>{{ 'addon.calendar.repeateditall' | translate:{$a: otherEventsCount} }}</p>
                         </ion-label>
-                        <ion-input type="number" name="repeats" formControlName="repeats" [disabled]="!form.controls.repeat.value">
-                        </ion-input>
+                        <ion-radio slot="end" value="1"></ion-radio>
                     </ion-item>
-                </ng-container>
-
-                <!-- Apply to all events or just this one (editing repeated events). -->
-                <div *ngIf="eventRepeatId" class="ion-text-wrap addon-calendar-radio-container">
-                    <ion-radio-group formControlName="repeateditall">
-                        <ion-item-divider class="addon-calendar-radio-title">
-                            <ion-label>
-                                <p class="item-heading">{{ 'addon.calendar.repeatedevents' | translate }}</p>
-                            </ion-label>
-                        </ion-item-divider>
-                        <ion-item>
-                            <ion-label>
-                                <p>{{ 'addon.calendar.repeateditall' | translate:{$a: otherEventsCount} }}</p>
-                            </ion-label>
-                            <ion-radio slot="end" value="1"></ion-radio>
-                        </ion-item>
-                        <ion-item>
-                            <ion-label>
-                                <p>{{ 'addon.calendar.repeateditthis' | translate }}</p>
-                            </ion-label>
-                            <ion-radio slot="end" value="0"></ion-radio>
-                        </ion-item>
-                    </ion-radio-group>
-                </div>
+                    <ion-item>
+                        <ion-label>
+                            <p>{{ 'addon.calendar.repeateditthis' | translate }}</p>
+                        </ion-label>
+                        <ion-radio slot="end" value="0"></ion-radio>
+                    </ion-item>
+                </ion-radio-group>
             </div>
+
+            <!-- Description. -->
+            <ion-item class="ion-text-wrap">
+                <ion-label position="stacked">
+                    <p class="item-heading">{{ 'core.description' | translate }}</p>
+                </ion-label>
+                <core-rich-text-editor [control]="descriptionControl" [attr.aria-label]="'core.description' | translate"
+                    [placeholder]="'core.description' | translate" name="description" [component]="component"
+                    [componentId]="eventId" [autoSave]="false"></core-rich-text-editor>
+            </ion-item>
+
+            <!-- Location. -->
+            <ion-item class="ion-text-wrap">
+                <ion-label position="stacked">
+                    <p class="item-heading">{{ 'core.location' | translate }}</p>
+                </ion-label>
+                <ion-input type="text" name="location" [placeholder]="'core.location' | translate" formControlName="location">
+                </ion-input>
+            </ion-item>
 
             <ion-item>
                 <ion-label>

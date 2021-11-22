@@ -144,9 +144,10 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = this.getGlossarySyncId(glossaryId, userId);
-        if (this.isSyncing(syncId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(syncId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this glossary, return the promise.
-            return this.getOngoingSync(syncId, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that glossary isn't blocked.

@@ -54,10 +54,11 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = 'preferences';
+        const currentSyncPromise = this.getOngoingSync(syncId, siteId);
 
-        if (this.isSyncing(syncId, siteId)) {
+        if (currentSyncPromise) {
             // There's already a sync ongoing, return the promise.
-            return this.getOngoingSync(syncId, siteId)!;
+            return currentSyncPromise;
         }
 
         this.logger.debug('Try to sync user preferences');

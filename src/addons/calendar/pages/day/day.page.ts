@@ -286,7 +286,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
                 this.offlineEvents = AddonCalendarHelper.classifyIntoMonths(offlineEvents);
 
                 // Get the IDs of events edited in offline.
-                this.offlineEditedEventsIds = offlineEvents.filter((event) => event.id! > 0).map((event) => event.id!);
+                this.offlineEditedEventsIds = offlineEvents.filter((event) => event.id > 0).map((event) => event.id);
 
                 return;
             }));
@@ -361,7 +361,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         const promises = this.events.map((event) => {
             event.ispast = this.isPastDay || (this.isCurrentDay && this.isEventPast(event));
 
-            return AddonCalendar.formatEventTime(event, this.timeFormat!, true, dayTime).then((time) => {
+            return AddonCalendar.formatEventTime(event, this.timeFormat, true, dayTime).then((time) => {
                 event.formattedtime = time;
 
                 return;
@@ -521,12 +521,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * @param eventId Event to load.
      */
     gotoEvent(eventId: number): void {
-        if (eventId < 0) {
-            // It's an offline event, go to the edit page.
-            this.openEdit(eventId);
-        } else {
-            CoreNavigator.navigateToSitePath(`/calendar/event/${eventId}`);
-        }
+        CoreNavigator.navigateToSitePath(`/calendar/event/${eventId}`);
     }
 
     /**

@@ -106,7 +106,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
      */
     ngDoCheck(): void {
         // Check if there's any change in the filter object.
-        const changes = this.differ.diff(this.filter!);
+        const changes = this.differ.diff(this.filter || {});
         if (changes) {
             this.filterEvents();
         }
@@ -183,7 +183,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
         // Re-calculate the formatted time so it uses the device date.
         const promises = this.events.map((event) =>
-            AddonCalendar.formatEventTime(event, this.timeFormat!).then((time) => {
+            AddonCalendar.formatEventTime(event, this.timeFormat).then((time) => {
                 event.formattedtime = time;
 
                 return;
@@ -221,7 +221,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
      * Filter events based on the filter popover.
      */
     protected filterEvents(): void {
-        this.filteredEvents = AddonCalendarHelper.getFilteredEvents(this.events, this.filter!, this.categories);
+        this.filteredEvents = AddonCalendarHelper.getFilteredEvents(this.events, this.filter, this.categories);
     }
 
     /**

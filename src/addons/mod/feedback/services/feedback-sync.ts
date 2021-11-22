@@ -130,9 +130,10 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     syncFeedback(feedbackId: number, siteId?: string): Promise<AddonModFeedbackSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (this.isSyncing(feedbackId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(feedbackId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this feedback, return the promise.
-            return this.getOngoingSync(feedbackId, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that feedback isn't blocked.

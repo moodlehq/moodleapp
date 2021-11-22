@@ -110,7 +110,7 @@ export class AddonCalendarOfflineProvider {
     async getAllEditedEventsIds(siteId?: string): Promise<number[]> {
         const events = await this.getAllEditedEvents(siteId);
 
-        return events.map((event) => event.id!);
+        return events.map((event) => event.id);
     }
 
     /**
@@ -215,20 +215,18 @@ export class AddonCalendarOfflineProvider {
     /**
      * Offline version for adding a new discussion to a forum.
      *
-     * @param eventId Event ID. If it's a new event, set it to undefined/null.
+     * @param eventId Event ID. Negative value to edit offline event. If it's a new event, set it to undefined/null.
      * @param data Event data.
-     * @param timeCreated The time the event was created. If not defined, current time.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the stored event.
      */
     async saveEvent(
         eventId: number | undefined,
         data: AddonCalendarSubmitCreateUpdateFormDataWSParams,
-        timeCreated?: number,
         siteId?: string,
     ): Promise<AddonCalendarOfflineEventDBRecord> {
         const site = await CoreSites.getSite(siteId);
-        timeCreated = timeCreated || Date.now();
+        const timeCreated = Date.now();
         const event: AddonCalendarOfflineEventDBRecord = {
             id: eventId || -timeCreated,
             name: data.name,

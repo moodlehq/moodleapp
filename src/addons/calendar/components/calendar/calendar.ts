@@ -94,7 +94,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
             this.obsDefaultTimeChange = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
                 this.weeks.forEach((week) => {
                     week.days.forEach((day) => {
-                        AddonCalendar.scheduleEventsNotifications(day.eventsFormated!);
+                        AddonCalendar.scheduleEventsNotifications(day.eventsFormated || []);
                     });
                 });
             }, this.currentSiteId);
@@ -150,7 +150,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
         if (this.weeks) {
             // Check if there's any change in the filter object.
-            const changes = this.differ.diff(this.filter!);
+            const changes = this.differ.diff(this.filter || {});
             if (changes) {
                 this.filterEvents();
             }
@@ -173,8 +173,8 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
             this.offlineEvents = AddonCalendarHelper.classifyIntoMonths(events);
 
             // Get the IDs of events edited in offline.
-            const filtered = events.filter((event) => event.id! > 0);
-            this.offlineEditedEventsIds = filtered.map((event) => event.id!);
+            const filtered = events.filter((event) => event.id > 0);
+            this.offlineEditedEventsIds = filtered.map((event) => event.id);
 
             return;
         }));
@@ -261,7 +261,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
                     isPast = day.ispast;
 
                     if (day.istoday) {
-                        day.eventsFormated!.forEach((event) => {
+                        day.eventsFormated?.forEach((event) => {
                             event.ispast = this.isEventPast(event);
                         });
                     }
@@ -306,8 +306,8 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         this.weeks.forEach((week) => {
             week.days.forEach((day) => {
                 day.filteredEvents = AddonCalendarHelper.getFilteredEvents(
-                    day.eventsFormated!,
-                    this.filter!,
+                    day.eventsFormated || [],
+                    this.filter,
                     this.categories,
                 );
 
@@ -466,14 +466,14 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
             week.days.forEach((day) => {
 
                 // Schedule notifications for the events retrieved (only future events will be scheduled).
-                AddonCalendar.scheduleEventsNotifications(day.eventsFormated!);
+                AddonCalendar.scheduleEventsNotifications(day.eventsFormated || []);
 
                 if (monthOfflineEvents || this.deletedEvents.length) {
                     // There is offline data, merge it.
 
                     if (this.deletedEvents.length) {
                         // Mark as deleted the events that were deleted in offline.
-                        day.eventsFormated!.forEach((event) => {
+                        day.eventsFormated?.forEach((event) => {
                             event.deleted = this.deletedEvents.indexOf(event.id) != -1;
                         });
                     }
@@ -483,10 +483,10 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
                         day.events = day.events.filter((event) => this.offlineEditedEventsIds.indexOf(event.id) == -1);
                     }
 
-                    if (monthOfflineEvents && monthOfflineEvents[day.mday]) {
+                    if (monthOfflineEvents && monthOfflineEvents[day.mday] && day.eventsFormated) {
                         // Add the offline events (either new or edited).
                         day.eventsFormated =
-                            AddonCalendarHelper.sortEvents(day.eventsFormated!.concat(monthOfflineEvents[day.mday]));
+                            AddonCalendarHelper.sortEvents(day.eventsFormated.concat(monthOfflineEvents[day.mday]));
                     }
                 }
             });
@@ -505,7 +505,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
         this.weeks.forEach((week) => {
             week.days.forEach((day) => {
-                const event = day.eventsFormated!.find((event) => event.id == eventId);
+                const event = day.eventsFormated?.find((event) => event.id == eventId);
 
                 if (event) {
                     event.deleted = false;
@@ -521,7 +521,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      * @return True if it's in the past.
      */
     protected isEventPast(event: { timestart: number; timeduration: number}): boolean {
-        return (event.timestart + event.timeduration) < this.currentTime!;
+        return (event.timestart + event.timeduration) < (this.currentTime || CoreTimeUtils.timestamp());
     }
 
     /**
