@@ -42,6 +42,7 @@ import { CoreH5PSemantics } from './content-validator';
 import { CoreH5PContentBeingSaved, CoreH5PLibraryBeingSaved } from './storage';
 import { CoreH5PLibraryAddTo, CoreH5PLibraryMetadataSettings } from './validator';
 import { CoreH5PMetadata } from './metadata';
+import { Translate } from '@singletons';
 
 /**
  * Equivalent to Moodle's implementation of H5PFrameworkInterface.
@@ -742,14 +743,14 @@ export class CoreH5PFramework {
     /**
      * Save what libraries a library is depending on.
      *
-     * @param libraryId Library Id for the library we're saving dependencies for.
+     * @param library Library data for the library we're saving dependencies for.
      * @param dependencies List of dependencies as associative arrays containing machineName, majorVersion, minorVersion.
      * @param dependencytype The type of dependency.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
     async saveLibraryDependencies(
-        libraryId: number,
+        library: CoreH5PLibraryBeingSaved,
         dependencies: CoreH5PLibraryBasicData[],
         dependencyType: string,
         siteId?: string,
@@ -761,9 +762,17 @@ export class CoreH5PFramework {
             // Get the ID of the library.
             const dependencyId = await this.getLibraryIdByData(dependency, siteId);
 
+            if (!dependencyId) {
+                // Missing dependency. It should have been detected before installing the package.
+                throw new CoreError(Translate.instant('core.h5p.missingdependency', { $a: {
+                    lib: CoreH5PCore.libraryToString(library),
+                    dep: CoreH5PCore.libraryToString(dependency),
+                } }));
+            }
+
             // Create the relation.
             const entry: Partial<CoreH5PLibraryDependencyDBRecord> = {
-                libraryid: libraryId,
+                libraryid: library.libraryId,
                 requiredlibraryid: dependencyId,
                 dependencytype: dependencyType,
             };

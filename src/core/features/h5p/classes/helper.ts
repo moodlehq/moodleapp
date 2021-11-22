@@ -211,7 +211,7 @@ export class CoreH5PHelper {
             // Read the contents of the unzipped dir, process them and store them.
             const contents = await CoreFile.getDirectoryContents(destFolder);
 
-            const filesData = await CoreH5P.h5pValidator.processH5PFiles(destFolder, contents);
+            const filesData = await CoreH5P.h5pValidator.processH5PFiles(destFolder, contents, siteId);
 
             const content = await CoreH5P.h5pStorage.savePackage(filesData, folderName, fileUrl, false, siteId);
 

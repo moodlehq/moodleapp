@@ -988,6 +988,13 @@ export type CoreH5PLibraryBasicData = {
 };
 
 /**
+ * Data about a missing library.
+ */
+export type CoreH5PMissingLibrary = CoreH5PLibraryBasicData & {
+    libString: string; // Library that has the dependency.
+};
+
+/**
  * Library basic data including patch version.
  */
 export type CoreH5PLibraryBasicDataWithPatch = CoreH5PLibraryBasicData & {
