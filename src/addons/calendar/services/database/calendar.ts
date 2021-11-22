@@ -251,7 +251,7 @@ export const CALENDAR_SITE_SCHEMA: CoreSiteSchema = {
                     record.time = events[record.eventid].timestart - record.time;
                 }
 
-                return this.insertRecord(REMINDERS_TABLE, record);
+                return db.insertRecord(REMINDERS_TABLE, record);
             }));
         }
     },
