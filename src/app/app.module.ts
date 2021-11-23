@@ -21,7 +21,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { IonicModule, IonicRouteStrategy, iosTransitionAnimation } from '@ionic/angular';
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { CoreModule } from '@/core/core.module';
 import { AddonsModule } from '@/addons/addons.module';
@@ -31,6 +31,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreSiteInfoCronHandler } from '@services/handlers/site-info-cron';
+import { moodleTransitionAnimation } from '@classes/page-transition';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -44,7 +45,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         BrowserAnimationsModule,
         IonicModule.forRoot(
             {
-                navAnimation: iosTransitionAnimation,
+                navAnimation: moodleTransitionAnimation,
             },
         ),
         HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
