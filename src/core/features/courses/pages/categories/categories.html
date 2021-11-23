@@ -3,10 +3,12 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text [text]="title" contextLevel="coursecat" [contextInstanceId]="currentCategory && currentCategory!.id">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="coursecat" [contextInstanceId]="currentCategory && currentCategory!.id">
+                </core-format-text>
+            </h1>
+        </ion-title>
         <ion-buttons slot="end">
             <core-context-menu>
                 <core-context-menu-item *ngIf="downloadCourseEnabled || downloadCoursesEnabled" [priority]="1000"

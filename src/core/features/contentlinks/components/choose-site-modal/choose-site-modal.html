@@ -1,9 +1,8 @@
 <ion-header>
     <ion-toolbar>
-        <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
-        </ion-buttons>
-        <h2>{{ 'core.contentlinks.chooseaccount' | translate }}</h2>
+        <ion-title>
+            <h2>{{ 'core.contentlinks.chooseaccount' | translate }}</h2>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
                 <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
@@ -23,12 +22,13 @@
             <ion-item *ngFor="let site of sites" (click)="siteClicked(site.id)" detail="false" button>
                 <ion-avatar slot="start">
                     <img [src]="site.avatar" core-external-content [siteId]="site.id"
-                        alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}"
-                        onError="this.src='assets/img/user-avatar.png'">
+                        alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}" onError="this.src='assets/img/user-avatar.png'">
                 </ion-avatar>
                 <ion-label>
                     <p class="item-heading">{{site.fullName}}</p>
-                    <p><core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text></p>
+                    <p>
+                        <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>
+                    </p>
                     <p>{{site.siteUrl}}</p>
                 </ion-label>
             </ion-item>

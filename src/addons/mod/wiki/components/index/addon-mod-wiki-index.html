@@ -50,13 +50,13 @@
     <!-- Activity info. -->
     <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
         [component]="component" [componentId]="componentId" [courseId]="courseId">
-        <h3 *ngIf="pageTitle" title>{{pageTitle}}</h3>
+        <h2 *ngIf="pageTitle" title>{{pageTitle}}</h2>
     </core-course-module-info>
 
     <div *ngIf="pageIsOffline || hasOffline || pageWarning">
         <!-- Wiki has something offline. -->
         <ion-card class="core-warning-card" *ngIf="pageIsOffline || hasOffline">
-            <ion-item>
+            <ion-item class="ion-text-wrap">
                 <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <span *ngIf="pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>

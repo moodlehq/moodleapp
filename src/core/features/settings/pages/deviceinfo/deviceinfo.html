@@ -3,9 +3,11 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            {{ 'core.settings.deviceinfo' | translate }}
-        </h1>
+        <ion-title>
+            <h1>
+                {{ 'core.settings.deviceinfo' | translate }}
+            </h1>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="copyInfo()" [attr.aria-label]="'core.settings.copyinfo' | translate">
                 <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true"></ion-icon>
@@ -37,7 +39,8 @@
         </ion-item>
         <ion-item *ngIf="deviceInfo.siteUrl" (longPress)="copyItemInfo($event)">
             <ion-label class="ion-text-wrap">
-                <h2>{{ 'core.settings.siteinfo' | translate }}<ng-container *ngIf="deviceInfo.isPrefixedUrl"> *</ng-container></h2>
+                <h2>{{ 'core.settings.siteinfo' | translate }}<ng-container *ngIf="deviceInfo.isPrefixedUrl"> *</ng-container>
+                </h2>
                 <p><a [href]="deviceInfo.siteUrl" core-link auto-login="yes">{{ deviceInfo.siteUrl }}</a></p>
                 <p *ngIf="deviceInfo.siteVersion">{{ deviceInfo.siteVersion }}</p>
                 <p *ngIf="deviceInfo.siteId">{{ deviceInfo.siteId }}</p>

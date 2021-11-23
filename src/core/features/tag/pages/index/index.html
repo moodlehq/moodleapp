@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'core.tag.tag' | translate }}: {{ tagName }}</h1>
+        <ion-title>
+            <h1>{{ 'core.tag.tag' | translate }}: {{ tagName }}</h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 
@@ -19,8 +21,7 @@
                     <ion-label class="ion-text-wrap">{{ 'core.tag.warningareasnotsupported' | translate }}</ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngFor="let area of areas" [attr.aria-label]="area.nameKey | translate"
-                    (click)="openArea(area)" [attr.aria-current]="area!.id == selectedAreaId ? 'page' : 'false'" button
-                    detail="true">
+                    (click)="openArea(area)" [attr.aria-current]="area!.id == selectedAreaId ? 'page' : 'false'" button detail="true">
                     <ion-label>
                         <h2>{{ area!.nameKey | translate }}</h2>
                     </ion-label>

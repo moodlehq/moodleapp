@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'core.sharedfiles.sharedfiles' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'core.sharedfiles.sharedfiles' | translate }}</h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -18,12 +20,13 @@
             <ion-item *ngFor="let site of sites" (click)="storeInSite(site.id)" detail="false" button>
                 <ion-avatar slot="start" aria-hidden="true">
                     <img [src]="site.avatar" core-external-content [siteId]="site.id"
-                        alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}"
-                        onError="this.src='assets/img/user-avatar.png'">
+                        alt="{{ 'core.pictureof' | translate:{$a: site.fullname} }}" onError="this.src='assets/img/user-avatar.png'">
                 </ion-avatar>
                 <ion-label>
                     <p class="item-heading">{{site.fullName}}</p>
-                    <p><core-format-text clean="true" [text]="site.siteName" [siteId]="site.id"></core-format-text></p>
+                    <p>
+                        <core-format-text clean="true" [text]="site.siteName" [siteId]="site.id"></core-format-text>
+                    </p>
                     <p>{{site.siteUrl}}</p>
                 </ion-label>
             </ion-item>

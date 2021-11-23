@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ title }}</h1>
+        <ion-title>
+            <h1>{{ title }}</h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -25,9 +27,11 @@
 
         <!-- Display info about space used and space left. -->
         <ion-card class="core-info-card" *ngIf="userQuota && filesInfo && filesInfo.filecount > 0">
-            <ion-item><ion-label>
-            {{ 'core.quotausage' | translate:{$a: {used: spaceUsed, total: userQuotaReadable} } }}
-            </ion-label></ion-item>
+            <ion-item>
+                <ion-label>
+                    {{ 'core.quotausage' | translate:{$a: {used: spaceUsed, total: userQuotaReadable} } }}
+                </ion-label>
+            </ion-item>
         </ion-card>
 
         <!-- List of files. -->

@@ -6,7 +6,9 @@
             </ion-button>
         </ion-buttons>
 
-        <h1>{{ 'core.mainmenu.switchaccount' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'core.mainmenu.switchaccount' | translate }}</h1>
+        </ion-title>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="accountsList.count > 1" (click)="toggleDelete()"

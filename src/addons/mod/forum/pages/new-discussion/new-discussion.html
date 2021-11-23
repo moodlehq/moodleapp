@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.mod_forum.addanewdiscussion' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.mod_forum.addanewdiscussion' | translate }}</h1>
+        </ion-title>
         <ion-buttons slot="end">
             <!-- The context menu will be added in here. -->
         </ion-buttons>
@@ -18,9 +20,8 @@
         <form *ngIf="showForm" #newDiscFormEl>
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_forum.subject' | translate }}</ion-label>
-                <ion-input
-                    [(ngModel)]="newDiscussion.subject"
-                    type="text" [placeholder]="'addon.mod_forum.subject' | translate" name="subject">
+                <ion-input [(ngModel)]="newDiscussion.subject" type="text" [placeholder]="'addon.mod_forum.subject' | translate"
+                    name="subject">
                 </ion-input>
             </ion-item>
             <ion-item>
@@ -31,19 +32,14 @@
                     (contentChanged)="onMessageChange($event)">
                 </core-rich-text-editor>
             </ion-item>
-            <ion-item
-                button
-                class="divider ion-text-wrap"
-                (click)="toggleAdvanced()"
-                detail="false"
-                [attr.aria-expanded]="advanced"
-                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate"
-                role="heading"
-                aria-controls="addon-mod-forum-new-discussion-advanced"
-            >
+            <ion-item button class="divider ion-text-wrap" (click)="toggleAdvanced()" detail="false" [attr.aria-expanded]="advanced"
+                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate" role="heading"
+                aria-controls="addon-mod-forum-new-discussion-advanced">
                 <ion-icon *ngIf="!advanced" name="fas-caret-right" flip-rtl slot="start" aria-hidden="true"></ion-icon>
                 <ion-icon *ngIf="advanced" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label><h2>{{ 'addon.mod_forum.advanced' | translate }}</h2></ion-label>
+                <ion-label>
+                    <h2>{{ 'addon.mod_forum.advanced' | translate }}</h2>
+                </ion-label>
             </ion-item>
             <div *ngIf="advanced" id="addon-mod-forum-new-discussion-advanced">
                 <ion-item *ngIf="showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups">
@@ -66,17 +62,16 @@
                     <ion-label>{{ 'addon.mod_forum.discussionpinned' | translate }}</ion-label>
                     <ion-toggle [(ngModel)]="newDiscussion.pin" name="pin"></ion-toggle>
                 </ion-item>
-                <core-attachments *ngIf="canCreateAttachments && forum && forum.maxattachments > 0"
-                    [files]="newDiscussion.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments"
-                    [component]="component" [componentId]="forum.cmid" [allowOffline]="true" [courseId]="courseId">
+                <core-attachments *ngIf="canCreateAttachments && forum && forum.maxattachments > 0" [files]="newDiscussion.files"
+                    [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid"
+                    [allowOffline]="true" [courseId]="courseId">
                 </core-attachments>
             </div>
             <ion-item>
                 <ion-label>
                     <ion-row>
                         <ion-col>
-                            <ion-button
-                                expand="block" [disabled]="newDiscussion.subject == '' || newDiscussion.message == null"
+                            <ion-button expand="block" [disabled]="newDiscussion.subject == '' || newDiscussion.message == null"
                                 (click)="add()">
                                 {{ 'addon.mod_forum.posttoforum' | translate }}
                             </ion-button>

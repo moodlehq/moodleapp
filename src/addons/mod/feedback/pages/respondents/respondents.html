@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.mod_feedback.responses' |translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.mod_feedback.responses' |translate }}</h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -48,7 +50,9 @@
                         {{ 'core.loadmore' | translate }}
                     </ion-button>
                     <ion-item *ngIf="responses.responses.canLoadMore && loadingMore" class="ion-text-center">
-                        <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
+                        <ion-label>
+                            <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                        </ion-label>
                     </ion-item>
                 </ng-container>
 
@@ -71,7 +75,9 @@
                         {{ 'core.loadmore' | translate }}
                     </ion-button>
                     <ion-item *ngIf="responses.anonResponses.canLoadMore && loadingMore" class="ion-text-center">
-                        <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
+                        <ion-label>
+                            <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                        </ion-label>
                     </ion-item>
                 </ng-container>
             </ion-list>

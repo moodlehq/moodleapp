@@ -3,10 +3,12 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="loaded" (click)="showChatUsers()" [attr.aria-label]="'core.users' | translate">
                 <ion-icon name="fas-users" slot="icon-only" aria-hidden="true"></ion-icon>
@@ -72,7 +74,7 @@
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
                             <strong>
                                 {{ message.userfullname }} <core-format-text [text]="message.message" contextLevel="module"
-                                [contextInstanceId]="cmId" [courseId]="courseId" (afterRender)="last && scrollToBottom()">
+                                    [contextInstanceId]="cmId" [courseId]="courseId" (afterRender)="last && scrollToBottom()">
                                 </core-format-text>
                             </strong>
                         </span>
@@ -81,8 +83,7 @@
 
                 <ion-item *ngIf="!message.special" class="ion-text-wrap addon-message"
                     [class.addon-message-mine]="message.userid == currentUserId"
-                    [class.addon-message-not-mine]="message.userid != currentUserId"
-                    [class.addon-message-no-user]="!message.showUserData"
+                    [class.addon-message-not-mine]="message.userid != currentUserId" [class.addon-message-no-user]="!message.showUserData"
                     [@coreSlideInOut]="message.userid == currentUserId ? '' : 'fromLeft'">
                     <ion-label>
                         <!-- User data. -->
@@ -104,8 +105,7 @@
             </ng-container>
         </ion-list>
 
-        <core-empty-box *ngIf="!messages || messages.length <= 0" icon="far-comments"
-            [message]="'addon.mod_chat.nomessages' | translate">
+        <core-empty-box *ngIf="!messages || messages.length <= 0" icon="far-comments" [message]="'addon.mod_chat.nomessages' | translate">
         </core-empty-box>
     </core-loading>
 </ion-content>

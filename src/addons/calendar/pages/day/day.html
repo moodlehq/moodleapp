@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.calendar.calendarevents' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.calendar.calendarevents' | translate }}</h1>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="openFilter($event)" [attr.aria-label]="'core.filter' | translate">
                 <ion-icon slot="icon-only" name="fas-filter" aria-hidden="true"></ion-icon>
@@ -13,8 +15,8 @@
                     iconAction="fas-calendar-day" (action)="goToCurrentDay()">
                 </core-context-menu-item>
                 <core-context-menu-item [hidden]="!loaded || !hasOffline || !isOnline" [priority]="400"
-                    [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event)"
-                    [iconAction]="syncIcon" [closeOnClick]="false">
+                    [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event)" [iconAction]="syncIcon"
+                    [closeOnClick]="false">
                 </core-context-menu-item>
             </core-context-menu>
         </ion-buttons>
@@ -60,7 +62,7 @@
         <ion-list *ngIf="filteredEvents && filteredEvents.length" class="ion-no-margin">
             <ng-container *ngFor="let event of filteredEvents">
                 <ion-item class="addon-calendar-event ion-text-wrap" [attr.aria-label]="event.name" (click)="gotoEvent(event.id)"
-                [class.item-dimmed]="event.ispast" [ngClass]="['addon-calendar-eventtype-'+event.eventtype]" button detail="true">
+                    [class.item-dimmed]="event.ispast" [ngClass]="['addon-calendar-eventtype-'+event.eventtype]" button detail="true">
                     <core-mod-icon *ngIf="event.moduleIcon" [modicon]="event.moduleIcon" slot="start" [showAlt]="false"
                         [modname]="event.modname" [componentId]="event.instance">
                     </core-mod-icon>
@@ -74,7 +76,7 @@
                         </span>
                         <p class="item-heading">
                             <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
-                            [contextInstanceId]="event.contextInstanceId"></core-format-text>
+                                [contextInstanceId]="event.contextInstanceId"></core-format-text>
                         </p>
                         <p [innerHTML]="event.formattedtime"></p>
                     </ion-label>

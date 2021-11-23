@@ -3,11 +3,13 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
-                [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
+                    [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -45,8 +47,8 @@
                 <ion-label>
                     <h2>{{ 'addon.mod_quiz.feedback' | translate }}</h2>
                     <p>
-                        <core-format-text [component]="component" [componentId]="componentId" [text]="feedback"
-                            contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                        <core-format-text [component]="component" [componentId]="componentId" [text]="feedback" contextLevel="module"
+                            [contextInstanceId]="cmId" [courseId]="courseId">
                         </core-format-text>
                     </p>
                 </ion-label>

@@ -3,11 +3,13 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
-                [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
+                    [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" id="addon-mod_quiz-connection-error-button" [hidden]="!autoSaveError"
@@ -15,8 +17,7 @@
                 aria-haspopup="dialog">
                 <ion-icon name="fas-exclamation-circle" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
-            <ion-button *ngIf="navigation.length" [attr.aria-label]="'addon.mod_quiz.opentoc' | translate"
-                (click)="openNavigation()">
+            <ion-button *ngIf="navigation.length" [attr.aria-label]="'addon.mod_quiz.opentoc' | translate" (click)="openNavigation()">
                 <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
@@ -24,8 +25,7 @@
     <!-- Navigation arrows and time left. -->
     <ion-toolbar *ngIf="loaded && endTime && questions.length && !quizAborted && !showSummary" color="light">
         <ion-title>
-            <core-timer [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate"
-                [align]="'center'">
+            <core-timer [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate" [align]="'center'">
             </core-timer>
         </ion-title>
         <ion-buttons slot="end">
@@ -79,10 +79,9 @@
                     </ion-item-divider>
 
                     <!-- Body of the question. -->
-                    <core-question class="ion-text-wrap" [question]="question" [component]="component"
-                        [componentId]="cmId" [attemptId]="attempt!.id" [usageId]="attempt!.uniqueid"
-                        [offlineEnabled]="offline" contextLevel="module" [contextInstanceId]="cmId"
-                        [courseId]="courseId" [preferredBehaviour]="quiz!.preferredbehaviour" [review]="false"
+                    <core-question class="ion-text-wrap" [question]="question" [component]="component" [componentId]="cmId"
+                        [attemptId]="attempt!.id" [usageId]="attempt!.uniqueid" [offlineEnabled]="offline" contextLevel="module"
+                        [contextInstanceId]="cmId" [courseId]="courseId" [preferredBehaviour]="quiz!.preferredbehaviour" [review]="false"
                         (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)">
                     </core-question>
                 </ion-card>
@@ -92,7 +91,7 @@
         <!-- Go to next or previous page. -->
         <ion-grid class="ion-text-wrap" *ngIf="questions.length && !quizAborted && !showSummary">
             <ion-row>
-                <ion-col *ngIf="previousPage >= 0" >
+                <ion-col *ngIf="previousPage >= 0">
                     <ion-button expand="block" color="light" (click)="changePage(previousPage)">
                         <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
                         {{ 'core.previous' | translate }}
@@ -131,8 +130,8 @@
             <!-- List of questions of the summary table. -->
             <ng-container *ngFor="let question of summaryQuestions">
                 <ion-item *ngIf="question.number" (click)="changePage(question.page, false, question.slot)"
-                    [attr.aria-label]="'core.question.questionno' | translate:{$a: question.number}"
-                    [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn">
+                    [attr.aria-label]="'core.question.questionno' | translate:{$a: question.number}" [detail]="!isSequential && canReturn"
+                    [button]="!isSequential && canReturn">
                     <ion-label>
                         <ion-row class="ion-align-items-center">
                             <ion-col size="3" class="ion-text-center">{{ question.number }}</ion-col>
@@ -153,8 +152,7 @@
             </ion-item>
 
             <!-- Time left (if quiz is timed). -->
-            <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()"
-                [timerText]="'addon.mod_quiz.timeleft' | translate">
+            <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate">
             </core-timer>
 
             <!-- List of messages explaining why the quiz cannot be submitted. -->
@@ -165,15 +163,14 @@
                 </ion-label>
             </ion-item>
 
-            <ion-button *ngIf="preventSubmitMessages.length" expand="block" [href]="moduleUrl" core-link
-                [showBrowserWarning]="false">
+            <ion-button *ngIf="preventSubmitMessages.length" expand="block" [href]="moduleUrl" core-link [showBrowserWarning]="false">
                 {{ 'core.openinbrowser' | translate }}
                 <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
             </ion-button>
 
             <!-- Button to submit the quiz. -->
-            <ion-button *ngIf="!attempt!.finishedOffline && !preventSubmitMessages.length" expand="block"
-                class="ion-margin" (click)="finishAttempt(true)">
+            <ion-button *ngIf="!attempt!.finishedOffline && !preventSubmitMessages.length" expand="block" class="ion-margin"
+                (click)="finishAttempt(true)">
                 {{ 'addon.mod_quiz.submitallandfinish' | translate }}
             </ion-button>
         </ion-card>

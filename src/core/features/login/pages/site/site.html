@@ -4,7 +4,9 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
 
-        <h1>{{ 'core.login.connecttomoodle' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'core.login.connecttomoodle' | translate }}</h1>
+        </ion-title>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="openSettings()" [attr.aria-label]="'core.settings.appsettings' | translate">
@@ -14,8 +16,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-    <div class="ion-text-center ion-padding ion-margin-bottom core-login-site-logo"
-        [class.hidden]="hasSites || enteredSiteUrl">
+    <div class="ion-text-center ion-padding ion-margin-bottom core-login-site-logo" [class.hidden]="hasSites || enteredSiteUrl">
         <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation" alt="">
     </div>
     <form [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites" #siteFormEl>
@@ -108,14 +109,8 @@
     </ng-container>
 
     <!-- Help. -->
-    <ion-button
-        class="ion-margin-top core-login-need-help core-button-as-link ion-text-wrap"
-        (click)="showHelp()"
-        aria-haspopup="dialog"
-        expand="block"
-        fill="clear"
-        color="dark"
-    >
+    <ion-button class="ion-margin-top core-login-need-help core-button-as-link ion-text-wrap" (click)="showHelp()" aria-haspopup="dialog"
+        expand="block" fill="clear" color="dark">
         <ion-label>{{ 'core.needhelp' | translate }}</ion-label>
     </ion-button>
 </ion-content>

@@ -1,6 +1,8 @@
 <ion-header>
     <ion-toolbar>
-        <h2>{{ 'addon.calendar.reminders' | translate }}</h2>
+        <ion-title>
+            <h2>{{ 'addon.calendar.reminders' | translate }}</h2>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
                 <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
@@ -36,15 +38,13 @@
 
             <div class="flex-row">
                 <!-- Input to enter the value. -->
-                <ion-input type="number" name="customvalue" [(ngModel)]="customValue" [disabled]="radioValue != 'custom'"
-                    placeholder="10">
+                <ion-input type="number" name="customvalue" [(ngModel)]="customValue" [disabled]="radioValue != 'custom'" placeholder="10">
                 </ion-input>
 
                 <!-- Units. -->
                 <label class="accesshide" for="reminderUnits">{{ 'addon.calendar.units' | translate }}</label>
                 <ion-select id="reminderUnits" name="customunits" [(ngModel)]="customUnits" interface="action-sheet"
-                    [disabled]="radioValue != 'custom'" slot="end"
-                    [interfaceOptions]="{header: 'addon.calendar.units' | translate}">
+                    [disabled]="radioValue != 'custom'" slot="end" [interfaceOptions]="{header: 'addon.calendar.units' | translate}">
                     <ion-select-option *ngFor="let option of customUnitsOptions" [value]="option.value">
                         {{ option.label | translate }}
                     </ion-select-option>
