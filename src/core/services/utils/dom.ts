@@ -769,21 +769,29 @@ export class CoreDomUtilsProvider {
      *
      * @param scrollEl The element that must be scrolled.
      * @param element DOM element to check.
+     * @param point The point of the element to check.
      * @return Whether the element is outside of the viewport.
      */
-    isElementOutsideOfScreen(scrollEl: HTMLElement, element: HTMLElement): boolean {
+    isElementOutsideOfScreen(scrollEl: HTMLElement, element: HTMLElement, point: 'top' | 'mid' | 'bottom' = 'mid'): boolean {
         const elementRect = element.getBoundingClientRect();
 
         if (!elementRect) {
             return false;
         }
 
-        const elementMidPoint = Math.round((elementRect.bottom + elementRect.top) / 2);
+        let elementPoint: number;
+        if (point === 'top') {
+            elementPoint = elementRect.top;
+        } else if (point === 'bottom') {
+            elementPoint = elementRect.bottom;
+        } else {
+            elementPoint = Math.round((elementRect.bottom + elementRect.top) / 2);
+        }
 
         const scrollElRect = scrollEl.getBoundingClientRect();
         const scrollTopPos = scrollElRect?.top || 0;
 
-        return elementMidPoint > window.innerHeight || elementMidPoint < scrollTopPos;
+        return elementPoint > window.innerHeight || elementPoint < scrollTopPos;
     }
 
     /**

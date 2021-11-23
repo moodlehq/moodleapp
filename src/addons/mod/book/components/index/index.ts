@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, Input, OnInit } from '@angular/core';
-import { IonContent } from '@ionic/angular';
+import { Component, Optional, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { IonContent, IonSlides } from '@ionic/angular';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import {
     AddonModBookProvider,
@@ -31,6 +31,8 @@ import { CoreCourse } from '@features/course/services/course';
 import { AddonModBookTocComponent } from '../toc/toc';
 import { CoreConstants } from '@/core/constants';
 import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar';
+import { CoreError } from '@classes/errors/error';
+import { Translate } from '@singletons';
 
 /**
  * Component that displays a book.
@@ -38,30 +40,43 @@ import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar
 @Component({
     selector: 'addon-mod-book-index',
     templateUrl: 'addon-mod-book-index.html',
+    styleUrls: ['index.scss'],
 })
 export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
+
+    @ViewChild(IonSlides) slides?: IonSlides;
 
     @Input() initialChapterId?: number; // The initial chapter ID to load.
 
     component = AddonModBookProvider.COMPONENT;
-    chapterContent?: string;
+    loadedChapters: LoadedChapter[] = [];
+    previousChapter?: AddonModBookTocChapter;
+    nextChapter?: AddonModBookTocChapter;
     tagsEnabled = false;
     warning = '';
     tags?: CoreTagItem[];
     displayNavBar = true;
     navigationItems: CoreNavigationBarItem<AddonModBookTocChapter>[] = [];
     displayTitlesInNavBar = false;
+    slidesOpts = {
+        initialSlide: 0,
+        autoHeight: true,
+    };
 
     protected chapters: AddonModBookTocChapter[] = [];
     protected currentChapter?: number;
     protected book?: AddonModBookBookWSData;
     protected contentsMap: AddonModBookContentsMap = {};
+    protected element: HTMLElement;
 
     constructor(
+        elementRef: ElementRef,
         protected content?: IonContent,
         @Optional() courseContentsPage?: CoreCourseContentsPage,
     ) {
         super('AddonModBookIndexComponent', courseContentsPage);
+
+        this.element = elementRef.nativeElement;
     }
 
     /**
@@ -102,10 +117,13 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      * @return Promise resolved when done.
      */
     changeChapter(chapterId: number): void {
-        if (chapterId && chapterId != this.currentChapter) {
-            this.loaded = false;
-            this.refreshIcon = CoreConstants.ICON_LOADING;
-            this.loadChapter(chapterId, true);
+        if (!chapterId || chapterId === this.currentChapter) {
+            return;
+        }
+
+        const index = this.loadedChapters.findIndex(chapter => chapter.id === chapterId);
+        if (index > -1) {
+            this.slides?.slideTo(index);
         }
     }
 
@@ -138,10 +156,11 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
             if (typeof this.currentChapter == 'undefined' && typeof this.initialChapterId != 'undefined' && this.chapters) {
                 // Initial chapter set. Validate that the chapter exists.
-                const chapter = this.chapters.find((chapter) => chapter.id == this.initialChapterId);
+                const index = this.chapters.findIndex((chapter) => chapter.id == this.initialChapterId);
 
-                if (chapter) {
+                if (index >= 0) {
                     this.currentChapter = this.initialChapterId;
+                    this.slidesOpts.initialSlide = index;
                 }
             }
 
@@ -154,14 +173,12 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
                 return;
             }
 
-            // Show chapter.
-            try {
-                await this.loadChapter(this.currentChapter, refresh);
+            await this.loadChapters();
 
-                this.warning = downloadResult?.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
-            } catch {
-                // Ignore errors, they're handled inside the loadChapter function.
-            }
+            // Show chapter.
+            await this.viewChapter(this.currentChapter, refresh);
+
+            this.warning = downloadResult?.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
         } finally {
             // Pass false because downloadResourceIfNeeded already invalidates and refresh data if refresh=true.
             this.fillContextMenu(false);
@@ -184,49 +201,94 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     }
 
     /**
-     * Load a book chapter.
+     * Load book chapters.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async loadChapters(): Promise<void> {
+        try {
+            const newChapters = await Promise.all(this.chapters.map(async (chapter) => {
+                const content = await AddonModBook.getChapterContent(this.contentsMap, chapter.id, this.module.id);
+
+                return {
+                    id: chapter.id,
+                    content,
+                    tags: this.tagsEnabled ? this.contentsMap[chapter.id].tags : [],
+                };
+            }));
+
+            let newIndex = -1;
+            if (this.loadedChapters.length && newChapters.length != this.loadedChapters.length) {
+                // Number of chapters has changed. Search the chapter to display, otherwise it could change automatically.
+                newIndex = this.chapters.findIndex((chapter) => chapter.id === this.currentChapter);
+            }
+
+            this.loadedChapters = newChapters;
+
+            if (newIndex > -1) {
+                this.slides?.slideTo(newIndex, 0, false);
+            }
+        } catch (exception) {
+            const error = exception ?? new CoreError(Translate.instant('addon.mod_book.errorchapter'));
+            if (!error.message) {
+                error.message = Translate.instant('addon.mod_book.errorchapter');
+            }
+
+            throw error;
+        }
+    }
+
+    /**
+     * View a book chapter.
      *
      * @param chapterId Chapter to load.
      * @param logChapterId Whether chapter ID should be passed to the log view function.
      * @return Promise resolved when done.
      */
-    protected async loadChapter(chapterId: number, logChapterId: boolean): Promise<void> {
+    protected async viewChapter(chapterId: number, logChapterId: boolean): Promise<void> {
         this.currentChapter = chapterId;
-        this.content?.scrollToTop();
 
-        try {
-            const content = await AddonModBook.getChapterContent(this.contentsMap, chapterId, this.module.id);
-
-            this.tags = this.tagsEnabled ? this.contentsMap[this.currentChapter].tags : [];
-
-            this.chapterContent = content;
-
-            if (this.displayNavBar) {
-                this.navigationItems = this.getNavigationItems(chapterId);
-            }
-
-            // Chapter loaded, log view. We don't return the promise because we don't want to block the user for this.
-            await CoreUtils.ignoreErrors(AddonModBook.logView(
-                this.module.instance!,
-                logChapterId ? chapterId : undefined,
-                this.module.name,
-            ));
-
-            const currentChapterIndex = this.chapters.findIndex((chapter) => chapter.id == chapterId);
-            const isLastChapter = currentChapterIndex < 0 || this.chapters[currentChapterIndex + 1] === undefined;
-
-            // Module is completed when last chapter is viewed, so we only check completion if the last is reached.
-            if (isLastChapter) {
-                CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-            }
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_book.errorchapter', true);
-
-            throw error;
-        } finally {
-            this.loaded = true;
-            this.refreshIcon = CoreConstants.ICON_REFRESH;
+        if (this.displayNavBar) {
+            this.navigationItems = this.getNavigationItems(chapterId);
         }
+
+        // Chapter loaded, log view.
+        await CoreUtils.ignoreErrors(AddonModBook.logView(
+            this.module.instance!,
+            logChapterId ? chapterId : undefined,
+            this.module.name,
+        ));
+
+        const currentChapterIndex = this.chapters.findIndex((chapter) => chapter.id == chapterId);
+        const isLastChapter = currentChapterIndex < 0 || this.chapters[currentChapterIndex + 1] === undefined;
+
+        // Module is completed when last chapter is viewed, so we only check completion if the last is reached.
+        if (isLastChapter) {
+            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+        }
+    }
+
+    /**
+     * Slide has changed.
+     *
+     * @return Promise resolved when done.
+     */
+    async slideChanged(): Promise<void> {
+        if (!this.slides) {
+            return;
+        }
+
+        const scrollElement = await this.content?.getScrollElement();
+        const container = this.element.querySelector<HTMLElement>('.addon-mod_book-container');
+
+        if (container && (!scrollElement || CoreDomUtils.isElementOutsideOfScreen(scrollElement, container, 'top'))) {
+            // Scroll to top.
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        const index = await this.slides.getActiveIndex();
+
+        this.viewChapter(this.loadedChapters[index].id, true);
     }
 
     /**
@@ -245,3 +307,9 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     }
 
 }
+
+type LoadedChapter = {
+    id: number;
+    content: string;
+    tags?: CoreTagItem[];
+};
