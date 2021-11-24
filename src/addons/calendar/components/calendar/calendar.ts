@@ -22,11 +22,12 @@ import {
     EventEmitter,
     KeyValueDiffers,
     KeyValueDiffer,
+    ViewChild,
 } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTimeUtils, YearAndMonth } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import {
     AddonCalendar,
@@ -41,6 +42,7 @@ import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { CoreCategoryData, CoreCourses } from '@features/courses/services/courses';
 import { CoreApp } from '@services/app';
 import { CoreLocalNotifications } from '@services/local-notifications';
+import { IonSlides } from '@ionic/angular';
 
 /**
  * Component that displays a calendar.
@@ -52,6 +54,8 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 })
 export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestroy {
 
+    @ViewChild(IonSlides) slides?: IonSlides;
+
     @Input() initialYear?: number; // Initial year to load.
     @Input() initialMonth?: number; // Initial month to load.
     @Input() filter?: AddonCalendarFilter; // Filter to apply.
@@ -61,15 +65,14 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     @Output() onDayClicked = new EventEmitter<{day: number; month: number; year: number}>();
 
     periodName?: string;
-    weekDays: AddonCalendarWeekDaysTranslationKeys[] = [];
-    weeks: AddonCalendarWeek[] = [];
+    preloadedMonths: PreloadedMonth[] = [];
     loaded = false;
+    monthLoaded = false;
     timeFormat?: string;
     isCurrentMonth = false;
     isPastMonth = false;
 
-    protected year: number;
-    protected month: number;
+    protected visibleMonth: YearAndMonth;
     protected categoriesRetrieved = false;
     protected categories: { [id: number]: CoreCategoryData } = {};
     protected currentSiteId: string;
@@ -92,9 +95,15 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         if (CoreLocalNotifications.isAvailable()) {
             // Re-schedule events if default time changes.
             this.obsDefaultTimeChange = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
-                this.weeks.forEach((week) => {
-                    week.days.forEach((day) => {
-                        AddonCalendar.scheduleEventsNotifications(day.eventsFormated || []);
+                this.preloadedMonths.forEach((month) => {
+                    if (!month.loaded) {
+                        return;
+                    }
+
+                    month.weeks.forEach((week) => {
+                        week.days.forEach((day) => {
+                            AddonCalendar.scheduleEventsNotifications(day.eventsFormated || []);
+                        });
                     });
                 });
             }, this.currentSiteId);
@@ -124,16 +133,18 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
         const now = new Date();
 
-        this.year = now.getFullYear();
-        this.month = now.getMonth() + 1;
+        this.visibleMonth = {
+            year: now.getFullYear(),
+            monthNumber: now.getMonth() + 1,
+        };
     }
 
     /**
      * Component loaded.
      */
     ngOnInit(): void {
-        this.year = this.initialYear ? this.initialYear : this.year;
-        this.month = this.initialMonth ? this.initialMonth : this.month;
+        this.visibleMonth.year = this.initialYear ?? this.visibleMonth.year;
+        this.visibleMonth.monthNumber = this.initialMonth ?? this.visibleMonth.monthNumber;
 
         this.calculateIsCurrentMonth();
 
@@ -148,11 +159,15 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         this.displayNavButtons = typeof this.displayNavButtons == 'undefined' ? true :
             CoreUtils.isTrueOrOne(this.displayNavButtons);
 
-        if (this.weeks) {
+        if (this.preloadedMonths.length) {
             // Check if there's any change in the filter object.
             const changes = this.differ.diff(this.filter || {});
             if (changes) {
-                this.filterEvents();
+                this.preloadedMonths.forEach((month) => {
+                    if (month.loaded) {
+                        this.filterEvents(month.weeks);
+                    }
+                });
             }
         }
     }
@@ -196,7 +211,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         try {
             await Promise.all(promises);
 
-            await this.fetchEvents();
+            await this.viewMonth();
 
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
@@ -206,72 +221,162 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     }
 
     /**
-     * Fetch the events for current month.
+     * Load or preload a month.
      *
+     * @param year Year.
+     * @param monthNumber Month number.
+     * @param preload Whether to "preload" the month. When preloading, no events will be fetched.
      * @return Promise resolved when done.
      */
-    async fetchEvents(): Promise<void> {
-        // Don't pass courseId and categoryId, we'll filter them locally.
-        let result: { daynames: Partial<AddonCalendarDayName>[]; weeks: Partial<AddonCalendarWeek>[] };
-        try {
-            result = await AddonCalendar.getMonthlyEvents(this.year, this.month);
-        } catch (error) {
-            if (!CoreApp.isOnline()) {
-                // Allow navigating to non-cached months in offline (behave as if using emergency cache).
-                result = await AddonCalendarHelper.getOfflineMonthWeeks(this.year, this.month);
-            } else {
-                throw error;
-            }
+    async loadMonth(month: YearAndMonth, preload = false): Promise<void> {
+        // Check if it's already loaded.
+        const existingMonth = this.findPreloadedMonth(month);
+        if (existingMonth && ((existingMonth.loaded && !existingMonth.needsRefresh) || preload)) {
+            return;
         }
 
-        // Calculate the period name. We don't use the one in result because it's in server's language.
-        this.periodName = CoreTimeUtils.userDate(
-            new Date(this.year, this.month - 1).getTime(),
-            'core.strftimemonthyear',
-        );
-        this.weekDays = AddonCalendar.getWeekDays(result.daynames[0].dayno);
-        this.weeks = result.weeks as AddonCalendarWeek[];
-        this.calculateIsCurrentMonth();
+        if (!preload) {
+            this.monthLoaded = false;
+        }
 
-        await Promise.all(this.weeks.map(async (week) => {
-            await Promise.all(week.days.map(async (day) => {
-                day.periodName = CoreTimeUtils.userDate(
-                    new Date(this.year, this.month - 1, day.mday).getTime(),
-                    'core.strftimedaydate',
-                );
-                day.eventsFormated = day.eventsFormated || [];
-                day.filteredEvents = day.filteredEvents || [];
-                // Format online events.
-                const onlineEventsFormatted = await Promise.all(
-                    day.events.map(async (event) => AddonCalendarHelper.formatEventData(event)),
-                );
+        try {
+            // Load or preload the weeks.
+            let result: { daynames: Partial<AddonCalendarDayName>[]; weeks: Partial<AddonCalendarWeek>[] };
+            if (preload) {
+                result = await AddonCalendarHelper.getOfflineMonthWeeks(month.year, month.monthNumber);
+            } else {
+                try {
+                    // Don't pass courseId and categoryId, we'll filter them locally.
+                    result = await AddonCalendar.getMonthlyEvents(month.year, month.monthNumber);
+                } catch (error) {
+                    if (!CoreApp.isOnline()) {
+                        // Allow navigating to non-cached months in offline (behave as if using emergency cache).
+                        result = await AddonCalendarHelper.getOfflineMonthWeeks(month.year, month.monthNumber);
+                    } else {
+                        throw error;
+                    }
+                }
+            }
 
-                day.eventsFormated = day.eventsFormated.concat(onlineEventsFormatted);
-            }));
-        }));
-
-        if (this.isCurrentMonth) {
+            const weekDays = AddonCalendar.getWeekDays(result.daynames[0].dayno);
+            const weeks = result.weeks as AddonCalendarWeek[];
+            const isCurrentMonth = CoreTimeUtils.isCurrentMonth(month);
             const currentDay = new Date().getDate();
             let isPast = true;
 
-            this.weeks.forEach((week) => {
-                week.days.forEach((day) => {
-                    day.istoday = day.mday == currentDay;
-                    day.ispast = isPast && !day.istoday;
-                    isPast = day.ispast;
+            await Promise.all(weeks.map(async (week) => {
+                await Promise.all(week.days.map(async (day) => {
+                    day.periodName = CoreTimeUtils.userDate(
+                        new Date(month.year, month.monthNumber - 1, day.mday).getTime(),
+                        'core.strftimedaydate',
+                    );
+                    day.eventsFormated = day.eventsFormated || [];
+                    day.filteredEvents = day.filteredEvents || [];
+                    // Format online events.
+                    const onlineEventsFormatted = await Promise.all(
+                        day.events.map(async (event) => AddonCalendarHelper.formatEventData(event)),
+                    );
 
-                    if (day.istoday) {
-                        day.eventsFormated?.forEach((event) => {
-                            event.ispast = this.isEventPast(event);
-                        });
+                    day.eventsFormated = day.eventsFormated.concat(onlineEventsFormatted);
+
+                    if (isCurrentMonth) {
+                        day.istoday = day.mday == currentDay;
+                        day.ispast = isPast && !day.istoday;
+                        isPast = day.ispast;
+
+                        if (day.istoday) {
+                            day.eventsFormated?.forEach((event) => {
+                                event.ispast = this.isEventPast(event);
+                            });
+                        }
                     }
-                });
+                }));
+            }));
+
+            if (!preload) {
+                // Merge the online events with offline data.
+                this.mergeEvents(month, weeks);
+                // Filter events by course.
+                this.filterEvents(weeks);
+            }
+
+            if (existingMonth) {
+                // Month already exists, update it.
+                existingMonth.loaded = !preload;
+                existingMonth.weeks = weeks;
+                existingMonth.weekDays = weekDays;
+
+                return;
+            }
+
+            // Add the preloaded month at the right position.
+            const preloadedMonth: PreloadedMonth = {
+                ...month,
+                loaded: !preload,
+                weeks,
+                weekDays,
+            };
+            const previousMonth = CoreTimeUtils.getPreviousMonth(month);
+            const nextMonth = CoreTimeUtils.getNextMonth(month);
+            const activeIndex = await this.slides?.getActiveIndex();
+
+            const added = this.preloadedMonths.some((month, index) => {
+                let positionToInsert = -1;
+                if (CoreTimeUtils.isSameMonth(month, previousMonth)) {
+                    // Previous month found, add the month after it.
+                    positionToInsert = index + 1;
+                }
+
+                if (CoreTimeUtils.isSameMonth(month, nextMonth)) {
+                    // Next month found, add the month before it.
+                    positionToInsert = index;
+                }
+
+                if (positionToInsert > -1) {
+                    this.preloadedMonths.splice(positionToInsert, 0, preloadedMonth);
+                    if (activeIndex !== undefined && positionToInsert <= activeIndex) {
+                        // Added a slide before the active one, keep current slide.
+                        this.slides?.slideTo(activeIndex + 1, 0, false);
+                    }
+
+                    return true;
+                }
             });
+
+            if (!added) {
+                // Previous and next months not found, this probably means the array is still empty. Add it at the end.
+                this.preloadedMonths.push(preloadedMonth);
+            }
+        } finally {
+            if (!preload) {
+                this.monthLoaded = true;
+            }
         }
-        // Merge the online events with offline data.
-        this.mergeEvents();
-        // Filter events by course.
-        this.filterEvents();
+    }
+
+    /**
+     * Load current month and preload next and previous ones.
+     *
+     * @return Promise resolved when done.
+     */
+    async viewMonth(): Promise<void> {
+        // Calculate the period name. We don't use the one in result because it's in server's language.
+        this.periodName = CoreTimeUtils.userDate(
+            new Date(this.visibleMonth.year, this.visibleMonth.monthNumber - 1).getTime(),
+            'core.strftimemonthyear',
+        );
+        this.calculateIsCurrentMonth();
+
+        try {
+            // Load current month, and preload next and previous ones.
+            await Promise.all([
+                this.loadMonth(this.visibleMonth, false),
+                this.loadMonth(CoreTimeUtils.getPreviousMonth(this.visibleMonth), true),
+                this.loadMonth(CoreTimeUtils.getNextMonth(this.visibleMonth), true),
+            ]);
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+        }
     }
 
     /**
@@ -301,9 +406,11 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
     /**
      * Filter events based on the filter popover.
+     *
+     * @param weeks Weeks with the events to filter.
      */
-    filterEvents(): void {
-        this.weeks.forEach((week) => {
+    filterEvents(weeks: AddonCalendarWeek[]): void {
+        weeks.forEach((week) => {
             week.days.forEach((day) => {
                 day.filteredEvents = AddonCalendarHelper.getFilteredEvents(
                     day.eventsFormated || [],
@@ -323,17 +430,19 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      * @param afterChange Whether the refresh is done after an event has changed or has been synced.
      * @return Promise resolved when done.
      */
-    async refreshData(afterChange?: boolean): Promise<void> {
+    async refreshData(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        // Don't invalidate monthly events after a change, it has already been handled.
-        if (!afterChange) {
-            promises.push(AddonCalendar.invalidateMonthlyEvents(this.year, this.month));
-        }
+        promises.push(AddonCalendar.invalidateMonthlyEvents(this.visibleMonth.year, this.visibleMonth.monthNumber));
         promises.push(CoreCourses.invalidateCategories(0, true));
         promises.push(AddonCalendar.invalidateTimeFormat());
 
         this.categoriesRetrieved = false; // Get categories again.
+
+        const preloadedMonth = this.findPreloadedMonth(this.visibleMonth);
+        if (preloadedMonth) {
+            preloadedMonth.needsRefresh = true;
+        }
 
         await Promise.all(promises);
 
@@ -343,35 +452,15 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     /**
      * Load next month.
      */
-    async loadNext(): Promise<void> {
-        this.increaseMonth();
-
-        this.loaded = false;
-
-        try {
-            await this.fetchEvents();
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
-            this.decreaseMonth();
-        }
-        this.loaded = true;
+    loadNext(): void {
+        this.slides?.slideNext();
     }
 
     /**
      * Load previous month.
      */
-    async loadPrevious(): Promise<void> {
-        this.decreaseMonth();
-
-        this.loaded = false;
-
-        try {
-            await this.fetchEvents();
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
-            this.increaseMonth();
-        }
-        this.loaded = true;
+    loadPrevious(): void {
+        this.slides?.slidePrev();
     }
 
     /**
@@ -391,78 +480,46 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      * @param day Day.
      */
     dayClicked(day: number): void {
-        this.onDayClicked.emit({ day: day, month: this.month, year: this.year });
+        this.onDayClicked.emit({ day: day, month: this.visibleMonth.monthNumber, year: this.visibleMonth.year });
     }
 
     /**
      * Check if user is viewing the current month.
      */
     calculateIsCurrentMonth(): void {
-        const now = new Date();
-
         this.currentTime = CoreTimeUtils.timestamp();
-
-        this.isCurrentMonth = this.year == now.getFullYear() && this.month == now.getMonth() + 1;
-        this.isPastMonth = this.year < now.getFullYear() || (this.year == now.getFullYear() && this.month < now.getMonth() + 1);
+        this.isCurrentMonth = CoreTimeUtils.isCurrentMonth(this.visibleMonth);
+        this.isPastMonth = CoreTimeUtils.isCurrentMonth(this.visibleMonth);
     }
 
     /**
      * Go to current month.
      */
     async goToCurrentMonth(): Promise<void> {
+
         const now = new Date();
-        const initialMonth = this.month;
-        const initialYear = this.year;
+        const currentMonth = {
+            monthNumber: now.getMonth() + 1,
+            year: now.getFullYear(),
+        };
 
-        this.month = now.getMonth() + 1;
-        this.year = now.getFullYear();
-
-        this.loaded = false;
-
-        try {
-            await this.fetchEvents();
-            this.isCurrentMonth = true;
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
-            this.year = initialYear;
-            this.month = initialMonth;
-        }
-
-        this.loaded = true;
-    }
-
-    /**
-     * Decrease the current month.
-     */
-    protected decreaseMonth(): void {
-        if (this.month === 1) {
-            this.month = 12;
-            this.year--;
-        } else {
-            this.month--;
-        }
-    }
-
-    /**
-     * Increase the current month.
-     */
-    protected increaseMonth(): void {
-        if (this.month === 12) {
-            this.month = 1;
-            this.year++;
-        } else {
-            this.month++;
+        const index = this.preloadedMonths.findIndex((month) => CoreTimeUtils.isSameMonth(month, currentMonth));
+        if (index > -1) {
+            this.slides?.slideTo(index);
         }
     }
 
     /**
      * Merge online events with the offline events of that period.
+     *
+     * @param month Month.
+     * @param weeks Weeks with the events to filter.
      */
-    protected mergeEvents(): void {
+    protected mergeEvents(month: YearAndMonth, weeks: AddonCalendarWeek[]): void {
         const monthOfflineEvents: { [day: number]: AddonCalendarEventToDisplay[] } =
-            this.offlineEvents[AddonCalendarHelper.getMonthId(this.year, this.month)];
+            this.offlineEvents[AddonCalendarHelper.getMonthId(month.year, month.monthNumber)];
 
-        this.weeks.forEach((week) => {
+        weeks.forEach((week) => {
             week.days.forEach((day) => {
 
                 // Schedule notifications for the events retrieved (only future events will be scheduled).
@@ -498,18 +555,20 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      *
      * @param eventId Event ID.
      */
-    protected undeleteEvent(eventId: number): void {
-        if (!this.weeks) {
-            return;
-        }
+    protected async undeleteEvent(eventId: number): Promise<void> {
+        this.preloadedMonths.forEach((month) => {
+            if (!month.loaded) {
+                return;
+            }
 
-        this.weeks.forEach((week) => {
-            week.days.forEach((day) => {
-                const event = day.eventsFormated?.find((event) => event.id == eventId);
+            month.weeks.forEach((week) => {
+                week.days.forEach((day) => {
+                    const event = day.eventsFormated?.find((event) => event.id == eventId);
 
-                if (event) {
-                    event.deleted = false;
-                }
+                    if (event) {
+                        event.deleted = false;
+                    }
+                });
             });
         });
     }
@@ -525,6 +584,38 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     }
 
     /**
+     * Slide has changed.
+     *
+     * @return Promise resolved when done.
+     */
+    async slideChanged(): Promise<void> {
+        if (!this.slides) {
+            return;
+        }
+
+        const index = await this.slides.getActiveIndex();
+        const preloadedMonth = this.preloadedMonths[index];
+        if (!preloadedMonth) {
+            return;
+        }
+
+        this.visibleMonth.year = preloadedMonth.year;
+        this.visibleMonth.monthNumber = preloadedMonth.monthNumber;
+
+        await this.viewMonth();
+    }
+
+    /**
+     * Find a certain preloaded month.
+     *
+     * @param month Month to search.
+     * @return Preloaded month, undefined if not found.
+     */
+    protected findPreloadedMonth(month: YearAndMonth): PreloadedMonth | undefined {
+        return this.preloadedMonths.find(preloadedMonth => CoreTimeUtils.isSameMonth(month, preloadedMonth));
+    }
+
+    /**
      * Component destroyed.
      */
     ngOnDestroy(): void {
@@ -533,3 +624,13 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     }
 
 }
+
+/**
+ * Preloaded month.
+ */
+type PreloadedMonth = YearAndMonth & {
+    loaded: boolean; // Whether the events have been loaded.
+    weekDays: AddonCalendarWeekDaysTranslationKeys[];
+    weeks: AddonCalendarWeek[];
+    needsRefresh?: boolean; // Whether the events needs to be re-loaded.
+};

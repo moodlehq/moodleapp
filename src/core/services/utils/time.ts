@@ -389,6 +389,86 @@ export class CoreTimeUtilsProvider {
         return String(moment().year() - 20);
     }
 
+    /**
+     * Given a year and a month, return the previous month and its year.
+     *
+     * @param month Year and month.
+     * @return Previous month and its year.
+     */
+    getPreviousMonth(month: YearAndMonth): YearAndMonth {
+        if (month.monthNumber === 1) {
+            return {
+                monthNumber: 12,
+                year: month.year - 1,
+            };
+        }
+
+        return {
+            monthNumber: month.monthNumber - 1,
+            year: month.year,
+        };
+    }
+
+    /**
+     * Given a year and a month, return the next month and its year.
+     *
+     * @param month Year and month.
+     * @return Next month and its year.
+     */
+    getNextMonth(month: YearAndMonth): YearAndMonth {
+        if (month.monthNumber === 12) {
+            return {
+                monthNumber: 1,
+                year: month.year + 1,
+            };
+        }
+
+        return {
+            monthNumber: month.monthNumber + 1,
+            year: month.year,
+        };
+    }
+
+    /**
+     * Check if a certain month is current month.
+     *
+     * @param month Year and month.
+     * @return Whether it's current month.
+     */
+    isCurrentMonth(month: YearAndMonth): boolean {
+        const now = new Date();
+
+        return month.year == now.getFullYear() && month.monthNumber == now.getMonth() + 1;
+    }
+
+    /**
+     * Check if a certain month is a past month.
+     *
+     * @param month Year and month.
+     * @return Whether it's a past month.
+     */
+    isPastMonth(month: YearAndMonth): boolean {
+        const now = new Date();
+
+        return month.year < now.getFullYear() || (month.year == now.getFullYear() && month.monthNumber < now.getMonth() + 1);
+    }
+
+    /**
+     * Check if two months are the same.
+     *
+     * @param monthA Month A.
+     * @param monthB Month B.
+     * @return Whether it's same month.
+     */
+    isSameMonth(monthA: YearAndMonth, monthB: YearAndMonth): boolean {
+        return monthA.monthNumber === monthB.monthNumber && monthA.year === monthB.year;
+    }
+
 }
 
 export const CoreTimeUtils = makeSingleton(CoreTimeUtilsProvider);
+
+export type YearAndMonth = {
+    year: number; // Year number.
+    monthNumber: number; // Month number (1 to 12).
+};

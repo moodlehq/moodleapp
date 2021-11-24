@@ -227,16 +227,12 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
     /**
      * Refresh events.
      *
-     * @param afterChange Whether the refresh is done after an event has changed or has been synced.
      * @return Promise resolved when done.
      */
-    async refreshData(afterChange?: boolean): Promise<void> {
+    async refreshData(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        // Don't invalidate upcoming events after a change, it has already been handled.
-        if (!afterChange) {
-            promises.push(AddonCalendar.invalidateAllUpcomingEvents());
-        }
+        promises.push(AddonCalendar.invalidateAllUpcomingEvents());
         promises.push(CoreCourses.invalidateCategories(0, true));
         promises.push(AddonCalendar.invalidateLookAhead());
         promises.push(AddonCalendar.invalidateTimeFormat());
