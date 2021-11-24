@@ -1,7 +1,7 @@
 (function() {
     // Set up the M object - only pending_js is implemented.
     window.M = window.M ? window.M : {};
-    var M = window.M;
+    const M = window.M;
     M.util = M.util ? M.util : {};
     M.util.pending_js = M.util.pending_js ? M.util.pending_js : []; // eslint-disable-line camelcase
 
@@ -11,9 +11,9 @@
      *
      * @param {string} text Information to log
      */
-    var log = function() {
-        var now = new Date();
-        var nowFormatted = String(now.getHours()).padStart(2, '0') + ':' +
+    const log = function() {
+        const now = new Date();
+        const nowFormatted = String(now.getHours()).padStart(2, '0') + ':' +
                 String(now.getMinutes()).padStart(2, '0') + ':' +
                 String(now.getSeconds()).padStart(2, '0') + '.' +
                 String(now.getMilliseconds()).padStart(2, '0');
@@ -26,7 +26,7 @@
      * @param {function} target function to run
      * @param {number} count Number of times to do setTimeout (leave blank for 10)
      */
-    var runAfterEverything = function(target, count) {
+    const runAfterEverything = function(target, count) {
         if (count === undefined) {
             count = 10;
         }
@@ -45,7 +45,7 @@
      *
      * @param {string} key Key to add
      */
-    var addPending = function(key) {
+    const addPending = function(key) {
         // Add a special DELAY entry whenever another entry is added.
         if (window.M.util.pending_js.length == 0) {
             window.M.util.pending_js.push('DELAY');
@@ -61,7 +61,7 @@
      *
      * @param {string} key Key to remove
      */
-    var removePending = function(key) {
+    const removePending = function(key) {
         // Remove the key immediately.
         window.M.util.pending_js = window.M.util.pending_js.filter(function(x) { // eslint-disable-line camelcase
             return x !== key;
@@ -86,17 +86,17 @@
     /**
      * Adds a pending key to the array, but removes it after some setTimeouts finish.
      */
-    var addPendingDelay = function() {
+    const addPendingDelay = function() {
         addPending('...');
         removePending('...');
     };
 
     // Override XMLHttpRequest to mark things pending while there is a request waiting.
-    var realOpen = XMLHttpRequest.prototype.open;
-    var requestIndex = 0;
+    const realOpen = XMLHttpRequest.prototype.open;
+    let requestIndex = 0;
     XMLHttpRequest.prototype.open = function() {
-        var index = requestIndex++;
-        var key = 'httprequest-' + index;
+        const index = requestIndex++;
+        const key = 'httprequest-' + index;
 
         try {
             // Add to the list of pending requests.
@@ -108,20 +108,20 @@
             });
 
             return realOpen.apply(this, arguments);
-        } catch (e) {
+        } catch (error) {
             removePending(key);
-            throw e;
+            throw error;
         }
     };
 
-    var waitingBlocked = false;
+    let waitingBlocked = false;
 
     /**
      * Checks if a loading spinner is present and visible; if so, adds it to the pending array
      * (and if not, removes it).
      */
-    var checkUIBlocked = function() {
-        var blocked = document.querySelector('span.core-loading-spinner, ion-loading, .click-block-active');
+    const checkUIBlocked = function() {
+        const blocked = document.querySelector('span.core-loading-spinner, ion-loading, .click-block-active');
         if (blocked && blocked.offsetParent) {
             if (!waitingBlocked) {
                 addPending('blocked');
@@ -142,8 +142,8 @@
     // of the animations are set to 500ms so we allow it to continue from 500ms after any DOM
     // change.
 
-    var recentMutation = false;
-    var lastMutation;
+    let recentMutation = false;
+    let lastMutation;
 
     /**
      * Called from the mutation callback to remove the pending tag after 500ms if nothing else
@@ -152,7 +152,7 @@
      * This will be called after 500ms, then every 100ms until there have been no mutation events
      * for 500ms.
      */
-    var pollRecentMutation = function() {
+    const pollRecentMutation = function() {
         if (Date.now() - lastMutation > 500) {
             recentMutation = false;
             removePending('dom-mutation');
@@ -164,7 +164,7 @@
     /**
      * Mutation callback, called whenever the DOM is mutated.
      */
-    var mutationCallback = function() {
+    const mutationCallback = function() {
         lastMutation = Date.now();
         if (!recentMutation) {
             recentMutation = true;
@@ -176,7 +176,7 @@
     };
 
     // Set listener using the mutation callback.
-    var observer = new MutationObserver(mutationCallback);
+    const observer = new MutationObserver(mutationCallback);
     observer.observe(document, {attributes: true, childList: true, subtree: true});
 
     /**
@@ -186,7 +186,7 @@
      * @param {HTMLElement} container Container
      * @returns {boolean} Whether the element is visible or not
      */
-    var isElementVisible = (element, container) => {
+    const isElementVisible = (element, container) => {
         if (element.getAttribute('aria-hidden') === 'true' || getComputedStyle(element).display === 'none')
             return false;
 
@@ -207,7 +207,7 @@
      * @param {HTMLElement} container Container
      * @returns {boolean} Whether the element is selected or not
      */
-    var isElementSelected = (element, container) => {
+    const isElementSelected = (element, container) => {
         const ariaCurrent = element.getAttribute('aria-current');
         if (
             (ariaCurrent && ariaCurrent !== 'false') ||
@@ -224,38 +224,13 @@
     };
 
     /**
-     * Generic shared function to find possible xpath matches within the document, that are visible,
-     * and then process them using a callback function.
-     *
-     * @param {string} xpath Xpath to use
-     * @param {function} process Callback function that handles each matched node
-     */
-    var findPossibleMatches = function(xpath, process) {
-        var select = 'ion-alert, ion-popover, ion-action-sheet, core-ion-tab.show-tab ion-page.show-page, ion-page.show-page, html';
-        var parent = document.querySelector(select);
-        var matches = document.evaluate(xpath, parent || document);
-        while (true) {
-            var match = matches.iterateNext();
-            if (!match) {
-                break;
-            }
-            // Skip invisible text nodes.
-            if (!match.offsetParent) {
-                continue;
-            }
-
-            process(match);
-        }
-    };
-
-    /**
      * Finds elements within a given container.
      *
      * @param {HTMLElement} container Parent element to search the element within
      * @param {string} text Text to look for
      * @return {HTMLElement} Elements containing the given text
      */
-    var findElementsBasedOnTextWithin = (container, text) => {
+    const findElementsBasedOnTextWithin = (container, text) => {
         const elements = [];
         const attributesSelector = `[aria-label*="${text}"], a[title*="${text}"], img[alt*="${text}"]`;
 
@@ -342,7 +317,7 @@
      * @param {Array} elements Elements list.
      * @return {Array} Top ancestors.
      */
-    var getTopAncestors = function(elements) {
+    const getTopAncestors = function(elements) {
         const uniqueElements = new Set(elements);
 
         for (const element of uniqueElements) {
@@ -366,7 +341,7 @@
      * @param {HTMLElement} element Element.
      * @return {HTMLElement} Parent element.
      */
-    var getParentElement = function(element) {
+    const getParentElement = function(element) {
         return element.parentElement || (element.getRootNode() && element.getRootNode().host) || null;
     };
 
@@ -376,7 +351,7 @@
      * @param {object} locator Element locator.
      * @return {HTMLElement} Found elements
      */
-    var findElementsBasedOnText = function(locator) {
+    const findElementsBasedOnText = function(locator) {
         const topContainer = document.querySelector('ion-alert, ion-popover, ion-action-sheet, core-ion-tab.show-tab ion-page.show-page, ion-page.show-page, html');
         let container = topContainer;
 
@@ -417,47 +392,38 @@
      *
      * @param {HTMLElement} element Element to press.
      */
-    var pressElement = function(element) {
-        if (window.BehatMoodleAppLegacy) {
-            var mainContent = getNavCtrl().getActive().contentRef().nativeElement;
-            var rect = element.getBoundingClientRect();
+    const pressElement = function(element) {
+        // Scroll the item into view.
+        element.scrollIntoView(false);
 
-            // Scroll the item into view.
-            mainContent.scrollTo(rect.x, rect.y);
+        const rect = element.getBoundingClientRect();
 
-            // Simulate a mouse click on the button.
-            var eventOptions = {
-                clientX: rect.left + rect.width / 2,
-                clientY: rect.top + rect.height / 2,
-                bubbles: true,
-                view: window,
-                cancelable: true,
-            };
-            setTimeout(() => element.dispatchEvent(new MouseEvent('mousedown', eventOptions)), 0);
-            setTimeout(() => element.dispatchEvent(new MouseEvent('mouseup', eventOptions)), 0);
-            setTimeout(() => element.dispatchEvent(new MouseEvent('click', eventOptions)), 0);
-        } else {
-            // Scroll the item into view.
-            element.scrollIntoView();
+        // Simulate a mouse click on the button.
+        const eventOptions = {
+            clientX: rect.left + rect.width / 2,
+            clientY: rect.top + rect.height / 2,
+            bubbles: true,
+            view: window,
+            cancelable: true,
+        };
 
-            // Events don't bubble up across Shadow DOM boundaries, and some buttons
-            // may not work without doing this.
-            const parentElement = getParentElement(element);
+        // Events don't bubble up across Shadow DOM boundaries, and some buttons
+        // may not work without doing this.
+        const parentElement = getParentElement(element);
 
-            if (parentElement && parentElement.matches('ion-button, ion-back-button')) {
-                element = parentElement;
-            }
-
-            // There are some buttons in the app that don't respond to click events, for example
-            // buttons using the core-supress-events directive. That's why we need to send both
-            // click and mouse events.
-            element.dispatchEvent(new MouseEvent('mousedown', eventOptions));
-
-            setTimeout(() => {
-                element.dispatchEvent(new MouseEvent('mouseup', eventOptions));
-                element.click();
-            }, 300);
+        if (parentElement && parentElement.matches('ion-button, ion-back-button')) {
+            element = parentElement;
         }
+
+        // There are some buttons in the app that don't respond to click events, for example
+        // buttons using the core-supress-events directive. That's why we need to send both
+        // click and mouse events.
+        element.dispatchEvent(new MouseEvent('mousedown', eventOptions));
+
+        setTimeout(() => {
+            element.dispatchEvent(new MouseEvent('mouseup', eventOptions));
+            element.click();
+        }, 300);
 
         // Mark busy until the button click finishes processing.
         addPendingDelay();
@@ -469,69 +435,30 @@
      * @param {string} button Type of button to press
      * @return {string} OK if successful, or ERROR: followed by message
      */
-    var behatPressStandard = function(button) {
+    const behatPressStandard = function(button) {
         log('Action - Click standard button: ' + button);
 
         // Find button
-        var foundButton = null;
+        let foundButton = null;
 
-        if (window.BehatMoodleAppLegacy) {
-            var selector;
-            switch (button) {
-                case 'back' :
-                    selector = 'ion-navbar > button.back-button-md';
-                    break;
-                case 'main menu' :
-                    // Change in app version 3.8.
-                    selector = 'page-core-mainmenu .tab-button > ion-icon[aria-label=more], ' +
-                            'page-core-mainmenu .tab-button > ion-icon[aria-label=menu]';
-                    break;
-                case 'page menu' :
-                    // This lang string was changed in app version 3.6.
-                    selector = 'core-context-menu > button[aria-label=Info], ' +
-                            'core-context-menu > button[aria-label=Information], ' +
-                            'core-context-menu > button[aria-label="Display options"]';
-                    break;
-                default:
-                    return 'ERROR: Unsupported standard button type';
-            }
-            var buttons = Array.from(document.querySelectorAll(selector));
-            var tooMany = false;
-            buttons.forEach(function(button) {
-                if (button.offsetParent) {
-                    if (foundButton === null) {
-                        foundButton = button;
-                    } else {
-                        tooMany = true;
-                    }
-                }
-            });
-            if (!foundButton) {
-                return 'ERROR: Could not find button';
-            }
-            if (tooMany) {
-                return 'ERROR: Found too many buttons';
-            }
-        } else {
-            switch (button) {
-                case 'back':
-                    foundButton = findElementsBasedOnText({ text: 'Back' })[0];
-                    break;
-                case 'main menu':
-                    foundButton = findElementsBasedOnText({
-                        text: 'More',
-                        near: { text: 'Notifications' },
-                    })[0];
-                    break;
-                case 'accounts menu' :
-                    foundButton = findElementsBasedOnText({ text: 'Account' })[0];
-                    break;
-                case 'page menu':
-                    foundButton = findElementsBasedOnText({ text: 'Display options' })[0];
-                    break;
-                default:
-                    return 'ERROR: Unsupported standard button type';
-            }
+        switch (button) {
+            case 'back':
+                foundButton = findElementsBasedOnText({ text: 'Back' })[0];
+                break;
+            case 'main menu':
+                foundButton = findElementsBasedOnText({
+                    text: 'More',
+                    near: { text: 'Notifications' },
+                })[0];
+                break;
+            case 'accounts menu' :
+                foundButton = findElementsBasedOnText({ text: 'Account' })[0];
+                break;
+            case 'page menu':
+                foundButton = findElementsBasedOnText({ text: 'Display options' })[0];
+                break;
+            default:
+                return 'ERROR: Unsupported standard button type';
         }
 
         // Click button
@@ -545,28 +472,22 @@
      *
      * @return {string} OK if successful, or ERROR: followed by message
      */
-    var behatClosePopup = function() {
+    const behatClosePopup = function() {
         log('Action - Close popup');
 
-        var backdrops = Array.from(document.querySelectorAll('ion-backdrop'));
-        var found = null;
-        var tooMany = false;
-        backdrops.forEach(function(backdrop) {
-            if (backdrop.offsetParent) {
-                if (found === null) {
-                    found = backdrop;
-                } else {
-                    tooMany = true;
-                }
-            }
+        let backdrops = Array.from(document.querySelectorAll('ion-backdrop'));
+        backdrops = backdrops.filter(function(backdrop) {
+            return !!backdrop.offsetParent;
         });
-        if (!found) {
+
+        if (!backdrops.length) {
             return 'ERROR: Could not find backdrop';
         }
-        if (tooMany) {
+        if (backdrops.length > 1) {
             return 'ERROR: Found too many backdrops';
         }
-        found.click();
+        const backdrop = backdrops[0];
+        backdrop.click();
 
         // Mark busy until the click finishes processing.
         addPendingDelay();
@@ -580,7 +501,7 @@
      * @param {object} locator Element locator.
      * @return {string} OK if successful, or ERROR: followed by message
      */
-    var behatFind = function(locator) {
+    const behatFind = function(locator) {
         log('Action - Find', locator);
 
         try {
@@ -597,29 +518,12 @@
     };
 
     /**
-     * Get main navigation controller.
-     *
-     * @return {Object} main navigation controller.
-     */
-    var getNavCtrl = function() {
-        var mainNav = window.appProvider.appCtrl.getRootNavs()[0].getActiveChildNav();
-        if (mainNav && mainNav.tabsIds.length && mainNav.firstSelectedTab) {
-            var tabPos = mainNav.tabsIds.indexOf(mainNav.firstSelectedTab);
-            if (tabPos !== -1 && mainNav._tabs && mainNav._tabs.length > tabPos) {
-                return mainNav._tabs[tabPos];
-            }
-        }
-        // Fallback to return main nav - this will work but will overlay current tab.
-        return window.appProvider.appCtrl.getRootNavs()[0];
-    };
-
-    /**
      * Check whether an item is selected or not.
      *
      * @param {object} locator Element locator.
      * @return {string} YES or NO if successful, or ERROR: followed by message
      */
-    var behatIsSelected = function(locator) {
+    const behatIsSelected = function(locator) {
         log('Action - Is Selected', locator);
 
         try {
@@ -637,10 +541,10 @@
      * @param {object} locator Element locator.
      * @return {string} OK if successful, or ERROR: followed by message
      */
-    var behatPress = function(locator) {
+    const behatPress = function(locator) {
         log('Action - Press', locator);
 
-        var found;
+        let found;
         try {
             found = findElementsBasedOnText(locator)[0];
 
@@ -661,28 +565,22 @@
      *
      * @return {string} OK: followed by header text if successful, or ERROR: followed by message.
      */
-    var behatGetHeader = function() {
+    const behatGetHeader = function() {
         log('Action - Get header');
 
-        var result = null;
-        var resultCount = 0;
-        var titles = Array.from(document.querySelectorAll('ion-header ion-title, ion-header h1'));
-        titles.forEach(function(title) {
-            if (
-                (window.BehatMoodleAppLegacy && title.offsetParent) ||
-                (!window.BehatMoodleAppLegacy && isElementVisible(title, document.body))
-            ) {
-                result = title.innerText.trim();
-                resultCount++;
-            }
+        let titles = Array.from(document.querySelectorAll('ion-header ion-title, ion-header h1'));
+        titles = titles.filter(function(title) {
+            return isElementVisible(title, document.body);
         });
+                
 
-        if (resultCount > 1) {
+        if (titles.length > 1) {
             return 'ERROR: Too many possible titles';
-        } else if (!resultCount) {
+        } else if (!titles.length) {
             return 'ERROR: No title found';
         } else {
-            return 'OK:' + result;
+            const title = titles[0].innerText.trim();
+            return 'OK:' + title;
         }
     };
 
@@ -695,67 +593,18 @@
      * @param {string} value New value
      * @return {string} OK or ERROR: followed by message
      */
-    var behatSetField = function(field, value) {
+    const behatSetField = function(field, value) {
         log('Action - Set field ' + field + ' to: ' + value);
 
-        if (window.BehatMoodleAppLegacy) {
-            // Find input(s) with given placeholder.
-            var escapedText = field.replace('"', '""');
-            var exactMatches = [];
-            var anyMatches = [];
-            findPossibleMatches(
-                    '//input[contains(@placeholder, "' + escapedText + '")] |' +
-                    '//textarea[contains(@placeholder, "' + escapedText + '")] |' +
-                    '//core-rich-text-editor/descendant::div[contains(@data-placeholder-text, "' +
-                    escapedText + '")]', function(match) {
-                        // Add to array depending on if it's an exact or partial match.
-                        var placeholder;
-                        if (match.nodeName === 'DIV') {
-                            placeholder = match.getAttribute('data-placeholder-text');
-                        } else {
-                            placeholder = match.getAttribute('placeholder');
-                        }
-                        if (placeholder.trim() === field) {
-                            exactMatches.push(match);
-                        } else {
-                            anyMatches.push(match);
-                        }
-                    });
-
-            // Select the resulting match.
-            var found = null;
-            do {
-                // If there is an exact text match, use that (regardless of other matches).
-                if (exactMatches.length > 1) {
-                    return 'ERROR: Too many exact placeholder matches for text';
-                } else if (exactMatches.length) {
-                    found = exactMatches[0];
-                    break;
-                }
-
-                // If there is one partial text match, use that.
-                if (anyMatches.length > 1) {
-                    return 'ERROR: Too many partial placeholder matches for text';
-                } else if (anyMatches.length) {
-                    found = anyMatches[0];
-                    break;
-                }
-            } while (false);
-
-            if (!found) {
-                return 'ERROR: No matches for text';
-            }
-        } else {
-            found = findElementsBasedOnText({ text: field, selector: 'input, textarea, [contenteditable="true"]' })[0];
-
-            if (!found) {
-                return 'ERROR: No matches for text';
-            }
+        
+        const found = findElementsBasedOnText({ text: field, selector: 'input, textarea, [contenteditable="true"]' })[0];
+        if (!found) {
+            return 'ERROR: No matches for text';
         }
 
         // Functions to get/set value depending on field type.
-        var setValue;
-        var getValue;
+        let setValue;
+        let getValue;
         switch (found.nodeName) {
             case 'INPUT':
             case 'TEXTAREA':
@@ -777,7 +626,7 @@
         }
 
         // Pretend we have cut and pasted the new text.
-        var event;
+        let event;
         if (getValue() !== '') {
             event = new InputEvent('input', {bubbles: true, view: window, cancelable: true,
                 inputType: 'devareByCut'});
@@ -805,7 +654,7 @@
      * @param {string} className Constructor class name
      * @return {object} Component instance
      */
-    var behatGetComponentInstance = function(selector, className) {
+    const behatGetComponentInstance = function(selector, className) {
         const activeElement = Array.from(document.querySelectorAll(`.ion-page:not(.ion-page-hidden) ${selector}`)).pop();
 
         if (!activeElement || !activeElement.__ngContext__) {
