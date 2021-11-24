@@ -536,7 +536,7 @@ class behat_app extends behat_base {
     /**
      * Presses standard buttons in the app.
      *
-     * @Given /^I press the (back|main menu|page menu|accounts menu) button in the app$/
+     * @Given /^I press the (back|more menu|page menu|user menu|main menu) button in the app$/
      * @param string $button Button type
      * @throws DriverException If the button push doesn't work
      */

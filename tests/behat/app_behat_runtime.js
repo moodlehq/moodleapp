@@ -445,13 +445,14 @@
             case 'back':
                 foundButton = findElementsBasedOnText({ text: 'Back' })[0];
                 break;
-            case 'main menu':
+            case 'main menu': // Deprecated name.
+            case 'more menu':
                 foundButton = findElementsBasedOnText({
                     text: 'More',
                     near: { text: 'Notifications' },
                 })[0];
                 break;
-            case 'accounts menu' :
+            case 'user menu' :
                 foundButton = findElementsBasedOnText({ text: 'Account' })[0];
                 break;
             case 'page menu':

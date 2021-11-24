@@ -33,7 +33,7 @@ Feature: Test basic usage of login in app
   Scenario: Add a non existing account
     When I enter the app
     And I log in as "student1"
-    And I press the accounts menu button in the app
+    And I press the user menu button in the app
     And I press "Log out" in the app
     And I wait the app to restart
     And I press "Add a new account" in the app
@@ -45,7 +45,7 @@ Feature: Test basic usage of login in app
   Scenario: Add a non existing account from accounts switcher
     When I enter the app
     And I log in as "student1"
-    And I press the accounts menu button in the app
+    And I press the user menu button in the app
     And I press "Switch account" in the app
     And I press "Add a new account" in the app
     And I wait the app to restart
@@ -57,7 +57,7 @@ Feature: Test basic usage of login in app
   Scenario: Delete an account
     When I enter the app
     And I log in as "student1"
-    And I press the accounts menu button in the app
+    And I press the user menu button in the app
     And I press "Log out" in the app
     And I wait the app to restart
     Then I should find "Acceptance test site" in the app

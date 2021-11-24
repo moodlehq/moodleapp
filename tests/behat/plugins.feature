@@ -6,10 +6,10 @@ Feature: Plugins work properly.
       | username         |
       | studentusername  |
 
-  Scenario: See main menu button
+  Scenario: See more menu button
     When I enter the app
     And I log in as "studentusername"
-    And I press the main menu button in the app
+    And I press the more menu button in the app
     Then I should find "Moodle Mobile language strings" in the app
 
     When I press "Moodle Mobile language strings" in the app
