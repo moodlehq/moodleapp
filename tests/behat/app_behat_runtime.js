@@ -568,7 +568,7 @@
     const behatGetHeader = function() {
         log('Action - Get header');
 
-        let titles = Array.from(document.querySelectorAll('ion-header ion-title, ion-header h1'));
+        let titles = Array.from(document.querySelectorAll('.ion-page:not(.ion-page-hidden) > ion-header h1'));
         titles = titles.filter(function(title) {
             return isElementVisible(title, document.body);
         });
