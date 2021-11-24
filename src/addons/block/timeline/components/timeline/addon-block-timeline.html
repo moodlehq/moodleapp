@@ -4,7 +4,7 @@
     </ion-label>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" [fullscreen]="false">
-    <ion-row class="ion-no-padding ion-justify-content-between">
+    <ion-row class="ion-no-padding ion-justify-content-between ion-align-items-center">
         <ion-col size="auto" class="ion-no-padding">
             <core-combobox [selection]="filter" (onChange)="switchFilter($event)" icon="fas-filter">
                 <ion-select-option class="ion-text-wrap" value="all">
@@ -30,6 +30,12 @@
                 </ion-select-option>
             </core-combobox>
         </ion-col>
+        <ion-col class="ion-no-padding ion-hide-md-down" *ngIf="searchEnabled">
+            <!-- Filter courses. -->
+            <core-search-box (onSubmit)="searchTextChanged($event)" (onClear)="searchTextChanged()"
+                [placeholder]="'addon.block_timeline.searchevents' | translate" autocorrect="off" spellcheck="false" lengthCheck="2"
+                searchArea="AddonBlockTimeline"></core-search-box>
+        </ion-col>
         <ion-col size="auto" class="ion-no-padding">
             <core-combobox [label]="'core.sortby' | translate" [selection]="sort" (onChange)="switchSort($event)"
                 icon="fas-sort-amount-down-alt">
@@ -40,6 +46,14 @@
                     {{'addon.block_timeline.sortbycourses' | translate}}
                 </ion-select-option>
             </core-combobox>
+        </ion-col>
+    </ion-row>
+    <ion-row class="ion-no-padding ion-hide-md-up" *ngIf="searchEnabled">
+        <ion-col class="ion-no-padding">
+            <!-- Filter courses. -->
+            <core-search-box (onSubmit)="searchTextChanged($event)" (onClear)="searchTextChanged()"
+                [placeholder]="'addon.block_timeline.searchevents' | translate" autocorrect="off" spellcheck="false" lengthCheck="2"
+                searchArea="AddonBlockTimeline"></core-search-box>
         </ion-col>
     </ion-row>
 

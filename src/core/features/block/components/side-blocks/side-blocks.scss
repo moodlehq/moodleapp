@@ -1,0 +1,13 @@
+@import "~theme/globals";
+
+:host ::ng-deep core-block {
+    @include media-breakpoint-up(md) {
+        .ion-hide-md-down {
+            display: none !important;
+        }
+
+        .ion-hide-md-up {
+            display: block !important;
+        }
+    }
+}

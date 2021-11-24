@@ -1785,6 +1785,7 @@ export type AddonCalendarGetActionEventsByCoursesWSParams = {
     timesortfrom?: number; // Time sort from.
     timesortto?: number; // Time sort to.
     limitnum?: number; // Limit number.
+    searchvalue?: string; // The value a user wishes to search against.
 };
 
 /**
@@ -1804,6 +1805,7 @@ export type AddonCalendarGetActionEventsByCourseWSParams = {
     timesortto?: number; // Time sort to.
     aftereventid?: number; // The last seen event id.
     limitnum?: number; // Limit number.
+    searchvalue?: string; // The value a user wishes to search against.
 };
 
 /**
@@ -1816,6 +1818,7 @@ export type AddonCalendarGetActionEventsByTimesortWSParams = {
     limitnum?: number; // Limit number.
     limittononsuspendedevents?: boolean; // Limit the events to courses the user is not suspended in.
     userid?: number; // The user id.
+    searchvalue?: string; // The value a user wishes to search against.
 };
 
 /**

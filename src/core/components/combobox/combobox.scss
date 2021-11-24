@@ -2,6 +2,7 @@
 
 :host {
     max-width: 100%;
+    display: block;
     @include margin-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
 
     ion-select,
