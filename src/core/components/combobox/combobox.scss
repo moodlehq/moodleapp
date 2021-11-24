@@ -87,6 +87,10 @@ ion-select {
         background: var(--background-focused);
         opacity: var(--background-focused-opacity);
     }
+
+    &[hidden] {
+        display: none !important;
+    }
 }
 
 ion-button {
