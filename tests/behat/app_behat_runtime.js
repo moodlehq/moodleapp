@@ -527,6 +527,33 @@
     };
 
     /**
+     * Scroll an element into view.
+     *
+     * @param {object} locator Element locator.
+     * @return {string} OK if successful, or ERROR: followed by message
+     */
+    const behatScrollTo = function(locator) {
+        log('Action - scrollTo', { locator });
+
+        try {
+            let element = findElementsBasedOnText(locator)[0];
+
+            if (!element) {
+                return 'ERROR: No matches for text';
+            }
+
+            element = element.closest('ion-item') ?? element.closest('button') ?? element;
+
+            element.scrollIntoView();
+
+            log('Action - Scrolled to', { locator, element });
+            return 'OK';
+        } catch (error) {
+            return 'ERROR: ' + error.message;
+        }
+    }
+
+    /**
      * Check whether an item is selected or not.
      *
      * @param {object} locator Element locator.
@@ -678,6 +705,7 @@
         pressStandard : behatPressStandard,
         closePopup : behatClosePopup,
         find : behatFind,
+        scrollTo : behatScrollTo,
         isSelected : behatIsSelected,
         press : behatPress,
         setField : behatSetField,

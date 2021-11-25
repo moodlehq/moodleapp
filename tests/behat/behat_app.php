@@ -182,6 +182,29 @@ class behat_app extends behat_base {
     }
 
     /**
+     * Scroll to an element in the app.
+     *
+     * @When /^I scroll to (".+") in the app$/
+     * @param string $locator
+     */
+    public function i_scroll_to_in_the_app(string $locator) {
+        $locator = $this->parse_element_locator($locator);
+        $locatorjson = json_encode($locator);
+
+        $this->spin(function() use ($locatorjson) {
+            $result = $this->evaluate_script("return window.behat.scrollTo($locatorjson);");
+
+            if ($result !== 'OK') {
+                throw new DriverException('Error finding item - ' . $result);
+            }
+
+            return true;
+        });
+
+        $this->wait_for_pending_js();
+    }
+
+    /**
      * Trigger swipe gesture.
      *
      * @When /^I swipe to the (left|right) in the app$/
