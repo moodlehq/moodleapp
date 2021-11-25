@@ -52,7 +52,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
         this.showCourse = !this.course;
 
         if (changes.events || changes.from || changes.to) {
-            if (this.events && this.events.length > 0) {
+            if (this.events) {
                 const filteredEvents = await this.filterEventsByTime(this.from, this.to);
                 this.empty = !filteredEvents || filteredEvents.length <= 0;
 

@@ -1,5 +1,5 @@
 :host {
-    height: 73px;
+    min-height: 61px;
     display: block;
     position: relative;
 
@@ -8,13 +8,12 @@
         left: 0;
         right: 0;
         z-index: 4;
-        margin-top: 10px;
-        margin-bottom: 10px;
+        margin-top: 8px;
+        margin-bottom: 8px;
     }
 
     ion-button.button {
-        margin-left: 0;
-        margin-right: 0;
+        margin: 0;
     }
 
     .core-search-history {
@@ -36,5 +35,10 @@
         --padding-end: 0px;
         padding-left: 0;
         padding-right: 0;
+    }
+
+
+    ion-item {
+        --min-height: var(--a11y-min-target-size);
     }
 }

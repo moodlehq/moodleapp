@@ -26,7 +26,6 @@ import {
 import moment from 'moment';
 import { makeSingleton } from '@singletons';
 import { CoreSiteWSPreSets } from '@classes/site';
-import { CoreError } from '@classes/errors/error';
 
 // Cache key was maintained from block myoverview when blocks were splitted.
 const ROOT_CACHE_KEY = 'myoverview:';
@@ -45,12 +44,14 @@ export class AddonBlockTimelineProvider {
      *
      * @param courseId Only events in this course.
      * @param afterEventId The last seen event id.
+     * @param searchValue The value a user wishes to search against.
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved when the info is retrieved.
      */
     async getActionEventsByCourse(
         courseId: number,
         afterEventId?: number,
+        searchValue = '',
         siteId?: string,
     ): Promise<{ events: AddonCalendarEvent[]; canLoadMore?: number }> {
         const site = await CoreSites.getSite(siteId);
@@ -70,17 +71,18 @@ export class AddonBlockTimelineProvider {
             cacheKey: this.getActionEventsByCourseCacheKey(courseId),
         };
 
+        if (searchValue != '') {
+            data.searchvalue = searchValue;
+            preSets.getFromCache = false;
+        }
+
         const courseEvents = await site.read<AddonCalendarEvents>(
             'core_calendar_get_action_events_by_course',
             data,
             preSets,
         );
 
-        if (courseEvents && courseEvents.events) {
-            return this.treatCourseEvents(courseEvents, time);
-        }
-
-        throw new CoreError('No events returned on core_calendar_get_action_events_by_course.');
+        return this.treatCourseEvents(courseEvents, time);
     }
 
     /**
@@ -98,10 +100,12 @@ export class AddonBlockTimelineProvider {
      *
      * @param courseIds Course IDs.
      * @param siteId Site ID. If not defined, use current site.
+     * @param searchValue The value a user wishes to search against.
      * @return Promise resolved when the info is retrieved.
      */
     async getActionEventsByCourses(
         courseIds: number[],
+        searchValue = '',
         siteId?: string,
     ): Promise<{[courseId: string]: { events: AddonCalendarEvent[]; canLoadMore?: number } }> {
         const site = await CoreSites.getSite(siteId);
@@ -116,6 +120,11 @@ export class AddonBlockTimelineProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getActionEventsByCoursesCacheKey(),
         };
+
+        if (searchValue != '') {
+            data.searchvalue = searchValue;
+            preSets.getFromCache = false;
+        }
 
         const events = await site.read<AddonCalendarEventsGroupedByCourse>(
             'core_calendar_get_action_events_by_courses',
@@ -145,11 +154,13 @@ export class AddonBlockTimelineProvider {
      * Get calendar action events based on the timesort value.
      *
      * @param afterEventId The last seen event id.
+     * @param searchValue The value a user wishes to search against.
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved when the info is retrieved.
      */
     async getActionEventsByTimesort(
         afterEventId?: number,
+        searchValue = '',
         siteId?: string,
     ): Promise<{ events: AddonCalendarEvent[]; canLoadMore?: number }> {
         const site = await CoreSites.getSite(siteId);
@@ -171,25 +182,26 @@ export class AddonBlockTimelineProvider {
             uniqueCacheKey: true,
         };
 
+        if (searchValue != '') {
+            data.searchvalue = searchValue;
+            preSets.getFromCache = false;
+        }
+
         const result = await site.read<AddonCalendarEvents>(
             'core_calendar_get_action_events_by_timesort',
             data,
             preSets,
         );
 
-        if (result && result.events) {
-            const canLoadMore = result.events.length >= limitnum ? result.lastid : undefined;
+        const canLoadMore = result.events.length >= limitnum ? result.lastid : undefined;
 
-            // Filter events by time in case it uses cache.
-            const events = result.events.filter((element) => element.timesort >= timesortfrom);
+        // Filter events by time in case it uses cache.
+        const events = result.events.filter((element) => element.timesort >= timesortfrom);
 
-            return {
-                events,
-                canLoadMore,
-            };
-        }
-
-        throw new CoreError('No events returned on core_calendar_get_action_events_by_timesort.');
+        return {
+            events,
+            canLoadMore,
+        };
     }
 
     /**

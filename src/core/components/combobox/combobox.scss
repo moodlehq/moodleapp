@@ -2,6 +2,7 @@
 
 :host {
     max-width: 100%;
+    display: block;
     @include margin-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
 
     ion-select,
@@ -86,6 +87,10 @@ ion-select {
         color: var(--color-focused);
         background: var(--background-focused);
         opacity: var(--background-focused-opacity);
+    }
+
+    &[hidden] {
+        display: none !important;
     }
 }
 

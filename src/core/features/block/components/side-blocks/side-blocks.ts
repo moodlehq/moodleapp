@@ -28,6 +28,7 @@ import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 @Component({
     selector: 'core-block-side-blocks',
     templateUrl: 'side-blocks.html',
+    styleUrls: ['side-blocks.scss'],
 })
 export class CoreBlockSideBlocksComponent implements OnInit {
 

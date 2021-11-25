@@ -18,6 +18,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonBlockTimelineComponent } from './timeline/timeline';
 import { AddonBlockTimelineEventsComponent } from './events/events';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 @NgModule({
     declarations: [
@@ -26,6 +27,7 @@ import { AddonBlockTimelineEventsComponent } from './events/events';
     ],
     imports: [
         CoreSharedModule,
+        CoreSearchComponentsModule,
     ],
     exports: [
         AddonBlockTimelineComponent,

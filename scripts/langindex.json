@@ -73,6 +73,7 @@
   "addon.block_timeline.noevents": "block_timeline",
   "addon.block_timeline.overdue": "block_timeline",
   "addon.block_timeline.pluginname": "block_timeline",
+  "addon.block_timeline.searchevents": "block_timeline",
   "addon.block_timeline.sortbycourses": "block_timeline",
   "addon.block_timeline.sortbydates": "block_timeline",
   "addon.blog.blog": "blog",

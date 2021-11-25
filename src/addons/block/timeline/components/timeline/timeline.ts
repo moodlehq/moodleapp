@@ -59,6 +59,9 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     dataFrom?: number;
     dataTo?: number;
 
+    searchEnabled = false;
+    searchText = '';
+
     protected courseIds: number[] = [];
     protected fetchContentDefaultError = 'Error getting timeline data.';
 
@@ -84,6 +87,8 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
         this.switchFilter(this.filter);
 
         this.sort = await this.currentSite.getLocalSiteConfig('AddonBlockTimelineSort', this.sort);
+
+        this.searchEnabled = this.currentSite.isVersionGreaterEqualThan('4.0');
 
         super.ngOnInit();
     }
@@ -135,7 +140,8 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     async loadMore(course?: AddonBlockTimelineCourse): Promise<void> {
         try {
             if (course) {
-                const courseEvents = await AddonBlockTimeline.getActionEventsByCourse(course.id, course.canLoadMore);
+                const courseEvents =
+                    await AddonBlockTimeline.getActionEventsByCourse(course.id, course.canLoadMore, this.searchText);
                 course.events = course.events?.concat(courseEvents.events);
                 course.canLoadMore = courseEvents.canLoadMore;
             } else {
@@ -153,7 +159,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      * @return Promise resolved when done.
      */
     protected async fetchMyOverviewTimeline(afterEventId?: number): Promise<void> {
-        const events = await AddonBlockTimeline.getActionEventsByTimesort(afterEventId);
+        const events = await AddonBlockTimeline.getActionEventsByTimesort(afterEventId, this.searchText);
 
         this.timeline.events = events.events;
         this.timeline.canLoadMore = events.canLoadMore;
@@ -174,7 +180,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
         if (this.timelineCourses.courses.length > 0) {
             this.courseIds = this.timelineCourses.courses.map((course) => course.id);
 
-            const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(this.courseIds);
+            const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(this.courseIds, this.searchText);
 
             this.timelineCourses.courses = this.timelineCourses.courses.filter((course) => {
                 if (courseEvents[course.id].events.length == 0) {
@@ -241,6 +247,17 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
         } else if (!this.timelineCourses.loaded && this.sort == 'sortbycourses') {
             this.fetchContent();
         }
+    }
+
+    /**
+     * Search text changed.
+     *
+     * @param searchValue Search value
+     */
+    searchTextChanged(searchValue = ''): void {
+        this.searchText = searchValue || '';
+
+        this.fetchContent();
     }
 
 }

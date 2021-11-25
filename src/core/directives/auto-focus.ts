@@ -52,7 +52,7 @@ export class CoreAutoFocusDirective implements AfterViewInit {
     /**
      * Function to focus the element.
      *
-     * @param retries Internal param to stop retrying then 0.
+     * @param retries Internal param to stop retrying on 0.
      */
     protected setFocus(retries = 10): void {
         if (retries == 0) {

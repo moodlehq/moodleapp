@@ -172,6 +172,7 @@ ion-app.ios ion-header h2 {
 .item.ion-text-wrap ion-label core-format-text .core-format-text-content > *,
 .fake-ion-item.ion-text-wrap core-format-text .core-format-text-content > * {
     white-space: normal;
+    overflow: inherit;
 }
 
 .item.ion-text-wrap ion-label {
