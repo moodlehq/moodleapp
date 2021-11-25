@@ -10,27 +10,7 @@
     <ion-label>
         <ion-row>
             <ion-col class="ion-align-self-center">
-                <p *ngIf="course.categoryname || (course.displayname && course.shortname && course.fullname != course.displayname)"
-                    class="core-course-additional-info">
-                    <span *ngIf="course.categoryname" class="core-course-category">
-                        <core-format-text [text]="course.categoryname"></core-format-text>
-                    </span>
-                    <span *ngIf="course.categoryname && course.displayname && course.shortname && course.fullname != course.displayname"
-                        class="core-course-category"> | </span>
-                    <span *ngIf="course.displayname && course.shortname && course.fullname != course.displayname"
-                        class="core-course-shortname">
-                        <core-format-text [text]="course.shortname" contextLevel="course" [contextInstanceId]="course.id">
-                        </core-format-text>
-                    </span>
-                </p>
-                <p class="item-heading">
-                    <ion-icon name="fas-star" *ngIf="course.isfavourite" [attr.aria-label]="'core.courses.favourite' | translate">
-                    </ion-icon>
-                    <span class="sr-only" *ngIf="course.isfavourite">{{ 'core.courses.aria:favourite' | translate }}</span>
-                    <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
-                    <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id">
-                    </core-format-text>
-                </p>
+                <ng-container *ngTemplateOutlet="mainInfo"></ng-container>
             </ion-col>
             <ion-col size="auto" class="ion-align-self-center">
                 <ng-container *ngIf="!isEnrolled">
@@ -47,11 +27,10 @@
             <core-progress-bar [progress]="progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
         </p>
     </ion-label>
-
 </ion-item>
 
 <ion-card [attr.course-color]="course.color ? null : course.colorNumber" *ngIf="layout == 'card' || layout == 'summarycard'"
-    class="core-course-list-card" [class.item-dimmed]="course.hidden">
+    class="core-course-list-card" [class.item-dimmed]="course.hidden" [attr.aria-label]="course.displayname || course.fullname">
     <div (click)="openCourse()" class="core-course-thumb" [class.core-course-color-img]="course.courseImage"
         [style.background-color]="course.color">
         <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt="" />
@@ -62,28 +41,7 @@
         <ion-label class="ion-text-wrap core-course-title">
             <ion-row>
                 <ion-col>
-                    <p *ngIf="course.categoryname || (course.displayname && course.shortname && course.fullname != course.displayname)"
-                        class="core-course-additional-info">
-                        <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
-                        <span *ngIf="course.categoryname" class="core-course-category">
-                            <core-format-text [text]="course.categoryname"></core-format-text>
-                        </span>
-                        <span *ngIf="course.categoryname && course.displayname && course.shortname && course.fullname != course.displayname"
-                            class="core-course-category"> | </span>
-                        <span *ngIf="course.displayname && course.shortname && course.fullname != course.displayname"
-                            class="core-course-shortname">
-                            <core-format-text [text]="course.shortname" contextLevel="course" [contextInstanceId]="course.id">
-                            </core-format-text>
-                        </span>
-                    </p>
-                    <p class="item-heading">
-                        <ion-icon name="fas-star" *ngIf="course.isfavourite" [attr.aria-label]="'core.courses.favourite' | translate">
-                        </ion-icon>
-                        <span class="sr-only" *ngIf="course.isfavourite">{{ 'core.courses.aria:favourite' | translate }}</span>
-                        <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
-                        <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id">
-                        </core-format-text>
-                    </p>
+                    <ng-container *ngTemplateOutlet="mainInfo"></ng-container>
                 </ion-col>
                 <ion-col size="auto"
                     *ngIf="isEnrolled && ((downloadCourseEnabled && !courseOptionMenuEnabled && showDownload) || courseOptionMenuEnabled)">
@@ -121,4 +79,28 @@
             <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
     </div>
+</ng-template>
+
+<ng-template #mainInfo>
+    <p *ngIf="course.categoryname || (course.displayname && course.shortname && course.fullname != course.displayname)"
+        class="core-course-additional-info">
+        <span *ngIf="course.categoryname" class="core-course-category">
+            <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
+            <core-format-text [text]="course.categoryname"></core-format-text>
+        </span>
+        <span *ngIf="course.categoryname && course.displayname && course.shortname && course.fullname != course.displayname"
+            class="core-course-category"> | </span>
+        <span *ngIf="course.displayname && course.shortname && course.fullname != course.displayname" class="core-course-shortname">
+            <core-format-text [text]="course.shortname" contextLevel="course" [contextInstanceId]="course.id">
+            </core-format-text>
+        </span>
+    </p>
+    <p class="item-heading">
+        <ion-icon name="fas-star" *ngIf="course.isfavourite" [attr.aria-label]="'core.courses.favourite' | translate">
+        </ion-icon>
+        <span class="sr-only" *ngIf="course.isfavourite">{{ 'core.courses.aria:favourite' | translate }}</span>
+        <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
+        <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id">
+        </core-format-text>
+    </p>
 </ng-template>

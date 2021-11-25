@@ -35,6 +35,8 @@ import { CoreUser } from '@features/user/services/user';
  *
  * <core-courses-course-progress [course]="course">
  * </core-courses-course-progress>
+ *
+ * @deprecated since 4.0 Use core-courses-course-list-item instead.
  */
 @Component({
     selector: 'core-courses-course-progress',
@@ -175,7 +177,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy, On
         try {
             await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
-            if (CoreDomUtils.isCanceledError(error)) {
+            if (!CoreDomUtils.isCanceledError(error)) {
                 throw error;
             }
 
@@ -233,7 +235,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy, On
                 }
                 break;
             case 'delete':
-                if (this.courseStatus == 'downloaded' || this.courseStatus == 'outdated') {
+                if (this.courseStatus == CoreConstants.DOWNLOADED || this.courseStatus == CoreConstants.OUTDATED) {
                     this.deleteCourse();
                 }
                 break;

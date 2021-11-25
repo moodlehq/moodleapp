@@ -250,13 +250,13 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     }
 
     /**
-     * Delete the course.
+     * Delete course stored data.
      */
-    async deleteCourse(): Promise<void> {
+    async deleteCourseStoredData(): Promise<void> {
         try {
             await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
-            if (CoreDomUtils.isCanceledError(error)) {
+            if (!CoreDomUtils.isCanceledError(error)) {
                 throw error;
             }
 
@@ -299,8 +299,8 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
                 }
                 break;
             case 'delete':
-                if (this.courseStatus == 'downloaded' || this.courseStatus == 'outdated') {
-                    this.deleteCourse();
+                if (this.courseStatus == CoreConstants.DOWNLOADED || this.courseStatus == CoreConstants.OUTDATED) {
+                    this.deleteCourseStoredData();
                 }
                 break;
             case 'hide':
