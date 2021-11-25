@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, UrlSegment } from '@angular/router';
 
 import { CoreNavigator } from '@services/navigator';
 
@@ -22,7 +22,7 @@ import { CoreItemsManagerSource } from './items-manager-source';
 /**
  * Helper class to manage the state and routing of a swipeable page.
  */
-export abstract class CoreSwipeItemsManager<
+export class CoreSwipeItemsManager<
     Item = unknown,
     Source extends CoreItemsManagerSource<Item> = CoreItemsManagerSource<Item>
 >
@@ -50,14 +50,6 @@ export abstract class CoreSwipeItemsManager<
     }
 
     /**
-     * Get the path of the selected item given the current route.
-     *
-     * @param route Page route.
-     * @return Path of the selected item in the given route.
-     */
-    protected abstract getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null;
-
-    /**
      * @inheritdoc
      */
     protected getCurrentPageRoute(): ActivatedRoute | null {
@@ -67,12 +59,20 @@ export abstract class CoreSwipeItemsManager<
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPath(route?: ActivatedRouteSnapshot | null): string | null {
-        if (!route) {
-            return null;
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
+        const segments: UrlSegment[] = [];
+
+        while (route) {
+            segments.push(...route.url);
+
+            if (!route.firstChild) {
+                break;
+            }
+
+            route = route.firstChild;
         }
 
-        return this.getSelectedItemPathFromRoute(route);
+        return segments.map(segment => segment.path).join('/').replace(/\/+/, '/').trim() || null;
     }
 
     /**

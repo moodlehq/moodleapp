@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Params } from '@angular/router';
+
 /**
  * Updates listener.
  */
@@ -142,6 +144,25 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
 
         this.setItems((this.items ?? []).concat(items), hasMoreItems ?? false);
     }
+
+    /**
+     * Get the query parameters to use when navigating to an item page.
+     *
+     * @param item Item.
+     * @return Query parameters to use when navigating to the item page.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getItemQueryParams(item: Item): Params {
+        return {};
+    }
+
+    /**
+     * Get the path to use when navigating to an item page.
+     *
+     * @param item Item.
+     * @return Path to use when navigating to the item page.
+     */
+    abstract getItemPath(item: Item): string;
 
     /**
      * Load page items.

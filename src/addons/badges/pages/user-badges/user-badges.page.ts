@@ -19,7 +19,6 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { Params } from '@angular/router';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
@@ -36,7 +35,7 @@ import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-
 export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
     currentTime = 0;
-    badges: AddonBadgesUserBadgesListManager;
+    badges: CoreListItemsManager<AddonBadgesUserBadge, AddonBadgesUserBadgesSource>;
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
@@ -49,7 +48,7 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
             courseId = 0;
         }
 
-        this.badges = new AddonBadgesUserBadgesListManager(
+        this.badges = new CoreListItemsManager(
             CoreItemsManagerSourcesTracker.getOrCreateSource(AddonBadgesUserBadgesSource, [courseId, userId]),
             AddonBadgesUserBadgesPage,
         );
@@ -101,30 +100,6 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
             this.badges.reset();
         }
-    }
-
-}
-
-/**
- * Helper class to manage badges list.
- */
-class AddonBadgesUserBadgesListManager extends CoreListItemsManager<AddonBadgesUserBadge, AddonBadgesUserBadgesSource> {
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(badge: AddonBadgesUserBadge): string {
-        return badge.uniquehash;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemQueryParams(): Params {
-        return {
-            courseId: this.getSource().COURSE_ID,
-            userId: this.getSource().USER_ID,
-        };
     }
 
 }

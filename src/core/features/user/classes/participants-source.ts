@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Params } from '@angular/router';
 import { CoreItemsManagerSource } from '@classes/items-management/items-manager-source';
 
 import { CoreUser, CoreUserData, CoreUserParticipant, CoreUserProvider } from '../services/user';
@@ -38,6 +39,20 @@ export class CoreUserParticipantsSource extends CoreItemsManagerSource<CoreUserP
 
         this.COURSE_ID = courseId;
         this.SEARCH_QUERY = searchQuery;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getItemPath(user: CoreUserParticipant | CoreUserData): string {
+        return user.id.toString();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getItemQueryParams(): Params {
+        return { search: this.SEARCH_QUERY };
     }
 
     /**

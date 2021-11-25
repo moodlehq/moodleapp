@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Params } from '@angular/router';
 import { CoreItemsManagerSource } from '@classes/items-management/items-manager-source';
 import { AddonBadges, AddonBadgesUserBadge } from '../services/badges';
 
@@ -28,6 +29,23 @@ export class AddonBadgesUserBadgesSource extends CoreItemsManagerSource<AddonBad
 
         this.COURSE_ID = courseId;
         this.USER_ID = userId;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getItemPath(badge: AddonBadgesUserBadge): string {
+        return badge.uniquehash;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getItemQueryParams(): Params {
+        return {
+            courseId: this.COURSE_ID,
+            userId: this.USER_ID,
+        };
     }
 
     /**

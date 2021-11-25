@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Params } from '@angular/router';
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreApp } from '@services/app';
@@ -50,7 +49,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.participants = new CoreUserParticipantsManager(
                 CoreItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId]),
-                this,
+                CoreUserParticipantsPage,
             );
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
@@ -196,35 +195,13 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
 /**
  * Helper to manage the list of participants.
  */
-class CoreUserParticipantsManager extends CoreListItemsManager<CoreUserParticipant | CoreUserData> {
-
-    page: CoreUserParticipantsPage;
-
-    constructor(source: CoreUserParticipantsSource, page: CoreUserParticipantsPage) {
-        super(source, CoreUserParticipantsPage);
-
-        this.page = page;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(participant: CoreUserParticipant | CoreUserData): string {
-        return participant.id.toString();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemQueryParams(): Params {
-        return { search: this.page.searchQuery };
-    }
+class CoreUserParticipantsManager extends CoreListItemsManager<CoreUserParticipant | CoreUserData, CoreUserParticipantsSource> {
 
     /**
      * @inheritdoc
      */
     protected async logActivity(): Promise<void> {
-        await CoreUser.logParticipantsView(this.page.courseId);
+        await CoreUser.logParticipantsView(this.getSource().COURSE_ID);
     }
 
 }

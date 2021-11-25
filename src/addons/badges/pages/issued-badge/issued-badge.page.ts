@@ -22,7 +22,7 @@ import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreNavigator } from '@services/navigator';
-import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
 import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
 import { AddonBadgesUserBadgesSource } from '@addons/badges/classes/user-badges-source';
@@ -43,7 +43,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
     user?: CoreUserProfile;
     course?: CoreEnrolledCourseData;
     badge?: AddonBadgesUserBadge;
-    badges?: AddonBadgesUserBadgesSwipeManager;
+    badges?: CoreSwipeItemsManager;
     badgeLoaded = false;
     currentTime = 0;
 
@@ -62,7 +62,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
         });
 
         const source = CoreItemsManagerSourcesTracker.getOrCreateSource(AddonBadgesUserBadgesSource, [this.courseId, this.userId]);
-        this.badges = new AddonBadgesUserBadgesSwipeManager(source);
+        this.badges = new CoreSwipeItemsManager(source);
 
         this.badges.start();
     }
@@ -114,37 +114,6 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
         ]));
 
         refresher?.complete();
-    }
-
-}
-
-/**
- * Helper to manage swiping within a collection of user badges.
- */
-class AddonBadgesUserBadgesSwipeManager extends CoreSwipeItemsManager<AddonBadgesUserBadge, AddonBadgesUserBadgesSource> {
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(badge: AddonBadgesUserBadge): string {
-        return String(badge.uniquehash);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemQueryParams(): Params {
-        return {
-            courseId: this.getSource().COURSE_ID,
-            userId: this.getSource().USER_ID,
-        };
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
-        return route.params.badgeHash;
     }
 
 }

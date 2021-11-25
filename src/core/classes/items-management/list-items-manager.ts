@@ -26,7 +26,7 @@ import { CoreItemsManagerSource } from './items-manager-source';
 /**
  * Helper class to manage the state and routing of a list of items in a page.
  */
-export abstract class CoreListItemsManager<
+export class CoreListItemsManager<
     Item = unknown,
     Source extends CoreItemsManagerSource<Item> = CoreItemsManagerSource<Item>
 > extends CoreItemsManager<Item, Source> {
@@ -206,10 +206,12 @@ export abstract class CoreListItemsManager<
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPath(route?: ActivatedRouteSnapshot | null): string | null {
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
         const segments: UrlSegment[] = [];
 
-        while ((route = route?.firstChild)) {
+        while (route.firstChild) {
+            route = route.firstChild;
+
             segments.push(...route.url);
         }
 

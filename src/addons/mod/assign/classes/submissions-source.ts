@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Params } from '@angular/router';
 import { CoreItemsManagerSource } from '@classes/items-management/items-manager-source';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
@@ -66,6 +67,24 @@ export class AddonModAssignSubmissionsSource extends CoreItemsManagerSource<Addo
         this.COURSE_ID = courseId;
         this.MODULE_ID = moduleId;
         this.SELECTED_STATUS = selectedStatus;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getItemPath(submission: AddonModAssignSubmissionForList): string {
+        return String(submission.submitid);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getItemQueryParams(submission: AddonModAssignSubmissionForList): Params {
+        return {
+            blindId: submission.blindid,
+            groupId: this.groupId,
+            selectedStatus: this.SELECTED_STATUS,
+        };
     }
 
     /**

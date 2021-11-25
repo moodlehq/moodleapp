@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
 import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
 import { CoreCourse } from '@features/course/services/course';
@@ -22,7 +22,7 @@ import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreDomUtils } from '@services/utils/dom';
-import { AddonModAssignSubmissionForList, AddonModAssignSubmissionsSource } from '../../classes/submissions-source';
+import { AddonModAssignSubmissionsSource } from '../../classes/submissions-source';
 import { AddonModAssignSubmissionComponent } from '../../components/submission/submission';
 import { AddonModAssign, AddonModAssignAssign } from '../../services/assign';
 
@@ -216,26 +216,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
 /**
  * Helper to manage swiping within a collection of submissions.
  */
-class AddonModAssignSubmissionSwipeItemsManager
-    extends CoreSwipeItemsManager<AddonModAssignSubmissionForList, AddonModAssignSubmissionsSource> {
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(submission: AddonModAssignSubmissionForList): string {
-        return String(submission.submitid);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemQueryParams(submission: AddonModAssignSubmissionForList): Params {
-        return {
-            blindId: submission.blindid,
-            groupId: this.getSource().groupId,
-            selectedStatus: this.getSource().SELECTED_STATUS,
-        };
-    }
+class AddonModAssignSubmissionSwipeItemsManager extends CoreSwipeItemsManager {
 
     /**
      * @inheritdoc

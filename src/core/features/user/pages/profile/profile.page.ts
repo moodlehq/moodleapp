@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -21,7 +21,7 @@ import { CoreSite } from '@classes/site';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreUser, CoreUserBasicData, CoreUserProfile, CoreUserProvider } from '@features/user/services/user';
+import { CoreUser, CoreUserProfile, CoreUserProvider } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
 import { CoreUserDelegate, CoreUserDelegateService, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
 import { CoreUtils } from '@services/utils/utils';
@@ -30,7 +30,6 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
 import { CoreUserParticipantsSource } from '@features/user/classes/participants-source';
 import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
-import { CoreItemsManagerSource } from '@classes/items-management/items-manager-source';
 
 @Component({
     selector: 'page-core-user-profile',
@@ -57,7 +56,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     communicationHandlers: CoreUserProfileHandlerData[] = [];
 
     users?: CoreUserSwipeItemsManager;
-    usersQueryParams: Params = {};
 
     constructor(private route: ActivatedRoute) {
         this.obsProfileRefreshed = CoreEvents.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
@@ -93,9 +91,8 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
         if (this.courseId && this.route.snapshot.data.swipeManagerSource === 'participants') {
             const search = CoreNavigator.getRouteParam('search');
             const source = CoreItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId, search]);
-            this.users = new CoreUserSwipeItemsManager(source, this);
+            this.users = new CoreUserSwipeItemsManager(source);
 
-            this.usersQueryParams.search = search;
             this.users.start();
         }
 
@@ -227,29 +224,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 /**
  * Helper to manage swiping within a collection of users.
  */
-class CoreUserSwipeItemsManager extends CoreSwipeItemsManager<CoreUserBasicData> {
-
-    page: CoreUserProfilePage;
-
-    constructor(source: CoreItemsManagerSource<CoreUserBasicData>, page: CoreUserProfilePage) {
-        super(source);
-
-        this.page = page;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(item: CoreUserBasicData): string {
-        return String(item.id);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemQueryParams(): Params {
-        return this.page.usersQueryParams;
-    }
+class CoreUserSwipeItemsManager extends CoreSwipeItemsManager {
 
     /**
      * @inheritdoc

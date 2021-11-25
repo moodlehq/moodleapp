@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
-import { Params } from '@angular/router';
 import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -44,7 +43,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     title = '';
-    submissions!: AddonModAssignSubmissionListManager; // List of submissions
+    submissions!: CoreListItemsManager<AddonModAssignSubmissionForList, AddonModAssignSubmissionsSource>; // List of submissions
 
     protected gradedObserver: CoreEventObserver; // Observer to refresh data when a grade changes.
     protected syncObserver: CoreEventObserver; // Observer to refresh data when the async is synchronized.
@@ -99,7 +98,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
                 },
             });
 
-            this.submissions = new AddonModAssignSubmissionListManager(
+            this.submissions = new CoreListItemsManager(
                 submissionsSource,
                 AddonModAssignSubmissionListPage,
             );
@@ -210,32 +209,6 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
         this.syncObserver?.off();
         this.submissions.destroy();
         this.sourceUnsubscribe && this.sourceUnsubscribe();
-    }
-
-}
-
-/**
- * Helper class to manage submissions.
- */
-class AddonModAssignSubmissionListManager
-    extends CoreListItemsManager<AddonModAssignSubmissionForList, AddonModAssignSubmissionsSource> {
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(submission: AddonModAssignSubmissionForList): string {
-        return String(submission.submitid);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemQueryParams(submission: AddonModAssignSubmissionForList): Params {
-        return {
-            blindId: submission.blindid,
-            groupId: this.getSource().groupId,
-            selectedStatus: this.getSource().SELECTED_STATUS,
-        };
     }
 
 }
