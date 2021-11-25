@@ -54,7 +54,7 @@
             [component]="component" [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings">
         </core-course-module-info>
 
-        <ion-list *ngIf="!isSearch && entries.offlineEntries.length > 0">
+        <ion-list *ngIf="!isSearch && entries && entries.offlineEntries.length > 0">
             <ion-item-divider>
                 <ion-label>
                     <h2>{{ 'addon.mod_glossary.entriestobesynced' | translate }}</h2>
@@ -70,7 +70,7 @@
             </ion-item>
         </ion-list>
 
-        <ion-list *ngIf="entries.onlineEntries.length > 0">
+        <ion-list *ngIf="entries && entries.onlineEntries.length > 0">
             <ng-container *ngFor="let entry of entries.onlineEntries; let index = index">
                 <ion-item-divider *ngIf="getDivider && showDivider(entry, entries.onlineEntries[index - 1])">
                     <ion-label>
@@ -88,11 +88,11 @@
             </ng-container>
         </ion-list>
 
-        <core-empty-box *ngIf="entries.empty && (!isSearch || hasSearched)" icon="fas-list"
+        <core-empty-box *ngIf="(!entries || entries.empty) && (!isSearch || hasSearched)" icon="fas-list"
             [message]="'addon.mod_glossary.noentriesfound' | translate">
         </core-empty-box>
 
-        <core-infinite-loading [enabled]="!entries.completed" [error]="loadMoreError" (action)="loadMoreEntries($event)">
+        <core-infinite-loading [enabled]="entries && !entries.completed" [error]="loadMoreError" (action)="loadMoreEntries($event)">
         </core-infinite-loading>
     </core-loading>
 

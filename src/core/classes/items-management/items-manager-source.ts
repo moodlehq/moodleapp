@@ -37,9 +37,9 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
         return args.map(argument => String(argument)).join('-');
     }
 
-    private items: Item[] | null = null;
-    private hasMoreItems = true;
-    private listeners: CoreItemsListSourceListener<Item>[] = [];
+    protected items: Item[] | null = null;
+    protected hasMoreItems = true;
+    protected listeners: CoreItemsListSourceListener<Item>[] = [];
 
     /**
      * Check whether any page has been loaded.
