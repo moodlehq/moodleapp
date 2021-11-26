@@ -94,7 +94,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
         if (this.isFixedUrlSet || !this.siteConfig) {
             // Fixed URL or not siteConfig retrieved from params, we need to check if it uses browser SSO login.
-            this.checkSite(this.siteUrl);
+            this.checkSite(this.siteUrl, true);
         } else {
             this.siteChecked = true;
             this.pageLoaded = true;
@@ -128,9 +128,10 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * This should be used only if a fixed URL is set, otherwise this check is already performed in CoreLoginSitePage.
      *
      * @param siteUrl Site URL to check.
+     * @param onInit Whether the check site is done when initializing the page.
      * @return Promise resolved when done.
      */
-    protected async checkSite(siteUrl: string): Promise<void> {
+    protected async checkSite(siteUrl: string, onInit = false): Promise<void> {
         this.pageLoaded = false;
 
         // If the site is configured with http:// protocol we force that one, otherwise we use default mode.
@@ -148,6 +149,11 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             if (CoreLoginHelper.isSSOLoginNeeded(result.code)) {
                 // SSO. User needs to authenticate in a browser.
                 this.isBrowserSSO = true;
+
+                if (this.showScanQR && onInit) {
+                    // Don't open browser automatically, let the user view the scan QR button.
+                    return;
+                }
 
                 // Check that there's no SSO authentication ongoing and the view hasn't changed.
                 if (!CoreApp.isSSOAuthenticationOngoing() && !this.viewLeft) {
