@@ -17,10 +17,12 @@ import { NgModule } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
 import { AddonBlockMyOverviewComponent } from './myoverview/myoverview';
+import { AddonBlockMyOverviewFilterOptionsComponent } from './filteroptions/filteroptions';
 
 @NgModule({
     declarations: [
         AddonBlockMyOverviewComponent,
+        AddonBlockMyOverviewFilterOptionsComponent,
     ],
     imports: [
         CoreSharedModule,

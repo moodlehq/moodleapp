@@ -429,7 +429,7 @@ export class CoreCourseHelperProvider {
         const siteId = CoreSites.getCurrentSiteId();
 
         // Confirm the download without checking size because it could take a while.
-        await CoreDomUtils.showConfirm(Translate.instant('core.areyousure'));
+        await CoreDomUtils.showConfirm(Translate.instant('core.areyousure'), Translate.instant('core.courses.downloadcourses'));
 
         const total = courses.length;
         let count = 0;
@@ -1209,7 +1209,7 @@ export class CoreCourseHelperProvider {
 
         const status = await this.determineCoursesStatus(courses);
 
-        prefetch = this.getCoursePrefetchStatusInfo(status);
+        prefetch = this.getCoursesPrefetchStatusInfo(status);
 
         if (prefetch.loading) {
             // It seems all courses are being downloaded, show a download button instead.
@@ -1376,6 +1376,33 @@ export class CoreCourseHelperProvider {
             prefetchStatus.loading = true;
         } else {
             prefetchStatus.statusTranslatable = 'core.course.downloadcourse';
+        }
+
+        return prefetchStatus;
+    }
+
+    /**
+     * Get a courses status icon and the langkey to use as a title from status.
+     *
+     * @param status Courses status.
+     * @return Prefetch status info.
+     */
+    getCoursesPrefetchStatusInfo(status: string): CorePrefetchStatusInfo {
+        const prefetchStatus: CorePrefetchStatusInfo = {
+            status: status,
+            icon: this.getPrefetchStatusIcon(status, false),
+            statusTranslatable: '',
+            loading: false,
+        };
+
+        if (status == CoreConstants.DOWNLOADED) {
+            // Always show refresh icon, we cannot know if there's anything new in course options.
+            prefetchStatus.statusTranslatable = 'core.courses.refreshcourses';
+        } else if (status == CoreConstants.DOWNLOADING) {
+            prefetchStatus.statusTranslatable = 'core.downloading';
+            prefetchStatus.loading = true;
+        } else {
+            prefetchStatus.statusTranslatable = 'core.courses.downloadcourses';
         }
 
         return prefetchStatus;

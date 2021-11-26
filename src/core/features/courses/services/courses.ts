@@ -19,7 +19,7 @@ import { makeSingleton } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { CoreEvents } from '@singletons/events';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreCourseWithImageAndColor } from './courses-helper';
+import { CoreCourseAnyCourseDataWithExtraInfoAndOptions, CoreCourseWithImageAndColor } from './courses-helper';
 
 const ROOT_CACHE_KEY = 'mmCourses:';
 
@@ -1384,7 +1384,10 @@ export type CoreCourseSearchedData = CoreCourseBasicSearchedData & {
 /**
  * Course to render as list item.
  */
-export type CoreCourseListItem = CoreCourseSearchedData & CoreCourseWithImageAndColor & {
+export type CoreCourseListItem = ((CoreCourseSearchedData & CoreCourseWithImageAndColor) |
+CoreCourseAnyCourseDataWithExtraInfoAndOptions) & {
+    isfavourite?: boolean; // If the user marked this course a favourite.
+    hidden?: boolean; // If the user hide the course from the dashboard.
     completionusertracked?: boolean; // If the user is completion tracked.
     progress?: number | null; // Progress percentage.
 };
