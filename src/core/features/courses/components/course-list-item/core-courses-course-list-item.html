@@ -30,7 +30,7 @@
 </ion-item>
 
 <ion-card [attr.course-color]="course.color ? null : course.colorNumber" *ngIf="layout == 'card' || layout == 'summarycard'"
-    class="core-course-list-card" [class.item-dimmed]="course.hidden" [attr.aria-label]="course.displayname || course.fullname">
+    class="core-course-list-card" [class.item-dimmed]="course.hidden">
     <div (click)="openCourse()" class="core-course-thumb" [class.core-course-color-img]="course.courseImage"
         [style.background-color]="course.color">
         <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt="" />
@@ -51,7 +51,6 @@
             <div *ngIf="layout == 'card' && progress >= 0 && completionUserTracked !== false" lines="none" class="core-course-progress">
                 <core-progress-bar [progress]="progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
             </div>
-
         </ion-label>
     </ion-item>
 </ion-card>
