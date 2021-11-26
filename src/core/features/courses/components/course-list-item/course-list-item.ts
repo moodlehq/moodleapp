@@ -157,7 +157,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
      * Helper function to update course fields.
      */
     protected updateCourseFields(): void {
-        this.progress = 'progress' in this.course ? this.course.progress || -1 : -1;
+        this.progress = 'progress' in this.course && typeof this.course.progress == 'number' ? this.course.progress : -1;
         this.completionUserTracked = 'completionusertracked' in this.course && this.course.completionusertracked;
     }
 
