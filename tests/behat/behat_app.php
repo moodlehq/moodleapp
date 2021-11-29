@@ -534,6 +534,34 @@ class behat_app extends behat_base {
     }
 
     /**
+     * User enters a course in the app.
+     *
+     * @Given /^I enter the course "(.+)" in the app$/
+     * @param string $coursename Course name
+     * @throws DriverException If the button push doesn't work
+     */
+    public function i_enter_the_course_in_the_app(string $coursename) {
+        try {
+            $this->i_press_in_the_app('"My courses" near "Messages"');
+        } catch (DriverException $e) {
+            // My courses not present enter from Dashboard.
+            $this->i_press_in_the_app('"Home" near "Messages"');
+            $this->i_press_in_the_app('"Dashboard"');
+            $this->i_press_in_the_app('"'.$coursename.'" near "Course overview"');
+
+            $this->wait_for_pending_js();
+
+            return true;
+        }
+
+        $this->i_press_in_the_app('"'.$coursename.'"');
+
+        $this->wait_for_pending_js();
+
+        return true;
+    }
+
+    /**
      * Presses standard buttons in the app.
      *
      * @Given /^I press the (back|more menu|page menu|user menu|main menu) button in the app$/

@@ -20,7 +20,7 @@ Feature: It navigates properly within activities.
   Scenario: Navigates using deep links
     When I enter the app
     And I log in as "student"
-    And I press "Course 1" in the app
+    And I enter the course "Course 1" in the app
     And I press "Page" in the app
     And I press "Go to label" in the app
     Then I should find "Label description" in the app

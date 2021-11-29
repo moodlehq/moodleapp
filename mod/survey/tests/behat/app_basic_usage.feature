@@ -24,7 +24,7 @@ Feature: Test basic usage of survey activity in app
   Scenario: Answer a survey & View results (ATTLS)
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test survey name" in the app
     And I press "Choose" near "1. In evaluating what someone says, I focus on the quality of their argument, not on the person who's presenting it." in the app
     And I press "Strongly agree" in the app
@@ -81,7 +81,7 @@ Feature: Test basic usage of survey activity in app
       | survey   | Test survey critical incidents | Test survey1 | 5        | C1    | survey1  | 0         |
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test survey critical incidents" in the app
     And I set the field with xpath "//textarea[@aria-label='At what moment in class were you most engaged as a learner?']" to "1st answer"
     And I set the field with xpath "//textarea[@aria-label='At what moment in class were you most distanced as a learner?']" to "2nd answer"
@@ -109,7 +109,7 @@ Feature: Test basic usage of survey activity in app
       | survey   | Test survey Colles (actual) | Test survey1 | 1        | C1    | survey1  | 0         |
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test survey Colles (actual)" in the app
     And I press "Choose" near "1. my learning focuses on issues that interest me." in the app
     And I press "Sometimes" near "Often" in the app
@@ -178,7 +178,7 @@ Feature: Test basic usage of survey activity in app
       | survey   | Test survey Colles (preferred) | Test survey1 | 2        | C1     | survey1  | 0         |
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test survey Colles (preferred)" in the app
     And I press "Choose" near "1. my learning focuses on issues that interest me." in the app
     And I press "Sometimes" near "Often" in the app
@@ -247,7 +247,7 @@ Feature: Test basic usage of survey activity in app
       | survey   | Test survey Colles (preferred and actual) | Test survey1 | 3        | C1     | survey1  | 0         |
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test survey Colles (preferred and actual)" in the app
     And I press "Choose" near "1. I prefer that my learning focuses on issues that interest me." in the app
     And I press "Sometimes" near "Often" in the app
@@ -364,7 +364,7 @@ Feature: Test basic usage of survey activity in app
       | survey   | Test survey critical incidents | Test survey1 | 5        | C1     | survey1  | 0         |
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test survey critical incidents" in the app
     And I switch offline mode to "true"
     And I press "Submit" in the app
@@ -387,7 +387,7 @@ Feature: Test basic usage of survey activity in app
       | survey   | Test survey critical incidents | Test survey1 | 5        | C1     | survey1  | 0         |
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Display options" in the app
     And I press "Show download options" in the app
     And I press "cloud download" near "Test survey critical incidents" in the app

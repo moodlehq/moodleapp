@@ -32,7 +32,7 @@ Feature: Attempt a quiz in app
   Scenario: Next and previous navigation
     Given I enter the app
     And I log in as "student1"
-    When I press "Course 1" near "Course overview" in the app
+    When I enter the course "Course 1" in the app
     And I press "Quiz 1" in the app
     And I press "Attempt quiz now" in the app
     Then I should find "Text of the first question" in the app

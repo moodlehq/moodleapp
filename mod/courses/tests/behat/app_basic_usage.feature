@@ -60,7 +60,7 @@ Feature: Test basic usage of courses in app
     And I should find "Course 2" in the app
     And I should find "Course 3" in the app
 
-    When I press "Course 1" near "Course overview" in the app
+    When I press "Course 1" in the app
     Then I should find "Choice course 1" in the app
     And the header should be "Course 1" in the app
 
@@ -70,12 +70,12 @@ Feature: Test basic usage of courses in app
 
     When I press the back button in the app
     And I press the back button in the app
-    And I press "Course 2" near "Course overview" in the app
+    And I press "Course 2" in the app
     Then I should find "Choice course 2" in the app
     And the header should be "Course 2" in the app
 
     When I press the back button in the app
-    And I press "Course 3" near "Course overview" in the app
+    And I press "Course 3" in the app
     Then I should find "Choice course 3" in the app
     And the header should be "Course 3" in the app
 
@@ -108,7 +108,7 @@ Feature: Test basic usage of courses in app
     Then I press "Open block drawer" in the app
     Then I should find "Timeline" in the app
 
-    Given I press "Course 1" near "Course overview" in the app
+    Given I press "Course 1" in the app
     And I press "assignment" in the app
     And I press "Display options" in the app
     And I press "Open in browser" in the app

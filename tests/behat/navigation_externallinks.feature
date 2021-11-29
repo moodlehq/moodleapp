@@ -21,7 +21,7 @@ Feature: It opens external links properly.
   Scenario: Click an external link
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test forum" in the app
     And I press "Forum topic" in the app
     And I press "moodle.org" in the app

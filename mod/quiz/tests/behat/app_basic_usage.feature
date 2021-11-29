@@ -58,7 +58,7 @@ Feature: Attempt a quiz in app
   Scenario: View a quiz entry page (attempts, status, etc.)
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Quiz 1" in the app
     And I press "Attempt quiz now" in the app
     Then I should find "Text of the first question" in the app
@@ -110,7 +110,7 @@ Feature: Attempt a quiz in app
   Scenario: Attempt a quiz (all question types)
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Quiz 2" in the app
     And I press "Attempt quiz now" in the app
     And I press "Four" in the app
@@ -149,7 +149,7 @@ Feature: Attempt a quiz in app
   Scenario: Submit a quiz & Review a quiz attempt
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Quiz 1" in the app
     And I press "Attempt quiz now" in the app
     And I press "True" in the app
@@ -162,7 +162,7 @@ Feature: Attempt a quiz in app
 
     When I enter the app
     And I log in as "teacher1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Quiz 1" in the app
     And I press "Display options" in the app
     And I press "Open in browser" in the app

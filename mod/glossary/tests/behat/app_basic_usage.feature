@@ -29,7 +29,7 @@ Feature: Test basic usage of glossary in app
   Scenario: View a glossary and its terms
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test glossary" in the app
     And I press "close" in the app
     And I set the field "Concept" to "potato" in the app
@@ -56,7 +56,7 @@ Feature: Test basic usage of glossary in app
   Scenario: Change filters (include search)
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test glossary" in the app
     And I press "close" in the app
     And I set the field "Concept" to "potato" in the app
@@ -94,7 +94,7 @@ Feature: Test basic usage of glossary in app
     When the "glossary" filter is "on"
     And I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test glossary" in the app
     And I press "close" in the app
     And I set the field "Concept" to "potato" in the app
@@ -139,7 +139,7 @@ Feature: Test basic usage of glossary in app
     # Create entries as a student
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test glossary" in the app
     And I press "close" in the app
     And I set the field "Concept" to "potato" in the app
@@ -164,7 +164,7 @@ Feature: Test basic usage of glossary in app
     # Write comments as a teacher
     When I enter the app
     And I log in as "teacher1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test glossary" in the app
     And I press "mountain" in the app
     Then I should see "Comments (0)"
@@ -186,7 +186,7 @@ Feature: Test basic usage of glossary in app
     # View comments as a student
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test glossary" in the app
     And I press "mountain" in the app
     Then I should see "Comments (2)"
@@ -199,7 +199,7 @@ Feature: Test basic usage of glossary in app
   Scenario: Prefetch
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test glossary" in the app
     And I press "close" in the app
     And I set the field "Concept" to "potato" in the app
@@ -222,7 +222,7 @@ Feature: Test basic usage of glossary in app
     And I press "Download" in the app
     And I press the back button in the app
     And I press the back button in the app
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I switch offline mode to "true"
     And I press "Test glossary" in the app
     Then the header should be "Test glossary" in the app
@@ -240,7 +240,7 @@ Feature: Test basic usage of glossary in app
   Scenario: Sync
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test glossary" in the app
     And I switch offline mode to "true"
     And I press "close" in the app
@@ -282,7 +282,7 @@ Feature: Test basic usage of glossary in app
     # Create entries as a student
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test glossary" in the app
     And I press "close" in the app
     And I set the field "Concept" to "potato" in the app
@@ -304,7 +304,7 @@ Feature: Test basic usage of glossary in app
     # Rate entries as teacher1
     When I enter the app
     And I log in as "teacher1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test glossary" in the app
     And I press "mountain" in the app
     Then I should see "Average of ratings: -"
@@ -316,7 +316,7 @@ Feature: Test basic usage of glossary in app
     # Rate entries as teacher2
     When I enter the app
     And I log in as "teacher2"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test glossary" in the app
     And I press "mountain" in the app
     And I switch offline mode to "true"
@@ -337,7 +337,7 @@ Feature: Test basic usage of glossary in app
     # View ratings as a student
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     And I press "Test glossary" in the app
     And I press "mountain" in the app
     Then the header should be "mountain" in the app

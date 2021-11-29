@@ -22,7 +22,7 @@ Feature: Check course completion feature.
       | forum    | Second forum | C1     | forum2   | 1          | 0              |
     When I enter the app
     And I log in as "student1"
-    And I press "Course 1" near "Course overview" in the app
+    And I enter the course "Course 1" in the app
     # Set activities as completed.
     And I should find "0%" in the app
     And I press "Mark First forum as done" in the app
