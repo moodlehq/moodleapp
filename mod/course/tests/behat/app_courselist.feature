@@ -22,6 +22,7 @@ Feature: Test course list shown on app start tab
   Scenario: View courses (shortnames not displayed)
     When I enter the app
     And I log in as "student1"
+    And I press "My courses" in the app
     Then I should find "Course 1" in the app
     But I should not find "Course 2" in the app
     But I should not find "C1" in the app
@@ -29,6 +30,7 @@ Feature: Test course list shown on app start tab
 
     When I enter the app
     And I log in as "student2"
+    And I press "My courses" in the app
     Then I should find "Course 1" in the app
     And I should find "Course 2" in the app
     But I should not find "C1" in the app
@@ -78,6 +80,7 @@ Feature: Test course list shown on app start tab
       | student2 | Z10    | student |
     When I enter the app
     And I log in as "student2"
+    And I press "My courses" in the app
     Then I should find "C1" in the app
     And I should find "C2" in the app
     And I should find "C3" in the app

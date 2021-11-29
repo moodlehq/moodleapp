@@ -39,15 +39,12 @@ Feature: Test basic usage of courses in app
     And I log in as "student1"
     Then I should see "Dashboard"
     And the header should be "Acceptance test site" in the app
-    And I should find "Course 1" in the app
-    And I should find "Course 2" in the app
-    And I should find "Course 3" in the app
-
-    When I press "Site home" in the app
+    And I should see "Timeline"
+    And I press "Site home" in the app
     Then I should find "Dashboard" in the app
     And the header should be "Acceptance test site" in the app
 
-    When I press "Dashboard" in the app
+    When I press "My courses" in the app
     Then I should find "Course 1" in the app
     And I should find "Course 2" in the app
     And I should find "Course 3" in the app
@@ -56,6 +53,7 @@ Feature: Test basic usage of courses in app
     When I enter the app
     And I log in as "student1"
     Then the header should be "Acceptance test site" in the app
+    And I press "My courses" in the app
     And I should find "Course 1" in the app
     And I should find "Course 2" in the app
     And I should find "Course 3" in the app
