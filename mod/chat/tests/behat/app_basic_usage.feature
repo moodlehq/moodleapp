@@ -57,7 +57,7 @@ Feature: Test basic usage of chat in app
     And I press "Send" in the app
     Then I should find "Hi David, I am Pau." in the app
 
-  Scenario: Past sessions shown for >=3.5
+  Scenario: Past sessions shown
     # Send messages as student1
     Given I enter the app
     And I log in as "student1"

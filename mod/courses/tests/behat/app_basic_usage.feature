@@ -34,7 +34,7 @@ Feature: Test basic usage of courses in app
       | activity | course | idnumber | name                | intro                       | assignsubmission_onlinetext_enabled |
       | assign   | C1     | assign1  | assignment          | Test assignment description | 1                                   |
 
-  Scenario: "Dashboard" tab displayed in >= 3.3 sites
+  Scenario: "Dashboard" tab displayed
     When I enter the app
     And I log in as "student1"
     Then I should see "Dashboard"
