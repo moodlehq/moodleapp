@@ -449,7 +449,7 @@
             case 'more menu':
                 foundButton = findElementsBasedOnText({
                     text: 'More',
-                    near: { text: 'Notifications' },
+                    near: { text: 'Messages' },
                 })[0];
                 break;
             case 'user menu' :
