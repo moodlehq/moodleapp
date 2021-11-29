@@ -91,10 +91,6 @@ Feature: Test course list shown on app start tab
     And I should find "Course 5" in the app
     And I should find "Toad 6" in the app
 
-    When I press "Display options" near "Course overview" in the app
-    And I press "Filter my courses" in the app
-
-    # TODO field should be "Filter my courses"
     And I set the field "search text" to "fr" in the app
 
     Then I should find "C3" in the app
@@ -110,8 +106,7 @@ Feature: Test course list shown on app start tab
     And I should not find "Course 5" in the app
     And I should not find "Toad 6" in the app
 
-    When I press "Display options" near "Course overview" in the app
-    And I press "Filter my courses" in the app
+    When I set the field "search text" to "" in the app
     Then I should find "C1" in the app
     And I should find "C2" in the app
     And I should find "C3" in the app

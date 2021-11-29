@@ -733,7 +733,7 @@ class behat_app extends behat_base {
      * Currently this only works for input fields which must be identified using a partial or
      * exact match on the placeholder text.
      *
-     * @Given /^I set the field "((?:[^"]|\\")+)" to "((?:[^"]|\\")+)" in the app$/
+     * @Given /^I set the field "((?:[^"]|\\")+)" to "((?:[^"]|\\")*)" in the app$/
      * @param string $field Text identifying field
      * @param string $value Value for field
      * @throws DriverException If the field set doesn't work
