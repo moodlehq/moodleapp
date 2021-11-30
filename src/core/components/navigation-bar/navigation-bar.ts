@@ -12,48 +12,103 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CoreTextUtils } from '@services/utils/text';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange } from '@angular/core';
+import { Translate } from '@singletons';
 
 /**
- * Component to show a "bar" with arrows to navigate forward/backward and a "info" icon to display more data.
+ * Component to show a "bar" with arrows to navigate forward/backward and an slider to move around.
  *
  * This directive will show two arrows at the left and right of the screen to navigate to previous/next item when clicked.
- * If no previous/next item is defined, that arrow won't be shown. It will also show a button to show more info.
+ * If no previous/next item is defined, that arrow won't be shown.
  *
  * Example usage:
- * <core-navigation-bar [previous]="prevItem" [next]="nextItem" (action)="goTo($event)"></core-navigation-bar>
+ * <core-navigation-bar [items]="items" (action)="goTo($event)"></core-navigation-bar>
  */
 @Component({
     selector: 'core-navigation-bar',
     templateUrl: 'core-navigation-bar.html',
     styleUrls: ['navigation-bar.scss'],
 })
-export class CoreNavigationBarComponent {
+export class CoreNavigationBarComponent implements OnChanges {
 
-    @Input() previous?: unknown; // Previous item. If not defined, the previous arrow won't be shown.
-    @Input() previousTitle?: string; // Previous item title. If not defined, only the arrow will be shown.
-    @Input() next?: unknown; // Next item. If not defined, the next arrow won't be shown.
-    @Input() nextTitle?: string; // Next item title. If not defined, only the arrow will be shown.
-    @Input() info = ''; // Info to show when clicking the info button. If not defined, the info button won't be shown.
-    @Input() title = ''; // Title to show when seeing the info (new page).
+    @Input() items: CoreNavigationBarItem[] = []; // List of items.
+    @Input() showTitles = false; // Display titles on buttons.
+    @Input() previousTranslate = 'core.previous'; // Previous translatable text, can admit $a variable.
+    @Input() nextTranslate = 'core.next'; // Next translatable text, can admit $a variable.
     @Input() component?: string; // Component the bar belongs to.
     @Input() componentId?: number; // Component ID.
     @Input() contextLevel?: string; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
-    @Output() action?: EventEmitter<unknown> =
-        new EventEmitter<unknown>(); // Function to call when arrow is clicked. Will receive as a param the item to load.
 
-    showInfo(): void {
-        CoreTextUtils.viewText(this.title, this.info, {
-            component: this.component,
-            componentId: this.componentId,
-            filter: true,
-            contextLevel: this.contextLevel,
-            instanceId: this.contextInstanceId,
-            courseId: this.courseId,
-        });
+    previousTitle?: string; // Previous item title.
+    nextTitle?: string; // Next item title.
+    previousIndex = -1; // Previous item index. If -1, the previous arrow won't be shown.
+    nextIndex = -1; // Next item index. If -1, the next arrow won't be shown.
+    currentIndex = 0;
+
+    // Function to call when arrow is clicked. Will receive as a param the item to load.
+    @Output() action: EventEmitter<unknown> = new EventEmitter<unknown>();
+
+    /**
+     * @inheritdoc
+     */
+    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+        if (!changes.items || !this.items.length) {
+            return;
+        }
+
+        this.currentIndex = this.items.findIndex((item) => item.current);
+        if (this.currentIndex < 0) {
+            return;
+        }
+
+        this.nextIndex = this.items[this.currentIndex + 1]?.enabled ? this.currentIndex + 1 : -1;
+        if (this.nextIndex >= 0) {
+            this.nextTitle = Translate.instant(this.nextTranslate, { $a: this.items[this.nextIndex].title || '' });
+        }
+
+        this.previousIndex = this.items[this.currentIndex - 1]?.enabled ? this.currentIndex - 1 : -1;
+        if (this.previousIndex >= 0) {
+            this.previousTitle = Translate.instant(this.previousTranslate, { $a: this.items[this.previousIndex].title || '' });
+        }
+    }
+
+    /**
+     * Navigate to an item.
+     *
+     * @param itemIndex Selected item index.
+     */
+    navigate(itemIndex: number): void {
+        if (this.currentIndex == itemIndex || !this.items[itemIndex].enabled) {
+            return;
+        }
+
+        this.currentIndex = itemIndex;
+        this.action.emit(this.items[itemIndex].item);
+    }
+
+    /**
+     * Navigate to an item with the range component.
+     *
+     * @param target: Element changed.
+     */
+    navigateOnRange(target: HTMLIonRangeElement): void {
+        const selectedIndex = target.value as number; // Single value, use number.
+        if (!this.items[selectedIndex].enabled) {
+            target.value = this.currentIndex;
+
+            return;
+        }
+
+        this.navigate(selectedIndex);
     }
 
 }
+
+export type CoreNavigationBarItem<T = unknown> = {
+    item: T;
+    title?: string;
+    current: boolean;
+    enabled: boolean;
+};

@@ -14,6 +14,7 @@
 
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreSilentError } from '@classes/errors/silenterror';
+import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
@@ -32,22 +33,19 @@ import { AddonModImscpTocComponent } from '../toc/toc';
 export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
     component = AddonModImscpProvider.COMPONENT;
-
-    items: AddonModImscpTocItem[] = [];
-    currentItem?: string;
     src = '';
     warning = '';
+    navigationItems: CoreNavigationBarItem<AddonModImscpTocItem>[] = [];
 
-    // Initialize empty previous/next to prevent showing arrows for an instant before they're hidden.
-    previousItem = '';
-    nextItem = '';
+    protected items: AddonModImscpTocItem[] = [];
+    protected currentHref?: string;
 
     constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
         super('AddonModImscpIndexComponent', courseContentsPage);
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
@@ -90,19 +88,19 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
 
             this.items = AddonModImscp.createItemList(contents);
 
-            if (this.items.length && typeof this.currentItem == 'undefined') {
-                this.currentItem = this.items[0].href;
+            if (this.items.length && this.currentHref === undefined) {
+                this.currentHref = this.items[0].href;
             }
 
             try {
-                await this.loadItem(this.currentItem);
+                await this.loadItemHref(this.currentHref);
             } catch (error) {
                 CoreDomUtils.showErrorModalDefault(error, 'addon.mod_imscp.deploymenterror', true);
 
                 throw new CoreSilentError(error);
             }
 
-            this.warning = downloadResult!.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult!.error!) : '';
+            this.warning = downloadResult.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
 
         } finally {
             // Pass false because downloadResourceIfNeeded already invalidates and refresh data if refresh=true.
@@ -113,14 +111,18 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     /**
      * Loads an item.
      *
-     * @param itemId Item ID.
+     * @param itemHref Item Href.
      * @return Promise resolved when done.
      */
-    async loadItem(itemId?: string): Promise<void> {
-        const src = await AddonModImscp.getIframeSrc(this.module, itemId);
-        this.currentItem = itemId;
-        this.previousItem = itemId ? AddonModImscp.getPreviousItem(this.items, itemId) : '';
-        this.nextItem = itemId ? AddonModImscp.getNextItem(this.items, itemId) : '';
+    async loadItemHref(itemHref?: string): Promise<void> {
+        const src = await AddonModImscp.getIframeSrc(this.module, itemHref);
+        this.currentHref = itemHref;
+
+        this.navigationItems = this.items.map((item) => ({
+            item: item,
+            current: item.href == this.currentHref,
+            enabled: !!item.href,
+        }));
 
         if (this.src && src == this.src) {
             // Re-loading same page. Set it to empty and then re-set the src in the next digest so it detects it has changed.
@@ -134,6 +136,15 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     }
 
     /**
+     * Loads an item.
+     *
+     * @param item Item.
+     */
+    loadItem(item: AddonModImscpTocItem): void {
+        this.loadItemHref(item.href);
+    }
+
+    /**
      * Show the TOC.
      */
     async showToc(): Promise<void> {
@@ -142,12 +153,12 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
             component: AddonModImscpTocComponent,
             componentProps: {
                 items: this.items,
-                selected: this.currentItem,
+                selected: this.currentHref,
             },
         });
 
         if (modalData) {
-            this.loadItem(modalData);
+            this.loadItemHref(modalData);
         }
     }
 

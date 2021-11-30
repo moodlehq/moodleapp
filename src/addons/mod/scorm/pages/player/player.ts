@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar';
 import { CoreMainMenuPage } from '@features/mainmenu/pages/menu/menu';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -50,8 +51,6 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     loadingToc = true; // Whether the TOC is being loaded.
     toc: AddonModScormTOCScoWithIcon[] = []; // List of SCOs.
     loaded = false; // Whether the data has been loaded.
-    previousSco?: AddonModScormScoWithData; // Previous SCO.
-    nextSco?: AddonModScormScoWithData; // Next SCO.
     src?: string; // Iframe src.
     errorMessage?: string; // Error message.
     accessInfo?: AddonModScormGetScormAccessInformationWSResponse; // Access information.
@@ -60,6 +59,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     incomplete = false; // Whether last attempt is incomplete.
     cmId!: number; // Course module ID.
     courseId!: number; // Course ID.
+    navigationItems: CoreNavigationBarItem<AddonModScormTOCScoWithIcon>[] = [];
 
     protected siteId!: string;
     protected mode!: string; // Mode to play the SCORM.
@@ -110,6 +110,8 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             await this.fetchData();
 
             if (!this.currentSco) {
+                CoreNavigator.back();
+
                 return;
             }
 
@@ -176,14 +178,20 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         }, this.siteId);
 
         this.launchNextObserver = CoreEvents.on(AddonModScormProvider.LAUNCH_NEXT_SCO_EVENT, (data) => {
-            if (data.scormId === this.scorm.id && this.nextSco) {
-                this.loadSco(this.nextSco);
+            if (data.scormId === this.scorm.id && this.currentSco) {
+                const nextSco = AddonModScormHelper.getNextScoFromToc(this.toc, this.currentSco.id);
+                if (nextSco) {
+                    this.loadSco(nextSco);
+                }
             }
         }, this.siteId);
 
         this.launchPrevObserver = CoreEvents.on(AddonModScormProvider.LAUNCH_PREV_SCO_EVENT, (data) => {
-            if (data.scormId === this.scorm.id && this.previousSco) {
-                this.loadSco(this.previousSco);
+            if (data.scormId === this.scorm.id && this.currentSco) {
+                const previousSco = AddonModScormHelper.getPreviousScoFromToc(this.toc, this.currentSco.id);
+                if (previousSco) {
+                    this.loadSco(previousSco);
+                }
             }
         }, this.siteId);
 
@@ -211,9 +219,16 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      *
      * @param scoId Current SCO ID.
      */
-    protected calculateNextAndPreviousSco(scoId: number): void {
-        this.previousSco = AddonModScormHelper.getPreviousScoFromToc(this.toc, scoId);
-        this.nextSco = AddonModScormHelper.getNextScoFromToc(this.toc, scoId);
+    protected calculateNavigationItems(scoId: number): void {
+        this.navigationItems = this.toc
+            .filter((item) => item.isvisible)
+            .map<CoreNavigationBarItem<AddonModScormTOCScoWithIcon>>((item) =>
+            ({
+                item: item,
+                title: item.title,
+                current: item.id == scoId,
+                enabled: !!(item.prereq && item.launch),
+            }));
     }
 
     /**
@@ -398,7 +413,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         this.currentSco = sco;
         this.title = sco.title || this.scorm.name; // Try to use SCO title.
 
-        this.calculateNextAndPreviousSco(sco.id);
+        this.calculateNavigationItems(sco.id);
 
         // Load the SCO source.
         this.loadScoSrc(sco);
@@ -540,7 +555,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         // Empty src when leaving the state so unload event is triggered in the iframe.

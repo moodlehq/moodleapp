@@ -26,11 +26,11 @@ import {
 import { CoreTag, CoreTagItem } from '@features/tag/services/tag';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourse } from '@features/course/services/course';
 import { AddonModBookTocComponent } from '../toc/toc';
 import { CoreConstants } from '@/core/constants';
+import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar';
 
 /**
  * Component that displays a book.
@@ -45,19 +45,16 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
     component = AddonModBookProvider.COMPONENT;
     chapterContent?: string;
-    previousChapter?: AddonModBookTocChapter;
-    nextChapter?: AddonModBookTocChapter;
     tagsEnabled = false;
-    displayNavBar = true;
-    previousNavBarTitle?: string;
-    nextNavBarTitle?: string;
     warning = '';
     tags?: CoreTagItem[];
+    displayNavBar = true;
+    navigationItems: CoreNavigationBarItem<AddonModBookTocChapter>[] = [];
+    displayTitlesInNavBar = false;
 
     protected chapters: AddonModBookTocChapter[] = [];
     protected currentChapter?: number;
     protected book?: AddonModBookBookWSData;
-    protected displayTitlesInNavBar = false;
     protected contentsMap: AddonModBookContentsMap = {};
 
     constructor(
@@ -148,14 +145,18 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
                 }
             }
 
-            if (typeof this.currentChapter == 'undefined') {
+            if (this.currentChapter === undefined) {
                 // Load the first chapter.
                 this.currentChapter = AddonModBook.getFirstChapter(this.chapters);
             }
 
+            if (this.currentChapter === undefined) {
+                return;
+            }
+
             // Show chapter.
             try {
-                await this.loadChapter(this.currentChapter!, refresh);
+                await this.loadChapter(this.currentChapter, refresh);
 
                 this.warning = downloadResult?.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
             } catch {
@@ -199,15 +200,10 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             this.tags = this.tagsEnabled ? this.contentsMap[this.currentChapter].tags : [];
 
             this.chapterContent = content;
-            this.previousChapter = AddonModBook.getPreviousChapter(this.chapters, chapterId);
-            this.nextChapter = AddonModBook.getNextChapter(this.chapters, chapterId);
 
-            this.previousNavBarTitle = this.previousChapter && this.displayTitlesInNavBar
-                ? Translate.instant('addon.mod_book.navprevtitle', { $a: this.previousChapter.title })
-                : '';
-            this.nextNavBarTitle = this.nextChapter && this.displayTitlesInNavBar
-                ? Translate.instant('addon.mod_book.navnexttitle', { $a: this.nextChapter.title })
-                : '';
+            if (this.displayNavBar) {
+                this.navigationItems = this.getNavigationItems(chapterId);
+            }
 
             // Chapter loaded, log view. We don't return the promise because we don't want to block the user for this.
             await CoreUtils.ignoreErrors(AddonModBook.logView(
@@ -216,8 +212,11 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
                 this.module.name,
             ));
 
+            const currentChapterIndex = this.chapters.findIndex((chapter) => chapter.id == chapterId);
+            const isLastChapter = currentChapterIndex < 0 || this.chapters[currentChapterIndex + 1] === undefined;
+
             // Module is completed when last chapter is viewed, so we only check completion if the last is reached.
-            if (!this.nextChapter) {
+            if (isLastChapter) {
                 CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
             }
         } catch (error) {
@@ -228,6 +227,21 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             this.loaded = true;
             this.refreshIcon = CoreConstants.ICON_REFRESH;
         }
+    }
+
+    /**
+     * Converts chapters to navigation items.
+     *
+     * @param chapterId Current chapter Id.
+     * @return Navigation items.
+     */
+    protected getNavigationItems(chapterId: number): CoreNavigationBarItem<AddonModBookTocChapter>[] {
+        return this.chapters.map((chapter) => ({
+            item: chapter,
+            title: chapter.title,
+            current: chapter.id == chapterId,
+            enabled: true,
+        }));
     }
 
 }

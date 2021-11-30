@@ -21,7 +21,7 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <core-navigation-bar [previous]="previousSco" [next]="nextSco" (action)="loadSco($event)"></core-navigation-bar>
+        <core-navigation-bar [items]="navigationItems" (action)="loadSco($event)"></core-navigation-bar>
 
         <core-iframe *ngIf="loaded && src" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"
             [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true">
