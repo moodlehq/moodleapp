@@ -56,7 +56,7 @@ Feature: Measure performance.
     And I set the field "Your site" to "$WWWROOT" in the app
     And I press "Connect to your site" in the app
     And I log in as "student1"
-    Then I should find "Course 1" in the app
+    And I should find "Timeline" in the app
 
     When I stop measuring "Login"
     Then "Login" should have taken less than 10 seconds
@@ -69,16 +69,18 @@ Feature: Measure performance.
     And I set the field "Your site" to "$WWWROOT" in the app
     And I press "Connect to your site" in the app
     And I log in as "student1"
-    Then I should find "Course 1" in the app
+    Then I press "My courses" in the app
+    And I should find "Course 1" in the app
 
     When I reload the page
     And I start measuring "Open Activity"
     And I wait the app to restart
     Then I should find "Course 1" in the app
 
-    When I press "Course 1" in the app
+    When I enter the course "Course 1" in the app
     And I press "Choice course 1" in the app
     Then I should find "Option 1" in the app
 
     When I stop measuring "Open Activity"
-    Then "Open Activity" should have taken less than 7 seconds
+    # TODO Check back to 7s or review perfect timings
+    Then "Open Activity" should have taken less than 8 seconds
