@@ -44,6 +44,7 @@ import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreCourseAutoSyncData, CoreCourseSyncProvider } from './sync';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreNavigator } from '@services/navigator';
+import { CoreCourseModuleDelegate } from './module-delegate';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -1058,6 +1059,14 @@ export class CoreCourseProvider {
      * @return Whether the module has a view page.
      */
     moduleHasView(module: CoreCourseModuleSummary | CoreCourseWSModule): boolean {
+        if ('modname' in module) {
+            // noviewlink was introduced in 3.8.5, use supports feature as a fallback.
+            if (module.noviewlink ||
+                CoreCourseModuleDelegate.supportsFeature(module.modname, CoreConstants.FEATURE_NO_VIEW_LINK, false)) {
+                return false;
+            }
+        }
+
         return !!module.url;
     }
 
