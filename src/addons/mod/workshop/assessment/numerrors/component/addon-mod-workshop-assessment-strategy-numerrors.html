@@ -3,8 +3,7 @@
         <ion-item class="ion-text-wrap">
             <ion-label>
                 <h2>{{ field.dimtitle }}</h2>
-                <core-format-text [text]="field.description" contextLevel="module" [contextInstanceId]="moduleId"
-                    [courseId]="courseId">
+                <core-format-text [text]="field.description" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
                 </core-format-text>
             </ion-label>
         </ion-item>
@@ -26,7 +25,9 @@
                     <ion-radio slot="start" [value]="-1" [disabled]="!edit"></ion-radio>
                 </ion-item>
                 <ion-item>
-                    <ion-label><core-format-text [text]="field.grade1" [filter]="false"></core-format-text></ion-label>
+                    <ion-label>
+                        <core-format-text [text]="field.grade1" [filter]="false"></core-format-text>
+                    </ion-label>
                     <ion-radio slot="start" [value]="1" [disabled]="!edit"></ion-radio>
                 </ion-item>
             </ion-radio-group>

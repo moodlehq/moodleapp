@@ -9,16 +9,17 @@
         <ion-icon *ngIf="item.iconDescription" [name]="item.iconDescription" aria-hidden="true" slot="start">
         </ion-icon>
         <ion-label>
-            <p class="item-heading"><core-format-text [clean]="true" [text]="item.content" [filter]="false"></core-format-text></p>
+            <p class="item-heading">
+                <core-format-text [clean]="true" [text]="item.content" [filter]="false"></core-format-text>
+            </p>
         </ion-label>
         <ng-container *ngIf="(item.href || item.action) && item.iconAction">
             <ion-icon *ngIf="item.iconAction != 'spinner' && item.iconAction != 'toggle'" [name]="item.iconAction"
                 [class.icon-slash]="item.iconSlash" slot="end" aria-hidden="true">
             </ion-icon>
-            <ion-spinner *ngIf="item.iconAction == 'spinner'" slot="end"
-                [attr.aria-label]="'core.loading' | translate">
+            <ion-spinner *ngIf="item.iconAction == 'spinner'" slot="end" [attr.aria-label]="'core.loading' | translate">
             </ion-spinner>
-            <ion-toggle  *ngIf="item.iconAction == 'toggle'" [(ngModel)]="item.toggle" (ionChange)="item.toggleChanged($event)" slot="end">
+            <ion-toggle *ngIf="item.iconAction == 'toggle'" [(ngModel)]="item.toggle" (ionChange)="item.toggleChanged($event)" slot="end">
             </ion-toggle>
         </ng-container>
         <ion-badge class="{{item.badgeClass}}" slot="end" *ngIf="item.badge">

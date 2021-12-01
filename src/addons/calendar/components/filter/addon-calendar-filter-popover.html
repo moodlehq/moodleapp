@@ -8,7 +8,9 @@
     <ng-container *ngIf="filter.course || filter.category || filter.group">
         <ion-radio-group [(ngModel)]="courseId" (ionChange)="onChange()">
             <ion-item class="ion-text-wrap" *ngFor="let course of courses">
-                <ion-label><core-format-text [text]="course.fullname"></core-format-text></ion-label>
+                <ion-label>
+                    <core-format-text [text]="course.fullname"></core-format-text>
+                </ion-label>
                 <ion-radio slot="end" [value]="course.id"></ion-radio>
             </ion-item>
         </ion-radio-group>

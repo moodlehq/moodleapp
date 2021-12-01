@@ -10,13 +10,12 @@
             </ion-item>
         </ion-card>
         <div class="addon-qtype-ddwtos-container">
-            <core-format-text [component]="component" [componentId]="componentId" [text]="ddQuestion.text"
-                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" #questiontext
-                (afterRender)="textRendered()">
+            <core-format-text [component]="component" [componentId]="componentId" [text]="ddQuestion.text" [contextLevel]="contextLevel"
+                [contextInstanceId]="contextInstanceId" [courseId]="courseId" #questiontext (afterRender)="textRendered()">
             </core-format-text>
 
-            <core-format-text *ngIf="ddQuestion.answers" [component]="component" [componentId]="componentId"
-                [text]="ddQuestion.answers" [filter]="false" (afterRender)="answersRendered()">
+            <core-format-text *ngIf="ddQuestion.answers" [component]="component" [componentId]="componentId" [text]="ddQuestion.answers"
+                [filter]="false" (afterRender)="answersRendered()">
             </core-format-text>
 
             <div class="drags"></div>

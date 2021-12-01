@@ -2,9 +2,10 @@
 <ion-item *ngIf="!edit && field && field.name">
     <ion-label>
         <h2>{{ field.name }}</h2>
-        <p><core-format-text [text]="value" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-            [courseId]="courseId">
-        </core-format-text></p>
+        <p>
+            <core-format-text [text]="value" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            </core-format-text>
+        </p>
     </ion-label>
 </ion-item>
 
