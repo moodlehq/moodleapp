@@ -198,7 +198,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
             const [hasOfflineRatings] = await Promise.all([
                 CoreRatingOffline.hasRatings('mod_glossary', 'entry', ContextLevel.MODULE, this.glossary.coursemodule),
-                refresh ? this.entries.reload() : this.entries.loadNextPage(),
+                refresh ? this.entries.reload() : this.entries.load(),
             ]);
 
             this.hasOfflineRatings = hasOfflineRatings;
@@ -307,7 +307,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         try {
             this.loadMoreError = false;
 
-            await this.entries.loadNextPage();
+            await this.entries.load();
         } catch (error) {
             this.loadMoreError = true;
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentries', true);

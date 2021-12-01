@@ -55,6 +55,7 @@ const mainMenuRoutes: Routes = [
     {
         path: `${AddonModForumModuleHandlerService.PAGE_NAME}/discussion/:discussionId`,
         loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+        data: { swipeEnabled: false },
     },
     {
         path: AddonModForumModuleHandlerService.PAGE_NAME,
@@ -66,10 +67,12 @@ const mainMenuRoutes: Routes = [
                 path: `${COURSE_CONTENTS_PATH}/${AddonModForumModuleHandlerService.PAGE_NAME}/new/:timeCreated`,
                 loadChildren: () => import('./pages/new-discussion/new-discussion.module')
                     .then(m => m.AddonForumNewDiscussionPageModule),
+                data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
             },
             {
                 path: `${COURSE_CONTENTS_PATH}/${AddonModForumModuleHandlerService.PAGE_NAME}/:discussionId`,
                 loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+                data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
             },
         ],
         () => CoreScreen.isMobile,
@@ -82,10 +85,12 @@ const courseContentsRoutes: Routes = conditionalRoutes(
             path: `${AddonModForumModuleHandlerService.PAGE_NAME}/new/:timeCreated`,
             loadChildren: () => import('./pages/new-discussion/new-discussion.module')
                 .then(m => m.AddonForumNewDiscussionPageModule),
+            data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
         },
         {
             path: `${AddonModForumModuleHandlerService.PAGE_NAME}/:discussionId`,
             loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+            data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
         },
     ],
     () => CoreScreen.isTablet,

@@ -110,7 +110,7 @@ export class CoreSwipeItemsManager<
         const item = items?.[index + delta] ?? null;
 
         if (!item && !this.getSource().isCompleted()) {
-            await this.getSource().loadNextPage();
+            await this.getSource().load();
 
             return this.getItemBy(delta);
         }

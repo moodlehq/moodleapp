@@ -14,6 +14,8 @@
 
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef, Optional } from '@angular/core';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingInfo, CoreRatingProvider } from '@features/rating/services/rating';
@@ -32,6 +34,8 @@ import { Network, NgZone, Translate } from '@singletons';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
+import { AddonModForumDiscussionsSource } from '../../classes/forum-discussions-source';
+import { AddonModForumDiscussionsSwipeManager } from '../../classes/forum-discussions-swipe-manager';
 import {
     AddonModForum,
     AddonModForumAccessInformation,
@@ -68,6 +72,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     forum: Partial<AddonModForumData> = {};
     accessInfo: AddonModForumAccessInformation = {};
     discussion?: AddonModForumDiscussion;
+    discussions?: AddonModForumDiscussionDiscussionsSwipeManager;
     startingPost?: Post;
     posts!: Post[];
     discussionLoaded = false;
@@ -117,14 +122,16 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     constructor(
         @Optional() protected splitView: CoreSplitViewComponent,
         protected elementRef: ElementRef,
+        protected route: ActivatedRoute,
     ) {}
 
     get isMobile(): boolean {
         return CoreScreen.isMobile;
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         try {
+            const routeData = this.route.snapshot.data;
             this.courseId = CoreNavigator.getRouteNumberParam('courseId');
             this.cmId = CoreNavigator.getRouteNumberParam('cmId');
             this.forumId = CoreNavigator.getRouteNumberParam('forumId');
@@ -136,6 +143,16 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             this.postId = CoreNavigator.getRouteNumberParam('postId');
             this.parent = CoreNavigator.getRouteNumberParam('parent');
 
+            if (this.courseId && this.cmId && (routeData.swipeEnabled ?? true)) {
+                this.discussions = new AddonModForumDiscussionDiscussionsSwipeManager(
+                    CoreItemsManagerSourcesTracker.getOrCreateSource(
+                        AddonModForumDiscussionsSource,
+                        [this.courseId, this.cmId, routeData.discussionsPathPrefix ?? ''],
+                    ),
+                );
+
+                await this.discussions.start();
+            }
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -311,6 +328,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      */
     ngOnDestroy(): void {
         this.onlineObserver && this.onlineObserver.unsubscribe();
+        this.discussions && this.discussions.destroy();
     }
 
     /**
@@ -839,3 +857,17 @@ export type AddonModForumSharedPostFormData = Omit<AddonModForumPostFormData, 'i
     id?: number; // ID when editing an online reply.
     syncId?: string; // Sync ID if some post has blocked synchronization.
 };
+
+/**
+ * Helper to manage swiping within a collection of discussions.
+ */
+class AddonModForumDiscussionDiscussionsSwipeManager extends AddonModForumDiscussionsSwipeManager {
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
+        return this.getSource().DISCUSSIONS_PATH_PREFIX + route.params.discussionId;
+    }
+
+}

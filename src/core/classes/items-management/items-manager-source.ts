@@ -40,6 +40,7 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
     protected items: Item[] | null = null;
     protected hasMoreItems = true;
     protected listeners: CoreItemsListSourceListener<Item>[] = [];
+    protected dirty = false;
 
     /**
      * Check whether any page has been loaded.
@@ -57,6 +58,17 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
      */
     isCompleted(): boolean {
         return !this.hasMoreItems;
+    }
+
+    /**
+     * Set whether the source as dirty.
+     *
+     * When a source is dirty, the next load request will reload items from the beginning.
+     *
+     * @param dirty Whether source should be marked as dirty or not.
+     */
+    setDirty(dirty: boolean): void {
+        this.dirty = dirty;
     }
 
     /**
@@ -92,6 +104,7 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
     reset(): void {
         this.items = null;
         this.hasMoreItems = true;
+        this.dirty = false;
 
         this.listeners.forEach(listener => listener.onReset?.call(listener));
     }
@@ -129,13 +142,23 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
     async reload(): Promise<void> {
         const { items, hasMoreItems } = await this.loadPageItems(0);
 
+        this.dirty = false;
         this.setItems(items, hasMoreItems ?? false);
     }
 
     /**
-     * Load items for the next page, if any.
+     * Load more items, if any.
      */
-    async loadNextPage(): Promise<void> {
+    async load(): Promise<void> {
+        if (this.dirty) {
+            const { items, hasMoreItems } = await this.loadPageItems(0);
+
+            this.dirty = false;
+            this.setItems(items, hasMoreItems ?? false);
+
+            return;
+        }
+
         if (!this.hasMoreItems) {
             return;
         }

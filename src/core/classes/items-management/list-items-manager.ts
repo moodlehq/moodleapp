@@ -140,10 +140,10 @@ export class CoreListItemsManager<
     }
 
     /**
-     * Load items for the next page, if any.
+     * Load more items, if any.
      */
-    async loadNextPage(): Promise<void> {
-        await this.getSource().loadNextPage();
+    async load(): Promise<void> {
+        await this.getSource().load();
     }
 
     /**

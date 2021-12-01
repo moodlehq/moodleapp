@@ -185,7 +185,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
     private async fetchParticipants(reload: boolean): Promise<void> {
         reload
             ? await this.participants.reload()
-            : await this.participants.loadNextPage();
+            : await this.participants.load();
 
         this.fetchMoreParticipantsFailed = false;
     }
