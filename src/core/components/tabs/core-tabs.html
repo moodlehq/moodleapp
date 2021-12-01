@@ -8,24 +8,12 @@
             <ion-slides (ionSlideDidChange)="slideChanged()" [options]="slidesOpts" [dir]="direction" role="tablist"
                 [attr.aria-label]="description">
                 <ng-container *ngFor="let tab of tabs">
-                    <ion-slide
-                        *ngIf="tab.enabled"
-                        role="presentation"
-                        [hidden]="!hideUntil"
-                        class="tab-slide"
-                        [id]="tab.id! + '-tab'"
+                    <ion-slide *ngIf="tab.enabled" role="presentation" [hidden]="!hideUntil" class="tab-slide" [id]="tab.id! + '-tab'"
                         [class.selected]="selected == tab.id">
-                        <ion-tab-button
-                            (click)="selectTab(tab.id, $event)"
-                            (keydown)="tabAction.keyDown($event)"
-                            (keyup)="tabAction.keyUp(tab.id, $event)"
-                            class="{{tab.class}}"
-                            [layout]="layout"
-                            role="tab"
-                            [attr.aria-controls]="tab.id"
-                            [attr.aria-selected]="selected == tab.id"
-                            [tabindex]="selected == tab.id ? 0 : -1"
-                        >
+                        <ion-tab-button (click)="selectTab(tab.id, $event)" (keydown)="tabAction.keyDown($event)"
+                            (keyup)="tabAction.keyUp(tab.id, $event)" class="{{tab.class}}" [layout]="layout" role="tab"
+                            [attr.aria-controls]="tab.id" [attr.aria-selected]="selected == tab.id"
+                            [tabindex]="selected == tab.id ? 0 : -1">
                             <ion-icon *ngIf="tab.icon" [name]="tab.icon" aria-hidden="true"></ion-icon>
                             <ion-label>
                                 {{ tab.title | translate}}

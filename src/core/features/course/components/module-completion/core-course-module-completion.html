@@ -3,18 +3,15 @@
 
     <ng-container *ngIf="completion.istrackeduser">
         <ng-container *ngFor="let rule of details">
-            <ion-badge *ngIf="rule.statuscomplete" color="success" role="listitem"
-                [attr.aria-label]="rule.accessibleDescription">
+            <ion-badge *ngIf="rule.statuscomplete" color="success" role="listitem" [attr.aria-label]="rule.accessibleDescription">
                 <strong>{{ 'core.course.completion_automatic:done' | translate }}</strong> {{ rule.rulevalue.description }}
             </ion-badge>
 
-            <ion-badge *ngIf="rule.statuscompletefail" color="danger" role="listitem"
-                [attr.aria-label]="rule.accessibleDescription">
+            <ion-badge *ngIf="rule.statuscompletefail" color="danger" role="listitem" [attr.aria-label]="rule.accessibleDescription">
                 <strong>{{ 'core.course.completion_automatic:failed' | translate }}</strong> {{ rule.rulevalue.description }}
             </ion-badge>
 
-            <ion-badge *ngIf="rule.statusincomplete" color="medium" role="listitem"
-                [attr.aria-label]="rule.accessibleDescription">
+            <ion-badge *ngIf="rule.statusincomplete" color="medium" role="listitem" [attr.aria-label]="rule.accessibleDescription">
                 <strong>{{ 'core.course.completion_automatic:todo' | translate }}</strong> {{ rule.rulevalue.description }}
             </ion-badge>
         </ng-container>

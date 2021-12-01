@@ -18,8 +18,7 @@
         </ion-input>
 
         <div class="buttons" slot="end">
-            <ion-button fill="clear" *ngIf="isIOS" (click)="openFile($event, true)"
-                [attr.aria-label]="openButtonLabel | translate">
+            <ion-button fill="clear" *ngIf="isIOS" (click)="openFile($event, true)" [attr.aria-label]="openButtonLabel | translate">
                 <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true"></ion-icon>
             </ion-button>
 
