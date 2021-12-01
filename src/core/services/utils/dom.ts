@@ -975,7 +975,7 @@ export class CoreDomUtilsProvider {
      * @deprecated since 3.9.5. Use directly the IonContent class.
      */
     scrollTo(content: IonContent, x: number, y: number, duration?: number): Promise<void> {
-        return content?.scrollToPoint(x, y, duration || 0);
+        return content.scrollToPoint(x, y, duration || 0);
     }
 
     /**
@@ -987,7 +987,7 @@ export class CoreDomUtilsProvider {
      * @deprecated since 3.9.5. Use directly the IonContent class.
      */
     scrollToBottom(content: IonContent, duration?: number): Promise<void> {
-        return content?.scrollToBottom(duration);
+        return content.scrollToBottom(duration);
     }
 
     /**
@@ -999,7 +999,7 @@ export class CoreDomUtilsProvider {
      * @deprecated since 3.9.5. Use directly the IonContent class.
      */
     scrollToTop(content: IonContent, duration?: number): Promise<void> {
-        return content?.scrollToTop(duration);
+        return content.scrollToTop(duration);
     }
 
     /**
@@ -1010,9 +1010,9 @@ export class CoreDomUtilsProvider {
      */
     async getContentHeight(content: IonContent): Promise<number> {
         try {
-            const scrollElement = await content?.getScrollElement();
+            const scrollElement = await content.getScrollElement();
 
-            return scrollElement?.clientHeight || 0;
+            return scrollElement.clientHeight || 0;
         } catch (error) {
             return 0;
         }
@@ -1026,9 +1026,9 @@ export class CoreDomUtilsProvider {
      */
     async getScrollHeight(content: IonContent): Promise<number> {
         try {
-            const scrollElement = await content?.getScrollElement();
+            const scrollElement = await content.getScrollElement();
 
-            return scrollElement?.scrollHeight || 0;
+            return scrollElement.scrollHeight || 0;
         } catch (error) {
             return 0;
         }
@@ -1042,9 +1042,9 @@ export class CoreDomUtilsProvider {
      */
     async getScrollTop(content: IonContent): Promise<number> {
         try {
-            const scrollElement = await content?.getScrollElement();
+            const scrollElement = await content.getScrollElement();
 
-            return scrollElement?.scrollTop || 0;
+            return scrollElement.scrollTop || 0;
         } catch (error) {
             return 0;
         }
@@ -1065,7 +1065,7 @@ export class CoreDomUtilsProvider {
             return false;
         }
 
-        content?.scrollToPoint(position[0], position[1], duration || 0);
+        content.scrollToPoint(position[0], position[1], duration || 0);
 
         return true;
     }
@@ -1097,7 +1097,7 @@ export class CoreDomUtilsProvider {
                 return false;
             }
 
-            content?.scrollToPoint(position[0], position[1], duration || 0);
+            content.scrollToPoint(position[0], position[1], duration || 0);
 
             return true;
         } catch (error) {

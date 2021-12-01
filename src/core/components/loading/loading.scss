@@ -44,15 +44,12 @@
     }
 
     .core-loading-content {
+        display: contents;
         @include core-transition(opacity, 200ms);
     }
 
     .core-loading-message {
         @include margin(10px, 0, 0, 0);
-    }
-
-    &.core-loading-fullheight .core-loading-content {
-        height: 100%;
     }
 
     &.core-loading-loaded {
