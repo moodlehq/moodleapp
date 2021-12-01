@@ -85,8 +85,9 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      */
     protected async loadContent(): Promise<void> {
         const available = await CoreCoursesDashboard.isAvailable();
+        const disabled = await CoreCoursesDashboard.isDisabled();
 
-        if (available) {
+        if (available && !disabled) {
             this.userId = CoreSites.getCurrentSiteUserId();
 
             try {
@@ -101,7 +102,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
                 // Cannot get the blocks, just show dashboard if needed.
                 this.loadFallbackBlocks();
             }
-        } else if (!CoreCoursesDashboard.isDisabledInSite()) {
+        } else if (!available) {
             // Not available, but not disabled either. Use fallback.
             this.loadFallbackBlocks();
         } else {

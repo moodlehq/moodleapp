@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 import {
     AddonCalendarEvents,
     AddonCalendarEventsGroupedByCourse,
@@ -249,19 +248,6 @@ export class AddonBlockTimelineProvider {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getActionEventsByTimesortPrefixCacheKey());
-    }
-
-    /**
-     * Returns whether or not My Overview is available for a certain site.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if available, resolved with false or rejected otherwise.
-     */
-    async isAvailable(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        // Check if dashboard is disabled.
-        return !CoreCoursesDashboard.isDisabledInSite(site);
     }
 
     /**
