@@ -585,14 +585,19 @@ class behat_app extends behat_base {
     /**
      * User enters a course in the app.
      *
-     * @Given /^I enter the course "(.+)" in the app$/
+     * @Given /^I enter the course "(.+?)"(?: as "(.+)")? in the app$/
      * @param string $coursename Course name
      * @throws DriverException If the button push doesn't work
      */
-    public function i_enter_the_course_in_the_app(string $coursename) {
-        try {
-            $this->i_press_in_the_app('"My courses" near "Messages"');
-        } catch (DriverException $e) {
+    public function i_enter_the_course_in_the_app(string $coursename, ?string $username = null) {
+        if (!is_null($username)) {
+            $this->i_enter_the_app();
+            $this->login($username);
+        }
+
+        $mycoursesfound = $this->evaluate_script("return window.behat.find({ text: 'My courses', near: { text: 'Messages' } });");
+
+        if ($mycoursesfound !== 'OK') {
             // My courses not present enter from Dashboard.
             $this->i_press_in_the_app('"Home" near "Messages"');
             $this->i_press_in_the_app('"Dashboard"');
@@ -600,14 +605,13 @@ class behat_app extends behat_base {
 
             $this->wait_for_pending_js();
 
-            return true;
+            return;
         }
 
+        $this->i_press_in_the_app('"My courses" near "Messages"');
         $this->i_press_in_the_app('"'.$coursename.'"');
 
         $this->wait_for_pending_js();
-
-        return true;
     }
 
     /**
