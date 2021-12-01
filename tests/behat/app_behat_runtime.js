@@ -554,6 +554,52 @@
     }
 
     /**
+     * Load more items form an active list with infinite loader.
+     *
+     * @return {string} OK if successful, or ERROR: followed by message
+     */
+     const behatLoadMoreItems = async function() {
+        log('Action - loadMoreItems');
+
+        try {
+            const infiniteLoading = Array
+                .from(document.querySelectorAll('core-infinite-loading'))
+                .find(element => !element.closest('.ion-page-hidden'));
+
+            if (!infiniteLoading) {
+                return 'ERROR: There isn\'t an infinite loader in the current page';
+            }
+
+            const initialOffset = infiniteLoading.offsetTop;
+            const isLoading = () => !!infiniteLoading.querySelector('ion-spinner[aria-label]');
+            const isCompleted = () => !isLoading() && !infiniteLoading.querySelector('ion-button');
+            const hasMoved = () => infiniteLoading.offsetTop !== initialOffset;
+
+            if (isCompleted()) {
+                return 'ERROR: All items are already loaded';
+            }
+
+            infiniteLoading.scrollIntoView();
+
+            // Wait 100ms
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            if (isLoading() || isCompleted() || hasMoved()) {
+                return 'OK';
+            }
+
+            infiniteLoading.querySelector('ion-button').click();
+
+            // Wait 100ms
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            return (isLoading() || isCompleted() || hasMoved()) ? 'OK' : 'ERROR: Couldn\'t load more items';
+        } catch (error) {
+            return 'ERROR: ' + error.message;
+        }
+    }
+
+    /**
      * Check whether an item is selected or not.
      *
      * @param {object} locator Element locator.
@@ -706,6 +752,7 @@
         closePopup : behatClosePopup,
         find : behatFind,
         scrollTo : behatScrollTo,
+        loadMoreItems: behatLoadMoreItems,
         isSelected : behatIsSelected,
         press : behatPress,
         setField : behatSetField,

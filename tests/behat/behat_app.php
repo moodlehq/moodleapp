@@ -205,6 +205,30 @@ class behat_app extends behat_base {
     }
 
     /**
+     * Load more items in a list with an infinite loader.
+     *
+     * @When /^I (should not be able to )?load more items in the app$/
+     * @param bool $not
+     */
+    public function i_load_more_items_in_the_app(bool $not = false) {
+        $this->spin(function() use ($not) {
+            $result = $this->evaluate_async_script('return window.behat.loadMoreItems();');
+
+            if ($not && $result !== 'ERROR: All items are already loaded') {
+                throw new DriverException('It should not have been possible to load more items');
+            }
+
+            if (!$not && $result !== 'OK') {
+                throw new DriverException('Error loading more items - ' . $result);
+            }
+
+            return true;
+        });
+
+        $this->wait_for_pending_js();
+    }
+
+    /**
      * Trigger swipe gesture.
      *
      * @When /^I swipe to the (left|right) in the app$/
@@ -1065,6 +1089,38 @@ class behat_app extends behat_base {
         foreach (self::$listeners as $listener) {
             $listener->on_app_unload();
         }
+    }
+
+    /**
+     * Evaludate a script that returns a Promise.
+     *
+     * @param string $script
+     * @return mixed Resolved promise result.
+     */
+    private function evaluate_async_script(string $script) {
+        $script = preg_replace('/^return\s+/', '', $script);
+        $script = preg_replace('/;$/', '', $script);
+        $start = microtime(true);
+        $promisevariable = 'PROMISE_RESULT_' . time();
+        $timeout = self::get_timeout();
+
+        $this->evaluate_script("Promise.resolve($script)
+            .then(result => window.$promisevariable = result)
+            .catch(error => window.$promisevariable = 'Async code rejected: ' + error?.message);");
+
+        do {
+            if (microtime(true) - $start > $timeout) {
+                throw new DriverException("Async script not resolved after $timeout seconds");
+            }
+
+            usleep(100000);
+        } while (!$this->evaluate_script("return '$promisevariable' in window;"));
+
+        $result = $this->evaluate_script("return window.$promisevariable;");
+
+        $this->evaluate_script("delete window.$promisevariable;");
+
+        return $result;
     }
 
 }
