@@ -14,10 +14,11 @@
 
 import { Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourse, CoreCourseProvider, CoreCourseWSSection } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModule, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { IonContent } from '@ionic/angular';
 import { ScrollDetail } from '@ionic/core';
+import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -41,6 +42,8 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
 
     nextModule?: CoreCourseModule;
     previousModule?: CoreCourseModule;
+    nextModuleSection?: CoreCourseSection;
+    previousModuleSection?: CoreCourseSection;
     loaded = false;
 
     protected element: HTMLElement;
@@ -201,9 +204,10 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
                 for (let j = startModule; j < section.modules.length && this.nextModule == undefined; j++) {
                     const module = section.modules[j];
 
-                    const found = await this.isModuleAvailable(module, section.id);
+                    const found = await this.isModuleAvailable(module);
                     if (found) {
                         this.nextModule = module;
+                        this.nextModuleSection = section;
                     }
                 }
             }
@@ -224,9 +228,10 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
                 for (let j = startModule; j >= 0 && this.previousModule == undefined; j--) {
                     const module = section.modules[j];
 
-                    const found = await this.isModuleAvailable(module, section.id);
+                    const found = await this.isModuleAvailable(module);
                     if (found) {
                         this.previousModule = module;
+                        this.previousModuleSection = section;
                     }
                 }
             }
@@ -237,20 +242,10 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      * Module is visible by the user and it has a specific view (e.g. not a label).
      *
      * @param module Module to check.
-     * @param sectionId Section ID the module belongs to.
      * @return Wether the module is available to the user or not.
      */
-    protected async isModuleAvailable(module: CoreCourseModule, sectionId: number): Promise<boolean> {
-        if (module.uservisible === false || !CoreCourse.instance.moduleHasView(module)) {
-            return false;
-        }
-
-        if (!module.handlerData) {
-            module.handlerData =
-                await CoreCourseModuleDelegate.getModuleDataFor(module.modname, module, this.courseId, sectionId);
-        }
-
-        return !!module.handlerData?.action;
+    protected async isModuleAvailable(module: CoreCourseModule): Promise<boolean> {
+        return CoreCourse.instance.moduleHasView(module);
     }
 
     /**
@@ -291,11 +286,19 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (!module.handlerData?.action) {
-            return;
+        if (module.uservisible === false) {
+            const section = next ? this.nextModuleSection : this.previousModuleSection;
+            const options: CoreNavigationOptions = {
+                replace: true,
+                params: {
+                    module,
+                    section,
+                },
+            };
+            CoreNavigator.navigateToSitePath('course/' + this.courseId + '/' + module.id +'/module-preview', options);
+        } else {
+            CoreCourseModuleDelegate.openActivityPage(module.modname, module, this.courseId, { replace: true });
         }
-
-        module.handlerData.action(new Event('click'), module, this.courseId, { replace: true });
     }
 
     /**

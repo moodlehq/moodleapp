@@ -19,7 +19,7 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptions } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
@@ -90,12 +90,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                     if (shouldOpen) {
                         openUrl(module, courseId);
                     } else {
-                        options = options || {};
-                        options.params = options.params || {};
-                        Object.assign(options.params, { module });
-                        const routeParams = '/' + courseId + '/' + module.id;
-
-                        CoreNavigator.navigateToSitePath(AddonModUrlModuleHandlerService.PAGE_NAME + routeParams, options);
+                        this.openActivityPage(module, courseId, options);
                     }
                 } finally {
                     modal.dismiss();

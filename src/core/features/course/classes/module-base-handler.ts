@@ -51,14 +51,31 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
                 courseId: number,
                 options?: CoreNavigationOptions,
             ): Promise<void> => {
-                options = options || {};
-                options.params = options.params || {};
-                Object.assign(options.params, { module });
-                const routeParams = '/' + courseId + '/' + module.id;
-
-                await CoreNavigator.navigateToSitePath(this.pageName + routeParams, options);
+                await this.openActivityPage(module, courseId, options);
             },
         };
+    }
+
+    /**
+     * Opens the activity page.
+     *
+     * @param module The module object.
+     * @param courseId The course ID.
+     * @param options Options for the navigation.
+     * @return Promise resolved when done.
+     */
+    async openActivityPage(module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+        if (!CoreCourse.moduleHasView(module)) {
+            return;
+        }
+
+        options = options || {};
+        options.params = options.params || {};
+        Object.assign(options.params, { module });
+
+        const routeParams = '/' + courseId + '/' + module.id;
+
+        await CoreNavigator.navigateToSitePath(this.pageName + routeParams, options);
     }
 
 }
