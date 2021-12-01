@@ -48,8 +48,12 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
         this.header = el.nativeElement;
 
         this.loadingObserver = CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, async (data) => {
+            if (!data.loaded) {
+                return;
+            }
+
             const loadingId = await this.getLoadingId();
-            if (loadingId && data.loaded && data.uniqueId == loadingId) {
+            if (loadingId && data.uniqueId == loadingId) {
                 // Remove event when loading is done.
                 this.loadingObserver.off();
 
@@ -78,7 +82,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
             }
         }
 
-        return this.content.querySelector('core-loading .core-loading-content')?.id;
+        return this.content.querySelector('core-loading.core-loading-loaded:not(.core-loading-inline) .core-loading-content')?.id;
     }
 
     /**
