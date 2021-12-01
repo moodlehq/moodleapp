@@ -251,7 +251,7 @@ export class CoreCoursesHelperProvider {
             case 'lastaccess':
                 courses.sort((a, b) => (b.lastaccess || 0) - (a.lastaccess || 0));
                 break;
-            // @todo Time modified property is not defined in CoreEnrolledCourseDataWithOptions, so it won't do nothing.
+            // @todo Time modified property is not defined in CoreEnrolledCourseDataWithOptions, so it Won't do anything.
             // case 'timemodified':
             //    courses.sort((a, b) => b.timemodified - a.timemodified);
             //    break;

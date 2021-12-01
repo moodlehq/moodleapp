@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.mod_workshop.editsubmission' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.mod_workshop.editsubmission' | translate }}</h1>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="save()" [attr.aria-label]="'core.save' | translate">
                 {{ 'core.save' | translate }}
@@ -38,9 +40,8 @@
             </ion-item>
 
             <core-attachments *ngIf="fileAvailable" [files]="attachments" [maxSize]="workshop.maxbytes"
-                [maxSubmissions]="workshop.nattachments" [component]="component" [componentId]="workshop.coursemodule"
-                allowOffline="true" [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired"
-                [courseId]="workshop.course">
+                [maxSubmissions]="workshop.nattachments" [component]="component" [componentId]="workshop.coursemodule" allowOffline="true"
+                [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired" [courseId]="workshop.course">
             </core-attachments>
         </form>
     </core-loading>

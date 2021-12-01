@@ -4,7 +4,9 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
 
-        <h1>{{ 'core.more' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'core.more' | translate }}</h1>
+        </ion-title>
 
         <ion-buttons slot="end">
             <core-user-menu-button></core-user-menu-button>
@@ -14,7 +16,9 @@
 <ion-content>
     <ion-list>
         <ion-item class="ion-text-center" *ngIf="(!handlers || !handlers.length) && !handlersLoaded">
-            <ion-label><ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner></ion-label>
+            <ion-label>
+                <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+            </ion-label>
         </ion-item>
         <ion-item button *ngFor="let handler of handlers" [ngClass]="['core-moremenu-handler', handler.class || '']"
             (click)="openHandler(handler)" [attr.aria-label]="handler.title | translate" detail="true">

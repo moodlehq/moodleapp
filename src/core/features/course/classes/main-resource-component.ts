@@ -70,7 +70,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     isDestroyed = false; // Whether the component is destroyed, used when calling fillContextMenu.
     contextMenuStatusObserver?: CoreEventObserver; // Observer of package status, used when calling fillContextMenu.
     contextFileStatusObserver?: CoreEventObserver; // Observer of file status, used when calling fillContextMenu.
-    showCompletion = false; // Whether to show completion inside the activity.
 
     protected fetchContentDefaultError = 'core.course.errorgetmodule'; // Default error to show when loading contents.
     protected isCurrentView = false; // Whether the component is in the current view.
@@ -80,6 +79,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected completionObserver?: CoreEventObserver;
     protected logger: CoreLogger;
     protected debouncedUpdateModule?: () => void; // Update the module after a certain time.
+    protected showCompletion = false; // Whether to show completion inside the activity.
 
     constructor(
         @Optional() @Inject('') loggerName: string = 'CoreCourseModuleMainResourceComponent',
@@ -97,7 +97,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.componentId = this.module.id;
         this.externalUrl = this.module.url;
         this.courseId = this.courseId || this.module.course!;
-        this.showCompletion = !!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
+        this.showCompletion = !!CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
 
         if (this.showCompletion) {
             CoreCourseHelper.calculateModuleCompletionData(this.module, this.courseId);

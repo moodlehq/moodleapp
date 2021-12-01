@@ -23,12 +23,12 @@
     // border: var(--a11y-focus-width) solid var(--a11y-focus-color);
 }
 
-@mixin core-transition($where: all, $time: 500ms) {
-    -webkit-transition: $where $time ease-in-out;
-    -moz-transition: $where $time ease-in-out;
-    -ms-transition: $where $time ease-in-out;
-    -o-transition: $where $time ease-in-out;
-    transition: $where $time ease-in-out;
+@mixin core-transition($property: all, $duration: 500ms, $timing-function: ease-in-out) {
+    -webkit-transition: $property $duration $timing-function;
+    -moz-transition: $property $duration $timing-function;
+    -ms-transition: $property $duration $timing-function;
+    -o-transition: $property $duration $timing-function;
+    transition: $property $duration $timing-function;
 }
 
 @mixin push-arrow-color($color: dedede, $flip-rtl: false) {

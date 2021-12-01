@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.notifications.notifications' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.notifications.notifications' | translate }}</h1>
+        </ion-title>
         <ion-buttons slot="end">
         </ion-buttons>
     </ion-toolbar>
@@ -65,8 +67,7 @@
                                 !(notification.processorsByName[currentProcessor!.name][state] &&
                                 notification.processorsByName[currentProcessor!.name][state].updating)">
                             </ion-spinner>
-                            <ion-toggle
-                                *ngIf="preferences!.enableall && !notification.processorsByName[currentProcessor!.name].locked"
+                            <ion-toggle *ngIf="preferences!.enableall && !notification.processorsByName[currentProcessor!.name].locked"
                                 [(ngModel)]="notification.processorsByName[currentProcessor!.name][state].checked"
                                 (ngModelChange)="changePreference(notification, state)"
                                 [disabled]="notification.processorsByName[currentProcessor!.name][state].updating">
@@ -88,18 +89,15 @@
                 <!-- If notifications enabled, show toggles. If disabled, show "Disabled" instead of toggle. -->
                 <ion-item *ngFor="let state of ['loggedin', 'loggedoff']" class="ion-text-wrap ion-hide-md-up" lines="none">
                     <ion-label>{{ 'core.settings.' + state | translate }}</ion-label>
-                    <ion-spinner slot="end"
-                        *ngIf="preferences!.enableall && (notification.processorsByName[currentProcessor!.name][state] &&
+                    <ion-spinner slot="end" *ngIf="preferences!.enableall && (notification.processorsByName[currentProcessor!.name][state] &&
                         notification.processorsByName[currentProcessor!.name][state].updating)">
                     </ion-spinner>
-                    <ion-toggle slot="end"
-                        *ngIf="preferences!.enableall && !notification.processorsByName[currentProcessor!.name].locked"
+                    <ion-toggle slot="end" *ngIf="preferences!.enableall && !notification.processorsByName[currentProcessor!.name].locked"
                         [(ngModel)]="notification.processorsByName[currentProcessor!.name][state].checked"
                         (ngModelChange)="changePreference(notification, state)"
                         [disabled]="notification.processorsByName[currentProcessor!.name][state].updating">
                     </ion-toggle>
-                    <span slot="end"
-                        *ngIf="preferences!.enableall && notification.processorsByName[currentProcessor!.name].locked"
+                    <span slot="end" *ngIf="preferences!.enableall && notification.processorsByName[currentProcessor!.name].locked"
                         class="text-gray">
                         {{'core.settings.locked' | translate }}
                     </span>

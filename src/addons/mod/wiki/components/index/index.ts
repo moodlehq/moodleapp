@@ -135,6 +135,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         if (!this.wiki) {
+            CoreNavigator.back();
+
             return;
         }
 
@@ -143,7 +145,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 await AddonModWiki.logView(this.wiki.id, this.wiki.name);
 
                 CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-            } catch (error) {
+            } catch {
                 // Ignore errors.
             }
         } else {
@@ -210,7 +212,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    protected async fetchContent(refresh = false, sync = false, showErrors = false): Promise<void> {
         try {
             // Get the wiki instance.
             this.wiki = await AddonModWiki.getWiki(this.courseId, this.module.id);
@@ -219,6 +221,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 // Page not loaded yet, emit the data to update the page title.
                 this.dataRetrieved.emit(this.wiki);
             }
+
             AddonModWiki.wikiPageOpened(this.wiki.id, this.currentPath);
 
             if (sync) {
@@ -299,14 +302,14 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
         // No page ID but we received a title. This means we're trying to load an offline page.
         try {
-            const title = this.pageTitle || this.wiki!.firstpagetitle!;
+            const title = this.pageTitle || this.wiki?.firstpagetitle || '';
 
             const offlinePage = await AddonModWikiOffline.getNewPage(
                 title,
-                this.currentSubwiki!.id,
-                this.currentSubwiki!.wikiid,
-                this.currentSubwiki!.userid,
-                this.currentSubwiki!.groupid,
+                this.currentSubwiki?.id,
+                this.currentSubwiki?.wikiid,
+                this.currentSubwiki?.userid,
+                this.currentSubwiki?.groupid,
             );
 
             this.pageIsOffline = true;
@@ -321,7 +324,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                     this.currentPage = data.pageId;
 
                     // Stop listening for new page events.
-                    this.newPageObserver!.off();
+                    this.newPageObserver?.off();
                     this.newPageObserver = undefined;
 
                     await this.showLoadingAndFetch(true, false);

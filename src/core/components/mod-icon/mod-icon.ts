@@ -15,7 +15,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 
-const assetsPath = 'assets/img/mod/';
+const assetsPath = 'assets/img/';
 const fallbackModName = 'external-tool';
 
 /**
@@ -51,7 +51,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
      * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (changes && changes.modicon && changes.modicon.previousValue) {
+        if (changes && changes.modicon && changes.modicon.previousValue !== undefined) {
             this.setIcon();
         }
     }

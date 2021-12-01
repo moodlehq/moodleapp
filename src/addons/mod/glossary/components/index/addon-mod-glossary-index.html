@@ -10,18 +10,17 @@
     </ion-button>
 
     <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt" [showBrowserWarning]="false">
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
+            iconAction="fas-external-link-alt" [showBrowserWarning]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
             (action)="expandDescription()" iconAction="fas-arrow-right">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
-            iconAction="far-newspaper" (action)="gotoBlog()">
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" iconAction="far-newspaper"
+            (action)="gotoBlog()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && !(hasOffline || hasOfflineRatings) && isOnline" [priority]="700"
-            [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon"
-            [closeOnClick]="false">
+            [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && (hasOffline || hasOfflineRatings) && isOnline" [priority]="600"
             (action)="doRefresh(null, $event, true)" [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon"
@@ -51,25 +50,15 @@
 
     <core-loading [hideUntil]="loaded">
         <!-- Activity info. -->
-        <core-course-module-info *ngIf="showCompletion && !isSearch" [module]="module" [showManualCompletion]="true"
-            (completionChanged)="onCompletionChange()">
+        <core-course-module-info *ngIf="!isSearch" [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
+            [component]="component" [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings">
         </core-course-module-info>
-
-        <core-course-module-description *ngIf="!isSearch" [description]="description" [component]="component" [componentId]="componentId"
-            contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-        </core-course-module-description>
-
-        <!-- Has offline data to be synchronized -->
-        <ion-card class="core-warning-card" *ngIf="hasOffline || hasOfflineRatings">
-            <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</ion-label>
-            </ion-item>
-        </ion-card>
 
         <ion-list *ngIf="!isSearch && entries.offlineEntries.length > 0">
             <ion-item-divider>
-                <ion-label><h2>{{ 'addon.mod_glossary.entriestobesynced' | translate }}</h2></ion-label>
+                <ion-label>
+                    <h2>{{ 'addon.mod_glossary.entriestobesynced' | translate }}</h2>
+                </ion-label>
             </ion-item-divider>
             <ion-item *ngFor="let entry of entries.offlineEntries" (click)="entries.select(entry)" detail="false" button
                 [attr.aria-current]="entries.getItemAriaCurrent(entry)">
@@ -84,11 +73,12 @@
         <ion-list *ngIf="entries.onlineEntries.length > 0">
             <ng-container *ngFor="let entry of entries.onlineEntries; let index = index">
                 <ion-item-divider *ngIf="getDivider && showDivider(entry, entries.onlineEntries[index - 1])">
-                    <ion-label><h2>{{ getDivider!(entry) }}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ getDivider!(entry) }}</h2>
+                    </ion-label>
                 </ion-item-divider>
 
-                <ion-item button (click)="entries.select(entry)" [attr.aria-current]="entries.getItemAriaCurrent(entry)"
-                    detail="false">
+                <ion-item button (click)="entries.select(entry)" [attr.aria-current]="entries.getItemAriaCurrent(entry)" detail="false">
                     <ion-label>
                         <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary!.coursemodule"
                             [courseId]="courseId">

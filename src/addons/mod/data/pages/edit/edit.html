@@ -3,10 +3,12 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button *ngIf="entry" fill="clear" (click)="save($event)">
                 {{ 'core.save' | translate }}

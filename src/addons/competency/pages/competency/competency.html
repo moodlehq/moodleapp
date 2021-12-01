@@ -3,9 +3,11 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1 *ngIf="competency">
-            {{ competency.competency.competency.shortname }} <small>{{ competency.competency.competency.idnumber }}</small>
-        </h1>
+        <ion-title>
+            <h1 *ngIf="competency">
+                {{ competency.competency.competency.shortname }} <small>{{ competency.competency.competency.idnumber }}</small>
+            </h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -16,7 +18,9 @@
         <ion-card *ngIf="user">
             <ion-item class="ion-text-wrap">
                 <core-user-avatar [user]="user" slot="start"></core-user-avatar>
-                <ion-label><h2>{{ user.fullname }}</h2></ion-label>
+                <ion-label>
+                    <h2>{{ user.fullname }}</h2>
+                </ion-label>
             </ion-item>
         </ion-card>
 
@@ -32,11 +36,9 @@
                 <ion-label>
                     <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
                     <p>
-                        <a *ngIf="competency.competency.comppath.showlinks"
-                            [href]="competency.competency.comppath.pluginbaseurl + '/competencies.php?competencyframeworkid=' +
+                        <a *ngIf="competency.competency.comppath.showlinks" [href]="competency.competency.comppath.pluginbaseurl + '/competencies.php?competencyframeworkid=' +
                             competency.competency.comppath.framework.id + '&pagecontextid=' +
-                            competency.competency.comppath.pagecontextid"
-                            core-link>
+                            competency.competency.comppath.pagecontextid" core-link>
                             {{ competency.competency.comppath.framework.name }}
                         </a>
                         <ng-container *ngIf="!competency.competency.comppath.showlinks">
@@ -129,7 +131,9 @@
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <p><ion-badge color="dark">{{ evidence.gradename }}</ion-badge></p>
+                        <p>
+                            <ion-badge color="dark">{{ evidence.gradename }}</ion-badge>
+                        </p>
                         <p class="ion-margin-top" *ngIf="evidence.description">{{ evidence.description }}</p>
                         <blockquote *ngIf="evidence.note">{{ evidence.note }}</blockquote>
                     </ion-label>

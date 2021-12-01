@@ -15,14 +15,13 @@
     left: 0;
     display: flex;
     position: absolute;
-    inset: 0;
     flex-direction: row;
     flex-wrap: nowrap;
     contain: strict;
 
     .menu,
     .content-outlet {
-        top: 0;
+        top: var(--offset-top);
         right: 0;
         bottom: 0;
         left: 0;

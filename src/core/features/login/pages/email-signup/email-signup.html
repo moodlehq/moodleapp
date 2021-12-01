@@ -4,7 +4,9 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
 
-        <h1>{{ 'core.login.newaccount' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'core.login.newaccount' | translate }}</h1>
+        </ion-title>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="authInstructions" (click)="showAuthInstructions()"
@@ -34,11 +36,13 @@
         </ion-list>
 
         <!-- Age verification. -->
-        <form *ngIf="allRequiredSupported && settingsLoaded && settings && ageDigitalConsentVerification"
-            [formGroup]="ageVerificationForm" (ngSubmit)="verifyAge($event)" #ageForm>
+        <form *ngIf="allRequiredSupported && settingsLoaded && settings && ageDigitalConsentVerification" [formGroup]="ageVerificationForm"
+            (ngSubmit)="verifyAge($event)" #ageForm>
 
             <ion-item-divider class="ion-text-wrap">
-                <ion-label><h3>{{ 'core.agelocationverification' | translate }}</h3></ion-label>
+                <ion-label>
+                    <h3>{{ 'core.agelocationverification' | translate }}</h3>
+                </ion-label>
             </ion-item-divider>
 
             <ion-item class="ion-text-wrap">
@@ -73,8 +77,8 @@
         </form>
 
         <!-- Signup form. -->
-        <form *ngIf="allRequiredSupported && settingsLoaded && settings && !ageDigitalConsentVerification"
-            [formGroup]="signupForm" (ngSubmit)="create($event)" #signupFormEl>
+        <form *ngIf="allRequiredSupported && settingsLoaded && settings && !ageDigitalConsentVerification" [formGroup]="signupForm"
+            (ngSubmit)="create($event)" #signupFormEl>
 
             <ion-item class="ion-text-wrap ion-text-center">
                 <ion-label>
@@ -90,14 +94,16 @@
 
             <!-- Username and password. -->
             <ion-item-divider class="ion-text-wrap">
-                <ion-label><h3>{{ 'core.login.createuserandpass' | translate }}</h3></ion-label>
+                <ion-label>
+                    <h3>{{ 'core.login.createuserandpass' | translate }}</h3>
+                </ion-label>
             </ion-item-divider>
             <ion-item class="ion-text-wrap">
                 <ion-label position="stacked">
                     <span core-mark-required="true">{{ 'core.login.username' | translate }}</span>
                 </ion-label>
-                <ion-input type="text" name="username" placeholder="{{ 'core.login.username' | translate }}"
-                    formControlName="username" autocapitalize="none" autocorrect="off">
+                <ion-input type="text" name="username" placeholder="{{ 'core.login.username' | translate }}" formControlName="username"
+                    autocapitalize="none" autocorrect="off">
                 </ion-input>
                 <core-input-errors [control]="signupForm.controls.username" [errorMessages]="usernameErrors"></core-input-errors>
             </ion-item>
@@ -169,7 +175,9 @@
             <!-- Other categories. -->
             <ng-container *ngFor="let category of categories">
                 <ion-item-divider class="ion-text-wrap">
-                    <ion-label><p class="item-heading">{{ category.name }}</p></ion-label>
+                    <ion-label>
+                        <p class="item-heading">{{ category.name }}</p>
+                    </ion-label>
                 </ion-item-divider>
                 <core-user-profile-field *ngFor="let field of category.fields" [field]="field" [edit]="true" [signup]="true"
                     registerAuth="email" [form]="signupForm"></core-user-profile-field>
@@ -188,7 +196,9 @@
             <!-- Site policy (if any). -->
             <ng-container *ngIf="settings.sitepolicy">
                 <ion-item-divider class="ion-text-wrap">
-                    <ion-label><h3>{{ 'core.login.policyagreement' | translate }}</h3></ion-label>
+                    <ion-label>
+                        <h3>{{ 'core.login.policyagreement' | translate }}</h3>
+                    </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap">
                     <ion-label>

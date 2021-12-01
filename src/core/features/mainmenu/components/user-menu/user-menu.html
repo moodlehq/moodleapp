@@ -1,13 +1,15 @@
 <ion-header>
     <ion-toolbar>
-        <ion-buttons slot="start">
+        <ion-title>
+            <h2>
+                {{'core.user.account' | translate}}
+            </h2>
+        </ion-title>
+        <ion-buttons slot="end">
             <ion-button fill="clear" (click)="close($event)" [attr.aria-label]="'core.close' | translate">
                 <ion-icon name="fas-times" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
-        <h1>
-            {{'core.user.account' | translate}}
-        </h1>
     </ion-toolbar>
 </ion-header>
 <ion-content>

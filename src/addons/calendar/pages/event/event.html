@@ -3,30 +3,31 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1 *ngIf="event">
-            <core-mod-icon *ngIf="event.moduleIcon" [modicon]="event.moduleIcon" [showAlt]="false"
-                [modname]="event.modulename" [componentId]="event.instance"></core-mod-icon>
-            <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" aria-hidden="true"></ion-icon>
-            <!-- Add the icon title so accessibility tools read it. -->
-            <span class="sr-only">
-                {{ 'addon.calendar.type' + event.formattedType | translate }}
-                <span class="sr-only" *ngIf="event.moduleIcon && event.iconTitle">{{ event.iconTitle }}</span>
-            </span>
-            <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
-                [contextInstanceId]="event.contextInstanceId"></core-format-text>
-        </h1>
+        <ion-title>
+            <h1 *ngIf="event">
+                <core-mod-icon *ngIf="event.moduleIcon" [modicon]="event.moduleIcon" [showAlt]="false" [modname]="event.modulename"
+                    [componentId]="event.instance"></core-mod-icon>
+                <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" aria-hidden="true"></ion-icon>
+                <!-- Add the icon title so accessibility tools read it. -->
+                <span class="sr-only">
+                    {{ 'addon.calendar.type' + event.formattedType | translate }}
+                    <span class="sr-only" *ngIf="event.moduleIcon && event.iconTitle">{{ event.iconTitle }}</span>
+                </span>
+                <core-format-text [text]="event.name" [contextLevel]="event.contextLevel" [contextInstanceId]="event.contextInstanceId">
+                </core-format-text>
+            </h1>
+        </ion-title>
         <ion-buttons slot="end">
             <core-context-menu>
-                <core-context-menu-item [hidden]="!eventLoaded || (!hasOffline && event && !event.deleted) || !isOnline"
-                    [priority]="400" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event, true)"
+                <core-context-menu-item [hidden]="!eventLoaded || (!hasOffline && event && !event.deleted) || !isOnline" [priority]="400"
+                    [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event, true)"
                     [iconAction]="syncIcon" [closeOnClick]="false">
                 </core-context-menu-item>
-                <core-context-menu-item [hidden]="!event || !event.canedit || event.deleted || (!canEdit && event.id > 0)"
-                    [priority]="300" [content]="'core.edit' | translate" (action)="openEdit()" iconAction="fas-edit">
+                <core-context-menu-item [hidden]="!event || !event.canedit || event.deleted || (!canEdit && event.id > 0)" [priority]="300"
+                    [content]="'core.edit' | translate" (action)="openEdit()" iconAction="fas-edit">
                 </core-context-menu-item>
                 <core-context-menu-item [hidden]="!event || !event.candelete || event.deleted" [priority]="200"
-                    [content]="'core.delete' | translate" (action)="deleteEvent()"
-                    iconAction="fas-trash"></core-context-menu-item>
+                    [content]="'core.delete' | translate" (action)="deleteEvent()" iconAction="fas-trash"></core-context-menu-item>
                 <core-context-menu-item [hidden]="!event || !event.deleted" [priority]="200" [content]="'core.restore' | translate"
                     (action)="undoDelete()" iconAction="fas-undo-alt"></core-context-menu-item>
             </core-context-menu>
@@ -52,7 +53,7 @@
                     <ion-label>
                         <h2>{{ 'addon.calendar.when' | translate }}</h2>
                         <core-format-text [text]="event.formattedtime" [contextLevel]="event.contextLevel"
-                        [contextInstanceId]="event.contextInstanceId"></core-format-text>
+                            [contextInstanceId]="event.contextInstanceId"></core-format-text>
                     </ion-label>
                     <ion-note slot="end" *ngIf="event.deleted">
                         <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> {{ 'core.deletedoffline' | translate }}
@@ -82,8 +83,10 @@
                 <ion-item class="ion-text-wrap" *ngIf="categoryPath">
                     <ion-label>
                         <h2>{{ 'core.category' | translate}}</h2>
-                        <p><core-format-text [text]="categoryPath" contextLevel="coursecat"
-                            [contextInstanceId]="event.categoryid"></core-format-text></p>
+                        <p>
+                            <core-format-text [text]="categoryPath" contextLevel="coursecat" [contextInstanceId]="event.categoryid">
+                            </core-format-text>
+                        </p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="event.description">
@@ -123,13 +126,12 @@
                 </ion-label>
             </ion-item>
             <ng-container *ngFor="let reminder of reminders">
-                <ion-item *ngIf="reminder.timestamp > 0" class="ion-text-wrap"
-                    [class.item-dimmed]="reminder.timestamp <= currentTime">
+                <ion-item *ngIf="reminder.timestamp > 0" class="ion-text-wrap" [class.item-dimmed]="reminder.timestamp <= currentTime">
                     <ion-label>
                         <p>{{ reminder.label }}</p>
                     </ion-label>
-                    <ion-button fill="clear" (click)="cancelNotification(reminder.id, $event)"
-                        [attr.aria-label]="'core.delete' | translate" slot="end" *ngIf="reminder.timestamp > currentTime">
+                    <ion-button fill="clear" (click)="cancelNotification(reminder.id, $event)" [attr.aria-label]="'core.delete' | translate"
+                        slot="end" *ngIf="reminder.timestamp > currentTime">
                         <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </ion-item>

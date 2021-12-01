@@ -3,10 +3,12 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -28,22 +30,20 @@
                             <ion-label [position]="item.hasTextInput ? 'stacked' : undefined">
                                 <p *ngIf="item.name" [core-mark-required]="item.required">
                                     <span *ngIf="feedback!.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
-                                    <core-format-text [component]="component" [componentId]="cmId" [text]="item.name"
-                                        contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" [wsNotFiltered]="true">
+                                    <core-format-text [component]="component" [componentId]="cmId" [text]="item.name" contextLevel="module"
+                                        [contextInstanceId]="cmId" [courseId]="courseId" [wsNotFiltered]="true">
                                     </core-format-text>
                                     <span *ngIf="item.postfix" class="addon-mod_feedback-postfix">{{item.postfix}}</span>
                                 </p>
                                 <p *ngIf="item.templateName == 'label'">
-                                    <core-format-text [component]="component" [componentId]="cmId"
-                                        [text]="item.presentation" contextLevel="module" [contextInstanceId]="cmId"
-                                        [wsNotFiltered]="true" [courseId]="courseId">
+                                    <core-format-text [component]="component" [componentId]="cmId" [text]="item.presentation"
+                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId">
                                     </core-format-text>
                                 </p>
                             </ion-label>
 
-                            <ion-input *ngIf="item.templateName == 'textfield'" type="text" [(ngModel)]="item.value"
-                                autocorrect="off" name="{{item.typ}}_{{item.id}}" maxlength="{{item.length}}"
-                                [required]="item.required">
+                            <ion-input *ngIf="item.templateName == 'textfield'" type="text" [(ngModel)]="item.value" autocorrect="off"
+                                name="{{item.typ}}_{{item.id}}" maxlength="{{item.length}}" [required]="item.required">
                             </ion-input>
 
                             <ng-container *ngIf="item.templateName == 'numeric'">
@@ -56,8 +56,8 @@
                                 </ion-text>
                             </ng-container>
 
-                            <ion-textarea *ngIf="item.templateName == 'textarea'" [required]="item.required"
-                                name="{{item.typ}}_{{item.id}}" [(ngModel)]="item.value">
+                            <ion-textarea *ngIf="item.templateName == 'textarea'" [required]="item.required" name="{{item.typ}}_{{item.id}}"
+                                [(ngModel)]="item.value">
                             </ion-textarea>
 
                             <ion-select *ngIf="item.templateName == 'multichoice-d'" [required]="item.required"
@@ -65,20 +65,18 @@
                                 [interfaceOptions]="{header: item.name}">
                                 <ion-select-option *ngFor="let option of item.choices" [value]="option.value">
                                     <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
-                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true"
-                                        [courseId]="courseId">
+                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId">
                                     </core-format-text>
                                 </ion-select-option>
                             </ion-select>
                         </ion-item>
 
-                        <ion-radio-group *ngIf="item.templateName == 'multichoice-r'" [(ngModel)]="item.value"
-                            [required]="item.required" name="{{item.typ}}_{{item.id}}">
+                        <ion-radio-group *ngIf="item.templateName == 'multichoice-r'" [(ngModel)]="item.value" [required]="item.required"
+                            name="{{item.typ}}_{{item.id}}">
                             <ion-item *ngFor="let option of item.choices">
                                 <ion-label>
-                                    <core-format-text [component]="component" [componentId]="cmId"
-                                        [text]="option.label" contextLevel="module" [contextInstanceId]="cmId"
-                                        [wsNotFiltered]="true" [courseId]="courseId">
+                                    <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
+                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId">
                                     </core-format-text>
                                 </ion-label>
                                 <ion-radio slot="start" [value]="option.value"></ion-radio>
@@ -89,19 +87,18 @@
                             <ion-item *ngFor="let option of item.choices">
                                 <ion-label>
                                     <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
-                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true"
-                                        [courseId]="courseId">
+                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId">
                                     </core-format-text>
                                 </ion-label>
-                                <ion-checkbox [required]="item.required" name="{{item.typ}}_{{item.id}}"
-                                    [(ngModel)]="option.checked" value="option.value">
+                                <ion-checkbox [required]="item.required" name="{{item.typ}}_{{item.id}}" [(ngModel)]="option.checked"
+                                    value="option.value">
                                 </ion-checkbox>
                             </ion-item>
                         </ng-container>
 
                         <ng-container *ngIf="item.templateName == 'captcha'">
-                            <core-recaptcha *ngIf="!preview && !offline" [publicKey]="item.captcha.recaptchapublickey"
-                                [model]="item" modelValueName="value">
+                            <core-recaptcha *ngIf="!preview && !offline" [publicKey]="item.captcha.recaptchapublickey" [model]="item"
+                                modelValueName="value">
                             </core-recaptcha>
                             <div *ngIf="!preview && (!item.captcha || offline)" class="core-warning-card">
                                 <ion-item>

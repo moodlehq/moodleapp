@@ -27,6 +27,7 @@ import { CoreUserLinkDirective } from './user-link';
 import { CoreAriaButtonClickDirective } from './aria-button';
 import { CoreOnResizeDirective } from './on-resize';
 import { CoreDownloadFileDirective } from './download-file';
+import { CoreCollapsibleHeaderDirective } from './collapsible-header';
 
 @NgModule({
     declarations: [
@@ -43,6 +44,7 @@ import { CoreDownloadFileDirective } from './download-file';
         CoreAriaButtonClickDirective,
         CoreOnResizeDirective,
         CoreDownloadFileDirective,
+        CoreCollapsibleHeaderDirective,
     ],
     exports: [
         CoreAutoFocusDirective,
@@ -58,6 +60,7 @@ import { CoreDownloadFileDirective } from './download-file';
         CoreAriaButtonClickDirective,
         CoreOnResizeDirective,
         CoreDownloadFileDirective,
+        CoreCollapsibleHeaderDirective,
     ],
 })
 export class CoreDirectivesModule {}

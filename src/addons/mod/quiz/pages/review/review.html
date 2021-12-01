@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.mod_quiz.review' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.mod_quiz.review' | translate }}</h1>
+        </ion-title>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="navigation.length" [attr.aria-label]="'addon.mod_quiz.opentoc' | translate"
@@ -75,8 +77,8 @@
                 <ion-item class="ion-text-wrap" *ngFor="let data of additionalData">
                     <ion-label>
                         <p class="item-heading">{{ data.title }}</p>
-                        <core-format-text [component]="component" [componentId]="cmId" [text]="data.content"
-                            contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                        <core-format-text [component]="component" [componentId]="cmId" [text]="data.content" contextLevel="module"
+                            [contextInstanceId]="cmId" [courseId]="courseId">
                         </core-format-text>
                     </ion-label>
                 </ion-item>
@@ -107,8 +109,7 @@
                     <!-- Body of the question. -->
                     <core-question class="ion-text-wrap" [question]="question" [component]="component" [componentId]="cmId"
                         [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="false" contextLevel="module"
-                        [contextInstanceId]="cmId" [courseId]="courseId" [review]="true"
-                        [preferredBehaviour]="quiz?.preferredbehaviour">
+                        [contextInstanceId]="cmId" [courseId]="courseId" [review]="true" [preferredBehaviour]="quiz?.preferredbehaviour">
                     </core-question>
                 </ion-card>
             </div>
@@ -130,8 +131,7 @@
                 </ion-button>
             </ion-col>
             <ion-col class="ion-text-end">
-                <ion-button color="light" *ngIf="nextPage >= -1" (click)="changePage(nextPage)"
-                    [attr.aria-label]="'core.next' | translate">
+                <ion-button color="light" *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [attr.aria-label]="'core.next' | translate">
                     <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
             </ion-col>

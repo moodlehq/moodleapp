@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1 *ngIf="title">{{ title }}</h1>
+        <ion-title>
+            <h1 *ngIf="title">{{ title }}</h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -84,7 +86,8 @@
                     </ion-label>
                 </ion-item>
             </ion-list>
-            <core-empty-box *ngIf="!user && !isDeleted && isEnrolled" icon="far-user" [message]=" 'core.user.detailsnotavailable' | translate">
+            <core-empty-box *ngIf="!user && !isDeleted && isEnrolled" icon="far-user"
+                [message]=" 'core.user.detailsnotavailable' | translate">
             </core-empty-box>
             <core-empty-box *ngIf="isDeleted" icon="far-user" [message]="'core.userdeleted' | translate"></core-empty-box>
             <core-empty-box *ngIf="!isEnrolled" icon="far-user" [message]="'core.notenrolledprofile' | translate"></core-empty-box>

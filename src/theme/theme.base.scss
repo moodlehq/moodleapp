@@ -119,45 +119,50 @@ body {
     }
 }
 
-// Some styles taken from ion-title
-ion-header h1,
-ion-header h2 {
-    display: block;
-    transform: translateZ(0);
-    --color: initial;
-    color: var(--color);
-    margin: 0;
-    width: 100%;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    pointer-events: auto;
+ion-header ion-title{
+    h1, h2, .subheading {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        margin: 0;
+    }
 
     .filter_mathjaxloader_equation div {
         display: inline !important;
     }
 }
 
-ion-app.md ion-header h1,
-ion-app.md ion-header h2 {
+ion-app.md ion-header ion-title{
     @include padding(0, 20px);
-    font-size: 20px;
-    font-weight: 500;
-    letter-spacing: .0125em;
+
+    h1, h2, .subheading {
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: .0125em;
+    }
+
+    h1 + h2,
+    h1 + .subheading {
+        font-size: 14px;
+        font-weight: 400;
+    }
 }
 
-ion-app.ios ion-header h1,
-ion-app.ios ion-header h2 {
-    @include position(0, null, null, 0);
-    @include padding(0, 90px, 0);
+ion-app.ios ion-header ion-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
-    position: absolute;
-    text-align: center;
-    font-size: 17px;
-    font-weight: 600;
-    line-height: var(--core-header-toolbar-height);
-    box-sizing: border-box;
-    pointer-events: none;
+    h1, h2, .subheading {
+        font-size: 17px;
+        font-weight: 600;
+    }
+
+    h1 + h2,
+    h1 + .subheading {
+        font-size: 14px;
+        font-weight: 400;
+    }
 }
 
 
@@ -848,7 +853,7 @@ core-block ion-item-divider .core-button-spinner {
 
 // Text formats.
 // Highlight text.
-.matchtext {
+mark, .matchtext {
     background-color: var(--text-hightlight-background-color);
 }
 
@@ -901,9 +906,13 @@ ion-back-button.md::part(text) {
     display: none;
 }
 
-// Hide close button because when present is read on voice over.
-ion-fab[core-fab] ion-fab-button::part(close-icon) {
-    display: none;
+ion-fab[core-fab] {
+    position: fixed;
+    
+    // Hide close button because when present is read on voice over.
+    ion-fab-button::part(close-icon) {
+        display: none;
+    }
 }
 
 .core-media-adapt-width {
@@ -1166,4 +1175,67 @@ iframe {
 
 ion-grid.core-no-grid > ion-row {
     display: block;
+}
+
+ion-header[collapsible] {
+    @include core-transition(all, 500ms);
+
+    ion-title {
+        @include core-transition(opacity, 0ms);
+    }
+
+    &:not(.core-header-collapsed) {
+        ion-toolbar {
+            --core-header-toolbar-background: rgba(255, 255, 255, 0);
+            --core-header-toolbar-border-width: 0;
+        }
+
+        ion-title, &::after {
+            opacity: 0;
+            z-index: 0;
+        }
+    }
+}
+
+.collapsible-title {
+    overflow: visible;
+    *, h1, h2, .subheading {
+        @include core-transition(all, 200ms, linear);
+    }
+
+    ion-label {
+        overflow: visible !important;
+    }
+
+    h1, h2, .subheading {
+        --max-width: none;
+    }
+}
+
+ion-app.ios .collapsible-title h1 {
+    font-weight: 600; // Default heading weight.
+}
+ion-app.md .collapsible-title h1 {
+    font-weight: 500; // Default heading weight.
+    letter-spacing: .0125em;
+}
+
+.collapsible-title.collapsible-title-collapsed {
+    ion-label, h1, h2, .subheading {
+        opacity: 0;
+    }
+}
+
+.collapsible-title.collapsible-title-collapse-started {
+    * {
+        opacity: 0;
+    }
+    ion-label, h1, h2, .subheading {
+        opacity: 1;
+    }
+    h1, h2, .subheading {
+        max-width: var(--max-width);
+        white-space: nowrap;
+        overflow: hidden;
+    }
 }

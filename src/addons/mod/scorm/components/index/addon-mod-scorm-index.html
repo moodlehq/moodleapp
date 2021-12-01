@@ -1,14 +1,14 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt" [showBrowserWarning]="false">
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
+            iconAction="fas-external-link-alt" [showBrowserWarning]="false">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
             (action)="expandDescription()" iconAction="fas-arrow-right">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
-            iconAction="far-newspaper" (action)="gotoBlog()">
+        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" iconAction="far-newspaper"
+            (action)="gotoBlog()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
             (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
@@ -29,13 +29,9 @@
 <core-loading [hideUntil]="loaded" class="safe-area-padding">
 
     <!-- Activity info. -->
-    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
-        (completionChanged)="onCompletionChange()">
+    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
+        [component]="component" [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="!errorMessage && hasOffline">
     </core-course-module-info>
-
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
-        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-    </core-course-module-description>
 
     <!-- Warning message. -->
     <ion-card class="core-info-card" *ngIf="scorm && scorm.warningMessage">
@@ -117,14 +113,6 @@
             </ion-list>
         </ion-card>
 
-        <!-- Synchronization warning. -->
-        <ion-card class="core-warning-card" *ngIf="!errorMessage && hasOffline">
-            <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
-            </ion-item>
-        </ion-card>
-
         <!-- TOC. -->
         <ion-card *ngIf="scorm && organizations && !skip &&
             ((scorm.displaycoursestructure && organizations.length) || organizations.length > 1)" class="addon-mod_scorm-toc">
@@ -134,8 +122,8 @@
             <ion-list>
                 <ion-item class="ion-text-wrap" *ngIf="organizations.length > 1">
                     <ion-label>{{ 'addon.mod_scorm.organizations' | translate }}</ion-label>
-                    <ion-select [(ngModel)]="currentOrganization.identifier" (ionChange)="loadOrganization()"
-                        interface="action-sheet" [interfaceOptions]="{header: 'addon.mod_scorm.organizations' | translate}">
+                    <ion-select [(ngModel)]="currentOrganization.identifier" (ionChange)="loadOrganization()" interface="action-sheet"
+                        [interfaceOptions]="{header: 'addon.mod_scorm.organizations' | translate}">
                         <ion-select-option *ngFor="let org of organizations" [value]="org.identifier">
                             {{ org.title }}
                         </ion-select-option>
@@ -155,8 +143,7 @@
                         <p>{{ currentOrganization.title }}</p>
                         <div *ngFor="let sco of toc" class="core-padding-{{sco.level}} addon-mod_scorm-type-{{sco.scormtype}}">
                             <p *ngIf="sco.isvisible">
-                                <ion-icon *ngIf="sco.icon" [name]="sco.icon.icon" [attr.aria-label]="sco.icon.description"
-                                    slot="start">
+                                <ion-icon *ngIf="sco.icon" [name]="sco.icon.icon" [attr.aria-label]="sco.icon.description" slot="start">
                                 </ion-icon>
                                 <button class="as-link" *ngIf="sco.prereq && sco.launch" (click)="open($event, false, sco.id)">
                                     <core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id"
@@ -205,8 +192,7 @@
             <ion-list>
                 <ng-container *ngIf="!downloading && !skip">
                     <!-- Create new attempt -->
-                    <ion-item class="ion-text-wrap"
-                        *ngIf="!scorm.forcenewattempt && numAttempts > 0 && !incomplete && attemptsLeft > 0">
+                    <ion-item class="ion-text-wrap" *ngIf="!scorm.forcenewattempt && numAttempts > 0 && !incomplete && attemptsLeft > 0">
                         <ion-label>{{ 'addon.mod_scorm.newattempt' | translate }}</ion-label>
                         <ion-checkbox slot="end" name="newAttempt" [(ngModel)]="startNewAttempt">
                         </ion-checkbox>

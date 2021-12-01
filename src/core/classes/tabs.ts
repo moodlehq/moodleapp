@@ -26,7 +26,7 @@ import {
     SimpleChange,
 } from '@angular/core';
 import { IonSlides } from '@ionic/angular';
-import { BackButtonEvent } from '@ionic/core';
+import { BackButtonEvent, ScrollDetail } from '@ionic/core';
 import { Subscription } from 'rxjs';
 
 import { Platform, Translate } from '@singletons';
@@ -43,8 +43,9 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
 
     // Minimum tab's width.
     protected static readonly MIN_TAB_WIDTH = 107;
-    // Max height that allows tab hiding.
-    protected static readonly MAX_HEIGHT_TO_HIDE_TABS = 768;
+    // @todo [4.0]
+    // Max height that allows tab hiding. WARNING: Hide tabs on scroll disabled. If confirmed, remove the associated code.
+    protected static readonly MAX_HEIGHT_TO_HIDE_TABS = 0;
 
     @Input() selectedIndex = 0; // Index of the tab to select.
     @Input() hideUntil = false; // Determine when should the contents be shown.
@@ -179,7 +180,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ngOnChanges(changes: Record<string, SimpleChange>): void {
@@ -624,8 +625,8 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
 
         content.scrollEvents = true;
         this.scrollElements[id] = scroll;
-        content.addEventListener('ionScroll', (e: CustomEvent): void => {
-            this.showHideTabs(parseInt(e.detail.scrollTop, 10), scroll);
+        content.addEventListener('ionScroll', (e: CustomEvent<ScrollDetail>): void => {
+            this.showHideTabs(e.detail.scrollTop, scroll);
         });
     }
 

@@ -3,14 +3,16 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
         <ion-buttons slot="end">
             <core-button-with-spinner *ngIf="showToc" [loading]="loadingToc">
-                <ion-button fill="clear" *ngIf="toc.length" (click)="openToc()"
-                    [attr.aria-label]="'addon.mod_scorm.toc' | translate" aria-haspopup="true">
+                <ion-button fill="clear" *ngIf="toc.length" (click)="openToc()" [attr.aria-label]="'addon.mod_scorm.toc' | translate"
+                    aria-haspopup="true">
                     <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
             </core-button-with-spinner>

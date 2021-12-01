@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'core.courses.mycourses' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'core.courses.mycourses' | translate }}</h1>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
                 <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>

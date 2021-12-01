@@ -1,6 +1,8 @@
 <ion-header>
     <ion-toolbar>
-        <h2 id="core-course-section-selector-label">{{ 'core.course.sections' | translate }}</h2>
+        <ion-title>
+            <h2 id="core-course-section-selector-label">{{ 'core.course.sections' | translate }}</h2>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
                 <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
@@ -26,12 +28,10 @@
                         a11yText="core.course.aria:sectionprogress">
                     </core-progress-bar>
 
-                    <ion-badge color="info" *ngIf="section.visible === 0 && section.uservisible !== false"
-                        class="ion-text-wrap">
+                    <ion-badge color="info" *ngIf="section.visible === 0 && section.uservisible !== false" class="ion-text-wrap">
                         {{ 'core.course.hiddenfromstudents' | translate }}
                     </ion-badge>
-                    <ion-badge color="info" *ngIf="section.visible === 0 && section.uservisible === false"
-                        class="ion-text-wrap">
+                    <ion-badge color="info" *ngIf="section.visible === 0 && section.uservisible === false" class="ion-text-wrap">
                         {{ 'core.notavailable' | translate }}
                     </ion-badge>
                     <ion-badge color="info" *ngIf="section.availabilityinfo" class="ion-text-wrap">

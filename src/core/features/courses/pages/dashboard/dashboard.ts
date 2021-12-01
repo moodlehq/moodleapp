@@ -109,7 +109,6 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
             this.blocks = [];
         }
 
-        // this.dashboardEnabled = this.blockDelegate.hasSupportedBlock(this.blocks);
         this.loaded = true;
     }
 

@@ -80,9 +80,10 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
     /**
      * Get the icon src for the module.
      *
+     * @param module: Module to get the icon from.
      * @return The icon src.
      */
-    getIconSrc?(module: CoreCourseWSModule): Promise<string> | string | undefined;
+    getIconSrc?(module?: CoreCourseWSModule): Promise<string | undefined> | string | undefined;
 
     /**
      * Check if this type of module supports a certain feature.
@@ -343,10 +344,11 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      *
      * @param modname The name of the module type.
      * @param modicon The mod icon string.
+     * @param module The module to use.
      * @return Promise resolved with the icon src.
      */
-    async getModuleIconSrc(modname: string, modicon?: string): Promise<string> {
-        const icon = await this.executeFunctionOnEnabled<Promise<string>>(modname, 'getIconSrc');
+    async getModuleIconSrc(modname: string, modicon?: string, module?: CoreCourseWSModule): Promise<string> {
+        const icon = await this.executeFunctionOnEnabled<Promise<string>>(modname, 'getIconSrc', [module]);
 
         return icon || await CoreCourse.getModuleIconSrc(modname, modicon) || '';
     }
