@@ -349,10 +349,16 @@
      * Function to find elements based on their text or Aria label.
      *
      * @param {object} locator Element locator.
+     * @param {boolean} insideSplitView Whether to search only inside the split view contents.
      * @return {HTMLElement} Found elements
      */
-    const findElementsBasedOnText = function(locator) {
-        const topContainer = document.querySelector('ion-alert, ion-popover, ion-action-sheet, core-ion-tab.show-tab ion-page.show-page, ion-page.show-page, html');
+    const findElementsBasedOnText = function(locator, insideSplitView) {
+        let topContainer = document.querySelector('ion-alert, ion-popover, ion-action-sheet, core-ion-tab.show-tab ion-page.show-page, ion-page.show-page, html');
+
+        if (insideSplitView) {
+            topContainer = topContainer.querySelector('core-split-view ion-router-outlet');
+        }
+
         let container = topContainer;
 
         if (topContainer && locator.near) {
@@ -382,7 +388,7 @@
             if (filteredElements.length > 0) {
                 return filteredElements;
             }
-        } while ((container = getParentElement(container)) && container !== topContainer);
+        } while (container !== topContainer && (container = getParentElement(container)) && container !== topContainer);
 
         return [];
     };
@@ -497,21 +503,23 @@
     };
 
     /**
-     * Function to find an arbitrary item based on its text or aria label.
+     * Function to find an arbitrary element based on its text or aria label.
      *
      * @param {object} locator Element locator.
+     * @param {boolean} insideSplitView Whether to search only inside the split view contents.
      * @return {string} OK if successful, or ERROR: followed by message
      */
-    const behatFind = function(locator) {
-        log('Action - Find', locator);
+    const behatFind = function(locator, insideSplitView) {
+        log('Action - Find', { locator, insideSplitView });
 
         try {
-            const element = findElementsBasedOnText(locator)[0];
+            const element = findElementsBasedOnText(locator, insideSplitView)[0];
 
             if (!element) {
                 return 'ERROR: No matches for text';
             }
 
+            log('Action - Found', { locator, insideSplitView, element });
             return 'OK';
         } catch (error) {
             return 'ERROR: ' + error.message;
@@ -573,7 +581,6 @@
         titles = titles.filter(function(title) {
             return isElementVisible(title, document.body);
         });
-                
 
         if (titles.length > 1) {
             return 'ERROR: Too many possible titles';
@@ -597,7 +604,6 @@
     const behatSetField = function(field, value) {
         log('Action - Set field ' + field + ' to: ' + value);
 
-        
         const found = findElementsBasedOnText({ text: field, selector: 'input, textarea, [contenteditable="true"]' })[0];
         if (!found) {
             return 'ERROR: No matches for text';
@@ -656,6 +662,8 @@
      * @return {object} Component instance
      */
     const behatGetComponentInstance = function(selector, className) {
+        log('Action - Get component instance ' + selector + ', ' + className);
+
         const activeElement = Array.from(document.querySelectorAll(`.ion-page:not(.ion-page-hidden) ${selector}`)).pop();
 
         if (!activeElement || !activeElement.__ngContext__) {
