@@ -33,6 +33,29 @@ export class AddonModBBBService {
     static readonly COMPONENT = 'mmaModBigBlueButtonBN';
 
     /**
+     * End a meeting.
+     *
+     * @param id BBB ID.
+     * @param groupId Group ID, 0 means that the function will determine the user group.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved when done.
+     */
+    async endMeeting(
+        id: number,
+        groupId: number = 0,
+        siteId?: string,
+    ): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+
+        const params: AddonModBBBEndMeetingWSParams = {
+            bigbluebuttonbnid: id,
+            groupid: groupId,
+        };
+
+        await site.write('mod_bigbluebuttonbn_end_meeting', params);
+    }
+
+    /**
      * Get a BBB activity.
      *
      * @param courseId Course ID.
@@ -348,4 +371,12 @@ export type AddonModBBBGetJoinUrlWSResponse = {
  */
 export type AddonModBBBViewBigBlueButtonBNWSParams = {
     bigbluebuttonbnid: number; // Bigbluebuttonbn instance id.
+};
+
+/**
+ * Params of mod_bigbluebuttonbn_end_meeting WS.
+ */
+export type AddonModBBBEndMeetingWSParams = {
+    bigbluebuttonbnid: number; // Bigbluebuttonbn instance id.
+    groupid?: number; // Bigbluebuttonbn group id.
 };

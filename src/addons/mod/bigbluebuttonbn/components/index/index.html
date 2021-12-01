@@ -120,6 +120,11 @@
             {{ 'addon.mod_bigbluebuttonbn.view_conference_action_join' | translate }}
         </ion-button>
 
+        <ion-button *ngIf="meetingInfo.statusrunning && meetingInfo.ismoderator" color="light" class="ion-margin" expand="block"
+            (click)="endMeeting()">
+            {{ 'addon.mod_bigbluebuttonbn.view_conference_action_end' | translate }}
+        </ion-button>
+
         <ion-card *ngIf="!meetingInfo.canjoin" class="core-warning-card">
             <ion-item class="ion-text-wrap">
                 <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>

@@ -45,6 +45,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         @Optional() courseContentsPage?: CoreCourseContentsPage,
     ) {
         super('AddonModBBBIndexComponent', content, courseContentsPage);
+        (<any>window).ths = this;
     }
 
     /**
@@ -118,9 +119,15 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             return;
         }
 
-        await AddonModBBB.invalidateAllGroupsMeetingInfo(this.bbb.id);
+        this.loaded = false;
 
-        await this.fetchMeetingInfo();
+        try {
+            await AddonModBBB.invalidateAllGroupsMeetingInfo(this.bbb.id);
+
+            await this.fetchMeetingInfo();
+        } finally {
+            this.loaded = true;
+        }
     }
 
     /**
@@ -168,6 +175,40 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             const joinUrl = await AddonModBBB.getJoinUrl(this.module.id, this.groupId);
 
             CoreUtils.openInBrowser(joinUrl);
+
+            this.updateMeetingInfo();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        } finally {
+            modal.dismiss();
+        }
+    }
+
+    /**
+     * End the meeting.
+     *
+     * @return Promise resolved when done.
+     */
+    async endMeeting(): Promise<void> {
+        if (!this.bbb) {
+            return;
+        }
+
+        try {
+            await CoreDomUtils.showConfirm(
+                Translate.instant('addon.mod_bigbluebuttonbn.end_session_confirm'),
+                Translate.instant('addon.mod_bigbluebuttonbn.end_session_confirm_title'),
+                Translate.instant('core.yes'),
+            );
+        } catch {
+            // User canceled.
+            return;
+        }
+
+        const modal = await CoreDomUtils.showModalLoading();
+
+        try {
+            await AddonModBBB.endMeeting(this.bbb.id, this.groupId);
 
             this.updateMeetingInfo();
         } catch (error) {

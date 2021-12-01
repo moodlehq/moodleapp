@@ -1,7 +1,10 @@
 {
+    "end_session_confirm": "Are you sure you want to end the virtual classroom session?",
+    "end_session_confirm_title": "Really end session?",
     "mod_form_field_closingtime": "Join closed",
     "mod_form_field_openingtime": "Join open",
     "userlimitreached": "The number of users allowed in a meeting has been reached.",
+    "view_conference_action_end": "End session",
     "view_conference_action_join": "Join session",
     "view_error_unable_join_student": "Unable to connect to the BigBlueButton server. Please contact your Teacher or the Administrator.",
     "view_groups_selection_warning": "There is a conference room for each group and you have access to more than one. Be sure to select the correct one.",
