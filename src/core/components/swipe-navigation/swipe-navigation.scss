@@ -5,3 +5,15 @@ ion-slides {
 ion-slide {
     align-items: start;
 }
+
+::ng-deep {
+
+    core-loading .core-loading-content {
+        width: 100%;
+    }
+
+    ion-refresher.refresher-native {
+        z-index: 2;
+    }
+
+}

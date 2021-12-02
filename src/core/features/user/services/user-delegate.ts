@@ -397,8 +397,14 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      */
     protected clearHandlerCache(courseId?: number, userId?: number): void {
         if (courseId && userId) {
+            const cacheKey = this.getCacheKey(courseId, userId);
+
             Object.keys(this.enabledHandlers).forEach((name) => {
-                delete this.enabledForUserCache[name][this.getCacheKey(courseId, userId)];
+                const cache = this.enabledForUserCache[name];
+
+                if (cache) {
+                    delete cache[cacheKey];
+                }
             });
         } else {
             this.enabledForUserCache = {};

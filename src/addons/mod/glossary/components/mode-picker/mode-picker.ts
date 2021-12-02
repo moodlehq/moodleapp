@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { PopoverController } from '@singletons';
-import { AddonModGlossaryFetchMode } from '../index';
+import { AddonModGlossaryFetchMode } from '../../classes/glossary-entries-source';
 
 /**
  * Component to display the mode picker.

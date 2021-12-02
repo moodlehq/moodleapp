@@ -12,16 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, UrlSegment } from '@angular/router';
 
 import { CoreNavigator } from '@services/navigator';
 
 import { CoreItemsManager } from './items-manager';
+import { CoreItemsManagerSource } from './items-manager-source';
 
 /**
  * Helper class to manage the state and routing of a swipeable page.
  */
-export abstract class CoreSwipeItemsManager<Item = unknown> extends CoreItemsManager<Item> {
+export class CoreSwipeItemsManager<
+    Item = unknown,
+    Source extends CoreItemsManagerSource<Item> = CoreItemsManagerSource<Item>
+>
+    extends CoreItemsManager<Item, Source> {
 
     /**
      * Process page started operations.
@@ -49,6 +54,25 @@ export abstract class CoreSwipeItemsManager<Item = unknown> extends CoreItemsMan
      */
     protected getCurrentPageRoute(): ActivatedRoute | null {
         return CoreNavigator.getCurrentRoute();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
+        const segments: UrlSegment[] = [];
+
+        while (route) {
+            segments.push(...route.url);
+
+            if (!route.firstChild) {
+                break;
+            }
+
+            route = route.firstChild;
+        }
+
+        return segments.map(segment => segment.path).join('/').replace(/\/+/, '/').trim() || null;
     }
 
     /**
@@ -86,7 +110,7 @@ export abstract class CoreSwipeItemsManager<Item = unknown> extends CoreItemsMan
         const item = items?.[index + delta] ?? null;
 
         if (!item && !this.getSource().isCompleted()) {
-            await this.getSource().loadNextPage();
+            await this.getSource().load();
 
             return this.getItemBy(delta);
         }

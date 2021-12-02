@@ -26,13 +26,16 @@ import { CoreItemsManagerSource } from './items-manager-source';
 /**
  * Helper class to manage the state and routing of a list of items in a page.
  */
-export abstract class CoreListItemsManager<Item = unknown> extends CoreItemsManager<Item> {
+export class CoreListItemsManager<
+    Item = unknown,
+    Source extends CoreItemsManagerSource<Item> = CoreItemsManagerSource<Item>
+> extends CoreItemsManager<Item, Source> {
 
     protected pageRouteLocator?: unknown | ActivatedRoute;
     protected splitView?: CoreSplitViewComponent;
     protected splitViewOutletSubscription?: Subscription;
 
-    constructor(source: CoreItemsManagerSource<Item>, pageRouteLocator: unknown | ActivatedRoute) {
+    constructor(source: Source, pageRouteLocator: unknown | ActivatedRoute) {
         super(source);
 
         this.pageRouteLocator = pageRouteLocator;
@@ -66,15 +69,6 @@ export abstract class CoreListItemsManager<Item = unknown> extends CoreItemsMana
 
         // Calculate current selected item.
         this.updateSelectedItem();
-
-        // Select default item if none is selected on a non-mobile layout.
-        if (!CoreScreen.isMobile && this.selectedItem === null && !splitView.isNested) {
-            const defaultItem = this.getDefaultItem();
-
-            if (defaultItem) {
-                this.select(defaultItem);
-            }
-        }
 
         // Log activity.
         await CoreUtils.ignoreErrors(this.logActivity());
@@ -146,10 +140,10 @@ export abstract class CoreListItemsManager<Item = unknown> extends CoreItemsMana
     }
 
     /**
-     * Load items for the next page, if any.
+     * Load more items, if any.
      */
-    async loadNextPage(): Promise<void> {
-        await this.getSource().loadNextPage();
+    async load(): Promise<void> {
+        await this.getSource().load();
     }
 
     /**
@@ -173,6 +167,25 @@ export abstract class CoreListItemsManager<Item = unknown> extends CoreItemsMana
     }
 
     /**
+     * @inheritdoc
+     */
+    protected updateSelectedItem(route: ActivatedRouteSnapshot | null = null): void {
+        super.updateSelectedItem(route);
+
+        if (CoreScreen.isMobile || this.selectedItem !== null || this.splitView?.isNested) {
+            return;
+        }
+
+        const defaultItem = this.getDefaultItem();
+
+        if (!defaultItem) {
+            return;
+        }
+
+        this.select(defaultItem);
+    }
+
+    /**
      * Get the item that should be selected by default.
      */
     protected getDefaultItem(): Item | null {
@@ -193,10 +206,12 @@ export abstract class CoreListItemsManager<Item = unknown> extends CoreItemsMana
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPath(route?: ActivatedRouteSnapshot | null): string | null {
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
         const segments: UrlSegment[] = [];
 
-        while ((route = route?.firstChild)) {
+        while (route.firstChild) {
+            route = route.firstChild;
+
             segments.push(...route.url);
         }
 

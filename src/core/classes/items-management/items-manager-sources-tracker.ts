@@ -18,6 +18,7 @@ type SourceConstructor<T extends CoreItemsManagerSource = CoreItemsManagerSource
     getSourceId(...args: unknown[]): string;
     new (...args: unknown[]): T;
 };
+type SourceConstuctorInstance<T> = T extends { new(...args: unknown[]): infer P } ? P : never;
 type InstanceTracking = { instance: CoreItemsManagerSource; references: unknown[] };
 type Instances = Record<string, InstanceTracking>;
 
@@ -36,14 +37,14 @@ export class CoreItemsManagerSourcesTracker {
      * @param constructorArguments Arguments to create a new instance, used to find out if an instance already exists.
      * @returns Source.
      */
-    static getOrCreateSource<T extends CoreItemsManagerSource>(
-        constructor: SourceConstructor<T>,
-        constructorArguments: ConstructorParameters<SourceConstructor<T>>,
-    ): T  {
+    static getOrCreateSource<T extends CoreItemsManagerSource, C extends SourceConstructor<T>>(
+        constructor: C,
+        constructorArguments: ConstructorParameters<C>,
+    ): SourceConstuctorInstance<C> {
         const id = constructor.getSourceId(...constructorArguments);
         const constructorInstances = this.getConstructorInstances(constructor);
 
-        return constructorInstances[id]?.instance as T
+        return constructorInstances[id]?.instance as SourceConstuctorInstance<C>
             ?? this.createInstance(id, constructor, constructorArguments);
     }
 
@@ -57,7 +58,7 @@ export class CoreItemsManagerSourcesTracker {
         const constructorInstances = this.getConstructorInstances(source.constructor as SourceConstructor);
         const instanceId = this.instanceIds.get(source);
 
-        if (!instanceId) {
+        if (instanceId === undefined) {
             return;
         }
 
@@ -82,7 +83,7 @@ export class CoreItemsManagerSourcesTracker {
         const instanceId = this.instanceIds.get(source);
         const index = constructorInstances?.[instanceId ?? '']?.references.indexOf(reference) ?? -1;
 
-        if (!constructorInstances || !instanceId || index === -1) {
+        if (!constructorInstances || instanceId === undefined || index === -1) {
             return;
         }
 
