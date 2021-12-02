@@ -184,7 +184,7 @@ export class AddonModFeedbackHelperProvider {
             if (params.showcompleted === undefined) {
                 // Param showcompleted not defined. Show entry list.
                 await CoreNavigator.navigateToSitePath(
-                    AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/respondents`,
+                    AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/attempts`,
                     { siteId },
                 );
 

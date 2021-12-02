@@ -30,13 +30,13 @@ import {
 import { AddonModFeedbackHelper, AddonModFeedbackResponsesAnalysis } from '../../services/feedback-helper';
 
 /**
- * Page that displays feedback respondents.
+ * Page that displays feedback attempts.
  */
 @Component({
-    selector: 'page-addon-mod-feedback-respondents',
-    templateUrl: 'respondents.html',
+    selector: 'page-addon-mod-feedback-attempts',
+    templateUrl: 'attempts.html',
 })
-export class AddonModFeedbackRespondentsPage implements AfterViewInit {
+export class AddonModFeedbackAttemptsPage implements AfterViewInit {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
@@ -45,7 +45,7 @@ export class AddonModFeedbackRespondentsPage implements AfterViewInit {
     protected page = 0;
     protected feedback?: AddonModFeedbackWSFeedback;
 
-    responses: AddonModFeedbackResponsesManager;
+    attempts: AddonModFeedbackAttemptsManager;
     selectedGroup!: number;
     groupInfo?: CoreGroupInfo;
     loaded = false;
@@ -54,7 +54,7 @@ export class AddonModFeedbackRespondentsPage implements AfterViewInit {
     constructor(
         route: ActivatedRoute,
     ) {
-        this.responses = new AddonModFeedbackResponsesManager(
+        this.attempts = new AddonModFeedbackAttemptsManager(
             route.component,
         );
     }
@@ -77,7 +77,7 @@ export class AddonModFeedbackRespondentsPage implements AfterViewInit {
 
         await this.fetchData();
 
-        this.responses.start(this.splitView);
+        this.attempts.start(this.splitView);
     }
 
     /**
@@ -88,7 +88,7 @@ export class AddonModFeedbackRespondentsPage implements AfterViewInit {
      */
     async fetchData(refresh: boolean = false): Promise<void> {
         this.page = 0;
-        this.responses.resetItems();
+        this.attempts.resetItems();
 
         try {
             this.feedback = await AddonModFeedback.getFeedback(this.courseId, this.cmId);
@@ -121,17 +121,17 @@ export class AddonModFeedbackRespondentsPage implements AfterViewInit {
         } else {
             this.selectedGroup = groupId;
             this.page = 0;
-            this.responses.resetItems();
+            this.attempts.resetItems();
         }
 
         try {
-            const responses = await AddonModFeedbackHelper.getResponsesAnalysis(this.feedback!.id, {
+            const attempts = await AddonModFeedbackHelper.getResponsesAnalysis(this.feedback!.id, {
                 groupId: this.selectedGroup,
                 page: this.page,
                 cmId: this.cmId,
             });
 
-            this.responses.setResponses(responses);
+            this.attempts.setAttempts(attempts);
         } finally {
             this.loadingMore = false;
             this.loaded = true;
@@ -183,16 +183,16 @@ type EntryItem = AddonModFeedbackWSAttempt | AddonModFeedbackWSAnonAttempt;
 /**
  * Entries manager.
  */
-class AddonModFeedbackResponsesManager extends CorePageItemsListManager<EntryItem> {
+class AddonModFeedbackAttemptsManager extends CorePageItemsListManager<EntryItem> {
 
-    responses: AddonModFeedbackResponses = {
-        attempts: [],
+    identifiable: AddonModFeedbackIdentifiableAttempts = {
+        items: [],
         total: 0,
         canLoadMore: false,
     };
 
-    anonResponses: AddonModFeedbackAnonResponses = {
-        attempts: [],
+    anonymous: AddonModFeedbackAnonymousAttempts = {
+        items: [],
         total: 0,
         canLoadMore: false,
     };
@@ -202,25 +202,25 @@ class AddonModFeedbackResponsesManager extends CorePageItemsListManager<EntryIte
     }
 
     /**
-     * Update responses.
+     * Update attempts.
      *
-     * @param responses Responses.
+     * @param attempts Attempts.
      */
-    setResponses(responses: AddonModFeedbackResponsesAnalysis): void {
-        this.responses.total = responses.totalattempts;
-        this.anonResponses.total = responses.totalanonattempts;
+    setAttempts(attempts: AddonModFeedbackResponsesAnalysis): void {
+        this.identifiable.total = attempts.totalattempts;
+        this.anonymous.total = attempts.totalanonattempts;
 
-        if (this.anonResponses.attempts.length < responses.totalanonattempts) {
-            this.anonResponses.attempts = this.anonResponses.attempts.concat(responses.anonattempts);
+        if (this.anonymous.items.length < attempts.totalanonattempts) {
+            this.anonymous.items = this.anonymous.items.concat(attempts.anonattempts);
         }
-        if (this.responses.attempts.length < responses.totalattempts) {
-            this.responses.attempts = this.responses.attempts.concat(responses.attempts);
+        if (this.identifiable.items.length < attempts.totalattempts) {
+            this.identifiable.items = this.identifiable.items.concat(attempts.attempts);
         }
 
-        this.anonResponses.canLoadMore = this.anonResponses.attempts.length < responses.totalanonattempts;
-        this.responses.canLoadMore = this.responses.attempts.length < responses.totalattempts;
+        this.anonymous.canLoadMore = this.anonymous.items.length < attempts.totalanonattempts;
+        this.identifiable.canLoadMore = this.identifiable.items.length < attempts.totalattempts;
 
-        this.setItems((<EntryItem[]> this.responses.attempts).concat(this.anonResponses.attempts));
+        this.setItems((<EntryItem[]> this.identifiable.items).concat(this.anonymous.items));
     }
 
     /**
@@ -228,29 +228,29 @@ class AddonModFeedbackResponsesManager extends CorePageItemsListManager<EntryIte
      */
     resetItems(): void {
         super.resetItems();
-        this.responses.total = 0;
-        this.responses.attempts = [];
-        this.anonResponses.total = 0;
-        this.anonResponses.attempts = [];
+        this.identifiable.total = 0;
+        this.identifiable.items = [];
+        this.anonymous.total = 0;
+        this.anonymous.items = [];
     }
 
     /**
      * @inheritdoc
      */
     protected getItemPath(entry: EntryItem): string {
-        return `attempt/${entry.id}`;
+        return entry.id.toString();
     }
 
 }
 
-type AddonModFeedbackResponses = {
-    attempts: AddonModFeedbackWSAttempt[];
+type AddonModFeedbackIdentifiableAttempts = {
+    items: AddonModFeedbackWSAttempt[];
     total: number;
     canLoadMore: boolean;
 };
 
-type AddonModFeedbackAnonResponses = {
-    attempts: AddonModFeedbackWSAnonAttempt[];
+type AddonModFeedbackAnonymousAttempts = {
+    items: AddonModFeedbackWSAnonAttempt[];
     total: number;
     canLoadMore: boolean;
 };

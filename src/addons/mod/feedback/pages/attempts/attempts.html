@@ -29,14 +29,15 @@
                     </ion-select>
                 </ion-item>
 
-                <ng-container *ngIf="responses.responses.total > 0">
+                <ng-container *ngIf="attempts.identifiable.total > 0">
                     <ion-item-divider>
                         <ion-label>
-                            <h2>{{ 'addon.mod_feedback.non_anonymous_entries' | translate : {$a: responses.responses.total } }}</h2>
+                            <h2>{{ 'addon.mod_feedback.non_anonymous_entries' | translate : {$a: attempts.identifiable.total } }}
+                            </h2>
                         </ion-label>
                     </ion-item-divider>
-                    <ion-item *ngFor="let attempt of responses.responses.attempts" class="ion-text-wrap" button detail="true"
-                        (click)="responses.select(attempt)" [attr.aria-current]="responses.getItemAriaCurrent(attempt)">
+                    <ion-item *ngFor="let attempt of attempts.identifiable.items" class="ion-text-wrap" button detail="true"
+                        (click)="attempts.select(attempt)" [attr.aria-current]="attempts.getItemAriaCurrent(attempt)">
                         <core-user-avatar [user]="attempt" slot="start"></core-user-avatar>
                         <ion-label>
                             <p class="item-heading">{{ attempt.fullname }}</p>
@@ -45,36 +46,36 @@
                     </ion-item>
 
                     <!-- Button and spinner to show more attempts. -->
-                    <ion-button *ngIf="responses.responses.canLoadMore && !loadingMore" class="ion-margin" expand="block"
+                    <ion-button *ngIf="attempts.identifiable.canLoadMore && !loadingMore" class="ion-margin" expand="block"
                         (click)="loadAttempts()">
                         {{ 'core.loadmore' | translate }}
                     </ion-button>
-                    <ion-item *ngIf="responses.responses.canLoadMore && loadingMore" class="ion-text-center">
+                    <ion-item *ngIf="attempts.identifiable.canLoadMore && loadingMore" class="ion-text-center">
                         <ion-label>
                             <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
                         </ion-label>
                     </ion-item>
                 </ng-container>
 
-                <ng-container *ngIf="responses.anonResponses.total > 0">
+                <ng-container *ngIf="attempts.anonymous.total > 0">
                     <ion-item-divider>
                         <ion-label>
-                            <h2>{{ 'addon.mod_feedback.anonymous_entries' |translate : {$a: responses.anonResponses.total } }}</h2>
+                            <h2>{{ 'addon.mod_feedback.anonymous_entries' |translate : {$a: attempts.anonymous.total } }}</h2>
                         </ion-label>
                     </ion-item-divider>
-                    <ion-item *ngFor="let attempt of responses.anonResponses.attempts" class="ion-text-wrap" button detail="true"
-                        (click)="responses.select(attempt)" [attr.aria-current]="responses.getItemAriaCurrent(attempt)">
+                    <ion-item *ngFor="let attempt of attempts.anonymous.items" class="ion-text-wrap" button detail="true"
+                        (click)="attempts.select(attempt)" [attr.aria-current]="attempts.getItemAriaCurrent(attempt)">
                         <ion-label>
                             <h2>{{ 'addon.mod_feedback.response_nr' |translate }}: {{attempt.number}}</h2>
                         </ion-label>
                     </ion-item>
 
                     <!-- Button and spinner to show more attempts. -->
-                    <ion-button *ngIf="responses.anonResponses.canLoadMore && !loadingMore" class="ion-margin" expand="block"
+                    <ion-button *ngIf="attempts.anonymous.canLoadMore && !loadingMore" class="ion-margin" expand="block"
                         (click)="loadAttempts()">
                         {{ 'core.loadmore' | translate }}
                     </ion-button>
-                    <ion-item *ngIf="responses.anonResponses.canLoadMore && loadingMore" class="ion-text-center">
+                    <ion-item *ngIf="attempts.anonymous.canLoadMore && loadingMore" class="ion-text-center">
                         <ion-label>
                             <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
                         </ion-label>
