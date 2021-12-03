@@ -15,7 +15,7 @@
 import { Type } from '@angular/core';
 
 import { CoreConstants } from '@/core/constants';
-import { CoreCourseAnyModuleData, CoreCourseWSModule } from '@features/course/services/course';
+import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from '@features/course/services/course';
 import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreSitePluginsModuleIndexComponent } from '@features/siteplugins/components/module-index/module-index';
@@ -92,17 +92,16 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
 
         if (this.handlerSchema.method) {
             // There is a method, add an action.
-            handlerData.action = (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
+            handlerData.action = async (
+                event: Event,
+                module: CoreCourseModule,
+                courseId: number,
+                options?: CoreNavigationOptions,
+            ) => {
                 event.preventDefault();
                 event.stopPropagation();
 
-                options = options || {};
-                options.params = {
-                    title: module.name,
-                    module,
-                };
-
-                CoreNavigator.navigateToSitePath(`siteplugins/module/${courseId}/${module.id}`, options);
+                await this.openActivityPage(module, courseId, options);
             };
         }
 
@@ -227,6 +226,24 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         }
 
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async openActivityPage(module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+        if (!CoreCourse.moduleHasView(module)) {
+            return;
+        }
+
+        options = options || {};
+        options.params = options.params || {};
+        Object.assign(options.params, {
+            title: module.name,
+            module,
+        });
+
+        CoreNavigator.navigateToSitePath(`siteplugins/module/${courseId}/${module.id}`, options);
     }
 
 }

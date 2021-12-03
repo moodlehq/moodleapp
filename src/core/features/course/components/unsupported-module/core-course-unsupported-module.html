@@ -1,6 +1,3 @@
-<core-course-module-info [description]="module?.description" [courseId]="courseId" [module]="module">
-</core-course-module-info>
-
 <div class="ion-padding">
     <h2 *ngIf="!isDisabledInSite && isSupportedByTheApp">{{ 'core.whoops' | translate }}</h2>
     <h2 *ngIf="isDisabledInSite || !isSupportedByTheApp">{{ 'core.uhoh' | translate }}</h2>

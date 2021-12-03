@@ -45,7 +45,6 @@ import {
 } from '../../services/h5pactivity-sync';
 import { CoreFileHelper } from '@services/file-helper';
 import { AddonModH5PActivityModuleHandlerService } from '../../services/handlers/module';
-import { CoreMainMenuPage } from '@features/mainmenu/pages/menu/menu';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -87,7 +86,6 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
 
     constructor(
-        protected mainMenuPage: CoreMainMenuPage,
         protected content?: IonContent,
         @Optional() courseContentsPage?: CoreCourseContentsPage,
     ) {

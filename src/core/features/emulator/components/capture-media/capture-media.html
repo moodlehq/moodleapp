@@ -11,7 +11,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <core-loading [hideUntil]="readyToCapture" class="core-loading-fullheight">
+    <core-loading [hideUntil]="readyToCapture">
         <div class="core-av-wrapper">
             <!-- Video stream for image and video. -->
             <video *ngIf="!isAudio" [hidden]="hasCaptured" class="core-webcam-stream" autoplay #streamVideo></video>

@@ -217,36 +217,6 @@ export class AddonModBookProvider {
     }
 
     /**
-     * Get the next chapter to the given one.
-     *
-     * @param chapters The chapters list.
-     * @param chapterId The current chapter.
-     * @return The next chapter.
-     */
-    getNextChapter(chapters: AddonModBookTocChapter[], chapterId: number): AddonModBookTocChapter | undefined {
-        const currentChapterIndex = chapters.findIndex((chapter) => chapter.id == chapterId);
-
-        if (currentChapterIndex >= 0 && typeof chapters[currentChapterIndex + 1] != 'undefined') {
-            return chapters[currentChapterIndex + 1];
-        }
-    }
-
-    /**
-     * Get the previous chapter to the given one.
-     *
-     * @param chapters The chapters list.
-     * @param chapterId The current chapter.
-     * @return The next chapter.
-     */
-    getPreviousChapter(chapters: AddonModBookTocChapter[], chapterId: number): AddonModBookTocChapter | undefined {
-        const currentChapterIndex = chapters.findIndex((chapter) => chapter.id == chapterId);
-
-        if (currentChapterIndex > 0) {
-            return chapters[currentChapterIndex - 1];
-        }
-    }
-
-    /**
      * Get the book toc as an array.
      *
      * @param contents The module contents.

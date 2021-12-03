@@ -96,6 +96,9 @@
         </core-infinite-loading>
     </core-loading>
 
+    <core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+    </core-course-module-navigation>
+
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canAdd">
         <ion-fab-button (click)="openNewEntry()" [attr.aria-label]="'addon.mod_glossary.addentry' | translate">
             <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>

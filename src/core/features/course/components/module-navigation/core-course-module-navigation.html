@@ -1,0 +1,16 @@
+<core-loading [hideUntil]="loaded" [fullscreen]="false">
+    <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding" *ngIf="previousModule || nextModule">
+        <ion-col size="auto">
+            <ion-button fill="clear" class="core-course-previous-module" *ngIf="previousModule" (click)="goToActivity(false)"
+                [attr.aria-label]="'core.course.gotopreviousactivity' | translate">
+                <ion-icon name="fas-arrow-left" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-col>
+        <ion-col size="auto">
+            <ion-button fill="clear" class="core-course-next-module" *ngIf="nextModule" (click)="goToActivity(true)"
+                [attr.aria-label]="'core.course.gotonextactivity' | translate">
+                <ion-icon name="fas-arrow-right" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-col>
+    </ion-row>
+</core-loading>

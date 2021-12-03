@@ -16,13 +16,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseUnsupportedModulePage } from './unsupported-module.page';
+import { CoreCourseModulePreviewPage } from './module-preview.page';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 const routes: Routes = [
     {
         path: '',
-        component: CoreCourseUnsupportedModulePage,
+        component: CoreCourseModulePreviewPage,
     },
 ];
 
@@ -33,8 +33,8 @@ const routes: Routes = [
         CoreCourseComponentsModule,
     ],
     declarations: [
-        CoreCourseUnsupportedModulePage,
+        CoreCourseModulePreviewPage,
     ],
     exports: [RouterModule],
 })
-export class CoreCourseUnsupportedModulePageModule {}
+export class CoreCourseModulePreviewPageModule { }

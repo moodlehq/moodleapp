@@ -40,10 +40,11 @@
     </ion-card>
 
     <div class="addon-mod-imscp-container">
-        <core-navigation-bar [previous]="previousItem" [next]="nextItem" (action)="loadItem($event)" [info]="description"
-            [title]="'core.description' | translate" [component]="component" [componentId]="componentId" contextLevel="module"
-            [contextInstanceId]="module.id" [courseId]="courseId">
+        <core-navigation-bar [items]="navigationItems" (action)="loadItem($event)">
         </core-navigation-bar>
         <core-iframe [src]="src"></core-iframe>
     </div>
 </core-loading>
+
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+</core-course-module-navigation>

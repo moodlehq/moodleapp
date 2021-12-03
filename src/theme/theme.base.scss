@@ -906,13 +906,16 @@ ion-back-button.md::part(text) {
     display: none;
 }
 
+// Hide close button because when present is read on voice over.
 ion-fab[core-fab] {
-    position: fixed;
-    
-    // Hide close button because when present is read on voice over.
     ion-fab-button::part(close-icon) {
         display: none;
     }
+} 
+
+core-course-module-navigation + ion-fab {
+    bottom: calc(var(--core-course-module-navigation-height, 0px) + 10px);
+    @include core-transition(all, 200ms);
 }
 
 .core-media-adapt-width {

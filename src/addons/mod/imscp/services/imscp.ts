@@ -71,63 +71,6 @@ export class AddonModImscpProvider {
     }
 
     /**
-     * Get the previous item to the given one.
-     *
-     * @param items The items list.
-     * @param itemId The current item.
-     * @return The previous item id.
-     */
-    getPreviousItem(items: AddonModImscpTocItem[], itemId: string): string {
-        const position = this.getItemPosition(items, itemId);
-
-        if (position == -1) {
-            return '';
-        }
-
-        for (let i = position - 1; i >= 0; i--) {
-            if (items[i] && items[i].href) {
-                return items[i].href;
-            }
-        }
-
-        return '';
-    }
-
-    /**
-     * Get the next item to the given one.
-     *
-     * @param items The items list.
-     * @param itemId The current item.
-     * @return The next item id.
-     */
-    getNextItem(items: AddonModImscpTocItem[], itemId: string): string {
-        const position = this.getItemPosition(items, itemId);
-
-        if (position == -1) {
-            return '';
-        }
-
-        for (let i = position + 1; i < items.length; i++) {
-            if (items[i] && items[i].href) {
-                return items[i].href;
-            }
-        }
-
-        return '';
-    }
-
-    /**
-     * Get the position of a item.
-     *
-     * @param items The items list.
-     * @param itemId The item to search.
-     * @return The item position.
-     */
-    protected getItemPosition(items: AddonModImscpTocItem[], itemId: string): number {
-        return items.findIndex((item) => item.href == itemId);
-    }
-
-    /**
      * Check if we should ommit the file download.
      *
      * @param fileName The file name
@@ -242,7 +185,7 @@ export class AddonModImscpProvider {
         const siteId = CoreSites.getCurrentSiteId();
 
         try {
-            const dirPath = await CoreFilepool.getPackageDirUrlByUrl(siteId, module!.url!);
+            const dirPath = await CoreFilepool.getPackageDirUrlByUrl(siteId, module.url!);
 
             return CoreTextUtils.concatenatePaths(dirPath, itemHref);
         } catch (error) {

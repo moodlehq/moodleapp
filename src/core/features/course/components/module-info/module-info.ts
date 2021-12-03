@@ -36,12 +36,14 @@ import { CoreSites } from '@services/sites';
 export class CoreCourseModuleInfoComponent implements OnInit {
 
     @Input() module!: CoreCourseModule; // The module to render.
+    @Input() showManualCompletion = true; // Whether to show manual completion, true by default.
     @Input() courseId!: number; // The courseId the module belongs to.
 
     @Input() component!: string; // Component for format text directive.
     @Input() componentId!: string | number; // Component ID to use in conjunction with the component.
 
     @Input() description?: string | false; // The description to display. If false, no description will be shown.
+    @Input() expandDescription = false; // If the description should be expanded by default.
 
     @Input() hasDataToSync = false; // If the activity has any data to be synced.
 

@@ -89,6 +89,9 @@
     </div>
 </core-loading>
 
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+</core-course-module-navigation>
+
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canEdit">
     <ion-fab-button (click)="goToNewPage()" [attr.aria-label]="'addon.mod_wiki.createpage' | translate">
         <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>

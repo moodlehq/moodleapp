@@ -49,14 +49,11 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
             icon: await CoreCourse.getModuleIconSrc(module.modname, module.modicon),
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
-            action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
+            action: async (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
                 event.preventDefault();
                 event.stopPropagation();
 
-                options = options || {};
-                options.params = { module };
-
-                CoreNavigator.navigateToSitePath('course/' + courseId + '/unsupported-module', options);
+                await this.openActivityPage(module, courseId, options);
             },
         };
 
@@ -90,6 +87,17 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
      */
     displayRefresherInSingleActivity(): boolean {
         return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async openActivityPage(module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+        options = options || {};
+        options.params = options.params || {};
+        Object.assign(options.params, { module });
+
+        await CoreNavigator.navigateToSitePath('course/' + courseId + '/' + module.id +'/module-preview', options);
     }
 
 }

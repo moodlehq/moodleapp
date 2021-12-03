@@ -45,15 +45,37 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
             title: module.name,
             class: 'addon-mod_' + module.modname + '-handler',
             showDownloadButton: true,
-            action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void => {
-                options = options || {};
-                options.params = options.params || {};
-                Object.assign(options.params, { module });
-                const routeParams = '/' + courseId + '/' + module.id;
-
-                CoreNavigator.navigateToSitePath(this.pageName + routeParams, options);
+            action: async (
+                event: Event,
+                module: CoreCourseModule,
+                courseId: number,
+                options?: CoreNavigationOptions,
+            ): Promise<void> => {
+                await this.openActivityPage(module, courseId, options);
             },
         };
+    }
+
+    /**
+     * Opens the activity page.
+     *
+     * @param module The module object.
+     * @param courseId The course ID.
+     * @param options Options for the navigation.
+     * @return Promise resolved when done.
+     */
+    async openActivityPage(module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+        if (!CoreCourse.moduleHasView(module)) {
+            return;
+        }
+
+        options = options || {};
+        options.params = options.params || {};
+        Object.assign(options.params, { module });
+
+        const routeParams = '/' + courseId + '/' + module.id;
+
+        await CoreNavigator.navigateToSitePath(this.pageName + routeParams, options);
     }
 
 }

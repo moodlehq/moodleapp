@@ -28,6 +28,7 @@ import { CoreSitePluginsAssignSubmissionComponent } from './assign-submission/as
 import { CoreSitePluginsWorkshopAssessmentStrategyComponent } from './workshop-assessment-strategy/workshop-assessment-strategy';
 import { CoreSitePluginsBlockComponent } from './block/block';
 import { CoreSitePluginsOnlyTitleBlockComponent } from './only-title-block/only-title-block';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 @NgModule({
     declarations: [
@@ -47,6 +48,7 @@ import { CoreSitePluginsOnlyTitleBlockComponent } from './only-title-block/only-
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponentModule,
+        CoreCourseComponentsModule,
     ],
     exports: [
         CoreSitePluginsPluginContentComponent,

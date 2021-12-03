@@ -84,3 +84,6 @@
         [trackComponent]="trackComponent" [contextId]="h5pActivity?.context">
     </core-h5p-iframe>
 </core-loading>
+
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+</core-course-module-navigation>

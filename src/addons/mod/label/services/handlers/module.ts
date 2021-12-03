@@ -39,6 +39,7 @@ export class AddonModLabelModuleHandlerService extends CoreModuleHandlerBase imp
         [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
         [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
         [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_NO_VIEW_LINK]: true,
     };
 
     /**

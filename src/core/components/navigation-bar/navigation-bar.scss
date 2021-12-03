@@ -1,7 +1,15 @@
-.core-navigation-bar-arrow {
-    text-transform: none;
-    max-width: 100%;
-    ion-icon {
-        flex-shrink: 0;
+:host {
+    --background: var(--core-course-module-navigation-background);
+
+    width: 100%;
+    background-color: var(--background);
+    display: block;
+
+    .core-navigation-bar-arrow {
+        text-transform: none;
+        max-width: 100%;
+        ion-icon {
+            flex-shrink: 0;
+        }
     }
 }
