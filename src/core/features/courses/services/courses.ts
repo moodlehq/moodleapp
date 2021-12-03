@@ -1328,6 +1328,7 @@ export type CoreEnrolledCourseData = CoreEnrolledCourseBasicData & {
     overviewfiles?: CoreWSExternalFile[];
     showactivitydates?: boolean; // @since 3.11. Whether the activity dates are shown or not.
     showcompletionconditions?: boolean; // @since 3.11. Whether the activity completion conditions are shown or not.
+    timemodified?: number; // @since 4.0. Last time course settings were updated (timestamp).
 };
 
 /**

@@ -16,11 +16,17 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData, CoreCourses } from '@features/courses/services/courses';
-import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
+import {
+    CoreCourseSearchedDataWithExtraInfoAndOptions,
+    CoreCoursesHelper,
+    CoreEnrolledCourseDataWithOptions,
+} from '@features/courses/services/courses-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreSite } from '@classes/site';
+import { AddonBlockStarredCourse, AddonBlockStarredCourses } from '../../services/starredcourses';
 
 /**
  * Component to render a starred courses block.
@@ -33,11 +39,12 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
 
     @Input() downloadEnabled = false;
 
-    courses: CoreEnrolledCourseDataWithOptions [] = [];
+    courses: AddonBlockStarredCoursesCourse[] = [];
 
     downloadCourseEnabled = false;
     scrollElementId!: string;
 
+    protected site!: CoreSite;
     protected isDestroyed = false;
     protected coursesObserver?: CoreEventObserver;
     protected updateSiteObserver?: CoreEventObserver;
@@ -45,6 +52,8 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
 
     constructor() {
         super('AddonBlockStarredCoursesComponent');
+
+        this.site = CoreSites.getRequiredCurrentSite();
     }
 
     /**
@@ -94,8 +103,12 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     protected async invalidateCourses(courseIds: number[]): Promise<void> {
         const promises: Promise<void>[] = [];
 
+        const invalidateCoursePromise = this.site.isVersionGreaterEqualThan('4.0')
+            ? CoreCourses.invalidateUserCourses()
+            : AddonBlockStarredCourses.invalidateStarredCourses();
+
         // Invalidate course completion data.
-        promises.push(CoreCourses.invalidateUserCourses().finally(() =>
+        promises.push(invalidateCoursePromise.finally(() =>
             CoreUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
@@ -118,8 +131,36 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
         const showCategories = this.block.configsRecord && this.block.configsRecord.displaycategories &&
             this.block.configsRecord.displaycategories.value == '1';
 
-        // @TODO: Sort won't coincide with website because timemodified is not informed.
-        this.courses = await CoreCoursesHelper.getUserCoursesWithOptions('timemodified', 0, 'isfavourite', showCategories);
+        if (this.site.isVersionGreaterEqualThan('4.0')) {
+            this.courses = await CoreCoursesHelper.getUserCoursesWithOptions('timemodified', 0, 'isfavourite', showCategories);
+
+            return;
+        }
+
+        // Timemodified not present, use the block WS to retrieve the info.
+        const starredCourses = await AddonBlockStarredCourses.getStarredCourses();
+
+        const courseIds = starredCourses.map((course) => course.id);
+
+        // Get the courses using getCoursesByField to get more info about each course.
+        const courses = await CoreCourses.getCoursesByField('ids', courseIds.join(','));
+
+        this.courses = starredCourses.map((recentCourse) => {
+            const course = courses.find((course) => recentCourse.id == course.id);
+
+            return Object.assign(recentCourse, course);
+        });
+
+        // Get course options and extra info.
+        const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);
+        this.courses.forEach((course) => {
+            course.navOptions = options.navOptions[course.id];
+            course.admOptions = options.admOptions[course.id];
+
+            if (!showCategories) {
+                course.categoryname = '';
+            }
+        });
     }
 
     /**
@@ -155,7 +196,6 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
             }
 
             await this.invalidateCourses([course.id]);
-
         }
     }
 
@@ -169,3 +209,9 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     }
 
 }
+
+type AddonBlockStarredCoursesCourse =
+    (AddonBlockStarredCourse & CoreCourseSearchedDataWithExtraInfoAndOptions) |
+    (CoreEnrolledCourseDataWithOptions & {
+        categoryname?: string; // Category name,
+    });
