@@ -140,6 +140,9 @@
         </ng-container>
     </core-loading>
 
+    <core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+    </core-course-module-navigation>
+
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="forum && canAddDiscussion">
         <ion-fab-button (click)="openNewDiscussion()" [attr.aria-label]="addDiscussionText">
             <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>

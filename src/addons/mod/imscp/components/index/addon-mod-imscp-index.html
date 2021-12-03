@@ -47,3 +47,6 @@
         <core-iframe [src]="src"></core-iframe>
     </div>
 </core-loading>
+
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+</core-course-module-navigation>

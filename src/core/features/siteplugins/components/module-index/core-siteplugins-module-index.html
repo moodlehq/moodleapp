@@ -11,8 +11,7 @@
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!displayRefresh || (
             content?.compileComponent?.componentInstance?.displayRefresh === false)" [priority]="700"
-            [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon"
-            [closeOnClick]="false">
+            [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!displayPrefetch || !prefetchStatusIcon || (
             content?.compileComponent?.componentInstance?.displayPrefetch === false)" [priority]="600" [content]="prefetchText"
@@ -30,3 +29,5 @@
     [initResult]="initResult" [data]="jsData" [pageTitle]="pageTitle" [preSets]="preSets" (onContentLoaded)="contentLoaded($event)"
     (onLoadingContent)="contentLoading()">
 </core-site-plugins-plugin-content>
+
+<core-course-module-navigation *ngIf="module" [courseId]="courseId" [currentModuleId]="module.id"></core-course-module-navigation>

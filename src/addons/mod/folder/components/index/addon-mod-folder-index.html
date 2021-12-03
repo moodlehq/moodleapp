@@ -48,3 +48,6 @@
         [message]=" 'addon.mod_folder.emptyfilelist' | translate"></core-empty-box>
 
 </core-loading>
+
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+</core-course-module-navigation>

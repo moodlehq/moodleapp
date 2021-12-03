@@ -167,8 +167,9 @@ export interface CoreCourseModuleHandlerData {
      * @param module The module object.
      * @param courseId The course ID.
      * @param options Options for the navigation.
+     * @return Promise resolved when done.
      */
-    action?(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void;
+    action?(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void> | void;
 
     /**
      * Updates the status of the module.
@@ -236,8 +237,10 @@ export interface CoreCourseModuleHandlerButton {
      * @param event The click event.
      * @param module The module object.
      * @param courseId The course ID.
+     * @param options Options for the navigation.
+     * @return Promise resolved when done.
      */
-    action(event: Event, module: CoreCourseModule, courseId: number): void;
+    action(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void> | void;
 }
 
 /**

@@ -13,7 +13,7 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="loaded" class="core-loading-fullheight">
+<core-loading [hideUntil]="loaded">
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="displayDescription && description"
@@ -52,3 +52,6 @@
         </ion-item>
     </ion-list>
 </core-loading>
+
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+</core-course-module-navigation>

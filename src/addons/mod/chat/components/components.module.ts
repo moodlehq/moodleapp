@@ -27,8 +27,6 @@ import { AddonModChatUsersModalComponent } from './users-modal/users-modal';
         CoreSharedModule,
         CoreCourseComponentsModule,
     ],
-    providers: [
-    ],
     exports: [
         AddonModChatIndexComponent,
         AddonModChatUsersModalComponent,

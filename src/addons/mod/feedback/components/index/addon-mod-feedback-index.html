@@ -55,6 +55,9 @@
     </core-tabs>
 </core-loading>
 
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+</core-course-module-navigation>
+
 <ng-template #basicInfo>
     <ion-list *ngIf="access && access.canviewanalysis && !access.isempty">
         <ion-item class="ion-text-wrap" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">

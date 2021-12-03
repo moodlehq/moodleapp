@@ -155,6 +155,9 @@
     </ion-card>
 </core-loading>
 
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+</core-course-module-navigation>
+
 <!-- Template to render a choice option label. -->
 <ng-template #optionLabelTemplate let-option="option">
     <p>

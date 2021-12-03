@@ -45,13 +45,18 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
             title: module.name,
             class: 'addon-mod_' + module.modname + '-handler',
             showDownloadButton: true,
-            action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void => {
+            action: async (
+                event: Event,
+                module: CoreCourseModule,
+                courseId: number,
+                options?: CoreNavigationOptions,
+            ): Promise<void> => {
                 options = options || {};
                 options.params = options.params || {};
                 Object.assign(options.params, { module });
                 const routeParams = '/' + courseId + '/' + module.id;
 
-                CoreNavigator.navigateToSitePath(this.pageName + routeParams, options);
+                await CoreNavigator.navigateToSitePath(this.pageName + routeParams, options);
             },
         };
     }

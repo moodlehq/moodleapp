@@ -161,7 +161,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         event.preventDefault();
         event.stopPropagation();
 
-        button.action(event, this.module!, this.courseId!);
+        button.action(event, this.module, this.courseId!);
     }
 
     /**

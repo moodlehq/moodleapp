@@ -1,0 +1,43 @@
+@import "~theme/globals";
+
+:host {
+    --height: var(--core-course-module-navigation-height, var(--core-course-module-navigation-max-height));
+    --background: var(--core-course-module-navigation-background);
+
+    height: var(--height);
+    width: 100%;
+    background-color: var(--background);
+    display: block;
+    bottom: 0;
+    z-index: 3;
+    box-shadow: 0px -3px 3px rgba(var(--drop-shadow));
+
+    @include core-transition(all, 200ms);
+
+    ion-col {
+        padding: 2px;
+    }
+
+    core-loading {
+        text-align: center;
+    }
+    
+    ion-buttom {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    core-loading {
+        --loading-inline-min-height: var(--height);
+    }
+}
+
+:host-context(.core-iframe-fullscreen) {
+    opacity: 0 !important;
+    height: 0 !important;
+}
+
+:host-context(core-course-format.core-course-format-singleactivity) {
+    opacity: 0 !important;
+    height: 0 !important;
+}
