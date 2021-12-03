@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonBlockTimeline } from '@addons/block/timeline/services/timeline';
 import { Injectable } from '@angular/core';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
@@ -49,6 +48,7 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
         const promises: Promise<void>[] = [];
         let blocksEnabled = false;
         let dashboardAvailable = false;
+        let dashboardEnabled = false;
 
         // Check if blocks and 3.6 dashboard is enabled.
         promises.push(CoreBlockDelegate.areBlocksDisabled(siteId).then((disabled) => {
@@ -57,7 +57,13 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
             return;
         }));
 
-        promises.push(CoreCoursesDashboard.isAvailable().then((available) => {
+        promises.push(CoreCoursesDashboard.isDisabled(siteId).then((disabled) => {
+            dashboardEnabled = !disabled;
+
+            return;
+        }));
+
+        promises.push(CoreCoursesDashboard.isAvailable(siteId).then((available) => {
             dashboardAvailable = available;
 
             return;
@@ -65,16 +71,14 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
 
         await Promise.all(promises);
 
-        if (dashboardAvailable && blocksEnabled) {
+        if (dashboardAvailable && dashboardEnabled && blocksEnabled) {
             const blocks = await CoreCoursesDashboard.getDashboardBlocks(undefined, siteId);
 
             return CoreBlockDelegate.hasSupportedBlock(blocks.mainBlocks) || CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
         }
 
-        // Check if my overview is enabled. If it's enabled we will fake enabled blocks.
-        const timelineEnabled = await AddonBlockTimeline.isAvailable();
-
-        return timelineEnabled && blocksEnabled;
+        // Dashboard is enabled but not available, we will fake blocks.
+        return dashboardEnabled && blocksEnabled;
     }
 
     /**

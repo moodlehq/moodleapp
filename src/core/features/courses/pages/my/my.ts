@@ -15,6 +15,8 @@
 import { AddonBlockMyOverviewComponent } from '@addons/block/myoverview/components/myoverview/myoverview';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreBlockComponent } from '@features/block/components/block/block';
+import { CoreCourseBlock } from '@features/course/services/course';
+import { CoreCoursesDashboard, CoreCoursesDashboardProvider } from '@features/courses/services/dashboard';
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -37,7 +39,9 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
     searchEnabled = false;
     downloadCoursesEnabled = false;
     userId: number;
+    loadedBlock?: Partial<CoreCourseBlock>;
     myOverviewBlock?: AddonBlockMyOverviewComponent;
+    loaded = false;
 
     protected updateSiteObserver: CoreEventObserver;
 
@@ -58,21 +62,49 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
         this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
-        this.loadBlock();
+        this.loadContent();
 
     }
 
     /**
      * Load my overview block instance.
      */
-    protected loadBlock(): void {
-        setTimeout(() => {
-            if (!this.block) {
-                return this.loadBlock();
-            }
+    protected async loadContent(): Promise<void> {
+        const available = await CoreCoursesDashboard.isAvailable();
+        const disabled = await CoreCourses.isMyCoursesDisabled();
 
-            this.myOverviewBlock = this.block?.dynamicComponent?.instance as AddonBlockMyOverviewComponent;
-        }, 500);
+        if (available && !disabled) {
+            try {
+                const blocks = await CoreCoursesDashboard.getDashboardBlocksFromWS(CoreCoursesDashboardProvider.MY_PAGE_COURSES);
+
+                this.loadedBlock = blocks.find((block) => block.name == 'myoverview');
+
+                await CoreUtils.nextTicks(2);
+
+                this.myOverviewBlock = this.block?.dynamicComponent?.instance as AddonBlockMyOverviewComponent;
+            } catch {
+                // Cannot get the blocks, just show the block if needed.
+                this.loadFallbackBlock();
+            }
+        } else if (!available) {
+            // WS not available, or my courses page not available. show fallback block.
+            this.loadFallbackBlock();
+        } else {
+            // Disabled.
+            this.loadedBlock = undefined;
+        }
+
+        this.loaded = true;
+    }
+
+    /**
+     * Load fallback blocks.
+     */
+    protected loadFallbackBlock(): void {
+        this.loadedBlock = {
+            name: 'myoverview',
+            visible: true,
+        };
     }
 
     /**
@@ -95,11 +127,21 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      */
     async refresh(refresher?: IonRefresher): Promise<void> {
-        if (this.block) {
-            await CoreUtils.ignoreErrors(this.block.doRefresh());
+
+        const promises: Promise<void>[] = [];
+
+        promises.push(CoreCoursesDashboard.invalidateDashboardBlocks(CoreCoursesDashboardProvider.MY_PAGE_COURSES));
+
+        // Invalidate the blocks.
+        if (this.myOverviewBlock) {
+            promises.push(CoreUtils.ignoreErrors(this.myOverviewBlock.doRefresh()));
         }
 
-        refresher?.complete();
+        Promise.all(promises).finally(() => {
+            this.loadContent().finally(() => {
+                refresher?.complete();
+            });
+        });
     }
 
     /**

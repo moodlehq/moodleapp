@@ -26,13 +26,16 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" (ionRefresh)="refresh($event.target)">
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <ion-list>
-        <!-- My courses blocks. -->
-        <core-block [block]="{name: 'myoverview', visible: true}" contextLevel="user" [instanceId]="userId"
-            [extraData]="{'downloadEnabled': true}">
-        </core-block>
-    </ion-list>
+    <core-loading [hideUntil]="loaded">
+        <ion-list>
+            <core-block *ngIf="loadedBlock?.visible" [block]="loadedBlock" contextLevel="user" [instanceId]="userId"
+                [extraData]="{'downloadEnabled': true}"></core-block>
+        </ion-list>
+
+        <core-empty-box *ngIf="!loadedBlock" icon="fas-cubes" [message]="'core.course.nocontentavailable' | translate">
+        </core-empty-box>
+    </core-loading>
 </ion-content>
