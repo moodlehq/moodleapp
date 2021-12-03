@@ -29,6 +29,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
 import { AddonBlockMyOverviewFilterOptionsComponent } from '../filteroptions/filteroptions';
 import { IonSearchbar } from '@ionic/angular';
+import moment from 'moment';
 
 const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] = ['all', 'inprogress', 'future', 'past'];
 
@@ -98,6 +99,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected coursesObserver?: CoreEventObserver;
     protected updateSiteObserver?: CoreEventObserver;
     protected fetchContentDefaultError = 'Error getting my overview data.';
+    protected gradePeriodAfter = 0;
+    protected gradePeriodBefore = 0;
 
     constructor() {
         super('AddonBlockMyOverviewComponent');
@@ -260,6 +263,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         );
 
         this.hasCourses = this.allCourses.length > 0;
+
+        this.gradePeriodAfter = parseInt(await this.currentSite.getConfig('coursegraceperiodafter', refresh), 10) || 0;
+        this.gradePeriodBefore = parseInt(await this.currentSite.getConfig('coursegraceperiodbefore', refresh), 10) || 0;
 
         this.loadSort();
         this.loadLayouts(config?.layouts?.value.split(','));
@@ -507,14 +513,15 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         // Time filter, favourite and hidden.
         const today = CoreTimeUtils.timestamp();
+
         this.filteredCourses = this.filteredCourses.filter((course) => {
             let include = timeFilter == 'all';
 
             if (!include) {
-                if ((course.enddate && course.enddate < today) || course.completed) {
+                if ((course.enddate && this.courseClassifyEndDate(course.enddate) < today) || course.completed) {
                     // Courses that have already ended.
                     include = timeFilter == 'past';
-                } else if (course.startdate && course.startdate > today) {
+                } else if (course.startdate && this.courseClassifyStartDate(course.startdate) > today) {
                     // Courses that have not started yet.
                     include = timeFilter == 'future';
                 } else {
@@ -552,6 +559,26 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         // Refresh prefetch data (if enabled).
         this.prefetchIconsInitialized = false;
         this.initPrefetchCoursesIcons();
+    }
+
+    /**
+     * This function calculates the end date to use for display classification purposes, incorporating the grace period, if any.
+     *
+     * @param endDate Course end date.
+     * @return The new enddate.
+     */
+    protected courseClassifyEndDate(endDate: number): number {
+        return moment(endDate).add(this.gradePeriodAfter, 'days').valueOf();
+    }
+
+    /**
+     * This function calculates the start date to use for display classification purposes, incorporating the grace period, if any.
+     *
+     * @param startDate Course start date.
+     * @return The new startdate.
+     */
+    protected courseClassifyStartDate(startDate: number): number {
+        return moment(startDate).subtract(this.gradePeriodBefore, 'days').valueOf();
     }
 
     /**
