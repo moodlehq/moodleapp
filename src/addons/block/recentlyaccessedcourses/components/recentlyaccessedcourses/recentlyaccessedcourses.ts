@@ -21,11 +21,16 @@ import {
     CoreCourses,
     CoreCourseSummaryData,
 } from '@features/courses/services/courses';
-import { CoreCourseSearchedDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
+import {
+    CoreCourseSearchedDataWithExtraInfoAndOptions,
+    CoreCoursesHelper,
+    CoreEnrolledCourseDataWithOptions,
+} from '@features/courses/services/courses-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreSite } from '@classes/site';
 
 /**
  * Component to render a recent courses block.
@@ -38,11 +43,12 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
     @Input() downloadEnabled = false;
 
-    courses: (Omit<CoreCourseSummaryData, 'visible'> & CoreCourseSearchedDataWithExtraInfoAndOptions)[] = [];
+    courses: AddonBlockRecentlyAccessedCourse[] = [];
 
     downloadCourseEnabled = false;
     scrollElementId!: string;
 
+    protected site!: CoreSite;
     protected isDestroyed = false;
     protected coursesObserver?: CoreEventObserver;
     protected updateSiteObserver?: CoreEventObserver;
@@ -50,6 +56,8 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
     constructor() {
         super('AddonBlockRecentlyAccessedCoursesComponent');
+
+        this.site = CoreSites.getRequiredCurrentSite();
     }
 
     /**
@@ -68,14 +76,14 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
 
-        }, CoreSites.getCurrentSiteId());
+        }, this.site.getId());
 
         this.coursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
             (data) => {
                 this.refreshCourseList(data);
             },
-            CoreSites.getCurrentSiteId(),
+            this.site.getId(),
         );
 
         super.ngOnInit();
@@ -99,8 +107,12 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     protected async invalidateCourses(courseIds: number[]): Promise<void> {
         const promises: Promise<void>[] = [];
 
+        const invalidateCoursePromise = this.site.isVersionGreaterEqualThan('3.8')
+            ? CoreCourses.invalidateRecentCourses()
+            : CoreCourses.invalidateUserCourses();
+
         // Invalidate course completion data.
-        promises.push(CoreCourses.invalidateRecentCourses().finally(() =>
+        promises.push(invalidateCoursePromise.finally(() =>
             CoreUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
@@ -122,6 +134,13 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     protected async fetchContent(): Promise<void> {
         const showCategories = this.block.configsRecord && this.block.configsRecord.displaycategories &&
             this.block.configsRecord.displaycategories.value == '1';
+
+        // WS is failing on 3.7 and 3.6, use a fallback.
+        if (!this.site.isVersionGreaterEqualThan('3.8')) {
+            this.courses = await CoreCoursesHelper.getUserCoursesWithOptions('lastaccess', 10, undefined, showCategories);
+
+            return;
+        }
 
         const recentCourses = await CoreCourses.getRecentCourses();
         const courseIds = recentCourses.map((course) => course.id);
@@ -191,3 +210,9 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     }
 
 }
+
+type AddonBlockRecentlyAccessedCourse =
+    (Omit<CoreCourseSummaryData, 'visible'> & CoreCourseSearchedDataWithExtraInfoAndOptions) |
+    (CoreEnrolledCourseDataWithOptions & {
+        categoryname?: string; // Category name,
+    });

@@ -236,7 +236,7 @@ export class CoreCoursesHelperProvider {
                 courses = courses.filter((course) => !!course.isfavourite);
                 break;
             default:
-            // Filter not implemented.
+                // Filter not implemented.
         }
 
         switch (sort) {
@@ -251,10 +251,10 @@ export class CoreCoursesHelperProvider {
             case 'lastaccess':
                 courses.sort((a, b) => (b.lastaccess || 0) - (a.lastaccess || 0));
                 break;
-            // @todo Time modified property is not defined in CoreEnrolledCourseDataWithOptions, so it Won't do anything.
-            // case 'timemodified':
-            //    courses.sort((a, b) => b.timemodified - a.timemodified);
-            //    break;
+            // Time modified property is defined on Moodle 4.0.
+            case 'timemodified':
+                courses.sort((a, b) => (b.timemodified || 0) - (a.timemodified || 0));
+                break;
             case 'shortname':
                 courses.sort((a, b) => {
                     const compareA = a.shortname.toLowerCase();

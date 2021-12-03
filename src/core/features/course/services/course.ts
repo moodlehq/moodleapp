@@ -1308,6 +1308,7 @@ export type CoreCourseSummary = {
     coursecategory: string; // @since 3.7. Coursecategory.
     showactivitydates: boolean | null; // @since 3.11. Whether the activity dates are shown or not.
     showcompletionconditions: boolean | null; // @since 3.11. Whether the activity completion conditions are shown or not.
+    timemodified?: number; // @since 4.0. Last time course settings were updated (timestamp).
 };
 
 /**
