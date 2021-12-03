@@ -66,8 +66,6 @@ const ALLOWED_LOGGEDOUT_WS = [
  */
 export class CoreSite {
 
-    static readonly REQUEST_QUEUE_DELAY = 50; // Maximum number of miliseconds to wait before processing the queue.
-    static readonly REQUEST_QUEUE_LIMIT = 10; // Maximum number of requests allowed in the queue.
     static readonly REQUEST_QUEUE_FORCE_WS = false; // Use "tool_mobile_call_external_functions" even for calling a single function.
 
     // Constants for cache update frequency.
@@ -756,10 +754,13 @@ export class CoreSite {
     protected enqueueRequest<T>(request: RequestQueueItem<T>): Promise<T> {
         this.requestQueue.push(request);
 
-        if (this.requestQueue.length >= CoreSite.REQUEST_QUEUE_LIMIT) {
+        if (this.requestQueue.length >= CoreConstants.CONFIG.wsrequestqueuelimit) {
             this.processRequestQueue();
         } else if (!this.requestQueueTimeout) {
-            this.requestQueueTimeout = window.setTimeout(this.processRequestQueue.bind(this), CoreSite.REQUEST_QUEUE_DELAY);
+            this.requestQueueTimeout = window.setTimeout(
+                this.processRequestQueue.bind(this),
+                CoreConstants.CONFIG.wsrequestqueuedelay,
+            );
         }
 
         return request.deferred.promise;
