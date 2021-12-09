@@ -38,34 +38,36 @@ import { AddonModFeedbackFormItem, AddonModFeedbackHelper } from '../../services
 })
 export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
 
-    protected attemptId!: number;
-
-    cmId!: number;
-    courseId!: number;
+    cmId: number;
+    courseId: number;
     feedback?: AddonModFeedbackWSFeedback;
     attempt?: AddonModFeedbackWSAttempt;
-    attempts?: AddonModFeedbackAttemptsSwipeManager;
+    attempts: AddonModFeedbackAttemptsSwipeManager;
     anonAttempt?: AddonModFeedbackWSAnonAttempt;
     items: AddonModFeedbackAttemptItem[] = [];
     component = AddonModFeedbackProvider.COMPONENT;
     loaded = false;
+
+    protected attemptId: number;
+
+    constructor() {
+        this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+        this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+        this.attemptId = CoreNavigator.getRequiredRouteNumberParam('attemptId');
+
+        const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+            AddonModFeedbackAttemptsSource,
+            [this.courseId, this.cmId],
+        );
+
+        this.attempts = new AddonModFeedbackAttemptsSwipeManager(source);
+    }
 
     /**
      * @inheritdoc
      */
     ngOnInit(): void {
         try {
-            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
-            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
-            this.attemptId = CoreNavigator.getRequiredRouteNumberParam('attemptId');
-
-            const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
-                AddonModFeedbackAttemptsSource,
-                [this.courseId, this.cmId],
-            );
-
-            this.attempts = new AddonModFeedbackAttemptsSwipeManager(source);
-
             this.attempts.start();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
@@ -82,7 +84,7 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.attempts?.destroy();
+        this.attempts.destroy();
     }
 
     /**
