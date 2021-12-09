@@ -23,6 +23,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreMath } from '@singletons/math';
 
 /**
  * Component to show a button to go to the next resource/activity.
@@ -50,6 +51,8 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
     protected initialHeight = 0;
     protected initialPaddingBottom = 0;
     protected previousTop = 0;
+    protected previousHeight = 0;
+    protected stickTimeout?: number;
     protected content?: HTMLIonContentElement | null;
     protected completionObserver: CoreEventObserver;
 
@@ -102,6 +105,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
         }
         // Set a minimum height value.
         this.initialHeight = this.initialHeight || 56;
+        this.previousHeight = this.initialHeight;
 
         this.content = this.element.closest('ion-content');
 
@@ -117,6 +121,8 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
 
             return;
         }
+
+        this.content.classList.add('has-core-course-module-navigation');
 
         // Move element to the nearest ion-content if it's not the parent.
         if (this.element.parentElement?.nodeName != 'ION-CONTENT') {
@@ -135,7 +141,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
                 return;
             }
 
-            this.onScroll(e.detail.scrollTop, scroll.scrollHeight - scroll.offsetHeight);
+            this.onScroll(e.detail, scroll);
         });
 
     }
@@ -304,19 +310,21 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
     /**
      * On scroll function.
      *
-     * @param top Scroll top measure.
-     * @param maxScroll Scroll height.
+     * @param scrollDetail Scroll detail object.
+     * @param scrollElement Scroll element to calculate maxScroll.
      */
-    protected onScroll(top: number, maxScroll: number): void {
-        if (top == 0 || top == maxScroll) {
+    protected onScroll(scrollDetail: ScrollDetail, scrollElement: HTMLElement): void {
+        const maxScroll = scrollElement.scrollHeight - scrollElement.offsetHeight;
+        if (scrollDetail.scrollTop <= 0 || scrollDetail.scrollTop >= maxScroll) {
             // Reset.
             this.setBarHeight(this.initialHeight);
         } else {
-            const diffHeight = this.element.clientHeight - (top - this.previousTop);
-            this.setBarHeight(diffHeight);
-        }
+            let newHeight = this.previousHeight - (scrollDetail.scrollTop - this.previousTop);
+            newHeight = CoreMath.clamp(newHeight, 0, this.initialHeight);
 
-        this.previousTop = top;
+            this.setBarHeight(newHeight);
+        }
+        this.previousTop = scrollDetail.scrollTop;
     }
 
     /**
@@ -325,14 +333,20 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      * @param height The new bar height.
      */
     protected setBarHeight(height: number): void {
-        if (height <= 0) {
-            height = 0;
-        } else if (height > this.initialHeight) {
-            height = this.initialHeight;
+        if (this.stickTimeout) {
+            clearTimeout(this.stickTimeout);
         }
 
-        this.element.style.opacity = height == 0 ? '0' : '1';
+        this.element.style.opacity = height <= 0 ? '0' : '1';
         this.content?.style.setProperty('--core-course-module-navigation-height', height + 'px');
+        this.previousHeight = height;
+
+        if (height > 0 && height < this.initialHeight) {
+            // Finish opening or closing the bar.
+            const newHeight = height < this.initialHeight / 2 ? 0 : this.initialHeight;
+
+            this.stickTimeout = window.setTimeout(() => this.setBarHeight(newHeight), 500);
+        }
     }
 
 }

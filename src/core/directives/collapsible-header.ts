@@ -106,6 +106,12 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
             return;
         }
 
+        // Wait animations to finish.
+        const animations = this.content.getAnimations();
+        await Promise.all(animations.map(async (animation) => {
+            await animation.finished;
+        }));
+
         const title = this.content.querySelector<HTMLElement>('.collapsible-title, h1');
         const contentH1 = this.content.querySelector<HTMLElement>('h1');
         const headerH1 = this.header.querySelector<HTMLElement>('h1');
@@ -133,11 +139,17 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
         const contentH1Styles = getComputedStyle(contentH1);
 
         if (Platform.isRTL) {
-            this.h1StartDifference = contentH1.getBoundingClientRect().right -
-                (headerH1.getBoundingClientRect().right - parseFloat(headerH1Styles.paddingRight));
+            // Checking position over parent because transition may not be finished.
+            const contentH1Position = contentH1.getBoundingClientRect().right - this.content.getBoundingClientRect().right;
+            const headerH1Position = headerH1.getBoundingClientRect().right - this.header.getBoundingClientRect().right;
+
+            this.h1StartDifference = Math.round(contentH1Position - (headerH1Position - parseFloat(headerH1Styles.paddingRight)));
         } else {
-            this.h1StartDifference = contentH1.getBoundingClientRect().left -
-                (headerH1.getBoundingClientRect().left + parseFloat(headerH1Styles.paddingLeft));
+            // Checking position over parent because transition may not be finished.
+            const contentH1Position = contentH1.getBoundingClientRect().left - this.content.getBoundingClientRect().left;
+            const headerH1Position = headerH1.getBoundingClientRect().left - this.header.getBoundingClientRect().left;
+
+            this.h1StartDifference = Math.round(contentH1Position - (headerH1Position + parseFloat(headerH1Styles.paddingLeft)));
         }
 
         this.headerH1FontSize = parseFloat(headerH1Styles.fontSize);
@@ -145,7 +157,9 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
 
         // Transfer font styles.
         Array.from(headerH1Styles).forEach((styleName) => {
-            if (styleName != 'font-size' && (styleName.startsWith('font-') || styleName.startsWith('letter-'))) {
+            if (styleName != 'font-size' &&
+                styleName != 'font-family' &&
+                (styleName.startsWith('font-') || styleName.startsWith('letter-'))) {
                 contentH1.style.setProperty(styleName, headerH1Styles.getPropertyValue(styleName));
             }
         });
