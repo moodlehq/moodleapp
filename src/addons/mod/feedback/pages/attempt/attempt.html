@@ -5,9 +5,7 @@
         </ion-buttons>
         <ion-title>
             <h1 *ngIf="attempt">{{ attempt.fullname }}</h1>
-            <h1 *ngIf="anonAttempt">
-                {{ 'addon.mod_feedback.response_nr' |translate }}: {{anonAttempt.number}}
-            </h1>
+            <h1 *ngIf="anonAttempt">{{ 'addon.mod_feedback.anonymous_user' | translate }}</h1>
         </ion-title>
     </ion-toolbar>
 </ion-header>
@@ -16,7 +14,7 @@
         <core-loading [hideUntil]="loaded">
             <ion-list class="ion-no-margin" *ngIf="attempt || anonAttempt">
                 <ion-item *ngIf="attempt" class="ion-text-wrap" core-user-link [userId]="attempt.userid"
-                    [attr.aria-label]=" 'core.user.viewprofile' | translate" [courseId]="attempt.courseid">
+                    [attr.aria-label]="'core.user.viewprofile' | translate" [courseId]="attempt.courseid">
                     <core-user-avatar [user]="attempt" slot="start"></core-user-avatar>
                     <ion-label>
                         <h2>{{attempt.fullname}}</h2>
@@ -25,11 +23,10 @@
                 </ion-item>
 
                 <ion-item class="ion-text-wrap" *ngIf="anonAttempt">
+                    <core-user-avatar [linkProfile]="false" slot="start"></core-user-avatar>
                     <ion-label>
-                        <h2>
-                            {{ 'addon.mod_feedback.response_nr' |translate }}: {{anonAttempt.number}}
-                            ({{ 'addon.mod_feedback.anonymous' |translate }})
-                        </h2>
+                        <h2>{{ 'addon.mod_feedback.anonymous_user' |translate }}</h2>
+                        <p>{{ 'addon.mod_feedback.response_nr' | translate }}: {{anonAttempt.number}}</p>
                     </ion-label>
                 </ion-item>
                 <ng-container *ngIf="items && items.length">

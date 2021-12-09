@@ -52,8 +52,10 @@
                     </ion-item-divider>
                     <ion-item *ngFor="let attempt of anonymousAttempts" class="ion-text-wrap" button detail="true"
                         (click)="attempts?.select(attempt)" [attr.aria-current]="attempts?.getItemAriaCurrent(attempt)">
+                        <core-user-avatar [linkProfile]="false" slot="start"></core-user-avatar>
                         <ion-label>
-                            <h2>{{ 'addon.mod_feedback.response_nr' | translate }}: {{attempt.number}}</h2>
+                            <p class="item-heading">{{ 'addon.mod_feedback.anonymous_user' | translate }}</p>
+                            <p>{{ 'addon.mod_feedback.response_nr' | translate }}: {{attempt.number}}</p>
                         </ion-label>
                     </ion-item>
                 </ng-container>

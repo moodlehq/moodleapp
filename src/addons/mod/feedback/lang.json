@@ -2,6 +2,7 @@
     "analysis": "Analysis",
     "anonymous": "Anonymous",
     "anonymous_entries": "Anonymous entries ({{$a}})",
+    "anonymous_user": "Anonymous user",
     "average": "Average",
     "captchaofflinewarning": "Feedback with CAPTCHA cannot be completed offline, or if not configured, or if the server is down.",
     "complete_the_form": "Answer the questions",
