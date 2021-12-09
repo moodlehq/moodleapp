@@ -495,7 +495,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     /**
      * Set the new message badge number and set scroll listener if needed.
      *
-     * @param addMessages NUmber of messages still to be read.
+     * @param addMessages Number of messages still to be read.
      */
     protected setNewMessagesBadge(addMessages: number): void {
         if (this.newMessages == 0 && addMessages > 0) {

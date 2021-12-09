@@ -459,7 +459,7 @@ body.core-iframe-fullscreen ion-router-outlet {
             @supports (padding-left: constant(safe-area-inset-left)) {
                 --ion-safe-area-left: constant(safe-area-inset-left);
             }
-            
+
             @supports (padding-left: env(safe-area-inset-left)) {
                 --ion-safe-area-left: env(safe-area-inset-left);
             }
@@ -539,7 +539,7 @@ body.core-iframe-fullscreen ion-router-outlet {
         .core-modal-lateral-#{$breakpoint} {
             --ion-safe-area-left: 0px;
             --ion-safe-area-right: 0px;
-    
+
             .modal-wrapper {
                 position: absolute;
                 @include position(0 !important, 0 !important, 0 !important, unset !important);
@@ -554,7 +554,7 @@ body.core-iframe-fullscreen ion-router-outlet {
             }
         }
     }
-    
+
 }
 
 // Hidden submit button.
@@ -911,9 +911,9 @@ ion-fab[core-fab] {
     ion-fab-button::part(close-icon) {
         display: none;
     }
-} 
+}
 
-core-course-module-navigation + ion-fab {
+ion-content.has-core-course-module-navigation ion-fab {
     bottom: calc(var(--core-course-module-navigation-height, 0px) + 10px);
     @include core-transition(all, 200ms);
 }
