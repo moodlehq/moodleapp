@@ -12,22 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CorePageItemsListManager } from '@classes/page-items-list-manager';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { CorePromisedValue } from '@classes/promised-value';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { IonRefresher } from '@ionic/angular';
-import { CoreGroupInfo, CoreGroups } from '@services/groups';
+import { CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import {
-    AddonModFeedback,
-    AddonModFeedbackWSAnonAttempt,
-    AddonModFeedbackWSAttempt,
-    AddonModFeedbackWSFeedback,
-} from '../../services/feedback';
-import { AddonModFeedbackHelper, AddonModFeedbackResponsesAnalysis } from '../../services/feedback-helper';
+import { AddonModFeedbackAttemptItem, AddonModFeedbackAttemptsSource } from '../../classes/feedback-attempts-source';
+import { AddonModFeedbackWSAnonAttempt, AddonModFeedbackWSAttempt } from '../../services/feedback';
 
 /**
  * Page that displays feedback attempts.
@@ -36,27 +33,52 @@ import { AddonModFeedbackHelper, AddonModFeedbackResponsesAnalysis } from '../..
     selector: 'page-addon-mod-feedback-attempts',
     templateUrl: 'attempts.html',
 })
-export class AddonModFeedbackAttemptsPage implements AfterViewInit {
+export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    protected cmId!: number;
-    protected courseId!: number;
-    protected page = 0;
-    protected feedback?: AddonModFeedbackWSFeedback;
+    promisedAttempts: CorePromisedValue<CoreListItemsManager<AddonModFeedbackAttemptItem, AddonModFeedbackAttemptsSource>>;
+    fetchFailed = false;
 
-    attempts: AddonModFeedbackAttemptsManager;
-    selectedGroup!: number;
-    groupInfo?: CoreGroupInfo;
-    loaded = false;
-    loadingMore = false;
+    constructor(protected route: ActivatedRoute) {
+        this.promisedAttempts = new CorePromisedValue();
+    }
 
-    constructor(
-        route: ActivatedRoute,
-    ) {
-        this.attempts = new AddonModFeedbackAttemptsManager(
-            route.component,
-        );
+    get attempts(): CoreListItemsManager<AddonModFeedbackAttemptItem, AddonModFeedbackAttemptsSource> | null {
+        return this.promisedAttempts.value;
+    }
+
+    get groupInfo(): CoreGroupInfo | undefined {
+        return this.attempts?.getSource().groupInfo;
+    }
+
+    get selectedGroup(): number | undefined {
+        return this.attempts?.getSource().selectedGroup;
+    }
+
+    set selectedGroup(group: number | undefined) {
+        if (!this.attempts) {
+            return;
+        }
+
+        this.attempts.getSource().selectedGroup = group;
+        this.attempts.getSource().setDirty(true);
+    }
+
+    get identifiableAttempts(): AddonModFeedbackWSAttempt[] {
+        return this.attempts?.getSource().identifiable ?? [];
+    }
+
+    get identifiableAttemptsTotal(): number {
+        return this.attempts?.getSource().identifiableTotal ?? 0;
+    }
+
+    get anonymousAttempts(): AddonModFeedbackWSAnonAttempt[] {
+        return this.attempts?.getSource().anonymous ?? [];
+    }
+
+    get anonymousAttemptsTotal(): number {
+        return this.attempts?.getSource().anonymousTotal ?? 0;
     }
 
     /**
@@ -64,9 +86,16 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit {
      */
     async ngAfterViewInit(): Promise<void> {
         try {
-            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
-            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
-            this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
+            const cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            const courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                AddonModFeedbackAttemptsSource,
+                [courseId, cmId],
+            );
+
+            source.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
+
+            this.promisedAttempts.resolve(new CoreListItemsManager(source, this.route.component));
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -75,79 +104,47 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit {
             return;
         }
 
-        await this.fetchData();
-
-        this.attempts.start(this.splitView);
-    }
-
-    /**
-     * Fetch all the data required for the view.
-     *
-     * @param refresh Empty events array first.
-     * @return Promise resolved when done.
-     */
-    async fetchData(refresh: boolean = false): Promise<void> {
-        this.page = 0;
-        this.attempts.resetItems();
+        const attempts = await this.promisedAttempts;
 
         try {
-            this.feedback = await AddonModFeedback.getFeedback(this.courseId, this.cmId);
+            this.fetchFailed = false;
 
-            this.groupInfo = await CoreGroups.getActivityGroupInfo(this.cmId);
-
-            this.selectedGroup = CoreGroups.validateGroupId(this.selectedGroup, this.groupInfo);
-
-            await this.loadGroupAttempts(this.selectedGroup);
+            await attempts.getSource().loadFeedback();
+            await attempts.load();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            this.fetchFailed = true;
 
-            if (!refresh) {
-                // Some call failed on first fetch, go back.
-                CoreNavigator.back();
-            }
+            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         }
+
+        await attempts.start(this.splitView);
     }
 
     /**
-     * Load Group attempts.
-     *
-     * @param groupId If defined it will change group if not, it will load more attempts for the same group.
-     * @return Resolved with the attempts loaded.
+     * @inheritdoc
      */
-    protected async loadGroupAttempts(groupId?: number): Promise<void> {
-        if (groupId === undefined) {
-            this.page++;
-            this.loadingMore = true;
-        } else {
-            this.selectedGroup = groupId;
-            this.page = 0;
-            this.attempts.resetItems();
-        }
+    ngOnDestroy(): void {
+        this.attempts?.destroy();
+    }
+
+    /**
+     * Fetch more attempts, if any.
+     *
+     * @param infiniteComplete Complete callback for infinite loader.
+     */
+    async fetchMoreAttempts(infiniteComplete?: () => void): Promise<void> {
+        const attempts = await this.promisedAttempts;
 
         try {
-            const attempts = await AddonModFeedbackHelper.getResponsesAnalysis(this.feedback!.id, {
-                groupId: this.selectedGroup,
-                page: this.page,
-                cmId: this.cmId,
-            });
+            this.fetchFailed = false;
 
-            this.attempts.setAttempts(attempts);
+            await attempts.load();
+        } catch (error) {
+            this.fetchFailed = true;
+
+            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         } finally {
-            this.loadingMore = false;
-            this.loaded = true;
-        }
-    }
-
-    /**
-     * Change selected group or load more attempts.
-     *
-     * @param groupId Group ID selected. If not defined, it will load more attempts.
-     */
-    async loadAttempts(groupId?: number): Promise<void> {
-        try {
-            await this.loadGroupAttempts(groupId);
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            infiniteComplete && infiniteComplete();
         }
     }
 
@@ -157,100 +154,30 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit {
      * @param refresher Refresher.
      */
     async refreshFeedback(refresher: IonRefresher): Promise<void> {
-        const promises: Promise<void>[] = [];
-
-        promises.push(CoreGroups.invalidateActivityGroupInfo(this.cmId));
-        if (this.feedback) {
-            promises.push(AddonModFeedback.invalidateResponsesAnalysisData(this.feedback.id));
-        }
+        const attempts = await this.promisedAttempts;
 
         try {
-            await CoreUtils.ignoreErrors(Promise.all(promises));
+            this.fetchFailed = false;
 
-            await this.fetchData(true);
+            await CoreUtils.ignoreErrors(attempts.getSource().invalidateCache());
+            await attempts.getSource().loadFeedback();
+            await attempts.reload();
+        } catch (error) {
+            this.fetchFailed = true;
+
+            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         } finally {
             refresher.complete();
         }
     }
 
-}
-
-/**
- * Type of items that can be held by the entries manager.
- */
-type EntryItem = AddonModFeedbackWSAttempt | AddonModFeedbackWSAnonAttempt;
-
-/**
- * Entries manager.
- */
-class AddonModFeedbackAttemptsManager extends CorePageItemsListManager<EntryItem> {
-
-    identifiable: AddonModFeedbackIdentifiableAttempts = {
-        items: [],
-        total: 0,
-        canLoadMore: false,
-    };
-
-    anonymous: AddonModFeedbackAnonymousAttempts = {
-        items: [],
-        total: 0,
-        canLoadMore: false,
-    };
-
-    constructor(pageComponent: unknown) {
-        super(pageComponent);
-    }
-
     /**
-     * Update attempts.
-     *
-     * @param attempts Attempts.
+     * Reload attempts list.
      */
-    setAttempts(attempts: AddonModFeedbackResponsesAnalysis): void {
-        this.identifiable.total = attempts.totalattempts;
-        this.anonymous.total = attempts.totalanonattempts;
+    async reloadAttempts(): Promise<void> {
+        const attempts = await this.promisedAttempts;
 
-        if (this.anonymous.items.length < attempts.totalanonattempts) {
-            this.anonymous.items = this.anonymous.items.concat(attempts.anonattempts);
-        }
-        if (this.identifiable.items.length < attempts.totalattempts) {
-            this.identifiable.items = this.identifiable.items.concat(attempts.attempts);
-        }
-
-        this.anonymous.canLoadMore = this.anonymous.items.length < attempts.totalanonattempts;
-        this.identifiable.canLoadMore = this.identifiable.items.length < attempts.totalattempts;
-
-        this.setItems((<EntryItem[]> this.identifiable.items).concat(this.anonymous.items));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    resetItems(): void {
-        super.resetItems();
-        this.identifiable.total = 0;
-        this.identifiable.items = [];
-        this.anonymous.total = 0;
-        this.anonymous.items = [];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(entry: EntryItem): string {
-        return entry.id.toString();
+        await attempts.reload();
     }
 
 }
-
-type AddonModFeedbackIdentifiableAttempts = {
-    items: AddonModFeedbackWSAttempt[];
-    total: number;
-    canLoadMore: boolean;
-};
-
-type AddonModFeedbackAnonymousAttempts = {
-    items: AddonModFeedbackWSAnonAttempt[];
-    total: number;
-    canLoadMore: boolean;
-};
