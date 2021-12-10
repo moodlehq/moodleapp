@@ -99,5 +99,5 @@
         "ios": "id633359593"
     },
     "wsrequestqueuelimit": 10,
-    "wsrequestqueuedelay": 50
+    "wsrequestqueuedelay": 100
 }
