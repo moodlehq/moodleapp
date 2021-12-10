@@ -15,7 +15,7 @@
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef, Optional } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingInfo, CoreRatingProvider } from '@features/rating/services/rating';
@@ -145,7 +145,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
             if (this.courseId && this.cmId && (routeData.swipeEnabled ?? true)) {
                 this.discussions = new AddonModForumDiscussionDiscussionsSwipeManager(
-                    CoreItemsManagerSourcesTracker.getOrCreateSource(
+                    CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
                         AddonModForumDiscussionsSource,
                         [this.courseId, this.cmId, routeData.discussionsPathPrefix ?? ''],
                     ),

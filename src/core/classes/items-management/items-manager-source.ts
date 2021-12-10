@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Params } from '@angular/router';
-
 /**
  * Updates listener.
  */
 export interface CoreItemsListSourceListener<Item> {
-    onItemsUpdated?(items: Item[], hasMoreItems: boolean): void;
+    onItemsUpdated?(items: Item[]): void;
     onReset?(): void;
 }
 
@@ -27,37 +25,17 @@ export interface CoreItemsListSourceListener<Item> {
  */
 export abstract class CoreItemsManagerSource<Item = unknown> {
 
-    /**
-     * Get a string to identify instances constructed with the given arguments as being reusable.
-     *
-     * @param args Constructor arguments.
-     * @returns Id.
-     */
-    static getSourceId(...args: unknown[]): string {
-        return args.map(argument => String(argument)).join('-');
-    }
-
     protected items: Item[] | null = null;
-    protected hasMoreItems = true;
     protected listeners: CoreItemsListSourceListener<Item>[] = [];
     protected dirty = false;
 
     /**
-     * Check whether any page has been loaded.
+     * Check whether any item has been loaded.
      *
-     * @returns Whether any page has been loaded.
+     * @returns Whether any item has been loaded.
      */
     isLoaded(): boolean {
         return this.items !== null;
-    }
-
-    /**
-     * Check whether there are more pages to be loaded.
-     *
-     * @return Whether there are more pages to be loaded.
-     */
-    isCompleted(): boolean {
-        return !this.hasMoreItems;
     }
 
     /**
@@ -81,33 +59,19 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
     }
 
     /**
-     * Get the count of pages that have been loaded.
-     *
-     * @returns Pages loaded.
-     */
-    getPagesLoaded(): number {
-        if (this.items === null) {
-            return 0;
-        }
-
-        const pageLength = this.getPageLength();
-        if (pageLength === null) {
-            return 1;
-        }
-
-        return Math.ceil(this.items.length / pageLength);
-    }
-
-    /**
      * Reset collection data.
      */
     reset(): void {
         this.items = null;
-        this.hasMoreItems = true;
         this.dirty = false;
 
         this.listeners.forEach(listener => listener.onReset?.call(listener));
     }
+
+    /**
+     * Load items.
+     */
+    abstract load(): Promise<void>;
 
     /**
      * Register a listener.
@@ -137,84 +101,21 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
     }
 
     /**
-     * Reload the collection, this resets the data to the first page.
-     */
-    async reload(): Promise<void> {
-        const { items, hasMoreItems } = await this.loadPageItems(0);
-
-        this.dirty = false;
-        this.setItems(items, hasMoreItems ?? false);
-    }
-
-    /**
-     * Load more items, if any.
-     */
-    async load(): Promise<void> {
-        if (this.dirty) {
-            const { items, hasMoreItems } = await this.loadPageItems(0);
-
-            this.dirty = false;
-            this.setItems(items, hasMoreItems ?? false);
-
-            return;
-        }
-
-        if (!this.hasMoreItems) {
-            return;
-        }
-
-        const { items, hasMoreItems } = await this.loadPageItems(this.getPagesLoaded());
-
-        this.setItems((this.items ?? []).concat(items), hasMoreItems ?? false);
-    }
-
-    /**
-     * Get the query parameters to use when navigating to an item page.
-     *
-     * @param item Item.
-     * @return Query parameters to use when navigating to the item page.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getItemQueryParams(item: Item): Params {
-        return {};
-    }
-
-    /**
-     * Get the path to use when navigating to an item page.
-     *
-     * @param item Item.
-     * @return Path to use when navigating to the item page.
-     */
-    abstract getItemPath(item: Item): string;
-
-    /**
-     * Load page items.
-     *
-     * @param page Page number (starting at 0).
-     * @return Page items data.
-     */
-    protected abstract loadPageItems(page: number): Promise<{ items: Item[]; hasMoreItems?: boolean }>;
-
-    /**
-     * Get the length of each page in the collection.
-     *
-     * @return Page length; null for collections that don't support pagination.
-     */
-    protected getPageLength(): number | null {
-        return null;
-    }
-
-    /**
      * Update the collection items.
      *
      * @param items Items.
-     * @param hasMoreItems Whether there are more pages to be loaded.
      */
-    protected setItems(items: Item[], hasMoreItems: boolean): void {
+    protected setItems(items: Item[]): void {
         this.items = items;
-        this.hasMoreItems = hasMoreItems;
 
-        this.listeners.forEach(listener => listener.onItemsUpdated?.call(listener, items, hasMoreItems));
+        this.notifyItemsUpdated();
+    }
+
+    /**
+     * Notify that items have been updated.
+     */
+    protected notifyItemsUpdated(): void {
+        this.listeners.forEach(listener => listener.onItemsUpdated?.call(listener, this.items));
     }
 
 }

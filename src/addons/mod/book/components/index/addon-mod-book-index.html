@@ -40,18 +40,18 @@
             previousTranslate="addon.mod_book.navprevtitle" nextTranslate="addon.mod_book.navnexttitle" (action)="changeChapter($event.id)">
         </core-navigation-bar>
 
-        <ion-slides (ionSlideWillChange)="slideChanged()" [options]="slidesOpts">
-            <ion-slide *ngFor="let chapter of loadedChapters">
+        <core-swipe-slides [manager]="manager" [options]="slidesOpts" (onWillChange)="slideChanged($event)">
+            <ng-template let-item="item">
                 <div class="ion-padding">
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="chapter.content" contextLevel="module"
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="item.content" contextLevel="module"
                         [contextInstanceId]="module.id" [courseId]="courseId"></core-format-text>
-                    <div class="ion-margin-top" *ngIf="tagsEnabled && chapter.tags?.length > 0">
+                    <div class="ion-margin-top" *ngIf="tagsEnabled && item.tags?.length > 0">
                         <strong>{{ 'core.tag.tags' | translate }}: </strong>
-                        <core-tag-list [tags]="chapter.tags"></core-tag-list>
+                        <core-tag-list [tags]="item.tags"></core-tag-list>
                     </div>
                 </div>
-            </ion-slide>
-        </ion-slides>
+            </ng-template>
+        </core-swipe-slides>
     </div>
 
 </core-loading>

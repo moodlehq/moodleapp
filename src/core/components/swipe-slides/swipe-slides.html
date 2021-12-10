@@ -1,0 +1,6 @@
+<ion-slides *ngIf="manager && manager.getSource().isLoaded()" (ionSlideWillChange)="slideWillChange()"
+    (ionSlideDidChange)="slideDidChange()" [options]="options">
+    <ion-slide *ngFor="let item of manager.getSource().getItems()">
+        <ng-container *ngIf="template" [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{item: item}"></ng-container>
+    </ion-slide>
+</ion-slides>

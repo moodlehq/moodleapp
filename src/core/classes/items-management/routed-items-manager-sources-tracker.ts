@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreItemsManagerSource } from './items-manager-source';
+import { CoreRoutedItemsManagerSource } from './routed-items-manager-source';
 
-type SourceConstructor<T extends CoreItemsManagerSource = CoreItemsManagerSource> = {
+type SourceConstructor<T extends CoreRoutedItemsManagerSource = CoreRoutedItemsManagerSource> = {
     getSourceId(...args: unknown[]): string;
     new (...args: unknown[]): T;
 };
 type SourceConstuctorInstance<T> = T extends { new(...args: unknown[]): infer P } ? P : never;
-type InstanceTracking = { instance: CoreItemsManagerSource; references: unknown[] };
+type InstanceTracking = { instance: CoreRoutedItemsManagerSource; references: unknown[] };
 type Instances = Record<string, InstanceTracking>;
 
 /**
- * Tracks CoreItemsManagerSource instances to reuse between pages.
+ * Tracks CoreRoutedItemsManagerSource instances to reuse between pages.
  */
-export class CoreItemsManagerSourcesTracker {
+export class CoreRoutedItemsManagerSourcesTracker {
 
     private static instances: WeakMap<SourceConstructor, Instances> = new WeakMap();
-    private static instanceIds: WeakMap<CoreItemsManagerSource, string> = new WeakMap();
+    private static instanceIds: WeakMap<CoreRoutedItemsManagerSource, string> = new WeakMap();
 
     /**
      * Create an instance of the given source or retrieve one if it's already in use.
@@ -37,7 +37,7 @@ export class CoreItemsManagerSourcesTracker {
      * @param constructorArguments Arguments to create a new instance, used to find out if an instance already exists.
      * @returns Source.
      */
-    static getOrCreateSource<T extends CoreItemsManagerSource, C extends SourceConstructor<T>>(
+    static getOrCreateSource<T extends CoreRoutedItemsManagerSource, C extends SourceConstructor<T>>(
         constructor: C,
         constructorArguments: ConstructorParameters<C>,
     ): SourceConstuctorInstance<C> {
@@ -54,7 +54,7 @@ export class CoreItemsManagerSourcesTracker {
      * @param source Source.
      * @param reference Object referncing this source.
      */
-    static addReference(source: CoreItemsManagerSource, reference: unknown): void {
+    static addReference(source: CoreRoutedItemsManagerSource, reference: unknown): void {
         const constructorInstances = this.getConstructorInstances(source.constructor as SourceConstructor);
         const instanceId = this.instanceIds.get(source);
 
@@ -78,7 +78,7 @@ export class CoreItemsManagerSourcesTracker {
      * @param source Source.
      * @param reference Object that was referncing this source.
      */
-    static removeReference(source: CoreItemsManagerSource, reference: unknown): void {
+    static removeReference(source: CoreRoutedItemsManagerSource, reference: unknown): void {
         const constructorInstances = this.instances.get(source.constructor as SourceConstructor);
         const instanceId = this.instanceIds.get(source);
         const index = constructorInstances?.[instanceId ?? '']?.references.indexOf(reference) ?? -1;
@@ -127,7 +127,7 @@ export class CoreItemsManagerSourcesTracker {
      * @param constructorArguments Source constructor arguments.
      * @returns Source instance.
      */
-    private static createInstance<T extends CoreItemsManagerSource>(
+    private static createInstance<T extends CoreRoutedItemsManagerSource>(
         id: string,
         constructor: SourceConstructor<T>,
         constructorArguments: ConstructorParameters<SourceConstructor<T>>,

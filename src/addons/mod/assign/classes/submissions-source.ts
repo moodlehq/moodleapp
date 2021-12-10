@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Params } from '@angular/router';
-import { CoreItemsManagerSource } from '@classes/items-management/items-manager-source';
+import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -33,7 +33,7 @@ import { AddonModAssignSync, AddonModAssignSyncProvider } from '../services/assi
 /**
  * Provides a collection of assignment submissions.
  */
-export class AddonModAssignSubmissionsSource extends CoreItemsManagerSource<AddonModAssignSubmissionForList> {
+export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSource<AddonModAssignSubmissionForList> {
 
     /**
      * @inheritdoc

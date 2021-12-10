@@ -13,14 +13,14 @@
 // limitations under the License.
 
 import { Params } from '@angular/router';
-import { CoreItemsManagerSource } from '@classes/items-management/items-manager-source';
+import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 
 import { CoreUser, CoreUserData, CoreUserParticipant, CoreUserProvider } from '../services/user';
 
 /**
  * Provides a collection of course participants.
  */
-export class CoreUserParticipantsSource extends CoreItemsManagerSource<CoreUserParticipant | CoreUserData> {
+export class CoreUserParticipantsSource extends CoreRoutedItemsManagerSource<CoreUserParticipant | CoreUserData> {
 
     /**
      * @inheritdoc

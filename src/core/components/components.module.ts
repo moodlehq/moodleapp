@@ -60,6 +60,7 @@ import { CoreComboboxComponent } from './combobox/combobox';
 import { CoreSpacerComponent } from './spacer/spacer';
 import { CoreHorizontalScrollControlsComponent } from './horizontal-scroll-controls/horizontal-scroll-controls';
 import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-with-spinner';
+import { CoreSwipeSlidesComponent } from './swipe-slides/swipe-slides';
 
 @NgModule({
     declarations: [
@@ -94,6 +95,7 @@ import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-wit
         CoreSplitViewComponent,
         CoreStyleComponent,
         CoreSwipeNavigationComponent,
+        CoreSwipeSlidesComponent,
         CoreTabComponent,
         CoreTabsComponent,
         CoreTabsOutletComponent,
@@ -143,6 +145,7 @@ import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-wit
         CoreSplitViewComponent,
         CoreStyleComponent,
         CoreSwipeNavigationComponent,
+        CoreSwipeSlidesComponent,
         CoreTabComponent,
         CoreTabsComponent,
         CoreTabsOutletComponent,

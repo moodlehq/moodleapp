@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, Optional, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { IonContent, IonSlides } from '@ionic/angular';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import {
     AddonModBookProvider,
@@ -29,10 +28,13 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourse } from '@features/course/services/course';
 import { AddonModBookTocComponent } from '../toc/toc';
-import { CoreConstants } from '@/core/constants';
 import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar';
 import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';
+import { CoreSwipeCurrentItemData, CoreSwipeSlidesComponent, CoreSwipeSlidesOptions } from '@components/swipe-slides/swipe-slides';
+import { CoreSwipeSlidesItemsManagerSource } from '@classes/items-management/slides-items-manager-source';
+import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreSwipeSlidesItemsManager } from '@classes/items-management/slides-items-manager';
 
 /**
  * Component that displays a book.
@@ -40,38 +42,32 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'addon-mod-book-index',
     templateUrl: 'addon-mod-book-index.html',
-    styleUrls: ['index.scss'],
 })
 export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
-    @ViewChild(IonSlides) slides?: IonSlides;
+    @ViewChild(CoreSwipeSlidesComponent) slides?: CoreSwipeSlidesComponent;
 
     @Input() initialChapterId?: number; // The initial chapter ID to load.
 
     component = AddonModBookProvider.COMPONENT;
-    loadedChapters: LoadedChapter[] = [];
+    manager?: CoreSwipeSlidesItemsManager<LoadedChapter, AddonModBookSlidesItemsManagerSource>;
     previousChapter?: AddonModBookTocChapter;
     nextChapter?: AddonModBookTocChapter;
     tagsEnabled = false;
     warning = '';
-    tags?: CoreTagItem[];
     displayNavBar = true;
     navigationItems: CoreNavigationBarItem<AddonModBookTocChapter>[] = [];
     displayTitlesInNavBar = false;
-    slidesOpts = {
-        initialSlide: 0,
+    slidesOpts: CoreSwipeSlidesOptions = {
         autoHeight: true,
+        scrollOnChange: 'top',
     };
 
-    protected chapters: AddonModBookTocChapter[] = [];
     protected currentChapter?: number;
-    protected book?: AddonModBookBookWSData;
-    protected contentsMap: AddonModBookContentsMap = {};
     protected element: HTMLElement;
 
     constructor(
         elementRef: ElementRef,
-        protected content?: IonContent,
         @Optional() courseContentsPage?: CoreCourseContentsPage,
     ) {
         super('AddonModBookIndexComponent', courseContentsPage);
@@ -86,7 +82,23 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         super.ngOnInit();
 
         this.tagsEnabled = CoreTag.areTagsAvailableInSite();
+        const source = new AddonModBookSlidesItemsManagerSource(
+            this.courseId,
+            this.module,
+            this.tagsEnabled,
+            this.initialChapterId,
+        );
+        this.manager = new CoreSwipeSlidesItemsManager(source);
+
         this.loadContent();
+    }
+
+    get book(): AddonModBookBookWSData | undefined {
+        return this.manager?.getSource().book;
+    }
+
+    get chapters(): AddonModBookTocChapter[] {
+        return this.manager?.getSource().chapters || [];
     }
 
     /**
@@ -121,10 +133,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             return;
         }
 
-        const index = this.loadedChapters.findIndex(chapter => chapter.id === chapterId);
-        if (index > -1) {
-            this.slides?.slideTo(index);
-        }
+        this.slides?.slideToItem({ id: chapterId });
     }
 
     /**
@@ -132,8 +141,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      *
      * @return Resolved when done.
      */
-    protected invalidateContent(): Promise<void> {
-        return AddonModBook.invalidateContent(this.module.id, this.courseId);
+    protected async invalidateContent(): Promise<void> {
+        await this.manager?.getSource().invalidateContent();
     }
 
     /**
@@ -144,97 +153,32 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      */
     protected async fetchContent(refresh = false): Promise<void> {
         try {
-            const downloadResult = await this.downloadResourceIfNeeded(refresh);
-
-            await this.loadBookData();
-
-            // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
-            const contents = await CoreCourse.getModuleContents(this.module, this.courseId);
-
-            this.contentsMap = AddonModBook.getContentsMap(contents);
-            this.chapters = AddonModBook.getTocList(contents);
-
-            if (typeof this.currentChapter == 'undefined' && typeof this.initialChapterId != 'undefined' && this.chapters) {
-                // Initial chapter set. Validate that the chapter exists.
-                const index = this.chapters.findIndex((chapter) => chapter.id == this.initialChapterId);
-
-                if (index >= 0) {
-                    this.currentChapter = this.initialChapterId;
-                    this.slidesOpts.initialSlide = index;
-                }
-            }
-
-            if (this.currentChapter === undefined) {
-                // Load the first chapter.
-                this.currentChapter = AddonModBook.getFirstChapter(this.chapters);
-            }
-
-            if (this.currentChapter === undefined) {
+            const source = this.manager?.getSource();
+            if (!source) {
                 return;
             }
 
-            await this.loadChapters();
+            const downloadResult = await this.downloadResourceIfNeeded(refresh);
 
-            // Show chapter.
-            await this.viewChapter(this.currentChapter, refresh);
+            const book = await source.loadBookData();
 
-            this.warning = downloadResult?.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
+            if (book) {
+                this.dataRetrieved.emit(book);
+
+                this.description = book.intro;
+                this.displayNavBar = book.navstyle != AddonModBookNavStyle.TOC_ONLY;
+                this.displayTitlesInNavBar = book.navstyle == AddonModBookNavStyle.TEXT;
+            }
+
+            // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
+            await source.loadContents();
+
+            await source.load();
+
+            this.warning = downloadResult?.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error || '') : '';
         } finally {
             // Pass false because downloadResourceIfNeeded already invalidates and refresh data if refresh=true.
             this.fillContextMenu(false);
-        }
-    }
-
-    /**
-     * Load book data from WS.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async loadBookData(): Promise<void> {
-        this.book = await AddonModBook.getBook(this.courseId, this.module.id);
-
-        this.dataRetrieved.emit(this.book);
-
-        this.description = this.book.intro;
-        this.displayNavBar = this.book.navstyle != AddonModBookNavStyle.TOC_ONLY;
-        this.displayTitlesInNavBar = this.book.navstyle == AddonModBookNavStyle.TEXT;
-    }
-
-    /**
-     * Load book chapters.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async loadChapters(): Promise<void> {
-        try {
-            const newChapters = await Promise.all(this.chapters.map(async (chapter) => {
-                const content = await AddonModBook.getChapterContent(this.contentsMap, chapter.id, this.module.id);
-
-                return {
-                    id: chapter.id,
-                    content,
-                    tags: this.tagsEnabled ? this.contentsMap[chapter.id].tags : [],
-                };
-            }));
-
-            let newIndex = -1;
-            if (this.loadedChapters.length && newChapters.length != this.loadedChapters.length) {
-                // Number of chapters has changed. Search the chapter to display, otherwise it could change automatically.
-                newIndex = this.chapters.findIndex((chapter) => chapter.id === this.currentChapter);
-            }
-
-            this.loadedChapters = newChapters;
-
-            if (newIndex > -1) {
-                this.slides?.slideTo(newIndex, 0, false);
-            }
-        } catch (exception) {
-            const error = exception ?? new CoreError(Translate.instant('addon.mod_book.errorchapter'));
-            if (!error.message) {
-                error.message = Translate.instant('addon.mod_book.errorchapter');
-            }
-
-            throw error;
         }
     }
 
@@ -271,24 +215,10 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Slide has changed.
      *
-     * @return Promise resolved when done.
+     * @param data Data about new item.
      */
-    async slideChanged(): Promise<void> {
-        if (!this.slides) {
-            return;
-        }
-
-        const scrollElement = await this.content?.getScrollElement();
-        const container = this.element.querySelector<HTMLElement>('.addon-mod_book-container');
-
-        if (container && (!scrollElement || CoreDomUtils.isElementOutsideOfScreen(scrollElement, container, 'top'))) {
-            // Scroll to top.
-            container.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        const index = await this.slides.getActiveIndex();
-
-        this.viewChapter(this.loadedChapters[index].id, true);
+    slideChanged(data: CoreSwipeCurrentItemData<LoadedChapter>): void {
+        this.viewChapter(data.item.id, true);
     }
 
     /**
@@ -313,3 +243,90 @@ type LoadedChapter = {
     content: string;
     tags?: CoreTagItem[];
 };
+
+/**
+ * Helper to manage swiping within a collection of chapters.
+ */
+class AddonModBookSlidesItemsManagerSource extends CoreSwipeSlidesItemsManagerSource<LoadedChapter> {
+
+    readonly COURSE_ID: number;
+    readonly MODULE: CoreCourseModule;
+    readonly TAGS_ENABLED: boolean;
+
+    book?: AddonModBookBookWSData;
+    chapters: AddonModBookTocChapter[] = [];
+    contentsMap: AddonModBookContentsMap = {};
+
+    constructor(courseId: number, module: CoreCourseModule, tagsEnabled: boolean, initialChapterId?: number) {
+        super(initialChapterId ? { id: initialChapterId } : undefined);
+
+        this.COURSE_ID = courseId;
+        this.MODULE = module;
+        this.TAGS_ENABLED = tagsEnabled;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getItemId(item: LoadedChapter): string | number {
+        return item.id;
+    }
+
+    /**
+     * Load book data from WS.
+     *
+     * @return Promise resolved when done.
+     */
+    async loadBookData(): Promise<AddonModBookBookWSData> {
+        this.book = await AddonModBook.getBook(this.COURSE_ID, this.MODULE.id);
+
+        return this.book;
+    }
+
+    /**
+     * Load module contents.
+     */
+    async loadContents(): Promise<void> {
+        // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
+        const contents = await CoreCourse.getModuleContents(this.MODULE, this.COURSE_ID);
+
+        this.contentsMap = AddonModBook.getContentsMap(contents);
+        this.chapters = AddonModBook.getTocList(contents);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async loadItems(): Promise<LoadedChapter[]> {
+        try {
+            const newChapters = await Promise.all(this.chapters.map(async (chapter) => {
+                const content = await AddonModBook.getChapterContent(this.contentsMap, chapter.id, this.MODULE.id);
+
+                return {
+                    id: chapter.id,
+                    content,
+                    tags: this.TAGS_ENABLED ? this.contentsMap[chapter.id].tags : [],
+                };
+            }));
+
+            return newChapters;
+        } catch (exception) {
+            const error = exception ?? new CoreError(Translate.instant('addon.mod_book.errorchapter'));
+            if (!error.message) {
+                error.message = Translate.instant('addon.mod_book.errorchapter');
+            }
+
+            throw error;
+        }
+    }
+
+    /**
+     * Perform the invalidate content function.
+     *
+     * @return Resolved when done.
+     */
+    invalidateContent(): Promise<void> {
+        return AddonModBook.invalidateContent(this.MODULE.id, this.COURSE_ID);
+    }
+
+}

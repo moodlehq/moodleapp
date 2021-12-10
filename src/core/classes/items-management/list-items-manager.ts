@@ -20,16 +20,16 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreUtils } from '@services/utils/utils';
 
-import { CoreItemsManager } from './items-manager';
-import { CoreItemsManagerSource } from './items-manager-source';
+import { CoreRoutedItemsManagerSource } from './routed-items-manager-source';
+import { CoreRoutedItemsManager } from './routed-items-manager';
 
 /**
  * Helper class to manage the state and routing of a list of items in a page.
  */
 export class CoreListItemsManager<
     Item = unknown,
-    Source extends CoreItemsManagerSource<Item> = CoreItemsManagerSource<Item>
-> extends CoreItemsManager<Item, Source> {
+    Source extends CoreRoutedItemsManagerSource<Item> = CoreRoutedItemsManagerSource<Item>
+> extends CoreRoutedItemsManager<Item, Source> {
 
     protected pageRouteLocator?: unknown | ActivatedRoute;
     protected splitView?: CoreSplitViewComponent;

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Component, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
-import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { IonRefresher } from '@ionic/angular';
 import { CoreGroupInfo } from '@services/groups';
@@ -86,7 +86,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
             const courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             const groupId = CoreNavigator.getRouteNumberParam('groupId') || 0;
             const selectedStatus = CoreNavigator.getRouteParam('status');
-            const submissionsSource = CoreItemsManagerSourcesTracker.getOrCreateSource(
+            const submissionsSource = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
                 AddonModAssignSubmissionsSource,
                 [courseId, moduleId, selectedStatus],
             );

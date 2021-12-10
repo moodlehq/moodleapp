@@ -19,7 +19,8 @@
             <ion-col class="ion-text-center addon-calendar-period">
                 <h2 id="addon-calendar-monthname">
                     {{ periodName }}
-                    <ion-spinner *ngIf="!monthLoaded" class="addon-calendar-loading-month"></ion-spinner>
+                    <ion-spinner *ngIf="manager && !manager.getSource().monthLoaded" class="addon-calendar-loading-month">
+                    </ion-spinner>
                 </h2>
             </ion-col>
             <ion-col class="ion-text-end" *ngIf="canNavigate">
@@ -30,14 +31,14 @@
         </ion-row>
     </ion-grid>
 
-    <ion-slides *ngIf="loaded" (ionSlideWillChange)="slideChanged()" [options]="{initialSlide: 1}">
-        <ion-slide *ngFor="let month of preloadedMonths">
+    <core-swipe-slides [manager]="manager" (onWillChange)="slideChanged($event)">
+        <ng-template let-item="item">
             <!-- Calendar view. -->
             <ion-grid class="addon-calendar-months" role="table" aria-describedby="addon-calendar-monthname">
                 <div role="rowgroup">
                     <!-- List of days. -->
                     <ion-row role="row">
-                        <ion-col class="ion-text-center addon-calendar-weekday" *ngFor="let day of month.weekDays" role="columnheader">
+                        <ion-col class="ion-text-center addon-calendar-weekday" *ngFor="let day of item.weekDays" role="columnheader">
                             <span class="sr-only">{{ day.fullname | translate }}</span>
                             <span class="ion-hide-md-up" aria-hidden="true">{{ day.shortname | translate }}</span>
                             <span class="ion-hide-md-down" aria-hidden="true">{{ day.fullname | translate }}</span>
@@ -46,7 +47,7 @@
                 </div>
                 <div role="rowgroup">
                     <!-- Weeks. -->
-                    <ion-row *ngFor="let week of month.weeks" class="addon-calendar-week" role="row">
+                    <ion-row *ngFor="let week of item.weeks" class="addon-calendar-week" role="row">
                         <!-- Empty slots (first week). -->
                         <ion-col *ngFor="let value of week.prepadding" class="dayblank addon-calendar-day" role="cell">
                         </ion-col>
@@ -104,7 +105,7 @@
                     </ion-row>
                 </div>
             </ion-grid>
-        </ion-slide>
-    </ion-slides>
+        </ng-template>
+    </core-swipe-slides>
 
 </core-loading>

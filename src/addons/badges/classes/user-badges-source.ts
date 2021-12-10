@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import { Params } from '@angular/router';
-import { CoreItemsManagerSource } from '@classes/items-management/items-manager-source';
+import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { AddonBadges, AddonBadgesUserBadge } from '../services/badges';
 
 /**
  * Provides a collection of user badges.
  */
-export class AddonBadgesUserBadgesSource extends CoreItemsManagerSource<AddonBadgesUserBadge> {
+export class AddonBadgesUserBadgesSource extends CoreRoutedItemsManagerSource<AddonBadgesUserBadge> {
 
     readonly COURSE_ID: number;
     readonly USER_ID: number;

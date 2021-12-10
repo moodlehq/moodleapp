@@ -29,7 +29,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
 import { CoreUserParticipantsSource } from '@features/user/classes/participants-source';
-import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 @Component({
     selector: 'page-core-user-profile',
@@ -90,7 +90,10 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 
         if (this.courseId && this.route.snapshot.data.swipeManagerSource === 'participants') {
             const search = CoreNavigator.getRouteParam('search');
-            const source = CoreItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId, search]);
+            const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                CoreUserParticipantsSource,
+                [this.courseId, search],
+            );
             this.users = new CoreUserSwipeItemsManager(source);
 
             this.users.start();

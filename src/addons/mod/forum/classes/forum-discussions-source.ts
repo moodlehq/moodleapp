@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Params } from '@angular/router';
-import { CoreItemsManagerSource } from '@classes/items-management/items-manager-source';
+import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { CoreUser } from '@features/user/services/user';
 import {
     AddonModForum,
@@ -24,7 +24,7 @@ import {
 } from '../services/forum';
 import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '../services/forum-offline';
 
-export class AddonModForumDiscussionsSource extends CoreItemsManagerSource<AddonModForumDiscussionItem> {
+export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource<AddonModForumDiscussionItem> {
 
     static readonly NEW_DISCUSSION: AddonModForumNewDiscussionForm = { newDiscussion: true };
 

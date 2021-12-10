@@ -15,8 +15,8 @@
 import { ContextLevel } from '@/core/constants';
 import { AfterViewInit, Component, OnDestroy, OnInit, Optional, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
@@ -113,7 +113,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         await super.ngOnInit();
 
         // Initialize entries manager.
-        const source = CoreItemsManagerSourcesTracker.getOrCreateSource(
+        const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
             AddonModGlossaryEntriesSource,
             [this.courseId, this.module.id, this.courseContentsPage ? `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` : ''],
         );

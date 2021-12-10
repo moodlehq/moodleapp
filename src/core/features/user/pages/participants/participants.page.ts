@@ -23,7 +23,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreUser, CoreUserParticipant, CoreUserData } from '@features/user/services/user';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreUserParticipantsSource } from '@features/user/classes/participants-source';
-import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 /**
  * Page that displays the list of course participants.
@@ -48,7 +48,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
         try {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.participants = new CoreUserParticipantsManager(
-                CoreItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId]),
+                CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId]),
                 CoreUserParticipantsPage,
             );
         } catch (error) {
@@ -107,7 +107,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
             return;
         }
 
-        const newSource = CoreItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId]);
+        const newSource = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId]);
 
         this.searchQuery = null;
         this.searchInProgress = false;
@@ -124,7 +124,10 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
     async search(query: string): Promise<void> {
         CoreApp.closeKeyboard();
 
-        const newSource = CoreItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId, query]);
+        const newSource = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+            CoreUserParticipantsSource,
+            [this.courseId, query],
+        );
 
         this.searchInProgress = true;
         this.searchQuery = query;
