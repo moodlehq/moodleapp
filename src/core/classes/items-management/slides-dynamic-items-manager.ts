@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSwipeSlidesDynamicItemsManagerSource } from './slides-dynamic-items-manager-source';
+import { CoreSwipeSlidesDynamicItem, CoreSwipeSlidesDynamicItemsManagerSource } from './slides-dynamic-items-manager-source';
 import { CoreSwipeSlidesItemsManager } from './slides-items-manager';
 
 /**
  * Helper class to manage items for core-swipe-slides.
  */
 export class CoreSwipeSlidesDynamicItemsManager<
-    Item = unknown,
+    Item extends CoreSwipeSlidesDynamicItem,
     Source extends CoreSwipeSlidesDynamicItemsManagerSource<Item> = CoreSwipeSlidesDynamicItemsManagerSource<Item>,
 > extends CoreSwipeSlidesItemsManager<Item, Source> {
 

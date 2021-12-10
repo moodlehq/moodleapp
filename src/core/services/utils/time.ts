@@ -396,16 +396,12 @@ export class CoreTimeUtilsProvider {
      * @return Previous month and its year.
      */
     getPreviousMonth(month: YearAndMonth): YearAndMonth {
-        if (month.monthNumber === 1) {
-            return {
-                monthNumber: 12,
-                year: month.year - 1,
-            };
-        }
+        const dayMoment = moment().year(month.year).month(month.monthNumber - 1);
+        dayMoment.subtract(1, 'month');
 
         return {
-            monthNumber: month.monthNumber - 1,
-            year: month.year,
+            year: dayMoment.year(),
+            monthNumber: dayMoment.month() + 1,
         };
     }
 
@@ -416,29 +412,27 @@ export class CoreTimeUtilsProvider {
      * @return Next month and its year.
      */
     getNextMonth(month: YearAndMonth): YearAndMonth {
-        if (month.monthNumber === 12) {
-            return {
-                monthNumber: 1,
-                year: month.year + 1,
-            };
-        }
+        const dayMoment = moment().year(month.year).month(month.monthNumber - 1);
+        dayMoment.add(1, 'month');
 
         return {
-            monthNumber: month.monthNumber + 1,
-            year: month.year,
+            year: dayMoment.year(),
+            monthNumber: dayMoment.month() + 1,
         };
     }
 
     /**
-     * Check if a certain month is current month.
+     * Get current month.
      *
-     * @param month Year and month.
-     * @return Whether it's current month.
+     * @return Current month.
      */
-    isCurrentMonth(month: YearAndMonth): boolean {
+    getCurrentMonth(): YearAndMonth {
         const now = new Date();
 
-        return month.year == now.getFullYear() && month.monthNumber == now.getMonth() + 1;
+        return {
+            year: now.getFullYear(),
+            monthNumber: now.getMonth() + 1,
+        };
     }
 
     /**
@@ -454,8 +448,6 @@ export class CoreTimeUtilsProvider {
     }
 
     /**
-     * Check if two months are the same.
-     *
      * @param monthA Month A.
      * @param monthB Month B.
      * @return Whether it's same month.
@@ -464,11 +456,94 @@ export class CoreTimeUtilsProvider {
         return monthA.monthNumber === monthB.monthNumber && monthA.year === monthB.year;
     }
 
+    /**
+     * Given a day data, return the previous day.
+     *
+     * @param day Day.
+     * @return Previous day.
+     */
+    getPreviousDay(day: YearMonthDay): YearMonthDay {
+        const dayMoment = moment().year(day.year).month(day.monthNumber - 1).date(day.dayNumber);
+        dayMoment.subtract(1, 'day');
+
+        return {
+            year: dayMoment.year(),
+            monthNumber: dayMoment.month() + 1,
+            dayNumber: dayMoment.date(),
+        };
+    }
+
+    /**
+     * Given a day data, return the next day.
+     *
+     * @param day Day.
+     * @return Next day.
+     */
+    getNextDay(day: YearMonthDay): YearMonthDay {
+        const dayMoment = moment().year(day.year).month(day.monthNumber - 1).date(day.dayNumber);
+        dayMoment.add(1, 'day');
+
+        return {
+            year: dayMoment.year(),
+            monthNumber: dayMoment.month() + 1,
+            dayNumber: dayMoment.date(),
+        };
+    }
+
+    /**
+     * Get current day.
+     *
+     * @return Current day.
+     */
+    getCurrentDay(): YearMonthDay {
+        const now = new Date();
+
+        return {
+            year: now.getFullYear(),
+            monthNumber: now.getMonth() + 1,
+            dayNumber: now.getDate(),
+        };
+    }
+
+    /**
+     * Check if a certain day is a past day.
+     *
+     * @param day Day.
+     * @return Whether it's a past day.
+     */
+    isPastDay(day: YearMonthDay): boolean {
+        const now = new Date();
+
+        return day.year < now.getFullYear() || (day.year === now.getFullYear() && day.monthNumber < now.getMonth() + 1) ||
+            (day.year === now.getFullYear() && day.monthNumber === now.getMonth() + 1 && day.dayNumber < now.getDate());
+    }
+
+    /**
+     * Check if two days are the same.
+     *
+     * @param dayA Day A.
+     * @param dayB Day B.
+     * @return Whether it's same day.
+     */
+    isSameDay(dayA: YearMonthDay, dayB: YearMonthDay): boolean {
+        return dayA.dayNumber === dayB.dayNumber && dayA.monthNumber === dayB.monthNumber && dayA.year === dayB.year;
+    }
+
 }
 
 export const CoreTimeUtils = makeSingleton(CoreTimeUtilsProvider);
 
+/**
+ * Data to identify a month.
+ */
 export type YearAndMonth = {
     year: number; // Year number.
     monthNumber: number; // Month number (1 to 12).
+};
+
+/**
+ * Data to identify a day.
+ */
+export type YearMonthDay = YearAndMonth & {
+    dayNumber: number; // Day number.
 };

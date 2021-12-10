@@ -17,15 +17,22 @@ import { CoreSwipeSlidesItemsManagerSource } from './slides-items-manager-source
 /**
  * Items collection source data for "swipe slides".
  */
-export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item = unknown> extends CoreSwipeSlidesItemsManagerSource<Item> {
+export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends CoreSwipeSlidesDynamicItem>
+    extends CoreSwipeSlidesItemsManagerSource<Item> {
+
+    // Items being loaded, to prevent loading them twice.
+    protected loadingItems: Record<string, boolean> = {};
 
     /**
      * @inheritdoc
      */
-    async load(): Promise<void> {
-        if (this.initialItem) {
+    async load(currentItem?: Partial<Item> | null): Promise<void> {
+        if (!this.initialized && this.initialItem) {
             // Load the initial item.
             await this.loadItem(this.initialItem);
+        } else if (this.initialized && currentItem) {
+            // Reload current item if needed.
+            await this.loadItem(currentItem);
         }
 
         this.setInitialized();
@@ -64,7 +71,7 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item = unknown> e
      * @return Promise resolved when done.
      */
     async loadItemInList(item: Partial<Item>, preload = false): Promise<void> {
-        const preloadedItem = await this.loadItemData(item, preload);
+        const preloadedItem = await this.performLoadItemData(item, preload);
         if (!preloadedItem) {
             return;
         }
@@ -115,6 +122,70 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item = unknown> e
 
     /**
      * Load or preload a certain item data.
+     * This helper function will check some common cases so they don't have to be replicated in all loadItemData implementations.
+     *
+     * @param item Basic data about the item to load.
+     * @param preload Whether to preload.
+     * @return Promise resolved with item. Resolve with null if already loading or item is not valid (e.g. there are no more items).
+     */
+    protected async performLoadItemData(item: Partial<Item>, preload: boolean): Promise<Item | null> {
+        const itemId = this.getItemId(item);
+
+        if (!itemId || this.loadingItems[itemId]) {
+            // Not valid or already loading, ignore it.
+            return null;
+        }
+
+        const existingItem = this.getItem(item);
+        if (existingItem && ((existingItem.loaded && !existingItem.dirty) || preload)) {
+            // Already loaded, or preloading an already preloaded item.
+            return existingItem;
+        }
+
+        // Load the item.
+        this.loadingItems[itemId] = true;
+
+        try {
+            const itemData = await this.loadItemData(item, preload);
+
+            if (itemData && !preload) {
+                itemData.loaded = true;
+                itemData.dirty = false;
+            }
+
+            if (existingItem && itemData) {
+                // Update item that is already in list.
+                Object.assign(existingItem, itemData);
+
+                return existingItem;
+            }
+
+            return itemData;
+        } finally {
+            this.loadingItems[itemId] = false;
+        }
+    }
+
+    /**
+     * Mark all items as dirty.
+     */
+    markAllItemsDirty(): void {
+        this.getItems()?.forEach(item => {
+            item.dirty = true;
+        });
+    }
+
+    /**
+     * Mark all items as not loaded.
+     */
+    markAllItemsUnloaded(): void {
+        this.getItems()?.forEach(item => {
+            item.loaded = false;
+        });
+    }
+
+    /**
+     * Load or preload a certain item data.
      *
      * @param item Basic data about the item to load.
      * @param preload Whether to preload.
@@ -139,3 +210,8 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item = unknown> e
     abstract getNextItem(item: Partial<Item>): Partial<Item> | null;
 
 }
+
+export type CoreSwipeSlidesDynamicItem = {
+    loaded?: boolean; // Whether the item has been loaded. This value can affect UI (e.g. to display a spinner).
+    dirty?: boolean; // Whether the item data needs to be reloaded. This value usually shouldn't affect UI.
+};
