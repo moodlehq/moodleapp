@@ -135,14 +135,16 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         const showCategories = this.block.configsRecord && this.block.configsRecord.displaycategories &&
             this.block.configsRecord.displaycategories.value == '1';
 
-        // WS is failing on 3.7 and 3.6, use a fallback.
-        if (!this.site.isVersionGreaterEqualThan('3.8')) {
+        let recentCourses: CoreCourseSummaryData[] = [];
+        try {
+            recentCourses = await CoreCourses.getRecentCourses();
+        } catch {
+            // WS is failing on 3.7 and bellow, use a fallback.
             this.courses = await CoreCoursesHelper.getUserCoursesWithOptions('lastaccess', 10, undefined, showCategories);
 
             return;
         }
 
-        const recentCourses = await CoreCourses.getRecentCourses();
         const courseIds = recentCourses.map((course) => course.id);
 
         // Get the courses using getCoursesByField to get more info about each course.
