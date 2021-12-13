@@ -45,7 +45,6 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         @Optional() courseContentsPage?: CoreCourseContentsPage,
     ) {
         super('AddonModBBBIndexComponent', content, courseContentsPage);
-        (<any>window).ths = this;
     }
 
     /**
