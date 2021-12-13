@@ -362,11 +362,11 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     /**
      * Play the package.
      */
-    play(): void {
+    async play(): Promise<void> {
         this.playing = true;
 
         // Mark the activity as viewed.
-        AddonModH5PActivity.logView(this.h5pActivity!.id, this.h5pActivity!.name, this.siteId);
+        await AddonModH5PActivity.logView(this.h5pActivity!.id, this.h5pActivity!.name, this.siteId);
 
         CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
     }

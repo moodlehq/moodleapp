@@ -203,11 +203,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
         try {
             if (refresh && this.showCompletion) {
-                try {
-                    this.module = await CoreCourse.getModule(this.module.id, this.courseId);
-                } catch {
-                    // Ignore errors.
-                }
+                await CoreUtils.ignoreErrors(this.fetchModule());
             }
 
             await this.fetchContent(refresh, sync, showErrors);
