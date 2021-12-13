@@ -264,8 +264,13 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         this.hasCourses = this.allCourses.length > 0;
 
-        this.gradePeriodAfter = parseInt(await this.currentSite.getConfig('coursegraceperiodafter', refresh), 10) || 0;
-        this.gradePeriodBefore = parseInt(await this.currentSite.getConfig('coursegraceperiodbefore', refresh), 10) || 0;
+        try {
+            this.gradePeriodAfter = parseInt(await this.currentSite.getConfig('coursegraceperiodafter', refresh), 10);
+            this.gradePeriodBefore = parseInt(await this.currentSite.getConfig('coursegraceperiodbefore', refresh), 10);
+        } catch {
+            this.gradePeriodAfter = 0;
+            this.gradePeriodBefore = 0;
+        }
 
         this.loadSort();
         this.loadLayouts(config?.layouts?.value.split(','));
