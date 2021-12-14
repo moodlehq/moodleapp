@@ -55,6 +55,7 @@ export class AddonModAssignSubmissionsSource extends CoreItemsManagerSource<Addo
         separateGroups: false,
         visibleGroups: false,
         defaultGroupId: 0,
+        canAccessAllGroups: false,
     };
 
     protected submissionsData: { canviewsubmissions: boolean; submissions?: AddonModAssignSubmission[] } = {

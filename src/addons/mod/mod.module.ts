@@ -15,6 +15,7 @@
 import { NgModule } from '@angular/core';
 
 import { AddonModAssignModule } from './assign/assign.module';
+import { AddonModBBBModule } from './bigbluebuttonbn/bigbluebuttonbn.module';
 import { AddonModBookModule } from './book/book.module';
 import { AddonModChatModule } from './chat/chat.module';
 import { AddonModChoiceModule } from './choice/choice.module';
@@ -40,6 +41,7 @@ import { AddonModWorkshopModule } from './workshop/workshop.module';
 @NgModule({
     imports: [
         AddonModAssignModule,
+        AddonModBBBModule,
         AddonModBookModule,
         AddonModChatModule,
         AddonModChoiceModule,

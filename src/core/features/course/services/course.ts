@@ -87,7 +87,7 @@ export class CoreCourseProvider {
     readonly CORE_MODULES = [
         'assign', 'assignment', 'book', 'chat', 'choice', 'data', 'database', 'date', 'external-tool',
         'feedback', 'file', 'folder', 'forum', 'glossary', 'ims', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz',
-        'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop', 'h5pactivity',
+        'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop', 'h5pactivity', 'bigbluebuttonbn',
     ];
 
     protected logger: CoreLogger;

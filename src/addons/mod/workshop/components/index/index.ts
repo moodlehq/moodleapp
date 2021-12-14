@@ -82,6 +82,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         separateGroups: false,
         visibleGroups: false,
         defaultGroupId: 0,
+        canAccessAllGroups: false,
     };
 
     canSubmit = false;

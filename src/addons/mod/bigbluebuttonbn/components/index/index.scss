@@ -1,0 +1,7 @@
+@import "~theme/globals";
+
+:host {
+    ion-item > p[slot="end"] {
+        font-size: 14px;
+    }
+}

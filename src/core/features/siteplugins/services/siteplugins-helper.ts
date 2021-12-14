@@ -205,7 +205,7 @@ export class CoreSitePluginsHelperProvider {
             undefined,
             undefined,
             undefined,
-            handlerSchema.styles!.version,
+            handlerSchema.styles?.version,
         );
 
         // File is downloaded, get the contents.
@@ -378,8 +378,9 @@ export class CoreSitePluginsHelperProvider {
 
         if (plugin.parsedHandlers) {
             // Register all the handlers.
-            await CoreUtils.allPromises(Object.keys(plugin.parsedHandlers).map(async (name) => {
-                await this.registerHandler(plugin, name, plugin.parsedHandlers![name]);
+            const parsedHandlers = plugin.parsedHandlers;
+            await CoreUtils.allPromises(Object.keys(parsedHandlers).map(async (name) => {
+                await this.registerHandler(plugin, name, parsedHandlers[name]);
             }));
         }
     }
@@ -891,6 +892,7 @@ export class CoreSitePluginsHelperProvider {
 
         const moduleHandler = new CoreSitePluginsModuleHandler(uniqueName, modName, plugin, handlerSchema, initResult);
         CoreCourseModuleDelegate.registerHandler(moduleHandler);
+        CoreSitePlugins.setModuleHandlerInstance(modName, moduleHandler);
 
         if (handlerSchema.offlinefunctions && Object.keys(handlerSchema.offlinefunctions).length) {
             // Register the prefetch handler.

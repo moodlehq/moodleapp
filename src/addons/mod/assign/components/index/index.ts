@@ -71,6 +71,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         separateGroups: false,
         visibleGroups: false,
         defaultGroupId: 0,
+        canAccessAllGroups: false,
     };
 
     // Status.
