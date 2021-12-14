@@ -235,7 +235,7 @@ export class CoreFormatTextDirective implements OnChanges {
             button.addEventListener('click', (e: Event) => {
                 e.preventDefault();
                 e.stopPropagation();
-                CoreDomUtils.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId, true);
+                CoreDomUtils.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId);
             });
 
             img.parentNode?.appendChild(button);

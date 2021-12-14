@@ -1787,14 +1787,12 @@ export class CoreDomUtilsProvider {
      * @param title Title of the page or modal.
      * @param component Component to link the image to if needed.
      * @param componentId An ID to use in conjunction with the component.
-     * @param fullScreen Whether the modal should be full screen.
      */
     async viewImage(
         image: string,
         title?: string | null,
         component?: string,
         componentId?: string | number,
-        fullScreen?: boolean,
     ): Promise<void> {
         if (!image) {
             return;
@@ -1808,7 +1806,7 @@ export class CoreDomUtilsProvider {
                 component,
                 componentId,
             },
-            cssClass: fullScreen ? 'core-modal-fullscreen' : '',
+            cssClass: 'core-modal-transparent',
         });
 
     }

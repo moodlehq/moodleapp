@@ -510,6 +510,27 @@ body.core-iframe-fullscreen ion-router-outlet {
     height: 100% !important;
 }
 
+.core-modal-transparent {
+
+    ion-backdrop {
+        backdrop-filter: blur(8px);
+    }
+
+    .modal-wrapper {
+        backdrop-filter: blur(12px);
+        --background: rgba(10, 10, 10, 0.2);
+
+        ion-content {
+            --background: transparent !important;
+        }
+        position: absolute;
+        @include position(0 !important, null, null, 0 !important);
+        display: block;
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
 .core-modal-force-on-top {
     z-index: 100000 !important;
 }

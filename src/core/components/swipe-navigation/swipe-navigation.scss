@@ -9,7 +9,7 @@ ion-slide {
 ::ng-deep {
 
     core-loading .core-loading-content {
-        display: block;
+        display: block !important;
         width: 100%;
     }
 
