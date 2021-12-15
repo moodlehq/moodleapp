@@ -17,6 +17,7 @@ import { CoreSites } from '@services/sites';
 import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
 import { CoreSiteHome } from '../sitehome';
 import { makeSingleton } from '@singletons';
+import { CoreSiteInfoUserHomepage } from '@classes/site';
 
 /**
  * Handler to add site home into home page.
@@ -55,7 +56,8 @@ export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
      */
     getDisplayData(): CoreMainMenuHomeHandlerToDisplay {
         const site = CoreSites.getCurrentSite();
-        const displaySiteHome = site?.getInfo() && site?.getInfo()?.userhomepage === 0;
+
+        const displaySiteHome = site?.getInfo() && site?.getInfo()?.userhomepage === CoreSiteInfoUserHomepage.HOMEPAGE_SITE;
 
         return {
             title: 'core.sitehome.sitehome',
