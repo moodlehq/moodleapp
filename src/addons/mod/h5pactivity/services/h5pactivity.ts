@@ -1128,3 +1128,43 @@ declare module '@singletons/events' {
     }
 
 }
+
+/**
+ * Data to be sent using xAPI.
+ */
+export type AddonModH5PActivityXAPIData = {
+    action: string;
+    component: string;
+    context: string;
+    environment: string;
+    statements: AddonModH5PActivityStatement[];
+};
+
+/**
+ * xAPI statement.
+ */
+export type AddonModH5PActivityStatement = {
+    actor: Record<string, string>;
+    context: Record<string, unknown>;
+    object: {
+        id: string;
+        definition: Record<string, unknown>;
+        objectType: string;
+    };
+    result: {
+        completion: boolean;
+        duration: string;
+        score: {
+            min: number;
+            max: number;
+            raw: number;
+            scaled: number;
+        };
+        success?: boolean;
+        response?: string;
+    };
+    verb: {
+        id: string;
+        display: Record<string, string>;
+    };
+};

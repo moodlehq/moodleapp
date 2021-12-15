@@ -37,6 +37,7 @@ import {
     AddonModH5PActivityAccessInfo,
     AddonModH5PActivityData,
     AddonModH5PActivityProvider,
+    AddonModH5PActivityXAPIData,
 } from '../../services/h5pactivity';
 import {
     AddonModH5PActivitySync,
@@ -409,7 +410,8 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      * @return Promise resolved when done.
      */
     protected async onIframeMessage(event: MessageEvent): Promise<void> {
-        if (!event.data || !CoreXAPI.canPostStatementsInSite(this.site) || !this.isCurrentXAPIPost(event.data)) {
+        const data = event.data;
+        if (!data || !CoreXAPI.canPostStatementsInSite(this.site) || !this.isCurrentXAPIPost(data)) {
             return;
         }
 
@@ -423,8 +425,8 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
             const sent = await CoreXAPI.postStatements(
                 this.h5pActivity!.context,
-                event.data.component,
-                JSON.stringify(event.data.statements),
+                data.component,
+                JSON.stringify(data.statements),
                 options,
             );
 
@@ -436,6 +438,12 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                     await AddonModH5PActivity.invalidateUserAttempts(this.h5pActivity!.id, undefined, this.siteId);
                 } catch (error) {
                     // Ignore errors.
+                }
+
+                // Check if the H5P has ended. Final statements don't include a subContentId.
+                const hasEnded = data.statements.some(statement => !statement.object.id.includes('subContentId='));
+                if (hasEnded) {
+                    CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
                 }
             }
         } catch (error) {
@@ -450,7 +458,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      * @return Whether it's an XAPI post statement of the current activity.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected isCurrentXAPIPost(data: any): boolean {
+    protected isCurrentXAPIPost(data: any): data is AddonModH5PActivityXAPIData {
         if (data.environment != 'moodleapp' || data.context != 'h5p' || data.action != 'xapi_post_statement' || !data.statements) {
             return false;
         }
