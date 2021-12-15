@@ -216,8 +216,8 @@ export class AddonModH5PActivityProvider {
 
         const optionsWithPage: AddonModH5PActivityGetAllUsersAttemptsOptions = {
             ...options,
-            page: 0,
         };
+        optionsWithPage.page = 0;
         let canLoadMore = true;
         let users: AddonModH5PActivityUserAttempts[] = [];
 
@@ -225,7 +225,7 @@ export class AddonModH5PActivityProvider {
             try {
                 const result = await this.getUsersAttempts(id, optionsWithPage);
 
-                optionsWithPage.page = optionsWithPage.page! + 1;
+                optionsWithPage.page = optionsWithPage.page + 1;
                 users = users.concat(result.users);
                 canLoadMore = result.canLoadMore;
             } catch (error) {
@@ -359,10 +359,11 @@ export class AddonModH5PActivityProvider {
 
         const params: AddonModH5pactivityGetResultsWSParams = {
             h5pactivityid: id,
-            attemptids: [attemptId],
         };
+        params.attemptids = [attemptId];
+
         const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getAttemptResultsCacheKey(id, params.attemptids!),
+            cacheKey: this.getAttemptResultsCacheKey(id, params.attemptids),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
             component: AddonModH5PActivityProvider.COMPONENT,
             componentId: options.cmId,
@@ -610,10 +611,11 @@ export class AddonModH5PActivityProvider {
         try {
             const params: AddonModH5pactivityGetAttemptsWSParams = {
                 h5pactivityid: id,
-                userids: [userId],
             };
+            params.userids = [userId];
+
             const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getUserAttemptsCacheKey(id, params.userids!),
+                cacheKey: this.getUserAttemptsCacheKey(id, params.userids),
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
                 component: AddonModH5PActivityProvider.COMPONENT,
                 componentId: options.cmId,
