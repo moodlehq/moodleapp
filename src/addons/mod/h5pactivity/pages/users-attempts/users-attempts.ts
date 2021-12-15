@@ -63,7 +63,9 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
         try {
             await this.fetchData();
 
-            await AddonModH5PActivity.logViewReport(this.h5pActivity!.id, this.h5pActivity!.name);
+            if (this.h5pActivity) {
+                await AddonModH5PActivity.logViewReport(this.h5pActivity.id, this.h5pActivity.name);
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading attempts.');
         } finally {
@@ -103,16 +105,20 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchUsers(refresh?: boolean): Promise<void> {
+        if (!this.h5pActivity) {
+            return;
+        }
+
         if (refresh) {
             this.page = 0;
         }
 
-        const result = await AddonModH5PActivity.getUsersAttempts(this.h5pActivity!.id, {
+        const result = await AddonModH5PActivity.getUsersAttempts(this.h5pActivity.id, {
             cmId: this.cmId,
             page: this.page,
         });
 
-        const formattedUsers = await this.formatUsers(result.users);
+        const formattedUsers = await this.formatUsers(this.h5pActivity, result.users);
 
         if (this.page === 0) {
             this.users = formattedUsers;
@@ -127,17 +133,21 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
     /**
      * Format users data.
      *
+     * @param h5pActivity Activity data.
      * @param users Users to format.
      * @return Formatted users.
      */
-    protected async formatUsers(users: AddonModH5PActivityUserAttempts[]): Promise<AddonModH5PActivityUserAttemptsFormatted[]> {
+    protected async formatUsers(
+        h5pActivity: AddonModH5PActivityData,
+        users: AddonModH5PActivityUserAttempts[],
+    ): Promise<AddonModH5PActivityUserAttemptsFormatted[]> {
         return await Promise.all(users.map(async (user: AddonModH5PActivityUserAttemptsFormatted) => {
             user.user = await CoreUser.getProfile(user.userid, this.courseId, true);
 
             // Calculate the score of the user.
-            if (this.h5pActivity!.grademethod === AddonModH5PActivityProvider.GRADEMANUAL) {
+            if (h5pActivity.grademethod === AddonModH5PActivityProvider.GRADEMANUAL) {
                 // No score.
-            } else if (this.h5pActivity!.grademethod === AddonModH5PActivityProvider.GRADEAVERAGEATTEMPT) {
+            } else if (h5pActivity.grademethod === AddonModH5PActivityProvider.GRADEAVERAGEATTEMPT) {
                 if (user.attempts.length) {
                     // Calculate the average.
                     const sumScores = user.attempts.reduce((sumScores, attempt) =>

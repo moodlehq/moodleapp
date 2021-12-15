@@ -65,7 +65,9 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
         try {
             await this.fetchData();
 
-            await AddonModH5PActivity.logViewReport(this.h5pActivity!.id, this.h5pActivity!.name, { attemptId: this.attemptId });
+            if (this.h5pActivity) {
+                await AddonModH5PActivity.logViewReport(this.h5pActivity.id, this.h5pActivity.name, { attemptId: this.attemptId });
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading attempt.');
         } finally {
@@ -105,8 +107,12 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchUserProfile(): Promise<void> {
+        if (!this.attempt) {
+            return;
+        }
+
         try {
-            this.user = await CoreUser.getProfile(this.attempt!.userid, this.courseId, true);
+            this.user = await CoreUser.getProfile(this.attempt.userid, this.courseId, true);
         } catch (error) {
             // Ignore errors.
         }
