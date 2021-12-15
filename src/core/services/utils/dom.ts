@@ -1703,6 +1703,9 @@ export class CoreDomUtilsProvider {
 
         let navSubscription: Subscription | undefined;
 
+        // Get the promise before presenting to get result if modal is suddenly hidden.
+        const resultPromise = waitForDismissCompleted ? modal.onDidDismiss<T>() : modal.onWillDismiss<T>();
+
         if (!this.displayedModals[modalId]) {
             // Store the modal and remove it when dismissed.
             this.displayedModals[modalId] = modal;
@@ -1719,7 +1722,8 @@ export class CoreDomUtilsProvider {
             await modal.present();
         }
 
-        const result = waitForDismissCompleted ? await modal.onDidDismiss<T>() : await modal.onWillDismiss<T>();
+        const result = await resultPromise;
+
         navSubscription?.unsubscribe();
         delete this.displayedModals[modalId];
 
