@@ -33,6 +33,7 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import {
     CoreCourse,
+    CoreCourseModuleCompletionStatus,
     CoreCourseProvider,
 } from '@features/course/services/course';
 import {
@@ -643,7 +644,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         const moduleProgressPercent = 100 / (completionModules || 1);
         // Use min/max here to avoid floating point rounding errors over/under-flowing the progress bar.
-        if (completionData.state === CoreCourseProvider.COMPLETION_COMPLETE) {
+        if (completionData.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
             this.course.progress = Math.min(100, this.course.progress + moduleProgressPercent);
         } else {
             this.course.progress = Math.max(0, this.course.progress - moduleProgressPercent);

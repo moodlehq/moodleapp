@@ -100,7 +100,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.showCompletion = !!CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
 
         if (this.showCompletion) {
-            CoreCourseHelper.calculateModuleCompletionData(this.module, this.courseId);
+            CoreCourseHelper.calculateModuleCompletionData(this.module);
             CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, this.module);
 
             this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
@@ -428,7 +428,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected async fetchModule(): Promise<void> {
         const module = await CoreCourse.getModule(this.module.id, this.courseId);
 
-        CoreCourseHelper.calculateModuleCompletionData(module, this.courseId);
+        CoreCourseHelper.calculateModuleCompletionData(module);
 
         await CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, module);
 

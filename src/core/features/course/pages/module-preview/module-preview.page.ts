@@ -73,7 +73,7 @@ export class CoreCourseModulePreviewPage implements OnInit {
             this.module = await CoreCourse.getModule(this.module.id, this.courseId);
         }
 
-        CoreCourseHelper.calculateModuleCompletionData(this.module, this.courseId);
+        CoreCourseHelper.calculateModuleCompletionData(this.module);
 
         await CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, this.module);
 

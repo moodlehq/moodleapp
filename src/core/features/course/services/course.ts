@@ -62,6 +62,25 @@ declare module '@singletons/events' {
 }
 
 /**
+ * Completion status valid values.
+ */
+export enum CoreCourseModuleCompletionStatus {
+    COMPLETION_INCOMPLETE = 0,
+    COMPLETION_COMPLETE = 1,
+    COMPLETION_COMPLETE_PASS = 2,
+    COMPLETION_COMPLETE_FAIL = 3,
+}
+
+/**
+ * Completion tracking valid values.
+ */
+export enum CoreCourseModuleCompletionTracking {
+    COMPLETION_TRACKING_NONE = 0,
+    COMPLETION_TRACKING_MANUAL = 1,
+    COMPLETION_TRACKING_AUTOMATIC = 2,
+}
+
+/**
  * Service that provides some features regarding a course.
  */
 @Injectable({ providedIn: 'root' })
@@ -73,13 +92,34 @@ export class CoreCourseProvider {
     static readonly ACCESS_DEFAULT = 'courses_access_default';
     static readonly ALL_COURSES_CLEARED = -1;
 
+    /**
+     * @deprecated since 4.0, use CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE instead.
+     */
     static readonly COMPLETION_TRACKING_NONE = 0;
+    /**
+     * @deprecated since 4.0, use CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL instead.
+     */
     static readonly COMPLETION_TRACKING_MANUAL = 1;
+    /**
+     * @deprecated since 4.0, use CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC instead.
+     */
     static readonly COMPLETION_TRACKING_AUTOMATIC = 2;
 
+    /**
+     * @deprecated since 4.0, use CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE instead.
+     */
     static readonly COMPLETION_INCOMPLETE = 0;
+    /**
+     * @deprecated since 4.0, use CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE instead.
+     */
     static readonly COMPLETION_COMPLETE = 1;
+    /**
+     * @deprecated since 4.0, use CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_PASS instead.
+     */
     static readonly COMPLETION_COMPLETE_PASS = 2;
+    /**
+     * @deprecated since 4.0, use CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_FAIL instead.
+     */
     static readonly COMPLETION_COMPLETE_FAIL = 3;
 
     static readonly COMPONENT = 'CoreCourse';
@@ -151,7 +191,8 @@ export class CoreCourseProvider {
      * @param completion Completion status of the module.
      */
     checkModuleCompletion(courseId: number, completion?: CoreCourseModuleCompletionData): void {
-        if (completion && completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC && completion.state === 0) {
+        if (completion && completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC &&
+            completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE) {
             this.invalidateSections(courseId).finally(() => {
                 CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, {
                     courseId: courseId,
@@ -256,7 +297,7 @@ export class CoreCourseProvider {
                     const onlineCompletion = completionStatus[offlineCompletion.cmid];
 
                     // If the activity uses manual completion, override the value with the offline one.
-                    if (onlineCompletion.tracking === 1) {
+                    if (onlineCompletion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL) {
                         onlineCompletion.state = offlineCompletion.completed;
                         onlineCompletion.offline = true;
                     }
@@ -986,7 +1027,7 @@ export class CoreCourseProvider {
             CoreCourseOffline.markCompletedManually(cmId, completed, courseId, courseName, siteId);
 
         // The offline function requires a courseId and it could be missing because it's a calculated field.
-        if (!CoreApp.isOnline() && courseId) {
+        if (!CoreApp.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -996,18 +1037,14 @@ export class CoreCourseProvider {
             const result = await this.markCompletedManuallyOnline(cmId, completed, siteId);
 
             // Data sent to server, if there is some offline data delete it now.
-            try {
-                await CoreCourseOffline.deleteManualCompletion(cmId, siteId);
-            } catch {
-                // Ignore errors, shouldn't happen.
-            }
+            await CoreUtils.ignoreErrors(CoreCourseOffline.deleteManualCompletion(cmId, siteId));
 
             // Invalidate module now, completion has changed.
             await this.invalidateModule(cmId, siteId);
 
             return result;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error) || !courseId) {
+            if (CoreUtils.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             } else {
@@ -1346,7 +1383,7 @@ export type CoreCourseCompletionActivityStatus = {
     instance: number; // Instance ID.
     state: number; // Completion state value: 0 means incomplete, 1 complete, 2 complete pass, 3 complete fail.
     timecompleted: number; // Timestamp for completed activity.
-    tracking: number; // Type of tracking: 0 means none, 1 manual, 2 automatic.
+    tracking: CoreCourseModuleCompletionTracking; // Type of tracking: 0 means none, 1 manual, 2 automatic.
     overrideby?: number | null; // The user id who has overriden the status, or null.
     valueused?: boolean; // Whether the completion status affects the availability of another activity.
     hascompletion?: boolean; // @since 3.11. Whether this activity module has completion enabled.
@@ -1497,7 +1534,7 @@ export type CoreCourseWSModule = {
     afterlink?: string; // After link info to be displayed.
     customdata?: string; // Custom data (JSON encoded).
     noviewlink?: boolean; // Whether the module has no view page.
-    completion?: number; // Type of completion tracking: 0 means none, 1 manual, 2 automatic.
+    completion?: CoreCourseModuleCompletionTracking; // Type of completion tracking: 0 means none, 1 manual, 2 automatic.
     completiondata?: CoreCourseModuleWSCompletionData; // Module completion data.
     contents?: CoreCourseModuleContentFile[];
     dates?: {
@@ -1517,7 +1554,7 @@ export type CoreCourseWSModule = {
  * Module completion data.
  */
 export type CoreCourseModuleWSCompletionData = {
-    state: number; // Completion state value: 0 means incomplete, 1 complete, 2 complete pass, 3 complete fail.
+    state: CoreCourseModuleCompletionStatus; // Completion state value.
     timecompleted: number; // Timestamp for completion status.
     overrideby: number | null; // The user id who has overriden the status.
     valueused?: boolean; // Whether the completion status affects the availability of another activity.

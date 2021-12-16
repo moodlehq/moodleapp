@@ -25,6 +25,8 @@ import {
     CoreCourseWSModule,
     CoreCourseProvider,
     CoreCourseWSSection,
+    CoreCourseModuleCompletionTracking,
+    CoreCourseModuleCompletionStatus,
 } from './course';
 import { CoreConstants } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
@@ -200,8 +202,8 @@ export class CoreCourseHelperProvider {
                 );
 
                 if (module.completiondata) {
-                    this.calculateModuleCompletionData(module, courseId, courseName);
-                } else if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
+                    this.calculateModuleCompletionData(module, undefined, courseName);
+                } else if (completionStatus && completionStatus[module.id] !== undefined) {
                     // Should not happen on > 3.6. Check if activity has completions and if it's marked.
                     const activityStatus = completionStatus[module.id];
 
@@ -229,18 +231,18 @@ export class CoreCourseHelperProvider {
      * Calculate completion data of a module.
      *
      * @param module Module.
-     * @param courseId Course ID of the module.
+     * @param courseId Not used since 4.0
      * @param courseName Course name.
      */
-    calculateModuleCompletionData(module: CoreCourseModule, courseId: number, courseName?: string): void {
+    calculateModuleCompletionData(module: CoreCourseModule, courseId?: number, courseName?: string): void {
         if (!module.completiondata || !module.completion) {
             return;
         }
 
-        module.completiondata.courseId = courseId;
-        module.completiondata.courseName = courseName;
+        module.completiondata.courseId = module.course;
         module.completiondata.tracking = module.completion;
         module.completiondata.cmid = module.id;
+        module.completiondata.courseName = courseName;
     }
 
     /**
@@ -2069,7 +2071,8 @@ export class CoreCourseHelperProvider {
             return;
         }
 
-        if (typeof completion.cmid == 'undefined' || completion.tracking !== 1) {
+        if (completion.cmid === undefined ||
+            completion.tracking !== CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL) {
             return;
         }
 
@@ -2077,14 +2080,15 @@ export class CoreCourseHelperProvider {
         event?.stopPropagation();
 
         const modal = await CoreDomUtils.showModalLoading();
-        completion.state = completion.state === 1 ? 0 : 1;
+        completion.state = completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE
+            ? CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE
+            : CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE;
 
         try {
             const response = await CoreCourse.markCompletedManually(
                 completion.cmid,
-                completion.state === 1,
+                completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE,
                 completion.courseId!,
-                completion.courseName,
             );
 
             if (response.offline) {
@@ -2093,7 +2097,11 @@ export class CoreCourseHelperProvider {
 
             return response;
         } catch (error) {
-            completion.state = completion.state === 1 ? 0 : 1;
+            // Restore previous state.
+            completion.state = completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE
+                ? CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE
+                : CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE;
+
             CoreDomUtils.showErrorModalDefault(error, 'core.errorchangecompletion', true);
         } finally {
             modal.dismiss();
@@ -2139,7 +2147,7 @@ export type CoreCourseModule = Omit<CoreCourseWSModule, 'completiondata'> & {
 export type CoreCourseModuleCompletionData = CoreCourseModuleWSCompletionData & {
     courseId?: number;
     courseName?: string;
-    tracking?: number;
+    tracking?: CoreCourseModuleCompletionTracking;
     cmid?: number;
     offline?: boolean;
 };
