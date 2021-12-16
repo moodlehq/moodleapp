@@ -173,7 +173,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
     async invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         const promises: Promise<void>[] = [];
         promises.push(AddonModData.invalidateDatabaseData(courseId));
-        promises.push(AddonModData.invalidateDatabaseAccessInformationData(module.instance!));
+        promises.push(AddonModData.invalidateDatabaseAccessInformationData(module.instance));
 
         await Promise.all(promises);
     }
@@ -279,7 +279,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
      */
     async sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModDataSyncResult> {
         const promises = [
-            AddonModDataSync.syncDatabase(module.instance!, siteId),
+            AddonModDataSync.syncDatabase(module.instance, siteId),
             AddonModDataSync.syncRatings(module.id, true, siteId),
         ];
 

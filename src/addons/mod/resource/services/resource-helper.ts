@@ -202,7 +202,7 @@ export class AddonModResourceHelperProvider {
             );
 
             try {
-                await AddonModResource.logView(module.instance!, module.name);
+                await AddonModResource.logView(module.instance, module.name);
                 CoreCourse.checkModuleCompletion(courseId, module.completiondata);
             } catch {
                 // Ignore errors.

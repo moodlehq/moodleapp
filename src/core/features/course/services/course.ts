@@ -936,7 +936,7 @@ export class CoreCourseProvider {
      * Load module contents into module.contents if they aren't loaded already.
      *
      * @param module Module to load the contents.
-     * @param courseId The course ID. Recommended to speed up the process and minimize data usage.
+     * @param courseId Not used since 4.0.
      * @param sectionId The section ID.
      * @param preferCache True if shouldn't call WS if data is cached, false otherwise.
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
@@ -960,7 +960,7 @@ export class CoreCourseProvider {
             return;
         }
 
-        const mod = await this.getModule(module.id, courseId, sectionId, preferCache, ignoreCache, siteId, modName);
+        const mod = await this.getModule(module.id, module.course, sectionId, preferCache, ignoreCache, siteId, modName);
 
         if (!mod.contents) {
             throw new CoreError(Translate.instant('core.course.modulenotfound'));
@@ -1532,13 +1532,13 @@ export type CoreCourseGetContentsWSModule = {
     id: number; // Activity id.
     url?: string; // Activity url.
     name: string; // Activity module name.
-    instance?: number; // Instance id.
-    contextid?: number; // Activity context id.
+    instance: number; // Instance id. Cannot be undefined.
+    contextid?: number; // @since 3.10. Activity context id.
     description?: string; // Activity description.
-    visible?: number; // Is the module visible.
-    uservisible?: boolean; // Is the module visible for the user?.
+    visible: number; // Is the module visible. Cannot be undefined.
+    uservisible: boolean; // Is the module visible for the user?. Cannot be undefined.
     availabilityinfo?: string; // Availability information.
-    visibleoncoursepage?: number; // Is the module visible on course page.
+    visibleoncoursepage: number; // Is the module visible on course page. Cannot be undefined.
     modicon: string; // Activity icon url.
     modname: string; // Activity module type.
     modplural: string; // Activity module plural name.

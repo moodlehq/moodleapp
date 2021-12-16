@@ -219,7 +219,7 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
      */
     async sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModGlossarySyncResult> {
         const results = await Promise.all([
-            AddonModGlossarySync.syncGlossaryEntries(module.instance!, undefined, siteId),
+            AddonModGlossarySync.syncGlossaryEntries(module.instance, undefined, siteId),
             AddonModGlossarySync.syncRatings(module.id, undefined, siteId),
         ]);
 

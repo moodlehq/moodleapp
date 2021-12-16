@@ -379,7 +379,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
      * @inheritdoc
      */
     async sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModDataSyncResult> {
-        return AddonModWorkshopSync.syncWorkshop(module.instance!, siteId);
+        return AddonModWorkshopSync.syncWorkshop(module.instance, siteId);
     }
 
 }

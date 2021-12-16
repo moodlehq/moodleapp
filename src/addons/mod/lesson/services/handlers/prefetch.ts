@@ -537,7 +537,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved when done.
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModLessonSyncResult> {
-        return AddonModLessonSync.syncLesson(module.instance!, false, false, siteId);
+        return AddonModLessonSync.syncLesson(module.instance, false, false, siteId);
     }
 
 }

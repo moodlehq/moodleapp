@@ -28,7 +28,6 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreWSFile } from '@services/ws';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../assign-helper';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
@@ -243,7 +242,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         promises.push(this.prefetchSubmissions(assign, courseId, module.id, userId, siteId));
 
-        promises.push(CoreCourseHelper.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(assign.id, 'assign', siteId));
         // Get course data, needed to determine upload max size if it's configured to be course limit.
         promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
@@ -515,7 +514,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved when done.
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
-        return AddonModAssignSync.syncAssign(module.instance!, siteId);
+        return AddonModAssignSync.syncAssign(module.instance, siteId);
     }
 
 }

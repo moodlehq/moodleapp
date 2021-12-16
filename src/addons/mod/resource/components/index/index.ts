@@ -82,7 +82,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
         await this.loadContent();
         try {
-            await AddonModResource.logView(this.module.instance!, this.module.name);
+            await AddonModResource.logView(this.module.instance, this.module.name);
             CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors.

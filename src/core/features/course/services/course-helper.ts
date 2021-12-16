@@ -1430,26 +1430,6 @@ export class CoreCourseHelperProvider {
     }
 
     /**
-     * Get the course ID from a module instance ID, showing an error message if it can't be retrieved.
-     *
-     * @param id Instance ID.
-     * @param module Name of the module. E.g. 'glossary'.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the module's course ID.
-     */
-    async getModuleCourseIdByInstance(id: number, module: string, siteId?: string): Promise<number> {
-        try {
-            const cm = await CoreCourse.getModuleBasicInfoByInstance(id, module, siteId);
-
-            return cm.course;
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
-
-            throw error;
-        }
-    }
-
-    /**
      * Get prefetch info for a module.
      *
      * @param module Module to get the info from.
@@ -1629,7 +1609,7 @@ export class CoreCourseHelperProvider {
             const site = await CoreSites.getSite(siteId);
 
             // Get the module.
-            const module = <CoreCourseModuleData>
+            const module =
                 await CoreCourse.getModule(moduleId, courseId, sectionId, false, false, siteId, modName);
 
             if (CoreSites.getCurrentSiteId() == site.getId()) {
@@ -1649,13 +1629,11 @@ export class CoreCourseHelperProvider {
                 }
             }
 
-            this.logger.warn('navCtrl was not passed to navigateToModule by the link handler for ' + module.modname);
-
             const params: Params = {
                 course: { id: courseId },
-                module: module,
-                sectionId: sectionId,
-                modParams: modParams,
+                module,
+                sectionId,
+                modParams,
             };
 
             if (courseId == site.getSiteHomeId()) {

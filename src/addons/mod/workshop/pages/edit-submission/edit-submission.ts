@@ -116,7 +116,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
             this.editorExtraParams.id = this.submissionId;
         }
 
-        this.workshopId = this.module.instance!;
+        this.workshopId = this.module.instance;
         this.componentId = this.module.id;
 
         if (!this.isDestroyed) {

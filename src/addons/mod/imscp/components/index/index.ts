@@ -53,7 +53,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
         await this.loadContent();
 
         try {
-            await AddonModImscp.logView(this.module.instance!, this.module.name);
+            await AddonModImscp.logView(this.module.instance, this.module.name);
             CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors.

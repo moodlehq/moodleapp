@@ -54,7 +54,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
         await this.loadContent();
 
         try {
-            await AddonModPage.logView(this.module.instance!, this.module.name);
+            await AddonModPage.logView(this.module.instance, this.module.name);
             CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors.

@@ -208,7 +208,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         // Invalidate the calls required to check if a quiz is downloadable.
         await Promise.all([
             AddonModQuiz.invalidateQuizData(courseId),
-            AddonModQuiz.invalidateUserAttemptsForUser(module.instance!),
+            AddonModQuiz.invalidateUserAttemptsForUser(module.instance),
         ]);
     }
 
