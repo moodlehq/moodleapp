@@ -2118,7 +2118,7 @@ export type CoreSiteInfoResponse = {
     usercanmanageownfiles?: boolean; // True if the user can manage his own files.
     userquota?: number; // User quota (bytes). 0 means user can ignore the quota.
     usermaxuploadfilesize?: number; // User max upload file size (bytes). -1 means the user can ignore the upload file size.
-    userhomepage?: number; // The default home page for the user: 0 for the site home, 1 for dashboard.
+    userhomepage?: CoreSiteInfoUserHomepage; // The default home page for the user.
     userprivateaccesskey?: string; // Private user access key for fetching files.
     siteid?: number; // Site course ID.
     sitecalendartype?: string; // Calendar type set in the site.
@@ -2137,6 +2137,15 @@ export type CoreSiteInfo = CoreSiteInfoResponse & {
             version: string; // The version number of the component to which the function belongs.
         };
     };
+};
+
+/**
+ * Enum constants that define default user home page.
+ */
+export enum CoreSiteInfoUserHomepage {
+    HOMEPAGE_SITE = 0, // Site home.
+    HOMEPAGE_MY = 1, // Dashboard.
+    HOMEPAGE_MYCOURSES = 3, // My courses.
 };
 
 /**

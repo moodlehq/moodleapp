@@ -107,7 +107,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
         }
 
         // Wait animations to finish.
-        const animations = this.content.getAnimations();
+        const animations = (this.content.getAnimations && this.content.getAnimations()) || [];
         await Promise.all(animations.map(async (animation) => {
             await animation.finished;
         }));
