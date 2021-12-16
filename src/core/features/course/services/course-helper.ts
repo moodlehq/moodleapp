@@ -164,7 +164,7 @@ export class CoreCourseHelperProvider {
      * @param sections List of sections to treat modules.
      * @param courseId Course ID of the modules.
      * @param completionStatus List of completion status.
-     * @param courseName Course name. Recommended if completionStatus is supplied.
+     * @param courseName Not used since 4.0
      * @param forCoursePage Whether the data will be used to render the course page.
      * @return Whether the sections have content.
      */
@@ -210,7 +210,6 @@ export class CoreCourseHelperProvider {
                         valueused: activityStatus.valueused,
                         tracking: activityStatus.tracking,
                         courseId,
-                        courseName,
                         cmid: module.id,
                     };
                 }

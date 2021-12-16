@@ -81,7 +81,7 @@ export class CoreCourseOfflineProvider {
      * @param cmId The module ID to store the completion.
      * @param completed Whether the module is completed or not.
      * @param courseId Course ID the module belongs to.
-     * @param courseName Course name. Recommended, it is used to display a better warning message.
+     * @param courseName Not used since 4.0.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when completion is successfully stored.
      */
@@ -99,7 +99,6 @@ export class CoreCourseOfflineProvider {
             cmid: cmId,
             completed: completed ? 1 : 0,
             courseid: courseId,
-            coursename: courseName || '',
             timecompleted: Date.now(),
         };
         await site.getDb().insertRecord(MANUAL_COMPLETION_TABLE, entry);

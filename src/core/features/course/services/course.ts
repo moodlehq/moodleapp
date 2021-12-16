@@ -1041,7 +1041,7 @@ export class CoreCourseProvider {
      * @param cmId The module ID.
      * @param completed Whether the module is completed or not.
      * @param courseId Course ID the module belongs to.
-     * @param courseName Course name. Recommended, it is used to display a better warning message.
+     * @param courseName Not used since 4.0.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when completion is successfully sent or stored.
      */
@@ -1057,7 +1057,7 @@ export class CoreCourseProvider {
 
         // Convenience function to store a completion to be synchronized later.
         const storeOffline = (): Promise<CoreStatusWithWarningsWSResponse> =>
-            CoreCourseOffline.markCompletedManually(cmId, completed, courseId, courseName, siteId);
+            CoreCourseOffline.markCompletedManually(cmId, completed, courseId, undefined, siteId);
 
         // The offline function requires a courseId and it could be missing because it's a calculated field.
         if (!CoreApp.isOnline()) {
