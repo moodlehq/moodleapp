@@ -242,7 +242,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         promises.push(this.prefetchSubmissions(assign, courseId, module.id, userId, siteId));
 
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(assign.id, 'assign', siteId));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(assign.id, 'assign', { siteId }));
         // Get course data, needed to determine upload max size if it's configured to be course limit.
         promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
@@ -253,7 +253,6 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         promises.push(CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id));
 
         await Promise.all(promises);
-
     }
 
     /**

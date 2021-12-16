@@ -18,7 +18,7 @@ import { Params } from '@angular/router';
 import { CoreApp } from '@services/app';
 import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
-import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
+import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
@@ -502,8 +502,12 @@ export class CoreCourseProvider {
 
         if (!courseId) {
             // No courseId passed, try to retrieve it.
-            const module = await this.getModuleBasicInfo(moduleId, siteId);
+            const module = await this.getModuleBasicInfo(
+                moduleId,
+                { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+            );
             courseId = module.course;
+            sectionId = module.section;
         }
 
         let sections: CoreCourseGetContentsWSSection[];
@@ -530,9 +534,8 @@ export class CoreCourseProvider {
         let foundModule: CoreCourseGetContentsWSModule | undefined;
 
         const foundSection = sections.some((section) => {
-            if (sectionId != null &&
-                !isNaN(sectionId) &&
-                section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID &&
+            if (section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID &&
+                sectionId !== undefined &&
                 sectionId != section.id
             ) {
                 return false;
@@ -585,17 +588,18 @@ export class CoreCourseProvider {
      * Gets a module basic info by module ID.
      *
      * @param moduleId Module ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Comon site WS options.
      * @return Promise resolved with the module's info.
      */
-    async getModuleBasicInfo(moduleId: number, siteId?: string): Promise<CoreCourseModuleBasicInfo> {
-        const site = await CoreSites.getSite(siteId);
+    async getModuleBasicInfo(moduleId: number, options: CoreSitesCommonWSOptions = {}): Promise<CoreCourseModuleBasicInfo> {
+        const site = await CoreSites.getSite(options.siteId);
         const params: CoreCourseGetCourseModuleWSParams = {
             cmid: moduleId,
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getModuleCacheKey(moduleId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
         const response = await site.read<CoreCourseGetCourseModuleWSResponse>('core_course_get_course_module', params, preSets);
 
@@ -614,7 +618,7 @@ export class CoreCourseProvider {
      * @return Promise resolved with the module's grade info.
      */
     async getModuleBasicGradeInfo(moduleId: number, siteId?: string): Promise<CoreCourseModuleGradeInfo | undefined> {
-        const info = await this.getModuleBasicInfo(moduleId, siteId);
+        const info = await this.getModuleBasicInfo(moduleId, { siteId });
 
         if (
             info.grade !== undefined ||
@@ -636,21 +640,29 @@ export class CoreCourseProvider {
     /**
      * Gets a module basic info by instance.
      *
-     * @param id Instance ID.
-     * @param module Name of the module. E.g. 'glossary'.
-     * @param siteId Site ID. If not defined, current site.
+     * @param instanceId Instance ID.
+     * @param moduleName Name of the module. E.g. 'glossary'.
+     * @param options Comon site WS options.
      * @return Promise resolved with the module's info.
      */
-    async getModuleBasicInfoByInstance(id: number, module: string, siteId?: string): Promise<CoreCourseModuleBasicInfo> {
-        const site = await CoreSites.getSite(siteId);
+    async getModuleBasicInfoByInstance(
+        instanceId: number,
+        moduleName: string,
+        options: CoreSitesCommonWSOptions = {},
+    ): Promise<CoreCourseModuleBasicInfo> {
+        const site = await CoreSites.getSite(options.siteId);
+
         const params: CoreCourseGetCourseModuleByInstanceWSParams = {
-            instance: id,
-            module: module,
+            instance: instanceId,
+            module: moduleName,
         };
-        const preSets = {
-            cacheKey: this.getModuleBasicInfoByInstanceCacheKey(id, module),
+
+        const preSets: CoreSiteWSPreSets = {
+            cacheKey: this.getModuleBasicInfoByInstanceCacheKey(instanceId, moduleName),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
+
         const response: CoreCourseGetCourseModuleWSResponse =
             await site.read('core_course_get_course_module_by_instance', params, preSets);
 
@@ -666,12 +678,12 @@ export class CoreCourseProvider {
     /**
      * Get cache key for get module by instance WS calls.
      *
-     * @param id Instance ID.
-     * @param module Name of the module. E.g. 'glossary'.
+     * @param instanceId Instance ID.
+     * @param moduleName Name of the module. E.g. 'glossary'.
      * @return Cache key.
      */
-    protected getModuleBasicInfoByInstanceCacheKey(id: number, module: string): string {
-        return ROOT_CACHE_KEY + 'moduleByInstance:' + module + ':' + id;
+    protected getModuleBasicInfoByInstanceCacheKey(instanceId: number, moduleName: string): string {
+        return ROOT_CACHE_KEY + 'moduleByInstance:' + moduleName + ':' + instanceId;
     }
 
     /**
@@ -721,13 +733,17 @@ export class CoreCourseProvider {
     /**
      * Get the section ID a module belongs to.
      *
+     * @deprecated since 4.0.
      * @param moduleId The module ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the section ID.
      */
     async getModuleSectionId(moduleId: number, siteId?: string): Promise<number> {
         // Try to get the section using getModuleBasicInfo.
-        const module = await this.getModuleBasicInfo(moduleId, siteId);
+        const module = await CoreCourse.getModuleBasicInfo(
+            moduleId,
+            { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
 
         return module.section;
     }
@@ -974,7 +990,7 @@ export class CoreCourseProvider {
      * It will throw an error if contents cannot be loaded.
      *
      * @param module Module to get its contents.
-     * @param courseId The course ID. Recommended to speed up the process and minimize data usage.
+     * @param courseId Not used since 4.0.
      * @param sectionId The section ID.
      * @param preferCache True if shouldn't call WS if data is cached, false otherwise.
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
@@ -984,7 +1000,7 @@ export class CoreCourseProvider {
      * @return Promise resolved when loaded.
      */
     async getModuleContents(
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModuleData,
         courseId?: number,
         sectionId?: number,
         preferCache?: boolean,
@@ -993,7 +1009,7 @@ export class CoreCourseProvider {
         modName?: string,
     ): Promise<CoreCourseModuleContentFile[]> {
         // Make sure contents are loaded.
-        await this.loadModuleContents(module, courseId, sectionId, preferCache, ignoreCache, siteId, modName);
+        await this.loadModuleContents(module, undefined, sectionId, preferCache, ignoreCache, siteId, modName);
 
         if (!module.contents) {
             throw new CoreError(Translate.instant('core.course.modulenotfound'));

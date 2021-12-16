@@ -92,7 +92,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
         dirPath?: string,
     ): Promise<void> {
         // Get module info to be able to handle links.
-        await CoreCourse.getModuleBasicInfo(module.id, siteId);
+        await CoreCourse.getModuleBasicInfo(module.id, { siteId });
 
         // Load module contents (ignore cache so we always have the latest data).
         await this.loadContents(module, courseId, true);

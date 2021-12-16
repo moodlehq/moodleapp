@@ -96,7 +96,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
         try {
             this.folderInstance = await AddonModFolder.getFolder(this.courseId, this.module.id);
 
-            const contents = await CoreCourse.getModuleContents(this.module, this.courseId, undefined, false, refresh);
+            const contents = await CoreCourse.getModuleContents(this.module, undefined, undefined, false, refresh);
 
             this.dataRetrieved.emit(this.folderInstance || this.module);
 

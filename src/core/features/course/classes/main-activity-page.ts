@@ -47,7 +47,7 @@ export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseMod
             return;
         }
 
-        this.title = this.module?.name;
+        this.title = this.module.name;
     }
 
     /**

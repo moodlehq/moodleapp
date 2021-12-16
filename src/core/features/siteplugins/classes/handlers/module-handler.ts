@@ -15,7 +15,7 @@
 import { Type } from '@angular/core';
 
 import { CoreConstants } from '@/core/constants';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreSitePluginsModuleIndexComponent } from '@features/siteplugins/components/module-index/module-index';
@@ -64,12 +64,12 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      * @inheritdoc
      */
     getData(
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModuleData,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
     ): CoreCourseModuleHandlerData {
-        if ('description' in module && this.shouldOnlyDisplayDescription(module, forCoursePage)) {
+        if (this.shouldOnlyDisplayDescription(module, forCoursePage)) {
             const title = module.description;
             module.description = '';
 
@@ -128,7 +128,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      * @param forCoursePage Whether the data will be used to render the course page.
      * @return Bool.
      */
-    protected shouldOnlyDisplayDescription(module: CoreCourseAnyModuleData, forCoursePage?: boolean): boolean {
+    protected shouldOnlyDisplayDescription(module: CoreCourseModuleData, forCoursePage?: boolean): boolean {
         if (forCoursePage && this.handlerSchema.coursepagemethod) {
             // The plugin defines a method for course page, don't display just the description.
             return false;
@@ -167,7 +167,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      * @return Promise resolved when done.
      */
     protected async loadCoursePageTemplate(
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModuleData,
         courseId: number,
         handlerData: CoreCourseModuleHandlerData,
         method: string,

@@ -363,7 +363,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
         }));
 
         // Add Basic Info to manage links.
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(workshop.id, 'workshop', siteId));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(workshop.id, 'workshop', { siteId }));
         promises.push(CoreCourse.getModuleBasicGradeInfo(module.id, siteId));
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.

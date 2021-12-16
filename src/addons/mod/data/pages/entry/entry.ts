@@ -16,7 +16,6 @@ import { Component, OnDestroy, ViewChild, ChangeDetectorRef, OnInit, Type } from
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreGroups, CoreGroupInfo } from '@services/groups';
@@ -57,7 +56,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     protected fields: Record<number, AddonModDataField> = {};
     protected fieldsArray: AddonModDataField[] = [];
 
-    module!: CoreCourseModuleData;
+    moduleId = 0;
     courseId!: number;
     offset?: number;
     title = '';
@@ -82,7 +81,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         fields: Record<number, AddonModDataField>;
         entries: Record<number, AddonModDataEntry>;
         database: AddonModDataData;
-        module: CoreCourseModuleData;
+        title: string;
         group: number;
     };
 
@@ -133,9 +132,10 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         try {
-            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModuleData>('module');
-            this.entryId = CoreNavigator.getRouteNumberParam('entryId') || undefined;
+            this.moduleId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.entryId = CoreNavigator.getRouteNumberParam('entryId') || undefined;
+            this.title = CoreNavigator.getRouteParam<string>('title') || '';
             this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
             this.offset = CoreNavigator.getRouteNumberParam('offset');
         } catch (error) {
@@ -145,8 +145,6 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
 
             return;
         }
-
-        this.title = this.module.name;
 
         this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
 
@@ -165,15 +163,15 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         this.isPullingToRefresh = isPtr;
 
         try {
-            this.database = await AddonModData.getDatabase(this.courseId, this.module.id);
+            this.database = await AddonModData.getDatabase(this.courseId, this.moduleId);
             this.title = this.database.name || this.title;
 
-            this.fieldsArray = await AddonModData.getFields(this.database.id, { cmId: this.module.id });
+            this.fieldsArray = await AddonModData.getFields(this.database.id, { cmId: this.moduleId });
             this.fields = CoreUtils.arrayToObject(this.fieldsArray, 'id');
 
             await this.setEntryFromOffset();
 
-            this.access = await AddonModData.getDatabaseAccessInformation(this.database.id, { cmId: this.module.id });
+            this.access = await AddonModData.getDatabaseAccessInformation(this.database.id, { cmId: this.moduleId });
 
             this.groupInfo = await CoreGroups.getActivityGroupInfo(this.database.coursemodule);
             this.selectedGroup = CoreGroups.validateGroupId(this.selectedGroup, this.groupInfo);
@@ -200,7 +198,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
                 fields: this.fields,
                 entries: entries,
                 database: this.database,
-                module: this.module,
+                title: this.title,
                 group: this.selectedGroup,
             };
         } catch (error) {
@@ -363,7 +361,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
 
         if (this.entryId > 0) {
             // Online entry, we need to fetch the the rating info.
-            const entry = await AddonModData.getEntry(this.database!.id, this.entryId, { cmId: this.module.id });
+            const entry = await AddonModData.getEntry(this.database!.id, this.entryId, { cmId: this.moduleId });
             this.ratingInfo = entry.ratinginfo;
         }
     }

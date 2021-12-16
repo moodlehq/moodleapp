@@ -17,6 +17,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModFeedbackModuleHandlerService } from './module';
@@ -43,7 +44,10 @@ export class AddonModFeedbackCompleteLinkHandlerService extends CoreContentLinks
                 const moduleId = Number(params.id);
 
                 try {
-                    const module = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
+                    const module = await CoreCourse.getModuleBasicInfo(
+                        moduleId,
+                        { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+                    );
 
                     CoreNavigator.navigateToSitePath(
                         AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/form`,

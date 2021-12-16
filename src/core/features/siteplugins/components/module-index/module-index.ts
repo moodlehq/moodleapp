@@ -145,7 +145,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
         this.refreshIcon = CoreConstants.ICON_REFRESH;
 
         // Check if there is a prefetch handler for this type of module.
-        if (CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(this.module)) {
+        if (CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(this.module.name)) {
             CoreCourseHelper.fillContextMenu(this, this.module, this.courseId, refresh, this.component);
         }
     }

@@ -18,7 +18,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity } from '../h5pactivity';
@@ -41,52 +41,34 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
         siteIds: string[],
         url: string,
         params: Record<string, string>,
-        courseId?: number,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
-        courseId = courseId || Number(params.courseid) || Number(params.cid);
-
         return [{
             action: async (siteId) => {
+                const modal = await CoreDomUtils.showModalLoading();
+
                 try {
                     const instanceId = Number(params.a);
 
-                    if (!courseId) {
-                        courseId = await this.getCourseId(instanceId, siteId);
-                    }
-
-                    const module = await CoreCourse.getModuleBasicInfoByInstance(instanceId, 'h5pactivity', siteId);
+                    const module = await CoreCourse.getModuleBasicInfoByInstance(
+                        instanceId,
+                        'h5pactivity',
+                        { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+                    );
 
                     if (params.attemptid !== undefined) {
-                        this.openAttemptResults(module.id, Number(params.attemptid), courseId, siteId);
+                        this.openAttemptResults(module.id, Number(params.attemptid), module.course, siteId);
                     } else {
                         const userId = params.userid ? Number(params.userid) : undefined;
 
-                        this.openUserAttempts(module.id, courseId, siteId, userId);
+                        this.openUserAttempts(module.id, module.course, siteId, userId);
                     }
                 } catch (error) {
                     CoreDomUtils.showErrorModalDefault(error, 'Error processing link.');
+                } finally {
+                    modal.dismiss();
                 }
             },
         }];
-    }
-
-    /**
-     * Get course Id for an activity.
-     *
-     * @param id Activity ID.
-     * @param siteId Site ID.
-     * @return Promise resolved with course ID.
-     */
-    protected async getCourseId(id: number, siteId: string): Promise<number> {
-        const modal = await CoreDomUtils.showModalLoading();
-
-        try {
-            const module = await CoreCourse.getModuleBasicInfoByInstance(id, 'h5pactivity', siteId);
-
-            return module.course;
-        } finally {
-            modal.dismiss();
-        }
     }
 
     /**

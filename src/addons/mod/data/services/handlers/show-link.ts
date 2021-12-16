@@ -18,6 +18,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModDataModuleHandlerService } from './module';
@@ -47,10 +48,13 @@ export class AddonModDataShowLinkHandlerService extends CoreContentLinksHandlerB
                 const page = parseInt(params.page, 10) || false;
 
                 try {
-                    const module = await CoreCourse.getModuleBasicInfoByInstance(dataId, 'data', siteId);
+                    const module = await CoreCourse.getModuleBasicInfoByInstance(
+                        dataId,
+                        'data',
+                        { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+                    );
                     const pageParams: Params = {
-                        module: module,
-                        courseId: module.course,
+                        title: module.name,
                     };
 
                     if (group) {

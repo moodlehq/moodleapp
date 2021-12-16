@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import moment from 'moment';
 
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
     CoreCourse,
     CoreCourseCompletionActivityStatus,
@@ -725,7 +725,7 @@ export class CoreCourseHelperProvider {
 
         if (!files || !files.length) {
             // Try to use module contents.
-            files = await CoreCourse.getModuleContents(module, courseId);
+            files = await CoreCourse.getModuleContents(module);
         }
 
         if (!files.length) {
@@ -1013,7 +1013,7 @@ export class CoreCourseHelperProvider {
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module);
+        const prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module.name);
 
         if (prefetchHandler) {
             // Use the prefetch handler to download the module.
@@ -1430,6 +1430,31 @@ export class CoreCourseHelperProvider {
     }
 
     /**
+     * Get the course ID from a module instance ID, showing an error message if it can't be retrieved.
+     *
+     * @deprecated since 4.0.
+     * @param instanceId Instance ID.
+     * @param moduleName Name of the module. E.g. 'glossary'.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the module's course ID.
+     */
+    async getModuleCourseIdByInstance(instanceId: number, moduleName: string, siteId?: string): Promise<number> {
+        try {
+            const cm = await CoreCourse.getModuleBasicInfoByInstance(
+                instanceId,
+                moduleName,
+                { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+            );
+
+            return cm.course;
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+
+            throw error;
+        }
+    }
+
+    /**
      * Get prefetch info for a module.
      *
      * @param module Module to get the info from.
@@ -1551,7 +1576,7 @@ export class CoreCourseHelperProvider {
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const module = await CoreCourse.getModuleBasicInfoByInstance(instanceId, modName, siteId);
+            const module = await CoreCourse.getModuleBasicInfoByInstance(instanceId, modName, { siteId });
 
             this.navigateToModule(
                 module.id,
@@ -1594,15 +1619,14 @@ export class CoreCourseHelperProvider {
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            if (!courseId) {
-                // We don't have courseId.
-                const module = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
+            if (!courseId || !sectionId) {
+                const module = await CoreCourse.getModuleBasicInfo(
+                    moduleId,
+                    { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+                );
 
                 courseId = module.course;
                 sectionId = module.section;
-            } else if (!sectionId) {
-                // We don't have sectionId but we have courseId.
-                sectionId = await CoreCourse.getModuleSectionId(moduleId, siteId);
             }
 
             // Get the site.
@@ -2024,7 +2048,7 @@ export class CoreCourseHelperProvider {
 
         promises.push(CoreCourseModulePrefetchDelegate.removeModuleFiles(module, courseId));
 
-        const handler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module);
+        const handler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module.name);
         const site = CoreSites.getCurrentSite();
         if (handler && site) {
             promises.push(site.deleteComponentFromCache(handler.component, module.id));

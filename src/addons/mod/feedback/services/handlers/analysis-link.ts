@@ -43,13 +43,11 @@ export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinks
                 const moduleId = Number(params.id);
 
                 try {
-                    const moduleBasicInfo = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
-
                     // Get the module.
                     const module = await CoreCourse.getModule(
                         moduleId,
-                        moduleBasicInfo.course,
-                        moduleBasicInfo.section,
+                        undefined,
+                        undefined,
                         false,
                         false,
                         siteId,

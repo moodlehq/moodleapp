@@ -189,7 +189,7 @@ export class AddonModWikiPrefetchHandlerService extends CoreCourseActivityPrefet
 
         // Fetch info to provide wiki links.
         promises.push(AddonModWiki.getWiki(courseId, module.id, { siteId }).then((wiki) =>
-            CoreCourse.getModuleBasicInfoByInstance(wiki.id, 'wiki', siteId)));
+            CoreCourse.getModuleBasicInfoByInstance(wiki.id, 'wiki', { siteId })));
 
         // Get related page files and fetch them.
         promises.push(this.getFiles(module, courseId, single, siteId).then((files) =>

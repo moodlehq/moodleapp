@@ -101,7 +101,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      */
     protected async fetchContent(refresh?: boolean): Promise<void> {
         // Load module contents if needed. Passing refresh is needed to force reloading contents.
-        const contents = await CoreCourse.getModuleContents(this.module, this.courseId, undefined, false, refresh);
+        const contents = await CoreCourse.getModuleContents(this.module, undefined, undefined, false, refresh);
 
         if (!contents.length) {
             throw new CoreError(Translate.instant('core.filenotfound'));
@@ -148,7 +148,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                 this.mode = 'embedded';
                 this.warning = '';
 
-                this.contentText = await AddonModResourceHelper.getEmbeddedHtml(this.module, this.courseId);
+                this.contentText = await AddonModResourceHelper.getEmbeddedHtml(this.module);
                 this.mode = this.contentText.length > 0 ? 'embedded' : 'external';
             } else {
                 this.mode = 'external';

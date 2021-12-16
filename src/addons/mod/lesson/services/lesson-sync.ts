@@ -243,7 +243,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         if (result.updated && result.courseId) {
             try {
                 // Data has been sent to server, update data.
-                const module = await CoreCourse.getModuleBasicInfoByInstance(lessonId, 'lesson', siteId);
+                const module = await CoreCourse.getModuleBasicInfoByInstance(lessonId, 'lesson', { siteId });
                 await this.prefetchAfterUpdate(AddonModLessonPrefetchHandler.instance, module, result.courseId, undefined, siteId);
             } catch {
                 // Ignore errors.

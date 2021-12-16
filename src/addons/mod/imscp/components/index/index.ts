@@ -84,7 +84,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
             this.dataRetrieved.emit(imscp);
 
             // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
-            const contents = await CoreCourse.getModuleContents(this.module, this.courseId);
+            const contents = await CoreCourse.getModuleContents(this.module);
 
             this.items = AddonModImscp.createItemList(contents);
 

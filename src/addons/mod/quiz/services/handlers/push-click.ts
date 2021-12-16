@@ -62,7 +62,6 @@ export class AddonModQuizPushClickHandlerService implements CorePushNotification
             return AddonModQuizHelper.handleReviewLink(
                 Number(contextUrlParams.attempt),
                 Number(contextUrlParams.page),
-                courseId,
                 Number(data.instance),
                 notification.site,
             );

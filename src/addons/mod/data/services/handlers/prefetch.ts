@@ -261,7 +261,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
         });
 
         // Add Basic Info to manage links.
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(database.id, 'data', siteId));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(database.id, 'data', { siteId }));
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.
         promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));

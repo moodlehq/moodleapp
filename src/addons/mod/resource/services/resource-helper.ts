@@ -39,15 +39,14 @@ export class AddonModResourceHelperProvider {
      * Get the HTML to display an embedded resource.
      *
      * @param module The module object.
-     * @param courseId The course ID.
      * @return Promise resolved with the HTML.
      */
-    async getEmbeddedHtml(module: CoreCourseModuleData, courseId: number): Promise<string> {
-        const contents = await CoreCourse.getModuleContents(module, courseId);
+    async getEmbeddedHtml(module: CoreCourseModuleData): Promise<string> {
+        const contents = await CoreCourse.getModuleContents(module);
 
         const result = await CoreCourseHelper.downloadModuleWithMainFileIfNeeded(
             module,
-            courseId,
+            module.course,
             AddonModResourceProvider.COMPONENT,
             module.id,
             contents,
@@ -124,14 +123,14 @@ export class AddonModResourceHelperProvider {
      * @param module The module object.
      * @return Whether the resource should be displayed in an iframe.
      */
-    isDisplayedInIframe(module: CoreCourseAnyModuleData): boolean {
+    isDisplayedInIframe(module: CoreCourseModuleData): boolean {
         if (!CoreFile.isAvailable()) {
             return false;
         }
 
         let mimetype: string | undefined;
 
-        if ('contentsinfo' in module && module.contentsinfo) {
+        if (module.contentsinfo) {
             mimetype = module.contentsinfo.mimetypes[0];
         } else if (module.contents) {
             const ext = CoreMimetypeUtils.getFileExtension(module.contents[0].filename);

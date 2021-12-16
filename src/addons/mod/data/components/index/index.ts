@@ -19,7 +19,6 @@ import { CoreCommentsProvider } from '@features/comments/services/comments';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { IonContent } from '@ionic/angular';
@@ -95,7 +94,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         fields: Record<number, AddonModDataField>;
         entries: Record<number, AddonModDataEntry>;
         database: AddonModDataData;
-        module: CoreCourseModuleData;
+        title: string;
         group: number;
         gotoEntry: (a: number) => void;
     };
@@ -371,7 +370,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 fields: this.fields,
                 entries: entriesById,
                 database: this.database!,
-                module: this.module,
+                title: this.module.name,
                 group: this.selectedGroup,
                 gotoEntry: this.gotoEntry.bind(this),
             };
@@ -474,8 +473,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      */
     gotoAddEntries(): void {
         const params: Params = {
-            module: this.module,
-            courseId: this.courseId,
+            title: this.module.name,
             group: this.selectedGroup,
         };
 
@@ -492,8 +490,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      */
     gotoEntry(entryId: number): void {
         const params: Params = {
-            module: this.module,
-            courseId: this.courseId,
+            title: this.module.name,
             group: this.selectedGroup,
         };
 

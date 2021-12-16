@@ -98,7 +98,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             // Try to get module contents, it's needed to get the URL with parameters.
             const contents = await CoreCourse.getModuleContents(
                 this.module,
-                this.courseId,
+                undefined,
                 undefined,
                 false,
                 refresh,

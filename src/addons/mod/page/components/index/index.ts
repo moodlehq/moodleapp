@@ -82,7 +82,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
             const downloadResult = await this.downloadResourceIfNeeded(refresh);
 
             // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
-            const contents = await CoreCourse.getModuleContents(this.module, this.courseId);
+            const contents = await CoreCourse.getModuleContents(this.module);
 
             const results = await Promise.all([
                 this.loadPageData(),

@@ -394,11 +394,11 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             const ignoreCache = refresh && CoreApp.isOnline();
 
             try {
-                await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, ignoreCache);
+                await CoreCourse.loadModuleContents(this.module, undefined, undefined, false, ignoreCache);
             } catch (error) {
                 // Error loading contents. If we ignored cache, try to get the cached value.
                 if (ignoreCache && !this.module.contents) {
-                    await CoreCourse.loadModuleContents(this.module, this.courseId);
+                    await CoreCourse.loadModuleContents(this.module);
                 } else if (!this.module.contents) {
                     // Not able to load contents, throw the error.
                     throw error;

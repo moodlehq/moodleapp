@@ -197,7 +197,7 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         // Data has been sent to server, prefetch choice if needed.
         try {
-            const module = await CoreCourse.getModuleBasicInfoByInstance(choiceId, 'choice', siteId);
+            const module = await CoreCourse.getModuleBasicInfoByInstance(choiceId, 'choice', { siteId });
 
             await this.prefetchAfterUpdate(AddonModChoicePrefetchHandler.instance, module, courseId, undefined, siteId);
         } catch {

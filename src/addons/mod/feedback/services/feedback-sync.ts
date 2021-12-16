@@ -223,7 +223,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         if (result.updated) {
             // Data has been sent to server, update data.
             try {
-                const module = await CoreCourse.getModuleBasicInfoByInstance(feedbackId, 'feedback', siteId);
+                const module = await CoreCourse.getModuleBasicInfoByInstance(feedbackId, 'feedback', { siteId });
 
                 await this.prefetchAfterUpdate(AddonModFeedbackPrefetchHandler.instance, module, courseId, undefined, siteId);
             } catch {

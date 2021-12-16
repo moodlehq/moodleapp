@@ -18,7 +18,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { FileEntry } from '@ionic-native/file/ngx';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFormFields } from '@singletons/form';
 import { CoreTextUtils } from '@services/utils/text';
@@ -230,7 +230,7 @@ export class AddonModDataHelperProvider {
                     render = Translate.instant('addon.mod_data.' + (entry.approved ? 'approved' : 'notapproved'));
                 } else {
                     render = '<addon-mod-data-action action="' + action + '" [entry]="entries[' + entry.id + ']" mode="' + mode +
-                    '" [database]="database" [module]="module" [offset]="' + offset + '" [group]="group" ></addon-mod-data-action>';
+                    '" [database]="database" [title]="title" [offset]="' + offset + '" [group]="group" ></addon-mod-data-action>';
                 }
                 template = template.replace(replaceRegex, render);
             } else {
@@ -437,7 +437,11 @@ export class AddonModDataHelperProvider {
             return courseId;
         }
 
-        const module = await CoreCourse.getModuleBasicInfoByInstance(dataId, 'data', siteId);
+        const module = await CoreCourse.getModuleBasicInfoByInstance(
+            dataId,
+            'data',
+            { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
 
         return module.course;
     }

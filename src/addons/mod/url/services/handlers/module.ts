@@ -54,7 +54,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
     /**
      * @inheritdoc
      */
-    async getData(module: CoreCourseModuleData, courseId: number): Promise<CoreCourseModuleHandlerData> {
+    async getData(module: CoreCourseModuleData): Promise<CoreCourseModuleHandlerData> {
 
         /**
          * Open the URL.
@@ -62,17 +62,17 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
          * @param module The module object.
          * @param courseId The course ID.
          */
-        const openUrl = async (module: CoreCourseModuleData, courseId: number): Promise<void> => {
+        const openUrl = async (module: CoreCourseModuleData): Promise<void> => {
             try {
                 if (module.instance) {
                     await AddonModUrl.logView(module.instance, module.name);
-                    CoreCourse.checkModuleCompletion(courseId, module.completiondata);
+                    CoreCourse.checkModuleCompletion(module.course, module.completiondata);
                 }
             } catch {
                 // Ignore errors.
             }
 
-            const contents = await CoreCourse.getModuleContents(module, courseId);
+            const contents = await CoreCourse.getModuleContents(module);
             AddonModUrlHelper.open(contents[0].fileurl);
         };
 
@@ -85,12 +85,12 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                 const modal = await CoreDomUtils.showModalLoading();
 
                 try {
-                    const shouldOpen = await this.shouldOpenLink(module, courseId);
+                    const shouldOpen = await this.shouldOpenLink(module);
 
                     if (shouldOpen) {
-                        openUrl(module, courseId);
+                        openUrl(module);
                     } else {
-                        this.openActivityPage(module, courseId, options);
+                        this.openActivityPage(module, module.course, options);
                     }
                 } finally {
                     modal.dismiss();
@@ -100,13 +100,13 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                 hidden: true, // Hide it until we calculate if it should be displayed or not.
                 icon: 'fas-link',
                 label: 'core.openmodinbrowser',
-                action: (event: Event, module: CoreCourseModuleData, courseId: number): void => {
-                    openUrl(module, courseId);
+                action: (event: Event, module: CoreCourseModuleData): void => {
+                    openUrl(module);
                 },
             }],
         };
 
-        this.hideLinkButton(module, courseId).then(async (hideButton) => {
+        this.hideLinkButton(module).then(async (hideButton) => {
             if (!handlerData.buttons) {
                 return;
             }
@@ -135,9 +135,10 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
      * @param courseId The course ID.
      * @return Resolved when done.
      */
-    protected async hideLinkButton(module: CoreCourseModuleData, courseId: number): Promise<boolean> {
+    protected async hideLinkButton(module: CoreCourseModuleData): Promise<boolean> {
         try {
-            const contents = await CoreCourse.getModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
+            const contents =
+                await CoreCourse.getModuleContents(module, undefined, undefined, false, false, undefined, this.modName);
 
             return !(contents[0] && contents[0].fileurl);
         } catch {
@@ -157,22 +158,22 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
      * Check whether the link should be opened directly.
      *
      * @param module Module.
-     * @param courseId Course ID.
      * @return Promise resolved with boolean.
      */
-    protected async shouldOpenLink(module: CoreCourseModuleData, courseId?: number): Promise<boolean> {
+    protected async shouldOpenLink(module: CoreCourseModuleData): Promise<boolean> {
         try {
-            const contents = await CoreCourse.getModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
+            const contents =
+                await CoreCourse.getModuleContents(module, undefined, undefined, false, false, undefined, this.modName);
 
             // Check if the URL can be handled by the app. If so, always open it directly.
-            const canHandle = await CoreContentLinksHelper.canHandleLink(contents[0].fileurl, courseId, undefined, true);
+            const canHandle = await CoreContentLinksHelper.canHandleLink(contents[0].fileurl, module.course, undefined, true);
 
             if (canHandle) {
                 // URL handled by the app, open it directly.
                 return true;
             } else {
                 // Not handled by the app, check the display type.
-                const url = courseId ? await CoreUtils.ignoreErrors(AddonModUrl.getUrl(courseId, module.id)) : undefined;
+                const url = await CoreUtils.ignoreErrors(AddonModUrl.getUrl(module.course, module.id));
                 const displayType = AddonModUrl.getFinalDisplayType(url);
 
                 return displayType == CoreConstants.RESOURCELIB_DISPLAY_OPEN ||
@@ -187,7 +188,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
      * @inheritdoc
      */
     manualCompletionAlwaysShown(module: CoreCourseModuleData): Promise<boolean> {
-        return this.shouldOpenLink(module, module.course);
+        return this.shouldOpenLink(module);
     }
 
 }
