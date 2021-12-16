@@ -94,7 +94,7 @@ export class CoreH5PStorage {
                 throw error;
             }
 
-            if (typeof libraryData.libraryId != 'undefined') {
+            if (libraryData.libraryId !== undefined) {
                 const promises: Promise<void>[] = [];
 
                 // Remove all indexes of contents that use this library.
@@ -127,17 +127,17 @@ export class CoreH5PStorage {
             // Insert the different new ones.
             const promises: Promise<void>[] = [];
 
-            if (typeof libraryData.preloadedDependencies != 'undefined') {
+            if (libraryData.preloadedDependencies !== undefined) {
                 promises.push(this.h5pFramework.saveLibraryDependencies(
                     libraryData,
                     libraryData.preloadedDependencies,
                     'preloaded',
                 ));
             }
-            if (typeof libraryData.dynamicDependencies != 'undefined') {
+            if (libraryData.dynamicDependencies !== undefined) {
                 promises.push(this.h5pFramework.saveLibraryDependencies(libraryData, libraryData.dynamicDependencies, 'dynamic'));
             }
-            if (typeof libraryData.editorDependencies != 'undefined') {
+            if (libraryData.editorDependencies !== undefined) {
                 promises.push(this.h5pFramework.saveLibraryDependencies(libraryData, libraryData.editorDependencies, 'editor'));
             }
 

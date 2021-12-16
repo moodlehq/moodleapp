@@ -299,7 +299,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
                 item.data = <string[]> item.data.map((dataItem) => {
                     const parsed = <Record<string, string>> CoreTextUtils.parseJSON(dataItem);
 
-                    return typeof parsed.show != 'undefined' ? parsed.show : false;
+                    return parsed.show !== undefined ? parsed.show : false;
                 }).filter((dataItem) => dataItem); // Filter false entries.
 
             case 'textfield':
@@ -312,7 +312,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
                 const parsedData = <Record<string, string | number>[]> item.data.map((dataItem) => {
                     const parsed = <Record<string, string | number>> CoreTextUtils.parseJSON(dataItem);
 
-                    return typeof parsed.answertext != 'undefined' ? parsed : false;
+                    return parsed.answertext !== undefined ? parsed : false;
                 }).filter((dataItem) => dataItem); // Filter false entries.
 
                 // Format labels.
@@ -320,7 +320,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
                     dataItem.quotient = (<number> dataItem.quotient * 100).toFixed(2);
                     let label = '';
 
-                    if (typeof dataItem.value != 'undefined') {
+                    if (dataItem.value !== undefined) {
                         label = '(' + dataItem.value + ') ';
                     }
                     label += dataItem.answertext;

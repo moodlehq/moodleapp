@@ -165,7 +165,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
             if (this.treatSiteConfig()) {
                 // Check content verification.
-                if (typeof this.ageDigitalConsentVerification == 'undefined') {
+                if (this.ageDigitalConsentVerification === undefined) {
 
                     const result = await CoreUtils.ignoreErrors(
                         CoreWS.callAjax<IsAgeVerificationEnabledWSResponse>(

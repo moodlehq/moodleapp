@@ -54,7 +54,7 @@ export class AddonModWikiEditLinkHandlerService extends CoreContentLinksHandlerB
                     const module = await CoreCourse.getModuleBasicInfoByInstance(pageContents.wikiid, 'wiki', siteId);
 
                     let section = '';
-                    if (typeof params.section != 'undefined') {
+                    if (params.section !== undefined) {
                         section = params.section.replace(/\+/g, ' ');
                     }
 

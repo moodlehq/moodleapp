@@ -218,13 +218,13 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                         ) as AddonModForumDiscussion;
 
                         if (discussion) {
-                            if (typeof data.locked != 'undefined') {
+                            if (data.locked !== undefined) {
                                 discussion.locked = data.locked;
                             }
-                            if (typeof data.pinned != 'undefined') {
+                            if (data.pinned !== undefined) {
                                 discussion.pinned = data.pinned;
                             }
-                            if (typeof data.starred != 'undefined') {
+                            if (data.starred !== undefined) {
                                 discussion.starred = data.starred;
                             }
 
@@ -232,7 +232,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                         }
                     }
 
-                    if (typeof data.deleted != 'undefined' && data.deleted) {
+                    if (data.deleted !== undefined && data.deleted) {
                         if (data.post?.parentid == 0 && CoreScreen.isTablet && !this.discussions.empty) {
                             // Discussion deleted, clear details page.
                             this.discussions.select(this.discussions[0]);

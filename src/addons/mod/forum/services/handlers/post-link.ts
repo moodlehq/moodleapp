@@ -78,7 +78,7 @@ export class AddonModForumPostLinkHandlerService extends CoreContentLinksHandler
      * @return Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string, url: string, params: Params): Promise<boolean> {
-        return typeof params.forum != 'undefined';
+        return params.forum !== undefined;
     }
 
 }

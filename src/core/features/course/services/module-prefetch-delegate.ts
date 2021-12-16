@@ -392,7 +392,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
 
         const packageId = CoreFilepool.getPackageId(handler.component, module.id);
         const downloadSize = this.statusCache.getValue<CoreFileSizeSum>(packageId, 'downloadSize');
-        if (typeof downloadSize != 'undefined') {
+        if (downloadSize !== undefined) {
             return downloadSize;
         }
 
@@ -430,7 +430,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
 
         const packageId = CoreFilepool.getPackageId(handler.component, module.id);
         const downloadedSize = this.statusCache.getValue<number>(packageId, 'downloadedSize');
-        if (typeof downloadedSize != 'undefined') {
+        if (downloadedSize !== undefined) {
             return downloadedSize;
         }
 
@@ -558,7 +558,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         const packageId = CoreFilepool.getPackageId(handler.component, module.id);
         const status = this.statusCache.getValue<string>(packageId, 'status');
 
-        if (!refresh && typeof status != 'undefined') {
+        if (!refresh && status !== undefined) {
             this.storeCourseAndSection(packageId, courseId, sectionId);
 
             return this.determineModuleStatus(module, status);
@@ -612,7 +612,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         }
 
         // Module is downloaded. Determine if there are updated in the module to show them outdated.
-        if (typeof updates == 'undefined') {
+        if (updates === undefined) {
             try {
                 // We don't have course updates, calculate them.
                 updates = await this.getCourseUpdatesByCourseId(courseId);
@@ -729,7 +729,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             } catch (error) {
                 const packageId = CoreFilepool.getPackageId(handler.component, module.id);
                 const cacheStatus = this.statusCache.getValue<string>(packageId, 'status', true);
-                if (typeof cacheStatus == 'undefined') {
+                if (cacheStatus === undefined) {
                     throw error;
                 }
 
@@ -769,7 +769,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         const packageId = CoreFilepool.getPackageId(handler.component, module.id);
         const status = this.statusCache.getValue<string>(packageId, 'status');
 
-        if (typeof status != 'undefined' && !CoreFileHelper.isStateDownloaded(status)) {
+        if (status !== undefined && !CoreFileHelper.isStateDownloaded(status)) {
             // Module isn't downloaded, just return the status.
             return { status };
         }
@@ -976,7 +976,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         const packageId = CoreFilepool.getPackageId(handler.component, module.id);
         let downloadable = this.statusCache.getValue<boolean>(packageId, 'downloadable');
 
-        if (typeof downloadable != 'undefined') {
+        if (downloadable !== undefined) {
             return downloadable;
         }
 

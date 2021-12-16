@@ -356,7 +356,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
                     },
                 );
 
-                if (typeof modalData != 'undefined') {
+                if (modalData !== undefined) {
                     this.selfEnrolInCourse(modalData, instanceId);
 
                     return;

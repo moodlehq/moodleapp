@@ -83,7 +83,7 @@ export class AddonBadgesProvider {
             badge.alignment = badge.alignment || badge.competencies;
 
             // Check that the alignment is valid, they were broken in 3.7.
-            if (badge.alignment && badge.alignment[0] && typeof badge.alignment[0].targetname == 'undefined') {
+            if (badge.alignment && badge.alignment[0] && badge.alignment[0].targetname === undefined) {
                 // If any badge lacks targetname it means they are affected by the Moodle bug, don't display them.
                 delete badge.alignment;
             }

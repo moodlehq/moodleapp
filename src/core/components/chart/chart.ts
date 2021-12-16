@@ -64,7 +64,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
      */
     async ngOnInit(): Promise<void> {
         let legend: ChartLegendOptions = {};
-        if (typeof this.legend == 'undefined') {
+        if (this.legend === undefined) {
             legend = {
                 display: false,
                 labels: {

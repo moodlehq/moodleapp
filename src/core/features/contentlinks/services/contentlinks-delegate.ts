@@ -278,7 +278,7 @@ export class CoreContentLinksDelegateService {
      * @return True if registered successfully, false otherwise.
      */
     registerHandler(handler: CoreContentLinksHandler): boolean {
-        if (typeof this.handlers[handler.name] !== 'undefined') {
+        if (this.handlers[handler.name] !== undefined) {
             this.logger.log(`Addon '${handler.name}' already registered`);
 
             return false;

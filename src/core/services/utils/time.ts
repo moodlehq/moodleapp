@@ -97,7 +97,7 @@ export class CoreTimeUtilsProvider {
                     converted += ']';
                 }
 
-                converted += typeof CoreTimeUtilsProvider.FORMAT_REPLACEMENTS[char] != 'undefined' ?
+                converted += CoreTimeUtilsProvider.FORMAT_REPLACEMENTS[char] !== undefined ?
                     CoreTimeUtilsProvider.FORMAT_REPLACEMENTS[char] : char;
             } else {
                 // Not a PHP format. We need to escape them, otherwise the letters could be confused with Moment formats.
@@ -338,7 +338,7 @@ export class CoreTimeUtilsProvider {
     convertToTimestamp(date: string, applyOffset?: boolean): number {
         const timestamp = moment(date).unix();
 
-        if (typeof applyOffset !== 'undefined') {
+        if (applyOffset !== undefined) {
             return applyOffset ? timestamp - moment().utcOffset() * 60 : timestamp;
         }
 

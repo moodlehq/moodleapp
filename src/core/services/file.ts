@@ -157,7 +157,7 @@ export class CoreFileProvider {
      * @return Whether the plugin is available.
      */
     isAvailable(): boolean {
-        return typeof window.resolveLocalFileSystemURL !== 'undefined';
+        return window.resolveLocalFileSystemURL !== undefined;
     }
 
     /**
@@ -982,7 +982,7 @@ export class CoreFileProvider {
     async replaceInFile(path: string, search: string | RegExp, newValue: string): Promise<void> {
         let content = <string> await this.readFile(path);
 
-        if (typeof content == 'undefined' || content === null || !content.replace) {
+        if (content === undefined || content === null || !content.replace) {
             throw new CoreError(`Error reading file ${path}`);
         }
 
@@ -1139,7 +1139,7 @@ export class CoreFileProvider {
      * @return Unique name.
      */
     calculateUniqueName(usedNames: Record<string, unknown>, name: string): string {
-        if (typeof usedNames[name.toLowerCase()] == 'undefined') {
+        if (usedNames[name.toLowerCase()] === undefined) {
             // No file with the same name.
             return name;
         }
@@ -1153,7 +1153,7 @@ export class CoreFileProvider {
         do {
             name = nameWithoutExtension + '(' + num + ')' + extension;
             num++;
-        } while (typeof usedNames[name.toLowerCase()] != 'undefined');
+        } while (usedNames[name.toLowerCase()] !== undefined);
 
         return name;
     }

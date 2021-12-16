@@ -165,9 +165,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             let section: CoreCourseSection | undefined;
 
-            if (typeof data.sectionId != 'undefined' && this.sections) {
+            if (data.sectionId !== undefined && this.sections) {
                 section = this.sections.find((section) => section.id == data.sectionId);
-            } else if (typeof data.sectionNumber != 'undefined' && this.sections) {
+            } else if (data.sectionNumber !== undefined && this.sections) {
                 section = this.sections.find((section) => section.section == data.sectionNumber);
             }
 
@@ -399,7 +399,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             }
         }
 
-        if (this.moduleId && typeof previousValue == 'undefined') {
+        if (this.moduleId && previousValue === undefined) {
             setTimeout(() => {
                 CoreDomUtils.scrollToElementBySelector(
                     this.elementRef.nativeElement,

@@ -197,7 +197,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
         const offlineEntries: Record<number, AddonModDataOfflineAction[]> = {};
 
         offlineActions.forEach((entry) => {
-            if (typeof offlineEntries[entry.entryid] == 'undefined') {
+            if (offlineEntries[entry.entryid] === undefined) {
                 offlineEntries[entry.entryid] = [];
             }
 

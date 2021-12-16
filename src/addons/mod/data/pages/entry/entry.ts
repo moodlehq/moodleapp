@@ -98,7 +98,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
 
         // Refresh data if this discussion is synchronized automatically.
         this.syncObserver = CoreEvents.on(AddonModDataSyncProvider.AUTO_SYNCED, (data) => {
-            if (typeof data.entryId == 'undefined') {
+            if (data.entryId === undefined) {
                 return;
             }
 
@@ -299,7 +299,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      * @return Resolved when done.
      */
     protected async setEntryFromOffset(): Promise<void> {
-        if (typeof this.offset == 'undefined' && typeof this.entryId != 'undefined') {
+        if (this.offset === undefined && this.entryId !== undefined) {
             // Entry id passed as navigation parameter instead of the offset.
             // We don't display next/previous buttons in this case.
             this.hasNext = false;
@@ -313,7 +313,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         }
 
         const perPage = AddonModDataProvider.PER_PAGE;
-        const page = typeof this.offset != 'undefined' && this.offset >= 0
+        const page = this.offset !== undefined && this.offset >= 0
             ? Math.floor(this.offset / perPage)
             : 0;
 
@@ -329,7 +329,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
 
         // Index of the entry when concatenating offline and online page entries.
         let pageIndex = 0;
-        if (typeof this.offset == 'undefined') {
+        if (this.offset === undefined) {
             // No offset passed, display the first entry.
             pageIndex = 0;
         } else if (this.offset > 0) {

@@ -367,14 +367,14 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
             return handler.isEnabledForUser(user, courseId);
         }
 
-        if (typeof this.enabledForUserCache[handler.name] == 'undefined') {
+        if (this.enabledForUserCache[handler.name] === undefined) {
             this.enabledForUserCache[handler.name] = {};
         }
 
         const cacheKey = this.getCacheKey(courseId, user.id);
         const cache = this.enabledForUserCache[handler.name][cacheKey];
 
-        if (typeof cache != 'undefined') {
+        if (cache !== undefined) {
             return cache;
         }
 

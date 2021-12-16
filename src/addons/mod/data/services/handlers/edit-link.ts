@@ -66,7 +66,7 @@ export class AddonModDataEditLinkHandlerService extends CoreContentLinksHandlerB
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Params): Promise<boolean> {
-        if (typeof params.d == 'undefined') {
+        if (params.d === undefined) {
             // Id not defined. Cannot treat the URL.
             return false;
         }

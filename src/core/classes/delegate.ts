@@ -199,7 +199,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @return If the handler is registered or not.
      */
     hasHandler(name: string, enabled: boolean = false): boolean {
-        return enabled ? typeof this.enabledHandlers[name] !== 'undefined' : typeof this.handlers[name] !== 'undefined';
+        return enabled ? this.enabledHandlers[name] !== undefined : this.handlers[name] !== undefined;
     }
 
     /**
@@ -226,7 +226,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
     registerHandler(handler: HandlerType): boolean {
         const key = handler[this.handlerNameProperty] || handler.name;
 
-        if (typeof this.handlers[key] !== 'undefined') {
+        if (this.handlers[key] !== undefined) {
             this.logger.log(`Handler '${handler[this.handlerNameProperty]}' already registered`);
 
             return false;
@@ -293,7 +293,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @return Whether is enabled or disabled in site.
      */
     protected isFeatureDisabled(handler: HandlerType, site: CoreSite): boolean {
-        return typeof this.featurePrefix != 'undefined' && site.isFeatureDisabled(this.featurePrefix + handler.name);
+        return this.featurePrefix !== undefined && site.isFeatureDisabled(this.featurePrefix + handler.name);
     }
 
     /**

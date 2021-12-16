@@ -293,7 +293,7 @@ export class CoreCourseProvider {
 
             offlineCompletions.forEach((offlineCompletion) => {
 
-                if (offlineCompletion && typeof completionStatus[offlineCompletion.cmid] != 'undefined') {
+                if (offlineCompletion && completionStatus[offlineCompletion.cmid] !== undefined) {
                     const onlineCompletion = completionStatus[offlineCompletion.cmid];
 
                     // If the activity uses manual completion, override the value with the offline one.
@@ -992,7 +992,7 @@ export class CoreCourseProvider {
         };
         const wsName = 'core_course_view_course';
 
-        if (typeof sectionNumber != 'undefined') {
+        if (sectionNumber !== undefined) {
             params.sectionnumber = sectionNumber;
         }
 
@@ -1135,7 +1135,7 @@ export class CoreCourseProvider {
         // Wait for site plugins to be fetched.
         await CoreUtils.ignoreErrors(CoreSitePlugins.waitFetchPlugins());
 
-        if (!('format' in course) || typeof course.format == 'undefined') {
+        if (!('format' in course) || course.format === undefined) {
             const result = await CoreCourseHelper.getCourse(course.id);
 
             course = result.course;
@@ -1255,7 +1255,7 @@ export class CoreCourseProvider {
 
         try {
             const entry = await this.getCourseStatusData(courseId, siteId);
-            if (typeof downloadTime == 'undefined') {
+            if (downloadTime === undefined) {
                 // Keep previous download time.
                 downloadTime = entry.downloadTime;
                 previousDownloadTime = entry.previousDownloadTime;

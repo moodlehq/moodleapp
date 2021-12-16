@@ -323,7 +323,7 @@ export class CoreLoginHelperProvider {
      * @return OAuth ID.
      */
     getOAuthIdFromParams(params?: CoreUrlParams): number | undefined {
-        return params && typeof params.oauthsso != 'undefined' ? Number(params.oauthsso) : undefined;
+        return params && params.oauthsso !== undefined ? Number(params.oauthsso) : undefined;
     }
 
     /**
@@ -530,7 +530,7 @@ export class CoreLoginHelperProvider {
      * @return Whether email signup is disabled.
      */
     isFeatureDisabled(feature: string, config?: CoreSitePublicConfigResponse, disabledFeatures?: string): boolean {
-        if (typeof disabledFeatures == 'undefined') {
+        if (disabledFeatures === undefined) {
             disabledFeatures = this.getDisabledFeatures(config);
         }
 
@@ -978,7 +978,7 @@ export class CoreLoginHelperProvider {
                 }
 
                 const info = currentSite.getInfo();
-                if (typeof info != 'undefined' && typeof info.username != 'undefined') {
+                if (info !== undefined && info.username !== undefined) {
                     // If current page is already reconnect, stop.
                     if (CoreNavigator.isCurrent('/login/reconnect')) {
                         return;
@@ -1249,7 +1249,7 @@ export class CoreLoginHelperProvider {
      * @return Whether the QR reader should be displayed in site screen.
      */
     displayQRInSiteScreen(): boolean {
-        return CoreUtils.canScanQR() && (typeof CoreConstants.CONFIG.displayqronsitescreen == 'undefined' ||
+        return CoreUtils.canScanQR() && (CoreConstants.CONFIG.displayqronsitescreen === undefined ||
             !!CoreConstants.CONFIG.displayqronsitescreen);
     }
 

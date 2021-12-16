@@ -211,7 +211,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId');
         this.filter.categoryId = CoreNavigator.getRouteNumberParam('categoryId');
 
-        this.filter.filtered = typeof this.filter.courseId != 'undefined' || types.some((name) => !this.filter[name]);
+        this.filter.filtered = this.filter.courseId !== undefined || types.some((name) => !this.filter[name]);
 
         const month = CoreNavigator.getRouteNumberParam('month');
         const source = new AddonCalendarDaySlidesItemsManagerSource(this, moment({

@@ -48,7 +48,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
      * @return Readable Latitude and logitude.
      */
     formatLatLong(north?: number, east?: number): string {
-        if (typeof north !== 'undefined' || typeof east !== 'undefined') {
+        if (north !== undefined || east !== undefined) {
             north = north || 0;
             east = east || 0;
             const northFixed = Math.abs(north).toFixed(4);
@@ -69,7 +69,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginCo
      */
     getLatLongLink(north?: number, east?: number): SafeUrl {
         let url = '';
-        if (typeof north !== 'undefined' || typeof east !== 'undefined') {
+        if (north !== undefined || east !== undefined) {
             const northFixed = north ? north.toFixed(4) : '0.0000';
             const eastFixed = east ? east.toFixed(4) : '0.0000';
 

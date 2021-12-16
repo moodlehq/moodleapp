@@ -325,7 +325,7 @@ export class CoreMimetypeUtilsProvider {
         }
 
         // Check extension corresponds to a mimetype to know if it's valid.
-        if (extension && typeof this.getMimeType(extension) == 'undefined') {
+        if (extension && this.getMimeType(extension) === undefined) {
             this.logger.warn('Guess file extension: Not valid extension ' + extension);
 
             return;
@@ -350,7 +350,7 @@ export class CoreMimetypeUtilsProvider {
             ext = this.cleanExtension(ext);
 
             // Check extension corresponds to a mimetype to know if it's valid.
-            if (typeof this.getMimeType(ext) == 'undefined') {
+            if (this.getMimeType(ext) === undefined) {
                 this.logger.warn('Get file extension: Not valid extension ' + ext);
 
                 return;
@@ -370,7 +370,7 @@ export class CoreMimetypeUtilsProvider {
     getGroupMimeInfo(group: string): MimeTypeGroupInfo;
     getGroupMimeInfo(group: string, field: string): string[] | undefined;
     getGroupMimeInfo(group: string, field?: string): MimeTypeGroupInfo | string[] | undefined {
-        if (typeof this.groupsMimeInfo[group] == 'undefined') {
+        if (this.groupsMimeInfo[group] === undefined) {
             this.fillGroupMimeInfo(group);
         }
 
@@ -590,7 +590,7 @@ export class CoreMimetypeUtilsProvider {
         if (position > -1) {
             // Check extension corresponds to a mimetype to know if it's valid.
             extension = path.substr(position + 1).toLowerCase();
-            if (typeof this.getMimeType(extension) != 'undefined') {
+            if (this.getMimeType(extension) !== undefined) {
                 return path.substr(0, position); // Remove extension.
             }
         }

@@ -484,7 +484,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         };
 
         let range = document.createRange();
-        if (typeof chars === 'undefined') {
+        if (chars === undefined) {
             // Select all so it will go to the end.
             range.selectNode(parent);
             range.selectNodeContents(parent);
@@ -601,7 +601,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * @param value text
      */
     protected isNullOrWhiteSpace(value: string | null): boolean {
-        if (value == null || typeof value == 'undefined') {
+        if (value == null || value === undefined) {
             return true;
         }
 
@@ -926,10 +926,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      */
     protected shouldAutoSaveDrafts(): boolean {
         return !!CoreSites.getCurrentSite() &&
-                (typeof this.autoSave == 'undefined' || CoreUtils.isTrueOrOne(this.autoSave)) &&
-                typeof this.contextLevel != 'undefined' &&
-                typeof this.contextInstanceId != 'undefined' &&
-                typeof this.elementId != 'undefined';
+                (this.autoSave === undefined || CoreUtils.isTrueOrOne(this.autoSave)) &&
+                this.contextLevel !== undefined &&
+                this.contextInstanceId !== undefined &&
+                this.elementId !== undefined;
     }
 
     /**
@@ -948,7 +948,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
                 this.originalContent,
             );
 
-            if (typeof entry == 'undefined') {
+            if (entry === undefined) {
                 // No draft found.
                 return;
             }

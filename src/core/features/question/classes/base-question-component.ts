@@ -164,7 +164,7 @@ export class CoreQuestionBaseComponent {
         for (const i in options) {
             const optionEl = options[i];
 
-            if (typeof optionEl.value == 'undefined') {
+            if (optionEl.value === undefined) {
                 this.logger.warn('Aborting because couldn\'t find input.', this.question?.slot);
                 CoreQuestionHelper.showComponentError(this.onAbort);
 
@@ -225,7 +225,7 @@ export class CoreQuestionBaseComponent {
 
         // Extract question text.
         this.question.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
-        if (typeof this.question.text == 'undefined') {
+        if (this.question.text === undefined) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
@@ -554,7 +554,7 @@ export class CoreQuestionBaseComponent {
             for (const j in options) {
                 const optionEl = options[j];
 
-                if (typeof optionEl.value == 'undefined') {
+                if (optionEl.value === undefined) {
                     this.logger.warn('Aborting because couldn\'t find the value of an option.', question.slot);
 
                     return CoreQuestionHelper.showComponentError(this.onAbort);

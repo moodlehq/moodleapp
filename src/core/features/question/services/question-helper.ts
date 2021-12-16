@@ -153,7 +153,7 @@ export class CoreQuestionHelperProvider {
         });
 
         // If we have a certainty value stored in local we'll use that one.
-        if (question.localAnswers && typeof question.localAnswers['-certainty'] != 'undefined') {
+        if (question.localAnswers && question.localAnswers['-certainty'] !== undefined) {
             question.behaviourCertaintySelected = question.localAnswers['-certainty'];
         }
 

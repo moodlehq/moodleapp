@@ -58,7 +58,7 @@ export class CoreLinkDirective implements OnInit {
      * Function executed when the component is initialized.
      */
     ngOnInit(): void {
-        this.inApp = typeof this.inApp == 'undefined' ? this.inApp : CoreUtils.isTrueOrOne(this.inApp);
+        this.inApp = this.inApp === undefined ? this.inApp : CoreUtils.isTrueOrOne(this.inApp);
 
         if (this.element.tagName != 'BUTTON' && this.element.tagName != 'A') {
             this.element.setAttribute('tabindex', '0');
@@ -233,7 +233,7 @@ export class CoreLinkDirective implements OnInit {
         } else {
             // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > data-open-in HTML attribute.
             let openInApp = this.inApp;
-            if (typeof this.inApp == 'undefined') {
+            if (this.inApp === undefined) {
                 if (CoreConstants.CONFIG.forceOpenLinksIn == 'browser') {
                     openInApp = false;
                 } else if (CoreConstants.CONFIG.forceOpenLinksIn == 'app' || openIn == 'app') {

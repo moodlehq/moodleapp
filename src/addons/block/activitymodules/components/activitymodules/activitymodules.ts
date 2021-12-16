@@ -67,13 +67,13 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
 
             section.modules.forEach((mod) => {
                 if (mod.uservisible === false || !CoreCourse.moduleHasView(mod) ||
-                    typeof modFullNames[mod.modname] != 'undefined') {
+                    modFullNames[mod.modname] !== undefined) {
                     // Ignore this module.
                     return;
                 }
 
                 // Get the archetype of the module type.
-                if (typeof archetypes[mod.modname] == 'undefined') {
+                if (archetypes[mod.modname] === undefined) {
                     archetypes[mod.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
                         mod.modname,
                         CoreConstants.FEATURE_MOD_ARCHETYPE,

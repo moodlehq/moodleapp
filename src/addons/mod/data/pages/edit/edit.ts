@@ -110,7 +110,7 @@ export class AddonModDataEditPage implements OnInit {
         }
 
         // If entryId is lower than 0 or null, it is a new entry or an offline entry.
-        this.isEditing = typeof this.entryId != 'undefined' && this.entryId > 0;
+        this.isEditing = this.entryId !== undefined && this.entryId > 0;
 
         this.title = this.module.name;
 

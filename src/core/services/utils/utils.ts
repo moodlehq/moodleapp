@@ -150,7 +150,7 @@ export class CoreUtilsProvider {
     ): Record<string, T[]> {
         for (const entry of array) {
             const key = propertyName ? entry[propertyName] : entry;
-            if (typeof result[key] == 'undefined') {
+            if (result[key] === undefined) {
                 result[key] = [];
             }
 
@@ -202,7 +202,7 @@ export class CoreUtilsProvider {
             return equal;
         } else {
             if (undefinedIsNull && (
-                (typeof itemA == 'undefined' && itemB === null) || (itemA === null && typeof itemB == 'undefined'))) {
+                (itemA === undefined && itemB === null) || (itemA === null && itemB === undefined))) {
                 return true;
             }
 
@@ -524,7 +524,7 @@ export class CoreUtilsProvider {
      * @return Locale float.
      */
     formatFloat(float: unknown): string {
-        if (typeof float == 'undefined' || float === null || typeof float == 'boolean') {
+        if (float === undefined || float === null || typeof float == 'boolean') {
             return '';
         }
 
@@ -836,7 +836,7 @@ export class CoreUtilsProvider {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isFalseOrZero(value: any): boolean {
-        return typeof value != 'undefined' && (value === false || value === 'false' || parseInt(value, 10) === 0);
+        return value !== undefined && (value === false || value === 'false' || parseInt(value, 10) === 0);
     }
 
     /**
@@ -847,7 +847,7 @@ export class CoreUtilsProvider {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isTrueOrOne(value: any): boolean {
-        return typeof value != 'undefined' && (value === true || value === 'true' || parseInt(value, 10) === 1);
+        return value !== undefined && (value === true || value === 'true' || parseInt(value, 10) === 1);
     }
 
     /**
@@ -858,7 +858,7 @@ export class CoreUtilsProvider {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isWebServiceError(error: any): boolean {
-        return error && (typeof error.warningcode != 'undefined' || (typeof error.errorcode != 'undefined' &&
+        return error && (error.warningcode !== undefined || (error.errorcode !== undefined &&
                 error.errorcode != 'userdeleted' && error.errorcode != 'upgraderunning' &&
                 error.errorcode != 'forcepasswordchangenotice' && error.errorcode != 'usernotfullysetup' &&
                 error.errorcode != 'sitepolicynotagreed' && error.errorcode != 'sitemaintenance' &&
@@ -929,7 +929,7 @@ export class CoreUtilsProvider {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     notNullOrUndefined(value: any): boolean {
-        return typeof value != 'undefined' && value !== null;
+        return value !== undefined && value !== null;
     }
 
     /**
@@ -1183,7 +1183,7 @@ export class CoreUtilsProvider {
     ): A[] {
         // Get the entries from an object or primitive value.
         const getEntries = (elKey: string, value: unknown): Record<string, unknown>[] | unknown => {
-            if (typeof value == 'undefined' || value == null) {
+            if (value === undefined || value == null) {
                 // Filter undefined and null values.
                 return;
             } else if (this.isObject(value)) {
@@ -1277,7 +1277,7 @@ export class CoreUtilsProvider {
         for (const name in flattened) {
             let value = flattened[name];
 
-            if (removeEmpty && (value === null || typeof value == 'undefined')) {
+            if (removeEmpty && (value === null || value === undefined)) {
                 continue;
             }
 
@@ -1379,8 +1379,8 @@ export class CoreUtilsProvider {
         obj2: Record<string, unknown> | unknown[],
         key: string,
     ): boolean {
-        let value1 = typeof obj1[key] != 'undefined' ? obj1[key] : '';
-        let value2 = typeof obj2[key] != 'undefined' ? obj2[key] : '';
+        let value1 = obj1[key] !== undefined ? obj1[key] : '';
+        let value2 = obj2[key] !== undefined ? obj2[key] : '';
 
         if (typeof value1 == 'number' || typeof value1 == 'boolean') {
             value1 = '' + value1;
@@ -1484,7 +1484,7 @@ export class CoreUtilsProvider {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     unformatFloat(localeFloat: any, strict?: boolean): false | '' | number {
         // Bad format on input type number.
-        if (typeof localeFloat == 'undefined') {
+        if (localeFloat === undefined) {
             return false;
         }
 
@@ -1656,7 +1656,7 @@ export class CoreUtilsProvider {
 
         if (error) {
             this.qrScanData.deferred.reject(data);
-        } else if (typeof data != 'undefined') {
+        } else if (data !== undefined) {
             this.qrScanData.deferred.resolve(data as string);
         } else {
             this.qrScanData.deferred.reject(new CoreCanceledError());

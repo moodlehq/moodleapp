@@ -416,7 +416,7 @@ export class AddonModLessonHelperProvider {
             // Treat each option.
             let controlAdded = false;
             options.forEach((option) => {
-                if (typeof option.value == 'undefined') {
+                if (option.value === undefined) {
                     // Option not valid, ignore it.
                     return;
                 }

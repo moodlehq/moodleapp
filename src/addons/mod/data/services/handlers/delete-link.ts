@@ -48,7 +48,7 @@ export class AddonModDataDeleteLinkHandlerService extends CoreContentLinksHandle
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Params): Promise<boolean> {
-        if (typeof params.d == 'undefined' || typeof params.delete == 'undefined') {
+        if (params.d === undefined || params.delete === undefined) {
             // Required fields not defined. Cannot treat the URL.
             return false;
         }

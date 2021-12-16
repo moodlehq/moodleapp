@@ -388,7 +388,7 @@ export class CoreH5PFramework {
      * @return Library parameter values separated by ', '
      */
     libraryParameterValuesToCsv(libraryData: CoreH5PLibraryBeingSaved, key: string, searchParam: string = 'path'): string {
-        if (typeof libraryData[key] != 'undefined') {
+        if (libraryData[key] !== undefined) {
             const parameterValues: string[] = [];
 
             libraryData[key].forEach((file) => {
@@ -489,7 +489,7 @@ export class CoreH5PFramework {
             params.metadata.title = params.title;
         }
         content.metadata = params.metadata;
-        content.params = JSON.stringify(typeof params.params != 'undefined' && params.params != null ? params.params : params);
+        content.params = JSON.stringify(params.params !== undefined && params.params != null ? params.params : params);
 
         return content;
     }
@@ -690,15 +690,15 @@ export class CoreH5PFramework {
         const preloadedCSS = this.libraryParameterValuesToCsv(libraryData, 'preloadedCss', 'path');
         const dropLibraryCSS = this.libraryParameterValuesToCsv(libraryData, 'dropLibraryCss', 'machineName');
 
-        if (typeof libraryData.semantics == 'undefined') {
+        if (libraryData.semantics === undefined) {
             libraryData.semantics = [];
         }
-        if (typeof libraryData.fullscreen == 'undefined') {
+        if (libraryData.fullscreen === undefined) {
             libraryData.fullscreen = 0;
         }
 
         let embedTypes = '';
-        if (typeof libraryData.embedTypes != 'undefined') {
+        if (libraryData.embedTypes !== undefined) {
             embedTypes = libraryData.embedTypes.join(', ');
         }
 
@@ -717,9 +717,9 @@ export class CoreH5PFramework {
             preloadedjs: preloadedJS,
             preloadedcss: preloadedCSS,
             droplibrarycss: dropLibraryCSS,
-            semantics: typeof libraryData.semantics != 'undefined' ? JSON.stringify(libraryData.semantics) : null,
-            addto: typeof libraryData.addTo != 'undefined' ? JSON.stringify(libraryData.addTo) : null,
-            metadatasettings: typeof libraryData.metadataSettings != 'undefined' ?
+            semantics: libraryData.semantics !== undefined ? JSON.stringify(libraryData.semantics) : null,
+            addto: libraryData.addTo !== undefined ? JSON.stringify(libraryData.addTo) : null,
+            metadatasettings: libraryData.metadataSettings !== undefined ?
                 CoreH5PMetadata.boolifyAndEncodeSettings(libraryData.metadataSettings) : null,
         };
 
@@ -841,7 +841,7 @@ export class CoreH5PFramework {
         const db = await CoreSites.getSiteDb(siteId);
 
         // If the libraryid declared in the package is empty, get the latest version.
-        if (content.library && typeof content.library.libraryId == 'undefined') {
+        if (content.library && content.library.libraryId === undefined) {
             const mainLibrary = await this.getLatestLibraryVersion(content.library.machineName, siteId);
 
             content.library.libraryId = mainLibrary.id;
@@ -867,7 +867,7 @@ export class CoreH5PFramework {
         };
         let contentId: number | undefined;
 
-        if (typeof content.id != 'undefined') {
+        if (content.id !== undefined) {
             data.id = content.id;
             contentId = content.id;
         } else {

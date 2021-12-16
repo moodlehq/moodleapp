@@ -160,7 +160,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
             return {
                 workshop,
                 groups,
-                files: files.filter((file) => typeof file !== 'undefined'),
+                files: files.filter((file) => file !== undefined),
             };
         } catch (error) {
             if (options.omitFail) {
@@ -168,7 +168,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
                 return {
                     workshop,
                     groups,
-                    files: files.filter((file) => typeof file !== 'undefined'),
+                    files: files.filter((file) => file !== undefined),
                 };
             }
 

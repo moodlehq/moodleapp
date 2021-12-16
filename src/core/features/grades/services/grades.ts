@@ -318,7 +318,7 @@ export class CoreGradesProvider {
 
         const course = await CoreCourses.getUserCourse(courseId, true, siteId);
 
-        return !(course && typeof course.showgrades != 'undefined' && !course.showgrades);
+        return !(course && course.showgrades !== undefined && !course.showgrades);
     }
 
     /**

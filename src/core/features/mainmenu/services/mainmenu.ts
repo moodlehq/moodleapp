@@ -176,7 +176,7 @@ export class CoreMainMenuProvider {
         }
 
         // Remove undefined values.
-        return result.filter((entry) => typeof entry != 'undefined');
+        return result.filter((entry) => entry !== undefined);
     }
 
     /**

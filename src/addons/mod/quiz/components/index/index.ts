@@ -615,7 +615,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
         await Promise.all(promises);
 
-        const grade = typeof this.gradebookData?.grade != 'undefined' ? this.gradebookData.grade : this.bestGrade?.grade;
+        const grade = this.gradebookData?.grade !== undefined ? this.gradebookData.grade : this.bestGrade?.grade;
         const quizGrade = AddonModQuiz.formatGrade(grade, quiz.decimalpoints);
 
         // Calculate data to construct the header of the attempts table.

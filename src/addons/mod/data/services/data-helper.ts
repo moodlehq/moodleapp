@@ -86,7 +86,7 @@ export class AddonModDataHelperProvider {
                     record.groupid = action.groupid;
 
                     action.fields.forEach((offlineContent) => {
-                        if (typeof offlineContents[offlineContent.fieldid] == 'undefined') {
+                        if (offlineContents[offlineContent.fieldid] === undefined) {
                             offlineContents[offlineContent.fieldid] = {};
                         }
 
@@ -270,7 +270,7 @@ export class AddonModDataHelperProvider {
             result.hasOfflineActions = !!actions.length;
 
             actions.forEach((action) => {
-                if (typeof offlineActions[action.entryid] == 'undefined') {
+                if (offlineActions[action.entryid] === undefined) {
                     offlineActions[action.entryid] = [];
                 }
                 offlineActions[action.entryid].push(action);

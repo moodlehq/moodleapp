@@ -959,28 +959,28 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                         candidateSubwikiId = subwiki.id;
                     }
 
-                    if (typeof candidateSubwikiId != 'undefined') {
+                    if (candidateSubwikiId !== undefined) {
                         if (candidateSubwikiId > 0) {
                             // Subwiki found and created, no need to keep looking.
                             candidateFirstPage = Number(i);
                             break;
-                        } else if (typeof candidateNoFirstPage == 'undefined') {
+                        } else if (candidateNoFirstPage === undefined) {
                             candidateNoFirstPage = Number(i);
                         }
-                    } else if (typeof firstCanEdit == 'undefined') {
+                    } else if (firstCanEdit === undefined) {
                         firstCanEdit = Number(i);
                     }
                 }
             }
 
             let subWikiToTake: number;
-            if (typeof candidateFirstPage != 'undefined') {
+            if (candidateFirstPage !== undefined) {
                 // Take the candidate that already has the first page created.
                 subWikiToTake = candidateFirstPage;
-            } else if (typeof candidateNoFirstPage != 'undefined') {
+            } else if (candidateNoFirstPage !== undefined) {
                 // No first page created, take the first candidate.
                 subWikiToTake = candidateNoFirstPage;
-            } else if (typeof firstCanEdit != 'undefined') {
+            } else if (firstCanEdit !== undefined) {
                 // None selected, take the first the user can edit.
                 subWikiToTake = firstCanEdit;
             } else {
@@ -989,7 +989,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             const subwiki = subwikiList[subWikiToTake];
-            if (typeof subwiki != 'undefined') {
+            if (subwiki !== undefined) {
                 this.setSelectedWiki(subwiki.id, subwiki.userid, subwiki.groupid);
             }
         }
@@ -1022,7 +1022,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             // As we loop over each subwiki, add it to the current group
             subwikiList.forEach((subwiki) => {
                 // Add the subwiki to the currently active grouping.
-                if (typeof subwiki.canedit == 'undefined') {
+                if (subwiki.canedit === undefined) {
                     noGrouping.subwikis.push(subwiki);
                 } else if (subwiki.canedit) {
                     myGroupsGrouping.subwikis.push(subwiki);

@@ -56,7 +56,7 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
 
                     const module = await CoreCourse.getModuleBasicInfoByInstance(instanceId, 'h5pactivity', siteId);
 
-                    if (typeof params.attemptid != 'undefined') {
+                    if (params.attemptid !== undefined) {
                         this.openAttemptResults(module.id, Number(params.attemptid), courseId, siteId);
                     } else {
                         const userId = params.userid ? Number(params.userid) : undefined;

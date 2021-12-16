@@ -49,7 +49,7 @@ export class AddonModFeedbackCompleteLinkHandlerService extends CoreContentLinks
                         AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/form`,
                         {
                             params: {
-                                page: typeof params.gopage != 'undefined' ? Number(params.gopage) : undefined,
+                                page: params.gopage !== undefined ? Number(params.gopage) : undefined,
                             },
                             siteId,
                         },
@@ -67,7 +67,7 @@ export class AddonModFeedbackCompleteLinkHandlerService extends CoreContentLinks
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        if (typeof params.id == 'undefined') {
+        if (params.id === undefined) {
             return false;
         }
 

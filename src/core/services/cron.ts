@@ -337,7 +337,7 @@ export class CoreCronDelegateService {
             // Invalid handler.
             return;
         }
-        if (typeof this.handlers[handler.name] != 'undefined') {
+        if (this.handlers[handler.name] !== undefined) {
             this.logger.debug(`The cron handler '${handler.name}' is already registered.`);
 
             return;

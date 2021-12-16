@@ -427,7 +427,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             this.slides!.slideTo(this.maxSlides);
         } else {
             const currentIndex = await this.slides!.getActiveIndex();
-            if (typeof currentIndex !== 'undefined') {
+            if (currentIndex !== undefined) {
                 const nextSlideIndex = currentIndex + this.maxSlides;
                 this.isInTransition = true;
                 if (nextSlideIndex < this.numTabsShown) {
@@ -456,7 +456,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             // Slide to the previous of the latest page.
         } else {
             const currentIndex = await this.slides!.getActiveIndex();
-            if (typeof currentIndex !== 'undefined') {
+            if (currentIndex !== undefined) {
                 const prevSlideIndex = currentIndex - this.maxSlides;
                 this.isInTransition = true;
                 if (prevSlideIndex >= 0) {

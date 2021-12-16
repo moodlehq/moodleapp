@@ -191,7 +191,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModDataAutoSyncData): boolean {
-        if (this.database && syncEventData.dataId == this.database.id && typeof syncEventData.entryId == 'undefined') {
+        if (this.database && syncEventData.dataId == this.database.id && syncEventData.entryId === undefined) {
             this.loaded = false;
             // Refresh the data.
             this.content?.scrollToTop();
@@ -309,7 +309,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         this.entriesRendered = '';
 
-        this.foundRecordsTranslationData = typeof entries.maxcount != 'undefined'
+        this.foundRecordsTranslationData = entries.maxcount !== undefined
             ? {
                 num: entries.totalcount,
                 max: entries.maxcount,

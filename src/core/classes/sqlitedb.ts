@@ -221,7 +221,7 @@ export class SQLiteDB {
                 columnSql += ` CHECK (${column.check})`;
             }
 
-            if (typeof column.default != 'undefined') {
+            if (column.default !== undefined) {
                 columnSql += ` DEFAULT ${column.default}`;
             }
 
@@ -388,7 +388,7 @@ export class SQLiteDB {
      * @return Promise resolved with the number of affected rows.
      */
     async deleteRecords(table: string, conditions?: SQLiteDBRecordValues): Promise<number> {
-        if (conditions === null || typeof conditions == 'undefined') {
+        if (conditions === null || conditions === undefined) {
             // No conditions, delete the whole table.
             const result = await this.execute(`DELETE FROM ${table}`);
 
@@ -485,7 +485,7 @@ export class SQLiteDB {
 
         // Remove undefined entries and convert null to "NULL".
         for (const name in data) {
-            if (typeof data[name] == 'undefined') {
+            if (data[name] === undefined) {
                 delete data[name];
             }
         }
@@ -581,13 +581,13 @@ export class SQLiteDB {
         let params: SQLiteDBRecordValue[];
 
         // Default behavior, return empty data on empty array.
-        if (Array.isArray(items) && !items.length && typeof onEmptyItems == 'undefined') {
+        if (Array.isArray(items) && !items.length && onEmptyItems === undefined) {
             return { sql: '', params: [] };
         }
 
         // Handle onEmptyItems on empty array of items.
         if (Array.isArray(items) && !items.length) {
-            if (onEmptyItems === null || typeof onEmptyItems === 'undefined') { // Special case, NULL value.
+            if (onEmptyItems === null || onEmptyItems === undefined) { // Special case, NULL value.
                 sql = equal ? ' IS NULL' : ' IS NOT NULL';
 
                 return { sql, params: [] };
@@ -1091,7 +1091,7 @@ export class SQLiteDB {
         for (const key in conditions) {
             const value = conditions[key];
 
-            if (typeof value == 'undefined' || value === null) {
+            if (value === undefined || value === null) {
                 where.push(key + ' IS NULL');
             } else {
                 where.push(key + ' = ?');
@@ -1124,7 +1124,7 @@ export class SQLiteDB {
         let sql = '';
 
         values.forEach((value) => {
-            if (typeof value == 'undefined' || value === null) {
+            if (value === undefined || value === null) {
                 sql = field + ' IS NULL';
             } else {
                 params.push(value);

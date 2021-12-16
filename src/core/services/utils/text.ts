@@ -215,7 +215,7 @@ export class CoreTextUtilsProvider {
      * @return Size in human readable format.
      */
     bytesToSize(bytes: number, precision: number = 2): string {
-        if (typeof bytes == 'undefined' || bytes === null || bytes < 0) {
+        if (bytes === undefined || bytes === null || bytes < 0) {
             return Translate.instant('core.notapplicable');
         }
 
@@ -347,7 +347,7 @@ export class CoreTextUtilsProvider {
      * @return Decoded text.
      */
     decodeHTML(text: string | number): string {
-        if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
+        if (text === undefined || text === null || (typeof text == 'number' && isNaN(text))) {
             return '';
         } else if (typeof text != 'string') {
             return '' + text;
@@ -430,7 +430,7 @@ export class CoreTextUtilsProvider {
      * @return Escaped text.
      */
     escapeHTML(text?: string | number | null, doubleEncode: boolean = true): string {
-        if (typeof text == 'undefined' || text === null || (typeof text == 'number' && isNaN(text))) {
+        if (text === undefined || text === null || (typeof text == 'number' && isNaN(text))) {
             return '';
         } else if (typeof text != 'string') {
             return '' + text;
@@ -673,7 +673,7 @@ export class CoreTextUtilsProvider {
         }
 
         // Error parsing, return the default value or the original value.
-        if (typeof defaultValue != 'undefined') {
+        if (defaultValue !== undefined) {
             return defaultValue;
         }
 

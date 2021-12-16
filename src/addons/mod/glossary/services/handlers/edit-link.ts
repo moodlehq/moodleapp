@@ -70,7 +70,7 @@ export class AddonModGlossaryEditLinkHandlerService extends CoreContentLinksHand
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        return typeof params.cmid != 'undefined';
+        return params.cmid !== undefined;
     }
 
 }

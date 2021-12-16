@@ -80,7 +80,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
      */
     protected initTab(tab: CoreTabsOutletTab): void {
         tab.id = tab.id || 'core-tab-outlet-' + CoreUtils.getUniqueId('CoreTabsOutletComponent');
-        if (typeof tab.enabled == 'undefined') {
+        if (tab.enabled === undefined) {
             tab.enabled = true;
         }
     }

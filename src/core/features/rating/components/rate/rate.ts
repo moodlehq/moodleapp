@@ -142,7 +142,7 @@ export class CoreRatingRateComponent implements OnChanges, OnDestroy {
                 this.aggregateMethod,
             );
 
-            if (typeof response == 'undefined') {
+            if (response === undefined) {
                 CoreDomUtils.showToast('core.datastoredoffline', true, 3000);
             } else {
                 this.onUpdate.emit();

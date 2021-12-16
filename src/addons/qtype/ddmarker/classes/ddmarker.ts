@@ -499,7 +499,7 @@ export class AddonQtypeDdMarkerQuestion {
         const dragging = !!this.doc.dragItemBeingDragged(choiceNo);
         const coords: number[][] = [];
 
-        if (fv !== '' && typeof fv != 'undefined' && fv !== null) {
+        if (fv !== '' && fv !== undefined && fv !== null) {
             // Get all the coordinates in the input and add them to the coords list.
             const coordsStrings = fv.split(';');
 

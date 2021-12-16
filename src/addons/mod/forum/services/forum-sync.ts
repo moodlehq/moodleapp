@@ -379,7 +379,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
 
         // Do not sync same discussion twice.
         replies.forEach((reply) => {
-            if (typeof promises[reply.discussionid] != 'undefined') {
+            if (promises[reply.discussionid] !== undefined) {
                 return;
             }
             promises[reply.discussionid] = this.syncDiscussionReplies(reply.discussionid, userId, siteId);

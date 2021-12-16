@@ -107,7 +107,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
         // Sync all conversations.
         conversationIds.forEach((conversationId) => {
             promises.push(this.syncDiscussion(conversationId, undefined, siteId).then((result) => {
-                if (typeof result == 'undefined') {
+                if (result === undefined) {
                     return;
                 }
 
@@ -120,7 +120,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
 
         userIds.forEach((userId) => {
             promises.push(this.syncDiscussion(undefined, userId, siteId).then((result) => {
-                if (typeof result == 'undefined') {
+                if (result === undefined) {
                     return;
                 }
 

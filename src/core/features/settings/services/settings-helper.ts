@@ -290,7 +290,7 @@ export class CoreSettingsHelperProvider {
         // Check old setting and update the new.
         try {
             const fontSize = await CoreConfig.get<number>('CoreSettingsFontSize');
-            if (typeof fontSize == 'undefined') {
+            if (fontSize === undefined) {
                 // Already upgraded.
                 return;
             }

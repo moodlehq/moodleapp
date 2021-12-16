@@ -44,7 +44,7 @@ export class AddonModFeedbackShowEntriesLinkHandlerService extends CoreContentLi
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        if (typeof params.id == 'undefined') {
+        if (params.id === undefined) {
             // Cannot treat the URL.
             return false;
         }

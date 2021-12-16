@@ -48,7 +48,7 @@ export class CoreSitePluginsCallWSOnClickBaseDirective extends CoreSitePluginsCa
             ev.preventDefault();
             ev.stopPropagation();
 
-            if (typeof this.confirmMessage != 'undefined') {
+            if (this.confirmMessage !== undefined) {
                 // Ask for confirm.
                 try {
                     await CoreDomUtils.showConfirm(this.confirmMessage || Translate.instant('core.areyousure'));
@@ -71,7 +71,7 @@ export class CoreSitePluginsCallWSOnClickBaseDirective extends CoreSitePluginsCa
         try {
             await super.callWS();
         } catch (error) {
-            if (typeof this.showError == 'undefined' || CoreUtils.isTrueOrOne(this.showError)) {
+            if (this.showError === undefined || CoreUtils.isTrueOrOne(this.showError)) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.serverconnection', true);
             }
         } finally {

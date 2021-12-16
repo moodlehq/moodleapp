@@ -86,7 +86,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
 
         // Update MathJax locale if app language changes.
         CoreEvents.on(CoreEvents.LANGUAGE_CHANGED, (lang: string) => {
-            if (typeof this.window.MathJax == 'undefined') {
+            if (this.window.MathJax === undefined) {
                 return;
             }
 
@@ -223,7 +223,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
                 if (!this._configured) {
                     const lang = this._lang;
 
-                    if (typeof that.window.MathJax != 'undefined') {
+                    if (that.window.MathJax !== undefined) {
                         that.window.MathJax.Hub.Queue(() => {
                             that.window.MathJax.Localization.setLocale(lang);
                         });
@@ -238,7 +238,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
                     this._setLocale();
                 }
 
-                if (typeof that.window.MathJax != 'undefined') {
+                if (that.window.MathJax !== undefined) {
                     const processDelay = that.window.MathJax.Hub.processSectionDelay;
                     // Set the process section delay to 0 when updating the formula.
                     that.window.MathJax.Hub.processSectionDelay = 0;

@@ -253,11 +253,11 @@ export class AddonModForumProvider {
             throw new Error('Invalid response calling mod_forum_can_add_discussion');
         }
 
-        if (typeof result.canpindiscussions == 'undefined') {
+        if (result.canpindiscussions === undefined) {
             // WS doesn't support it yet, default it to false to prevent students from seeing the option.
             result.canpindiscussions = false;
         }
-        if (typeof result.cancreateattachment == 'undefined') {
+        if (result.cancreateattachment === undefined) {
             // WS doesn't support it yet, default it to true since usually the users will be able to create them.
             result.cancreateattachment = true;
         }
@@ -816,7 +816,7 @@ export class AddonModForumProvider {
             discussions: [] as AddonModForumDiscussion[],
             error: false,
         };
-        let numPages = typeof options.numPages == 'undefined' ? -1 : options.numPages;
+        let numPages = options.numPages === undefined ? -1 : options.numPages;
 
         if (!numPages) {
             return result;

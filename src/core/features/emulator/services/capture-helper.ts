@@ -192,7 +192,7 @@ export class CoreEmulatorCaptureHelperProvider {
      * @return Promise resolved when loaded.
      */
     load(): Promise<void> {
-        if (typeof window.MediaRecorder != 'undefined' && this.initGetUserMedia()) {
+        if (window.MediaRecorder !== undefined && this.initGetUserMedia()) {
             this.initMimeTypes();
         }
 

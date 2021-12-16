@@ -263,8 +263,8 @@ export class AddonModWorkshopProvider {
         }
 
         // Set submission types for Moodle 3.5.
-        if (typeof workshop.submissiontypetext == 'undefined') {
-            if (typeof workshop.nattachments != 'undefined' && workshop.nattachments > 0) {
+        if (workshop.submissiontypetext === undefined) {
+            if (workshop.nattachments !== undefined && workshop.nattachments > 0) {
                 workshop.submissiontypetext = AddonModWorkshopSubmissionType.SUBMISSION_TYPE_AVAILABLE;
                 workshop.submissiontypefile = AddonModWorkshopSubmissionType.SUBMISSION_TYPE_AVAILABLE;
             } else {

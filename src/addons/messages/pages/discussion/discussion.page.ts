@@ -205,7 +205,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 message.useridfrom;
 
         let added = false;
-        if (typeof this.keepMessageMap[message.hash] === 'undefined') {
+        if (this.keepMessageMap[message.hash] === undefined) {
             // Message not added to the list. Add it now.
             this.messages.push(message);
             added = message.useridfrom != this.currentUserId;
@@ -1277,7 +1277,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 },
             });
 
-            if (typeof userId != 'undefined') {
+            if (userId !== undefined) {
                 const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/**/discussion');
 
                 // Open user conversation.

@@ -186,7 +186,7 @@ export class AddonModQuizAttemptPage implements OnInit {
             promises.push(AddonModQuiz.invalidateQuizAccessInformation(this.quiz.id));
             promises.push(AddonModQuiz.invalidateCombinedReviewOptionsForUser(this.quiz.id));
 
-            if (this.attempt && typeof this.feedback != 'undefined') {
+            if (this.attempt && this.feedback !== undefined) {
                 promises.push(AddonModQuiz.invalidateFeedback(this.quiz.id));
             }
         }

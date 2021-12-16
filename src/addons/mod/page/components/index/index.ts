@@ -113,9 +113,9 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
             const options: Record<string, string | boolean> =
                 CoreTextUtils.unserialize(this.page.displayoptions) || {};
 
-            this.displayDescription = typeof options.printintro == 'undefined' ||
+            this.displayDescription = options.printintro === undefined ||
                     CoreUtils.isTrueOrOne(options.printintro);
-            this.displayTimemodified = typeof options.printlastmodified == 'undefined' ||
+            this.displayTimemodified = options.printlastmodified === undefined ||
                     CoreUtils.isTrueOrOne(options.printlastmodified);
         } else {
             this.displayDescription = true;

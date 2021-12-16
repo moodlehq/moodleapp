@@ -85,7 +85,7 @@ export class CoreCourseListModTypePage implements OnInit {
 
                     if (this.modName === 'resources') {
                         // Check that the module is a resource.
-                        if (typeof this.archetypes[mod.modname] == 'undefined') {
+                        if (this.archetypes[mod.modname] === undefined) {
                             this.archetypes[mod.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
                                 mod.modname,
                                 CoreConstants.FEATURE_MOD_ARCHETYPE,

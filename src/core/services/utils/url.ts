@@ -146,7 +146,7 @@ export class CoreUrlUtilsProvider {
         }
 
         urlAndHash[0].replace(regex, (match: string, key: string, value: string): string => {
-            params[key] = typeof value != 'undefined' ? CoreTextUtils.decodeURIComponent(value) : '';
+            params[key] = value !== undefined ? CoreTextUtils.decodeURIComponent(value) : '';
 
             if (subParams) {
                 params[key] = params[key].replace(subParamsPlaceholder, subParams);
@@ -246,7 +246,7 @@ export class CoreUrlUtilsProvider {
     async getDocsUrl(release?: string, page: string = 'Mobile_app'): Promise<string> {
         let docsUrl = 'https://docs.moodle.org/en/' + page;
 
-        if (typeof release != 'undefined') {
+        if (release !== undefined) {
             const version = CoreSites.getMajorReleaseNumber(release).replace('.', '');
 
             // Check is a valid number.

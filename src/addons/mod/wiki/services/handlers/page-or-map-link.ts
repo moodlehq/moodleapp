@@ -97,7 +97,7 @@ export class AddonModWikiPageOrMapLinkHandlerService extends CoreContentLinksHan
         if (params.id && !isMap) {
             // ID param is more prioritary than pageid in index page, it's a index URL.
             return false;
-        } else if (isMap && typeof params.option != 'undefined' && params.option != '5') {
+        } else if (isMap && params.option !== undefined && params.option != '5') {
             // Map link but the option isn't "Page list", not supported.
             return false;
         }

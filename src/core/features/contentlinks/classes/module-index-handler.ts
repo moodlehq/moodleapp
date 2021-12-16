@@ -83,7 +83,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
         courseId = Number(courseId || params.courseid || params.cid);
         const pageParams = this.getPageParams(url, params, courseId);
 
-        if (this.instanceIdParam && typeof params[this.instanceIdParam] != 'undefined') {
+        if (this.instanceIdParam && params[this.instanceIdParam] !== undefined) {
             const instanceId = parseInt(params[this.instanceIdParam], 10);
 
             return [{

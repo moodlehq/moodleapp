@@ -69,7 +69,7 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit, OnDestroy 
             return;
         }
 
-        if (typeof this.post.capabilities.delete == 'undefined') {
+        if (this.post.capabilities.delete === undefined) {
             if (this.forumId) {
                 try {
                     this.post =

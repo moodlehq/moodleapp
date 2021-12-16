@@ -72,7 +72,7 @@ export class CoreSitePluginsCallWSDirective extends CoreSitePluginsCallWSOnClick
             this.parentContent.refreshContent(true);
         }
 
-        if (typeof this.successMessage != 'undefined') {
+        if (this.successMessage !== undefined) {
             // Display the success message.
             CoreDomUtils.showToast(this.successMessage || Translate.instant('core.success'));
         }

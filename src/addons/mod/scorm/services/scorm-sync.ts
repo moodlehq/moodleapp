@@ -476,7 +476,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
                 await this.syncScorm(scorm, siteId) :
                 await this.syncScormIfNeeded(scorm, siteId);
 
-            if (typeof data != 'undefined') {
+            if (data !== undefined) {
                 // We tried to sync. Send event.
                 CoreEvents.trigger(AddonModScormSyncProvider.AUTO_SYNCED, {
                     scormId: scorm.id,

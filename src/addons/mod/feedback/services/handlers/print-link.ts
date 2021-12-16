@@ -67,7 +67,7 @@ export class AddonModFeedbackPrintLinkHandlerService extends CoreContentLinksHan
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        if (typeof params.id == 'undefined') {
+        if (params.id === undefined) {
             return false;
         }
 

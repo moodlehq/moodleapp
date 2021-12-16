@@ -344,10 +344,10 @@ export class FileMock extends File {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const win = <any> window; // Convert to <any> to be able to use non-standard properties.
 
-            if (typeof win.requestFileSystem == 'undefined') {
+            if (win.requestFileSystem === undefined) {
                 win.requestFileSystem = win.webkitRequestFileSystem;
             }
-            if (typeof win.resolveLocalFileSystemURL == 'undefined') {
+            if (win.resolveLocalFileSystemURL === undefined) {
                 win.resolveLocalFileSystemURL = win.webkitResolveLocalFileSystemURL;
             }
             win.LocalFileSystem = {

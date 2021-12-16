@@ -418,11 +418,11 @@ export class AddonModLessonProvider {
         }
 
         // The name was changed to "answer_editor" in 3.7. Before it was just "answer". Support both cases.
-        if (typeof data['answer_editor[text]'] != 'undefined') {
+        if (data['answer_editor[text]'] !== undefined) {
             studentAnswer = data['answer_editor[text]'];
         } else if (typeof data.answer_editor == 'object') {
             studentAnswer = (<{text: string}> data.answer_editor).text;
-        } else if (typeof data['answer[text]'] != 'undefined') {
+        } else if (data['answer[text]'] !== undefined) {
             studentAnswer = data['answer[text]'];
         } else if (typeof data.answer == 'object') {
             studentAnswer = (<{text: string}> data.answer).text;
@@ -505,7 +505,7 @@ export class AddonModLessonProvider {
             value = CoreTextUtils.decodeHTML(value);
             userResponse.push(value);
 
-            if (typeof answers[id] != 'undefined') {
+            if (answers[id] !== undefined) {
                 const answer = answers[id];
 
                 result.studentanswer += '<br />' + answer.answer + ' = ' + value;
@@ -606,7 +606,7 @@ export class AddonModLessonProvider {
                             nHits++;
                         } else {
                             // Always use the first student wrong answer.
-                            if (typeof wrongPageId == 'undefined') {
+                            if (wrongPageId === undefined) {
                                 wrongPageId = answer.jumpto;
                             }
                             // Save the answer id for scoring.
@@ -621,7 +621,7 @@ export class AddonModLessonProvider {
                     nCorrect++;
 
                     // Save the first jumpto.
-                    if (typeof correctPageId == 'undefined') {
+                    if (correctPageId === undefined) {
                         correctPageId = answer.jumpto;
                     }
                     // Save the answer id for scoring.
@@ -644,7 +644,7 @@ export class AddonModLessonProvider {
             }
         } else {
             // Only one answer allowed.
-            if (typeof data.answerid == 'undefined' || (!data.answerid && Number(data.answerid) !== 0)) {
+            if (data.answerid === undefined || (!data.answerid && Number(data.answerid) !== 0)) {
                 result.noanswer = true;
 
                 return;
@@ -1501,7 +1501,7 @@ export class AddonModLessonProvider {
 
         const response = await site.read<AddonModLessonGetLessonWSResponse>('mod_lesson_get_lesson', params, preSets);
 
-        if (typeof response.lesson.ongoing == 'undefined') {
+        if (response.lesson.ongoing === undefined) {
             // Basic data not received, password is wrong. Remove stored password.
             this.removeStoredPassword(lessonId, site.id);
 
@@ -1788,7 +1788,7 @@ export class AddonModLessonProvider {
         const jumps: AddonModLessonPossibleJumps = {};
 
         response.jumps.forEach((jump) => {
-            if (typeof jumps[jump.pageid] == 'undefined') {
+            if (jumps[jump.pageid] === undefined) {
                 jumps[jump.pageid] = {};
             }
             jumps[jump.pageid][jump.jumpto] = jump;
@@ -2886,7 +2886,7 @@ export class AddonModLessonProvider {
                 if (options.pageIndex[lastAttempt.pageid].qtype == AddonModLessonProvider.LESSON_PAGE_ESSAY) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const score: number | undefined = (<any> lastAttempt.useranswer)?.score;
-                    if (typeof score != 'undefined') {
+                    if (score !== undefined) {
                         result.earned += score;
                     }
                     result.nmanual++;
@@ -2917,7 +2917,7 @@ export class AddonModLessonProvider {
             for (const answerId in answers) {
                 const answer = answers[answerId];
 
-                if (typeof bestScores[answer.pageid] == 'undefined') {
+                if (bestScores[answer.pageid] === undefined) {
                     bestScores[answer.pageid] = answer.score || 0;
                 } else if (bestScores[answer.pageid] < (answer.score || 0)) {
                     bestScores[answer.pageid] = answer.score || 0;
@@ -3271,7 +3271,7 @@ export class AddonModLessonProvider {
 
         if (lesson.review && !result.correctanswer && !result.isessayquestion) {
             // Calculate the number of question attempt in the page if it isn't calculated already.
-            if (typeof nAttempts == 'undefined') {
+            if (nAttempts === undefined) {
                 const result = await this.getQuestionsAttempts(lesson.id, retake, {
                     cmId: lesson.coursemodule,
                     pageId: pageData.page.id,

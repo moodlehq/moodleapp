@@ -50,7 +50,7 @@ export class AddonModDataApproveLinkHandlerService extends CoreContentLinksHandl
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Params): Promise<boolean> {
-        if (typeof params.d == 'undefined' || (typeof params.approve == 'undefined' && typeof params.disapprove == 'undefined')) {
+        if (params.d === undefined || (params.approve === undefined && params.disapprove === undefined)) {
             // Required fields not defined. Cannot treat the URL.
             return false;
         }

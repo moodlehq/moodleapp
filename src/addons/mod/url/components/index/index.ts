@@ -92,7 +92,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
 
             if (url.displayoptions) {
                 const unserialized = CoreTextUtils.unserialize<AddonModUrlDisplayOptions>(url.displayoptions);
-                this.displayDescription = typeof unserialized.printintro == 'undefined' || !!unserialized.printintro;
+                this.displayDescription = unserialized.printintro === undefined || !!unserialized.printintro;
             }
 
             // Try to get module contents, it's needed to get the URL with parameters.

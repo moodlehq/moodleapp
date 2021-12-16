@@ -100,7 +100,7 @@ export class CoreWSProvider {
         }
 
         preSets.typeExpected = preSets.typeExpected || 'object';
-        if (typeof preSets.responseExpected == 'undefined') {
+        if (preSets.responseExpected === undefined) {
             preSets.responseExpected = true;
         }
 
@@ -323,7 +323,7 @@ export class CoreWSProvider {
      */
     protected getPromiseHttp<T = unknown>(method: string, url: string, params?: Record<string, unknown>): Promise<T> | undefined {
         const queueItemId = this.getQueueItemId(method, url, params);
-        if (typeof this.ongoingCalls[queueItemId] != 'undefined') {
+        if (this.ongoingCalls[queueItemId] !== undefined) {
             return this.ongoingCalls[queueItemId];
         }
     }
@@ -414,13 +414,13 @@ export class CoreWSProvider {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let promise: Promise<HttpResponse<any>>;
 
-        if (typeof preSets.siteUrl == 'undefined') {
+        if (preSets.siteUrl === undefined) {
             throw new CoreAjaxError(Translate.instant('core.unexpectederror'));
         } else if (!CoreApp.isOnline()) {
             throw new CoreAjaxError(Translate.instant('core.networkerrormsg'));
         }
 
-        if (typeof preSets.responseExpected == 'undefined') {
+        if (preSets.responseExpected === undefined) {
             preSets.responseExpected = true;
         }
 
@@ -655,7 +655,7 @@ export class CoreWSProvider {
                 }
             }
 
-            if (typeof data.exception !== 'undefined') {
+            if (data.exception !== undefined) {
                 // Special debugging for site plugins, otherwise it's hard to debug errors if the data is cached.
                 if (method == 'tool_mobile_get_content') {
                     this.logger.error('Error calling WS', method, data);
@@ -664,7 +664,7 @@ export class CoreWSProvider {
                 throw new CoreWSError(data);
             }
 
-            if (typeof data.debuginfo != 'undefined') {
+            if (data.debuginfo !== undefined) {
                 throw new CoreError('Error. ' + data.message);
             }
 
@@ -787,7 +787,7 @@ export class CoreWSProvider {
         }
 
         preSets.typeExpected = preSets.typeExpected || 'object';
-        if (typeof preSets.responseExpected == 'undefined') {
+        if (preSets.responseExpected === undefined) {
             preSets.responseExpected = true;
         }
 
@@ -838,7 +838,7 @@ export class CoreWSProvider {
             throw new CoreError(Translate.instant('core.errorinvalidresponse'));
         }
 
-        if (typeof data.exception != 'undefined' || typeof data.debuginfo != 'undefined') {
+        if (data.exception !== undefined || data.debuginfo !== undefined) {
             throw new CoreWSError(data);
         }
 
@@ -907,14 +907,14 @@ export class CoreWSProvider {
                 throw new CoreError(Translate.instant('core.errorinvalidresponse'));
             }
 
-            if (typeof data.exception !== 'undefined') {
+            if (data.exception !== undefined) {
                 throw new CoreWSError(data);
-            } else if (typeof data.error !== 'undefined') {
+            } else if (data.error !== undefined) {
                 throw new CoreWSError({
                     errorcode: data.errortype,
                     message: data.error,
                 });
-            } else if (data[0] && typeof data[0].error !== 'undefined') {
+            } else if (data[0] && data[0].error !== undefined) {
                 throw new CoreWSError({
                     errorcode: data[0].errortype,
                     message: data[0].error,
@@ -966,7 +966,7 @@ export class CoreWSProvider {
     async sendHTTPRequest<T = unknown>(url: string, options: HttpRequestOptions): Promise<HttpResponse<T>> {
         // Set default values.
         options.responseType = options.responseType || 'json';
-        options.timeout = typeof options.timeout == 'undefined' ? this.getRequestTimeout() : options.timeout;
+        options.timeout = options.timeout === undefined ? this.getRequestTimeout() : options.timeout;
 
         if (CoreApp.isMobile()) {
             // Use the cordova plugin.

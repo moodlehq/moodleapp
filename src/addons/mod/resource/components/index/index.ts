@@ -116,7 +116,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             resource.displayoptions ? CoreTextUtils.unserialize(resource.displayoptions) : {};
 
         try {
-            this.displayDescription = typeof options.printintro == 'undefined' || !!options.printintro;
+            this.displayDescription = options.printintro === undefined || !!options.printintro;
             this.dataRetrieved.emit(resource);
 
             if (AddonModResourceHelper.isDisplayedInIframe(this.module)) {

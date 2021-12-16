@@ -270,12 +270,12 @@ export class CoreCoursesHelperProvider {
         courses = slice > 0 ? courses.slice(0, slice) : courses;
 
         return Promise.all(courses.map(async (course) => {
-            if (typeof course.completed != 'undefined') {
+            if (course.completed !== undefined) {
                 // The WebService already returns the completed status, no need to fetch it.
                 return course;
             }
 
-            if (typeof course.enablecompletion != 'undefined' && !course.enablecompletion) {
+            if (course.enablecompletion !== undefined && !course.enablecompletion) {
                 // Completion is disabled for this course, there is no need to fetch the completion status.
                 return course;
             }

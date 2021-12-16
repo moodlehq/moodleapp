@@ -223,7 +223,7 @@ export class AddonModBookProvider {
      * @return The toc.
      */
     getToc(contents: CoreCourseModuleContentFile[]): AddonModBookTocChapterParsed[] {
-        if (!contents || !contents.length || typeof contents[0].content == 'undefined') {
+        if (!contents || !contents.length || contents[0].content === undefined) {
             return [];
         }
 

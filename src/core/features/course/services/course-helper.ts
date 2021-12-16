@@ -1253,7 +1253,7 @@ export class CoreCourseHelperProvider {
                 const module = section.modules[j];
                 const offlineCompletion = offlineCompletionsMap[module.id];
 
-                if (offlineCompletion && typeof module.completiondata != 'undefined' &&
+                if (offlineCompletion && module.completiondata !== undefined &&
                     offlineCompletion.timecompleted >= module.completiondata.timecompleted * 1000) {
                     // The module has offline completion. Load it.
                     module.completiondata.state = offlineCompletion.completed;
@@ -1771,7 +1771,7 @@ export class CoreCourseHelperProvider {
             promises.push(CoreCourses.getCoursesByField('id', course.id));
 
             const sectionWithModules = sections.find((section) => section.modules && section.modules.length > 0);
-            if (!sectionWithModules || typeof sectionWithModules.modules[0].completion == 'undefined') {
+            if (!sectionWithModules || sectionWithModules.modules[0].completion === undefined) {
                 promises.push(CoreCourse.getActivitiesCompletionStatus(course.id));
             }
 
@@ -1988,7 +1988,7 @@ export class CoreCourseHelperProvider {
             return false;
         }
 
-        return (typeof section.availabilityinfo != 'undefined' && section.availabilityinfo != '') ||
+        return (section.availabilityinfo !== undefined && section.availabilityinfo != '') ||
             section.summary != '' || (section.modules && section.modules.length > 0);
     }
 

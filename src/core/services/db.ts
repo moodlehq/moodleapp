@@ -36,7 +36,7 @@ export class CoreDbProvider {
      * @return DB.
      */
     getDB(name: string, forceNew?: boolean): SQLiteDB {
-        if (typeof this.dbInstances[name] === 'undefined' || forceNew) {
+        if (this.dbInstances[name] === undefined || forceNew) {
             if (Platform.is('cordova')) {
                 this.dbInstances[name] = new SQLiteDB(name);
             } else {
@@ -54,7 +54,7 @@ export class CoreDbProvider {
      * @return Promise resolved when the DB is deleted.
      */
     async deleteDB(name: string): Promise<void> {
-        if (typeof this.dbInstances[name] != 'undefined') {
+        if (this.dbInstances[name] !== undefined) {
             // Close the database first.
             await this.dbInstances[name].close();
 
