@@ -19,7 +19,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTimeUtils, YearMonthDay } from '@services/utils/time';
+import { CoreTimeUtils } from '@services/utils/time';
 import {
     AddonCalendarProvider,
     AddonCalendar,
@@ -40,12 +40,12 @@ import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
-import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/slides-dynamic-items-manager';
-import { CoreSwipeCurrentItemData, CoreSwipeSlidesComponent } from '@components/swipe-slides/swipe-slides';
+import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/swipe-slides-dynamic-items-manager';
+import { CoreSwipeSlidesComponent } from '@components/swipe-slides/swipe-slides';
 import {
     CoreSwipeSlidesDynamicItem,
     CoreSwipeSlidesDynamicItemsManagerSource,
-} from '@classes/items-management/slides-dynamic-items-manager-source';
+} from '@classes/items-management/swipe-slides-dynamic-items-manager-source';
 
 /**
  * Page that displays the calendar events for a certain day.
@@ -72,13 +72,13 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     protected onlineObserver: Subscription;
     protected obsDefaultTimeChange?: CoreEventObserver;
     protected filterChangedObserver: CoreEventObserver;
+    protected managerUnsubscribe?: () => void;
 
     periodName?: string;
     manager?: CoreSwipeSlidesDynamicItemsManager<PreloadedDay, AddonCalendarDaySlidesItemsManagerSource>;
     loaded = false;
     isOnline = false;
     syncIcon = CoreConstants.ICON_LOADING;
-    isCurrentDay = false;
     filter: AddonCalendarFilter = {
         filtered: false,
         courseId: undefined,
@@ -97,7 +97,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             // Re-schedule events if default time changes.
             this.obsDefaultTimeChange = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
                 this.manager?.getSource().getItems()?.forEach(day => {
-                    AddonCalendar.scheduleEventsNotifications(day.onlineEvents);
+                    AddonCalendar.scheduleEventsNotifications(day.onlineEvents || []);
                 });
             }, this.currentSiteId);
         }
@@ -140,9 +140,8 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
         // Refresh data if calendar events are synchronized manually but not by this page.
         this.manualSyncObserver = CoreEvents.on(AddonCalendarSyncProvider.MANUAL_SYNCED, (data) => {
-            const visibleDay = this.slides?.getCurrentItem();
-            if (data && (data.source != 'day' || !visibleDay || data.day === undefined || data.year != visibleDay.year ||
-                    data.month != visibleDay.monthNumber || data.day != visibleDay.dayNumber)) {
+            const selectedDay = this.manager?.getSelectedItem();
+            if (data && (data.source != 'day' || !selectedDay || !data.moment || !selectedDay.moment.isSame(data.moment, 'day'))) {
                 this.manager?.getSource().markAllItemsUnloaded();
                 this.refreshData(false, true);
             }
@@ -214,15 +213,18 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
         this.filter.filtered = typeof this.filter.courseId != 'undefined' || types.some((name) => !this.filter[name]);
 
-        const currentDay = CoreTimeUtils.getCurrentDay();
-        const source = new AddonCalendarDaySlidesItemsManagerSource(this, {
-            year: CoreNavigator.getRouteNumberParam('year') ?? currentDay.year,
-            monthNumber: CoreNavigator.getRouteNumberParam('month') ?? currentDay.monthNumber,
-            dayNumber: CoreNavigator.getRouteNumberParam('day') ?? currentDay.dayNumber,
-        });
+        const month = CoreNavigator.getRouteNumberParam('month');
+        const source = new AddonCalendarDaySlidesItemsManagerSource(this, moment({
+            year: CoreNavigator.getRouteNumberParam('year'),
+            month: month ? month - 1 : undefined,
+            date: CoreNavigator.getRouteNumberParam('day'),
+        }));
         this.manager = new CoreSwipeSlidesDynamicItemsManager(source);
-
-        this.calculateIsCurrentDay();
+        this.managerUnsubscribe = this.manager.addListener({
+            onSelectedItemUpdated: (item) => {
+                this.onDayViewed(item);
+            },
+        });
 
         this.fetchData(true);
     }
@@ -264,13 +266,14 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
     /**
      * Update data related to day being viewed.
+     *
+     * @param day Day viewed.
      */
-    viewDay(day: YearMonthDay): void {
+    onDayViewed(day: DayBasicData): void {
         this.periodName = CoreTimeUtils.userDate(
-            new Date(day.year, day.monthNumber - 1, day.dayNumber).getTime(),
+            day.moment.unix() * 1000,
             'core.strftimedaydate',
         );
-        this.calculateIsCurrentDay();
     }
 
     /**
@@ -301,10 +304,10 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     async refreshData(sync?: boolean, afterChange?: boolean): Promise<void> {
         this.syncIcon = CoreConstants.ICON_LOADING;
 
-        const visibleDay = this.slides?.getCurrentItem() || null;
+        const selectedDay = this.manager?.getSelectedItem() || null;
 
         // Don't invalidate day events after a change, it has already been handled.
-        await this.manager?.getSource().invalidateContent(visibleDay, !afterChange);
+        await this.manager?.getSource().invalidateContent(selectedDay, !afterChange);
 
         await this.fetchData(sync);
     }
@@ -325,14 +328,9 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
             if (result.updated) {
                 // Trigger a manual sync event.
-                const visibleDay = this.slides?.getCurrentItem();
+                const selectedDay = this.manager?.getSelectedItem();
                 result.source = 'day';
-
-                if (visibleDay) {
-                    result.day = visibleDay.dayNumber;
-                    result.month = visibleDay.monthNumber;
-                    result.year = visibleDay.year;
-                }
+                result.moment = selectedDay?.moment;
 
                 this.manager?.getSource().markAllItemsUnloaded();
                 CoreEvents.trigger(AddonCalendarSyncProvider.MANUAL_SYNCED, result, this.currentSiteId);
@@ -342,6 +340,13 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
                 CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
             }
         }
+    }
+
+    /**
+     * Check whether selected day is current day.
+     */
+    selectedDayIsCurrent(): boolean {
+        return !!this.manager?.getSelectedItem()?.isCurrentDay;
     }
 
     /**
@@ -381,10 +386,9 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             // It's a new event, set the time.
             eventId = 0;
 
-            const visibleDay = this.slides?.getCurrentItem();
-            if (visibleDay) {
-                params.timestamp = moment().year(visibleDay.year).month(visibleDay.monthNumber - 1).date(visibleDay.dayNumber)
-                    .unix() * 1000;
+            const selectedDay = this.manager?.getSelectedItem();
+            if (selectedDay) {
+                params.timestamp = selectedDay.moment.unix() * 1000;
             }
         }
 
@@ -396,26 +400,14 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Check if user is viewing the current day.
-     */
-    calculateIsCurrentDay(): void {
-        const visibleDay = this.slides?.getCurrentItem();
-        if (!visibleDay) {
-            return;
-        }
-
-        this.isCurrentDay = visibleDay.isCurrentDay;
-    }
-
-    /**
-     * Check whether visible day has offline data.
+     * Check whether selected day has offline data.
      *
-     * @return Whether visible day has offline data.
+     * @return Whether selected day has offline data.
      */
-    visibleDayHasOffline(): boolean {
-        const visibleDay = this.slides?.getCurrentItem();
+    selectedDayHasOffline(): boolean {
+        const selectedDay = this.manager?.getSelectedItem();
 
-        return !!visibleDay && visibleDay.hasOffline;
+        return !!(selectedDay?.hasOffline);
     }
 
     /**
@@ -428,7 +420,9 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             return;
         }
 
-        const currentDay = CoreTimeUtils.getCurrentDay();
+        const currentDay = {
+            moment: moment(),
+        };
         this.loaded = false;
 
         try {
@@ -436,7 +430,6 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             await manager.getSource().loadItem(currentDay);
 
             slides.slideToItem(currentDay);
-            this.isCurrentDay = true;
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
         } finally {
@@ -459,15 +452,6 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Slide has changed.
-     *
-     * @param data Data about new item.
-     */
-    slideChanged(data: CoreSwipeCurrentItemData<PreloadedDay>): void {
-        this.viewDay(data.item);
-    }
-
-    /**
      * Page destroyed.
      */
     ngOnDestroy(): void {
@@ -481,20 +465,28 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.onlineObserver?.unsubscribe();
         this.filterChangedObserver?.off();
         this.obsDefaultTimeChange?.off();
+        this.managerUnsubscribe && this.managerUnsubscribe();
     }
 
 }
 
 /**
+ * Basic data to identify a day.
+ */
+type DayBasicData = {
+    moment: moment.Moment;
+};
+
+/**
  * Preloaded month.
  */
-type PreloadedDay = YearMonthDay & CoreSwipeSlidesDynamicItem & {
-    events: AddonCalendarEventToDisplay[]; // Events (both online and offline).
-    onlineEvents: AddonCalendarEventToDisplay[];
-    filteredEvents: AddonCalendarEventToDisplay[];
-    isCurrentDay: boolean;
-    isPastDay: boolean;
-    hasOffline: boolean; // Whether the day has offline data.
+type PreloadedDay = DayBasicData & CoreSwipeSlidesDynamicItem & {
+    events?: AddonCalendarEventToDisplay[]; // Events (both online and offline).
+    onlineEvents?: AddonCalendarEventToDisplay[];
+    filteredEvents?: AddonCalendarEventToDisplay[];
+    isCurrentDay?: boolean;
+    isPastDay?: boolean;
+    hasOffline?: boolean; // Whether the day has offline data.
 };
 
 /**
@@ -506,16 +498,15 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
     // Offline events classified in month & day.
     offlineEvents: Record<string, Record<number, AddonCalendarEventToDisplay[]>> = {};
     offlineEditedEventsIds: number[] = []; // IDs of events edited in offline.
-    categories: { [id: number]: CoreCategoryData } = {};
-    deletedEvents: number[] = []; // Events deleted in offline.
+    categories?: { [id: number]: CoreCategoryData };
+    deletedEvents?: Set<number>; // Events deleted in offline.
     timeFormat?: string;
     canCreate = false;
 
     protected dayPage: AddonCalendarDayPage;
-    protected categoriesRetrieved = false;
 
-    constructor(page: AddonCalendarDayPage, initialDay: YearMonthDay) {
-        super(initialDay);
+    constructor(page: AddonCalendarDayPage, initialMoment: moment.Moment) {
+        super({ moment: initialMoment });
 
         this.dayPage = page;
     }
@@ -553,7 +544,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      * @param filter Filter to apply.
      */
     filterEvents(day: PreloadedDay, filter: AddonCalendarFilter): void {
-        day.filteredEvents = AddonCalendarHelper.getFilteredEvents(day.events, filter, this.categories);
+        day.filteredEvents = AddonCalendarHelper.getFilteredEvents(day.events || [], filter, this.categories || {});
     }
 
     /**
@@ -584,20 +575,16 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      * @return Promise resolved when done.
      */
     async loadCategories(): Promise<void> {
-        if (this.categoriesRetrieved) {
+        if (this.categories) {
             // Already retrieved, stop.
             return;
         }
 
         try {
-            const cats = await CoreCourses.getCategories(0, true);
-            this.categoriesRetrieved = true;
-            this.categories = {};
+            const categories = await CoreCourses.getCategories(0, true);
 
             // Index categories by ID.
-            cats.forEach((category) => {
-                this.categories[category.id] = category;
-            });
+            this.categories = CoreUtils.arrayToObject(categories, 'id');
         } catch {
             // Ignore errors.
         }
@@ -625,7 +612,9 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      * @return Promise resolved when done.
      */
     async loadOfflineDeletedEvents(): Promise<void> {
-        this.deletedEvents = await AddonCalendarOffline.getAllDeletedEventsIds();
+        const deletedEventsIds = await AddonCalendarOffline.getAllDeletedEventsIds();
+
+        this.deletedEvents = new Set(deletedEventsIds);
     }
 
     /**
@@ -640,36 +629,40 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
     /**
      * @inheritdoc
      */
-    getItemId(item: YearMonthDay): string | number {
-        return AddonCalendarHelper.getDayId(item);
+    getItemId(item: DayBasicData): string | number {
+        return AddonCalendarHelper.getDayId(item.moment);
     }
 
     /**
      * @inheritdoc
      */
-    getPreviousItem(item: YearMonthDay): YearMonthDay | null {
-        return CoreTimeUtils.getPreviousDay(item);
+    getPreviousItem(item: DayBasicData): DayBasicData | null {
+        return {
+            moment: item.moment.clone().subtract(1, 'day'),
+        };
     }
 
     /**
      * @inheritdoc
      */
-    getNextItem(item: YearMonthDay): YearMonthDay | null {
-        return CoreTimeUtils.getNextDay(item);
+    getNextItem(item: DayBasicData): DayBasicData | null {
+        return {
+            moment: item.moment.clone().add(1, 'day'),
+        };
     }
 
     /**
      * @inheritdoc
      */
-    async loadItemData(day: YearMonthDay, preload = false): Promise<PreloadedDay | null> {
+    async loadItemData(day: DayBasicData, preload = false): Promise<PreloadedDay | null> {
         const preloadedDay: PreloadedDay = {
             ...day,
             hasOffline: false,
             events: [],
             onlineEvents: [],
             filteredEvents: [],
-            isCurrentDay: CoreTimeUtils.isSameDay(day, CoreTimeUtils.getCurrentDay()),
-            isPastDay: CoreTimeUtils.isPastDay(day),
+            isCurrentDay: day.moment.isSame(moment(), 'day'),
+            isPastDay: day.moment.isBefore(moment(), 'day'),
         };
 
         if (preload) {
@@ -680,7 +673,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
 
         try {
             // Don't pass courseId and categoryId, we'll filter them locally.
-            result = await AddonCalendar.getDayEvents(day.year, day.monthNumber, day.dayNumber);
+            result = await AddonCalendar.getDayEvents(day.moment.year(), day.moment.month() + 1, day.moment.date());
             preloadedDay.onlineEvents = await Promise.all(
                 result.events.map((event) => AddonCalendarHelper.formatEventData(event)),
             );
@@ -692,7 +685,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
         }
 
         // Schedule notifications for the events retrieved (only future events will be scheduled).
-        AddonCalendar.scheduleEventsNotifications(preloadedDay.onlineEvents);
+        AddonCalendar.scheduleEventsNotifications(preloadedDay.onlineEvents || []);
 
         // Merge the online events with offline data.
         preloadedDay.events = this.mergeEvents(preloadedDay);
@@ -701,7 +694,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
         this.filterEvents(preloadedDay, this.dayPage.filter);
 
         // Re-calculate the formatted time so it uses the device date.
-        const dayTime = moment().year(day.year).month(day.monthNumber - 1).date(day.dayNumber).unix() * 1000;
+        const dayTime = day.moment.unix() * 1000;
         const currentTime = CoreTimeUtils.timestamp();
 
         const promises = preloadedDay.events.map(async (event) => {
@@ -734,19 +727,19 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
     mergeEvents(day: PreloadedDay): AddonCalendarEventToDisplay[] {
         day.hasOffline = false;
 
-        if (!Object.keys(this.offlineEvents).length && !this.deletedEvents.length) {
+        if (!Object.keys(this.offlineEvents).length && !this.deletedEvents?.size) {
             // No offline events, nothing to merge.
-            return day.onlineEvents;
+            return day.onlineEvents || [];
         }
 
-        const monthOfflineEvents = this.offlineEvents[AddonCalendarHelper.getMonthId(day)];
-        const dayOfflineEvents = monthOfflineEvents && monthOfflineEvents[day.dayNumber];
-        let result = day.onlineEvents;
+        const monthOfflineEvents = this.offlineEvents[AddonCalendarHelper.getMonthId(day.moment)];
+        const dayOfflineEvents = monthOfflineEvents && monthOfflineEvents[day.moment.date()];
+        let result = day.onlineEvents || [];
 
-        if (this.deletedEvents.length) {
+        if (this.deletedEvents?.size) {
             // Mark as deleted the events that were deleted in offline.
             result.forEach((event) => {
-                event.deleted = this.deletedEvents.indexOf(event.id) != -1;
+                event.deleted = this.deletedEvents?.has(event.id);
 
                 if (event.deleted) {
                     day.hasOffline = true;
@@ -758,7 +751,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
             // Remove the online events that were modified in offline.
             result = result.filter((event) => this.offlineEditedEventsIds.indexOf(event.id) == -1);
 
-            if (result.length != day.onlineEvents.length) {
+            if (result.length != day.onlineEvents?.length) {
                 day.hasOffline = true;
             }
         }
@@ -775,24 +768,28 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
     /**
      * Invalidate content.
      *
-     * @param visibleDay The current visible day.
-     * @param invalidateDayEvents Whether to invalidate visible day events.
+     * @param selectedDay The current selected day.
+     * @param invalidateDayEvents Whether to invalidate selected day events.
      * @return Promise resolved when done.
      */
-    async invalidateContent(visibleDay: PreloadedDay | null, invalidateDayEvents?: boolean): Promise<void> {
+    async invalidateContent(selectedDay: PreloadedDay | null, invalidateDayEvents?: boolean): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        if (invalidateDayEvents && visibleDay) {
-            promises.push(AddonCalendar.invalidateDayEvents(visibleDay.year, visibleDay.monthNumber, visibleDay.dayNumber));
+        if (invalidateDayEvents && selectedDay) {
+            promises.push(AddonCalendar.invalidateDayEvents(
+                selectedDay.moment.year(),
+                selectedDay.moment.month() + 1,
+                selectedDay.moment.date(),
+            ));
         }
         promises.push(AddonCalendar.invalidateAllowedEventTypes());
         promises.push(CoreCourses.invalidateCategories(0, true));
         promises.push(AddonCalendar.invalidateTimeFormat());
 
-        this.categoriesRetrieved = false; // Get categories again.
+        this.categories = undefined; // Get categories again.
 
-        if (visibleDay) {
-            visibleDay.dirty = true;
+        if (selectedDay) {
+            selectedDay.dirty = true;
         }
 
         await Promise.all(promises);
@@ -807,7 +804,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
     markAsDeleted(eventId: number, deleted: boolean): void {
         // Mark the event as deleted or not.
         this.getItems()?.some(day => {
-            const event = day.onlineEvents.find((event) => event.id == eventId);
+            const event = day.onlineEvents?.find((event) => event.id == eventId);
 
             if (!event) {
                 return false;
@@ -819,8 +816,8 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
                 day.hasOffline = true;
             } else {
                 // Re-calculate "hasOffline".
-                day.hasOffline = day.events.length != day.onlineEvents.length ||
-                    day.events.some((event) => event.deleted || event.offline);
+                day.hasOffline = day.events?.length != day.onlineEvents?.length ||
+                    day.events?.some((event) => event.deleted || event.offline);
             }
 
             return true;
@@ -828,14 +825,9 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
 
         // Add it or remove it from the list of deleted events.
         if (deleted) {
-            if (!this.deletedEvents.includes(eventId)) {
-                this.deletedEvents.push(eventId);
-            }
+            this.deletedEvents?.add(eventId);
         } else {
-            const index = this.deletedEvents.indexOf(eventId);
-            if (index != -1) {
-                this.deletedEvents.splice(index, 1);
-            }
+            this.deletedEvents?.delete(eventId);
         }
     }
 

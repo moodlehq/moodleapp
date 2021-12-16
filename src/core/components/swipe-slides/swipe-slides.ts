@@ -15,9 +15,10 @@
 import {
     Component, ContentChild, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, TemplateRef, ViewChild,
 } from '@angular/core';
-import { CoreSwipeSlidesItemsManager } from '@classes/items-management/slides-items-manager';
+import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
 import { IonContent, IonSlides } from '@ionic/angular';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDomUtils, VerticalPoint } from '@services/utils/dom';
+import { CoreMath } from '@singletons/math';
 
 /**
  * Helper component to display swipable slides.
@@ -31,7 +32,6 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
 
     @Input() manager?: CoreSwipeSlidesItemsManager<Item>;
     @Input() options: CoreSwipeSlidesOptions = {};
-    @Output() onInit = new EventEmitter<CoreSwipeCurrentItemData<Item>>();
     @Output() onWillChange = new EventEmitter<CoreSwipeCurrentItemData<Item>>();
     @Output() onDidChange = new EventEmitter<CoreSwipeCurrentItemData<Item>>();
 
@@ -57,6 +57,14 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         }
     }
 
+    get items(): Item[] {
+        return this.manager?.getSource().getItems() || [];
+    }
+
+    get loaded(): boolean {
+        return !!this.manager?.getSource().isLoaded();
+    }
+
     /**
      * Initialize some properties based on the manager.
      */
@@ -66,15 +74,15 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         });
 
         // Don't call default callbacks on init, emit our own events instead.
-        // This is because default callbacks aren't triggered for position 0, and to prevent auto scroll on init.
+        // This is because default callbacks aren't triggered for index 0, and to prevent auto scroll on init.
         this.options.runCallbacksOnInit = false;
 
-        await manager.getSource().waitForInitialized();
+        await manager.getSource().waitForLoaded();
 
         if (this.options.initialSlide === undefined) {
             // Calculate the initial slide.
-            const position = manager.getSource().getInitialPosition();
-            this.options.initialSlide = position > - 1 ? position : 0;
+            const index = manager.getSource().getInitialItemIndex();
+            this.options.initialSlide = Math.max(index, 0);
         }
 
         // Emit change events with the initial item.
@@ -83,28 +91,23 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
             return;
         }
 
-        // Validate that the initial position is inside the valid range.
-        let initialPosition = this.options.initialSlide as number;
-        if (initialPosition < 0) {
-            initialPosition = 0;
-        } else if (initialPosition >= items.length) {
-            initialPosition = items.length - 1;
-        }
+        // Validate that the initial index is inside the valid range.
+        const initialIndex = CoreMath.clamp(this.options.initialSlide as number, 0, items.length - 1);
 
         const initialItemData = {
-            index: initialPosition,
-            item: items[initialPosition],
+            index: initialIndex,
+            item: items[initialIndex],
         };
 
-        manager.setSelectedItem(items[initialPosition]);
+        manager.setSelectedItem(items[initialIndex]);
         this.onWillChange.emit(initialItemData);
         this.onDidChange.emit(initialItemData);
     }
 
     /**
-     * Slide to a certain position.
+     * Slide to a certain index.
      *
-     * @param index Position.
+     * @param index Index.
      * @param speed Animation speed.
      * @param runCallbacks Whether to run callbacks.
      */
@@ -119,8 +122,8 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      * @param speed Animation speed.
      * @param runCallbacks Whether to run callbacks.
      */
-    slideToItem(item: Partial<Item>, speed?: number, runCallbacks?: boolean): void {
-        const index = this.manager?.getSource().getItemPosition(item) ?? -1;
+    slideToItem(item: Item, speed?: number, runCallbacks?: boolean): void {
+        const index = this.manager?.getSource().getItemIndex(item) ?? -1;
         if (index != -1) {
             this.slides?.slideTo(index, speed, runCallbacks);
         }
@@ -147,28 +150,19 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     }
 
     /**
-     * Get current item.
-     *
-     * @return Current item. Undefined if no current item yet.
-     */
-    getCurrentItem(): Item | null {
-        return this.manager?.getSelectedItem() || null;
-    }
-
-    /**
      * Called when items list has been updated.
      *
      * @param items New items.
      */
     protected onItemsUpdated(): void {
-        const currentItem = this.getCurrentItem();
+        const currentItem = this.manager?.getSelectedItem();
 
         if (!currentItem || !this.manager) {
             return;
         }
 
         // Keep the same slide in case the list has changed.
-        const newIndex = this.manager.getSource().getItemPosition(currentItem) ?? -1;
+        const newIndex = this.manager.getSource().getItemIndex(currentItem) ?? -1;
         if (newIndex != -1) {
             this.slides?.slideTo(newIndex, 0, false);
         }
@@ -194,7 +188,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         // Scroll top. This can be improved in the future to keep the scroll for each slide.
         const scrollElement = await this.content?.getScrollElement();
 
-        if (!scrollElement || CoreDomUtils.isElementOutsideOfScreen(scrollElement, this.hostElement, 'top')) {
+        if (!scrollElement || CoreDomUtils.isElementOutsideOfScreen(scrollElement, this.hostElement, VerticalPoint.TOP)) {
             // Scroll to top.
             this.hostElement.scrollIntoView({ behavior: 'smooth' });
         }

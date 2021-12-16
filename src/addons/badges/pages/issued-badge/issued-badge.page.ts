@@ -23,7 +23,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreNavigator } from '@services/navigator';
 import { ActivatedRoute } from '@angular/router';
-import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { AddonBadgesUserBadgesSource } from '@addons/badges/classes/user-badges-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
@@ -43,7 +43,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
     user?: CoreUserProfile;
     course?: CoreEnrolledCourseData;
     badge?: AddonBadgesUserBadge;
-    badges?: CoreSwipeItemsManager;
+    badges?: CoreSwipeNavigationItemsManager;
     badgeLoaded = false;
     currentTime = 0;
 
@@ -65,7 +65,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
             AddonBadgesUserBadgesSource,
             [this.courseId, this.userId],
         );
-        this.badges = new CoreSwipeItemsManager(source);
+        this.badges = new CoreSwipeNavigationItemsManager(source);
 
         this.badges.start();
     }

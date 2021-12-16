@@ -15,7 +15,7 @@
 /**
  * Updates listener.
  */
-export interface CoreItemsListSourceListener<Item> {
+export interface CoreItemsManagerSourceListener<Item> {
     onItemsUpdated?(items: Item[]): void;
     onReset?(): void;
 }
@@ -26,16 +26,40 @@ export interface CoreItemsListSourceListener<Item> {
 export abstract class CoreItemsManagerSource<Item = unknown> {
 
     protected items: Item[] | null = null;
-    protected listeners: CoreItemsListSourceListener<Item>[] = [];
+    protected listeners: CoreItemsManagerSourceListener<Item>[] = [];
     protected dirty = false;
+    protected loaded = false;
+    protected loadedPromise: Promise<void>;
+    protected resolveLoaded!: () => void;
+
+    constructor() {
+        this.loadedPromise = new Promise(resolve => this.resolveLoaded = resolve);
+    }
 
     /**
-     * Check whether any item has been loaded.
+     * Check whether data is loaded.
      *
-     * @returns Whether any item has been loaded.
+     * @returns Whether data is loaded.
      */
     isLoaded(): boolean {
-        return this.items !== null;
+        return this.loaded;
+    }
+
+    /**
+     * Return a promise that is resolved when the data is loaded.
+     *
+     * @return Promise.
+     */
+    waitForLoaded(): Promise<void> {
+        return this.loadedPromise;
+    }
+
+    /**
+     * Mark the source as initialized.
+     */
+    protected setLoaded(): void {
+        this.loaded = true;
+        this.resolveLoaded();
     }
 
     /**
@@ -79,7 +103,7 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
      * @param listener Listener.
      * @returns Unsubscribe function.
      */
-    addListener(listener: CoreItemsListSourceListener<Item>): () => void {
+    addListener(listener: CoreItemsManagerSourceListener<Item>): () => void {
         this.listeners.push(listener);
 
         return () => this.removeListener(listener);
@@ -90,7 +114,7 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
      *
      * @param listener Listener.
      */
-    removeListener(listener: CoreItemsListSourceListener<Item>): void {
+    removeListener(listener: CoreItemsManagerSourceListener<Item>): void {
         const index = this.listeners.indexOf(listener);
 
         if (index === -1) {
@@ -107,6 +131,7 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
      */
     protected setItems(items: Item[]): void {
         this.items = items;
+        this.setLoaded();
 
         this.notifyItemsUpdated();
     }

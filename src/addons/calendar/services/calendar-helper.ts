@@ -37,7 +37,6 @@ import { AddonCalendarSyncInvalidateEvent } from './calendar-sync';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { CoreCategoryData } from '@features/courses/services/courses';
 import { AddonCalendarReminderDBRecord } from './database/calendar';
-import { YearAndMonth, YearMonthDay } from '@services/utils/time';
 
 /**
  * Context levels enumeration.
@@ -141,7 +140,7 @@ export class AddonCalendarHelperProvider {
 
             // Add the event to all the days it lasts.
             while (!treatedDay.isAfter(endDay, 'day')) {
-                const monthId = this.getMonthId({ year: treatedDay.year(), monthNumber: treatedDay.month() + 1 });
+                const monthId = this.getMonthId(treatedDay);
                 const day = treatedDay.date();
 
                 if (!result[monthId]) {
@@ -367,21 +366,21 @@ export class AddonCalendarHelperProvider {
     /**
      * Get the month "id".
      *
-     * @param month Month data.
+     * @param moment Month moment.
      * @return The "id".
      */
-    getMonthId(month: YearAndMonth): string {
-        return `${month.year}#${month.monthNumber}`;
+    getMonthId(moment: moment.Moment): string {
+        return `${moment.year()}#${moment.month() + 1}`;
     }
 
     /**
      * Get the day "id".
      *
-     * @param day Day data.
+     * @param day Day moment.
      * @return The "id".
      */
-    getDayId(day: YearMonthDay): string {
-        return `${day.year}#${day.monthNumber}#${day.dayNumber}`;
+    getDayId(moment: moment.Moment): string {
+        return `${this.getMonthId(moment)}#${moment.date()}`;
     }
 
     /**
@@ -660,7 +659,7 @@ export class AddonCalendarHelperProvider {
             fetchTimestarts.map((fetchTime) => {
                 const day = moment(new Date(fetchTime * 1000));
 
-                const monthId = this.getMonthId({ year: day.year(), monthNumber: day.month() + 1 });
+                const monthId = this.getMonthId(day);
                 if (!treatedMonths[monthId]) {
                     // Month not refetch or invalidated already, do it now.
                     treatedMonths[monthId] = true;
@@ -696,7 +695,7 @@ export class AddonCalendarHelperProvider {
             invalidateTimestarts.map((fetchTime) => {
                 const day = moment(new Date(fetchTime * 1000));
 
-                const monthId = this.getMonthId({ year: day.year(), monthNumber: day.month() + 1 });
+                const monthId = this.getMonthId(day);
                 if (!treatedMonths[monthId]) {
                     // Month not refetch or invalidated already, do it now.
                     treatedMonths[monthId] = true;

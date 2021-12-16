@@ -22,7 +22,7 @@ import { CoreRoutedItemsManagerSource } from './routed-items-manager-source';
 /**
  * Helper class to manage the state and routing of a swipeable page.
  */
-export class CoreSwipeItemsManager<
+export class CoreSwipeNavigationItemsManager<
     Item = unknown,
     Source extends CoreRoutedItemsManagerSource<Item> = CoreRoutedItemsManagerSource<Item>
 >
@@ -99,7 +99,7 @@ export class CoreSwipeItemsManager<
     protected async getItemBy(delta: number): Promise<Item | null> {
         const items = this.getSource().getItems();
 
-        // Get current item.
+        // Get selected item.
         const index = (this.selectedItem && items?.indexOf(this.selectedItem)) ?? -1;
 
         if (index === -1) {

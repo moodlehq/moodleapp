@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSwipeSlidesItemsManagerSource } from './slides-items-manager-source';
+import { CoreSwipeSlidesItemsManagerSource } from './swipe-slides-items-manager-source';
 
 /**
  * Items collection source data for "swipe slides".
@@ -26,16 +26,16 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
     /**
      * @inheritdoc
      */
-    async load(currentItem?: Partial<Item> | null): Promise<void> {
-        if (!this.initialized && this.initialItem) {
+    async load(selectedItem?: Item | null): Promise<void> {
+        if (!this.loaded && this.initialItem) {
             // Load the initial item.
             await this.loadItem(this.initialItem);
-        } else if (this.initialized && currentItem) {
-            // Reload current item if needed.
-            await this.loadItem(currentItem);
+        } else if (this.loaded && selectedItem) {
+            // Reload selected item if needed.
+            await this.loadItem(selectedItem);
         }
 
-        this.setInitialized();
+        this.setLoaded();
     }
 
     /**
@@ -49,35 +49,35 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
     /**
      * Load a certain item and preload next and previous ones.
      *
-     * @param item Basic data about the item to load.
+     * @param item Item to load.
      * @return Promise resolved when done.
      */
-    async loadItem(item: Partial<Item>): Promise<void> {
+    async loadItem(item: Item): Promise<void> {
         const previousItem = this.getPreviousItem(item);
         const nextItem = this.getNextItem(item);
 
         await Promise.all([
             this.loadItemInList(item, false),
-            previousItem ? this.loadItemInList(previousItem, true) : undefined,
-            nextItem ? this.loadItemInList(nextItem, true) : undefined,
+            previousItem && this.loadItemInList(previousItem, true),
+            nextItem && this.loadItemInList(nextItem, true),
         ]);
     }
 
     /**
      * Load or preload a certain item and add it to the list.
      *
-     * @param item Basic data about the item to load.
+     * @param item Item to load.
      * @param preload Whether to preload.
      * @return Promise resolved when done.
      */
-    async loadItemInList(item: Partial<Item>, preload = false): Promise<void> {
+    async loadItemInList(item: Item, preload = false): Promise<void> {
         const preloadedItem = await this.performLoadItemData(item, preload);
         if (!preloadedItem) {
             return;
         }
 
         // Add the item at the right position.
-        const existingItem = this.getItem(item);
+        const existingItem = this.getItem(this.getItemId(item));
         if (existingItem) {
             // Already in list, no need to add it.
             return;
@@ -94,19 +94,19 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
 
         const added = this.items.some((item, index) => {
             const itemId = this.getItemId(item);
-            let positionToInsert = -1;
+            let indexToInsert = -1;
             if (itemId === previousItemId) {
                 // Previous item found, add the item after it.
-                positionToInsert = index + 1;
+                indexToInsert = index + 1;
             }
 
             if (itemId === nextItemId) {
                 // Next item found, add the item before it.
-                positionToInsert = index;
+                indexToInsert = index;
             }
 
-            if (positionToInsert > -1) {
-                this.items?.splice(positionToInsert, 0, preloadedItem);
+            if (indexToInsert > -1) {
+                this.items?.splice(indexToInsert, 0, preloadedItem);
 
                 return true;
             }
@@ -124,19 +124,19 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
      * Load or preload a certain item data.
      * This helper function will check some common cases so they don't have to be replicated in all loadItemData implementations.
      *
-     * @param item Basic data about the item to load.
+     * @param item Item to load.
      * @param preload Whether to preload.
      * @return Promise resolved with item. Resolve with null if already loading or item is not valid (e.g. there are no more items).
      */
-    protected async performLoadItemData(item: Partial<Item>, preload: boolean): Promise<Item | null> {
+    protected async performLoadItemData(item: Item, preload: boolean): Promise<Item | null> {
         const itemId = this.getItemId(item);
 
-        if (!itemId || this.loadingItems[itemId]) {
-            // Not valid or already loading, ignore it.
+        if (this.loadingItems[itemId]) {
+            // Already loading, ignore it.
             return null;
         }
 
-        const existingItem = this.getItem(item);
+        const existingItem = this.getItem(itemId);
         if (existingItem && ((existingItem.loaded && !existingItem.dirty) || preload)) {
             // Already loaded, or preloading an already preloaded item.
             return existingItem;
@@ -191,7 +191,7 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
      * @param preload Whether to preload.
      * @return Promise resolved with item. Resolve with null if item is not valid (e.g. there are no more items).
      */
-    abstract loadItemData(item: Partial<Item>, preload: boolean): Promise<Item | null>;
+    abstract loadItemData(item: Item, preload: boolean): Promise<Item | null>;
 
     /**
      * Return the data to identify the previous item.
@@ -199,7 +199,7 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
      * @param item Data about the item.
      * @return Previous item data. Null if no previous item.
      */
-    abstract getPreviousItem(item: Partial<Item>): Partial<Item> | null;
+    abstract getPreviousItem(item: Item): Item | null;
 
     /**
      * Return the data to identify the next item.
@@ -207,7 +207,7 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
      * @param item Data about the item.
      * @return Next item data. Null if no next item.
      */
-    abstract getNextItem(item: Partial<Item>): Partial<Item> | null;
+    abstract getNextItem(item: Item): Item | null;
 
 }
 

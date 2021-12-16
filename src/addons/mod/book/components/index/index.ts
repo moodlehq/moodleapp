@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Optional, Input, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import {
     AddonModBookProvider,
@@ -31,10 +31,11 @@ import { AddonModBookTocComponent } from '../toc/toc';
 import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar';
 import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';
-import { CoreSwipeCurrentItemData, CoreSwipeSlidesComponent, CoreSwipeSlidesOptions } from '@components/swipe-slides/swipe-slides';
-import { CoreSwipeSlidesItemsManagerSource } from '@classes/items-management/slides-items-manager-source';
+import { CoreSwipeSlidesComponent, CoreSwipeSlidesOptions } from '@components/swipe-slides/swipe-slides';
+import { CoreSwipeSlidesItemsManagerSource } from '@classes/items-management/swipe-slides-items-manager-source';
 import { CoreCourseModule } from '@features/course/services/course-helper';
-import { CoreSwipeSlidesItemsManager } from '@classes/items-management/slides-items-manager';
+import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
+import { CoreTextUtils } from '@services/utils/text';
 
 /**
  * Component that displays a book.
@@ -43,7 +44,7 @@ import { CoreSwipeSlidesItemsManager } from '@classes/items-management/slides-it
     selector: 'addon-mod-book-index',
     templateUrl: 'addon-mod-book-index.html',
 })
-export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
+export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 
     @ViewChild(CoreSwipeSlidesComponent) slides?: CoreSwipeSlidesComponent;
 
@@ -51,9 +52,6 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
     component = AddonModBookProvider.COMPONENT;
     manager?: CoreSwipeSlidesItemsManager<LoadedChapter, AddonModBookSlidesItemsManagerSource>;
-    previousChapter?: AddonModBookTocChapter;
-    nextChapter?: AddonModBookTocChapter;
-    tagsEnabled = false;
     warning = '';
     displayNavBar = true;
     navigationItems: CoreNavigationBarItem<AddonModBookTocChapter>[] = [];
@@ -63,8 +61,9 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         scrollOnChange: 'top',
     };
 
-    protected currentChapter?: number;
+    protected firstLoad = true;
     protected element: HTMLElement;
+    protected managerUnsubscribe?: () => void;
 
     constructor(
         elementRef: ElementRef,
@@ -81,14 +80,18 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.tagsEnabled = CoreTag.areTagsAvailableInSite();
         const source = new AddonModBookSlidesItemsManagerSource(
             this.courseId,
             this.module,
-            this.tagsEnabled,
+            CoreTag.areTagsAvailableInSite(),
             this.initialChapterId,
         );
         this.manager = new CoreSwipeSlidesItemsManager(source);
+        this.managerUnsubscribe = this.manager.addListener({
+            onSelectedItemUpdated: (item) => {
+                this.onChapterViewed(item.id);
+            },
+        });
 
         this.loadContent();
     }
@@ -106,12 +109,14 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      */
     async showToc(): Promise<void> {
         // Create the toc modal.
+        const visibleChapter = this.manager?.getSelectedItem();
+
         const modalData = await CoreDomUtils.openSideModal<number>({
             component: AddonModBookTocComponent,
             componentProps: {
                 moduleId: this.module.id,
                 chapters: this.chapters,
-                selected: this.currentChapter,
+                selected: visibleChapter,
                 courseId: this.courseId,
                 book: this.book,
             },
@@ -129,7 +134,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      * @return Promise resolved when done.
      */
     changeChapter(chapterId: number): void {
-        if (!chapterId || chapterId === this.currentChapter) {
+        if (!chapterId) {
             return;
         }
 
@@ -183,14 +188,15 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     }
 
     /**
-     * View a book chapter.
+     * Update data related to chapter being viewed.
      *
-     * @param chapterId Chapter to load.
-     * @param logChapterId Whether chapter ID should be passed to the log view function.
+     * @param chapterId Chapter viewed.
      * @return Promise resolved when done.
      */
-    protected async viewChapter(chapterId: number, logChapterId: boolean): Promise<void> {
-        this.currentChapter = chapterId;
+    protected async onChapterViewed(chapterId: number): Promise<void> {
+        // Don't log the chapter ID when the user has just opened the book.
+        const logChapterId = this.firstLoad;
+        this.firstLoad = false;
 
         if (this.displayNavBar) {
             this.navigationItems = this.getNavigationItems(chapterId);
@@ -213,15 +219,6 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     }
 
     /**
-     * Slide has changed.
-     *
-     * @param data Data about new item.
-     */
-    slideChanged(data: CoreSwipeCurrentItemData<LoadedChapter>): void {
-        this.viewChapter(data.item.id, true);
-    }
-
-    /**
      * Converts chapters to navigation items.
      *
      * @param chapterId Current chapter Id.
@@ -236,11 +233,20 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         }));
     }
 
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        super.ngOnDestroy();
+
+        this.managerUnsubscribe && this.managerUnsubscribe();
+    }
+
 }
 
 type LoadedChapter = {
     id: number;
-    content: string;
+    content?: string;
     tags?: CoreTagItem[];
 };
 
@@ -287,7 +293,6 @@ class AddonModBookSlidesItemsManagerSource extends CoreSwipeSlidesItemsManagerSo
      * Load module contents.
      */
     async loadContents(): Promise<void> {
-        // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
         const contents = await CoreCourse.getModuleContents(this.MODULE, this.COURSE_ID);
 
         this.contentsMap = AddonModBook.getContentsMap(contents);
@@ -310,10 +315,9 @@ class AddonModBookSlidesItemsManagerSource extends CoreSwipeSlidesItemsManagerSo
             }));
 
             return newChapters;
-        } catch (exception) {
-            const error = exception ?? new CoreError(Translate.instant('addon.mod_book.errorchapter'));
-            if (!error.message) {
-                error.message = Translate.instant('addon.mod_book.errorchapter');
+        } catch (error) {
+            if (!CoreTextUtils.getErrorMessageFromError(error)) {
+                throw new CoreError(Translate.instant('addon.mod_book.errorchapter'));
             }
 
             throw error;

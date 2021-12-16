@@ -12,27 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSwipeSlidesDynamicItem, CoreSwipeSlidesDynamicItemsManagerSource } from './slides-dynamic-items-manager-source';
-import { CoreSwipeSlidesItemsManager } from './slides-items-manager';
+import { CoreItemsManager } from './items-manager';
+import { CoreSwipeSlidesItemsManagerSource } from './swipe-slides-items-manager-source';
 
 /**
  * Helper class to manage items for core-swipe-slides.
  */
-export class CoreSwipeSlidesDynamicItemsManager<
-    Item extends CoreSwipeSlidesDynamicItem,
-    Source extends CoreSwipeSlidesDynamicItemsManagerSource<Item> = CoreSwipeSlidesDynamicItemsManagerSource<Item>,
-> extends CoreSwipeSlidesItemsManager<Item, Source> {
+export class CoreSwipeSlidesItemsManager<
+    Item = unknown,
+    Source extends CoreSwipeSlidesItemsManagerSource<Item> = CoreSwipeSlidesItemsManagerSource<Item>,
+> extends CoreItemsManager<Item, Source> {
 
     /**
      * @inheritdoc
      */
-    setSelectedItem(item: Item | null): void {
-        super.setSelectedItem(item);
-
-        if (item) {
-            // Load the item if not loaded yet.
-            this.getSource().loadItem(item);
-        }
+    getItemId(item: Item): string | number {
+        return this.getSource().getItemId(item);
     }
 
 }

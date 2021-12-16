@@ -123,13 +123,16 @@ export abstract class CoreRoutedItemsManager<
      * @inheritdoc
      */
     protected onSourceItemsUpdated(items: Item[]): void {
-        this.itemsMap = items.reduce((map, item) => {
-            map[this.getSource().getItemPath(item)] = item;
-
-            return map;
-        }, {});
+        super.onSourceItemsUpdated(items);
 
         this.updateSelectedItem();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getItemId(item: Item): string | number {
+        return this.getSource().getItemPath(item);
     }
 
 }

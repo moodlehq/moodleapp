@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { AddonModForumDiscussionItem, AddonModForumDiscussionsSource } from './forum-discussions-source';
 
 /**
  * Helper to manage swiping within a collection of discussions.
  */
 export class AddonModForumDiscussionsSwipeManager
-    extends CoreSwipeItemsManager<AddonModForumDiscussionItem, AddonModForumDiscussionsSource> {
+    extends CoreSwipeNavigationItemsManager<AddonModForumDiscussionItem, AddonModForumDiscussionsSource> {
 
     /**
      * @inheritdoc

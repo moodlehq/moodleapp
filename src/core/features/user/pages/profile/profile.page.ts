@@ -27,7 +27,7 @@ import { CoreUserDelegate, CoreUserDelegateService, CoreUserProfileHandlerData }
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourses } from '@features/courses/services/courses';
-import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreUserParticipantsSource } from '@features/user/classes/participants-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
@@ -227,7 +227,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 /**
  * Helper to manage swiping within a collection of users.
  */
-class CoreUserSwipeItemsManager extends CoreSwipeItemsManager {
+class CoreUserSwipeItemsManager extends CoreSwipeNavigationItemsManager {
 
     /**
      * @inheritdoc

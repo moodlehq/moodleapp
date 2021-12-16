@@ -15,7 +15,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
-import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreCourse } from '@features/course/services/course';
 import { CanLeave } from '@guards/can-leave';
 import { IonRefresher } from '@ionic/angular';
@@ -216,7 +216,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
 /**
  * Helper to manage swiping within a collection of submissions.
  */
-class AddonModAssignSubmissionSwipeItemsManager extends CoreSwipeItemsManager {
+class AddonModAssignSubmissionSwipeItemsManager extends CoreSwipeNavigationItemsManager {
 
     /**
      * @inheritdoc

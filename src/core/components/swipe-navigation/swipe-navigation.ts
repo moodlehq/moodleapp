@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input } from '@angular/core';
-import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreScreen } from '@services/screen';
 
 @Component({
@@ -23,7 +23,7 @@ import { CoreScreen } from '@services/screen';
 })
 export class CoreSwipeNavigationComponent {
 
-    @Input() manager?: CoreSwipeItemsManager;
+    @Input() manager?: CoreSwipeNavigationItemsManager;
 
     get enabled(): boolean {
         return CoreScreen.isMobile && !!this.manager;

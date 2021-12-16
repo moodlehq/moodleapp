@@ -15,6 +15,13 @@
 import { CoreItemsManagerSource } from './items-manager-source';
 
 /**
+ * Listeners.
+ */
+export interface CoreItemsanagerListener<Item> {
+    onSelectedItemUpdated?(item: Item): void;
+}
+
+/**
  * Helper to manage a collection of items in a page.
  */
 export abstract class CoreItemsManager<
@@ -25,6 +32,7 @@ export abstract class CoreItemsManager<
     protected source?: { instance: Source; unsubscribe: () => void };
     protected itemsMap: Record<string, Item> | null = null;
     protected selectedItem: Item | null = null;
+    protected listeners: CoreItemsanagerListener<Item>[] = [];
 
     constructor(source: Source) {
         this.setSource(source);
@@ -96,6 +104,35 @@ export abstract class CoreItemsManager<
      */
     setSelectedItem(item: Item | null): void {
         this.selectedItem = item;
+
+        this.listeners.forEach(listener => listener.onSelectedItemUpdated?.call(listener, item));
+    }
+
+    /**
+     * Register a listener.
+     *
+     * @param listener Listener.
+     * @returns Unsubscribe function.
+     */
+    addListener(listener: CoreItemsanagerListener<Item>): () => void {
+        this.listeners.push(listener);
+
+        return () => this.removeListener(listener);
+    }
+
+    /**
+     * Remove a listener.
+     *
+     * @param listener Listener.
+     */
+    removeListener(listener: CoreItemsanagerListener<Item>): void {
+        const index = this.listeners.indexOf(listener);
+
+        if (index === -1) {
+            return;
+        }
+
+        this.listeners.splice(index, 1);
     }
 
     /**
@@ -103,9 +140,12 @@ export abstract class CoreItemsManager<
      *
      * @param items New items.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected onSourceItemsUpdated(items: Item[]): void {
-        // Nothing to do.
+        this.itemsMap = items.reduce((map, item) => {
+            map[this.getItemId(item)] = item;
+
+            return map;
+        }, {});
     }
 
     /**
@@ -115,5 +155,23 @@ export abstract class CoreItemsManager<
         this.itemsMap = null;
         this.selectedItem = null;
     }
+
+    /**
+     * Get item by ID.
+     *
+     * @param id ID
+     * @return Item, null if not found.
+     */
+    getItemById(id: string | number): Item | null {
+        return this.itemsMap?.[id] ?? null;
+    }
+
+    /**
+     * Get an ID to identify an item.
+     *
+     * @param item Data about the item.
+     * @return Item ID.
+     */
+    abstract getItemId(item: Item): string | number;
 
 }

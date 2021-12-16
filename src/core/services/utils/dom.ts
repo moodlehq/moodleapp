@@ -772,7 +772,11 @@ export class CoreDomUtilsProvider {
      * @param point The point of the element to check.
      * @return Whether the element is outside of the viewport.
      */
-    isElementOutsideOfScreen(scrollEl: HTMLElement, element: HTMLElement, point: 'top' | 'mid' | 'bottom' = 'mid'): boolean {
+    isElementOutsideOfScreen(
+        scrollEl: HTMLElement,
+        element: HTMLElement,
+        point: VerticalPoint = VerticalPoint.MID,
+    ): boolean {
         const elementRect = element.getBoundingClientRect();
 
         if (!elementRect) {
@@ -780,12 +784,18 @@ export class CoreDomUtilsProvider {
         }
 
         let elementPoint: number;
-        if (point === 'top') {
-            elementPoint = elementRect.top;
-        } else if (point === 'bottom') {
-            elementPoint = elementRect.bottom;
-        } else {
-            elementPoint = Math.round((elementRect.bottom + elementRect.top) / 2);
+        switch (point) {
+            case VerticalPoint.TOP:
+                elementPoint = elementRect.top;
+                break;
+
+            case VerticalPoint.BOTTOM:
+                elementPoint = elementRect.bottom;
+                break;
+
+            case VerticalPoint.MID:
+                elementPoint = Math.round((elementRect.bottom + elementRect.top) / 2);
+                break;
         }
 
         const scrollElRect = scrollEl.getBoundingClientRect();
@@ -2098,3 +2108,12 @@ export type PromptButton = Omit<AlertButton, 'handler'> & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handler?: (value: any, resolve: (value: any) => void, reject: (reason: any) => void) => void;
 };
+
+/**
+ * Vertical points for an element.
+ */
+export enum VerticalPoint {
+    TOP = 'top',
+    MID = 'mid',
+    BOTTOM = 'bottom',
+}
