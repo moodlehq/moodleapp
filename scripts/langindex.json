@@ -2327,5 +2327,7 @@
   "core.years": "moodle",
   "core.yes": "moodle",
   "core.youreoffline": "local_moodlemobileapp",
-  "core.youreonline": "local_moodlemobileapp"
+  "core.youreonline": "local_moodlemobileapp",
+  "core.zoomin": "local_moodlemobileapp",
+  "core.zoomout": "local_moodlemobileapp"
 }
