@@ -36,7 +36,7 @@ import {
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
-import { CoreCourseHelper, CoreCourseModuleCompletionData } from './course-helper';
+import { CoreCourseHelper, CoreCourseModuleData, CoreCourseModuleCompletionData } from './course-helper';
 import { CoreCourseFormatDelegate } from './format-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreCourseLogCronHandler } from './handlers/log-cron';
@@ -431,7 +431,7 @@ export class CoreCourseProvider {
         ignoreCache: boolean = false,
         siteId?: string,
         modName?: string,
-    ): Promise<CoreCourseWSModule> {
+    ): Promise<CoreCourseModuleData> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Helper function to do the WS request without processing the result.
@@ -544,13 +544,41 @@ export class CoreCourseProvider {
         });
 
         if (foundSection && foundModule) {
-            return {
-                ...foundModule,
-                course: courseId,
-            };
+            return this.addAdditionalModuleData(foundModule, courseId);
         }
 
         throw new CoreError(Translate.instant('core.course.modulenotfound'));
+    }
+
+    /**
+     * Add some additional info to course module.
+     *
+     * @param module Module.
+     * @param courseId Course ID of the module.
+     * @return Module with additional info.
+     */
+    protected  addAdditionalModuleData(
+        module: CoreCourseGetContentsWSModule,
+        courseId: number,
+    ): CoreCourseModuleData {
+        let completionData: CoreCourseModuleCompletionData | undefined = undefined;
+
+        if (module.completiondata && module.completion) {
+            completionData = {
+                ...module.completiondata,
+                tracking: module.completion,
+                cmid: module.id,
+                courseId,
+            };
+        }
+
+        const moduleWithCourse: CoreCourseModuleData = {
+            ...module,
+            course: courseId,
+            completiondata: completionData,
+        };
+
+        return moduleWithCourse;
     }
 
     /**
@@ -808,10 +836,7 @@ export class CoreCourseProvider {
         // Add course to all modules.
         return sections.map((section) => ({
             ...section,
-            modules: section.modules.map((module) => ({
-                ...module,
-                course: courseId,
-            })),
+            modules: section.modules.map((module) => this.addAdditionalModuleData(module, courseId)),
         }));
     }
 
@@ -831,12 +856,12 @@ export class CoreCourseProvider {
      * @param sections Sections.
      * @return Modules.
      */
-    getSectionsModules(sections: CoreCourseWSSection[]): CoreCourseWSModule[] {
+    getSectionsModules(sections: CoreCourseWSSection[]): CoreCourseModuleData[] {
         if (!sections || !sections.length) {
             return [];
         }
 
-        return sections.reduce((previous: CoreCourseWSModule[], section) => previous.concat(section.modules || []), []);
+        return sections.reduce((previous: CoreCourseModuleData[], section) => previous.concat(section.modules || []), []);
     }
 
     /**
@@ -1103,7 +1128,7 @@ export class CoreCourseProvider {
      * @param module The module object.
      * @return Whether the module has a view page.
      */
-    moduleHasView(module: CoreCourseModuleSummary | CoreCourseWSModule): boolean {
+    moduleHasView(module: CoreCourseModuleSummary | CoreCourseModuleData): boolean {
         if ('modname' in module) {
             // noviewlink was introduced in 3.8.5, use supports feature as a fallback.
             if (module.noviewlink ||
@@ -1503,7 +1528,7 @@ type CoreCourseGetContentsWSSection = {
 /**
  * Module data returned by core_course_get_contents WS.
  */
-type CoreCourseGetContentsWSModule = {
+export type CoreCourseGetContentsWSModule = {
     id: number; // Activity id.
     url?: string; // Activity url.
     name: string; // Activity module name.
@@ -1544,7 +1569,7 @@ type CoreCourseGetContentsWSModule = {
  * Data returned by core_course_get_contents WS.
  */
 export type CoreCourseWSSection = Omit<CoreCourseGetContentsWSSection, 'modules'> & {
-    modules: CoreCourseWSModule[]; // List of module.
+    modules: CoreCourseModuleData[]; // List of module.
 };
 
 /**
@@ -1572,6 +1597,8 @@ type CoreCourseGetCourseModuleWSResponse = {
 
 /**
  * Course module data returned by the WS with course added.
+ *
+ * @deprecated since 4.0. Use CoreCourseModuleData instead.
  */
 export type CoreCourseWSModule = CoreCourseGetContentsWSModule & {
     course: number; // The course id.
@@ -1703,6 +1730,6 @@ type CoreCompletionUpdateActivityCompletionStatusManuallyWSParams = {
 /**
  * Any of the possible module WS data.
  */
-export type CoreCourseAnyModuleData = CoreCourseWSModule | CoreCourseModuleBasicInfo & {
+export type CoreCourseAnyModuleData = CoreCourseModuleData | CoreCourseModuleBasicInfo & {
     contents?: CoreCourseModuleContentFile[]; // If needed, calculated in the app in loadModuleContents.
 };

@@ -15,7 +15,7 @@
 import { CoreConstants } from '@/core/constants';
 import { Component, OnInit } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseHelper, CoreCourseModule, CoreCourseSection } from '@features/course/services/course-helper';
+import { CoreCourseHelper, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreNavigator } from '@services/navigator';
@@ -52,8 +52,8 @@ export class AddonStorageManagerCourseStoragePage implements OnInit {
             return;
         }
 
-        this.sections = await CoreCourse.getSections(this.course.id, false, true);
-        CoreCourseHelper.addHandlerDataForModules(this.sections, this.course.id);
+        const sections = await CoreCourse.getSections(this.course.id, false, true);
+        this.sections = CoreCourseHelper.addHandlerDataForModules(sections, this.course.id).sections;
 
         this.totalSize = 0;
 
@@ -231,7 +231,7 @@ type AddonStorageManagerCourseSection = Omit<CoreCourseSection, 'modules'> & {
     modules: AddonStorageManagerModule[];
 };
 
-type AddonStorageManagerModule = CoreCourseModule & {
+type AddonStorageManagerModule = CoreCourseModuleData & {
     parentSection?: AddonStorageManagerCourseSection;
     totalSize?: number;
 };

@@ -14,7 +14,7 @@
 
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreCourse } from '../services/course';
-import { CoreCourseModule } from '../services/course-helper';
+import { CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../services/module-delegate';
 
 /**
@@ -35,7 +35,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
      * @inheritdoc
      */
     async getData(
-        module: CoreCourseModule,
+        module: CoreCourseModuleData,
         courseId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         sectionId?: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         forCoursePage?: boolean, // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -47,7 +47,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
             showDownloadButton: true,
             action: async (
                 event: Event,
-                module: CoreCourseModule,
+                module: CoreCourseModuleData,
                 courseId: number,
                 options?: CoreNavigationOptions,
             ): Promise<void> => {
@@ -64,7 +64,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
      * @param options Options for the navigation.
      * @return Promise resolved when done.
      */
-    async openActivityPage(module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+    async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
         if (!CoreCourse.moduleHasView(module)) {
             return;
         }

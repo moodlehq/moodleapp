@@ -16,7 +16,7 @@ import { CoreConstants } from '@/core/constants';
 import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
 
 import { CoreSiteWSPreSets } from '@classes/site';
-import { CoreCourseHelper, CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import {
     CoreCourseModuleDelegate,
     CoreCourseModuleMainComponent,
@@ -44,7 +44,7 @@ import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-
 })
 export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
 
-    @Input() module!: CoreCourseModule; // The module.
+    @Input() module!: CoreCourseModuleData; // The module.
     @Input() courseId!: number; // Course ID the module belongs to.
     @Input() pageTitle?: string; // Current page title. It can be used by the "new-content" directives.
 

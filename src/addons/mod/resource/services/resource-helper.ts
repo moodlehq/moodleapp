@@ -15,8 +15,8 @@
 import { CoreConstants } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from '@features/course/services/course';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
+import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
@@ -42,7 +42,7 @@ export class AddonModResourceHelperProvider {
      * @param courseId The course ID.
      * @return Promise resolved with the HTML.
      */
-    async getEmbeddedHtml(module: CoreCourseWSModule, courseId: number): Promise<string> {
+    async getEmbeddedHtml(module: CoreCourseModuleData, courseId: number): Promise<string> {
         const contents = await CoreCourse.getModuleContents(module, courseId);
 
         const result = await CoreCourseHelper.downloadModuleWithMainFileIfNeeded(
@@ -62,7 +62,7 @@ export class AddonModResourceHelperProvider {
      * @param module The module object.
      * @return Promise resolved with the iframe src.
      */
-    async getIframeSrc(module: CoreCourseWSModule): Promise<string> {
+    async getIframeSrc(module: CoreCourseModuleData): Promise<string> {
         if (!module.contents?.length) {
             throw new CoreError('No contents available in module');
         }
@@ -97,7 +97,7 @@ export class AddonModResourceHelperProvider {
      * @param display The display mode (if available).
      * @return Whether the resource should be displayed embeded.
      */
-    isDisplayedEmbedded(module: CoreCourseWSModule, display: number): boolean {
+    isDisplayedEmbedded(module: CoreCourseModuleData, display: number): boolean {
         const currentSite = CoreSites.getCurrentSite();
 
         if (!CoreFile.isAvailable() ||
@@ -150,7 +150,7 @@ export class AddonModResourceHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with boolean: whether main file is downloadable.
      */
-    async isMainFileDownloadable(module: CoreCourseWSModule, siteId?: string): Promise<boolean> {
+    async isMainFileDownloadable(module: CoreCourseModuleData, siteId?: string): Promise<boolean> {
         const contents = await CoreCourse.getModuleContents(module);
         if (!contents.length) {
             throw new CoreError(Translate.instant('core.filenotfound'));
@@ -186,7 +186,7 @@ export class AddonModResourceHelperProvider {
      * @param options Options to open the file.
      * @return Resolved when done.
      */
-    async openModuleFile(module: CoreCourseWSModule, courseId: number, options: CoreUtilsOpenFileOptions = {}): Promise<void> {
+    async openModuleFile(module: CoreCourseModuleData, courseId: number, options: CoreUtilsOpenFileOptions = {}): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading();
 
         try {

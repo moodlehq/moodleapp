@@ -16,7 +16,7 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreConstants } from '@/core/constants';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { makeSingleton } from '@singletons';
 import { AddonModLtiHelper } from '../lti-helper';
 import { AddonModLtiIndexComponent } from '../../components/index';
@@ -49,7 +49,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
      * @inheritdoc
      */
     async getData(
-        module: CoreCourseModule,
+        module: CoreCourseModuleData,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
@@ -63,7 +63,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
         data.buttons = [{
             icon: 'fas-external-link-alt',
             label: 'addon.mod_lti.launchactivity',
-            action: (event: Event, module: CoreCourseModule, courseId: number): void => {
+            action: (event: Event, module: CoreCourseModuleData, courseId: number): void => {
                 // Launch the LTI.
                 AddonModLtiHelper.getDataAndLaunch(courseId, module);
             },

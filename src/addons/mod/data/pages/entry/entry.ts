@@ -16,7 +16,7 @@ import { Component, OnDestroy, ViewChild, ChangeDetectorRef, OnInit, Type } from
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreGroups, CoreGroupInfo } from '@services/groups';
@@ -57,7 +57,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     protected fields: Record<number, AddonModDataField> = {};
     protected fieldsArray: AddonModDataField[] = [];
 
-    module!: CoreCourseModule;
+    module!: CoreCourseModuleData;
     courseId!: number;
     offset?: number;
     title = '';
@@ -82,7 +82,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         fields: Record<number, AddonModDataField>;
         entries: Record<number, AddonModDataEntry>;
         database: AddonModDataData;
-        module: CoreCourseModule;
+        module: CoreCourseModuleData;
         group: number;
     };
 
@@ -133,7 +133,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         try {
-            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModule>('module');
+            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModuleData>('module');
             this.entryId = CoreNavigator.getRouteNumberParam('entryId') || undefined;
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;

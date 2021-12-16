@@ -15,8 +15,8 @@
 import { CoreConstants } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
-import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreFileHelper } from '@services/file-helper';
@@ -63,7 +63,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
      * @inheritdoc
      */
     async getData(
-        module: CoreCourseModule,
+        module: CoreCourseModuleData,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
@@ -84,7 +84,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
             hidden: true,
             icon: openWithPicker ? 'fas-share-square' : 'fas-file',
             label: module.name + ': ' + Translate.instant(openWithPicker ? 'core.openwith' : 'addon.mod_resource.openthefile'),
-            action: async (event: Event, module: CoreCourseModule, courseId: number): Promise<void> => {
+            action: async (event: Event, module: CoreCourseModuleData, courseId: number): Promise<void> => {
                 const hide = await this.hideOpenButton(module, courseId);
                 if (!hide) {
                     AddonModResourceHelper.openModuleFile(module, courseId);
@@ -112,7 +112,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
      * @param courseId The course ID.
      * @return Resolved when done.
      */
-    protected async hideOpenButton(module: CoreCourseModule, courseId: number): Promise<boolean> {
+    protected async hideOpenButton(module: CoreCourseModuleData, courseId: number): Promise<boolean> {
         if (!('contentsinfo' in module) || !module.contentsinfo) {
             await CoreCourse.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
         }
@@ -130,7 +130,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
      * @return Resource data.
      */
     protected async getResourceData(
-        module: CoreCourseModule,
+        module: CoreCourseModuleData,
         courseId: number,
         handlerData: CoreCourseModuleHandlerData,
     ): Promise<AddonResourceHandlerData> {
@@ -229,7 +229,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
     /**
      * @inheritdoc
      */
-    async getIconSrc(module?: CoreCourseWSModule): Promise<string | undefined> {
+    async getIconSrc(module?: CoreCourseModuleData): Promise<string | undefined> {
         if (!module) {
             return;
         }

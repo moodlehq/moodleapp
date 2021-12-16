@@ -18,8 +18,8 @@ import {
     CoreCourse,
     CoreCourseAnyModuleData,
     CoreCourseModuleContentFile,
-    CoreCourseWSModule,
 } from '@features/course/services/course';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -40,7 +40,7 @@ export class AddonModImscpPrefetchHandlerService extends CoreCourseResourcePrefe
     /**
      * @inheritdoc
      */
-    async downloadOrPrefetch(module: CoreCourseWSModule, courseId: number, prefetch?: boolean): Promise<void> {
+    async downloadOrPrefetch(module: CoreCourseModuleData, courseId: number, prefetch?: boolean): Promise<void> {
         const siteId = CoreSites.getCurrentSiteId();
 
         const dirPath = await CoreFilepool.getPackageDirPathByUrl(siteId, module.url!);

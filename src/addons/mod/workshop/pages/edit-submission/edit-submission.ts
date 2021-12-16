@@ -15,7 +15,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CanLeave } from '@guards/can-leave';
 import { CoreFile } from '@services/file';
@@ -51,7 +51,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
 
     @ViewChild('editFormEl') formElement!: ElementRef;
 
-    module!: CoreCourseModule;
+    module!: CoreCourseModuleData;
     courseId!: number;
     access!: AddonModWorkshopGetWorkshopAccessInformationWSResponse;
     submission?: AddonModWorkshopSubmissionDataWithOfflineData;
@@ -100,7 +100,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
      */
     ngOnInit(): void {
         try {
-            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModule>('module');
+            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModuleData>('module');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.access = CoreNavigator.getRequiredRouteParam<AddonModWorkshopGetWorkshopAccessInformationWSResponse>('access');
             this.submissionId = CoreNavigator.getRouteNumberParam('submissionId') || 0;

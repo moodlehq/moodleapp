@@ -30,7 +30,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCourseContentsPage } from '../pages/contents/contents';
 import { CoreCourse } from '../services/course';
-import { CoreCourseHelper, CoreCourseModule } from '../services/course-helper';
+import { CoreCourseHelper, CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleDelegate, CoreCourseModuleMainComponent } from '../services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../services/module-prefetch-delegate';
 
@@ -50,7 +50,7 @@ export type CoreCourseResourceDownloadResult = {
 })
 export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
 
-    @Input() module!: CoreCourseModule; // The module of the component.
+    @Input() module!: CoreCourseModuleData; // The module of the component.
     @Input() courseId!: number; // Course ID the component belongs to.
     @Output() dataRetrieved = new EventEmitter<unknown>(); // Called to notify changes the index page from the main component.
 
@@ -100,7 +100,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.showCompletion = !!CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
 
         if (this.showCompletion) {
-            CoreCourseHelper.calculateModuleCompletionData(this.module);
             CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, this.module);
 
             this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
@@ -427,8 +426,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      */
     protected async fetchModule(): Promise<void> {
         const module = await CoreCourse.getModule(this.module.id, this.courseId);
-
-        CoreCourseHelper.calculateModuleCompletionData(module);
 
         await CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, module);
 

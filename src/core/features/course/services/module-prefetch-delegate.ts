@@ -22,7 +22,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreCourse, CoreCourseAnyModuleData, CoreCourseModuleContentFile, CoreCourseWSModule } from './course';
+import { CoreCourse, CoreCourseAnyModuleData, CoreCourseModuleContentFile } from './course';
 import { CoreCache } from '@classes/cache';
 import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreConstants } from '@/core/constants';
@@ -33,6 +33,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreWSFile, CoreWSExternalWarning } from '@services/ws';
 import { CHECK_UPDATES_TIMES_TABLE, CoreCourseCheckUpdatesDBRecord } from './database/module-prefetch';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
+import { CoreCourseModuleData } from './course-helper';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -123,7 +124,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @param courseId Course ID the modules belong to.
      * @return Promise resolved with the lists.
      */
-    protected async createToCheckList(modules: CoreCourseWSModule[], courseId: number): Promise<ToCheckList> {
+    protected async createToCheckList(modules: CoreCourseModuleData[], courseId: number): Promise<ToCheckList> {
         const result: ToCheckList = {
             toCheck: [],
             cannotUse: [],
@@ -221,7 +222,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Promise resolved with the updates. If a module is set to false, it means updates cannot be
      *         checked for that module in the current site.
      */
-    async getCourseUpdates(modules: CoreCourseWSModule[], courseId: number): Promise<CourseUpdates> {
+    async getCourseUpdates(modules: CoreCourseModuleData[], courseId: number): Promise<CourseUpdates> {
         // Check if there's already a getCourseUpdates in progress.
         const id = <string> Md5.hashAsciiStr(courseId + '#' + JSON.stringify(modules));
         const siteId = CoreSites.getCurrentSiteId();
@@ -253,7 +254,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      *         checked for that module in the site.
      */
     protected async fetchCourseUpdates(
-        modules: CoreCourseWSModule[],
+        modules: CoreCourseModuleData[],
         courseId: number,
         siteId: string,
     ): Promise<CourseUpdates> {
@@ -351,7 +352,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @param courseId Course ID the modules belong to.
      * @return Promise resolved with the size.
      */
-    async getDownloadSize(modules: CoreCourseWSModule[], courseId: number): Promise<CoreFileSizeSum> {
+    async getDownloadSize(modules: CoreCourseModuleData[], courseId: number): Promise<CoreFileSizeSum> {
         // Get the status of each module.
         const data = await this.getModulesStatus(modules, courseId);
 
@@ -683,7 +684,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Promise resolved with the data.
      */
     async getModulesStatus(
-        modules: CoreCourseWSModule[],
+        modules: CoreCourseModuleData[],
         courseId: number,
         sectionId?: number,
         refresh?: boolean,
@@ -891,7 +892,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @param courseId Course ID.
      * @return Promise resolved when modules are invalidated.
      */
-    async invalidateModules(modules: CoreCourseWSModule[], courseId: number): Promise<void> {
+    async invalidateModules(modules: CoreCourseModuleData[], courseId: number): Promise<void> {
 
         const promises = modules.map(async (module) => {
             const handler = this.getPrefetchHandlerFor(module);
@@ -1049,7 +1050,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @param courseId Course ID the module belongs to.
      * @return Promise resolved when finished.
      */
-    syncModules(modules: CoreCourseWSModule[], courseId: number): Promise<unknown> {
+    syncModules(modules: CoreCourseModuleData[], courseId: number): Promise<unknown> {
         return Promise.all(modules.map(async (module) => {
             await this.syncModule(module, courseId);
 
@@ -1091,7 +1092,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      */
     async prefetchModules(
         id: string,
-        modules: CoreCourseWSModule[],
+        modules: CoreCourseModuleData[],
         courseId: number,
         onProgress?: CoreCourseModulesProgressFunction,
     ): Promise<void> {
@@ -1512,7 +1513,7 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
 
 type ToCheckList = {
     toCheck: CheckUpdatesToCheckWSParam[];
-    cannotUse: CoreCourseWSModule[];
+    cannotUse: CoreCourseModuleData[];
 };
 
 /**
@@ -1526,10 +1527,10 @@ type CourseUpdates = Record<number, false | CheckUpdatesWSInstance>;
 export type CoreCourseModulesStatus = {
     total: number; // Number of modules.
     status: string; // Status of the list of modules.
-    [CoreConstants.NOT_DOWNLOADED]: CoreCourseWSModule[]; // Modules with state NOT_DOWNLOADED.
-    [CoreConstants.DOWNLOADED]: CoreCourseWSModule[]; // Modules with state DOWNLOADED.
-    [CoreConstants.DOWNLOADING]: CoreCourseWSModule[]; // Modules with state DOWNLOADING.
-    [CoreConstants.OUTDATED]: CoreCourseWSModule[]; // Modules with state OUTDATED.
+    [CoreConstants.NOT_DOWNLOADED]: CoreCourseModuleData[]; // Modules with state NOT_DOWNLOADED.
+    [CoreConstants.DOWNLOADED]: CoreCourseModuleData[]; // Modules with state DOWNLOADED.
+    [CoreConstants.DOWNLOADING]: CoreCourseModuleData[]; // Modules with state DOWNLOADING.
+    [CoreConstants.OUTDATED]: CoreCourseModuleData[]; // Modules with state OUTDATED.
 };
 
 /**

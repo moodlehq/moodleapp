@@ -14,7 +14,7 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 import { Params } from '@angular/router';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
@@ -44,7 +44,7 @@ export class AddonModDataActionComponent implements OnInit {
     @Input() action!: AddonModDataAction; // The field to render.
     @Input() entry!: AddonModDataEntry; // The value of the field.
     @Input() database!: AddonModDataData; // Database object.
-    @Input() module!: CoreCourseModule; // Module object.
+    @Input() module!: CoreCourseModuleData; // Module object.
     @Input() group = 0; // Module object.
     @Input() offset?: number; // Offset of the entry.
 

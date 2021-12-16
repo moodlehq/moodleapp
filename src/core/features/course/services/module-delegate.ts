@@ -20,10 +20,10 @@ import { CoreSite } from '@classes/site';
 import { CoreCourseModuleDefaultHandler } from './handlers/default-module';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCourse, CoreCourseWSModule } from './course';
+import { CoreCourse } from './course';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { CoreCourseModule } from './course-helper';
+import { CoreCourseModuleData } from './course-helper';
 import { CoreNavigationOptions } from '@services/navigator';
 
 /**
@@ -52,7 +52,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @return Data to render the module.
      */
     getData(
-        module: CoreCourseModule,
+        module: CoreCourseModuleData,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
@@ -67,7 +67,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @param module The module object.
      * @return Promise resolved with component to use, undefined if not found.
      */
-    getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseWSModule): Promise<Type<unknown> | undefined>;
+    getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseModuleData): Promise<Type<unknown> | undefined>;
 
     /**
      * Whether to display the course refresher in single activity course format. If it returns false, a refresher must be
@@ -83,7 +83,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @param module: Module to get the icon from.
      * @return The icon src.
      */
-    getIconSrc?(module?: CoreCourseWSModule): Promise<string | undefined> | string | undefined;
+    getIconSrc?(module?: CoreCourseModuleData): Promise<string | undefined> | string | undefined;
 
     /**
      * Check if this type of module supports a certain feature.
@@ -101,7 +101,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @param module Module.
      * @return Promise resolved with boolean: whether the manual completion should always be displayed.
      */
-    manualCompletionAlwaysShown?(module: CoreCourseModule): Promise<boolean>;
+    manualCompletionAlwaysShown?(module: CoreCourseModuleData): Promise<boolean>;
 
     /**
      * Opens the activity page.
@@ -111,7 +111,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @param options Options for the navigation.
      * @return Promise resolved when done.
      */
-    openActivityPage(module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void>;
+    openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void>;
 }
 
 /**
@@ -179,7 +179,7 @@ export interface CoreCourseModuleHandlerData {
      * @param options Options for the navigation.
      * @return Promise resolved when done.
      */
-    action?(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void> | void;
+    action?(event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> | void;
 
     /**
      * Updates the status of the module.
@@ -250,7 +250,7 @@ export interface CoreCourseModuleHandlerButton {
      * @param options Options for the navigation.
      * @return Promise resolved when done.
      */
-    action(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void> | void;
+    action(event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> | void;
 }
 
 /**
@@ -273,7 +273,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @param module The module object.
      * @return Promise resolved with component to use, undefined if not found.
      */
-    async getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseWSModule): Promise<Type<unknown> | undefined> {
+    async getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseModuleData): Promise<Type<unknown> | undefined> {
         try {
             return await this.executeFunctionOnEnabled<Type<unknown>>(module.modname, 'getMainComponent', [course, module]);
         } catch (error) {
@@ -293,7 +293,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      */
     async getModuleDataFor(
         modname: string,
-        module: CoreCourseModule,
+        module: CoreCourseModuleData,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
@@ -315,7 +315,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      */
     async openActivityPage(
         modname: string,
-        module: CoreCourseModule,
+        module: CoreCourseModuleData,
         courseId: number,
         options?: CoreNavigationOptions,
     ): Promise<void> {
@@ -381,7 +381,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @param module The module to use.
      * @return Promise resolved with the icon src.
      */
-    async getModuleIconSrc(modname: string, modicon?: string, module?: CoreCourseWSModule): Promise<string> {
+    async getModuleIconSrc(modname: string, modicon?: string, module?: CoreCourseModuleData): Promise<string> {
         const icon = await this.executeFunctionOnEnabled<Promise<string>>(modname, 'getIconSrc', [module]);
 
         return icon || await CoreCourse.getModuleIconSrc(modname, modicon) || '';
@@ -419,7 +419,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @param module Module.
      * @return Promise resolved with boolean: whether the manual completion should always be displayed.
      */
-    async manualCompletionAlwaysShown(module: CoreCourseModule): Promise<boolean> {
+    async manualCompletionAlwaysShown(module: CoreCourseModuleData): Promise<boolean> {
         const result = await this.executeFunctionOnEnabled<boolean>(module.modname, 'manualCompletionAlwaysShown', [module]);
 
         return !!result;

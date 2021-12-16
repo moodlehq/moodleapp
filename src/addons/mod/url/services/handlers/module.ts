@@ -17,7 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreNavigationOptions } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -54,7 +54,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
     /**
      * @inheritdoc
      */
-    async getData(module: CoreCourseModule, courseId: number): Promise<CoreCourseModuleHandlerData> {
+    async getData(module: CoreCourseModuleData, courseId: number): Promise<CoreCourseModuleHandlerData> {
 
         /**
          * Open the URL.
@@ -62,7 +62,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
          * @param module The module object.
          * @param courseId The course ID.
          */
-        const openUrl = async (module: CoreCourseModule, courseId: number): Promise<void> => {
+        const openUrl = async (module: CoreCourseModuleData, courseId: number): Promise<void> => {
             try {
                 if (module.instance) {
                     await AddonModUrl.logView(module.instance, module.name);
@@ -81,7 +81,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
             title: module.name,
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
-            action: async (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
+            action: async (event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions) => {
                 const modal = await CoreDomUtils.showModalLoading();
 
                 try {
@@ -100,7 +100,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                 hidden: true, // Hide it until we calculate if it should be displayed or not.
                 icon: 'fas-link',
                 label: 'core.openmodinbrowser',
-                action: (event: Event, module: CoreCourseModule, courseId: number): void => {
+                action: (event: Event, module: CoreCourseModuleData, courseId: number): void => {
                     openUrl(module, courseId);
                 },
             }],
@@ -135,7 +135,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
      * @param courseId The course ID.
      * @return Resolved when done.
      */
-    protected async hideLinkButton(module: CoreCourseModule, courseId: number): Promise<boolean> {
+    protected async hideLinkButton(module: CoreCourseModuleData, courseId: number): Promise<boolean> {
         try {
             const contents = await CoreCourse.getModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
 
@@ -160,7 +160,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
      * @param courseId Course ID.
      * @return Promise resolved with boolean.
      */
-    protected async shouldOpenLink(module: CoreCourseModule, courseId?: number): Promise<boolean> {
+    protected async shouldOpenLink(module: CoreCourseModuleData, courseId?: number): Promise<boolean> {
         try {
             const contents = await CoreCourse.getModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
 
@@ -186,7 +186,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
     /**
      * @inheritdoc
      */
-    manualCompletionAlwaysShown(module: CoreCourseModule): Promise<boolean> {
+    manualCompletionAlwaysShown(module: CoreCourseModuleData): Promise<boolean> {
         return this.shouldOpenLink(module, module.course);
     }
 

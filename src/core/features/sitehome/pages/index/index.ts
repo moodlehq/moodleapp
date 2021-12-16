@@ -17,14 +17,14 @@ import { IonRefresher } from '@ionic/angular';
 import { Params } from '@angular/router';
 
 import { CoreSite, CoreSiteConfig } from '@classes/site';
-import { CoreCourse, CoreCourseWSModule, CoreCourseWSSection } from '@features/course/services/course';
+import { CoreCourse, CoreCourseWSSection } from '@features/course/services/course';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreCourses, CoreCoursesProvider } from '@features//courses/services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourseHelper, CoreCourseModule } from '@features/course/services/course-helper';
-import { CoreCourseModuleDelegate, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
+import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
@@ -52,7 +52,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     searchEnabled = false;
     displayEnableDownload = false;
     downloadEnabled = false;
-    newsForumModule?: NewsForum;
+    newsForumModule?: CoreCourseModuleData;
 
     protected updateSiteObserver: CoreEventObserver;
     protected downloadEnabledObserver: CoreEventObserver;
@@ -79,7 +79,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         this.currentSite = CoreSites.getRequiredCurrentSite();
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
 
-        const module = CoreNavigator.getRouteParam<CoreCourseModule>('module');
+        const module = CoreNavigator.getRouteParam<CoreCourseModuleData>('module');
         if (module) {
             const modParams = CoreNavigator.getRouteParam<Params>('modParams');
             CoreCourseHelper.openModule(module, this.siteHomeId, undefined, modParams);
@@ -235,7 +235,3 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     }
 
 }
-
-type NewsForum = CoreCourseWSModule & {
-    handlerData?: CoreCourseModuleHandlerData;
-};

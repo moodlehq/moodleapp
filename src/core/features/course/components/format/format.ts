@@ -38,7 +38,7 @@ import {
 } from '@features/course/services/course';
 import {
     CoreCourseHelper,
-    CoreCourseModule,
+    CoreCourseModuleData,
     CoreCourseModuleCompletionData,
     CoreCourseSection,
     CoreCourseSectionWithStatus,
@@ -637,7 +637,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         // If the completion value is not used, the page won't be reloaded, so update the progress bar.
-        const completionModules = (<CoreCourseModule[]> [])
+        const completionModules = (<CoreCourseModuleData[]> [])
             .concat(...this.sections!.map((section) => section.modules))
             .map((module) => module.completion && module.completion > 0 ? 1 : module.completion)
             .reduce((accumulator, currentValue) => (accumulator || 0) + (currentValue || 0), 0);

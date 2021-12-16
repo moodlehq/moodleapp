@@ -15,7 +15,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Type } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreTag } from '@features/tag/services/tag';
 import { IonContent } from '@ionic/angular';
@@ -66,7 +66,7 @@ export class AddonModDataEditPage implements OnInit {
     entry?: AddonModDataEntry;
     fields: Record<number, AddonModDataField> = {};
     courseId!: number;
-    module!: CoreCourseModule;
+    module!: CoreCourseModuleData;
     database?: AddonModDataData;
     title = '';
     component = AddonModDataProvider.COMPONENT;
@@ -97,7 +97,7 @@ export class AddonModDataEditPage implements OnInit {
      */
     ngOnInit(): void {
         try {
-            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModule>('module');
+            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModuleData>('module');
             this.entryId = CoreNavigator.getRouteNumberParam('entryId') || undefined;
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;

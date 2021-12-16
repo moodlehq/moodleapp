@@ -19,7 +19,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     CoreCourseHelper,
-    CoreCourseModule,
+    CoreCourseModuleData,
     CoreCourseModuleCompletionData,
     CoreCourseSection,
 } from '@features/course/services/course-helper';
@@ -44,7 +44,7 @@ import {
 })
 export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
-    @Input() module!: CoreCourseModule; // The module to render.
+    @Input() module!: CoreCourseModuleData; // The module to render.
     @Input() courseId?: number; // The course the module belongs to.
     @Input() section?: CoreCourseSection; // The section the module belongs to.
     @Input() showActivityDates = false; // Whether to show activity dates.
