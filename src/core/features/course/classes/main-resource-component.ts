@@ -96,7 +96,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.description = this.module.description;
         this.componentId = this.module.id;
         this.externalUrl = this.module.url;
-        this.courseId = this.courseId || this.module.course!;
+        this.courseId = this.courseId || this.module.course;
         this.showCompletion = !!CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
 
         if (this.showCompletion) {

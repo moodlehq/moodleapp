@@ -182,7 +182,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             if (!CoreFilepool.getPackageDownloadPromise(siteId, handler.component, module.id)) {
                 // Not handled, the app was probably restarted or something weird happened.
                 // Re-start download (files already on queue or already downloaded will be skipped).
-                handler.prefetch(module, module.course!);
+                handler.prefetch(module, module.course);
             }
         } else if (handler.determineStatus) {
             // The handler implements a determineStatus function. Apply it.

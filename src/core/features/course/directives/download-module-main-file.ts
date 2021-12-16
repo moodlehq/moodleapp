@@ -71,7 +71,7 @@ export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
 
                 await CoreCourseHelper.downloadModuleAndOpenFile(
                     this.module,
-                    courseId ?? this.module.course!,
+                    courseId ?? this.module.course,
                     this.component,
                     componentId,
                     this.files,
