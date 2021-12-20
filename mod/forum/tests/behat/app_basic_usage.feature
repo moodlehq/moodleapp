@@ -240,7 +240,8 @@ Feature: Test basic usage of forum activity in app
     And I press "Display options" near "Reply" in the app
     Then I should not find "Delete" in the app
 
-    When I switch offline mode to "false"
+    When I close the popup in the app
+    And I switch offline mode to "false"
     And I press "Display options" near "Reply" in the app
     And I press "Delete" in the app
     And I press "Delete" in the app

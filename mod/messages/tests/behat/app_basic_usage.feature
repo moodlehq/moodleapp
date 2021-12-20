@@ -158,8 +158,7 @@ Feature: Test basic usage of messages in app
     And I press "Display options" in the app
     Then I should find "Add to contacts" in the app
 
-    When I press "Display options" in the app
-    And I press "Delete conversation" in the app
+    When I press "Delete conversation" in the app
     And I press "Delete" near "Are you sure you would like to delete this entire conversation?" in the app
     Then I should not find "heeey student" in the app
     And I should not find "hi" in the app
@@ -392,6 +391,7 @@ Feature: Test basic usage of messages in app
     And I should find "Delete conversation" in the app
 
     When I press "Show delete messages" in the app
+    And I close the popup in the app
     Then I should find "self conversation online" in the app
     And I should find "self conversation offline" in the app
 
