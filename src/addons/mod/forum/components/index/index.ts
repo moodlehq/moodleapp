@@ -157,6 +157,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.sourceUnsubscribe = source.addListener({
             onItemsUpdated: async discussions => {
                 this.discussionsItems = discussions.filter(discussion => !source.isNewDiscussionForm(discussion));
+                this.hasOffline = discussions.some(discussion => source.isOfflineDiscussion(discussion));
 
                 if (!this.forum) {
                     return;
