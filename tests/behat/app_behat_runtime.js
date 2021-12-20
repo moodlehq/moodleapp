@@ -349,10 +349,16 @@
      * Function to find elements based on their text or Aria label.
      *
      * @param {object} locator Element locator.
+     * @param {boolean} insideSplitView Whether to search only inside the split view contents.
      * @return {HTMLElement} Found elements
      */
-    const findElementsBasedOnText = function(locator) {
-        const topContainer = document.querySelector('ion-alert, ion-popover, ion-action-sheet, core-ion-tab.show-tab ion-page.show-page, ion-page.show-page, html');
+    const findElementsBasedOnText = function(locator, insideSplitView) {
+        let topContainer = document.querySelector('ion-alert, ion-popover, ion-action-sheet, core-ion-tab.show-tab ion-page.show-page, ion-page.show-page, html');
+
+        if (insideSplitView) {
+            topContainer = topContainer.querySelector('core-split-view ion-router-outlet');
+        }
+
         let container = topContainer;
 
         if (topContainer && locator.near) {
@@ -382,7 +388,7 @@
             if (filteredElements.length > 0) {
                 return filteredElements;
             }
-        } while ((container = getParentElement(container)) && container !== topContainer);
+        } while (container !== topContainer && (container = getParentElement(container)) && container !== topContainer);
 
         return [];
     };
@@ -497,26 +503,101 @@
     };
 
     /**
-     * Function to find an arbitrary item based on its text or aria label.
+     * Function to find an arbitrary element based on its text or aria label.
      *
      * @param {object} locator Element locator.
+     * @param {boolean} insideSplitView Whether to search only inside the split view contents.
      * @return {string} OK if successful, or ERROR: followed by message
      */
-    const behatFind = function(locator) {
-        log('Action - Find', locator);
+    const behatFind = function(locator, insideSplitView) {
+        log('Action - Find', { locator, insideSplitView });
 
         try {
-            const element = findElementsBasedOnText(locator)[0];
+            const element = findElementsBasedOnText(locator, insideSplitView)[0];
 
             if (!element) {
                 return 'ERROR: No matches for text';
             }
 
+            log('Action - Found', { locator, insideSplitView, element });
             return 'OK';
         } catch (error) {
             return 'ERROR: ' + error.message;
         }
     };
+
+    /**
+     * Scroll an element into view.
+     *
+     * @param {object} locator Element locator.
+     * @return {string} OK if successful, or ERROR: followed by message
+     */
+    const behatScrollTo = function(locator) {
+        log('Action - scrollTo', { locator });
+
+        try {
+            let element = findElementsBasedOnText(locator)[0];
+
+            if (!element) {
+                return 'ERROR: No matches for text';
+            }
+
+            element = element.closest('ion-item') ?? element.closest('button') ?? element;
+
+            element.scrollIntoView();
+
+            log('Action - Scrolled to', { locator, element });
+            return 'OK';
+        } catch (error) {
+            return 'ERROR: ' + error.message;
+        }
+    }
+
+    /**
+     * Load more items form an active list with infinite loader.
+     *
+     * @return {string} OK if successful, or ERROR: followed by message
+     */
+     const behatLoadMoreItems = async function() {
+        log('Action - loadMoreItems');
+
+        try {
+            const infiniteLoading = Array
+                .from(document.querySelectorAll('core-infinite-loading'))
+                .find(element => !element.closest('.ion-page-hidden'));
+
+            if (!infiniteLoading) {
+                return 'ERROR: There isn\'t an infinite loader in the current page';
+            }
+
+            const initialOffset = infiniteLoading.offsetTop;
+            const isLoading = () => !!infiniteLoading.querySelector('ion-spinner[aria-label]');
+            const isCompleted = () => !isLoading() && !infiniteLoading.querySelector('ion-button');
+            const hasMoved = () => infiniteLoading.offsetTop !== initialOffset;
+
+            if (isCompleted()) {
+                return 'ERROR: All items are already loaded';
+            }
+
+            infiniteLoading.scrollIntoView();
+
+            // Wait 100ms
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            if (isLoading() || isCompleted() || hasMoved()) {
+                return 'OK';
+            }
+
+            infiniteLoading.querySelector('ion-button').click();
+
+            // Wait 100ms
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            return (isLoading() || isCompleted() || hasMoved()) ? 'OK' : 'ERROR: Couldn\'t load more items';
+        } catch (error) {
+            return 'ERROR: ' + error.message;
+        }
+    }
 
     /**
      * Check whether an item is selected or not.
@@ -573,7 +654,6 @@
         titles = titles.filter(function(title) {
             return isElementVisible(title, document.body);
         });
-                
 
         if (titles.length > 1) {
             return 'ERROR: Too many possible titles';
@@ -597,7 +677,6 @@
     const behatSetField = function(field, value) {
         log('Action - Set field ' + field + ' to: ' + value);
 
-        
         const found = findElementsBasedOnText({ text: field, selector: 'input, textarea, [contenteditable="true"]' })[0];
         if (!found) {
             return 'ERROR: No matches for text';
@@ -656,6 +735,8 @@
      * @return {object} Component instance
      */
     const behatGetComponentInstance = function(selector, className) {
+        log('Action - Get component instance ' + selector + ', ' + className);
+
         const activeElement = Array.from(document.querySelectorAll(`.ion-page:not(.ion-page-hidden) ${selector}`)).pop();
 
         if (!activeElement || !activeElement.__ngContext__) {
@@ -670,6 +751,8 @@
         pressStandard : behatPressStandard,
         closePopup : behatClosePopup,
         find : behatFind,
+        scrollTo : behatScrollTo,
+        loadMoreItems: behatLoadMoreItems,
         isSelected : behatIsSelected,
         press : behatPress,
         setField : behatSetField,
