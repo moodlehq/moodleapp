@@ -140,7 +140,7 @@ export class AddonCalendarHelperProvider {
 
             // Add the event to all the days it lasts.
             while (!treatedDay.isAfter(endDay, 'day')) {
-                const monthId = this.getMonthId(treatedDay.year(), treatedDay.month() + 1);
+                const monthId = this.getMonthId(treatedDay);
                 const day = treatedDay.date();
 
                 if (!result[monthId]) {
@@ -364,14 +364,23 @@ export class AddonCalendarHelperProvider {
     }
 
     /**
-     * Get the month "id" (year + month).
+     * Get the month "id".
      *
-     * @param year Year.
-     * @param month Month.
+     * @param moment Month moment.
      * @return The "id".
      */
-    getMonthId(year: number, month: number): string {
-        return year + '#' + month;
+    getMonthId(moment: moment.Moment): string {
+        return `${moment.year()}#${moment.month() + 1}`;
+    }
+
+    /**
+     * Get the day "id".
+     *
+     * @param day Day moment.
+     * @return The "id".
+     */
+    getDayId(moment: moment.Moment): string {
+        return `${this.getMonthId(moment)}#${moment.date()}`;
     }
 
     /**
@@ -650,7 +659,7 @@ export class AddonCalendarHelperProvider {
             fetchTimestarts.map((fetchTime) => {
                 const day = moment(new Date(fetchTime * 1000));
 
-                const monthId = this.getMonthId(day.year(), day.month() + 1);
+                const monthId = this.getMonthId(day);
                 if (!treatedMonths[monthId]) {
                     // Month not refetch or invalidated already, do it now.
                     treatedMonths[monthId] = true;
@@ -686,7 +695,7 @@ export class AddonCalendarHelperProvider {
             invalidateTimestarts.map((fetchTime) => {
                 const day = moment(new Date(fetchTime * 1000));
 
-                const monthId = this.getMonthId(day.year(), day.month() + 1);
+                const monthId = this.getMonthId(day);
                 if (!treatedMonths[monthId]) {
                     // Month not refetch or invalidated already, do it now.
                     treatedMonths[monthId] = true;

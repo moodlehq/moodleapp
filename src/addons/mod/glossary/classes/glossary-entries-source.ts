@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Params } from '@angular/router';
-import { CoreItemsManagerSource } from '@classes/items-management/items-manager-source';
+import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import {
     AddonModGlossary,
     AddonModGlossaryEntry,
@@ -27,7 +27,7 @@ import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from '../servic
 /**
  * Provides a collection of glossary entries.
  */
-export class AddonModGlossaryEntriesSource extends CoreItemsManagerSource<AddonModGlossaryEntryItem> {
+export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<AddonModGlossaryEntryItem> {
 
     static readonly NEW_ENTRY: AddonModGlossaryNewEntryForm = { newEntry: true };
 

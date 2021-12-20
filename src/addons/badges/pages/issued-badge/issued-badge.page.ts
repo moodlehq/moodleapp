@@ -23,9 +23,9 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreNavigator } from '@services/navigator';
 import { ActivatedRoute } from '@angular/router';
-import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
-import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { AddonBadgesUserBadgesSource } from '@addons/badges/classes/user-badges-source';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 /**
  * Page that displays the list of calendar events.
@@ -43,7 +43,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
     user?: CoreUserProfile;
     course?: CoreEnrolledCourseData;
     badge?: AddonBadgesUserBadge;
-    badges?: CoreSwipeItemsManager;
+    badges?: CoreSwipeNavigationItemsManager;
     badgeLoaded = false;
     currentTime = 0;
 
@@ -61,8 +61,11 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
             this.badgeLoaded = true;
         });
 
-        const source = CoreItemsManagerSourcesTracker.getOrCreateSource(AddonBadgesUserBadgesSource, [this.courseId, this.userId]);
-        this.badges = new CoreSwipeItemsManager(source);
+        const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+            AddonBadgesUserBadgesSource,
+            [this.courseId, this.userId],
+        );
+        this.badges = new CoreSwipeNavigationItemsManager(source);
 
         this.badges.start();
     }

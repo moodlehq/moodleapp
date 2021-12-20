@@ -57,7 +57,7 @@ import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { ContextLevel } from '@/core/constants';
 import { AddonModForumDiscussionItem, AddonModForumDiscussionsSource } from '../../classes/forum-discussions-source';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
-import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 /**
  * Component that displays a forum entry page.
@@ -149,7 +149,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         await super.ngOnInit();
 
         // Initialize discussions manager.
-        const source = CoreItemsManagerSourcesTracker.getOrCreateSource(
+        const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
             AddonModForumDiscussionsSource,
             [this.courseId, this.module.id, this.courseContentsPage ? `${AddonModForumModuleHandlerService.PAGE_NAME}/` : ''],
         );

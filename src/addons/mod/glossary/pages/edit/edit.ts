@@ -16,7 +16,7 @@ import { Component, OnInit, ViewChild, ElementRef, Optional, OnDestroy } from '@
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
-import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CanLeave } from '@guards/can-leave';
@@ -101,7 +101,7 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
             this.editorExtraParams.timecreated = this.timecreated;
 
             if (this.timecreated !== 0 && (routeData.swipeEnabled ?? true)) {
-                const source = CoreItemsManagerSourcesTracker.getOrCreateSource(
+                const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
                     AddonModGlossaryEntriesSource,
                     [this.courseId, this.cmId, routeData.glossaryPathPrefix ?? ''],
                 );

@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSwipeItemsManager } from '@classes/items-management/swipe-items-manager';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { AddonModGlossaryEntriesSource, AddonModGlossaryEntryItem } from './glossary-entries-source';
 
 /**
  * Helper to manage swiping within a collection of glossary entries.
  */
 export abstract class AddonModGlossaryEntriesSwipeManager
-    extends CoreSwipeItemsManager<AddonModGlossaryEntryItem, AddonModGlossaryEntriesSource> {
+    extends CoreSwipeNavigationItemsManager<AddonModGlossaryEntryItem, AddonModGlossaryEntriesSource> {
 
     /**
      * @inheritdoc

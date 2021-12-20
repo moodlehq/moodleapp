@@ -14,7 +14,7 @@
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreRatingInfo } from '@features/rating/services/rating';
@@ -73,7 +73,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
             if (routeData.swipeEnabled ?? true) {
                 const cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
-                const source = CoreItemsManagerSourcesTracker.getOrCreateSource(
+                const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
                     AddonModGlossaryEntriesSource,
                     [this.courseId, cmId, routeData.glossaryPathPrefix ?? ''],
                 );

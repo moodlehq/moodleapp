@@ -1,0 +1,15 @@
+:host {
+    --swipe-slides-min-height: auto;
+
+    ion-slides {
+        min-height: var(--swipe-slides-min-height);
+    }
+
+    ion-slide {
+        display: block;
+        font-size: inherit;
+        justify-content: start;
+        align-items: start;
+        text-align: start;
+    }
+}

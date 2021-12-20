@@ -42,8 +42,8 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreForms } from '@singletons/form';
 import { AddonModForumDiscussionsSwipeManager } from '../../classes/forum-discussions-swipe-manager';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { CoreItemsManagerSourcesTracker } from '@classes/items-management/items-manager-sources-tracker';
 import { AddonModForumDiscussionsSource } from '../../classes/forum-discussions-source';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 type NewDiscussionData = {
     subject: string;
@@ -117,7 +117,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
             this.timeCreated = CoreNavigator.getRequiredRouteNumberParam('timeCreated');
 
             if (this.timeCreated !== 0 && (routeData.swipeEnabled ?? true)) {
-                const source = CoreItemsManagerSourcesTracker.getOrCreateSource(
+                const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
                     AddonModForumDiscussionsSource,
                     [this.courseId, this.cmId, routeData.discussionsPathPrefix ?? ''],
                 );

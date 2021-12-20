@@ -29,6 +29,7 @@ import { AddonCalendarHelper } from './calendar-helper';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSync } from '@services/sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
+import moment from 'moment';
 
 /**
  * Service to sync calendar.
@@ -307,9 +308,7 @@ export type AddonCalendarSyncEvents = {
     toinvalidate: AddonCalendarSyncInvalidateEvent[];
     updated: boolean;
     source?: string; // Added on pages.
-    day?: number; // Added on day page.
-    month?: number; // Added on day page.
-    year?: number; // Added on day page.
+    moment?: moment.Moment; // Added on day page.
 };
 
 export type AddonCalendarSyncInvalidateEvent = {

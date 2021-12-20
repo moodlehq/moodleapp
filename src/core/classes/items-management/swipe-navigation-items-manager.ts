@@ -16,17 +16,17 @@ import { ActivatedRoute, ActivatedRouteSnapshot, UrlSegment } from '@angular/rou
 
 import { CoreNavigator } from '@services/navigator';
 
-import { CoreItemsManager } from './items-manager';
-import { CoreItemsManagerSource } from './items-manager-source';
+import { CoreRoutedItemsManager } from './routed-items-manager';
+import { CoreRoutedItemsManagerSource } from './routed-items-manager-source';
 
 /**
  * Helper class to manage the state and routing of a swipeable page.
  */
-export class CoreSwipeItemsManager<
+export class CoreSwipeNavigationItemsManager<
     Item = unknown,
-    Source extends CoreItemsManagerSource<Item> = CoreItemsManagerSource<Item>
+    Source extends CoreRoutedItemsManagerSource<Item> = CoreRoutedItemsManagerSource<Item>
 >
-    extends CoreItemsManager<Item, Source> {
+    extends CoreRoutedItemsManager<Item, Source> {
 
     /**
      * Process page started operations.
@@ -99,7 +99,7 @@ export class CoreSwipeItemsManager<
     protected async getItemBy(delta: number): Promise<Item | null> {
         const items = this.getSource().getItems();
 
-        // Get current item.
+        // Get selected item.
         const index = (this.selectedItem && items?.indexOf(this.selectedItem)) ?? -1;
 
         if (index === -1) {

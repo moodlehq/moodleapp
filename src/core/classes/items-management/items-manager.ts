@@ -12,20 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
-
 import { CoreItemsManagerSource } from './items-manager-source';
-import { CoreItemsManagerSourcesTracker } from './items-manager-sources-tracker';
+
+/**
+ * Listeners.
+ */
+export interface CoreItemsanagerListener<Item> {
+    onSelectedItemUpdated?(item: Item): void;
+}
 
 /**
  * Helper to manage a collection of items in a page.
  */
-export abstract class CoreItemsManager<Item = unknown, Source extends CoreItemsManagerSource<Item> = CoreItemsManagerSource<Item>> {
+export abstract class CoreItemsManager<
+    Item = unknown,
+    Source extends CoreItemsManagerSource<Item> = CoreItemsManagerSource<Item>,
+> {
 
     protected source?: { instance: Source; unsubscribe: () => void };
     protected itemsMap: Record<string, Item> | null = null;
     protected selectedItem: Item | null = null;
+    protected listeners: CoreItemsanagerListener<Item>[] = [];
 
     constructor(source: Source) {
         this.setSource(source);
@@ -51,8 +58,6 @@ export abstract class CoreItemsManager<Item = unknown, Source extends CoreItemsM
      */
     setSource(newSource: Source | null): void {
         if (this.source) {
-            CoreItemsManagerSourcesTracker.removeReference(this.source.instance, this);
-
             this.source.unsubscribe();
             delete this.source;
 
@@ -60,8 +65,6 @@ export abstract class CoreItemsManager<Item = unknown, Source extends CoreItemsM
         }
 
         if (newSource) {
-            CoreItemsManagerSourcesTracker.addReference(newSource, this);
-
             this.source = {
                 instance: newSource,
                 unsubscribe: newSource.addListener({
@@ -86,79 +89,50 @@ export abstract class CoreItemsManager<Item = unknown, Source extends CoreItemsM
     }
 
     /**
-     * Get page route.
+     * Get selected item.
      *
-     * @returns Current page route, if any.
+     * @return Selected item, null if none.
      */
-    protected abstract getCurrentPageRoute(): ActivatedRoute | null;
-
-    /**
-     * Get the path of the selected item given the current route.
-     *
-     * @param route Page route.
-     * @return Path of the selected item in the given route.
-     */
-    protected abstract getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null;
-
-    /**
-     * Get the path of the selected item.
-     *
-     * @param route Page route, if any.
-     * @return Path of the selected item.
-     */
-    protected getSelectedItemPath(route?: ActivatedRouteSnapshot | null): string | null {
-        if (!route) {
-            return null;
-        }
-
-        return this.getSelectedItemPathFromRoute(route);
+    getSelectedItem(): Item | null {
+        return this.selectedItem;
     }
 
     /**
-     * Update the selected item given the current route.
+     * Set selected item.
      *
-     * @param route Current route.
+     * @param item Item, null if none.
      */
-    protected updateSelectedItem(route: ActivatedRouteSnapshot | null = null): void {
-        route = route ?? this.getCurrentPageRoute()?.snapshot ?? null;
+    setSelectedItem(item: Item | null): void {
+        this.selectedItem = item;
 
-        const selectedItemPath = this.getSelectedItemPath(route);
-
-        this.selectedItem = selectedItemPath
-            ? this.itemsMap?.[selectedItemPath] ?? null
-            : null;
+        this.listeners.forEach(listener => listener.onSelectedItemUpdated?.call(listener, item));
     }
 
     /**
-     * Navigate to an item in the collection.
+     * Register a listener.
      *
-     * @param item Item.
-     * @param options Navigation options.
+     * @param listener Listener.
+     * @returns Unsubscribe function.
      */
-    protected async navigateToItem(
-        item: Item,
-        options: Pick<CoreNavigationOptions, 'reset' | 'replace' | 'animationDirection'> = {},
-    ): Promise<void> {
-        // Get current route in the page.
-        const route = this.getCurrentPageRoute();
+    addListener(listener: CoreItemsanagerListener<Item>): () => void {
+        this.listeners.push(listener);
 
-        if (route === null) {
+        return () => this.removeListener(listener);
+    }
+
+    /**
+     * Remove a listener.
+     *
+     * @param listener Listener.
+     */
+    removeListener(listener: CoreItemsanagerListener<Item>): void {
+        const index = this.listeners.indexOf(listener);
+
+        if (index === -1) {
             return;
         }
 
-        // If this item is already selected, do nothing.
-        const itemPath = this.getSource().getItemPath(item);
-        const selectedItemPath = this.getSelectedItemPath(route.snapshot);
-
-        if (selectedItemPath === itemPath) {
-            return;
-        }
-
-        // Navigate to item.
-        const params = this.getSource().getItemQueryParams(item);
-        const pathPrefix = selectedItemPath ? selectedItemPath.split('/').fill('../').join('') : '';
-
-        await CoreNavigator.navigate(pathPrefix + itemPath, { params, ...options });
+        this.listeners.splice(index, 1);
     }
 
     /**
@@ -168,12 +142,10 @@ export abstract class CoreItemsManager<Item = unknown, Source extends CoreItemsM
      */
     protected onSourceItemsUpdated(items: Item[]): void {
         this.itemsMap = items.reduce((map, item) => {
-            map[this.getSource().getItemPath(item)] = item;
+            map[this.getItemId(item)] = item;
 
             return map;
         }, {});
-
-        this.updateSelectedItem();
     }
 
     /**
@@ -183,5 +155,23 @@ export abstract class CoreItemsManager<Item = unknown, Source extends CoreItemsM
         this.itemsMap = null;
         this.selectedItem = null;
     }
+
+    /**
+     * Get item by ID.
+     *
+     * @param id ID
+     * @return Item, null if not found.
+     */
+    getItemById(id: string | number): Item | null {
+        return this.itemsMap?.[id] ?? null;
+    }
+
+    /**
+     * Get an ID to identify an item.
+     *
+     * @param item Data about the item.
+     * @return Item ID.
+     */
+    abstract getItemId(item: Item): string | number;
 
 }
