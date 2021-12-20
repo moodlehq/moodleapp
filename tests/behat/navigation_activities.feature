@@ -18,9 +18,7 @@ Feature: It navigates properly within activities.
     And I replace the arguments in "page" "content"
 
   Scenario: Navigates using deep links
-    When I enter the app
-    And I log in as "student"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student" in the app
     And I press "Page" in the app
     And I press "Go to label" in the app
     Then I should find "Label description" in the app

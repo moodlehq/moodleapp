@@ -289,9 +289,7 @@ Feature: Test basic usage of messages in app
     And I should find "Student1 student1" in the app
 
   Scenario: User blocking feature
-    When I enter the app
-    And I log in as "student2"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student2" in the app
     And I press "Participants" in the app
     And I press "Student1 student1" in the app
     And I press "Message" in the app
@@ -300,17 +298,13 @@ Feature: Test basic usage of messages in app
     And I press "Block user" near "Are you sure you want to block Student1 student1?" in the app
     Then I should find "You have blocked this user" in the app
 
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Participants" in the app
     And I press "Student2 student2" in the app
     And I press "Message" in the app
     Then I should find "You are unable to message this user" in the app
 
-    When I enter the app
-    And I log in as "student2"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student2" in the app
     And I press "Participants" in the app
     And I press "Student1 student1" in the app
     And I press "Message" in the app
@@ -322,9 +316,7 @@ Feature: Test basic usage of messages in app
     And I press "Unblock user" near "Are you sure you want to unblock Student1 student1?" in the app
     Then I should not find "You have blocked this user" in the app
 
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Participants" in the app
     And I press "Student2 student2" in the app
     And I press "Message" in the app
@@ -334,9 +326,7 @@ Feature: Test basic usage of messages in app
     But I should not find "You are unable to message this user" in the app
 
   Scenario: Mute Unmute conversations
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Participants" in the app
     And I press "Student2 student2" in the app
     And I press "Message" in the app

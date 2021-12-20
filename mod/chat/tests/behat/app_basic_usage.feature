@@ -21,9 +21,7 @@ Feature: Test basic usage of chat in app
 
   Scenario: Receive and send messages & See connected users, beep and talk to
     # Send messages as student1
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Test chat name" in the app
     Then I should find "Click here to enter the chat now" in the app
     And I should find "View past chat sessions" in the app
@@ -39,9 +37,7 @@ Feature: Test basic usage of chat in app
     And I should find "I am David" in the app
 
     # Read messages, view connected users, send beep and reply as student2
-    When I enter the app
-    And I log in as "student2"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student2" in the app
     And I press "Test chat name" in the app
     And I press "Click here to enter the chat now" in the app
     Then I should find "Hi!" in the app
@@ -59,9 +55,7 @@ Feature: Test basic usage of chat in app
 
   Scenario: Past sessions shown
     # Send messages as student1
-    Given I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "student1" in the app
     And I press "Test chat name" in the app
     And I press "Click here to enter the chat now" in the app
     And I set the field "New message" to "Hi!" in the app
@@ -73,9 +67,7 @@ Feature: Test basic usage of chat in app
     Then I should find "I am David" in the app
 
     # Read messages from past sessions as student2
-    When I enter the app
-    And I log in as "student2"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student2" in the app
     And I press "Test chat name" in the app
     And I press "View past chat sessions" in the app
     And I press "Show incomplete sessions" in the app

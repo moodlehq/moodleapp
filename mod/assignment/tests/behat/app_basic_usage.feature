@@ -21,9 +21,7 @@ Feature: Test basic usage of assignment activity in app
 
   Scenario: View assign description, due date & View list of student submissions (as teacher) & View own submission or student submission
     # Create, edit and submit as a student
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "assignment1" in the app
     Then the header should be "assignment1" in the app
     And I should find "Test assignment description1" in the app
@@ -49,9 +47,7 @@ Feature: Test basic usage of assignment activity in app
     And I should find "Submission test edited" in the app
 
     # View as a teacher
-    When I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "teacher1" in the app
     And I press "assignment1" in the app
     Then the header should be "assignment1" in the app
 
@@ -65,9 +61,7 @@ Feature: Test basic usage of assignment activity in app
 
   Scenario: Edit/Add submission (online text) & Add new attempt from previous submission & Submit for grading
     # Submit first attempt as a student
-    Given I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "student1" in the app
     And I press "assignment1" in the app
     And I press "Add submission" in the app
     And I set the field "Online text submissions" to "Submission test 1st attempt" in the app
@@ -76,9 +70,7 @@ Feature: Test basic usage of assignment activity in app
     And I press "OK" in the app
 
     # Allow more attempts as a teacher
-    When I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "teacher1" in the app
     And I press "assignment1" in the app
     And I press "Participants" in the app
     And I press "Student student" near "assignment1" in the app
@@ -89,9 +81,7 @@ Feature: Test basic usage of assignment activity in app
     And I should find "Not graded" in the app
 
     # Submit second attempt as a student
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "assignment1" in the app
     Then I should find "Reopened" in the app
     And I should find "2 out of Unlimited" in the app
@@ -109,9 +99,7 @@ Feature: Test basic usage of assignment activity in app
     And I press "OK" in the app
 
     # View second attempt as a teacher
-    When I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "teacher1" in the app
     And I press "assignment1" in the app
     And I press "Participants" in the app
     And I press "Student student" near "assignment1" in the app
@@ -119,9 +107,7 @@ Feature: Test basic usage of assignment activity in app
     And I should find "Submission test 2nd attempt" in the app
 
   Scenario: Add submission offline (online text) & Submit for grading offline & Sync submissions
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "assignment1" in the app
     And I press "Add submission" in the app
     And I switch offline mode to "true"
@@ -140,9 +126,7 @@ Feature: Test basic usage of assignment activity in app
     But I should not find "This Assignment has offline data to be synchronised." in the app
 
   Scenario: Edit an offline submission before synchronising it
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "assignment1" in the app
     And I press "Add submission" in the app
     And I switch offline mode to "true"

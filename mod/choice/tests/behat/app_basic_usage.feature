@@ -21,9 +21,7 @@ Feature: Test basic usage of choice activity in app
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Test single choice name" in the app
     And I select "Option 1" in the app
     And I select "Option 2" in the app
@@ -46,9 +44,7 @@ Feature: Test basic usage of choice activity in app
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test multi choice name  | Test multi choice description  | C1     | choice2  | Option 1, Option 2, Option 3 | 1             | 1           | 1           |
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Test multi choice name" in the app
     And I select "Option 1" in the app
     And I select "Option 2" in the app
@@ -76,9 +72,7 @@ Feature: Test basic usage of choice activity in app
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Test single choice name" in the app
     And I select "Option 1" in the app
     And I switch offline mode to "true"
@@ -110,9 +104,7 @@ Feature: Test basic usage of choice activity in app
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Test single choice name" in the app
     And I select "Option 1" in the app
     And I switch offline mode to "true"
@@ -139,9 +131,7 @@ Feature: Test basic usage of choice activity in app
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test multi choice name  | Test multi choice description  | C1     | choice2  | Option 1, Option 2, Option 3 | 1             | 1           | 1           |
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Display options" in the app
     And I press "Show download options" in the app
     And I press "Download" near "Test single choice name" in the app
@@ -180,18 +170,14 @@ Feature: Test basic usage of choice activity in app
     Given the following "activities" exist:
       | activity | name        | intro                   | course | idnumber | option |
       | choice   | Choice name | Test choice description | C1     | choice1  | Option 1, Option 2, Option 3 |
-    And I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    And I enter the course "Course 1" as "student1" in the app
     And I press "Choice name" in the app
     And I select "Option 2" in the app
     And I press "Save my choice" in the app
     And I press "OK" in the app
 
     # Download answers as teacher
-    When I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "teacher1" in the app
     And I press "Choice name" in the app
     Then I should find "Test choice description" in the app
 

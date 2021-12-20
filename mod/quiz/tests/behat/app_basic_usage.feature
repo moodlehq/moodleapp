@@ -56,9 +56,7 @@ Feature: Attempt a quiz in app
       | TF9      | 7    |
 
   Scenario: View a quiz entry page (attempts, status, etc.)
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Quiz 1" in the app
     And I press "Attempt quiz now" in the app
     Then I should find "Text of the first question" in the app
@@ -108,9 +106,7 @@ Feature: Attempt a quiz in app
     And I should find "Question 2" in the app
 
   Scenario: Attempt a quiz (all question types)
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Quiz 2" in the app
     And I press "Attempt quiz now" in the app
     And I press "Four" in the app
@@ -147,9 +143,7 @@ Feature: Attempt a quiz in app
     And I should find "Not yet graded" in the app
 
   Scenario: Submit a quiz & Review a quiz attempt
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Quiz 1" in the app
     And I press "Attempt quiz now" in the app
     And I press "True" in the app
@@ -160,9 +154,7 @@ Feature: Attempt a quiz in app
     And I press "OK" in the app
     Then I should find "Review of attempt 1" in the app
 
-    When I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "teacher1" in the app
     And I press "Quiz 1" in the app
     And I press "Display options" in the app
     And I press "Open in browser" in the app

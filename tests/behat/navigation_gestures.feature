@@ -21,9 +21,7 @@ Feature: It navigates using gestures.
       | student3 | C1     | student |
 
   Scenario: Swipe between participants
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Participants" in the app
     And I press "Student First" in the app
     And I swipe to the left in the app
@@ -42,9 +40,7 @@ Feature: It navigates using gestures.
     Then I should find "Student First" in the app
 
   Scenario: Swipe between filtered participants
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Participants" in the app
     And I press "Search" in the app
     And I set the field "Search" to "student" in the app

@@ -33,9 +33,7 @@ Feature: Users can store entries in database activities when offline and sync wh
 
   @app_from3.7
   Scenario: Create entry (offline)
-    Given I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "student1" in the app
     And I press "Web links" near "General" in the app
     And I switch offline mode to "true"
     And I should see "No entries in database"
@@ -55,9 +53,7 @@ Feature: Users can store entries in database activities when offline and sync wh
 
   @app_from3.7
   Scenario: Update entry (offline) & Delete entry (offline)
-    Given I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "student1" in the app
     And I press "Web links" near "General" in the app
     And I should see "No entries in database"
     And I press "Add entries" in the app
@@ -106,9 +102,7 @@ Feature: Users can store entries in database activities when offline and sync wh
 
   @app_from3.7
   Scenario: Students can undo deleting entries to a database in the app while offline
-    Given I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "student1" in the app
     And I press "Web links" near "General" in the app
     And I should see "No entries in database"
     And I press "Add entries" in the app
