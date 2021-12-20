@@ -322,7 +322,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
 
             const offlineData = await AddonModWorkshopHelper.applyOfflineData(submission, this.offlineSubmissions);
 
-            if (typeof offlineData != 'undefined') {
+            if (offlineData !== undefined) {
                 this.grades!.push(offlineData);
             }
         }));

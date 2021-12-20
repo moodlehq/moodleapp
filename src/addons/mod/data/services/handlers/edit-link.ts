@@ -18,6 +18,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModDataModuleHandlerService } from './module';
@@ -44,10 +45,13 @@ export class AddonModDataEditLinkHandlerService extends CoreContentLinksHandlerB
                 const rId = params.rid || '';
 
                 try {
-                    const module = await CoreCourse.getModuleBasicInfoByInstance(dataId, 'data', siteId);
+                    const module = await CoreCourse.getModuleBasicInfoByInstance(
+                        dataId,
+                        'data',
+                        { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+                    );
                     const pageParams: Params = {
-                        module,
-                        courseId: module.course,
+                        title: module.name,
                     };
 
                     CoreNavigator.navigateToSitePath(
@@ -66,7 +70,7 @@ export class AddonModDataEditLinkHandlerService extends CoreContentLinksHandlerB
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Params): Promise<boolean> {
-        if (typeof params.d == 'undefined') {
+        if (params.d === undefined) {
             // Id not defined. Cannot treat the URL.
             return false;
         }

@@ -65,13 +65,13 @@ export class CoreH5PValidator {
         const missing: Record<string, CoreH5PMissingLibrary> = {};
 
         Object.values(libraries).forEach((library) => {
-            if (typeof library.preloadedDependencies !== 'undefined') {
+            if (library.preloadedDependencies !== undefined) {
                 Object.assign(missing, this.getMissingDependencies(library.preloadedDependencies, library, libraries));
             }
-            if (typeof library.dynamicDependencies !== 'undefined') {
+            if (library.dynamicDependencies !== undefined) {
                 Object.assign(missing, this.getMissingDependencies(library.dynamicDependencies, library, libraries));
             }
-            if (typeof library.editorDependencies !== 'undefined') {
+            if (library.editorDependencies !== undefined) {
                 Object.assign(missing, this.getMissingDependencies(library.editorDependencies, library, libraries));
             }
         });

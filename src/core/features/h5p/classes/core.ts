@@ -241,7 +241,7 @@ export class CoreH5PCore {
             return content.filtered;
         }
 
-        if (typeof content.library == 'undefined' || typeof content.params == 'undefined') {
+        if (content.library === undefined || content.params === undefined) {
             return null;
         }
 

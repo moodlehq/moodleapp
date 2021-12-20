@@ -460,7 +460,7 @@ export class AddonModWorkshopHelperProvider {
             return submission;
         }
 
-        if (typeof submission == 'undefined') {
+        if (submission === undefined) {
             submission = {
                 id: 0,
                 workshopid: 0,
@@ -559,7 +559,7 @@ export class AddonModWorkshopHelperProvider {
             return value;
         }
 
-        if (value == null || typeof value == 'undefined') {
+        if (value == null || value === undefined) {
             return undefined;
         }
 
@@ -602,7 +602,7 @@ export class AddonModWorkshopHelperProvider {
      * @return If grade should be shown or not.
      */
     showGrade(grade?: number|string): boolean {
-        return typeof grade !== 'undefined' && grade !== null;
+        return grade !== undefined && grade !== null;
     }
 
 }

@@ -163,7 +163,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             this.canAddComments = this.addDeleteCommentsAvailable && !!commentsResponse.canpost;
 
             let comments = commentsResponse.comments.sort((a, b) => a.timecreated - b.timecreated);
-            if (typeof commentsResponse.count != 'undefined') {
+            if (commentsResponse.count !== undefined) {
                 this.canLoadMore = (this.comments.length + comments.length) < commentsResponse.count;
             } else {
                 // Old style.

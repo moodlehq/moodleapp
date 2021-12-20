@@ -355,7 +355,7 @@ export class CoreSite {
      * @return Whether the user authenticated in the site using an OAuth method.
      */
     isOAuth(): boolean {
-        return this.oauthId != null && typeof this.oauthId != 'undefined';
+        return this.oauthId != null && this.oauthId !== undefined;
     }
 
     /**
@@ -366,7 +366,7 @@ export class CoreSite {
     canAccessMyFiles(): boolean {
         const info = this.getInfo();
 
-        return !!(info && (typeof info.usercanmanageownfiles === 'undefined' || info.usercanmanageownfiles));
+        return !!(info && (info.usercanmanageownfiles === undefined || info.usercanmanageownfiles));
     }
 
     /**
@@ -390,7 +390,7 @@ export class CoreSite {
     canUseAdvancedFeature(featureName: string, whenUndefined: boolean = true): boolean {
         const info = this.getInfo();
 
-        if (typeof info?.advancedfeatures === 'undefined') {
+        if (info?.advancedfeatures === undefined) {
             return whenUndefined;
         }
 
@@ -444,13 +444,13 @@ export class CoreSite {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     read<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
         preSets = preSets || {};
-        if (typeof preSets.getFromCache == 'undefined') {
+        if (preSets.getFromCache === undefined) {
             preSets.getFromCache = true;
         }
-        if (typeof preSets.saveToCache == 'undefined') {
+        if (preSets.saveToCache === undefined) {
             preSets.saveToCache = true;
         }
-        if (typeof preSets.reusePending == 'undefined') {
+        if (preSets.reusePending === undefined) {
             preSets.reusePending = true;
         }
 
@@ -468,13 +468,13 @@ export class CoreSite {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     write<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
         preSets = preSets || {};
-        if (typeof preSets.getFromCache == 'undefined') {
+        if (preSets.getFromCache === undefined) {
             preSets.getFromCache = false;
         }
-        if (typeof preSets.saveToCache == 'undefined') {
+        if (preSets.saveToCache === undefined) {
             preSets.saveToCache = false;
         }
-        if (typeof preSets.emergencyCache == 'undefined') {
+        if (preSets.emergencyCache === undefined) {
             preSets.emergencyCache = false;
         }
 
@@ -655,7 +655,7 @@ export class CoreSite {
                     this.saveToCache(method, data, error, preSets);
 
                     throw new CoreWSError(error);
-                } else if (typeof preSets.emergencyCache !== 'undefined' && !preSets.emergencyCache) {
+                } else if (preSets.emergencyCache !== undefined && !preSets.emergencyCache) {
                     this.logger.debug(`WS call '${method}' failed. Emergency cache is forbidden, rejecting.`);
 
                     throw new CoreWSError(error);
@@ -681,7 +681,7 @@ export class CoreSite {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         }).then((response: any) => {
             // Check if the response is an error, this happens if the error was stored in the cache.
-            if (response && (typeof response.exception != 'undefined' || typeof response.errorcode != 'undefined')) {
+            if (response && (response.exception !== undefined || response.errorcode !== undefined)) {
                 throw new CoreWSError(response);
             }
 
@@ -857,7 +857,7 @@ export class CoreSite {
                 } else {
                     let responseData = response.data ? CoreTextUtils.parseJSON(response.data) : {};
                     // Match the behaviour of CoreWSProvider.call when no response is expected.
-                    const responseExpected = typeof wsPresets.responseExpected == 'undefined' || wsPresets.responseExpected;
+                    const responseExpected = wsPresets.responseExpected === undefined || wsPresets.responseExpected;
                     if (!responseExpected && (responseData == null || responseData === '')) {
                         responseData = {};
                     }
@@ -938,7 +938,7 @@ export class CoreSite {
             entry = await db.getRecord(CoreSite.WS_CACHE_TABLE, { id });
         }
 
-        if (typeof entry == 'undefined') {
+        if (entry === undefined) {
             throw new CoreError('Cache entry not valid.');
         }
 
@@ -957,7 +957,7 @@ export class CoreSite {
             }
         }
 
-        if (typeof entry.data != 'undefined') {
+        if (entry.data !== undefined) {
             if (!expirationTime) {
                 this.logger.info(`Cached element found, id: ${id}. Expiration time ignored.`);
             } else {
@@ -1206,7 +1206,7 @@ export class CoreSite {
      * @return Fixed URL.
      */
     fixPluginfileURL(url: string): string {
-        const accessKey = this.tokenPluginFileWorks || typeof this.tokenPluginFileWorks == 'undefined' ?
+        const accessKey = this.tokenPluginFileWorks || this.tokenPluginFileWorks === undefined ?
             this.infos && this.infos.userprivateaccesskey : undefined;
 
         return CoreUrlUtils.fixPluginfileURL(url, this.token || '', this.siteUrl, accessKey);
@@ -1829,7 +1829,7 @@ export class CoreSite {
 
             return <T> entry.value;
         } catch (error) {
-            if (typeof defaultValue != 'undefined') {
+            if (defaultValue !== undefined) {
                 return defaultValue;
             }
 
@@ -1876,7 +1876,7 @@ export class CoreSite {
         if (!CoreUrlUtils.canUseTokenPluginFile(url, this.siteUrl, this.infos && this.infos.userprivateaccesskey)) {
             // Cannot use tokenpluginfile.
             return Promise.resolve(false);
-        } else if (typeof this.tokenPluginFileWorks != 'undefined') {
+        } else if (this.tokenPluginFileWorks !== undefined) {
             // Already checked.
             return Promise.resolve(this.tokenPluginFileWorks);
         } else if (this.tokenPluginFileWorksPromise) {

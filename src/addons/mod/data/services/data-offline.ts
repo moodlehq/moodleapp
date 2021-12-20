@@ -262,7 +262,7 @@ export class AddonModDataOfflineProvider {
         const site = await CoreSites.getSite(siteId);
 
         timemodified = timemodified || new Date().getTime();
-        entryId = typeof entryId == 'undefined' || entryId === null ? -timemodified : entryId;
+        entryId = entryId === undefined || entryId === null ? -timemodified : entryId;
 
         const entry: AddonModDataEntryDBRecord = {
             dataid: dataId,

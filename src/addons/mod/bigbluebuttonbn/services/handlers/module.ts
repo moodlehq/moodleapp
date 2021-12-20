@@ -15,7 +15,7 @@
 import { CoreConstants } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreSitePluginsModuleHandler } from '@features/siteplugins/classes/handlers/module-handler';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
@@ -72,7 +72,7 @@ export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase imple
      * @inheritdoc
      */
     async getData(
-        module: CoreCourseModule,
+        module: CoreCourseModuleData,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,

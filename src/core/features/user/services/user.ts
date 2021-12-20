@@ -820,7 +820,7 @@ export class CoreUserProvider {
             responseExpected: false,
         };
 
-        if (typeof disableNotifications != 'undefined') {
+        if (disableNotifications !== undefined) {
             params.emailstop = disableNotifications ? 1 : 0;
         }
 

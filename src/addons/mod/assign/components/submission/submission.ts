@@ -380,7 +380,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             for (const x in this.gradeInfo.outcomes) {
                 const outcome = this.gradeInfo.outcomes[x];
 
-                if (this.originalGrades.outcomes[outcome.id] == 'undefined' ||
+                if (this.originalGrades.outcomes[outcome.id] === undefined ||
                         this.originalGrades.outcomes[outcome.id] != outcome.selectedId) {
                     return true;
                 }
@@ -726,7 +726,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
             if (submissionGrade.outcomes && Object.keys(submissionGrade.outcomes).length && this.gradeInfo?.outcomes) {
                 this.gradeInfo.outcomes.forEach((outcome) => {
-                    if (typeof submissionGrade.outcomes[outcome.itemNumber!] != 'undefined') {
+                    if (submissionGrade.outcomes[outcome.itemNumber!] !== undefined) {
                         // If outcome has been modified from gradebook, do not use offline.
                         if (outcome.modified! < submissionGrade.timemodified) {
                             outcome.selectedId = submissionGrade.outcomes[outcome.itemNumber!];
@@ -944,7 +944,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
         // Check if grading method is simple or not.
         if (this.gradeInfo.advancedgrading && this.gradeInfo.advancedgrading[0] &&
-                typeof this.gradeInfo.advancedgrading[0].method != 'undefined') {
+                this.gradeInfo.advancedgrading[0].method !== undefined) {
             this.grade.method = this.gradeInfo.advancedgrading[0].method || 'simple';
         } else {
             this.grade.method = 'simple';
@@ -1039,7 +1039,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         const submissionStatementMissing = !!this.assign!.requiresubmissionstatement &&
-            typeof this.assign!.submissionstatement == 'undefined';
+            this.assign!.submissionstatement === undefined;
 
         this.canSubmit = !this.isSubmittedForGrading && !this.submittedOffline && (submissionStatus.lastattempt.cansubmit ||
             (this.hasOffline && AddonModAssign.canSubmitOffline(this.assign!, submissionStatus)));

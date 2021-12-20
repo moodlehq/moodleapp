@@ -54,7 +54,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
         await this.loadContent();
 
         try {
-            await AddonModPage.logView(this.module.instance!, this.module.name);
+            await AddonModPage.logView(this.module.instance, this.module.name);
             CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors.
@@ -82,7 +82,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
             const downloadResult = await this.downloadResourceIfNeeded(refresh);
 
             // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
-            const contents = await CoreCourse.getModuleContents(this.module, this.courseId);
+            const contents = await CoreCourse.getModuleContents(this.module);
 
             const results = await Promise.all([
                 this.loadPageData(),
@@ -113,9 +113,9 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
             const options: Record<string, string | boolean> =
                 CoreTextUtils.unserialize(this.page.displayoptions) || {};
 
-            this.displayDescription = typeof options.printintro == 'undefined' ||
+            this.displayDescription = options.printintro === undefined ||
                     CoreUtils.isTrueOrOne(options.printintro);
-            this.displayTimemodified = typeof options.printlastmodified == 'undefined' ||
+            this.displayTimemodified = options.printlastmodified === undefined ||
                     CoreUtils.isTrueOrOne(options.printlastmodified);
         } else {
             this.displayDescription = true;

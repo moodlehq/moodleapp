@@ -524,15 +524,15 @@ export class CoreCoursesProvider {
 
         // Courses will be sorted using sortorder if available.
         return response.courses.sort((a, b) => {
-            if (typeof a.sortorder == 'undefined' && typeof b.sortorder == 'undefined') {
+            if (a.sortorder === undefined && b.sortorder === undefined) {
                 return b.id - a.id;
             }
 
-            if (typeof a.sortorder == 'undefined') {
+            if (a.sortorder === undefined) {
                 return 1;
             }
 
-            if (typeof b.sortorder == 'undefined') {
+            if (b.sortorder === undefined) {
                 return -1;
             }
 

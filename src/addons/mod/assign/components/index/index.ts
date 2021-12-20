@@ -304,7 +304,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      * @param hasSubmissions If the status has any submission.
      */
     goToSubmissionList(status?: string, hasSubmissions = false): void {
-        if (typeof status != 'undefined' && !hasSubmissions) {
+        if (status !== undefined && !hasSubmissions) {
             return;
         }
 
@@ -312,7 +312,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             groupId: this.group || 0,
             moduleName: this.moduleName,
         };
-        if (typeof status != 'undefined') {
+        if (status !== undefined) {
             params.status = status;
         }
 

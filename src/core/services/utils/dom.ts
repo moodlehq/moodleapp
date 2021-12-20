@@ -200,8 +200,8 @@ export class CoreDomUtilsProvider {
 
         const availableSpace = getAvailableSpace(availableBytes);
 
-        wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreConstants.WIFI_DOWNLOAD_THRESHOLD : wifiThreshold;
-        limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
+        wifiThreshold = wifiThreshold === undefined ? CoreConstants.WIFI_DOWNLOAD_THRESHOLD : wifiThreshold;
+        limitedThreshold = limitedThreshold === undefined ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
 
         let wifiPrefix = '';
         if (CoreApp.isNetworkAccessLimited()) {
@@ -948,7 +948,7 @@ export class CoreDomUtilsProvider {
                 paths[CoreUrlUtils.removeUrlParams(CoreTextUtils.decodeURIComponent(currentSrc))] :
                 undefined;
 
-            if (typeof newSrc != 'undefined') {
+            if (newSrc !== undefined) {
                 media.setAttribute('src', newSrc);
             }
 
@@ -956,7 +956,7 @@ export class CoreDomUtilsProvider {
             if (media.tagName == 'VIDEO' && media.getAttribute('poster')) {
                 const currentPoster = media.getAttribute('poster');
                 const newPoster = paths[CoreTextUtils.decodeURIComponent(currentPoster!)];
-                if (typeof newPoster !== 'undefined') {
+                if (newPoster !== undefined) {
                     media.setAttribute('poster', newPoster);
                 }
             }
@@ -970,7 +970,7 @@ export class CoreDomUtilsProvider {
                 paths[CoreUrlUtils.removeUrlParams(CoreTextUtils.decodeURIComponent(currentHref))] :
                 undefined;
 
-            if (typeof newHref != 'undefined') {
+            if (newHref !== undefined) {
                 anchor.setAttribute('href', newHref);
 
                 if (typeof anchorFn == 'function') {
@@ -1226,7 +1226,7 @@ export class CoreDomUtilsProvider {
                 if (options.buttons) {
                     // Execute dismiss function if any.
                     const cancelButton = <AlertButton> options.buttons.find(
-                        (button) => typeof button != 'string' && typeof button.handler != 'undefined' && button.role == 'cancel',
+                        (button) => typeof button != 'string' && button.handler !== undefined && button.role == 'cancel',
                     );
                     cancelButton.handler?.(null);
                 }

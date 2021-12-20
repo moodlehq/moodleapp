@@ -44,7 +44,7 @@ export class CoreProgressBarComponent implements OnChanges {
      * Detect changes on input properties.
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (changes.text && typeof changes.text.currentValue != 'undefined') {
+        if (changes.text && changes.text.currentValue !== undefined) {
             // User provided a custom text, don't use default.
             this.textSupplied = true;
         }

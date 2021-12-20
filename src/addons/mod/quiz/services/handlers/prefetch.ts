@@ -120,7 +120,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             }
 
             const attemptGrade = AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false);
-            if (typeof attemptGrade == 'undefined') {
+            if (attemptGrade === undefined) {
                 return;
             }
 
@@ -208,7 +208,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         // Invalidate the calls required to check if a quiz is downloadable.
         await Promise.all([
             AddonModQuiz.invalidateQuizData(courseId),
-            AddonModQuiz.invalidateUserAttemptsForUser(module.instance!),
+            AddonModQuiz.invalidateUserAttemptsForUser(module.instance),
         ]);
     }
 
@@ -421,7 +421,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         if (AddonModQuiz.isAttemptFinished(attempt.state)) {
             // Attempt is finished, get feedback and review data.
             const attemptGrade = AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false);
-            if (typeof attemptGrade != 'undefined') {
+            if (attemptGrade !== undefined) {
                 promises.push(AddonModQuiz.getFeedbackForGrade(quiz.id, Number(attemptGrade), modOptions));
             }
 

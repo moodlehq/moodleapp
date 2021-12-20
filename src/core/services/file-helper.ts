@@ -449,7 +449,7 @@ export class CoreFileHelperProvider {
     getFilenameFromPath(file: CoreFileEntry): string | undefined {
         const path = CoreUtils.isFileEntry(file) ? file.fullPath : file.filepath;
 
-        if (typeof path == 'undefined' || path.length == 0) {
+        if (path === undefined || path.length == 0) {
             return;
         }
 

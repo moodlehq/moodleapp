@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Params } from '@angular/router';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreGradesHelper, CoreGradesMenuItem } from '@features/grades/services/grades-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CanLeave } from '@guards/can-leave';
@@ -61,7 +61,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
 
     @ViewChild('feedbackFormEl') formElement?: ElementRef;
 
-    module!: CoreCourseModule;
+    module!: CoreCourseModuleData;
     workshop!: AddonModWorkshopData;
     access!: AddonModWorkshopGetWorkshopAccessInformationWSResponse;
     assessment?: AddonModWorkshopSubmissionAssessmentWithFormData;
@@ -132,7 +132,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     async ngOnInit(): Promise<void> {
         try {
             this.submissionId = CoreNavigator.getRequiredRouteNumberParam('submissionId');
-            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModule>('module');
+            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModuleData>('module');
             this.workshop = CoreNavigator.getRequiredRouteParam<AddonModWorkshopData>('workshop');
             this.access = CoreNavigator.getRequiredRouteParam<AddonModWorkshopGetWorkshopAccessInformationWSResponse>('access');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');

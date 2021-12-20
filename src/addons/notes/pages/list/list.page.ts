@@ -195,7 +195,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
             },
         });
 
-        if (typeof modalData != 'undefined') {
+        if (modalData !== undefined) {
 
             if (modalData.sent && modalData.type) {
                 if (modalData.type != this.type) {

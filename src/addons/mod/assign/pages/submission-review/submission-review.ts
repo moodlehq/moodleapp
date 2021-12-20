@@ -142,7 +142,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
 
         // Grades can be saved if simple grading.
         if (gradeInfo.advancedgrading && gradeInfo.advancedgrading[0] &&
-                typeof gradeInfo.advancedgrading[0].method != 'undefined') {
+                gradeInfo.advancedgrading[0].method !== undefined) {
 
             const method = gradeInfo.advancedgrading[0].method || 'simple';
             this.canSaveGrades = method == 'simple';

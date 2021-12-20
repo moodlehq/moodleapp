@@ -205,11 +205,11 @@ export class CoreFilterProvider {
         // Clone object if needed so we can modify it.
         options = options ? Object.assign({}, options) : {};
 
-        if (typeof options.clean == 'undefined') {
+        if (options.clean === undefined) {
             options.clean = false;
         }
 
-        if (typeof options.filter == 'undefined') {
+        if (options.filter === undefined) {
             options.filter = true;
         }
 

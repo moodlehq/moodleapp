@@ -15,7 +15,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitePluginsModuleIndexComponent } from '../../components/module-index/module-index';
@@ -32,7 +32,7 @@ export class CoreSitePluginsModuleIndexPage implements OnInit, CanLeave {
     @ViewChild(CoreSitePluginsModuleIndexComponent) content?: CoreSitePluginsModuleIndexComponent;
 
     title?: string; // Page title.
-    module?: CoreCourseModule;
+    module?: CoreCourseModuleData;
     courseId?: number;
 
     /**

@@ -211,7 +211,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
      * @return Whether it's undefined or equal.
      */
     protected undefinedOrEqual(data: Record<string, unknown>, name: string): boolean {
-        return typeof data[name] == 'undefined' || data[name] == this[name];
+        return data[name] === undefined || data[name] == this[name];
     }
 
 }

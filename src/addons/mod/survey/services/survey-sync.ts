@@ -202,7 +202,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
                 await AddonModSurvey.invalidateSurveyData(result.courseId, siteId);
 
                 // Data has been sent to server, update survey data.
-                const module = await CoreCourse.getModuleBasicInfoByInstance(surveyId, 'survey', siteId);
+                const module = await CoreCourse.getModuleBasicInfoByInstance(surveyId, 'survey', { siteId });
 
                 CoreUtils.ignoreErrors(
                     this.prefetchAfterUpdate(AddonModSurveyPrefetchHandler.instance, module, result.courseId, undefined, siteId),

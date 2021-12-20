@@ -118,7 +118,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 // Search the conversation to update.
                 const conversation = this.findConversation(data.conversationId, data.userId, expandedOption);
 
-                if (typeof conversation == 'undefined') {
+                if (conversation === undefined) {
                 // Probably a new conversation, refresh the list.
                     this.loaded = false;
                     this.refreshData().finally(() => {
@@ -152,7 +152,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             if (data.conversationId) {
                 const conversation = this.findConversation(data.conversationId);
 
-                if (typeof conversation != 'undefined') {
+                if (conversation !== undefined) {
                     // A conversation has been read reset counter.
                     conversation.unreadcount = 0;
 
@@ -318,7 +318,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             await Promise.all(promises);
 
             // The expanded status hasn't been initialized. Do it now.
-            if (typeof this.favourites.expanded == 'undefined' && (this.selectedConversationId || this.selectedUserId)) {
+            if (this.favourites.expanded === undefined && (this.selectedConversationId || this.selectedUserId)) {
                 // A certain conversation should be opened.
                 // We don't know which option it belongs to, so we need to fetch the data for all of them.
                 const promises: Promise<void>[] = [];
@@ -355,7 +355,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async fetchDataForExpandedOption(): Promise<void> {
-        if (typeof this.favourites.expanded == 'undefined') {
+        if (this.favourites.expanded === undefined) {
             // Calculate which option should be expanded initially.
             this.favourites.expanded = this.favourites.count != 0 && !this.group.unread && !this.individual.unread;
             this.group.expanded = !this.favourites.expanded && this.group.count != 0 && !this.individual.unread;
@@ -572,7 +572,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
                 if (conversation) {
                     // Check if it's the last message. Offline messages are considered more recent than sent messages.
-                    if (typeof conversation.lastmessage === 'undefined' || conversation.lastmessage === null ||
+                    if (conversation.lastmessage === undefined || conversation.lastmessage === null ||
                             !conversation.lastmessagepending || (conversation.lastmessagedate || 0) <= message.timecreated / 1000) {
 
                         this.addLastOfflineMessage(conversation, message);

@@ -115,7 +115,7 @@ export class AddonModFeedbackRespondentsPage implements AfterViewInit {
      * @return Resolved with the attempts loaded.
      */
     protected async loadGroupAttempts(groupId?: number): Promise<void> {
-        if (typeof groupId == 'undefined') {
+        if (groupId === undefined) {
             this.page++;
             this.loadingMore = true;
         } else {

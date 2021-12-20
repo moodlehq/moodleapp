@@ -70,7 +70,7 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
     protected async fetchCompetency(): Promise<void> {
         try {
             const result = await AddonCompetency.getCompetencySummary(this.competencyId);
-            if (!this.contextLevel || typeof this.contextInstanceId == 'undefined') {
+            if (!this.contextLevel || this.contextInstanceId === undefined) {
                 // Context not specified, use user context.
                 this.contextLevel = ContextLevel.USER;
                 this.contextInstanceId = result.usercompetency!.userid;

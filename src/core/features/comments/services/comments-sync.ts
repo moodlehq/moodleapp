@@ -92,7 +92,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
                     siteId,
                 ));
 
-            if (typeof result != 'undefined') {
+            if (result !== undefined) {
                 // Sync successful, send event.
                 CoreEvents.trigger(CoreCommentsSyncProvider.AUTO_SYNCED, {
                     contextLevel: comment.contextlevel,

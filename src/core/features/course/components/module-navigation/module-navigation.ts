@@ -14,7 +14,7 @@
 
 import { Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourse, CoreCourseProvider, CoreCourseWSSection } from '@features/course/services/course';
-import { CoreCourseModule, CoreCourseSection } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { IonContent } from '@ionic/angular';
 import { ScrollDetail } from '@ionic/core';
@@ -41,10 +41,10 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
     @Input() courseId!: number; // Course ID.
     @Input() currentModuleId!: number; // Current module ID.
 
-    nextModule?: CoreCourseModule;
-    previousModule?: CoreCourseModule;
-    nextModuleSection?: CoreCourseSection;
-    previousModuleSection?: CoreCourseSection;
+    nextModule?: CoreCourseModuleData;
+    previousModule?: CoreCourseModuleData;
+    nextModuleSection?: CoreCourseWSSection;
+    previousModuleSection?: CoreCourseWSSection;
     loaded = false;
 
     protected element: HTMLElement;
@@ -184,7 +184,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
                 return false;
             }
 
-            currentModuleIndex = section.modules.findIndex((module: CoreCourseModule) => module.id == this.currentModuleId);
+            currentModuleIndex = section.modules.findIndex((module: CoreCourseModuleData) => module.id == this.currentModuleId);
 
             return currentModuleIndex >= 0;
         });
@@ -250,7 +250,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      * @param module Module to check.
      * @return Wether the module is available to the user or not.
      */
-    protected async isModuleAvailable(module: CoreCourseModule): Promise<boolean> {
+    protected async isModuleAvailable(module: CoreCourseModuleData): Promise<boolean> {
         return CoreCourse.instance.moduleHasView(module);
     }
 

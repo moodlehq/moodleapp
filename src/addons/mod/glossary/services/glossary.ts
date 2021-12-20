@@ -583,7 +583,7 @@ export class AddonModGlossaryProvider {
             try {
                 const data = await this.getStoredDataForEntry(entryId, site.getId());
 
-                if (typeof data.from != 'undefined') {
+                if (data.from !== undefined) {
                     const response = await CoreUtils.ignoreErrors(
                         this.getEntryFromList(data.glossaryId, entryId, data.from, false, options),
                     );

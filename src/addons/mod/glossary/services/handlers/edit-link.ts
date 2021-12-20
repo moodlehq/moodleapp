@@ -17,6 +17,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModGlossaryModuleHandlerService } from './module';
@@ -44,7 +45,10 @@ export class AddonModGlossaryEditLinkHandlerService extends CoreContentLinksHand
                 const cmId = Number(params.cmid);
 
                 try {
-                    const module = await CoreCourse.getModuleBasicInfo(cmId, siteId);
+                    const module = await CoreCourse.getModuleBasicInfo(
+                        cmId,
+                        { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+                    );
 
                     await CoreNavigator.navigateToSitePath(
                         AddonModGlossaryModuleHandlerService.PAGE_NAME + '/edit/0',
@@ -70,7 +74,7 @@ export class AddonModGlossaryEditLinkHandlerService extends CoreContentLinksHand
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        return typeof params.cmid != 'undefined';
+        return params.cmid !== undefined;
     }
 
 }

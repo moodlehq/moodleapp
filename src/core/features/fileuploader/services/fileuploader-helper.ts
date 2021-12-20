@@ -123,8 +123,8 @@ export class CoreFileUploaderHelperProvider {
             throw new CoreError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
         }
 
-        wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreFileUploaderProvider.WIFI_SIZE_WARNING : wifiThreshold;
-        limitedThreshold = typeof limitedThreshold == 'undefined' ?
+        wifiThreshold = wifiThreshold === undefined ? CoreFileUploaderProvider.WIFI_SIZE_WARNING : wifiThreshold;
+        limitedThreshold = limitedThreshold === undefined ?
             CoreFileUploaderProvider.LIMITED_SIZE_WARNING : limitedThreshold;
 
         if (size < 0) {
@@ -203,7 +203,7 @@ export class CoreFileUploaderHelperProvider {
         const fileName = options?.fileName || CoreFile.getFileAndDirectoryFromPath(path).name;
 
         // Check that size isn't too large.
-        if (typeof maxSize != 'undefined' && maxSize != -1) {
+        if (maxSize !== undefined && maxSize != -1) {
             try {
                 const fileEntry = await CoreFile.getExternalFile(path);
 

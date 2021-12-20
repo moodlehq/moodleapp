@@ -121,7 +121,7 @@ export class CoreSitesProvider {
         const demoSites = CoreConstants.CONFIG.demo_sites;
         name = name.toLowerCase();
 
-        if (typeof demoSites != 'undefined' && typeof demoSites[name] != 'undefined') {
+        if (demoSites !== undefined && demoSites[name] !== undefined) {
             return demoSites[name];
         }
     }
@@ -364,13 +364,13 @@ export class CoreSitesProvider {
             throw new CoreError(Translate.instant('core.cannotconnecttrouble'));
         }
 
-        if (typeof data == 'undefined') {
+        if (data === undefined) {
             throw new CoreError(Translate.instant('core.cannotconnecttrouble'));
         } else {
-            if (typeof data.token != 'undefined') {
+            if (data.token !== undefined) {
                 return { token: data.token, siteUrl, privateToken: data.privatetoken };
             } else {
-                if (typeof data.error != 'undefined') {
+                if (data.error !== undefined) {
                     // We only allow one retry (to avoid loops).
                     if (!retry && data.errorcode == 'requirecorrectaccess') {
                         siteUrl = CoreUrlUtils.addOrRemoveWWW(siteUrl);
@@ -468,7 +468,7 @@ export class CoreSitesProvider {
                 }
             }
 
-            if (typeof config != 'undefined') {
+            if (config !== undefined) {
                 candidateSite.setConfig(config);
             }
 
@@ -891,7 +891,7 @@ export class CoreSitesProvider {
      * @return Whether the user is logged in a site.
      */
     isLoggedIn(): boolean {
-        return typeof this.currentSite != 'undefined' && typeof this.currentSite.token != 'undefined' &&
+        return this.currentSite !== undefined && this.currentSite.token !== undefined &&
             this.currentSite.token != '';
     }
 
@@ -904,7 +904,7 @@ export class CoreSitesProvider {
     async deleteSite(siteId: string): Promise<void> {
         this.logger.debug(`Delete site ${siteId}`);
 
-        if (typeof this.currentSite != 'undefined' && this.currentSite.id == siteId) {
+        if (this.currentSite !== undefined && this.currentSite.id == siteId) {
             this.logout();
         }
 
@@ -956,7 +956,7 @@ export class CoreSitesProvider {
             throw new CoreError('No current site found.');
         } else if (this.currentSite && this.currentSite.getId() == siteId) {
             return this.currentSite;
-        } else if (typeof this.sites[siteId] != 'undefined') {
+        } else if (this.sites[siteId] !== undefined) {
             return this.sites[siteId];
         } else {
             // Retrieve and create the site.
@@ -981,7 +981,7 @@ export class CoreSitesProvider {
         const db = await this.appDB;
         const data = await db.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { siteUrl });
 
-        if (typeof this.sites[data.id] != 'undefined') {
+        if (this.sites[data.id] !== undefined) {
             return this.sites[data.id];
         }
 
@@ -1326,7 +1326,7 @@ export class CoreSitesProvider {
                 loggedOut: site.isLoggedOut() ? 1 : 0,
             };
 
-            if (typeof config != 'undefined') {
+            if (config !== undefined) {
                 site.setConfig(config);
                 newValues.config = JSON.stringify(config);
             }

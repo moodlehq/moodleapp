@@ -261,7 +261,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         if (page != -1 && (this.attempt.state == AddonModQuizProvider.ATTEMPT_OVERDUE || this.attempt.finishedOffline)) {
             // We can't load a page if overdue or the local attempt is finished.
             return;
-        } else if (page == this.attempt.currentpage && !this.showSummary && typeof slot != 'undefined') {
+        } else if (page == this.attempt.currentpage && !this.showSummary && slot !== undefined) {
             // Navigating to a question in the current page.
             this.scrollToQuestion(slot);
 
@@ -317,7 +317,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         } finally {
             this.loaded = true;
 
-            if (typeof slot != 'undefined') {
+            if (slot !== undefined) {
                 // Scroll to the question. Give some time to the questions to render.
                 setTimeout(() => {
                     this.scrollToQuestion(slot);

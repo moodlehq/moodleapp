@@ -15,8 +15,8 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreSite } from '@classes/site';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
-import { CoreCourse, CoreCourseCommonModWSOptions, CoreCourseWSModule } from '@features/course/services/course';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCourse, CoreCourseCommonModWSOptions } from '@features/course/services/course';
+import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
 import { CoreApp } from '@services/app';
@@ -51,7 +51,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(IonContent) content?: IonContent;
 
-    protected module?: CoreCourseWSModule;
+    protected module?: CoreCourseModuleData;
     protected currentPage?: number;
     protected siteAfterSubmit?: string;
     protected onlineObserver: Subscription;

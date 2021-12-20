@@ -256,7 +256,10 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         if (sync) {
             // Try to synchronize the course data.
             // For now we don't allow manual syncing, so ignore errors.
-            const result = await CoreUtils.ignoreErrors(CoreCourseSync.syncCourse(this.course.id));
+            const result = await CoreUtils.ignoreErrors(CoreCourseSync.syncCourse(
+                this.course.id,
+                this.course.displayname || this.course.fullname,
+            ));
             if (result?.warnings?.length) {
                 CoreDomUtils.showErrorModal(result.warnings[0]);
             }
@@ -296,7 +299,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         if (this.course.enablecompletion !== false) {
             const sectionWithModules = sections.find((section) => section.modules.length > 0);
 
-            if (sectionWithModules && typeof sectionWithModules.modules[0].completion != 'undefined') {
+            if (sectionWithModules && sectionWithModules.modules[0].completion !== undefined) {
                 // The module already has completion (3.6 onwards). Load the offline completion.
                 this.modulesHaveCompletion = true;
 
@@ -396,7 +399,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async onCompletionChange(completionData: CoreCourseModuleCompletionData): Promise<void> {
-        const shouldReload = typeof completionData.valueused == 'undefined' || completionData.valueused;
+        const shouldReload = completionData.valueused === undefined || completionData.valueused;
 
         if (!shouldReload) {
             // Invalidate the completion.

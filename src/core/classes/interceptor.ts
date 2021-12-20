@@ -53,7 +53,7 @@ export class CoreInterceptor implements HttpInterceptor {
                     innerObj[fullSubName] = subValue;
                     query += this.serialize(innerObj) + '&';
                 }
-            } else if (addNull || (typeof value != 'undefined' && value !== null)) {
+            } else if (addNull || (value !== undefined && value !== null)) {
                 query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
             }
         }

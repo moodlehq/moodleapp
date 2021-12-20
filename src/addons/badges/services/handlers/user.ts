@@ -49,7 +49,7 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
         courseId: number,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean> {
-        if (navOptions && typeof navOptions.badges != 'undefined') {
+        if (navOptions && navOptions.badges !== undefined) {
             return navOptions.badges;
         }
 

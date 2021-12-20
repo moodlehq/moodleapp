@@ -128,7 +128,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
     async loadForum(): Promise<void> {
         this.forum = await AddonModForum.getForum(this.COURSE_ID, this.CM_ID);
 
-        if (typeof this.forum.istracked != 'undefined') {
+        if (this.forum.istracked !== undefined) {
             this.trackPosts = this.forum.istracked;
         }
     }
@@ -192,7 +192,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
         }
 
         // If any discussion has unread posts, the whole forum is being tracked.
-        if (typeof this.forum.istracked === 'undefined' && !this.trackPosts) {
+        if (this.forum.istracked === undefined && !this.trackPosts) {
             for (const discussion of discussions) {
                 if (discussion.numunread > 0) {
                     this.trackPosts = true;

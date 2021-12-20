@@ -63,7 +63,7 @@ export class CoreSupressEventsDirective implements OnInit {
 
         let events: string[];
 
-        if (this.suppressEvents == 'all' || typeof this.suppressEvents == 'undefined' || this.suppressEvents === null) {
+        if (this.suppressEvents == 'all' || this.suppressEvents === undefined || this.suppressEvents === null) {
             // Suppress all events.
             events = ['click', 'mousedown', 'touchdown', 'touchmove', 'touchstart'];
 

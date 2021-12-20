@@ -15,7 +15,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreCourseAnyModuleData } from '../services/course';
+import { CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleMainResourceComponent } from './main-resource-component';
 
 /**
@@ -29,7 +29,7 @@ export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseMod
     activityComponent?: ActivityType;
 
     title!: string;
-    module!: CoreCourseAnyModuleData;
+    module!: CoreCourseModuleData;
     courseId!: number;
 
     /**
@@ -37,7 +37,7 @@ export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseMod
      */
     ngOnInit(): void {
         try {
-            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseAnyModuleData>('module');
+            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModuleData>('module');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
@@ -47,7 +47,7 @@ export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseMod
             return;
         }
 
-        this.title = this.module?.name;
+        this.title = this.module.name;
     }
 
     /**

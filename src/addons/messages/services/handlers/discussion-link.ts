@@ -69,12 +69,12 @@ export class AddonMessagesDiscussionLinkHandlerService extends CoreContentLinksH
             return false;
         }
 
-        if (typeof params.id == 'undefined' && typeof params.user2 == 'undefined') {
+        if (params.id === undefined && params.user2 === undefined) {
             // Other user not defined, cannot treat the URL.
             return false;
         }
 
-        if (typeof params.user1 != 'undefined') {
+        if (params.user1 !== undefined) {
             // Check if user1 is the current user, since the app only supports current user.
             const site = await CoreSites.getSite(siteId);
 

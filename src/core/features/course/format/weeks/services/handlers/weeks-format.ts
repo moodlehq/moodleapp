@@ -57,7 +57,7 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
 
         for (let i = 0; i < sections.length; i++) {
             const section = sections[i];
-            if (typeof section.section == 'undefined' || section.section < 1) {
+            if (section.section === undefined || section.section < 1) {
                 continue;
             }
 

@@ -15,7 +15,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 import { CoreCourseSection } from '@features/course/services/course-helper';
-import { CoreCourseProvider } from '@features/course/services/course';
+import {
+    CoreCourseModuleCompletionStatus,
+    CoreCourseModuleCompletionTracking,
+    CoreCourseProvider,
+} from '@features/course/services/course';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController } from '@singletons';
@@ -56,14 +60,14 @@ export class CoreCourseSectionSelectorComponent implements OnInit {
             let complete = 0;
             let total = 0;
             section.modules.forEach((module) => {
-                if (!module.uservisible || module.completiondata === undefined || module.completiondata.tracking === undefined ||
-                        module.completiondata.tracking <= CoreCourseProvider.COMPLETION_TRACKING_NONE) {
+                if (!module.uservisible || module.completiondata === undefined ||
+                        module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE) {
                     return;
                 }
 
                 total++;
-                if (module.completiondata.state == CoreCourseProvider.COMPLETION_COMPLETE ||
-                        module.completiondata.state == CoreCourseProvider.COMPLETION_COMPLETE_PASS) {
+                if (module.completiondata.state == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE ||
+                        module.completiondata.state == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_PASS) {
                     complete++;
                 }
             });

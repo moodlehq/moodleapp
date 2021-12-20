@@ -48,7 +48,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
         prefetch?: boolean,
         siteId?: string,
     ): Promise<void> {
-        if (typeof preflightData.quizpassword != 'undefined') {
+        if (preflightData.quizpassword !== undefined) {
             return;
         }
 
@@ -134,7 +134,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
         siteId?: string,
     ): Promise<void> {
         // The password is right, store it to use it automatically in following executions.
-        if (typeof preflightData.quizpassword != 'undefined') {
+        if (preflightData.quizpassword !== undefined) {
             return this.storePassword(quiz.id, preflightData.quizpassword, siteId);
         }
     }

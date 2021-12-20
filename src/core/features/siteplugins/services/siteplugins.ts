@@ -403,7 +403,7 @@ export class CoreSitePluginsProvider {
             return false;
         }
 
-        if (restrictEnrolled || typeof restrictEnrolled == 'undefined') {
+        if (restrictEnrolled || restrictEnrolled === undefined) {
             // Only enabled for courses the user is enrolled to. Check if the user is enrolled in the course.
             try {
                 await CoreCourses.getUserCourse(courseId, true);
@@ -485,7 +485,7 @@ export class CoreSitePluginsProvider {
 
         otherData = otherData || {};
 
-        if (typeof useOtherData == 'undefined') {
+        if (useOtherData === undefined) {
             // No need to add other data, return args as they are.
             return args;
         } else if (Array.isArray(useOtherData)) {
@@ -560,12 +560,12 @@ export class CoreSitePluginsProvider {
                     for (const i in paramsList) {
                         const paramName = paramsList[i];
 
-                        if (typeof args[paramName] != 'undefined') {
+                        if (args[paramName] !== undefined) {
                             params[paramName] = args[paramName];
                         } else {
                             // The param is not one of the default ones. Try to calculate the param to use.
                             const value = this.getDownloadParam(component, paramName, courseId, module);
-                            if (typeof value != 'undefined') {
+                            if (value !== undefined) {
                                 params[paramName] = value;
                             }
                         }

@@ -184,13 +184,13 @@ export class CoreGradesHelperProvider {
         let normalRow = formatted.rows.find(
             row =>
                 row.itemtype != 'leader' &&
-                (typeof row.grade != 'undefined' || typeof row.percentage != 'undefined'),
+                (row.grade !== undefined || row.percentage !== undefined),
         );
 
         // Decide if grades or percentage is being shown on phones.
-        if (normalRow && typeof normalRow.grade != 'undefined') {
+        if (normalRow && normalRow.grade !== undefined) {
             columns.grade = true;
-        } else if (normalRow && typeof normalRow.percentage != 'undefined') {
+        } else if (normalRow && normalRow.percentage !== undefined) {
             columns.percentage = true;
         } else {
             normalRow = formatted.rows.find((e) => e.itemtype != 'leader');
@@ -198,7 +198,7 @@ export class CoreGradesHelperProvider {
         }
 
         for (const colName in columns) {
-            if (normalRow && typeof normalRow[colName] != 'undefined') {
+            if (normalRow && normalRow[colName] !== undefined) {
                 formatted.columns.push({
                     name: colName,
                     colspan: colName == 'gradeitem' ? maxDepth : 1,
@@ -562,7 +562,7 @@ export class CoreGradesHelperProvider {
             row.iconAlt = Translate.instant('core.grades.calculatedgrade');
         } else if (text.indexOf('/mod/') > -1) {
             const module = text.match(/mod\/([^/]*)\//);
-            if (typeof module?.[1] != 'undefined') {
+            if (module?.[1] !== undefined) {
                 row.itemtype = 'mod';
                 row.itemmodule = module[1];
                 row.iconAlt = CoreCourse.translateModuleName(row.itemmodule) || '';
@@ -613,7 +613,7 @@ export class CoreGradesHelperProvider {
         defaultValue: string | number = '',
         scale?: string,
     ): Promise<CoreGradesMenuItem[]> {
-        if (typeof gradingType == 'undefined') {
+        if (gradingType === undefined) {
             return [];
         }
 

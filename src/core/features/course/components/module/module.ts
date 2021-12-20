@@ -19,7 +19,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     CoreCourseHelper,
-    CoreCourseModule,
+    CoreCourseModuleData,
     CoreCourseModuleCompletionData,
     CoreCourseSection,
 } from '@features/course/services/course-helper';
@@ -44,7 +44,7 @@ import {
 })
 export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
-    @Input() module!: CoreCourseModule; // The module to render.
+    @Input() module!: CoreCourseModuleData; // The module to render.
     @Input() courseId?: number; // The course the module belongs to.
     @Input() section?: CoreCourseSection; // The section the module belongs to.
     @Input() showActivityDates = false; // Whether to show activity dates.
@@ -106,7 +106,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
         if (this.module.handlerData.showDownloadButton) {
             // Listen for changes on this module status, even if download isn't enabled.
-            this.prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(this.module);
+            this.prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(this.module.name);
 
             this.statusObserver = CoreEvents.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
                 if (!this.module || data.componentId != this.module.id || !this.prefetchHandler ||
@@ -180,14 +180,14 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
         try {
             // Get download size to ask for confirm if it's high.
-            const size = await this.prefetchHandler.getDownloadSize(this.module, this.courseId!, true);
+            const size = await this.prefetchHandler.getDownloadSize(this.module, this.module.course, true);
 
-            await CoreCourseHelper.prefetchModule(this.prefetchHandler, this.module, size, this.courseId!, refresh);
+            await CoreCourseHelper.prefetchModule(this.prefetchHandler, this.module, size, this.module.course, refresh);
 
             const eventData = {
                 sectionId: this.section?.id,
                 moduleId: this.module.id,
-                courseId: this.courseId!,
+                courseId: this.module.course,
             };
             this.statusChanged.emit(eventData);
         } catch (error) {

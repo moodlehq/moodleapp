@@ -100,7 +100,7 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
     protected async loadGroupUsers(groupId?: number): Promise<void> {
         this.loadMoreError = false;
 
-        if (typeof groupId == 'undefined') {
+        if (groupId === undefined) {
             this.page++;
         } else {
             this.selectedGroup = groupId;

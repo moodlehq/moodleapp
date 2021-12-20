@@ -15,7 +15,7 @@
 import { Component, Input } from '@angular/core';
 
 import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
-import { CoreCourseModuleWSRuleDetails, CoreCourseProvider } from '@features/course/services/course';
+import { CoreCourseModuleCompletionStatus, CoreCourseModuleWSRuleDetails } from '@features/course/services/course';
 import { CoreUser } from '@features/user/services/user';
 import { Translate } from '@singletons';
 
@@ -51,10 +51,10 @@ export class CoreCourseModuleCompletionComponent extends CoreCourseModuleComplet
 
         // Format rules.
         this.details = await Promise.all(this.completion.details.map(async (rule: CompletionRule) => {
-            rule.statuscomplete = rule.rulevalue.status == CoreCourseProvider.COMPLETION_COMPLETE ||
-                    rule.rulevalue.status == CoreCourseProvider.COMPLETION_COMPLETE_PASS;
-            rule.statuscompletefail = rule.rulevalue.status == CoreCourseProvider.COMPLETION_COMPLETE_FAIL;
-            rule.statusincomplete = rule.rulevalue.status == CoreCourseProvider.COMPLETION_INCOMPLETE;
+            rule.statuscomplete = rule.rulevalue.status == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE ||
+                    rule.rulevalue.status == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_PASS;
+            rule.statuscompletefail = rule.rulevalue.status == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_FAIL;
+            rule.statusincomplete = rule.rulevalue.status == CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
             rule.accessibleDescription = null;
 
             if (this.completion!.overrideby) {

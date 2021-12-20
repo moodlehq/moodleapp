@@ -203,7 +203,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
             this.accessInfo = accessInfo;
 
             // Check whether to launch the SCORM immediately.
-            if (typeof this.skip == 'undefined') {
+            if (this.skip === undefined) {
                 this.skip = !this.hasOffline && !this.errorMessage &&
                     (!this.scorm.lastattemptlock || this.attemptsLeft > 0) &&
                     this.accessInfo.canskipview && !this.accessInfo.canviewreport &&

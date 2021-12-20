@@ -17,6 +17,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { Md5 } from 'ts-md5';
@@ -40,10 +41,7 @@ export class AddonModWikiPageOrMapLinkHandlerService extends CoreContentLinksHan
         siteIds: string[],
         url: string,
         params: Record<string, string>,
-        courseId?: number,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
-
-        courseId = Number(courseId || params.courseid || params.cid);
 
         return [{
             action: async (siteId: string) => {
@@ -55,7 +53,11 @@ export class AddonModWikiPageOrMapLinkHandlerService extends CoreContentLinksHan
                     // Get the page data to obtain wikiId, subwikiId, etc.
                     const page = await AddonModWiki.getPageContents(pageId, { siteId });
 
-                    const module = await CoreCourse.getModuleBasicInfoByInstance(page.wikiid, 'wiki', siteId);
+                    const module = await CoreCourse.getModuleBasicInfoByInstance(
+                        page.wikiid,
+                        'wiki',
+                        { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+                    );
 
                     const hash = <string> Md5.hashAsciiStr(JSON.stringify({
                         pageId: page.id,
@@ -64,10 +66,9 @@ export class AddonModWikiPageOrMapLinkHandlerService extends CoreContentLinksHan
                         action: action,
                         timestamp: Date.now(),
                     }));
-                    courseId = courseId || module.course;
 
                     CoreNavigator.navigateToSitePath(
-                        AddonModWikiModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/page/${hash}`,
+                        AddonModWikiModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/page/${hash}`,
                         {
                             params: {
                                 module,
@@ -97,7 +98,7 @@ export class AddonModWikiPageOrMapLinkHandlerService extends CoreContentLinksHan
         if (params.id && !isMap) {
             // ID param is more prioritary than pageid in index page, it's a index URL.
             return false;
-        } else if (isMap && typeof params.option != 'undefined' && params.option != '5') {
+        } else if (isMap && params.option !== undefined && params.option != '5') {
             // Map link but the option isn't "Page list", not supported.
             return false;
         }

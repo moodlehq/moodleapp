@@ -87,7 +87,7 @@ export class AddonModFeedbackProvider {
         let values: AddonModFeedbackResponseValue[];
 
         if (subtype === 'c') {
-            if (typeof item.rawValue == 'undefined') {
+            if (item.rawValue === undefined) {
                 values = [''];
             } else {
                 item.rawValue = '' + item.rawValue;
@@ -146,7 +146,7 @@ export class AddonModFeedbackProvider {
             });
 
             filledItems.forEach((itemData) => {
-                if (itemData.hasvalue && typeof values[itemData.id] != 'undefined') {
+                if (itemData.hasvalue && values[itemData.id] !== undefined) {
                     itemData.rawValue = values[itemData.id];
                 }
             });
@@ -182,7 +182,7 @@ export class AddonModFeedbackProvider {
         });
 
         offlineValuesArray.forEach((value) => {
-            if (typeof offlineValues[value.item] == 'undefined') {
+            if (offlineValues[value.item] === undefined) {
                 offlineValues[value.item] = [];
             }
             offlineValues[value.item].push(value.value);

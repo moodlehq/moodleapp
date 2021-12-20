@@ -18,6 +18,7 @@ import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/class
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
@@ -85,14 +86,15 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
 
         try {
             // Get the module.
-            const module = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
-
-            courseId = courseId || module.course;
+            const module = await CoreCourse.getModuleBasicInfo(
+                moduleId,
+                { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+            );
 
             // Store the password so it's automatically used.
             await CoreUtils.ignoreErrors(AddonModLesson.storePassword(module.instance, password, siteId));
 
-            await CoreCourseHelper.navigateToModule(moduleId, siteId, courseId, module.section);
+            await CoreCourseHelper.navigateToModule(moduleId, siteId, module.course, module.section);
         } catch {
             // Error, go to index page.
             await CoreCourseHelper.navigateToModule(moduleId, siteId, courseId);

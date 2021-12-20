@@ -181,7 +181,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      */
     getIntroFilesFromInstance(module: CoreCourseAnyModuleData, instance?: ModuleInstance): CoreWSFile[] {
         if (instance) {
-            if (typeof instance.introfiles != 'undefined') {
+            if (instance.introfiles !== undefined) {
                 return instance.introfiles;
             } else if (instance.intro) {
                 return CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(instance.intro);

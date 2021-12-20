@@ -73,7 +73,7 @@ export class CoreConfigProvider {
 
             return entry.value;
         } catch (error) {
-            if (typeof defaultValue != 'undefined') {
+            if (defaultValue !== undefined) {
                 return defaultValue;
             }
 

@@ -41,7 +41,7 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
      * @return Promise resolved when done.
      */
     invalidateEnabledForCourse(courseId: number, navOptions?: CoreCourseUserAdminOrNavOptionIndexed): Promise<void> {
-        if (navOptions && typeof navOptions.grades != 'undefined') {
+        if (navOptions && navOptions.grades !== undefined) {
             // No need to invalidate anything.
             return Promise.resolve();
         }
@@ -75,7 +75,7 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
             return false; // Not enabled for guests.
         }
 
-        if (navOptions && typeof navOptions.grades != 'undefined') {
+        if (navOptions && navOptions.grades !== undefined) {
             return navOptions.grades;
         }
 

@@ -16,15 +16,17 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import moment from 'moment';
 
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
     CoreCourse,
     CoreCourseCompletionActivityStatus,
     CoreCourseModuleWSCompletionData,
     CoreCourseModuleContentFile,
-    CoreCourseWSModule,
     CoreCourseProvider,
     CoreCourseWSSection,
+    CoreCourseModuleCompletionTracking,
+    CoreCourseModuleCompletionStatus,
+    CoreCourseGetContentsWSModule,
 } from './course';
 import { CoreConstants } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
@@ -162,7 +164,7 @@ export class CoreCourseHelperProvider {
      * @param sections List of sections to treat modules.
      * @param courseId Course ID of the modules.
      * @param completionStatus List of completion status.
-     * @param courseName Course name. Recommended if completionStatus is supplied.
+     * @param courseName Not used since 4.0
      * @param forCoursePage Whether the data will be used to render the course page.
      * @return Whether the sections have content.
      */
@@ -174,18 +176,16 @@ export class CoreCourseHelperProvider {
         forCoursePage = false,
     ): { hasContent: boolean; sections: CoreCourseSection[] } {
 
-        const formattedSections: CoreCourseSection[] = sections;
         let hasContent = false;
 
-        formattedSections.forEach((section) => {
-            if (!section || !section.modules) {
-                return;
-            }
-
-            section.hasContent = this.sectionHasContent(section);
+        const formattedSections = sections.map<CoreCourseSection>((courseSection) => {
+            const section = {
+                ...courseSection,
+                hasContent: this.sectionHasContent(courseSection),
+            };
 
             if (!section.hasContent) {
-                return;
+                return section;
             }
 
             hasContent = true;
@@ -199,9 +199,7 @@ export class CoreCourseHelperProvider {
                     forCoursePage,
                 );
 
-                if (module.completiondata) {
-                    this.calculateModuleCompletionData(module, courseId, courseName);
-                } else if (completionStatus && typeof completionStatus[module.id] != 'undefined') {
+                if (!module.completiondata && completionStatus && completionStatus[module.id] !== undefined) {
                     // Should not happen on > 3.6. Check if activity has completions and if it's marked.
                     const activityStatus = completionStatus[module.id];
 
@@ -212,7 +210,6 @@ export class CoreCourseHelperProvider {
                         valueused: activityStatus.valueused,
                         tracking: activityStatus.tracking,
                         courseId,
-                        courseName,
                         cmid: module.id,
                     };
                 }
@@ -220,6 +217,8 @@ export class CoreCourseHelperProvider {
                 // Check if the module is stealth.
                 module.isStealth = module.visibleoncoursepage === 0 || (!!module.visible && !section.visible);
             });
+
+            return section;
         });
 
         return { hasContent, sections: formattedSections };
@@ -228,17 +227,15 @@ export class CoreCourseHelperProvider {
     /**
      * Calculate completion data of a module.
      *
+     * @deprecated since 4.0.
      * @param module Module.
-     * @param courseId Course ID of the module.
-     * @param courseName Course name.
      */
-    calculateModuleCompletionData(module: CoreCourseModule, courseId: number, courseName?: string): void {
+    calculateModuleCompletionData(module: CoreCourseModuleData): void {
         if (!module.completiondata || !module.completion) {
             return;
         }
 
-        module.completiondata.courseId = courseId;
-        module.completiondata.courseName = courseName;
+        module.completiondata.courseId = module.course;
         module.completiondata.tracking = module.completion;
         module.completiondata.cmid = module.id;
     }
@@ -495,7 +492,7 @@ export class CoreCourseHelperProvider {
      * @param done Function to call when done. It will close the context menu.
      * @return Promise resolved when done.
      */
-    async confirmAndRemoveFiles(module: CoreCourseWSModule, courseId: number, done?: () => void): Promise<void> {
+    async confirmAndRemoveFiles(module: CoreCourseModuleData, courseId: number, done?: () => void): Promise<void> {
         let modal: CoreIonLoadingElement | undefined;
 
         try {
@@ -584,7 +581,7 @@ export class CoreCourseHelperProvider {
      */
     async contextMenuPrefetch(
         instance: ComponentWithContextMenu,
-        module: CoreCourseWSModule,
+        module: CoreCourseModuleData,
         courseId: number,
         done?: () => void,
     ): Promise<void> {
@@ -716,7 +713,7 @@ export class CoreCourseHelperProvider {
      * @return Resolved on success.
      */
     async downloadModuleAndOpenFile(
-        module: CoreCourseWSModule,
+        module: CoreCourseModuleData,
         courseId: number,
         component?: string,
         componentId?: string | number,
@@ -728,7 +725,7 @@ export class CoreCourseHelperProvider {
 
         if (!files || !files.length) {
             // Try to use module contents.
-            files = await CoreCourse.getModuleContents(module, courseId);
+            files = await CoreCourse.getModuleContents(module);
         }
 
         if (!files.length) {
@@ -808,7 +805,7 @@ export class CoreCourseHelperProvider {
     protected async openModuleFileInBrowser(
         fileUrl: string,
         site: CoreSite,
-        module: CoreCourseWSModule,
+        module: CoreCourseModuleData,
         courseId: number,
         component?: string,
         componentId?: string | number,
@@ -859,7 +856,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when done.
      */
     async downloadModuleWithMainFileIfNeeded(
-        module: CoreCourseWSModule,
+        module: CoreCourseModuleData,
         courseId: number,
         component: string,
         componentId?: string | number,
@@ -942,7 +939,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when done.
      */
     protected async downloadModuleWithMainFile(
-        module: CoreCourseWSModule,
+        module: CoreCourseModuleData,
         courseId: number,
         fixedUrl: string,
         files: CoreCourseModuleContentFile[],
@@ -1007,7 +1004,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved when done.
      */
     async downloadModule(
-        module: CoreCourseWSModule,
+        module: CoreCourseModuleData,
         courseId: number,
         component?: string,
         componentId?: string | number,
@@ -1016,7 +1013,7 @@ export class CoreCourseHelperProvider {
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module);
+        const prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module.name);
 
         if (prefetchHandler) {
             // Use the prefetch handler to download the module.
@@ -1045,7 +1042,7 @@ export class CoreCourseHelperProvider {
      */
     async fillContextMenu(
         instance: ComponentWithContextMenu,
-        module: CoreCourseWSModule,
+        module: CoreCourseModuleData,
         courseId: number,
         invalidateCache?: boolean,
         component?: string,
@@ -1228,7 +1225,7 @@ export class CoreCourseHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async loadOfflineCompletion(courseId: number, sections: CoreCourseSection[], siteId?: string): Promise<void> {
+    async loadOfflineCompletion(courseId: number, sections: CoreCourseWSSection[], siteId?: string): Promise<void> {
         const offlineCompletions = await CoreCourseOffline.getCourseManualCompletions(courseId, siteId);
 
         if (!offlineCompletions || !offlineCompletions.length) {
@@ -1251,7 +1248,7 @@ export class CoreCourseHelperProvider {
                 const module = section.modules[j];
                 const offlineCompletion = offlineCompletionsMap[module.id];
 
-                if (offlineCompletion && typeof module.completiondata != 'undefined' &&
+                if (offlineCompletion && module.completiondata !== undefined &&
                     offlineCompletion.timecompleted >= module.completiondata.timecompleted * 1000) {
                     // The module has offline completion. Load it.
                     module.completiondata.state = offlineCompletion.completed;
@@ -1276,7 +1273,7 @@ export class CoreCourseHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async loadModuleOfflineCompletion(courseId: number, module: CoreCourseModule, siteId?: string): Promise<void> {
+    async loadModuleOfflineCompletion(courseId: number, module: CoreCourseModuleData, siteId?: string): Promise<void> {
         if (!module.completiondata) {
             return;
         }
@@ -1435,14 +1432,19 @@ export class CoreCourseHelperProvider {
     /**
      * Get the course ID from a module instance ID, showing an error message if it can't be retrieved.
      *
-     * @param id Instance ID.
-     * @param module Name of the module. E.g. 'glossary'.
+     * @deprecated since 4.0.
+     * @param instanceId Instance ID.
+     * @param moduleName Name of the module. E.g. 'glossary'.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the module's course ID.
      */
-    async getModuleCourseIdByInstance(id: number, module: string, siteId?: string): Promise<number> {
+    async getModuleCourseIdByInstance(instanceId: number, moduleName: string, siteId?: string): Promise<number> {
         try {
-            const cm = await CoreCourse.getModuleBasicInfoByInstance(id, module, siteId);
+            const cm = await CoreCourse.getModuleBasicInfoByInstance(
+                instanceId,
+                moduleName,
+                { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+            );
 
             return cm.course;
         } catch (error) {
@@ -1462,7 +1464,7 @@ export class CoreCourseHelperProvider {
      * @return Promise resolved with the info.
      */
     async getModulePrefetchInfo(
-        module: CoreCourseWSModule,
+        module: CoreCourseModuleData,
         courseId: number,
         invalidateCache?: boolean,
         component?: string,
@@ -1574,7 +1576,7 @@ export class CoreCourseHelperProvider {
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const module = await CoreCourse.getModuleBasicInfoByInstance(instanceId, modName, siteId);
+            const module = await CoreCourse.getModuleBasicInfoByInstance(instanceId, modName, { siteId });
 
             this.navigateToModule(
                 module.id,
@@ -1617,22 +1619,21 @@ export class CoreCourseHelperProvider {
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            if (!courseId) {
-                // We don't have courseId.
-                const module = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
+            if (!courseId || !sectionId) {
+                const module = await CoreCourse.getModuleBasicInfo(
+                    moduleId,
+                    { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+                );
 
                 courseId = module.course;
                 sectionId = module.section;
-            } else if (!sectionId) {
-                // We don't have sectionId but we have courseId.
-                sectionId = await CoreCourse.getModuleSectionId(moduleId, siteId);
             }
 
             // Get the site.
             const site = await CoreSites.getSite(siteId);
 
             // Get the module.
-            const module = <CoreCourseModule>
+            const module =
                 await CoreCourse.getModule(moduleId, courseId, sectionId, false, false, siteId, modName);
 
             if (CoreSites.getCurrentSiteId() == site.getId()) {
@@ -1652,13 +1653,11 @@ export class CoreCourseHelperProvider {
                 }
             }
 
-            this.logger.warn('navCtrl was not passed to navigateToModule by the link handler for ' + module.modname);
-
             const params: Params = {
                 course: { id: courseId },
-                module: module,
-                sectionId: sectionId,
-                modParams: modParams,
+                module,
+                sectionId,
+                modParams,
             };
 
             if (courseId == site.getSiteHomeId()) {
@@ -1691,7 +1690,7 @@ export class CoreCourseHelperProvider {
      * @param modParams Params to pass to the module
      * @param True if module can be opened, false otherwise.
      */
-    async openModule(module: CoreCourseModule, courseId: number, sectionId?: number, modParams?: Params): Promise<boolean> {
+    async openModule(module: CoreCourseModuleData, courseId: number, sectionId?: number, modParams?: Params): Promise<boolean> {
         if (!module.handlerData) {
             module.handlerData = await CoreCourseModuleDelegate.getModuleDataFor(
                 module.modname,
@@ -1747,7 +1746,7 @@ export class CoreCourseHelperProvider {
             const promises: Promise<unknown>[] = [];
 
             // Prefetch all the sections. If the first section is "All sections", use it. Otherwise, use a fake "All sections".
-            let allSectionsSection: CoreCourseSection = sections[0];
+            let allSectionsSection: CoreCourseWSSection = sections[0];
             if (sections[0].id != CoreCourseProvider.ALL_SECTIONS_ID) {
                 allSectionsSection = this.createAllSectionsSection();
             }
@@ -1769,7 +1768,7 @@ export class CoreCourseHelperProvider {
             promises.push(CoreCourses.getCoursesByField('id', course.id));
 
             const sectionWithModules = sections.find((section) => section.modules && section.modules.length > 0);
-            if (!sectionWithModules || typeof sectionWithModules.modules[0].completion == 'undefined') {
+            if (!sectionWithModules || sectionWithModules.modules[0].completion === undefined) {
                 promises.push(CoreCourse.getActivitiesCompletionStatus(course.id));
             }
 
@@ -1804,7 +1803,7 @@ export class CoreCourseHelperProvider {
      */
     async prefetchModule(
         handler: CoreCourseModulePrefetchHandler,
-        module: CoreCourseWSModule,
+        module: CoreCourseModuleData,
         size: CoreFileSizeSum,
         courseId: number,
         refresh?: boolean,
@@ -1982,11 +1981,15 @@ export class CoreCourseHelperProvider {
      * @return Whether the section has content.
      */
     sectionHasContent(section: CoreCourseWSSection): boolean {
+        if (!section.modules) {
+            return false;
+        }
+
         if (section.hiddenbynumsections) {
             return false;
         }
 
-        return (typeof section.availabilityinfo != 'undefined' && section.availabilityinfo != '') ||
+        return (section.availabilityinfo !== undefined && section.availabilityinfo != '') ||
             section.summary != '' || (section.modules && section.modules.length > 0);
     }
 
@@ -2040,12 +2043,12 @@ export class CoreCourseHelperProvider {
      * @param courseId Course ID the module belongs to.
      * @return Promise resolved when done.
      */
-    async removeModuleStoredData(module: CoreCourseWSModule, courseId: number): Promise<void> {
+    async removeModuleStoredData(module: CoreCourseModuleData, courseId: number): Promise<void> {
         const promises: Promise<void>[] = [];
 
         promises.push(CoreCourseModulePrefetchDelegate.removeModuleFiles(module, courseId));
 
-        const handler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module);
+        const handler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module.name);
         const site = CoreSites.getCurrentSite();
         if (handler && site) {
             promises.push(site.deleteComponentFromCache(handler.component, module.id));
@@ -2069,7 +2072,8 @@ export class CoreCourseHelperProvider {
             return;
         }
 
-        if (typeof completion.cmid == 'undefined' || completion.tracking !== 1) {
+        if (completion.cmid === undefined ||
+            completion.tracking !== CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL) {
             return;
         }
 
@@ -2077,14 +2081,15 @@ export class CoreCourseHelperProvider {
         event?.stopPropagation();
 
         const modal = await CoreDomUtils.showModalLoading();
-        completion.state = completion.state === 1 ? 0 : 1;
+        completion.state = completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE
+            ? CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE
+            : CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE;
 
         try {
             const response = await CoreCourse.markCompletedManually(
                 completion.cmid,
-                completion.state === 1,
-                completion.courseId!,
-                completion.courseName,
+                completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE,
+                completion.courseId,
             );
 
             if (response.offline) {
@@ -2093,7 +2098,11 @@ export class CoreCourseHelperProvider {
 
             return response;
         } catch (error) {
-            completion.state = completion.state === 1 ? 0 : 1;
+            // Restore previous state.
+            completion.state = completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE
+                ? CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE
+                : CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE;
+
             CoreDomUtils.showErrorModalDefault(error, 'core.errorchangecompletion', true);
         } finally {
             modal.dismiss();
@@ -2107,9 +2116,8 @@ export const CoreCourseHelper = makeSingleton(CoreCourseHelperProvider);
 /**
  * Section with calculated data.
  */
-export type CoreCourseSection = Omit<CoreCourseWSSection, 'modules'> & {
+export type CoreCourseSection = CoreCourseWSSection & {
     hasContent?: boolean;
-    modules: CoreCourseModule[];
 };
 
 /**
@@ -2127,20 +2135,27 @@ export type CoreCourseSectionWithStatus = CoreCourseSection & {
 /**
  * Module with calculated data.
  */
-export type CoreCourseModule = Omit<CoreCourseWSModule, 'completiondata'> & {
+export type CoreCourseModuleData = Omit<CoreCourseGetContentsWSModule, 'completiondata'> & {
+    course: number; // The course id.
     isStealth?: boolean;
     handlerData?: CoreCourseModuleHandlerData;
     completiondata?: CoreCourseModuleCompletionData;
 };
 
 /**
+ * Module with calculated data.
+ *
+ * @deprecated since 4.0. Use CoreCourseModuleData instead.
+ */
+export type CoreCourseModule = CoreCourseModuleData;
+
+/**
  * Module completion with calculated data.
  */
 export type CoreCourseModuleCompletionData = CoreCourseModuleWSCompletionData & {
-    courseId?: number;
-    courseName?: string;
-    tracking?: number;
-    cmid?: number;
+    courseId: number;
+    tracking: CoreCourseModuleCompletionTracking;
+    cmid: number;
     offline?: boolean;
 };
 

@@ -58,7 +58,7 @@ export class CoreCache {
     getValue<T = unknown>(id: string, name: string, ignoreInvalidate = false): T | undefined {
         const entry = this.getEntry(id);
 
-        if (entry[name] && typeof entry[name].value != 'undefined') {
+        if (entry[name] && entry[name].value !== undefined) {
             const now = Date.now();
             // Invalidate after 5 minutes.
             if (ignoreInvalidate || entry[name].timemodified + 300000 >= now) {

@@ -17,7 +17,6 @@ import { Component, OnDestroy, OnInit, Optional, Type } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCommentsProvider } from '@features/comments/services/comments';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseModule } from '@features/course/course.module';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreRatingProvider } from '@features/rating/services/rating';
@@ -95,7 +94,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         fields: Record<number, AddonModDataField>;
         entries: Record<number, AddonModDataEntry>;
         database: AddonModDataData;
-        module: CoreCourseModule;
+        title: string;
         group: number;
         gotoEntry: (a: number) => void;
     };
@@ -191,7 +190,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModDataAutoSyncData): boolean {
-        if (this.database && syncEventData.dataId == this.database.id && typeof syncEventData.entryId == 'undefined') {
+        if (this.database && syncEventData.dataId == this.database.id && syncEventData.entryId === undefined) {
             this.loaded = false;
             // Refresh the data.
             this.content?.scrollToTop();
@@ -309,7 +308,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         this.entriesRendered = '';
 
-        this.foundRecordsTranslationData = typeof entries.maxcount != 'undefined'
+        this.foundRecordsTranslationData = entries.maxcount !== undefined
             ? {
                 num: entries.totalcount,
                 max: entries.maxcount,
@@ -371,7 +370,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 fields: this.fields,
                 entries: entriesById,
                 database: this.database!,
-                module: this.module,
+                title: this.module.name,
                 group: this.selectedGroup,
                 gotoEntry: this.gotoEntry.bind(this),
             };
@@ -474,8 +473,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      */
     gotoAddEntries(): void {
         const params: Params = {
-            module: this.module,
-            courseId: this.courseId,
+            title: this.module.name,
             group: this.selectedGroup,
         };
 
@@ -492,8 +490,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      */
     gotoEntry(entryId: number): void {
         const params: Params = {
-            module: this.module,
-            courseId: this.courseId,
+            title: this.module.name,
             group: this.selectedGroup,
         };
 

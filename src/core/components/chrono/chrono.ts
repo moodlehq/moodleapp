@@ -102,7 +102,7 @@ export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
             this.time += Date.now() - lastExecTime;
             lastExecTime = Date.now();
 
-            if (typeof this.endTime != 'undefined' && this.time > this.endTime) {
+            if (this.endTime !== undefined && this.time > this.endTime) {
                 // End time reached, stop the timer and call the end function.
                 this.stop();
                 this.onEnd.emit();

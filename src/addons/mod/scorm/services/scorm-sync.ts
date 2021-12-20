@@ -198,7 +198,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         if (updated) {
             try {
                 // Update downloaded data.
-                const module = await CoreCourse.getModule(scorm.coursemodule, scorm.course, undefined, false, false, siteId);
+                const module = await CoreCourse.getModuleBasicInfoByInstance(scorm.id, 'scorm', { siteId });
 
                 await this.prefetchAfterUpdate(AddonModScormPrefetchHandler.instance, module, scorm.course, undefined, siteId);
             } catch {
@@ -476,7 +476,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
                 await this.syncScorm(scorm, siteId) :
                 await this.syncScormIfNeeded(scorm, siteId);
 
-            if (typeof data != 'undefined') {
+            if (data !== undefined) {
                 // We tried to sync. Send event.
                 CoreEvents.trigger(AddonModScormSyncProvider.AUTO_SYNCED, {
                     scormId: scorm.id,

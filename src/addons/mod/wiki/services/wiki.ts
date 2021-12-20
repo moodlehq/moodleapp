@@ -58,7 +58,7 @@ export class AddonModWikiProvider {
      * @param wikiId wiki Id, if not provided all will be cleared.
      */
     clearSubwikiList(wikiId?: number): void {
-        if (typeof wikiId == 'undefined') {
+        if (wikiId === undefined) {
             this.subwikiListsCache = {};
         } else {
             delete this.subwikiListsCache[wikiId];

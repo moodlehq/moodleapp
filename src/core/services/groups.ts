@@ -214,7 +214,7 @@ export class CoreGroupsProvider {
         const response: CoreGroupGetActivityGroupModeWSResponse =
             await site.read('core_group_get_activity_groupmode', params, preSets);
 
-        if (!response || typeof response.groupmode == 'undefined') {
+        if (!response || response.groupmode === undefined) {
             throw new CoreError('Activity group mode not found.');
         }
 

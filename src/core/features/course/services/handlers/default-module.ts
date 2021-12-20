@@ -17,7 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../module-delegate';
 import { CoreCourse } from '../course';
-import { CoreCourseModule } from '../course-helper';
+import { CoreCourseModuleData } from '../course-helper';
 import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 
@@ -42,14 +42,14 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
      * @inheritdoc
      */
     async getData(
-        module: CoreCourseModule,
+        module: CoreCourseModuleData,
     ): Promise<CoreCourseModuleHandlerData> {
         // Return the default data.
         const defaultData: CoreCourseModuleHandlerData = {
             icon: await CoreCourse.getModuleIconSrc(module.modname, module.modicon),
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
-            action: async (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
+            action: async (event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions) => {
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -92,7 +92,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
     /**
      * @inheritdoc
      */
-    async openActivityPage(module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+    async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
         options = options || {};
         options.params = options.params || {};
         Object.assign(options.params, { module });

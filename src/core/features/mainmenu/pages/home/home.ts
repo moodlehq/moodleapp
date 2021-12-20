@@ -109,7 +109,7 @@ export class CoreMainMenuHomePage implements OnInit {
         // Sort them by priority so new handlers are in the right position.
         newTabs.sort((a, b) => (handlersMap[b.title].priority || 0) - (handlersMap[a.title].priority || 0));
 
-        if (typeof this.selectedTab == 'undefined' && newTabs.length > 0) {
+        if (this.selectedTab === undefined && newTabs.length > 0) {
             let maxPriority = 0;
 
             this.selectedTab = Object.entries(newTabs).reduce((maxIndex, [index, tab]) => {

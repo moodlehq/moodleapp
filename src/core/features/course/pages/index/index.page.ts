@@ -20,8 +20,8 @@ import { CoreCourseFormatDelegate } from '../../services/format-delegate';
 import { CoreCourseOptionsDelegate } from '../../services/course-options-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreNavigator } from '@services/navigator';
@@ -46,7 +46,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     protected currentPagePath = '';
     protected selectTabObserver: CoreEventObserver;
     protected firstTabName?: string;
-    protected module?: CoreCourseWSModule;
+    protected module?: CoreCourseModuleData;
     protected modParams?: Params;
     protected isGuest?: boolean;
     protected contentsTab: CoreTabsOutletTab = {
@@ -90,7 +90,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         // Get params.
         this.course = CoreNavigator.getRouteParam('course');
         this.firstTabName = CoreNavigator.getRouteParam('selectedTab');
-        this.module = CoreNavigator.getRouteParam<CoreCourseWSModule>('module');
+        this.module = CoreNavigator.getRouteParam<CoreCourseModuleData>('module');
         this.modParams = CoreNavigator.getRouteParam<Params>('modParams');
         this.isGuest = CoreNavigator.getRouteBooleanParam('isGuest');
 

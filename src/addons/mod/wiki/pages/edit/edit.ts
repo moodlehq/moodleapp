@@ -18,7 +18,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCourse } from '@features/course/services/course';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -262,7 +262,11 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        const module = await CoreCourse.getModuleBasicInfoByInstance(this.wikiId, 'wiki');
+        const module = await CoreCourse.getModuleBasicInfoByInstance(
+            this.wikiId,
+            'wiki',
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
 
         this.cmId = module.id;
         this.courseId = module.course;

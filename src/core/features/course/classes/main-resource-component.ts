@@ -30,7 +30,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCourseContentsPage } from '../pages/contents/contents';
 import { CoreCourse } from '../services/course';
-import { CoreCourseHelper, CoreCourseModule } from '../services/course-helper';
+import { CoreCourseHelper, CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleDelegate, CoreCourseModuleMainComponent } from '../services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../services/module-prefetch-delegate';
 
@@ -50,7 +50,7 @@ export type CoreCourseResourceDownloadResult = {
 })
 export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
 
-    @Input() module!: CoreCourseModule; // The module of the component.
+    @Input() module!: CoreCourseModuleData; // The module of the component.
     @Input() courseId!: number; // Course ID the component belongs to.
     @Output() dataRetrieved = new EventEmitter<unknown>(); // Called to notify changes the index page from the main component.
 
@@ -96,11 +96,10 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.description = this.module.description;
         this.componentId = this.module.id;
         this.externalUrl = this.module.url;
-        this.courseId = this.courseId || this.module.course!;
+        this.courseId = this.courseId || this.module.course;
         this.showCompletion = !!CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
 
         if (this.showCompletion) {
-            CoreCourseHelper.calculateModuleCompletionData(this.module, this.courseId);
             CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, this.module);
 
             this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
@@ -395,11 +394,11 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             const ignoreCache = refresh && CoreApp.isOnline();
 
             try {
-                await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, ignoreCache);
+                await CoreCourse.loadModuleContents(this.module, undefined, undefined, false, ignoreCache);
             } catch (error) {
                 // Error loading contents. If we ignored cache, try to get the cached value.
                 if (ignoreCache && !this.module.contents) {
-                    await CoreCourse.loadModuleContents(this.module, this.courseId);
+                    await CoreCourse.loadModuleContents(this.module);
                 } else if (!this.module.contents) {
                     // Not able to load contents, throw the error.
                     throw error;
@@ -427,8 +426,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      */
     protected async fetchModule(): Promise<void> {
         const module = await CoreCourse.getModule(this.module.id, this.courseId);
-
-        CoreCourseHelper.calculateModuleCompletionData(module, this.courseId);
 
         await CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, module);
 

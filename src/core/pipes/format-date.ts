@@ -59,7 +59,7 @@ export class CoreFormatDatePipe implements PipeTransform {
             format = 'core.' + format;
         }
 
-        if (typeof convert == 'undefined') {
+        if (convert === undefined) {
             // Initialize convert param. Set it to false if it's a core.df format, set it to true otherwise.
             convert = format.indexOf('core.df') != 0;
         }

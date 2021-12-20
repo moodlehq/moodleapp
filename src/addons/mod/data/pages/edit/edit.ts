@@ -15,7 +15,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Type } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
-import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreTag } from '@features/tag/services/tag';
 import { IonContent } from '@ionic/angular';
@@ -66,7 +65,7 @@ export class AddonModDataEditPage implements OnInit {
     entry?: AddonModDataEntry;
     fields: Record<number, AddonModDataField> = {};
     courseId!: number;
-    module!: CoreCourseModule;
+    moduleId = 0;
     database?: AddonModDataData;
     title = '';
     component = AddonModDataProvider.COMPONENT;
@@ -97,9 +96,10 @@ export class AddonModDataEditPage implements OnInit {
      */
     ngOnInit(): void {
         try {
-            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModule>('module');
-            this.entryId = CoreNavigator.getRouteNumberParam('entryId') || undefined;
+            this.moduleId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.title = CoreNavigator.getRouteParam<string>('title') || '';
+            this.entryId = CoreNavigator.getRouteNumberParam('entryId') || undefined;
             this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
@@ -110,9 +110,7 @@ export class AddonModDataEditPage implements OnInit {
         }
 
         // If entryId is lower than 0 or null, it is a new entry or an offline entry.
-        this.isEditing = typeof this.entryId != 'undefined' && this.entryId > 0;
-
-        this.title = this.module.name;
+        this.isEditing = this.entryId !== undefined && this.entryId > 0;
 
         this.fetchEntryData(true);
     }
@@ -134,7 +132,7 @@ export class AddonModDataEditPage implements OnInit {
 
         if (changed) {
             // Show confirmation if some data has been modified.
-            await CoreDomUtils.showConfirm(Translate.instant('coentryre.confirmcanceledit'));
+            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
         }
 
         // Delete the local files from the tmp folder.
@@ -154,11 +152,11 @@ export class AddonModDataEditPage implements OnInit {
      */
     protected async fetchEntryData(refresh = false): Promise<void> {
         try {
-            this.database = await AddonModData.getDatabase(this.courseId, this.module.id);
+            this.database = await AddonModData.getDatabase(this.courseId, this.moduleId);
             this.title = this.database.name || this.title;
             this.cssClass = 'addon-data-entries-' + this.database.id;
 
-            this.fieldsArray = await AddonModData.getFields(this.database.id, { cmId: this.module.id });
+            this.fieldsArray = await AddonModData.getFields(this.database.id, { cmId: this.moduleId });
             this.fields = CoreUtils.arrayToObject(this.fieldsArray, 'id');
 
             const entry = await AddonModDataHelper.fetchEntry(this.database, this.fieldsArray, this.entryId || 0);
@@ -183,7 +181,7 @@ export class AddonModDataEditPage implements OnInit {
 
                         await Promise.all(this.groupInfo.groups.map(async (group) => {
                             const accessData = await AddonModData.getDatabaseAccessInformation(this.database!.id, {
-                                cmId: this.module.id, groupId: group.id });
+                                cmId: this.moduleId, groupId: group.id });
 
                             canAddGroup[group.id] = accessData.canaddentry;
                         }));
@@ -196,7 +194,7 @@ export class AddonModDataEditPage implements OnInit {
                         haveAccess = true;
                     }
                 } else {
-                    const accessData = await AddonModData.getDatabaseAccessInformation(this.database.id, { cmId: this.module.id });
+                    const accessData = await AddonModData.getDatabaseAccessInformation(this.database.id, { cmId: this.moduleId });
                     haveAccess = accessData.canaddentry;
                 }
 

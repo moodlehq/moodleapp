@@ -137,7 +137,7 @@ export class CoreEvents {
 
         this.logger.debug(`New observer listening to event '${eventName}'`);
 
-        if (typeof this.observables[eventName] == 'undefined') {
+        if (this.observables[eventName] === undefined) {
             // No observable for this event, create a new one.
             this.observables[eventName] = new Subject();
         }

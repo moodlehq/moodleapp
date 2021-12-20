@@ -65,7 +65,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
         const pageParams: Params = {
             sectionId: sectionId || null,
         };
-        let sectionNumber = typeof params.section != 'undefined' ? parseInt(params.section, 10) : NaN;
+        let sectionNumber = params.section !== undefined ? parseInt(params.section, 10) : NaN;
 
         if (!sectionId && !sectionNumber) {
             // Check if the URL has a hash to navigate to the section.
@@ -294,7 +294,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
                 let body = ' '; // Empty message.
                 const placeholder = Translate.instant('core.courses.password');
 
-                if (typeof password != 'undefined') {
+                if (password !== undefined) {
                     // The user attempted a password. Show an error message.
                     body = CoreTextUtils.getErrorMessageFromError(error) || body;
                 }

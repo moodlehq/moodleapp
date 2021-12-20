@@ -15,8 +15,8 @@
 import { Type } from '@angular/core';
 
 import { CoreConstants } from '@/core/constants';
-import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreSitePluginsModuleIndexComponent } from '@features/siteplugins/components/module-index/module-index';
 import {
@@ -64,12 +64,12 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      * @inheritdoc
      */
     getData(
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModuleData,
         courseId: number,
         sectionId?: number,
         forCoursePage?: boolean,
     ): CoreCourseModuleHandlerData {
-        if ('description' in module && this.shouldOnlyDisplayDescription(module, forCoursePage)) {
+        if (this.shouldOnlyDisplayDescription(module, forCoursePage)) {
             const title = module.description;
             module.description = '';
 
@@ -87,14 +87,14 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
             title: module.name,
             icon: this.getIconSrc(),
             class: this.handlerSchema.displaydata?.class,
-            showDownloadButton: typeof showDowloadButton != 'undefined' ? showDowloadButton : hasOffline,
+            showDownloadButton: showDowloadButton !== undefined ? showDowloadButton : hasOffline,
         };
 
         if (this.handlerSchema.method) {
             // There is a method, add an action.
             handlerData.action = async (
                 event: Event,
-                module: CoreCourseModule,
+                module: CoreCourseModuleData,
                 courseId: number,
                 options?: CoreNavigationOptions,
             ) => {
@@ -128,7 +128,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      * @param forCoursePage Whether the data will be used to render the course page.
      * @return Bool.
      */
-    protected shouldOnlyDisplayDescription(module: CoreCourseAnyModuleData, forCoursePage?: boolean): boolean {
+    protected shouldOnlyDisplayDescription(module: CoreCourseModuleData, forCoursePage?: boolean): boolean {
         if (forCoursePage && this.handlerSchema.coursepagemethod) {
             // The plugin defines a method for course page, don't display just the description.
             return false;
@@ -167,7 +167,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      * @return Promise resolved when done.
      */
     protected async loadCoursePageTemplate(
-        module: CoreCourseAnyModuleData,
+        module: CoreCourseModuleData,
         courseId: number,
         handlerData: CoreCourseModuleHandlerData,
         method: string,
@@ -190,7 +190,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
 
             // Use the html returned.
             handlerData.title = result.templates[0]?.html ?? '';
-            (<CoreCourseWSModule> module).description = '';
+            (<CoreCourseModuleData> module).description = '';
         } catch (error) {
             this.logger.error('Error calling course page method:', error);
         } finally {
@@ -215,7 +215,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
     /**
      * @inheritdoc
      */
-    async manualCompletionAlwaysShown(module: CoreCourseModule): Promise<boolean> {
+    async manualCompletionAlwaysShown(module: CoreCourseModuleData): Promise<boolean> {
         if (this.handlerSchema.manualcompletionalwaysshown !== undefined) {
             return this.handlerSchema.manualcompletionalwaysshown;
         }
@@ -231,7 +231,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
     /**
      * @inheritdoc
      */
-    async openActivityPage(module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+    async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
         if (!CoreCourse.moduleHasView(module)) {
             return;
         }

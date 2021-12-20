@@ -425,7 +425,7 @@ export class AddonModQuizProvider {
         attemptId: number,
         options: AddonModQuizGetAttemptReviewOptions = {},
     ): Promise<AddonModQuizGetAttemptReviewResponse> {
-        const page = typeof options.page == 'undefined' ? -1 : options.page;
+        const page = options.page === undefined ? -1 : options.page;
 
         const site = await CoreSites.getSite(options.siteId);
 
@@ -620,7 +620,7 @@ export class AddonModQuizProvider {
      * @return Number of decimals.
      */
     getGradeDecimals(quiz: AddonModQuizQuizWSData): number {
-        if (typeof quiz.questiondecimalpoints == 'undefined') {
+        if (quiz.questiondecimalpoints === undefined) {
             quiz.questiondecimalpoints = -1;
         }
 
@@ -1029,7 +1029,7 @@ export class AddonModQuizProvider {
     ): Promise<AddonModQuizAttemptWSData[]> {
 
         const status = options.status || 'all';
-        const includePreviews = typeof options.includePreviews == 'undefined' ? true : options.includePreviews;
+        const includePreviews = options.includePreviews === undefined ? true : options.includePreviews;
 
         const site = await CoreSites.getSite(options.siteId);
 

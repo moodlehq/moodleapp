@@ -14,7 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseHelper, CoreCourseModule, CoreCourseSection } from '@features/course/services/course-helper';
+import { CoreCourseHelper, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
@@ -31,7 +31,7 @@ import { CoreUtils } from '@services/utils/utils';
 export class CoreCourseModulePreviewPage implements OnInit {
 
     title!: string;
-    module!: CoreCourseModule;
+    module!: CoreCourseModuleData;
     section?: CoreCourseSection; // The section the module belongs to.
     courseId!: number;
     loaded = false;
@@ -45,7 +45,7 @@ export class CoreCourseModulePreviewPage implements OnInit {
      */
     async ngOnInit(): Promise<void> {
         try {
-            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModule>('module');
+            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModuleData>('module');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.section = CoreNavigator.getRouteParam<CoreCourseSection>('section');
         } catch (error) {
@@ -72,8 +72,6 @@ export class CoreCourseModulePreviewPage implements OnInit {
         if (refresh) {
             this.module = await CoreCourse.getModule(this.module.id, this.courseId);
         }
-
-        CoreCourseHelper.calculateModuleCompletionData(this.module, this.courseId);
 
         await CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, this.module);
 

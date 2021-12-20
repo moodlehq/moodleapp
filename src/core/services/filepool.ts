@@ -466,7 +466,7 @@ export class CoreFilepoolProvider {
 
         let size: number;
 
-        if (typeof this.sizeCache[fileUrl] != 'undefined') {
+        if (this.sizeCache[fileUrl] !== undefined) {
             size = this.sizeCache[fileUrl];
         } else {
             if (!CoreApp.isOnline()) {
@@ -594,7 +594,7 @@ export class CoreFilepoolProvider {
      * @return Link, null if nothing to link.
      */
     protected createComponentLink(component?: string, componentId?: string | number): CoreFilepoolComponentLink | undefined {
-        if (typeof component != 'undefined' && component != null) {
+        if (component !== undefined && component != null) {
             return { component, componentId: this.fixComponentId(componentId) };
         }
     }
@@ -681,7 +681,7 @@ export class CoreFilepoolProvider {
         }
 
         const extension = CoreMimetypeUtils.guessExtensionFromUrl(fileUrl);
-        const addExtension = typeof filePath == 'undefined';
+        const addExtension = filePath === undefined;
         const path = filePath || (await this.getFilePath(siteId, fileId, extension));
 
         if (poolFileObject && poolFileObject.fileId !== fileId) {
@@ -994,7 +994,7 @@ export class CoreFilepoolProvider {
         const links = this.createComponentLinks(component, componentId);
 
         const finishSuccessfulDownload = (url: string): string => {
-            if (typeof component != 'undefined') {
+            if (component !== undefined) {
                 CoreUtils.ignoreErrors(this.addFileLink(siteId, fileId, component, componentId));
             }
 
@@ -1104,7 +1104,7 @@ export class CoreFilepoolProvider {
      * @return Promise resolved when done.
      */
     protected async fillExtensionInFile(entry: CoreFilepoolFileEntry, siteId: string): Promise<void> {
-        if (typeof entry.extension != 'undefined') {
+        if (entry.extension !== undefined) {
             // Already filled.
             return;
         }
@@ -1149,7 +1149,7 @@ export class CoreFilepoolProvider {
             return componentId;
         }
 
-        if (typeof componentId == 'undefined' || componentId === null) {
+        if (componentId === undefined || componentId === null) {
             return -1;
         }
 
@@ -1335,7 +1335,7 @@ export class CoreFilepoolProvider {
     protected async getFilePath(siteId: string, fileId: string, extension?: string): Promise<string> {
         let path = this.getFilepoolFolderPath(siteId) + '/' + fileId;
 
-        if (typeof extension == 'undefined') {
+        if (extension === undefined) {
             // We need the extension to be able to open files properly.
             try {
                 const entry = await this.hasFileInPool(siteId, fileId);
@@ -1555,7 +1555,7 @@ export class CoreFilepoolProvider {
         try {
             const entry = await this.hasFileInPool(siteId, fileId);
 
-            if (typeof entry === 'undefined') {
+            if (entry === undefined) {
                 throw new CoreError('File not downloaded.');
             }
 
@@ -1949,7 +1949,7 @@ export class CoreFilepoolProvider {
         }
 
         const matches = url.match(revisionRegex);
-        if (matches && typeof matches[1] != 'undefined') {
+        if (matches && matches[1] !== undefined) {
             return parseInt(matches[1], 10);
         }
 
@@ -2131,7 +2131,7 @@ export class CoreFilepoolProvider {
         const db = await CoreSites.getSiteDb(siteId);
         const entry = await db.getRecord<CoreFilepoolFileEntry>(FILES_TABLE_NAME, { fileId });
 
-        if (typeof entry === 'undefined') {
+        if (entry === undefined) {
             throw new CoreError('File not found in filepool.');
         }
 
@@ -2149,7 +2149,7 @@ export class CoreFilepoolProvider {
         const db = await this.appDB;
         const entry = await db.getRecord<CoreFilepoolQueueEntry>(QUEUE_TABLE_NAME, { siteId, fileId });
 
-        if (typeof entry === 'undefined') {
+        if (entry === undefined) {
             throw new CoreError('File not found in queue.');
         }
         // Convert the links to an object.
@@ -2872,7 +2872,7 @@ export class CoreFilepoolProvider {
             const entry = await site.getDb().getRecord<CoreFilepoolPackageEntry>(PACKAGES_TABLE_NAME, { id: packageId });
 
             extra = extra ?? entry.extra;
-            if (typeof downloadTime == 'undefined') {
+            if (downloadTime === undefined) {
                 // Keep previous download time.
                 downloadTime = entry.downloadTime;
                 previousDownloadTime = entry.previousDownloadTime;

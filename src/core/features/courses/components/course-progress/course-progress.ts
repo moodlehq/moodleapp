@@ -82,7 +82,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy, On
 
         // This field is only available from 3.6 onwards.
         this.courseOptionMenuEnabled = this.showAll && 'isfavourite' in this.course &&
-            typeof this.course.isfavourite != 'undefined';
+            this.course.isfavourite !== undefined;
 
         // Refresh the enabled flag if site is updated.
         this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {

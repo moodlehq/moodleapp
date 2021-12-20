@@ -91,7 +91,7 @@ export class CoreH5PContentValidator {
         const group = CoreUtils.clone(metadata || {});
 
         // Stop complaining about "invalid selected option in select" for old content without license chosen.
-        if (typeof group.license == 'undefined') {
+        if (group.license === undefined) {
             group.license = 'U';
         }
 
@@ -168,7 +168,7 @@ export class CoreH5PContentValidator {
         }
 
         // Check if string is within allowed length.
-        if (typeof semantics.maxLength != 'undefined') {
+        if (semantics.maxLength !== undefined) {
             text = text.substr(0, semantics.maxLength);
         }
 
@@ -202,22 +202,22 @@ export class CoreH5PContentValidator {
             num = 0;
         }
         // Check if number is within valid bounds. Move within bounds if not.
-        if (typeof semantics.min != 'undefined' && num < semantics.min) {
+        if (semantics.min !== undefined && num < semantics.min) {
             num = semantics.min;
         }
-        if (typeof semantics.max != 'undefined' && num > semantics.max) {
+        if (semantics.max !== undefined && num > semantics.max) {
             num = semantics.max;
         }
         // Check if number is within allowed bounds even if step value is set.
-        if (typeof semantics.step != 'undefined') {
-            const testNumber = num - (typeof semantics.min != 'undefined' ? semantics.min : 0);
+        if (semantics.step !== undefined) {
+            const testNumber = num - (semantics.min !== undefined ? semantics.min : 0);
             const rest = testNumber % semantics.step;
             if (rest !== 0) {
                 num -= rest;
             }
         }
         // Check if number has proper number of decimals.
-        if (typeof semantics.decimals != 'undefined') {
+        if (semantics.decimals !== undefined) {
             num = Number(num.toFixed(semantics.decimals));
         }
 
@@ -303,7 +303,7 @@ export class CoreH5PContentValidator {
         let keys = Object.keys(list);
 
         // Check that list is not longer than allowed length.
-        if (typeof semantics.max != 'undefined') {
+        if (semantics.max !== undefined) {
             keys = keys.slice(0, semantics.max);
         }
 
@@ -392,8 +392,8 @@ export class CoreH5PContentValidator {
             file.bitrate = parseInt(file.bitrate, 10);
         }
 
-        if (typeof file.quality != 'undefined') {
-            if (file.quality === null || typeof file.quality.level == 'undefined' || typeof file.quality.label == 'undefined') {
+        if (file.quality !== undefined) {
+            if (file.quality === null || file.quality.level === undefined || file.quality.label === undefined) {
                 delete file.quality;
             } else {
                 this.filterParams(file.quality, ['level', 'label']);
@@ -402,7 +402,7 @@ export class CoreH5PContentValidator {
             }
         }
 
-        if (typeof file.copyright != 'undefined') {
+        if (file.copyright !== undefined) {
             await this.validateGroup(file.copyright, this.getCopyrightSemantics());
         }
 

@@ -147,7 +147,7 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved when done.
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModChoiceSyncResult> {
-        return AddonModChoiceSync.syncChoice(module.instance!, undefined, siteId);
+        return AddonModChoiceSync.syncChoice(module.instance, undefined, siteId);
     }
 
 }

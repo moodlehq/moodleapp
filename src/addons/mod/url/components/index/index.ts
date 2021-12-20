@@ -92,13 +92,13 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
 
             if (url.displayoptions) {
                 const unserialized = CoreTextUtils.unserialize<AddonModUrlDisplayOptions>(url.displayoptions);
-                this.displayDescription = typeof unserialized.printintro == 'undefined' || !!unserialized.printintro;
+                this.displayDescription = unserialized.printintro === undefined || !!unserialized.printintro;
             }
 
             // Try to get module contents, it's needed to get the URL with parameters.
             const contents = await CoreCourse.getModuleContents(
                 this.module,
-                this.courseId,
+                undefined,
                 undefined,
                 false,
                 refresh,
@@ -169,7 +169,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      */
     protected async logView(): Promise<void> {
         try {
-            await AddonModUrl.logView(this.module.instance!, this.module.name);
+            await AddonModUrl.logView(this.module.instance, this.module.name);
             CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors.

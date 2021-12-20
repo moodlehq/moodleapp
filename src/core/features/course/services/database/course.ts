@@ -81,7 +81,7 @@ export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
                     type: 'INTEGER',
                 },
                 {
-                    name: 'coursename',
+                    name: 'coursename', // Not used  since 4.0 it can be safely removed.
                     type: 'TEXT',
                 },
                 {
@@ -106,6 +106,5 @@ export type CoreCourseManualCompletionDBRecord = {
     cmid: number;
     completed: number;
     courseid: number;
-    coursename: string;
     timecompleted: number;
 };

@@ -14,7 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/resource-prefetch-handler';
-import { CoreCourseAnyModuleData, CoreCourseWSModule } from '@features/course/services/course';
+import { CoreCourseAnyModuleData } from '@features/course/services/course';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -39,7 +40,7 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
      * @param prefetch True to prefetch, false to download right away.
      * @return Promise resolved when all content is downloaded. Data returned is not reliable.
      */
-    async downloadOrPrefetch(module: CoreCourseWSModule, courseId: number, prefetch?: boolean): Promise<void> {
+    async downloadOrPrefetch(module: CoreCourseModuleData, courseId: number, prefetch?: boolean): Promise<void> {
         const promises: Promise<unknown>[] = [];
 
         promises.push(super.downloadOrPrefetch(module, courseId, prefetch));

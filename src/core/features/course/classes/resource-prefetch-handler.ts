@@ -18,7 +18,8 @@ import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreWSFile } from '@services/ws';
-import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from '../services/course';
+import { CoreCourse, CoreCourseAnyModuleData } from '../services/course';
+import { CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModulePrefetchHandlerBase } from './module-prefetch-handler';
 
 /**
@@ -40,7 +41,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @param dirPath Path of the directory where to store all the content files.
      * @return Promise resolved when all content is downloaded.
      */
-    download(module: CoreCourseWSModule, courseId: number, dirPath?: string): Promise<void> {
+    download(module: CoreCourseModuleData, courseId: number, dirPath?: string): Promise<void> {
         return this.downloadOrPrefetch(module, courseId, false, dirPath);
     }
 
@@ -55,7 +56,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      *                in the filepool root folder.
      * @return Promise resolved when all content is downloaded.
      */
-    async downloadOrPrefetch(module: CoreCourseWSModule, courseId: number, prefetch?: boolean, dirPath?: string): Promise<void> {
+    async downloadOrPrefetch(module: CoreCourseModuleData, courseId: number, prefetch?: boolean, dirPath?: string): Promise<void> {
         if (!CoreApp.isOnline()) {
             // Cannot download in offline.
             throw new CoreNetworkError();
@@ -85,13 +86,13 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      */
     protected async performDownloadOrPrefetch(
         siteId: string,
-        module: CoreCourseWSModule,
+        module: CoreCourseModuleData,
         courseId: number,
         prefetch: boolean,
         dirPath?: string,
     ): Promise<void> {
         // Get module info to be able to handle links.
-        await CoreCourse.getModuleBasicInfo(module.id, siteId);
+        await CoreCourse.getModuleBasicInfo(module.id, { siteId });
 
         // Load module contents (ignore cache so we always have the latest data).
         await this.loadContents(module, courseId, true);
@@ -143,7 +144,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @return Promise resolved with the list of files.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getFiles(module: CoreCourseWSModule, courseId: number, single?: boolean): Promise<CoreWSFile[]> {
+    async getFiles(module: CoreCourseModuleData, courseId: number, single?: boolean): Promise<CoreWSFile[]> {
         // Load module contents if needed.
         await this.loadContents(module, courseId);
 
@@ -190,7 +191,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @param dirPath Path of the directory where to store all the content files.
      * @return Promise resolved when done.
      */
-    prefetch(module: CoreCourseWSModule, courseId: number, single?: boolean, dirPath?: string): Promise<void> {
+    prefetch(module: CoreCourseModuleData, courseId: number, single?: boolean, dirPath?: string): Promise<void> {
         return this.downloadOrPrefetch(module, courseId, true, dirPath);
     }
 

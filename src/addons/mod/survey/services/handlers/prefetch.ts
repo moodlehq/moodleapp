@@ -107,7 +107,7 @@ export class AddonModSurveyPrefetchHandlerService extends CoreCourseActivityPref
      * @inheritdoc
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModSurveySyncResult> {
-        return AddonModSurveySync.syncSurvey(module.instance!, undefined, siteId);
+        return AddonModSurveySync.syncSurvey(module.instance, undefined, siteId);
     }
 
 }

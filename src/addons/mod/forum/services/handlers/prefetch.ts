@@ -320,8 +320,8 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
     ): Promise<AddonModForumSyncResult> {
         const promises: Promise<AddonModForumSyncResult>[] = [];
 
-        promises.push(AddonModForumSync.syncForumDiscussions(module.instance!, undefined, siteId));
-        promises.push(AddonModForumSync.syncForumReplies(module.instance!, undefined, siteId));
+        promises.push(AddonModForumSync.syncForumDiscussions(module.instance, undefined, siteId));
+        promises.push(AddonModForumSync.syncForumReplies(module.instance, undefined, siteId));
         promises.push(AddonModForumSync.syncRatings(module.id, undefined, true, siteId));
 
         const results = await Promise.all(promises);

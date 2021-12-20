@@ -211,7 +211,7 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
      * @inheritdoc
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModFeedbackSyncResult> {
-        return AddonModFeedbackSync.syncFeedback(module.instance!, siteId);
+        return AddonModFeedbackSync.syncFeedback(module.instance, siteId);
     }
 
 }

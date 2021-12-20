@@ -32,10 +32,10 @@ export class CoreH5PMetadata {
         }
 
         // Convert metadataSettings values to boolean.
-        if (typeof metadataSettings.disable != 'undefined') {
+        if (metadataSettings.disable !== undefined) {
             metadataSettings.disable = metadataSettings.disable === 1;
         }
-        if (typeof metadataSettings.disableExtraTitleField != 'undefined') {
+        if (metadataSettings.disableExtraTitleField !== undefined) {
             metadataSettings.disableExtraTitleField = metadataSettings.disableExtraTitleField === 1;
         }
 

@@ -33,11 +33,12 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import {
     CoreCourse,
+    CoreCourseModuleCompletionStatus,
     CoreCourseProvider,
 } from '@features/course/services/course';
 import {
     CoreCourseHelper,
-    CoreCourseModule,
+    CoreCourseModuleData,
     CoreCourseModuleCompletionData,
     CoreCourseSection,
     CoreCourseSectionWithStatus,
@@ -164,9 +165,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             let section: CoreCourseSection | undefined;
 
-            if (typeof data.sectionId != 'undefined' && this.sections) {
+            if (data.sectionId !== undefined && this.sections) {
                 section = this.sections.find((section) => section.id == data.sectionId);
-            } else if (typeof data.sectionNumber != 'undefined' && this.sections) {
+            } else if (data.sectionNumber !== undefined && this.sections) {
                 section = this.sections.find((section) => section.section == data.sectionNumber);
             }
 
@@ -398,7 +399,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             }
         }
 
-        if (this.moduleId && typeof previousValue == 'undefined') {
+        if (this.moduleId && previousValue === undefined) {
             setTimeout(() => {
                 CoreDomUtils.scrollToElementBySelector(
                     this.elementRef.nativeElement,
@@ -636,14 +637,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         // If the completion value is not used, the page won't be reloaded, so update the progress bar.
-        const completionModules = (<CoreCourseModule[]> [])
+        const completionModules = (<CoreCourseModuleData[]> [])
             .concat(...this.sections!.map((section) => section.modules))
             .map((module) => module.completion && module.completion > 0 ? 1 : module.completion)
             .reduce((accumulator, currentValue) => (accumulator || 0) + (currentValue || 0), 0);
 
         const moduleProgressPercent = 100 / (completionModules || 1);
         // Use min/max here to avoid floating point rounding errors over/under-flowing the progress bar.
-        if (completionData.state === CoreCourseProvider.COMPLETION_COMPLETE) {
+        if (completionData.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
             this.course.progress = Math.min(100, this.course.progress + moduleProgressPercent);
         } else {
             this.course.progress = Math.max(0, this.course.progress - moduleProgressPercent);

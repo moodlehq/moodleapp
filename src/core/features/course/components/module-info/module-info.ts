@@ -14,7 +14,7 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseModule, CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
+import { CoreCourseModuleData, CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
 
@@ -35,7 +35,7 @@ import { CoreSites } from '@services/sites';
 })
 export class CoreCourseModuleInfoComponent implements OnInit {
 
-    @Input() module!: CoreCourseModule; // The module to render.
+    @Input() module!: CoreCourseModuleData; // The module to render.
     @Input() showManualCompletion = true; // Whether to show manual completion, true by default.
     @Input() courseId!: number; // The courseId the module belongs to.
 

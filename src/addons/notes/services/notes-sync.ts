@@ -75,7 +75,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
                 ? this.syncNotes(courseId, siteId)
                 : this.syncNotesIfNeeded(courseId, siteId));
 
-            if (typeof result != 'undefined') {
+            if (result !== undefined) {
                 // Sync successful, send event.
                 CoreEvents.trigger(AddonNotesSyncProvider.AUTO_SYNCED, {
                     courseId,

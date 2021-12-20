@@ -406,7 +406,7 @@ export class AddonModAssignHelperProvider {
 
         submissions.forEach((submission) => {
             submission.submitid = submission.userid && submission.userid > 0 ? submission.userid : submission.blindid;
-            if (typeof submission.submitid == 'undefined' || submission.submitid <= 0) {
+            if (submission.submitid === undefined || submission.submitid <= 0) {
                 return;
             }
 

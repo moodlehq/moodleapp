@@ -167,7 +167,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
         await Promise.all(files.map(async (file) => {
             const size = await this.getFileSize(file, siteId);
 
-            if (typeof size == 'undefined') {
+            if (size === undefined) {
                 // We don't have the file size, cannot calculate its total size.
                 result.total = false;
             } else {

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
@@ -171,7 +171,7 @@ export class AddonModImscpProvider {
      * @param itemHref Href of item to get. If not defined, gets src of main item.
      * @return Promise resolved with the item src.
      */
-    async getIframeSrc(module: CoreCourseModule, itemHref?: string): Promise<string> {
+    async getIframeSrc(module: CoreCourseModuleData, itemHref?: string): Promise<string> {
         const contents = await CoreCourse.getModuleContents(module);
 
         if (!itemHref) {

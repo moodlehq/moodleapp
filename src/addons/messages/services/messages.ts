@@ -317,7 +317,7 @@ export class AddonMessagesProvider {
             userid: userId,
         };
 
-        if (typeof read != 'undefined') {
+        if (read !== undefined) {
             params.read = read;
         }
 
@@ -1075,10 +1075,10 @@ export class AddonMessagesProvider {
             preSets.getFromCache = false;
             preSets.emergencyCache = false;
         }
-        if (typeof type != 'undefined' && type != null) {
+        if (type !== undefined && type != null) {
             params.type = type;
         }
-        if (typeof favourites != 'undefined' && favourites != null) {
+        if (favourites !== undefined && favourites != null) {
             params.favourites = !!favourites;
         }
         if (site.isVersionGreaterEqualThan('3.7') && type != AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
@@ -1244,7 +1244,7 @@ export class AddonMessagesProvider {
             userId: number,
             userFullname: string,
         ): void => {
-            if (typeof discussions[userId] === 'undefined') {
+            if (discussions[userId] === undefined) {
                 discussions[userId] = {
                     fullname: userFullname,
                     profileimageurl: '',
@@ -1259,7 +1259,7 @@ export class AddonMessagesProvider {
 
             // Extract the most recent message. Pending messages are considered more recent than messages already sent.
             const discMessage = discussions[userId].message;
-            if (typeof discMessage === 'undefined' || (!discMessage.pending && message.pending) ||
+            if (discMessage === undefined || (!discMessage.pending && message.pending) ||
                 (discMessage.pending == message.pending && (discMessage.timecreated < message.timecreated ||
                     (discMessage.timecreated == message.timecreated && discMessage.id < messageId)))) {
 
@@ -2646,7 +2646,7 @@ export class AddonMessagesProvider {
             conversationid: conversationId,
             messages: messages.map((message) => ({
                 text: message.text,
-                textformat: typeof message.textformat != 'undefined' ? message.textformat : 1,
+                textformat: message.textformat !== undefined ? message.textformat : 1,
             })),
         };
 

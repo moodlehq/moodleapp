@@ -254,17 +254,17 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data => {
             if (discussion && this.forumId && (this.forumId === data.forumId || data.cmId === this.cmId)) {
                 AddonModForum.invalidateDiscussionsList(this.forumId).finally(() => {
-                    if (typeof data.locked != 'undefined') {
+                    if (data.locked !== undefined) {
                         discussion.locked = data.locked;
                     }
-                    if (typeof data.pinned != 'undefined') {
+                    if (data.pinned !== undefined) {
                         discussion.pinned = data.pinned;
                     }
-                    if (typeof data.starred != 'undefined') {
+                    if (data.starred !== undefined) {
                         discussion.starred = data.starred;
                     }
 
-                    if (typeof data.deleted != 'undefined' && data.deleted) {
+                    if (data.deleted !== undefined && data.deleted) {
                         if (!data.post?.parentid) {
                             this.goBack();
                         } else {
@@ -469,7 +469,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 // Now try to get the forum.
                 const forum = await this.fetchForum();
                 // "forum.istracked" is more reliable than "trackPosts".
-                if (typeof forum.istracked != 'undefined') {
+                if (forum.istracked !== undefined) {
                     this.trackPosts = forum.istracked;
                 }
 
