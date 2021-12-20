@@ -415,10 +415,8 @@ Feature: Test basic usage of one course in app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
-    And I press "Actions menu"
-    And I follow "More..."
-    And I follow "Users"
-    And I follow "Enrolment methods"
+    And I click on "Participants" "link"
+    And I select "Enrolment methods" from the "jump" singleselect
     And I click on "Enable" "icon" in the "Self enrolment (Student)" "table_row"
     And I close the browser tab opened by the app
     When I enter the app
@@ -455,10 +453,8 @@ Feature: Test basic usage of one course in app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
-    And I press "Actions menu"
-    And I follow "More..."
-    And I follow "Users"
-    And I follow "Enrolment methods"
+    And I click on "Participants" "link"
+    And I select "Enrolment methods" from the "jump" singleselect
     And I click on "Enable" "icon" in the "Guest access" "table_row"
     And I close the browser tab opened by the app
     When I enter the app
@@ -485,30 +481,11 @@ Feature: Test basic usage of one course in app
     And I should find "Test scorm name" in the app
     And I should find "Test workshop name" in the app
 
-  # TODO remove LMS UI steps in app tests
   Scenario: View blocks on drawer
-    Given I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
-    And I press "Display options" in the app
-    And I press "Course summary" in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "teacher1"
-    And I click on "Edit mode" "checkbox"
-    And I click on "Side panel" "button"
-    And I follow "Add a block"
-    And I follow "Text"
-    And I click on "Side panel" "button"
-    And I follow "Add a block"
-    And I follow "Activities"
-    And I click on "Open block drawer" "button"
-    And I click on "Actions menu" "icon" in the "#action-menu-toggle-0" "css_element"
-    And I follow "Configure (new text block) block"
-    And I set the field "Text block title" to "HTML title test"
-    And I set the field "Content" to "body test"
-    And I press "Save changes"
-    And I close the browser tab opened by the app
+    Given the following "blocks" exist:
+      | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |
+      | html             | Course       | C1        | course-view-*   | site-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
+      | activity_modules | Course       | C1        | course-view-*   | site-pre      |                                                                                                              |
     When I enter the app
     And I log in as "student1"
     And I enter the course "Course 1" in the app

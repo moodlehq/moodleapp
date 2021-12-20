@@ -199,7 +199,6 @@ Feature: Test basic usage of choice activity in app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
-    And I press "Actions menu"
     And I follow "Responses"
     And I press "Download in text format"
     # TODO Then I should find "..." in the downloads folder
