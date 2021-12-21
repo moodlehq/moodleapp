@@ -131,6 +131,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
      */
     startSearch(): void {
         this.isSearch = true;
+        this.setDirty(true);
     }
 
     /**
@@ -148,6 +149,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
         this.hasSearched = false;
         this.onlineEntries = cachedOnlineEntries;
         this.hasMoreItems = hasMoreOnlineEntries;
+        this.setDirty(true);
     }
 
     /**
@@ -177,6 +179,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
             'ASC',
         );
         this.hasSearched = true;
+        this.setDirty(true);
     }
 
     /**
@@ -209,6 +212,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
 
         this.fetchMode = mode;
         this.isSearch = false;
+        this.setDirty(true);
 
         switch (mode) {
             case 'author_all':
