@@ -28,6 +28,7 @@ import { CoreAriaButtonClickDirective } from './aria-button';
 import { CoreOnResizeDirective } from './on-resize';
 import { CoreDownloadFileDirective } from './download-file';
 import { CoreCollapsibleHeaderDirective } from './collapsible-header';
+import { CoreSwipeNavigationDirective } from './swipe-navigation';
 
 @NgModule({
     declarations: [
@@ -45,6 +46,7 @@ import { CoreCollapsibleHeaderDirective } from './collapsible-header';
         CoreOnResizeDirective,
         CoreDownloadFileDirective,
         CoreCollapsibleHeaderDirective,
+        CoreSwipeNavigationDirective,
     ],
     exports: [
         CoreAutoFocusDirective,
@@ -61,6 +63,7 @@ import { CoreCollapsibleHeaderDirective } from './collapsible-header';
         CoreOnResizeDirective,
         CoreDownloadFileDirective,
         CoreCollapsibleHeaderDirective,
+        CoreSwipeNavigationDirective,
     ],
 })
 export class CoreDirectivesModule {}
