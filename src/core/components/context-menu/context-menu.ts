@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { auditTime } from 'rxjs/operators';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -43,16 +43,17 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     protected parentContextMenu?: CoreContextMenuComponent;
     protected expanded = false;
 
-    constructor(elementRef: ElementRef) {
+    constructor(elementRef: ElementRef, changeDetector: ChangeDetectorRef) {
         // Create the stream and subscribe to it. We ignore successive changes during 250ms.
         this.itemsChangedStream = new Subject<void>();
-        this.itemsChangedStream.pipe(auditTime(250));
-        this.itemsChangedStream.subscribe(() => {
+        this.itemsChangedStream.pipe(auditTime(250)).subscribe(() => {
             // Hide the menu if all items are hidden.
             this.hideMenu = !this.items.some((item) => !item.hidden);
 
             // Sort the items by priority.
             this.items.sort((a, b) => (a.priority || 0) <= (b.priority || 0) ? 1 : -1);
+
+            changeDetector.detectChanges();
         });
 
         // Calculate the unique ID.
@@ -118,7 +119,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
 
         // Remove all items from the current menu.
         this.items = [];
-        this.itemsChanged();
+        this.itemsChangedStream.next();
     }
 
     /**
