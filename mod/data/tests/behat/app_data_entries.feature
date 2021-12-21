@@ -32,9 +32,7 @@ Feature: Users can manage entries in database activities
     And I log out
 
   Scenario: Create entry
-    Given I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "student1" in the app
     And I press "Web links" near "General" in the app
     And I should see "No entries in database"
     When I press "Add entries" in the app
@@ -45,17 +43,13 @@ Feature: Users can manage entries in database activities
     And I should see "Moodle community site"
 
   Scenario: Browse entry
-    Given I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "student1" in the app
     And I press "Web links" near "General" in the app
     And I press "Add entries" in the app
     And I set the field "URL" to "https://moodle.org/" in the app
     And I set the field "Description" to "Moodle community site" in the app
     And I press "Save" near "Web links" in the app
-    When I enter the app
-    And I log in as "student2"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student2" in the app
     And I press "Web links" near "General" in the app
     And I press "Add entries" in the app
     And I set the field "URL" to "https://moodlecloud.com/" in the app
@@ -77,17 +71,13 @@ Feature: Users can manage entries in database activities
     And I should see "Moodle Cloud"
 
   Scenario: Students can not edit or delete other user's entries from list and single view in the app
-    Given I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "student1" in the app
     And I press "Web links" near "General" in the app
     And I press "Add entries" in the app
     And I set the field "URL" to "https://moodle.org/" in the app
     And I set the field "Description" to "Moodle community site" in the app
     And I press "Save" near "Web links" in the app
-    When I enter the app
-    And I log in as "student2"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student2" in the app
     And I press "Web links" near "General" in the app
     Then "Edit" "link" should not exist
     And "Delete" "link" should not exist
@@ -96,9 +86,7 @@ Feature: Users can manage entries in database activities
     And "Delete" "link" should not exist
 
   Scenario: Delete entry (student) & Update entry (student)
-    Given I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "student1" in the app
     And I press "Web links" near "General" in the app
     And I press "Add entries" in the app
     And I set the field "URL" to "https://moodle.org/" in the app
@@ -144,9 +132,7 @@ Feature: Users can manage entries in database activities
     And I should see "No entries in database"
 
   Scenario: Delete entry (teacher) & Update entry (teacher)
-    Given I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "student1" in the app
     And I press "Web links" near "General" in the app
     And I press "Add entries" in the app
     And I set the field "URL" to "https://moodle.org/" in the app
@@ -156,9 +142,7 @@ Feature: Users can manage entries in database activities
     And I set the field "URL" to "https://telegram.org/" in the app
     And I set the field "Description" to "Telegram" in the app
     And I press "Save" near "Web links" in the app
-    When I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "teacher1" in the app
     And I press "Web links" near "General" in the app
     Then I should see "https://moodle.org/"
     And I should see "Moodle community site"

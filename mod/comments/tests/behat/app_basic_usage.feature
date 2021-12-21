@@ -26,9 +26,7 @@ Feature: Test basic usage of comments in app
   @app @3.8.0
   Scenario: Add comments & Delete comments (database)
     # Create database entry and comment as a teacher
-    Given I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "teacher1" in the app
     And I press "Data" in the app
     And I press "Display options" in the app
     And I press "Open in browser" in the app
@@ -39,9 +37,7 @@ Feature: Test basic usage of comments in app
         | Field description | Test field description |
     And I press "Save"
     And I close the browser tab opened by the app
-    When I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "teacher1" in the app
     And I press "Data" in the app
     And I press "add" in the app
     And I set the field "Test field name" to "Test" in the app
@@ -58,9 +54,7 @@ Feature: Test basic usage of comments in app
     And I should see "Comments (1)"
 
     # Create and delete comments as a student
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Data" in the app
     And I press "More" in the app
     And I press "Comments (1)" in the app
@@ -85,9 +79,7 @@ Feature: Test basic usage of comments in app
 
   @app @3.8.0
   Scenario: Add comments offline & Delete comments offline & Sync comments (database)
-    Given I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "teacher1" in the app
     And I press "Data" in the app
     And I press "Display options" in the app
     And I press "Open in browser" in the app
@@ -98,9 +90,7 @@ Feature: Test basic usage of comments in app
         | Field description | Test field description |
     And I press "Save"
     And I close the browser tab opened by the app
-    When I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "teacher1" in the app
     And I press "Data" in the app
     And I press "add" in the app
     And I set the field "Test field name" to "Test" in the app
@@ -148,9 +138,7 @@ Feature: Test basic usage of comments in app
   @app @3.8.0
   Scenario: Add comments & delete comments (glossary)
     # Create glossary entry and comment as a teacher
-    When I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "teacher1" in the app
     And I press "Test glossary" in the app
     And I press "close" in the app
     And I set the field "Concept" to "potato" in the app
@@ -167,9 +155,7 @@ Feature: Test basic usage of comments in app
     And I should see "Comments (1)"
 
     # Create and delete comments as a student
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Test glossary" in the app
     And I press "potato" in the app
     And I press "Comments (1)" in the app
@@ -194,9 +180,7 @@ Feature: Test basic usage of comments in app
 
   @app @3.8.0
   Scenario: Add comments offline & Delete comments offline & Sync comments (glossary)
-    When I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "teacher1" in the app
     And I press "Test glossary" in the app
     And I press "close" in the app
     And I set the field "Concept" to "potato" in the app
@@ -245,9 +229,7 @@ Feature: Test basic usage of comments in app
   @app @3.8.0
   Scenario: Add comments & Delete comments (blogs)
     # Create blog as a teacher
-    Given I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "teacher1" in the app
     And I press "menu" in the app
     And I press "Website" in the app
     And I switch to the browser tab opened by the app
@@ -266,9 +248,7 @@ Feature: Test basic usage of comments in app
     And I close the browser tab opened by the app
 
     # Create and delete comments as a student
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "menu" in the app
     And I press "Site blog" in the app
     Then I should see "Blog test"
@@ -295,9 +275,7 @@ Feature: Test basic usage of comments in app
   @app @3.8.0
   Scenario: Add comments offline & Delete comments offline & Sync comments (blogs)
     # Create blog as a teacher
-    Given I enter the app
-    And I log in as "teacher1"
-    And I enter the course "Course 1" in the app
+    Given I enter the course "Course 1" as "teacher1" in the app
     And I press "menu" in the app
     And I press "Website" in the app
     And I switch to the browser tab opened by the app
@@ -316,9 +294,7 @@ Feature: Test basic usage of comments in app
     And I close the browser tab opened by the app
 
     # Create and delete comments as a student
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "menu" in the app
     And I press "Site blog" in the app
     Then I should see "Blog test"

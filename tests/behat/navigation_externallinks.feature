@@ -19,9 +19,7 @@ Feature: It opens external links properly.
       | Test forum | student1 | Forum topic | See <a href="https://moodle.org/">moodle.org</a> |
 
   Scenario: Click an external link
-    When I enter the app
-    And I log in as "student1"
-    And I enter the course "Course 1" in the app
+    When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum" in the app
     And I press "Forum topic" in the app
     And I press "moodle.org" in the app
