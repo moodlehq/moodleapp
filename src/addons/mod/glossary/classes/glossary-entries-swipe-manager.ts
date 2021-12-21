@@ -24,29 +24,8 @@ export abstract class AddonModGlossaryEntriesSwipeManager
     /**
      * @inheritdoc
      */
-    async navigateToNextItem(): Promise<void> {
-        let delta = -1;
-        const item = await this.getItemBy(-1);
-
-        if (item && this.getSource().isNewEntryForm(item)) {
-            delta--;
-        }
-
-        await this.navigateToItemBy(delta, 'back');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async navigateToPreviousItem(): Promise<void> {
-        let delta = 1;
-        const item = await this.getItemBy(1);
-
-        if (item && this.getSource().isNewEntryForm(item)) {
-            delta++;
-        }
-
-        await this.navigateToItemBy(delta, 'forward');
+    protected skipItemInSwipe(item: AddonModGlossaryEntryItem): boolean {
+        return this.getSource().isNewEntryForm(item);
     }
 
 }

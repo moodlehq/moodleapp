@@ -95,7 +95,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Promise resolved with boolean: whether the module can use check updates WS.
      */
     async canModuleUseCheckUpdates(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
 
         if (!handler) {
             // Module not supported, cannot use check updates.
@@ -171,7 +171,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Module status.
      */
     determineModuleStatus(module: CoreCourseAnyModuleData, status: string): string {
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
         const siteId = CoreSites.getCurrentSiteId();
 
         if (!handler) {
@@ -203,7 +203,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      */
     async downloadModule(module: CoreCourseAnyModuleData, courseId: number, dirPath?: string): Promise<void> {
         // Check if the module has a prefetch handler.
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
 
         if (!handler) {
             return;
@@ -381,7 +381,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Promise resolved with the size.
      */
     async getModuleDownloadSize(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreFileSizeSum> {
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
 
         if (!handler) {
             return { size: 0, total: false };
@@ -419,7 +419,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Promise resolved with the size.
      */
     async getModuleDownloadedSize(module: CoreCourseAnyModuleData, courseId: number): Promise<number> {
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
         if (!handler) {
             return 0;
         }
@@ -492,7 +492,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         }
 
         const site = CoreSites.getCurrentSite();
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
         if (!handler || !site) {
             // If there is no handler then we can't find out the component name.
             // We can't work out the cached size, so just return downloaded size.
@@ -515,7 +515,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         module: CoreCourseAnyModuleData,
         courseId: number,
     ): Promise<(CoreWSFile | CoreCourseModuleContentFile)[]> {
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
 
         if (handler?.getFiles) {
             // The handler defines a function to get files, use it.
@@ -548,7 +548,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         refresh?: boolean,
         sectionId?: number,
     ): Promise<string> {
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
 
         if (!handler) {
             // No handler found, module not downloadable.
@@ -712,7 +712,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         }
 
         await Promise.all(modules.map(async (module) => {
-            const handler = this.getPrefetchHandlerFor(module.name);
+            const handler = this.getPrefetchHandlerFor(module.modname);
             if (!handler || (onlyToDisplay && handler.skipListStatus)) {
                 return;
             }
@@ -758,7 +758,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         module: CoreCourseAnyModuleData,
         courseId: number,
     ): Promise<{ status: string; downloadTime?: number }> {
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
         const siteId = CoreSites.getCurrentSiteId();
 
         if (!handler) {
@@ -895,7 +895,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
     async invalidateModules(modules: CoreCourseModuleData[], courseId: number): Promise<void> {
 
         const promises = modules.map(async (module) => {
-            const handler = this.getPrefetchHandlerFor(module.name);
+            const handler = this.getPrefetchHandlerFor(module.modname);
             if (!handler) {
                 return;
             }
@@ -919,7 +919,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @param module Module to be invalidated.
      */
     invalidateModuleStatusCache(module: CoreCourseAnyModuleData): void {
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
         if (handler) {
             this.statusCache.invalidate(CoreFilepool.getPackageId(handler.component, module.id));
         }
@@ -964,7 +964,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             return false;
         }
 
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
         if (!handler) {
             return false;
         }
@@ -1000,7 +1000,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Promise resolved with boolean: whether the module has updates.
      */
     async moduleHasUpdates(module: CoreCourseAnyModuleData, courseId: number, updates: CourseUpdates): Promise<boolean> {
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
         const moduleUpdates = updates[module.id];
 
         if (handler?.hasUpdates) {
@@ -1033,7 +1033,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Promise resolved when finished.
      */
     async prefetchModule(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<void> {
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
         if (!handler) {
             return;
         }
@@ -1067,7 +1067,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Promise resolved when finished.
      */
     async syncModule<T = unknown>(module: CoreCourseAnyModuleData, courseId: number): Promise<T | undefined> {
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
         if (!handler?.sync) {
             return;
         }
@@ -1124,7 +1124,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
 
         const promises = modules.map(async (module) => {
             // Check if the module has a prefetch handler.
-            const handler = this.getPrefetchHandlerFor(module.name);
+            const handler = this.getPrefetchHandlerFor(module.modname);
             if (!handler) {
                 return;
             }
@@ -1170,7 +1170,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Promise resolved when done.
      */
     async removeModuleFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        const handler = this.getPrefetchHandlerFor(module.name);
+        const handler = this.getPrefetchHandlerFor(module.modname);
         const siteId = CoreSites.getCurrentSiteId();
 
         if (handler?.removeFiles) {

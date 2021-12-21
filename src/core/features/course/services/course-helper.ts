@@ -1013,7 +1013,7 @@ export class CoreCourseHelperProvider {
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module.name);
+        const prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module.modname);
 
         if (prefetchHandler) {
             // Use the prefetch handler to download the module.
@@ -2048,7 +2048,7 @@ export class CoreCourseHelperProvider {
 
         promises.push(CoreCourseModulePrefetchDelegate.removeModuleFiles(module, courseId));
 
-        const handler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module.name);
+        const handler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module.modname);
         const site = CoreSites.getCurrentSite();
         if (handler && site) {
             promises.push(site.deleteComponentFromCache(handler.component, module.id));
