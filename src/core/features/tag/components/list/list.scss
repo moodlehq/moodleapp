@@ -1,7 +1,10 @@
+@import "~theme/globals";
+
 :host {
     line-height: 1.6;
 
     ion-badge {
         cursor: pointer;
+        @include margin-horizontal(4px, 4px);
     }
 }
