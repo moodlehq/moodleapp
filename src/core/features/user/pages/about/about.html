@@ -14,7 +14,7 @@
     </ion-refresher>
     <core-loading [hideUntil]="userLoaded">
         <ion-list *ngIf="user">
-            <ion-item class="ion-text-center core-user-profile-maininfo" lines="full">
+            <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" lines="full">
                 <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true">
                     <ion-button class="edit-avatar" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"
                         [attr.aria-label]="'core.user.newpicture' | translate" fill="clear" color="dark">

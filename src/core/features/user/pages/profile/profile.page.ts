@@ -47,7 +47,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     userLoaded = false;
     isLoadingHandlers = false;
     user?: CoreUserProfile;
-    title?: string;
     isDeleted = false;
     isEnrolled = true;
     rolesFormatted?: string;
@@ -128,7 +127,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             this.rolesFormatted = 'roles' in user ? CoreUserHelper.formatRoleList(user.roles) : '';
 
             this.user = user;
-            this.title = user.fullname;
 
             // If there's already a subscription, unsubscribe because we'll get a new one.
             this.subscription?.unsubscribe();

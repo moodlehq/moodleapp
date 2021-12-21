@@ -4,7 +4,7 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="title">{{ title }}</h1>
+            <h1>{{ user?.fullname }}</h1>
         </ion-title>
     </ion-toolbar>
 </ion-header>
@@ -15,7 +15,7 @@
         </ion-refresher>
         <core-loading [hideUntil]="userLoaded">
             <ion-list *ngIf="user && !isDeleted && isEnrolled">
-                <ion-item class="ion-text-center core-user-profile-maininfo">
+                <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap">
                     <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true">
                     </core-user-avatar>
                     <ion-label>
@@ -23,7 +23,7 @@
                         <p *ngIf="user.address">
                             <ion-icon name="fas-map-marker-alt" [attr.aria-hidden]="true"></ion-icon> {{ user.address }}
                         </p>
-                        <p *ngIf="rolesFormatted" class="ion-text-wrap">
+                        <p *ngIf="rolesFormatted">
                             <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
                             {{ rolesFormatted }}
                         </p>
