@@ -82,7 +82,13 @@ export class CoreSwipeNavigationItemsManager<
      * @param animationDirection Animation direction.
      */
     protected async navigateToItemBy(delta: number, animationDirection: 'forward' | 'back'): Promise<void> {
-        const item = await this.getItemBy(delta);
+        let item: Item | null;
+
+        do {
+            item = await this.getItemBy(delta);
+
+            delta += delta > 0 ? 1 : -1;
+        } while (item && this.skipItemInSwipe(item));
 
         if (!item) {
             return;
@@ -100,14 +106,15 @@ export class CoreSwipeNavigationItemsManager<
         const items = this.getSource().getItems();
 
         // Get selected item.
-        const index = (this.selectedItem && items?.indexOf(this.selectedItem)) ?? -1;
+        const selectedIndex = (this.selectedItem && items?.indexOf(this.selectedItem)) ?? -1;
+        const nextIndex = selectedIndex + delta;
 
-        if (index === -1) {
+        if (selectedIndex === -1 || nextIndex < 0) {
             return null;
         }
 
         // Get item by delta.
-        const item = items?.[index + delta] ?? null;
+        const item = items?.[nextIndex] ?? null;
 
         if (!item && !this.getSource().isCompleted()) {
             await this.getSource().load();
@@ -116,6 +123,17 @@ export class CoreSwipeNavigationItemsManager<
         }
 
         return item;
+    }
+
+    /**
+     * Check if an item should be skipped during swipe navigation.
+     *
+     * @param item Item.
+     * @returns Whether to skip this item during swipe navigation.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected skipItemInSwipe(item: Item): boolean {
+        return false;
     }
 
 }

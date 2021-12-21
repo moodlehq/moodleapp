@@ -24,29 +24,8 @@ export class AddonModForumDiscussionsSwipeManager
     /**
      * @inheritdoc
      */
-    async navigateToNextItem(): Promise<void> {
-        let delta = -1;
-        const item = await this.getItemBy(-1);
-
-        if (item && this.getSource().isNewDiscussionForm(item)) {
-            delta--;
-        }
-
-        await this.navigateToItemBy(delta, 'back');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async navigateToPreviousItem(): Promise<void> {
-        let delta = 1;
-        const item = await this.getItemBy(1);
-
-        if (item && this.getSource().isNewDiscussionForm(item)) {
-            delta++;
-        }
-
-        await this.navigateToItemBy(delta, 'forward');
+    protected skipItemInSwipe(item: AddonModForumDiscussionItem): boolean {
+        return this.getSource().isNewDiscussionForm(item);
     }
 
 }
