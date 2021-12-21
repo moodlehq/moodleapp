@@ -43,29 +43,30 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
     user?: CoreUserProfile;
     course?: CoreEnrolledCourseData;
     badge?: AddonBadgesUserBadge;
-    badges?: CoreSwipeNavigationItemsManager;
+    badges: CoreSwipeNavigationItemsManager;
     badgeLoaded = false;
     currentTime = 0;
 
-    constructor(protected route: ActivatedRoute) { }
-
-    /**
-     * View loaded.
-     */
-    ngOnInit(): void {
+    constructor(protected route: ActivatedRoute) {
         this.courseId = CoreNavigator.getRouteNumberParam('courseId') || this.courseId; // Use 0 for site badges.
         this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getRequiredCurrentSite().getUserId();
         this.badgeHash = CoreNavigator.getRouteParam('badgeHash') || '';
-
-        this.fetchIssuedBadge().finally(() => {
-            this.badgeLoaded = true;
-        });
 
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
             AddonBadgesUserBadgesSource,
             [this.courseId, this.userId],
         );
+
         this.badges = new CoreSwipeNavigationItemsManager(source);
+    }
+
+    /**
+     * View loaded.
+     */
+    ngOnInit(): void {
+        this.fetchIssuedBadge().finally(() => {
+            this.badgeLoaded = true;
+        });
 
         this.badges.start();
     }

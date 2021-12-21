@@ -17,6 +17,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, Optional, ViewChild } from
 import { ActivatedRoute } from '@angular/router';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CorePromisedValue } from '@classes/promised-value';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
@@ -70,7 +71,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     canAdd = false;
     loadMoreError = false;
     loadingMessage: string;
-    entries!: AddonModGlossaryEntriesManager;
+    promisedEntries: CorePromisedValue<AddonModGlossaryEntriesManager>;
     hasOfflineRatings = false;
 
     protected syncEventName = AddonModGlossarySyncProvider.AUTO_SYNCED;
@@ -92,18 +93,23 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         super('AddonModGlossaryIndexComponent', content, courseContentsPage);
 
         this.loadingMessage = Translate.instant('core.loading');
+        this.promisedEntries = new CorePromisedValue();
+    }
+
+    get entries(): AddonModGlossaryEntriesManager | null {
+        return this.promisedEntries.value;
     }
 
     get glossary(): AddonModGlossaryGlossary | undefined {
-        return this.entries.getSource().glossary;
+        return this.entries?.getSource().glossary;
     }
 
     get isSearch(): boolean {
-        return this.entries.getSource().isSearch;
+        return this.entries?.getSource().isSearch ?? false;
     }
 
     get hasSearched(): boolean {
-        return this.entries.getSource().hasSearched;
+        return this.entries?.getSource().hasSearched ?? false;
     }
 
     /**
@@ -118,10 +124,10 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             [this.courseId, this.module.id, this.courseContentsPage ? `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` : ''],
         );
 
-        this.entries = new AddonModGlossaryEntriesManager(
+        this.promisedEntries.resolve(new AddonModGlossaryEntriesManager(
             source,
             this.route.component,
-        );
+        ));
 
         this.sourceUnsubscribe = source.addListener({
             onItemsUpdated: items => this.hasOffline = !!items.find(item => source.isOfflineEntry(item)),
@@ -156,13 +162,10 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
+        const entries = await this.promisedEntries;
+
         await this.loadContent(false, true);
-
-        if (!this.glossary) {
-            return;
-        }
-
-        await this.entries.start(this.splitView);
+        await entries.start(this.splitView);
 
         try {
             CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
@@ -175,8 +178,10 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * @inheritdoc
      */
     protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
+        const entries = await this.promisedEntries;
+
         try {
-            await this.entries.getSource().loadGlossary();
+            await entries.getSource().loadGlossary();
 
             if (!this.glossary) {
                 return;
@@ -187,7 +192,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
             this.dataRetrieved.emit(this.glossary);
 
-            if (!this.entries.getSource().fetchMode) {
+            if (!entries.getSource().fetchMode) {
                 this.switchMode('letter_all');
             }
 
@@ -198,7 +203,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
             const [hasOfflineRatings] = await Promise.all([
                 CoreRatingOffline.hasRatings('mod_glossary', 'entry', ContextLevel.MODULE, this.glossary.coursemodule),
-                refresh ? this.entries.reload() : this.entries.load(),
+                refresh ? entries.reload() : entries.load(),
             ]);
 
             this.hasOfflineRatings = hasOfflineRatings;
@@ -211,7 +216,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * @inheritdoc
      */
     protected async invalidateContent(): Promise<void> {
-        await this.entries.getSource().invalidateCache();
+        await this.entries?.getSource().invalidateCache();
     }
 
     /**
@@ -250,7 +255,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * @param mode New mode.
      */
     protected switchMode(mode: AddonModGlossaryFetchMode): void {
-        this.entries.getSource().switchMode(mode);
+        this.entries?.getSource().switchMode(mode);
 
         switch (mode) {
             case 'author_all':
@@ -304,10 +309,12 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * @return Promise resolved when done.
      */
     async loadMoreEntries(infiniteComplete?: () => void): Promise<void> {
+        const entries = await this.promisedEntries;
+
         try {
             this.loadMoreError = false;
 
-            await this.entries.load();
+            await entries.load();
         } catch (error) {
             this.loadMoreError = true;
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentries', true);
@@ -326,7 +333,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             return;
         }
 
-        const previousMode = this.entries.getSource().fetchMode;
+        const entries = await this.promisedEntries;
+        const previousMode = entries.getSource().fetchMode;
         const newMode = await CoreDomUtils.openPopover<AddonModGlossaryFetchMode>({
             component: AddonModGlossaryModePickerPopoverComponent,
             componentProps: {
@@ -357,6 +365,10 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * Toggles between search and fetch mode.
      */
     toggleSearch(): void {
+        if (!this.entries) {
+            return;
+        }
+
         if (this.isSearch) {
             const fetchMode = this.entries.getSource().fetchMode;
 
@@ -393,7 +405,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * Opens new entry editor.
      */
     openNewEntry(): void {
-        this.entries.select(AddonModGlossaryEntriesSource.NEW_ENTRY);
+        this.entries?.select(AddonModGlossaryEntriesSource.NEW_ENTRY);
     }
 
     /**
@@ -405,7 +417,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         this.loadingMessage = Translate.instant('core.searching');
         this.loaded = false;
 
-        this.entries.getSource().search(query);
+        this.entries?.getSource().search(query);
         this.loadContent();
     }
 
@@ -419,7 +431,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         this.ratingOfflineObserver?.off();
         this.ratingSyncObserver?.off();
         this.sourceUnsubscribe?.call(null);
-        this.entries.destroy();
+        this.entries?.destroy();
     }
 
 }

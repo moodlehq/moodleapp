@@ -559,6 +559,7 @@
   "addon.mod_feedback.analysis": "feedback",
   "addon.mod_feedback.anonymous": "feedback",
   "addon.mod_feedback.anonymous_entries": "feedback",
+  "addon.mod_feedback.anonymous_user": "feedback",
   "addon.mod_feedback.average": "feedback",
   "addon.mod_feedback.captchaofflinewarning": "local_moodlemobileapp",
   "addon.mod_feedback.complete_the_form": "feedback",

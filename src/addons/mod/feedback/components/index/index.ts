@@ -400,15 +400,15 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     }
 
     /**
-     * Open respondents page.
+     * Open attempts page.
      */
-    openRespondents(): void {
+    openAttempts(): void {
         if (!this.access!.canviewreports || this.completedCount <= 0) {
             return;
         }
 
         CoreNavigator.navigateToSitePath(
-            AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/respondents`,
+            AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/attempts`,
             {
                 params: {
                     group: this.group,
