@@ -303,6 +303,10 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected loadFilters(
         config?: Record<string, { name: string; value: string; type: string }>,
     ): void {
+        if (!this.hasCourses) {
+            return;
+        }
+
         this.textFilter = '';
 
         const sampleCourse = this.allCourses[0];
