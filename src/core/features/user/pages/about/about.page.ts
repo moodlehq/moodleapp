@@ -49,6 +49,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
     formattedAddress?: string;
     encodedAddress?: SafeUrl;
     canChangeProfilePicture = false;
+    interests?: string[];
 
     protected userId!: number;
     protected site!: CoreSite;
@@ -106,6 +107,10 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
                 this.formattedAddress = CoreUserHelper.formatAddress(user.address, user.city, user.country);
                 this.encodedAddress = CoreTextUtils.buildAddressURL(this.formattedAddress);
             }
+
+            this.interests = user.interests ?
+                user.interests.split(',').map(interest => interest.trim()) :
+                undefined;
 
             this.hasContact = !!(user.email || user.phone1 || user.phone2 || user.city || user.country || user.address);
             this.hasDetails = !!(user.url || user.interests || (user.customfields && user.customfields.length > 0));
@@ -248,6 +253,17 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
         }
 
         return avatarUrl;
+    }
+
+    /**
+     * Open a user interest.
+     *
+     * @param interest Interest name.
+     */
+    openInterest(interest: string): void {
+        CoreNavigator.navigateToSitePath('/tag/index', { params: {
+            tagName: interest,
+        } });
     }
 
     /**

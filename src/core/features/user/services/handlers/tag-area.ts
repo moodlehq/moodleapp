@@ -68,6 +68,7 @@ export class CoreUserTagAreaHandlerService implements CoreTagAreaHandler {
                 avatarUrl,
                 heading: userbox.innerText,
                 details: [],
+                url: profileUrl,
                 user: {
                     id: Number(match[1]),
                     profileimageurl: avatarUrl || '',
