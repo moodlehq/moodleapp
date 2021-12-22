@@ -84,6 +84,7 @@ import { CoreSitePluginsWorkshopAssessmentStrategyHandler } from '../classes/han
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
+import { CoreObject } from '@singletons/object';
 
 const HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
 
@@ -615,9 +616,11 @@ export class CoreSitePluginsHelperProvider {
             if (result.jsResult) {
                 // Override default handler functions with the result of the method JS.
                 const jsResult = <Record<string, unknown>> result.jsResult;
-                for (const property in handler) {
-                    if (property != 'constructor' && typeof handler[property] == 'function' &&
-                            typeof jsResult[property] == 'function') {
+                const handlerProperties = CoreObject.getAllPropertyNames(handler);
+
+                for (const property of handlerProperties) {
+                    if (property !== 'constructor' && typeof handler[property] === 'function' &&
+                            typeof jsResult[property] === 'function') {
                         // eslint-disable-next-line @typescript-eslint/ban-types
                         handler[property] = (<Function> jsResult[property]).bind(handler);
                     }

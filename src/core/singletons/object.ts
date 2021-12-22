@@ -37,6 +37,25 @@ export class CoreObject {
     }
 
     /**
+     * Get all the properties names of an object, including the inherited ones except the ones from Object.prototype.
+     *
+     * @param object Object to get its properties.
+     * @return Set of property names.
+     */
+    static getAllPropertyNames(object: unknown): Set<string> {
+        if (typeof object !== 'object' || object === null || object === Object.prototype) {
+            // Not an object or we already reached root level.
+            return new Set<string>([]);
+        }
+
+        const properties = CoreObject.getAllPropertyNames(Object.getPrototypeOf(object));
+
+        Object.getOwnPropertyNames(object).forEach(property => properties.add(property));
+
+        return properties;
+    }
+
+    /**
      * Check whether the given object is empty.
      *
      * @param object Object.
