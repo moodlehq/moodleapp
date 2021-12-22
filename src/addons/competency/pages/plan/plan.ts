@@ -19,7 +19,6 @@ import { AddonCompetencyHelper } from '../../services/competency-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUserProfile } from '@features/user/services/user';
 import { IonRefresher } from '@ionic/angular';
-import { ADDON_COMPETENCY_MAIN_PAGE_NAME } from '@addons/competency/competency.module';
 
 /**
  * Page that displays a learning plan.
@@ -79,10 +78,9 @@ export class AddonCompetencyPlanPage implements OnInit {
      * @param competencyId
      */
     openCompetency(competencyId: number): void {
-        CoreNavigator.navigateToSitePath(
-            ADDON_COMPETENCY_MAIN_PAGE_NAME + '/competencies/' + competencyId,
-            { params: { planId: this.planId } },
-        );
+        CoreNavigator.navigate('./' + competencyId, {
+            params: { userId: this.user?.id },
+        });
     }
 
     /**

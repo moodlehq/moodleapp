@@ -19,7 +19,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import {
     AddonCompetencyDataForPlanPageCompetency, AddonCompetencyDataForCourseCompetenciesPageCompetency, AddonCompetency,
 } from '../../services/competency';
-import { Params, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
@@ -51,8 +51,7 @@ export class AddonCompetencyCompetenciesPage implements AfterViewInit, OnDestroy
             this.userId = CoreNavigator.getRouteNumberParam('userId', { route });
         }
 
-        this.competencies =
-            new AddonCompetencyListManager(AddonCompetencyCompetenciesPage, this.planId, this.courseId, this.userId);
+        this.competencies = new AddonCompetencyListManager(AddonCompetencyCompetenciesPage, this.userId);
     }
 
     /**
@@ -133,14 +132,11 @@ type AddonCompetencyDataForPlanPageCompetencyFormatted =
  */
 class AddonCompetencyListManager extends CorePageItemsListManager<AddonCompetencyDataForPlanPageCompetencyFormatted> {
 
-    planId?: number;
-    courseId?: number;
-    userId?: number;
+    private userId?: number;
 
-    constructor(pageComponent: unknown, planId?: number, courseId?: number, userId?: number) {
+    constructor(pageComponent: unknown, userId?: number) {
         super(pageComponent);
-        this.planId = planId;
-        this.courseId = courseId;
+
         this.userId = userId;
     }
 
@@ -155,11 +151,11 @@ class AddonCompetencyListManager extends CorePageItemsListManager<AddonCompetenc
      * @inheritdoc
      */
     protected getItemQueryParams(): Params {
-        if (this.planId) {
-            return { planId: this.planId };
-        } else {
-            return { courseId: this.courseId, userId: this.userId };
+        if (this.userId) {
+            return { userId: this.userId };
         }
+
+        return {};
     }
 
 }

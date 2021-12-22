@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ADDON_COMPETENCY_MAIN_PAGE_NAME } from '@addons/competency/competency.module';
+import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_LEARNING_PLANS_PAGE } from '@addons/competency/competency.module';
 import { Injectable } from '@angular/core';
+import { COURSE_PAGE_NAME } from '@features/course/course.module';
 import { CoreUserProfile } from '@features/user/services/user';
 import { CoreUserProfileHandler, CoreUserDelegateService, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonCompetency } from '../competency';
@@ -69,12 +71,8 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
                     event.preventDefault();
                     event.stopPropagation();
                     CoreNavigator.navigateToSitePath(
-                        ADDON_COMPETENCY_MAIN_PAGE_NAME + '/course/' + courseId,
-                        {
-                            params: { userId: user.id },
-                        },
+                        [COURSE_PAGE_NAME, courseId, PARTICIPANTS_PAGE_NAME, user.id, ADDON_COMPETENCY_COMPETENCIES_PAGE].join('/'),
                     );
-
                 },
             };
         } else {
@@ -85,7 +83,7 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
                 action: (event, user): void => {
                     event.preventDefault();
                     event.stopPropagation();
-                    CoreNavigator.navigateToSitePath(ADDON_COMPETENCY_MAIN_PAGE_NAME, {
+                    CoreNavigator.navigateToSitePath(ADDON_COMPETENCY_LEARNING_PLANS_PAGE, {
                         params: { userId: user.id },
                     });
                 },

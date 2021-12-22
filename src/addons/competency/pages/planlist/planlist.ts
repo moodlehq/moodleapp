@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -20,6 +20,8 @@ import { AddonCompetencyProvider, AddonCompetencyPlan, AddonCompetency } from '.
 import { AddonCompetencyHelper } from '../../services/competency-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CorePageItemsListManager } from '@classes/page-items-list-manager';
+import { ADDON_COMPETENCY_COMPETENCIES_PAGE } from '@addons/competency/competency.module';
+import { Params } from '@angular/router';
 
 /**
  * Page that displays the list of learning plans.
@@ -28,7 +30,7 @@ import { CorePageItemsListManager } from '@classes/page-items-list-manager';
     selector: 'page-addon-competency-planlist',
     templateUrl: 'planlist.html',
 })
-export class AddonCompetencyPlanListPage implements OnInit, AfterViewInit, OnDestroy {
+export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
@@ -36,14 +38,9 @@ export class AddonCompetencyPlanListPage implements OnInit, AfterViewInit, OnDes
     plans: AddonCompetencyPlanListManager;
 
     constructor() {
-        this.plans = new AddonCompetencyPlanListManager(AddonCompetencyPlanListPage);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
         this.userId = CoreNavigator.getRouteNumberParam('userId');
+
+        this.plans = new AddonCompetencyPlanListManager(AddonCompetencyPlanListPage, this.userId);
     }
 
     /**
@@ -118,15 +115,30 @@ type AddonCompetencyPlanFormatted = AddonCompetencyPlan & {
  */
 class AddonCompetencyPlanListManager extends CorePageItemsListManager<AddonCompetencyPlanFormatted> {
 
-    constructor(pageComponent: unknown) {
+    private userId?: number;
+
+    constructor(pageComponent: unknown, userId?: number) {
         super(pageComponent);
+
+        this.userId = userId;
     }
 
     /**
      * @inheritdoc
      */
     protected getItemPath(plan: AddonCompetencyPlanFormatted): string {
-        return String(plan.id);
+        return `${plan.id}/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getItemQueryParams(): Params {
+        if (this.userId) {
+            return { userId: this.userId };
+        }
+
+        return {};
     }
 
 }

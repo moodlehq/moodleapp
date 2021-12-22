@@ -19,7 +19,7 @@ import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { ADDON_COMPETENCY_MAIN_PAGE_NAME } from '@addons/competency/competency.module';
+import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/competency.module';
 
 /**
  * Page that displays the competency summary.
@@ -101,8 +101,8 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
      * @param competencyId
      */
     openCompetencySummary(competencyId: number): void {
-        CoreNavigator.navigateToSitePath(
-            ADDON_COMPETENCY_MAIN_PAGE_NAME + '/summary/' + competencyId,
+        CoreNavigator.navigate(
+            `../../${competencyId}/${ADDON_COMPETENCY_SUMMARY_PAGE}`,
             {
                 params: { contextLevel: this.contextLevel, contextInstanceId: this.contextInstanceId },
             },

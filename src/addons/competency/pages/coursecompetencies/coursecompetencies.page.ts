@@ -20,7 +20,7 @@ import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { ContextLevel } from '@/core/constants';
-import { ADDON_COMPETENCY_MAIN_PAGE_NAME } from '@addons/competency/competency.module';
+import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/competency.module';
 
 /**
  * Page that displays the list of competencies of a course.
@@ -80,12 +80,7 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit {
      * @param competencyId
      */
     openCompetency(competencyId: number): void {
-        CoreNavigator.navigateToSitePath(
-            ADDON_COMPETENCY_MAIN_PAGE_NAME + '/competencies/' + competencyId,
-            {
-                params: { courseId: this.courseId, userId: this.userId },
-            },
-        );
+        CoreNavigator.navigate('./' + competencyId);
     }
 
     /**
@@ -94,11 +89,15 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit {
      * @param competencyId
      */
     openCompetencySummary(competencyId: number): void {
-        CoreNavigator.navigateToSitePath(ADDON_COMPETENCY_MAIN_PAGE_NAME + '/summary/' + competencyId, {
-            params: {
-                contextLevel: ContextLevel.COURSE,
-                contextInstanceId: this.courseId,
-            } });
+        CoreNavigator.navigateToSitePath(
+            `./${competencyId}/${ADDON_COMPETENCY_SUMMARY_PAGE}`,
+            {
+                params: {
+                    contextLevel: ContextLevel.COURSE,
+                    contextInstanceId: this.courseId,
+                },
+            },
+        );
     }
 
     /**

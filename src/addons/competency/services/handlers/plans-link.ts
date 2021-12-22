@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ADDON_COMPETENCY_MAIN_PAGE_NAME } from '@addons/competency/competency.module';
+import { ADDON_COMPETENCY_LEARNING_PLANS_PAGE } from '@addons/competency/competency.module';
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
@@ -36,7 +36,7 @@ export class AddonCompetencyPlansLinkHandlerService extends CoreContentLinksHand
         return [{
             action: (siteId: string): void => {
                 CoreNavigator.navigateToSitePath(
-                    ADDON_COMPETENCY_MAIN_PAGE_NAME,
+                    ADDON_COMPETENCY_LEARNING_PLANS_PAGE,
                     { params: { userId: params.userid }, siteId },
                 );
 
