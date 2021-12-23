@@ -91,7 +91,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
         const items = config.frontpageloggedin.split(',');
         const hasNewsItem = items.find((item) => parseInt(item, 10) == FrontPageItemNames['NEWS_ITEMS']);
 
-        const result = CoreCourseHelper.addHandlerDataForModules(
+        const result = await CoreCourseHelper.addHandlerDataForModules(
             [mainMenuBlock],
             this.siteHomeId,
             undefined,

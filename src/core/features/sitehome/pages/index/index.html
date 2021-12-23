@@ -7,6 +7,8 @@
             (action)="switchDownload()" iconAction="toggle" [(toggle)]="downloadEnabled"></core-context-menu-item>
         <core-context-menu-item [priority]="500" [content]="'addon.storagemanager.managestorage' | translate"
             (action)="manageCoursesStorage()" iconAction="fas-archive"></core-context-menu-item>
+        <core-context-menu-item [priority]="400" [content]="'addon.storagemanager.managecoursestorage' | translate"
+            (action)="manageCourseStorage()" iconAction="fas-archive"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
 <ion-content>

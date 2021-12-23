@@ -168,58 +168,60 @@ export class CoreCourseHelperProvider {
      * @param forCoursePage Whether the data will be used to render the course page.
      * @return Whether the sections have content.
      */
-    addHandlerDataForModules(
+    async addHandlerDataForModules(
         sections: CoreCourseWSSection[],
         courseId: number,
         completionStatus?: Record<string, CoreCourseCompletionActivityStatus>,
         courseName?: string,
         forCoursePage = false,
-    ): { hasContent: boolean; sections: CoreCourseSection[] } {
+    ): Promise<{ hasContent: boolean; sections: CoreCourseSection[] }> {
 
         let hasContent = false;
 
-        const formattedSections = sections.map<CoreCourseSection>((courseSection) => {
-            const section = {
-                ...courseSection,
-                hasContent: this.sectionHasContent(courseSection),
-            };
+        const formattedSections = await Promise.all(
+            sections.map<Promise<CoreCourseSection>>(async (courseSection) => {
+                const section = {
+                    ...courseSection,
+                    hasContent: this.sectionHasContent(courseSection),
+                };
 
-            if (!section.hasContent) {
-                return section;
-            }
-
-            hasContent = true;
-
-            section.modules.forEach(async (module) => {
-                module.handlerData = await CoreCourseModuleDelegate.getModuleDataFor(
-                    module.modname,
-                    module,
-                    courseId,
-                    section.id,
-                    forCoursePage,
-                );
-
-                if (!module.completiondata && completionStatus && completionStatus[module.id] !== undefined) {
-                    // Should not happen on > 3.6. Check if activity has completions and if it's marked.
-                    const activityStatus = completionStatus[module.id];
-
-                    module.completiondata = {
-                        state: activityStatus.state,
-                        timecompleted: activityStatus.timecompleted,
-                        overrideby: activityStatus.overrideby || 0,
-                        valueused: activityStatus.valueused,
-                        tracking: activityStatus.tracking,
-                        courseId,
-                        cmid: module.id,
-                    };
+                if (!section.hasContent) {
+                    return section;
                 }
 
-                // Check if the module is stealth.
-                module.isStealth = module.visibleoncoursepage === 0 || (!!module.visible && !section.visible);
-            });
+                hasContent = true;
 
-            return section;
-        });
+                await Promise.all(section.modules.map(async (module) => {
+                    module.handlerData = await CoreCourseModuleDelegate.getModuleDataFor(
+                        module.modname,
+                        module,
+                        courseId,
+                        section.id,
+                        forCoursePage,
+                    );
+
+                    if (!module.completiondata && completionStatus && completionStatus[module.id] !== undefined) {
+                        // Should not happen on > 3.6. Check if activity has completions and if it's marked.
+                        const activityStatus = completionStatus[module.id];
+
+                        module.completiondata = {
+                            state: activityStatus.state,
+                            timecompleted: activityStatus.timecompleted,
+                            overrideby: activityStatus.overrideby || 0,
+                            valueused: activityStatus.valueused,
+                            tracking: activityStatus.tracking,
+                            courseId,
+                            cmid: module.id,
+                        };
+                    }
+
+                    // Check if the module is stealth.
+                    module.isStealth = module.visibleoncoursepage === 0 || (!!module.visible && !section.visible);
+                }));
+
+                return section;
+            }),
+        );
 
         return { hasContent, sections: formattedSections };
     }

@@ -129,7 +129,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             // Check "Include a topic section" setting from numsections.
             this.section = config.numsections ? sections.find((section) => section.section == 1) : undefined;
             if (this.section) {
-                const result = CoreCourseHelper.addHandlerDataForModules(
+                const result = await CoreCourseHelper.addHandlerDataForModules(
                     [this.section],
                     this.siteHomeId,
                     undefined,
@@ -198,6 +198,13 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      */
     manageCoursesStorage(): void {
         CoreNavigator.navigateToSitePath('/storage');
+    }
+
+    /**
+     * Open page to manage course storage.
+     */
+    manageCourseStorage(): void {
+        CoreNavigator.navigateToSitePath('/storage/' + this.siteHomeId);
     }
 
     /**

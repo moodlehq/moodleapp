@@ -105,7 +105,7 @@ export class CoreCourseListModTypePage implements OnInit {
                 return section.modules.length > 0;
             });
 
-            const result = CoreCourseHelper.addHandlerDataForModules(sections, this.courseId);
+            const result = await CoreCourseHelper.addHandlerDataForModules(sections, this.courseId);
 
             this.sections = result.sections;
         } catch (error) {

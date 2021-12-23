@@ -314,7 +314,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         }
 
         // Add handlers
-        const result = CoreCourseHelper.addHandlerDataForModules(
+        const result = await CoreCourseHelper.addHandlerDataForModules(
             sections,
             this.course.id,
             completionStatus,

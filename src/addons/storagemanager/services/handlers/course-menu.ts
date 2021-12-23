@@ -49,7 +49,7 @@ export class AddonStorageManagerCourseMenuHandlerService implements CoreCourseOp
     ): CoreCourseOptionsMenuHandlerData {
         return {
             icon: 'fas-archive',
-            title: 'addon.storagemanager.managestorage',
+            title: 'addon.storagemanager.managecoursestorage',
             page: 'storage/' + course.id,
             class: 'addon-storagemanager-coursemenu-handler',
         };

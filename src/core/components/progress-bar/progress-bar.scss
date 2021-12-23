@@ -35,4 +35,11 @@
             border-radius: 0;
         }
     }
+
+    ion-progress-bar {
+        --progress-background: var(--color);
+        height: var(--height);
+        margin-top: calc((var(--line-height) - var(--height)) /2);
+        margin-bottom: calc((var(--line-height) - var(--height)) /2);
+    }
 }

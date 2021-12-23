@@ -4,5 +4,6 @@
     "deletedatafrom": "Offload data from {{name}}",
     "info": "Files stored on your device make the app work faster and enable the app to be used offline. You can safely offload files if you need to free up storage space.",
     "managestorage": "Manage storage",
+    "managecoursestorage": "Manage course storage",
     "storageused": "File storage used:"
 }

@@ -9,3 +9,12 @@
         font-size: 1.2rem;
     }
 }
+
+.storage-buttons {
+    display: flex;
+    align-items: center;
+}
+
+ion-item {
+    --inner-padding-end: 0px;
+}
