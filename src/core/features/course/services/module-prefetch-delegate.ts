@@ -457,13 +457,10 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
                         size += fileSize;
                     } catch {
                         // Error getting size. Check if the file is being downloaded.
-                        try {
-                            await CoreFilepool.isFileDownloadingByUrl(siteId, CoreFileHelper.getFileUrl(file));
-
+                        const isDownloading = await CoreFilepool.isFileDownloadingByUrl(siteId, CoreFileHelper.getFileUrl(file));
+                        if (isDownloading) {
                             // If downloading, count as downloaded.
                             size += file.filesize || 0;
-                        } catch {
-                            // Not downloading and not found in disk, don't add any size
                         }
                     }
                 }));

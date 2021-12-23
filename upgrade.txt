@@ -8,6 +8,7 @@ information provided here is intended especially for developers.
   Now you have to pass all items and 3 optional params have been added.
 - CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor now admits module name instead of full module object.
 - CoreCourse.getModuleBasicInfoByInstance and CoreCourse.getModuleBasicInfo have been modified to accept an "options" parameter instead of only siteId.
+- The function CoreFilepool.isFileDownloadingByUrl now returns Promise<boolean> instead of relying on resolve/reject.
 
 === 3.9.5 ===
 

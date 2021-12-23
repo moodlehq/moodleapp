@@ -364,7 +364,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             finalUrl = CoreFile.convertFileSrc(finalUrl);
         }
 
-        if (!CoreUrlUtils.isLocalFileUrl(finalUrl) && !finalUrl.includes('#')) {
+        if (!CoreUrlUtils.isLocalFileUrl(finalUrl) && !finalUrl.includes('#') && tagName !== 'A') {
             /* In iOS, if we use the same URL in embedded file and background download then the download only
                downloads a few bytes (cached ones). Add an anchor to the URL so both URLs are different.
                Don't add this anchor if the URL already has an anchor, otherwise other anchors might not work.

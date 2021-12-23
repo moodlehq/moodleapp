@@ -2280,13 +2280,19 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileUrl File URL.
-     * @param Promise resolved if file is downloading, rejected otherwise.
+     * @param Promise resolved with boolean: whether the file is downloading.
      */
-    async isFileDownloadingByUrl(siteId: string, fileUrl: string): Promise<void> {
+    async isFileDownloadingByUrl(siteId: string, fileUrl: string): Promise<boolean> {
         const file = await this.fixPluginfileURL(siteId, fileUrl);
         const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
 
-        await this.hasFileInQueue(siteId, fileId);
+        try {
+            await this.hasFileInQueue(siteId, fileId);
+
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     /**
