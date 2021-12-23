@@ -103,7 +103,7 @@ core-format-text {
                 color: var(--text-color);
                 margin: 0;
 
-                
+
                 .core-format-text-arrow {
                     width: var(--a11y-min-target-size);
                     height: var(--a11y-min-target-size);
@@ -210,6 +210,12 @@ core-format-text {
     // Disable clicks in links inside MathJax equations.
     .core-format-text-content .filter_mathjaxloader_equation .MathJax_Preview a {
         pointer-events: none;
+    }
+
+    .MathJax_SVG_Display {
+        overflow-x: auto;
+        margin: 0;
+        padding: 10px 0;
     }
 }
 
