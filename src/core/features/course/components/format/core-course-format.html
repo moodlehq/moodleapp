@@ -11,10 +11,8 @@
     <core-loading [hideUntil]="loaded">
         <!-- Section selector. -->
         <core-dynamic-component [component]="sectionSelectorComponent" [data]="data">
-
             <div *ngIf="displaySectionSelector && sections && hasSeveralSections"
-                class="ion-text-wrap ion-justify-content-between ion-align-items-center core-button-selector-row"
-                [class.core-section-download]="downloadEnabled">
+                class="ion-text-wrap ion-justify-content-between ion-align-items-center core-button-selector-row">
                 <core-combobox [modalOptions]="sectionSelectorModalOptions" interface="modal" listboxId="core-course-section-button"
                     icon="fas-folder" [label]="'core.course.section' | translate"
                     [selection]="selectedSection ? selectedSection.name : 'core.course.sections' | translate"
@@ -26,16 +24,14 @@
                         <ng-container *ngIf="!selectedSection">{{ 'core.course.sections' | translate }}</ng-container>
                     </span>
                 </core-combobox>
-                <!-- Section download. -->
-                <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: selectedSection}"></ng-container>
             </div>
         </core-dynamic-component>
 
         <!-- Course summary. By default we only display the course progress. -->
         <core-dynamic-component [component]="courseSummaryComponent" [data]="data">
-            <ion-list lines="none" class="core-format-progress-list" *ngIf="imageThumb || (selectedSection?.id == allSectionsId && progress !== undefined) ||
+            <ion-list *ngIf="imageThumb || (selectedSection?.id == allSectionsId && progress !== undefined) ||
                     (selectedSection && selectedSection.id != allSectionsId &&
-                    (selectedSection.availabilityinfo || selectedSection.visible === 0))">
+                    (selectedSection.availabilityinfo || selectedSection.visible === 0))" lines="none" class="core-format-progress-list">
                 <div *ngIf="imageThumb" class="core-course-thumb">
                     <img [src]="imageThumb" core-external-content alt="" />
                 </div>
@@ -103,8 +99,7 @@
             </ion-button>
         </ion-buttons>
 
-        <core-block-side-blocks-button *ngIf="course && displayBlocks && hasBlocks" [courseId]="course.id"
-            [downloadEnabled]="downloadEnabled">
+        <core-block-side-blocks-button *ngIf="course && displayBlocks && hasBlocks" [courseId]="course.id">
         </core-block-side-blocks-button>
     </core-loading>
 </core-dynamic-component>
@@ -114,7 +109,7 @@
     <section *ngIf="!section.hiddenbynumsections && section.id != allSectionsId && section.id != stealthModulesSectionId">
         <!-- Title is only displayed when viewing all sections. -->
         <ion-item-divider *ngIf="selectedSection?.id == allSectionsId && section.name" class="ion-text-wrap" color="light"
-            [class.core-section-download]="downloadEnabled" [class.item-dimmed]="section.visible === 0 || section.uservisible === false">
+            [class.item-dimmed]="section.visible === 0 || section.uservisible === false">
             <ion-label>
                 <h2>
                     <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="course?.id">
@@ -133,8 +128,6 @@
                     </ion-badge>
                 </p>
             </ion-label>
-            <!-- Section download. -->
-            <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: section}"></ng-container>
         </ion-item-divider>
 
         <ion-item class="ion-text-wrap" *ngIf="section.summary">
@@ -145,28 +138,10 @@
         </ion-item>
 
         <ng-container *ngFor="let module of section.modules">
-            <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [courseId]="course?.id"
-                [downloadEnabled]="downloadEnabled" [section]="section" (completionChanged)="onCompletionChange($event)"
-                (statusChanged)="onModuleStatusChange()" [showActivityDates]="course?.showactivitydates"
+            <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section"
+                (completionChanged)="onCompletionChange($event)" [showActivityDates]="course?.showactivitydates"
                 [showCompletionConditions]="course?.showcompletionconditions">
             </core-course-module>
         </ng-container>
     </section>
-</ng-template>
-
-<!-- Template to render a section download button/progress. -->
-<ng-template #sectionDownloadTemplate let-section="section">
-    <div *ngIf="section && downloadEnabled" slot="end" class="core-button-spinner">
-        <!-- Download progress. -->
-        <ion-badge class="core-course-download-section-progress"
-            *ngIf="section.isDownloading && section.total > 0 && section.count < section.total" role="progressbar"
-            [attr.aria-valuemax]="section.total" [attr.aria-valuenow]="section.count"
-            [attr.aria-valuetext]="'core.course.downloadsectionprogressdescription' | translate:section">
-            {{section.count}} / {{section.total}}
-        </ion-badge>
-
-        <core-download-refresh [status]="section.downloadStatus" [enabled]="downloadEnabled" (action)="prefetch(section)"
-            [loading]="section.isDownloading || section.isCalculating" [canTrustDownload]="true" size="small">
-        </core-download-refresh>
-    </div>
 </ng-template>

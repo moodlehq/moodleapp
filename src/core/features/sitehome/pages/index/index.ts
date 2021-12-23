@@ -21,7 +21,7 @@ import { CoreCourse, CoreCourseWSSection } from '@features/course/services/cours
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
-import { CoreCourses, CoreCoursesProvider } from '@features//courses/services/courses';
+import { CoreCourses } from '@features//courses/services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -50,24 +50,15 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     siteHomeId = 1;
     currentSite!: CoreSite;
     searchEnabled = false;
-    displayEnableDownload = false;
-    downloadEnabled = false;
     newsForumModule?: CoreCourseModuleData;
 
     protected updateSiteObserver: CoreEventObserver;
-    protected downloadEnabledObserver: CoreEventObserver;
 
     constructor() {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
-
-            this.displayEnableDownload = !CoreSites.getRequiredCurrentSite().isOfflineDisabled();
         }, CoreSites.getCurrentSiteId());
-
-        this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
-            this.downloadEnabled = data.enabled;
-        });
     }
 
     /**
@@ -84,9 +75,6 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             const modParams = CoreNavigator.getRouteParam<Params>('modParams');
             CoreCourseHelper.openModule(module, this.siteHomeId, undefined, modParams);
         }
-
-        this.displayEnableDownload = !CoreSites.getRequiredCurrentSite().isOfflineDisabled();
-        this.downloadEnabled = CoreCourses.getCourseDownloadOptionsEnabled();
 
         this.loadContent().finally(() => {
             this.dataLoaded = true;
@@ -187,13 +175,6 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Switch download enabled.
-     */
-    switchDownload(): void {
-        CoreCourses.setCourseDownloadOptionsEnabled(this.downloadEnabled);
-    }
-
-    /**
      * Open page to manage courses storage.
      */
     manageCoursesStorage(): void {
@@ -240,7 +221,6 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.updateSiteObserver.off();
-        this.downloadEnabledObserver.off();
     }
 
 }

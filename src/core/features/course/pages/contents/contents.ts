@@ -15,20 +15,17 @@
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { IonContent, IonRefresher } from '@ionic/angular';
 
-import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreCourses, CoreCourseAnyCourseData, CoreCoursesProvider } from '@features/courses/services/courses';
+import { CoreCourses, CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import {
     CoreCourse,
     CoreCourseCompletionActivityStatus,
-    CoreCourseProvider,
 } from '@features/course/services/course';
 import {
     CoreCourseHelper,
     CoreCourseModuleCompletionData,
     CoreCourseSection,
-    CorePrefetchStatusInfo,
 } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
@@ -43,7 +40,6 @@ import {
     CoreEventObserver,
 } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
-import { CoreConstants } from '@/core/constants';
 
 /**
  * Page that displays the contents of a course.
@@ -63,46 +59,18 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     sectionNumber?: number;
     courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
     dataLoaded = false;
-    downloadEnabled = false;
     downloadCourseEnabled = false;
     moduleId?: number;
     displayEnableDownload = false;
     displayRefresher = false;
-    prefetchCourseData: CorePrefetchStatusInfo = {
-        icon: CoreConstants.ICON_LOADING,
-        statusTranslatable: 'core.course.downloadcourse',
-        status: '',
-        loading: true,
-    };
 
     protected formatOptions?: Record<string, unknown>;
     protected completionObserver?: CoreEventObserver;
-    protected courseStatusObserver?: CoreEventObserver;
-    protected siteUpdatedObserver?: CoreEventObserver;
-    protected downloadEnabledObserver?: CoreEventObserver;
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected modulesHaveCompletion = false;
-    protected isGuest?: boolean;
+    protected isGuest = false;
     protected debouncedUpdateCachedCompletion?: () => void; // Update the cached completion after a certain time.
-
-    constructor() {
-        // Refresh the enabled flags if site is updated.
-        this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-
-            this.displayEnableDownload = !CoreSites.getRequiredCurrentSite().isOfflineDisabled() &&
-                CoreCourseFormatDelegate.displayEnableDownload(this.course);
-
-            this.downloadEnabled = this.displayEnableDownload && this.downloadEnabled;
-
-            this.initListeners();
-        }, CoreSites.getCurrentSiteId());
-
-        this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
-            this.downloadEnabled = this.displayEnableDownload && data.enabled;
-        });
-    }
 
     /**
      * @inheritdoc
@@ -121,13 +89,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         this.sectionId = CoreNavigator.getRouteNumberParam('sectionId');
         this.sectionNumber = CoreNavigator.getRouteNumberParam('sectionNumber');
         this.moduleId = CoreNavigator.getRouteNumberParam('moduleId');
-        this.isGuest = CoreNavigator.getRouteBooleanParam('isGuest');
-
-        this.displayEnableDownload = !CoreSites.getRequiredCurrentSite().isOfflineDisabled() &&
-            CoreCourseFormatDelegate.displayEnableDownload(this.course);
-        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-
-        this.downloadEnabled = this.displayEnableDownload && CoreCourses.getCourseDownloadOptionsEnabled();
+        this.isGuest = !!CoreNavigator.getRouteBooleanParam('isGuest');
 
         this.debouncedUpdateCachedCompletion = CoreUtils.debounce(() => {
             if (this.modulesHaveCompletion) {
@@ -149,8 +111,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         await this.loadData(false, true);
 
         this.dataLoaded = true;
-
-        this.initPrefetch();
     }
 
     /**
@@ -159,15 +119,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async initListeners(): Promise<void> {
-        if (this.downloadCourseEnabled && !this.courseStatusObserver) {
-            // Listen for changes in course status.
-            this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data) => {
-                if (data.courseId == this.course.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
-                    this.updateCourseStatus(data.status);
-                }
-            }, CoreSites.getCurrentSiteId());
-        }
-
         // Check if the course format requires the view to be refreshed when completion changes.
         const shouldRefresh = await CoreCourseFormatDelegate.shouldRefreshWhenCompletionChanges(this.course);
         if (!shouldRefresh) {
@@ -197,41 +148,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
                     CoreDomUtils.showErrorModal(data.warnings[0]);
                 }
             });
-        }
-    }
-
-    /**
-     * Init prefetch data if needed.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async initPrefetch(): Promise<void> {
-        if (!this.downloadCourseEnabled) {
-            // Cannot download the whole course, stop.
-            return;
-        }
-
-        // Determine the course prefetch status.
-        await this.determineCoursePrefetchIcon();
-
-        if (this.prefetchCourseData.icon != CoreConstants.ICON_LOADING) {
-            return;
-        }
-
-        // Course is being downloaded. Get the download promise.
-        const promise = CoreCourseHelper.getCourseDownloadPromise(this.course.id);
-        if (promise) {
-            // There is a download promise. Show an error if it fails.
-            promise.catch((error) => {
-                if (!this.isDestroyed) {
-                    CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-                }
-            });
-        } else {
-            // No download, this probably means that the app was closed while downloading. Set previous status.
-            const status = await CoreCourse.setCoursePreviousStatus(this.course.id);
-
-            this.updateCourseStatus(status);
         }
     }
 
@@ -464,59 +380,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Determines the prefetch icon of the course.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async determineCoursePrefetchIcon(): Promise<void> {
-        this.prefetchCourseData = await CoreCourseHelper.getCourseStatusIconAndTitle(this.course.id);
-    }
-
-    /**
-     * Prefetch the whole course.
-     */
-    async prefetchCourse(): Promise<void> {
-        try {
-            await CoreCourseHelper.confirmAndPrefetchCourse(
-                this.prefetchCourseData,
-                this.course,
-                {
-                    sections: this.sections,
-                    menuHandlers: this.courseMenuHandlers,
-                    isGuest: this.isGuest,
-                },
-            );
-        } catch (error) {
-            if (this.isDestroyed) {
-                return;
-            }
-
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-        }
-    }
-
-    /**
-     * Toggle download enabled.
-     */
-    toggleDownload(): void {
-        CoreCourses.setCourseDownloadOptionsEnabled(this.downloadEnabled);
-    }
-
-    /**
-     * Update the course status icon and title.
-     *
-     * @param status Status to show.
-     */
-    protected updateCourseStatus(status: string): void {
-        const statusData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
-
-        this.prefetchCourseData.status = statusData.status;
-        this.prefetchCourseData.icon = statusData.icon;
-        this.prefetchCourseData.statusTranslatable = statusData.statusTranslatable;
-        this.prefetchCourseData.loading = statusData.loading;
-    }
-
-    /**
      * Open the course summary
      */
     openCourseSummary(): void {
@@ -542,10 +405,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.completionObserver?.off();
-        this.courseStatusObserver?.off();
         this.syncObserver?.off();
-        this.siteUpdatedObserver?.off();
-        this.downloadEnabledObserver?.off();
     }
 
     /**

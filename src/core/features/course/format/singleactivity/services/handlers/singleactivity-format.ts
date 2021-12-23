@@ -71,13 +71,6 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
     /**
      * @inheritdoc
      */
-    displayEnableDownload(): boolean {
-        return false;
-    }
-
-    /**
-     * @inheritdoc
-     */
     displaySectionSelector(): boolean {
         return false;
     }

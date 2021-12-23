@@ -38,13 +38,6 @@ export class CoreSitePluginsCourseFormatHandler extends CoreSitePluginsBaseHandl
     /**
      * @inheritdoc
      */
-    displayEnableDownload(): boolean {
-        return this.handlerSchema.displayenabledownload ?? true;
-    }
-
-    /**
-     * @inheritdoc
-     */
     displaySectionSelector(): boolean {
         return this.handlerSchema.displaysectionselector ?? true;
     }

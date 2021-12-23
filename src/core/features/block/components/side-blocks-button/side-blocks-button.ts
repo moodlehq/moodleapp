@@ -27,7 +27,6 @@ import { CoreBlockSideBlocksComponent } from '../side-blocks/side-blocks';
 export class CoreBlockSideBlocksButtonComponent {
 
     @Input() courseId!: number;
-    @Input() downloadEnabled = false;
 
     /**
      * Open side blocks.
@@ -37,7 +36,6 @@ export class CoreBlockSideBlocksButtonComponent {
             component: CoreBlockSideBlocksComponent,
             componentProps: {
                 courseId: this.courseId,
-                downloadEnabled: this.downloadEnabled,
             },
         });
     }

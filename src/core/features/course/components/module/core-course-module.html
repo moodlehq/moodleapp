@@ -15,7 +15,7 @@
             <ion-label class="core-module-title">
                 <p class="item-heading">
                     <core-format-text [text]="module.handlerData.title" contextLevel="module" [contextInstanceId]="module.id"
-                        [courseId]="courseId" [attr.aria-label]="module.handlerData.a11yTitle + ', ' + modNameTranslated">
+                        [courseId]="module.course" [attr.aria-label]="module.handlerData.a11yTitle + ', ' + modNameTranslated">
                     </core-format-text>
                 </p>
                 <ion-badge *ngIf="module.handlerData.extraBadge" [color]="module.handlerData.extraBadgeColor"
@@ -31,7 +31,7 @@
                 <div class="core-module-availabilityinfo" *ngIf="module.availabilityinfo">
                     <ion-badge class="ion-text-wrap">{{ 'core.restricted' | translate }}</ion-badge>
                     <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
-                        [courseId]="courseId" class="ion-text-wrap">
+                        [courseId]="module.course" class="ion-text-wrap">
                     </core-format-text>
                 </div>
                 <ion-badge *ngIf="module.completiondata?.offline" color="warning" class="ion-text-wrap">
@@ -48,13 +48,9 @@
                 </core-course-module-completion-legacy>
 
                 <div class="core-module-buttons-more">
-                    <core-download-refresh [status]="downloadStatus" [enabled]="downloadEnabled" [canTrustDownload]="true"
-                        [loading]="spinner || module.handlerData.spinner" (action)="download($event)" size="small">
-                    </core-download-refresh>
-
                     <!-- Buttons defined by the module handler. -->
                     <ion-button fill="clear" *ngFor="let button of module.handlerData.buttons" color="dark" size="small"
-                        [hidden]="button.hidden || spinner || module.handlerData.spinner" class="core-animate-show-hide"
+                        [hidden]="button.hidden || module.handlerData.spinner" class="core-animate-show-hide"
                         (click)="buttonClicked($event, button)" [attr.aria-label]="button.label | translate:{$a: module.handlerData.title}">
                         <ion-icon [name]="button.icon" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
@@ -81,7 +77,7 @@
                 </core-course-module-completion>
 
                 <core-format-text class="core-module-description" *ngIf="module.description" [maxHeight]="80" [text]="module.description"
-                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="module.course">
                 </core-format-text>
             </ion-label>
         </ion-item>
