@@ -136,6 +136,8 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
                     undefined,
                     true,
                 );
+
+                this.section.hasContent = result.hasContent;
                 this.hasContent = result.hasContent || this.hasContent;
             }
 
