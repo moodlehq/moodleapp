@@ -12,8 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, AfterViewInit, ElementRef, OnChanges, SimpleChange, Output, EventEmitter } from '@angular/core';
-
+import {
+    Directive,
+    Input,
+    AfterViewInit,
+    ElementRef,
+    OnChanges,
+    SimpleChange,
+    Output,
+    EventEmitter,
+    OnDestroy,
+} from '@angular/core';
 import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
@@ -24,6 +33,9 @@ import { CoreUtils } from '@services/utils/utils';
 import { Platform } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreError } from '@classes/errors/error';
+import { CoreSite } from '@classes/site';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreConstants } from '../constants';
 
 /**
  * Directive to handle external content.
@@ -38,7 +50,7 @@ import { CoreError } from '@classes/errors/error';
 @Directive({
     selector: '[core-external-content]',
 })
-export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
+export class CoreExternalContentDirective implements AfterViewInit, OnChanges, OnDestroy {
 
     @Input() siteId?: string; // Site ID to use.
     @Input() component?: string; // Component to link the file to.
@@ -54,6 +66,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     protected element: Element;
     protected logger: CoreLogger;
     protected initialized = false;
+    protected fileEventObserver?: CoreEventObserver;
 
     constructor(element: ElementRef) {
 
@@ -183,34 +196,8 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     protected async handleExternalContent(targetAttr: string, url: string, siteId?: string): Promise<void> {
 
         const tagName = this.element.tagName;
-
         if (tagName == 'VIDEO' && targetAttr != 'poster') {
-            const video = <HTMLVideoElement> this.element;
-            if (video.textTracks) {
-                // It's a video with subtitles. Fix some issues with subtitles.
-                video.textTracks.onaddtrack = (event): void => {
-                    const track = <TextTrack> event.track;
-                    if (track) {
-                        track.oncuechange = (): void => {
-                            if (!track.cues) {
-                                return;
-                            }
-
-                            const line = Platform.is('tablet') || CoreApp.isAndroid() ? 90 : 80;
-                            // Position all subtitles to a percentage of video height.
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            Array.from(track.cues).forEach((cue: any) => {
-                                cue.snapToLines = false;
-                                cue.line = line;
-                                cue.size = 100; // This solves some Android issue.
-                            });
-                            // Delete listener.
-                            track.oncuechange = null;
-                        };
-                    }
-                };
-            }
-
+            this.handleVideoSubtitles(<HTMLVideoElement> this.element);
         }
 
         const site = await CoreSites.getSite(siteId);
@@ -234,46 +221,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             throw new CoreError('Site doesn\'t allow downloading files.');
         }
 
-        // Download images, tracks and posters if size is unknown.
-        const downloadUnknown = tagName == 'IMG' || tagName == 'TRACK' || targetAttr == 'poster';
-        let finalUrl: string;
-
-        if (targetAttr === 'src' && tagName !== 'SOURCE' && tagName !== 'TRACK' && tagName !== 'VIDEO' && tagName !== 'AUDIO') {
-            finalUrl = await CoreFilepool.getSrcByUrl(
-                site.getId(),
-                url,
-                this.component,
-                this.componentId,
-                0,
-                true,
-                downloadUnknown,
-            );
-        } else if (tagName === 'TRACK') {
-            // Download tracks right away. Using an online URL for tracks can give a CORS error in Android.
-            finalUrl = await CoreFilepool.downloadUrl(site.getId(), url, false, this.component, this.componentId);
-
-            finalUrl = CoreFile.convertFileSrc(finalUrl);
-        } else {
-            finalUrl = await CoreFilepool.getUrlByUrl(
-                site.getId(),
-                url,
-                this.component,
-                this.componentId,
-                0,
-                true,
-                downloadUnknown,
-            );
-
-            finalUrl = CoreFile.convertFileSrc(finalUrl);
-        }
-
-        if (!CoreUrlUtils.isLocalFileUrl(finalUrl) && !finalUrl.includes('#')) {
-            /* In iOS, if we use the same URL in embedded file and background download then the download only
-               downloads a few bytes (cached ones). Add an anchor to the URL so both URLs are different.
-               Don't add this anchor if the URL already has an anchor, otherwise other anchors might not work.
-               The downloaded URL won't have anchors so the URLs will already be different. */
-            finalUrl = finalUrl + '#moodlemobile-embedded';
-        }
+        const finalUrl = await this.getUrlToUse(targetAttr, url, site);
 
         this.logger.debug('Using URL ' + finalUrl + ' for ' + url);
         if (tagName === 'SOURCE') {
@@ -295,28 +243,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             this.element.setAttribute('data-original-' + targetAttr, url);
         }
 
-        // Set events to download big files (not downloaded automatically).
-        if (!CoreUrlUtils.isLocalFileUrl(finalUrl) && targetAttr != 'poster' &&
-            (tagName == 'VIDEO' || tagName == 'AUDIO' || tagName == 'A' || tagName == 'SOURCE')) {
-            const eventName = tagName == 'A' ? 'click' : 'play';
-            let clickableEl = this.element;
-
-            if (tagName == 'SOURCE') {
-                clickableEl = <HTMLElement> CoreDomUtils.closest(this.element, 'video,audio');
-                if (!clickableEl) {
-                    return;
-                }
-            }
-
-            clickableEl.addEventListener(eventName, () => {
-                // User played media or opened a downloadable link.
-                // Download the file if in wifi and it hasn't been downloaded already (for big files).
-                if (CoreApp.isWifi()) {
-                    // We aren't using the result, so it doesn't matter which of the 2 functions we call.
-                    CoreFilepool.getUrlByUrl(site.getId(), url, this.component, this.componentId, 0, false);
-                }
-            });
-        }
+        this.setListeners(targetAttr, url, site);
     }
 
     /**
@@ -360,6 +287,153 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     }
 
     /**
+     * Handle video subtitles if any.
+     *
+     * @param video Video element.
+     */
+    protected handleVideoSubtitles(video: HTMLVideoElement): void {
+        if (!video.textTracks) {
+            return;
+        }
+
+        // It's a video with subtitles. Fix some issues with subtitles.
+        video.textTracks.onaddtrack = (event): void => {
+            const track = <TextTrack> event.track;
+            if (track) {
+                track.oncuechange = (): void => {
+                    if (!track.cues) {
+                        return;
+                    }
+
+                    const line = Platform.is('tablet') || CoreApp.isAndroid() ? 90 : 80;
+                    // Position all subtitles to a percentage of video height.
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    Array.from(track.cues).forEach((cue: any) => {
+                        cue.snapToLines = false;
+                        cue.line = line;
+                        cue.size = 100; // This solves some Android issue.
+                    });
+                    // Delete listener.
+                    track.oncuechange = null;
+                };
+            }
+        };
+    }
+
+    /**
+     * Get the URL to use in the element. E.g. if the file is already downloaded it will return the local URL.
+     *
+     * @param targetAttr Attribute to modify.
+     * @param url Original URL to treat.
+     * @param site Site.
+     * @return Promise resolved with the URL.
+     */
+    protected async getUrlToUse(targetAttr: string, url: string, site: CoreSite): Promise<string> {
+        const tagName = this.element.tagName;
+        let finalUrl: string;
+
+        // Download images, tracks and posters if size is unknown.
+        const downloadUnknown = tagName == 'IMG' || tagName == 'TRACK' || targetAttr == 'poster';
+
+        if (targetAttr === 'src' && tagName !== 'SOURCE' && tagName !== 'TRACK' && tagName !== 'VIDEO' && tagName !== 'AUDIO') {
+            finalUrl = await CoreFilepool.getSrcByUrl(
+                site.getId(),
+                url,
+                this.component,
+                this.componentId,
+                0,
+                true,
+                downloadUnknown,
+            );
+        } else if (tagName === 'TRACK') {
+            // Download tracks right away. Using an online URL for tracks can give a CORS error in Android.
+            finalUrl = await CoreFilepool.downloadUrl(site.getId(), url, false, this.component, this.componentId);
+
+            finalUrl = CoreFile.convertFileSrc(finalUrl);
+        } else {
+            finalUrl = await CoreFilepool.getUrlByUrl(
+                site.getId(),
+                url,
+                this.component,
+                this.componentId,
+                0,
+                true,
+                downloadUnknown,
+            );
+
+            finalUrl = CoreFile.convertFileSrc(finalUrl);
+        }
+
+        if (!CoreUrlUtils.isLocalFileUrl(finalUrl) && !finalUrl.includes('#')) {
+            /* In iOS, if we use the same URL in embedded file and background download then the download only
+               downloads a few bytes (cached ones). Add an anchor to the URL so both URLs are different.
+               Don't add this anchor if the URL already has an anchor, otherwise other anchors might not work.
+               The downloaded URL won't have anchors so the URLs will already be different. */
+            finalUrl = finalUrl + '#moodlemobile-embedded';
+        }
+
+        return finalUrl;
+    }
+
+    /**
+     * Set listeners if needed.
+     *
+     * @param targetAttr Attribute to modify.
+     * @param url Original URL to treat.
+     * @param site Site.
+     * @return Promise resolved when done.
+     */
+    protected async setListeners(targetAttr: string, url: string, site: CoreSite): Promise<void> {
+        if (this.fileEventObserver) {
+            // Already listening to events.
+            return;
+        }
+
+        const tagName = this.element.tagName;
+        let state = await CoreFilepool.getFileStateByUrl(site.getId(), url);
+
+        // Listen for download changes in the file.
+        const eventName = await CoreFilepool.getFileEventNameByUrl(site.getId(), url);
+
+        this.fileEventObserver = CoreEvents.on(eventName, async () => {
+            const newState = await CoreFilepool.getFileStateByUrl(site.getId(), url);
+            if (newState === state) {
+                return;
+            }
+
+            state = newState;
+            if (state === CoreConstants.DOWNLOADING) {
+                return;
+            }
+
+            // The file state has changed. Handle the file again, maybe it's downloaded now or the file has been deleted.
+            this.checkAndHandleExternalContent();
+        });
+
+        // Set events to download big files (not downloaded automatically).
+        if (targetAttr !== 'poster' && (tagName === 'VIDEO' || tagName === 'AUDIO' || tagName === 'A' || tagName === 'SOURCE')) {
+            const eventName = tagName == 'A' ? 'click' : 'play';
+            let clickableEl = this.element;
+
+            if (tagName == 'SOURCE') {
+                clickableEl = <HTMLElement> CoreDomUtils.closest(this.element, 'video,audio');
+                if (!clickableEl) {
+                    return;
+                }
+            }
+
+            clickableEl.addEventListener(eventName, () => {
+                // User played media or opened a downloadable link.
+                // Download the file if in wifi and it hasn't been downloaded already (for big files).
+                if (state !== CoreConstants.DOWNLOADED && state !== CoreConstants.DOWNLOADING && CoreApp.isWifi()) {
+                    // We aren't using the result, so it doesn't matter which of the 2 functions we call.
+                    CoreFilepool.getUrlByUrl(site.getId(), url, this.component, this.componentId, 0, false);
+                }
+            });
+        }
+    }
+
+    /**
      * Wait for the image to be loaded or error, and emit an event when it happens.
      */
     protected waitForLoad(): void {
@@ -372,6 +446,13 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
 
         this.element.addEventListener('load', listener);
         this.element.addEventListener('error', listener);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.fileEventObserver?.off();
     }
 
 }

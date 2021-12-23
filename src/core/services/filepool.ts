@@ -559,10 +559,19 @@ export class CoreFilepoolProvider {
     async clearFilepool(siteId: string): Promise<void> {
         const db = await CoreSites.getSiteDb(siteId);
 
+        // Read the data first to be able to notify the deletions.
+        const filesEntries = await db.getAllRecords<CoreFilepoolFileEntry>(FILES_TABLE_NAME);
+        const filesLinks = await db.getAllRecords<CoreFilepoolLinksRecord>(LINKS_TABLE_NAME);
+
         await Promise.all([
             db.deleteRecords(FILES_TABLE_NAME),
             db.deleteRecords(LINKS_TABLE_NAME),
         ]);
+
+        // Notify now.
+        const filesLinksMap = CoreUtils.arrayToObjectMultiple(filesLinks, 'fileId');
+
+        filesEntries.forEach(entry => this.notifyFileDeleted(siteId, entry.fileId, filesLinksMap[entry.fileId] || []));
     }
 
     /**
