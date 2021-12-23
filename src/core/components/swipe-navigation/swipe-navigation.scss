@@ -6,7 +6,11 @@ ion-slide {
     align-items: start;
 }
 
-::ng-deep {
+:host ::ng-deep {
+
+    .swiper-wrapper {
+        position: absolute;
+    }
 
     core-loading .core-loading-content {
         display: block !important;

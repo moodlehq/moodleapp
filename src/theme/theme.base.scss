@@ -535,6 +535,10 @@ body.core-iframe-fullscreen ion-router-outlet {
     z-index: 100000 !important;
 }
 
+.core-modal-lateral .modal-wrapper {
+    @include margin-horizontal(16px, null);
+}
+
 @media only screen and (min-height: 400px) and (min-width: #{$modal-lateral-width}) {
     .core-modal-lateral {
         --ion-safe-area-left: 0px;
@@ -556,6 +560,10 @@ body.core-iframe-fullscreen ion-router-outlet {
 }
 
 @each $breakpoint, $width in $screen-breakpoints {
+    .core-modal-lateral-#{$breakpoint} .modal-wrapper {
+        @include margin-horizontal(16px, null);
+    }
+
     @media only screen and (min-height: 400px) and (min-width: #{$width}) {
         .core-modal-lateral-#{$breakpoint} {
             --ion-safe-area-left: 0px;
