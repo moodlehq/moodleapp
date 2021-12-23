@@ -1020,7 +1020,7 @@ class behat_app extends behat_base {
      * @return object
      */
     public function parse_element_locator(string $text): object {
-        preg_match('/^"((?:[^"]|\\")*?)"(?: "([^"]*?)")?(?: near "((?:[^"]|\\")*?)"(?: "([^"]*?)")?)?$/', $text, $matches);
+        preg_match('/^"((?:[^"]|\\")*?)"(?: "([^"]*?)")?(?: (near|within) "((?:[^"]|\\")*?)"(?: "([^"]*?)")?)?$/', $text, $matches);
 
         $locator = [
             'text' => str_replace('\\"', '"', $matches[1]),
@@ -1028,9 +1028,9 @@ class behat_app extends behat_base {
         ];
 
         if (!empty($matches[3])) {
-            $locator['near'] = (object) [
-                'text' => str_replace('\\"', '"', $matches[3]),
-                'selector' => $matches[4] ?? null,
+            $locator[$matches[3]] = (object) [
+                'text' => str_replace('\\"', '"', $matches[4]),
+                'selector' => $matches[5] ?? null,
             ];
         }
 

@@ -346,6 +346,26 @@
     };
 
     /**
+     * Get closest element matching a selector, without traversing up a given container.
+     *
+     * @param {HTMLElement} element Element.
+     * @param {string} selector Selector.
+     * @param {HTMLElement} container Topmost container to search within.
+     * @return {HTMLElement} Closest matching element.
+     */
+    const getClosestMatching = function(element, selector, container) {
+        if (element.matches(selector)) {
+            return element;
+        }
+
+        if (element === container || !element.parentElement) {
+            return null;
+        }
+
+        return getClosestMatching(element.parentElement, selector, container);
+    };
+
+    /**
      * Function to find elements based on their text or Aria label.
      *
      * @param {object} locator Element locator.
@@ -360,6 +380,24 @@
         }
 
         let container = topContainer;
+
+        if (locator.within) {
+            const withinElements = findElementsBasedOnText(locator.within);
+
+            if (withinElements.length === 0) {
+                throw new Error('There was no match for within text')
+            } else if (withinElements.length > 1) {
+                const withinElementsAncestors = getTopAncestors(withinElements);
+
+                if (withinElementsAncestors.length > 1) {
+                    throw new Error('Too many matches for within text');
+                }
+
+                topContainer = container = withinElementsAncestors[0];
+            } else {
+                topContainer = container = withinElements[0];
+            }
+        }
 
         if (topContainer && locator.near) {
             const nearElements = findElementsBasedOnText(locator.near);
@@ -382,7 +420,7 @@
         do {
             const elements = findElementsBasedOnTextWithin(container, locator.text);
             const filteredElements = locator.selector
-                ? elements.filter(element => element.matches(locator.selector))
+                ? elements.map(element => getClosestMatching(element, locator.selector, container)).filter(element => !!element)
                 : elements;
 
             if (filteredElements.length > 0) {
