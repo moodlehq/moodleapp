@@ -231,7 +231,7 @@ export class CoreSettingsHelperProvider {
      * @return Sync promise or null if site is not being syncrhonized.
      */
     getSiteSyncPromise(siteId: string): Promise<void> | void {
-        if (this.syncPromises[siteId]) {
+        if (this.syncPromises[siteId] !== undefined) {
             return this.syncPromises[siteId];
         }
     }
@@ -244,7 +244,7 @@ export class CoreSettingsHelperProvider {
      * @return Promise resolved when synchronized, rejected if failure.
      */
     async synchronizeSite(syncOnlyOnWifi: boolean, siteId: string): Promise<void> {
-        if (this.syncPromises[siteId]) {
+        if (this.syncPromises[siteId] !== undefined) {
             // There's already a sync ongoing for this site, return the promise.
             return this.syncPromises[siteId];
         }

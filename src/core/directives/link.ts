@@ -26,6 +26,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { DomSanitizer } from '@singletons';
+import { CoreFilepool } from '@services/filepool';
 
 /**
  * Directive to open a link in external browser or in the app.
@@ -215,6 +216,26 @@ export class CoreLinkDirective implements OnInit {
                 href = currentSite.getURL() + href;
             } else {
                 href = currentSite.getURL() + '/' + href;
+            }
+        }
+
+        if (currentSite.isSitePluginFileUrl(href)) {
+            // It's a site file. Check if it's being downloaded right now.
+            const isDownloading = await CoreFilepool.isFileDownloadingByUrl(currentSite.getId(), href);
+
+            if (isDownloading) {
+                // Wait for the download to finish before opening the file to prevent downloading it twice.
+                const modal = await CoreDomUtils.showModalLoading();
+
+                try {
+                    const path = await CoreFilepool.downloadUrl(currentSite.getId(), href);
+
+                    return this.openLocalFile(path);
+                } catch {
+                    // Error downloading, just open the original URL.
+                } finally {
+                    modal.dismiss();
+                }
             }
         }
 
