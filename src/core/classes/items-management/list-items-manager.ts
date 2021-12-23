@@ -64,8 +64,10 @@ export class CoreListItemsManager<
      *
      * @param splitView Split view component.
      */
-    async start(splitView: CoreSplitViewComponent): Promise<void> {
-        this.watchSplitViewOutlet(splitView);
+    async start(splitView?: CoreSplitViewComponent): Promise<void> {
+        if (splitView) {
+            this.watchSplitViewOutlet(splitView);
+        }
 
         // Calculate current selected item.
         this.updateSelectedItem();
@@ -172,7 +174,7 @@ export class CoreListItemsManager<
     protected updateSelectedItem(route: ActivatedRouteSnapshot | null = null): void {
         super.updateSelectedItem(route);
 
-        if (CoreScreen.isMobile || this.selectedItem !== null || this.splitView?.isNested) {
+        if (CoreScreen.isMobile || this.selectedItem !== null || !this.splitView || this.splitView.isNested) {
             return;
         }
 

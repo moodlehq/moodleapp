@@ -16,12 +16,10 @@ import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { AddonCompetencyProvider, AddonCompetencyPlan, AddonCompetency } from '../../services/competency';
-import { AddonCompetencyHelper } from '../../services/competency-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CorePageItemsListManager } from '@classes/page-items-list-manager';
-import { ADDON_COMPETENCY_COMPETENCIES_PAGE } from '@addons/competency/competency.module';
-import { Params } from '@angular/router';
+import { AddonCompetencyPlanFormatted, AddonCompetencyPlansSource } from '@addons/competency/classes/competency-plans-source';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 
 /**
  * Page that displays the list of learning plans.
@@ -34,13 +32,13 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    protected userId?: number;
-    plans: AddonCompetencyPlanListManager;
+    plans: CoreListItemsManager<AddonCompetencyPlanFormatted, AddonCompetencyPlansSource>;
 
     constructor() {
-        this.userId = CoreNavigator.getRouteNumberParam('userId');
+        const userId = CoreNavigator.getRouteNumberParam('userId');
+        const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonCompetencyPlansSource, [userId]);
 
-        this.plans = new AddonCompetencyPlanListManager(AddonCompetencyPlanListPage, this.userId);
+        this.plans = new CoreListItemsManager(source, AddonCompetencyPlanListPage);
     }
 
     /**
@@ -59,23 +57,7 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
      */
     protected async fetchLearningPlans(): Promise<void> {
         try {
-            const plans = await AddonCompetency.getLearningPlans(this.userId);
-            plans.forEach((plan: AddonCompetencyPlanFormatted) => {
-                plan.statusname = AddonCompetencyHelper.getPlanStatusName(plan.status);
-                switch (plan.status) {
-                    case AddonCompetencyProvider.STATUS_ACTIVE:
-                        plan.statuscolor = 'success';
-                        break;
-                    case AddonCompetencyProvider.STATUS_COMPLETE:
-                        plan.statuscolor = 'danger';
-                        break;
-                    default:
-                        plan.statuscolor = 'warning';
-                        break;
-                }
-            });
-            this.plans.setItems(plans);
-
+            await this.plans.load();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting learning plans data.');
         }
@@ -86,11 +68,11 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshLearningPlans(refresher: IonRefresher): void {
-        AddonCompetency.invalidateLearningPlans(this.userId).finally(() => {
-            this.fetchLearningPlans().finally(() => {
-                refresher?.complete();
-            });
+    async refreshLearningPlans(refresher: IonRefresher): Promise<void> {
+        await this.plans.getSource().invalidateCache();
+
+        this.fetchLearningPlans().finally(() => {
+            refresher?.complete();
         });
     }
 
@@ -99,46 +81,6 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.plans.destroy();
-    }
-
-}
-
-/**
- * Competency plan with some calculated data.
- */
-type AddonCompetencyPlanFormatted = AddonCompetencyPlan & {
-    statuscolor?: string; // Calculated in the app. Color of the plan's status.
-};
-
-/**
- * Helper class to manage plan list.
- */
-class AddonCompetencyPlanListManager extends CorePageItemsListManager<AddonCompetencyPlanFormatted> {
-
-    private userId?: number;
-
-    constructor(pageComponent: unknown, userId?: number) {
-        super(pageComponent);
-
-        this.userId = userId;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(plan: AddonCompetencyPlanFormatted): string {
-        return `${plan.id}/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemQueryParams(): Params {
-        if (this.userId) {
-            return { userId: this.userId };
-        }
-
-        return {};
     }
 
 }
