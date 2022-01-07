@@ -612,11 +612,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
             // If we have data about the grader, get its profile.
             if (feedback.grade && feedback.grade.grader > 0) {
-                try {
-                    this.grader = await CoreUser.getProfile(feedback.grade.grader, this.courseId);
-                } catch {
-                    // Ignore errors.
-                }
+                this.grader = await CoreUtils.ignoreErrors(CoreUser.getProfile(feedback.grade.grader, this.courseId));
             } else {
                 delete this.grader;
             }
@@ -633,7 +629,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             if (feedback.grade && feedback.grade.grade && !this.grade.grade) {
                 const parsedGrade = parseFloat(feedback.grade.grade);
 
-                this.grade!.grade = parsedGrade >= 0 ? parsedGrade : undefined;
+                this.grade.grade = parsedGrade >= 0 ? parsedGrade : undefined;
                 this.grade.gradebookGrade = CoreUtils.formatFloat(this.grade.grade);
                 this.originalGrades.grade = this.grade.grade;
             }
