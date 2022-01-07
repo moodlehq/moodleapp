@@ -302,7 +302,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             }
         }
 
-        this.needsGradingAvailable = (submissionStatus.gradingsummary?.submissionsneedgradingcount || 0) > 0;
+        this.needsGradingAvailable = this.summary.submissionsneedgradingcount > 0;
     }
 
     /**

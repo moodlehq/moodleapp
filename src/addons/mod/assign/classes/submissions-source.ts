@@ -211,14 +211,9 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
                             submission.gradingstatus,
                         );
 
-                        // Show submission status if not submitted for grading.
-                        if (submission.statusColor != 'success' || !submission.gradingstatus) {
-                            submission.statusTranslated = Translate.instant(
-                                'addon.mod_assign.submissionstatus_' + submission.status,
-                            );
-                        } else {
-                            submission.statusTranslated = '';
-                        }
+                        submission.statusTranslated = Translate.instant(
+                            'addon.mod_assign.submissionstatus_' + submission.status,
+                        );
 
                         if (notSynced) {
                             submission.gradingStatusTranslationId = 'addon.mod_assign.gradenotsynced';
