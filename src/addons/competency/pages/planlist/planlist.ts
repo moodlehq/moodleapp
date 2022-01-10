@@ -71,6 +71,7 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
     async refreshLearningPlans(refresher: IonRefresher): Promise<void> {
         await this.plans.getSource().invalidateCache();
 
+        this.plans.getSource().setDirty(true);
         this.fetchLearningPlans().finally(() => {
             refresher?.complete();
         });

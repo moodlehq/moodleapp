@@ -17,13 +17,16 @@ import { IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import {
-    AddonCompetencyDataForPlanPageCompetency, AddonCompetencyDataForCourseCompetenciesPageCompetency, AddonCompetency,
+    AddonCompetencyDataForPlanPageCompetency,
+    AddonCompetencyDataForCourseCompetenciesPageCompetency,
 } from '../../services/competency';
-import { ActivatedRoute, Params } from '@angular/router';
-import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreError } from '@classes/errors/error';
+import { AddonCompetencyPlanCompetenciesSource } from '@addons/competency/classes/competency-plan-competencies-source';
+import { AddonCompetencyCourseCompetenciesSource } from '@addons/competency/classes/competency-course-competencies-source';
+import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 /**
  * Page that displays the list of competencies of a learning plan.
@@ -36,22 +39,32 @@ export class AddonCompetencyCompetenciesPage implements AfterViewInit, OnDestroy
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    protected planId?: number;
-    protected courseId?: number;
-    protected userId?: number;
+    competencies: CoreListItemsManager<
+        AddonCompetencyDataForPlanPageCompetency | AddonCompetencyDataForCourseCompetenciesPageCompetency,
+        AddonCompetencyPlanCompetenciesSource | AddonCompetencyCourseCompetenciesSource
+    >;
 
-    competenciesLoaded = false;
-    competencies: AddonCompetencyListManager;
     title = '';
 
-    constructor(protected route: ActivatedRoute) {
-        this.planId = CoreNavigator.getRouteNumberParam('planId', { route });
-        if (!this.planId) {
-            this.courseId = CoreNavigator.getRouteNumberParam('courseId', { route });
-            this.userId = CoreNavigator.getRouteNumberParam('userId', { route });
+    constructor() {
+        const planId = CoreNavigator.getRouteNumberParam('planId');
+
+        if (!planId) {
+            const courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            const userId = CoreNavigator.getRouteNumberParam('userId');
+            const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                AddonCompetencyCourseCompetenciesSource,
+                [courseId, userId],
+            );
+
+            this.competencies = new CoreListItemsManager(source, AddonCompetencyCompetenciesPage);
+
+            return;
         }
 
-        this.competencies = new AddonCompetencyListManager(AddonCompetencyCompetenciesPage, this.userId);
+        const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonCompetencyPlanCompetenciesSource, [planId]);
+
+        this.competencies = new CoreListItemsManager(source, AddonCompetencyCompetenciesPage);
     }
 
     /**
@@ -70,25 +83,18 @@ export class AddonCompetencyCompetenciesPage implements AfterViewInit, OnDestroy
      */
     protected async fetchCompetencies(): Promise<void> {
         try {
-            if (this.planId) {
+            const source = this.competencies.getSource();
 
-                const response = await AddonCompetency.getLearningPlan(this.planId);
+            await this.competencies.load();
 
-                if (response.competencycount <= 0) {
+            if (source instanceof AddonCompetencyPlanCompetenciesSource) {
+                if (!source.plan || source.plan && source.plan.competencycount <= 0) {
                     throw new CoreError(Translate.instant('addon.competency.errornocompetenciesfound'));
                 }
 
-                this.title = response.plan.name;
-                this.userId = response.plan.userid;
-
-                this.competencies.setItems(response.competencies);
-            } else if (this.courseId) {
-                const response = await AddonCompetency.getCourseCompetencies(this.courseId, this.userId);
-                this.title = Translate.instant('addon.competency.coursecompetencies');
-
-                this.competencies.setItems(response.competencies);
+                this.title = source.plan.plan.name;
             } else {
-                throw null;
+                this.title = Translate.instant('addon.competency.coursecompetencies');
             }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting competencies data.');
@@ -101,18 +107,12 @@ export class AddonCompetencyCompetenciesPage implements AfterViewInit, OnDestroy
      * @param refresher Refresher.
      */
     async refreshCompetencies(refresher?: IonRefresher): Promise<void> {
-        try {
-            if (this.planId) {
-                await AddonCompetency.invalidateLearningPlan(this.planId);
-            } else {
-                await AddonCompetency.invalidateCourseCompetencies(this.courseId!, this.userId);
-            }
+        await this.competencies.getSource().invalidateCache();
 
-        } finally {
-            this.fetchCompetencies().finally(() => {
-                refresher?.complete();
-            });
-        }
+        this.competencies.getSource().setDirty(true);
+        this.fetchCompetencies().finally(() => {
+            refresher?.complete();
+        });
     }
 
     /**
@@ -120,42 +120,6 @@ export class AddonCompetencyCompetenciesPage implements AfterViewInit, OnDestroy
      */
     ngOnDestroy(): void {
         this.competencies.destroy();
-    }
-
-}
-
-type AddonCompetencyDataForPlanPageCompetencyFormatted =
-    AddonCompetencyDataForPlanPageCompetency | AddonCompetencyDataForCourseCompetenciesPageCompetency;
-
-/**
- * Helper class to manage competencies list.
- */
-class AddonCompetencyListManager extends CorePageItemsListManager<AddonCompetencyDataForPlanPageCompetencyFormatted> {
-
-    private userId?: number;
-
-    constructor(pageComponent: unknown, userId?: number) {
-        super(pageComponent);
-
-        this.userId = userId;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(competency: AddonCompetencyDataForPlanPageCompetencyFormatted): string {
-        return String(competency.competency.id);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemQueryParams(): Params {
-        if (this.userId) {
-            return { userId: this.userId };
-        }
-
-        return {};
     }
 
 }
