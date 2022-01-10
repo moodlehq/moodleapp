@@ -734,8 +734,8 @@
      * @param {string} className Constructor class name
      * @return {object} Component instance
      */
-    const behatGetComponentInstance = function(selector, className) {
-        log('Action - Get component instance ' + selector + ', ' + className);
+    const behatGetAngularInstance = function(selector, className) {
+        log('Action - Get Angular instance ' + selector + ', ' + className);
 
         const activeElement = Array.from(document.querySelectorAll(`.ion-page:not(.ion-page-hidden) ${selector}`)).pop();
 
@@ -757,6 +757,6 @@
         press : behatPress,
         setField : behatSetField,
         getHeader : behatGetHeader,
-        getComponentInstance: behatGetComponentInstance,
+        getAngularInstance: behatGetAngularInstance,
     };
 })();

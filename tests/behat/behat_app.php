@@ -237,7 +237,7 @@ class behat_app extends behat_base {
     public function i_swipe_in_the_app(string $direction) {
         $method = 'swipe' . ucwords($direction);
 
-        $this->evaluate_script("behat.getComponentInstance('core-swipe-navigation', 'CoreSwipeNavigationComponent').$method()");
+        $this->evaluate_script("behat.getAngularInstance('ion-content', 'CoreSwipeNavigationDirective').$method()");
     }
 
     /**
