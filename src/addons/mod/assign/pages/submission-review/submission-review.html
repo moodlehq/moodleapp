@@ -19,15 +19,12 @@
         </ion-button>
     </core-navbar-buttons>
 </ion-header>
-<ion-content>
-    <core-swipe-navigation [manager]="submissions">
-        <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshSubmission($event.target)">
-            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
-        </ion-refresher>
-        <core-loading [hideUntil]="loaded">
-            <addon-mod-assign-submission *ngIf="loaded"
-                [courseId]="courseId" [moduleId]="moduleId" [submitId]="submitId" [blindId]="blindId">
-            </addon-mod-assign-submission>
-        </core-loading>
-    </core-swipe-navigation>
+<ion-content [core-swipe-navigation]="submissions">
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshSubmission($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+        <addon-mod-assign-submission *ngIf="loaded" [courseId]="courseId" [moduleId]="moduleId" [submitId]="submitId" [blindId]="blindId">
+        </addon-mod-assign-submission>
+    </core-loading>
 </ion-content>

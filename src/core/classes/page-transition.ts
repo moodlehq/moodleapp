@@ -229,11 +229,19 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
 
         rootAnimation.addAnimation(leavingContent);
 
+        // Check if leaving content is being translated using transform styles and decide to use fromTo or only To animation.
+        const hasTransformStyle = !!leavingContentEl && (leavingContentEl as HTMLElement).style.transform !== '';
         if (backDirection) {
             // leaving content, back direction
-            leavingContent
-                .beforeClearStyles([OPACITY])
-                .fromTo('transform', `translateX(${CENTER})`, (isRTL ? 'translateX(-100%)' : 'translateX(100%)'));
+            if (hasTransformStyle) {
+                leavingContent
+                    .to('transform', (isRTL ? 'translateX(-100%)' : 'translateX(100%)'))
+                    .fromTo(OPACITY, 1, OFF_OPACITY);
+            } else {
+                leavingContent
+                    .beforeClearStyles([OPACITY])
+                    .fromTo('transform', `translateX(${CENTER})`, (isRTL ? 'translateX(-100%)' : 'translateX(100%)'));
+            }
 
             const leavingPage = getIonPageElement(leavingEl) as HTMLElement;
             rootAnimation.afterAddWrite(() => {
@@ -244,9 +252,15 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
 
         } else {
             // leaving content, forward direction
-            leavingContent
-                .fromTo('transform', `translateX(${CENTER})`, `translateX(${OFF_LEFT})`)
-                .fromTo(OPACITY, 1, OFF_OPACITY);
+            if (hasTransformStyle) {
+                leavingContent
+                    .to('transform', (isRTL ? 'translateX(100%)' : 'translateX(-100%)'))
+                    .fromTo(OPACITY, 1, OFF_OPACITY);
+            } else {
+                leavingContent
+                    .fromTo('transform', `translateX(${CENTER})`, `translateX(${OFF_LEFT})`)
+                    .fromTo(OPACITY, 1, OFF_OPACITY);
+            }
         }
 
         if (leavingContentEl) {

@@ -50,6 +50,24 @@ export class CoreSwipeNavigationItemsManager<
     }
 
     /**
+     * Has a next item.
+     */
+    async hasNextItem(): Promise<boolean> {
+        const item = await this.getItemBy(-1);
+
+        return !!item;
+    }
+
+    /**
+     * Has a previous item.
+     */
+    async hasPreviousItem(): Promise<boolean> {
+        const item = await this.getItemBy(1);
+
+        return !!item;
+    }
+
+    /**
      * @inheritdoc
      */
     protected getCurrentPageRoute(): ActivatedRoute | null {
