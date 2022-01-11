@@ -213,6 +213,10 @@ ion-button.button-outline {
     --background: var(--contrast-background);
 }
 
+ion-button ion-spinner {
+    --color: inherit !important;
+}
+
 @each $color-name, $value in $colors {
     .text-#{$color-name},
     p.text-#{$color-name} {

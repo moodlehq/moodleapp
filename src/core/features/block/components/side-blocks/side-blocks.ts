@@ -33,7 +33,6 @@ import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 export class CoreBlockSideBlocksComponent implements OnInit {
 
     @Input() courseId?: number;
-    @Input() downloadEnabled = false;
 
     @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
 

@@ -36,7 +36,6 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
 
     @Input() course?: CoreCourseAnyCourseData; // The course to render.
     @Input() sections?: CoreCourseSectionWithStatus[]; // List of course sections.
-    @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.

@@ -58,8 +58,9 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
     displayBlocks?(course: CoreCourseAnyCourseData): boolean;
 
     /**
-     * Whether the option to enable section/module download should be displayed. Defaults to true.
+     * Whether the option to enable section/module download should be displayed.
      *
+     * @deprecated on 4.0 Not used anymore because prefetch has been moved to storage manager.
      * @param course The course to check.
      * @return Whether the option to enable section/module download should be displayed.
      */
@@ -202,16 +203,6 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      */
     displayBlocks(course: CoreCourseAnyCourseData): boolean {
         return !!this.executeFunctionOnEnabled<boolean>(course.format || '', 'displayBlocks', [course]);
-    }
-
-    /**
-     * Whether the option to enable section/module download should be displayed. Defaults to true.
-     *
-     * @param course The course to check.
-     * @return Whether the option to enable section/module download should be displayed
-     */
-    displayEnableDownload(course: CoreCourseAnyCourseData): boolean {
-        return !!this.executeFunctionOnEnabled<boolean>(course.format || '', 'displayEnableDownload', [course]);
     }
 
     /**

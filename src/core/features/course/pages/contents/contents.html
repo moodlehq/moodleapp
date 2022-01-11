@@ -1,12 +1,5 @@
 <core-navbar-buttons slot="end">
     <core-context-menu>
-        <core-context-menu-item [hidden]="!displayEnableDownload" [priority]="2000" iconAction="toggle" [(toggle)]="downloadEnabled"
-            [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()">
-        </core-context-menu-item>
-        <core-context-menu-item [hidden]="!downloadCourseEnabled" [priority]="1900"
-            [content]="prefetchCourseData.statusTranslatable | translate" (action)="prefetchCourse()" [iconAction]="prefetchCourseData.icon"
-            [closeOnClick]="false">
-        </core-context-menu-item>
         <core-context-menu-item [priority]="1800" [content]="'core.course.coursesummary' | translate" (action)="openCourseSummary()"
             iconAction="fas-graduation-cap">
         </core-context-menu-item>
@@ -22,8 +15,7 @@
 
     <core-loading [hideUntil]="dataLoaded">
         <core-course-format [course]="course" [sections]="sections" [initialSectionId]="sectionId" [initialSectionNumber]="sectionNumber"
-            [downloadEnabled]="downloadEnabled" [moduleId]="moduleId" (completionChanged)="onCompletionChange($event)"
-            class="core-course-format-{{course.format}}">
+            [moduleId]="moduleId" (completionChanged)="onCompletionChange($event)" class="core-course-format-{{course.format}}">
         </core-course-format>
     </core-loading>
 </ion-content>

@@ -9,6 +9,7 @@ information provided here is intended especially for developers.
 - CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor now admits module name instead of full module object.
 - CoreCourse.getModuleBasicInfoByInstance and CoreCourse.getModuleBasicInfo have been modified to accept an "options" parameter instead of only siteId.
 - The function CoreFilepool.isFileDownloadingByUrl now returns Promise<boolean> instead of relying on resolve/reject.
+- downloadEnabled input has been removed from CoreBlockSideBlocksComponent, CoreCourseFormatComponent, CoreCourseFormatSingleActivityComponent and CoreCourseModuleComponent.
 
 === 3.9.5 ===
 

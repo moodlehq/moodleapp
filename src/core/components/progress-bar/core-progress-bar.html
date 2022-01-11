@@ -7,3 +7,5 @@
         {{ 'core.percentagenumber' | translate: {$a: text} }}
     </div>
 </ng-container>
+
+<ion-progress-bar *ngIf="progress < 0" type="indeterminate"></ion-progress-bar>

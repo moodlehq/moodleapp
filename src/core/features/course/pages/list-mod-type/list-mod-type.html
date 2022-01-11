@@ -19,8 +19,7 @@
         <ion-list>
             <ng-container *ngFor="let section of sections">
                 <ng-container *ngFor="let module of section.modules">
-                    <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section" [courseId]="courseId"
-                        [downloadEnabled]="downloadEnabled">
+                    <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section">
                     </core-course-module>
                 </ng-container>
             </ng-container>

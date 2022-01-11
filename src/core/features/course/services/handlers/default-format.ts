@@ -79,17 +79,6 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     }
 
     /**
-     * Whether the option to enable section/module download should be displayed. Defaults to true.
-     *
-     * @param course The course to check.
-     * @return Whether the option to enable section/module download should be displayed
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    displayEnableDownload(course: CoreCourseAnyCourseData): boolean {
-        return true;
-    }
-
-    /**
      * Whether the default section selector should be displayed. Defaults to true.
      *
      * @param course The course to check.
