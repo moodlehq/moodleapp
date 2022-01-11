@@ -25,7 +25,6 @@ import { AddonCalendarHelper, AddonCalendarFilter } from '../../services/calenda
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { CoreCategoryData, CoreCourses } from '@features/courses/services/courses';
 import { CoreConstants } from '@/core/constants';
-import { CoreLocalNotifications } from '@services/local-notifications';
 
 /**
  * Component that displays upcoming events.
@@ -58,18 +57,11 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
     // Observers.
     protected undeleteEventObserver: CoreEventObserver;
-    protected obsDefaultTimeChange?: CoreEventObserver;
 
     constructor(
         differs: KeyValueDiffers,
     ) {
         this.currentSiteId = CoreSites.getCurrentSiteId();
-
-        if (CoreLocalNotifications.isAvailable()) {            // Re-schedule events if default time changes.
-            this.obsDefaultTimeChange = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
-                AddonCalendar.scheduleEventsNotifications(this.onlineEvents);
-            }, this.currentSiteId);
-        }
 
         // Listen for events "undeleted" (offline).
         this.undeleteEventObserver = CoreEvents.on(
@@ -174,8 +166,6 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
         // Don't pass courseId and categoryId, we'll filter them locally.
         const result = await AddonCalendar.getUpcomingEvents();
         this.onlineEvents = await Promise.all(result.events.map((event) => AddonCalendarHelper.formatEventData(event)));
-        // Schedule notifications for the events retrieved.
-        AddonCalendar.scheduleEventsNotifications(this.onlineEvents);
         // Merge the online events with offline data.
         this.events = this.mergeEvents();
         // Filter events by course.
@@ -313,7 +303,6 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
      */
     ngOnDestroy(): void {
         this.undeleteEventObserver?.off();
-        this.obsDefaultTimeChange?.off();
     }
 
 }

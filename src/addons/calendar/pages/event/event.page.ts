@@ -129,10 +129,6 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         // Reload reminders if default notification time changes.
         this.defaultTimeChangedObserver = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
             this.loadReminders();
-
-            if (this.event) {
-                AddonCalendar.scheduleEventsNotifications([this.event]);
-            }
         }, this.currentSiteId);
 
         // Set and update current time. Use a 5 seconds error margin.
@@ -225,9 +221,8 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 return; // At this point we should always have the event, adding this check to avoid TS errors.
             }
 
-            // Load reminders, and re-schedule them if needed (maybe the event time has changed).
+            // Load reminders.
             this.loadReminders();
-            AddonCalendar.scheduleEventsNotifications([this.event]);
 
             // Reset some of the calculated data.
             this.categoryPath = '';

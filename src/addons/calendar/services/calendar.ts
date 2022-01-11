@@ -39,6 +39,7 @@ import { SafeUrl } from '@angular/platform-browser';
 import { CoreNavigator } from '@services/navigator';
 import { AddonCalendarFilter } from './calendar-helper';
 import { AddonCalendarSyncEvents, AddonCalendarSyncProvider } from './calendar-sync';
+import { CoreEvents } from '@singletons/events';
 
 const ROOT_CACHE_KEY = 'mmaCalendar:';
 
@@ -351,6 +352,28 @@ export class AddonCalendarProvider {
             },
         );
 
+        if (CoreLocalNotifications.isAvailable()) {
+            CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, async (data) => {
+                const site = await CoreSites.getSite(data.siteId);
+
+                // Get all the events that have a default reminder.
+                const query = 'SELECT events.*, reminders.id AS reminderid ' +
+                    'FROM ' + EVENTS_TABLE + ' events ' +
+                    'INNER JOIN ' + REMINDERS_TABLE + ' reminders ON events.id = reminders.eventid ' +
+                    'WHERE reminders.time IS NULL';
+
+                const result = await site.getDb().execute(query);
+
+                // Reschedule all the default reminders.
+                for (let i = 0; i < result.rows.length; i++) {
+                    const event = result.rows.item(i) as AddonCalendarEventDBRecord & {
+                        reminderid: number;
+                    };
+
+                    this.scheduleEventNotification(event, event.reminderid, null, site.getId());
+                }
+            });
+        }
     }
 
     /**
@@ -674,6 +697,9 @@ export class AddonCalendarProvider {
             const response: AddonCalendarGetCalendarEventByIdWSResponse =
                 await site.read('core_calendar_get_calendar_event_by_id', params, preSets);
 
+            this.storeEventInLocalDb(response.event, { siteId });
+            this.scheduleEventsNotifications([response.event], siteId);
+
             return response.event;
         } catch (error) {
             try {
@@ -837,6 +863,7 @@ export class AddonCalendarProvider {
         }
         const response: AddonCalendarCalendarDay = await site.read('core_calendar_get_calendar_day_view', params, preSets);
         this.storeEventsInLocalDB(response.events, { siteId });
+        this.scheduleEventsNotifications(response.events, siteId);
 
         return response;
     }
@@ -1040,7 +1067,8 @@ export class AddonCalendarProvider {
         const response = await site.read<AddonCalendarMonth>('core_calendar_get_calendar_monthly_view', params, preSets);
         response.weeks.forEach((week) => {
             week.days.forEach((day) => {
-                this.storeEventsInLocalDB(day.events as AddonCalendarCalendarEvent[], { siteId });
+                this.storeEventsInLocalDB(day.events, { siteId });
+                this.scheduleEventsNotifications(day.events, siteId);
             });
         });
 
@@ -1154,6 +1182,7 @@ export class AddonCalendarProvider {
 
         const response = await site.read<AddonCalendarUpcoming>('core_calendar_get_calendar_upcoming_view', params, preSets);
         this.storeEventsInLocalDB(response.events, { siteId });
+        this.scheduleEventsNotifications(response.events, siteId);
 
         return response;
     }
@@ -1512,7 +1541,7 @@ export class AddonCalendarProvider {
         const promises = events.map(async (event) => {
             if (event.timestart * 1000 <= Date.now()) {
                 // The event has already started, don't schedule it.
-                return this.deleteLocalEvent(event.id, siteId);
+                return;
             }
 
             const reminders = await this.getEventReminders(event.id, siteId);

@@ -16,7 +16,6 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -70,7 +69,6 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     protected syncObserver: CoreEventObserver;
     protected manualSyncObserver: CoreEventObserver;
     protected onlineObserver: Subscription;
-    protected obsDefaultTimeChange?: CoreEventObserver;
     protected filterChangedObserver: CoreEventObserver;
     protected managerUnsubscribe?: () => void;
 
@@ -92,15 +90,6 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
     constructor() {
         this.currentSiteId = CoreSites.getCurrentSiteId();
-
-        if (CoreLocalNotifications.isAvailable()) {
-            // Re-schedule events if default time changes.
-            this.obsDefaultTimeChange = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
-                this.manager?.getSource().getItems()?.forEach(day => {
-                    AddonCalendar.scheduleEventsNotifications(day.onlineEvents || []);
-                });
-            }, this.currentSiteId);
-        }
 
         // Listen for events added. When an event is added, reload the data.
         this.newEventObserver = CoreEvents.on(
@@ -464,7 +453,6 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.manualSyncObserver?.off();
         this.onlineObserver?.unsubscribe();
         this.filterChangedObserver?.off();
-        this.obsDefaultTimeChange?.off();
         this.managerUnsubscribe && this.managerUnsubscribe();
     }
 
@@ -683,9 +671,6 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
                 throw error;
             }
         }
-
-        // Schedule notifications for the events retrieved (only future events will be scheduled).
-        AddonCalendar.scheduleEventsNotifications(preloadedDay.onlineEvents || []);
 
         // Merge the online events with offline data.
         preloadedDay.events = this.mergeEvents(preloadedDay);
