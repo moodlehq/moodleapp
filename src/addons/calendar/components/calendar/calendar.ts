@@ -41,7 +41,6 @@ import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calenda
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { CoreCategoryData, CoreCourses } from '@features/courses/services/courses';
 import { CoreApp } from '@services/app';
-import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSwipeSlidesComponent } from '@components/swipe-slides/swipe-slides';
 import {
     CoreSwipeSlidesDynamicItem,
@@ -78,30 +77,12 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     protected differ: KeyValueDiffer<unknown, unknown>; // To detect changes in the data input.
     // Observers and listeners.
     protected undeleteEventObserver: CoreEventObserver;
-    protected obsDefaultTimeChange?: CoreEventObserver;
     protected managerUnsubscribe?: () => void;
 
     constructor(
         differs: KeyValueDiffers,
     ) {
         this.currentSiteId = CoreSites.getCurrentSiteId();
-
-        if (CoreLocalNotifications.isAvailable()) {
-            // Re-schedule events if default time changes.
-            this.obsDefaultTimeChange = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
-                this.manager?.getSource().getItems()?.forEach((month) => {
-                    if (!month.loaded) {
-                        return;
-                    }
-
-                    month.weeks?.forEach((week) => {
-                        week.days.forEach((day) => {
-                            AddonCalendar.scheduleEventsNotifications(day.eventsFormated || []);
-                        });
-                    });
-                });
-            }, this.currentSiteId);
-        }
 
         // Listen for events "undeleted" (offline).
         this.undeleteEventObserver = CoreEvents.on(
@@ -329,7 +310,6 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      */
     ngOnDestroy(): void {
         this.undeleteEventObserver?.off();
-        this.obsDefaultTimeChange?.off();
         this.managerUnsubscribe && this.managerUnsubscribe();
     }
 
@@ -577,30 +557,22 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
 
         weeks.forEach((week) => {
             week.days.forEach((day) => {
+                if (this.deletedEvents.length) {
+                    // Mark as deleted the events that were deleted in offline.
+                    day.eventsFormated?.forEach((event) => {
+                        event.deleted = this.deletedEvents.indexOf(event.id) != -1;
+                    });
+                }
 
-                // Schedule notifications for the events retrieved (only future events will be scheduled).
-                AddonCalendar.scheduleEventsNotifications(day.eventsFormated || []);
+                if (this.offlineEditedEventsIds.length) {
+                    // Remove the online events that were modified in offline.
+                    day.events = day.events.filter((event) => this.offlineEditedEventsIds.indexOf(event.id) == -1);
+                }
 
-                if (monthOfflineEvents || this.deletedEvents.length) {
-                    // There is offline data, merge it.
-
-                    if (this.deletedEvents.length) {
-                        // Mark as deleted the events that were deleted in offline.
-                        day.eventsFormated?.forEach((event) => {
-                            event.deleted = this.deletedEvents.indexOf(event.id) != -1;
-                        });
-                    }
-
-                    if (this.offlineEditedEventsIds.length) {
-                        // Remove the online events that were modified in offline.
-                        day.events = day.events.filter((event) => this.offlineEditedEventsIds.indexOf(event.id) == -1);
-                    }
-
-                    if (monthOfflineEvents && monthOfflineEvents[day.mday] && day.eventsFormated) {
-                        // Add the offline events (either new or edited).
-                        day.eventsFormated =
-                            AddonCalendarHelper.sortEvents(day.eventsFormated.concat(monthOfflineEvents[day.mday]));
-                    }
+                if (monthOfflineEvents && monthOfflineEvents[day.mday] && day.eventsFormated) {
+                    // Add the offline events (either new or edited).
+                    day.eventsFormated =
+                        AddonCalendarHelper.sortEvents(day.eventsFormated.concat(monthOfflineEvents[day.mday]));
                 }
             });
         });
