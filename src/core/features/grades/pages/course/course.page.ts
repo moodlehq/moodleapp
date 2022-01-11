@@ -159,7 +159,11 @@ class CoreGradesCourseManager extends CorePageItemsListManager<CoreGradesFormatt
      */
     async select(row: CoreGradesFormattedTableRowFilled): Promise<void> {
         if (this.outsideGradesTab) {
-            await CoreNavigator.navigateToSitePath(`/grades/${this.courseId}/${row.id}`);
+            await CoreNavigator.navigateToSitePath(`/grades/${this.courseId}/${row.id}`, {
+                params: {
+                    userId: this.userId,
+                },
+            });
 
             return;
         }

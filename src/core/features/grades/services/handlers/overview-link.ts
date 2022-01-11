@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
+import { GRADES_PAGE_NAME } from '@features/grades/grades.module';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { CoreGrades } from '../grades';
@@ -36,10 +37,7 @@ export class CoreGradesOverviewLinkHandlerService extends CoreContentLinksHandle
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: siteId => {
-                CoreNavigator.navigateToSitePath('/grades', {
-                    siteId,
-                    preferCurrentTab: false,
-                });
+                CoreNavigator.navigateToSitePath(GRADES_PAGE_NAME, { siteId });
             },
         }];
     }
