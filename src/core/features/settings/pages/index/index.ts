@@ -13,13 +13,11 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { Params } from '@angular/router';
 
-import { CorePageItemsListManager } from '@classes/page-items-list-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreConstants } from '@/core/constants';
-import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/sharedfiles.module';
-import { CoreApp } from '@services/app';
+import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { CoreSettingsSection, CoreSettingsSectionsSource } from '@features/settings/classes/settings-sections-source';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 @Component({
     selector: 'page-core-settings-index',
@@ -27,16 +25,22 @@ import { CoreApp } from '@services/app';
 })
 export class CoreSettingsIndexPage implements AfterViewInit, OnDestroy {
 
-    sections: CoreSettingsSectionsManager = new CoreSettingsSectionsManager(CoreSettingsIndexPage);
+    sections: CoreListItemsManager<CoreSettingsSection>;
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+
+    constructor() {
+        const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreSettingsSectionsSource, []);
+
+        this.sections = new CoreListItemsManager(source, CoreSettingsIndexPage);
+    }
 
     /**
      * @inheritdoc
      */
-    ngAfterViewInit(): void {
-        this.sections.setItems(this.getSections());
-        this.sections.start(this.splitView);
+    async ngAfterViewInit(): Promise<void> {
+        await this.sections.load();
+        await this.sections.start(this.splitView);
     }
 
     /**
@@ -46,77 +50,4 @@ export class CoreSettingsIndexPage implements AfterViewInit, OnDestroy {
         this.sections.destroy();
     }
 
-    /**
-     * Get the sections.
-     *
-     * @returns Sections.
-     */
-    protected getSections(): CoreSettingsSection[] {
-        const sections: CoreSettingsSection[] = [
-            {
-                name: 'core.settings.general',
-                path: 'general',
-                icon: 'fas-wrench',
-            },
-            {
-                name: 'core.settings.spaceusage',
-                path: 'spaceusage',
-                icon: 'fas-tasks',
-            },
-            {
-                name: 'core.settings.synchronization',
-                path: 'sync',
-                icon: CoreConstants.ICON_SYNC,
-            },
-        ];
-
-        if (CoreApp.isIOS()) {
-            sections.push({
-                name: 'core.sharedfiles.sharedfiles',
-                path: SHAREDFILES_PAGE_NAME + '/list/root',
-                icon: 'fas-folder',
-                params: { manage: true },
-            });
-        }
-
-        sections.push({
-            name: 'core.settings.about',
-            path: 'about',
-            icon: 'fas-id-card',
-        });
-
-        return sections;
-    }
-
 }
-
-/**
- * Helper class to manage sections.
- */
-class CoreSettingsSectionsManager extends CorePageItemsListManager<CoreSettingsSection> {
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(section: CoreSettingsSection): string {
-        return section.path;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemQueryParams(section: CoreSettingsSection): Params {
-        return section.params || {};
-    }
-
-}
-
-/**
- * Settings section.
- */
-export type CoreSettingsSection = {
-    name: string;
-    path: string;
-    icon: string;
-    params?: Params;
-};
