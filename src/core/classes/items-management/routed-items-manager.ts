@@ -120,6 +120,34 @@ export abstract class CoreRoutedItemsManager<
     }
 
     /**
+     * Navigate to the index page.
+     *
+     * @param options Navigation options.
+     */
+    protected async navigateToIndex(
+        options: Pick<CoreNavigationOptions, 'reset' | 'replace' | 'animationDirection'> = {},
+    ): Promise<void> {
+        // Get current route in the page.
+        const route = this.getCurrentPageRoute();
+
+        if (route === null) {
+            return;
+        }
+
+        // If the current page is already the index, do nothing.
+        const selectedItemPath = this.getSelectedItemPath(route.snapshot);
+
+        if (selectedItemPath === null) {
+            return;
+        }
+
+        // Navigate to index.
+        const indexPath = selectedItemPath ? selectedItemPath.split('/').fill('../').join('') : '';
+
+        await CoreNavigator.navigate(indexPath, options);
+    }
+
+    /**
      * @inheritdoc
      */
     protected onSourceItemsUpdated(items: Item[]): void {
