@@ -49,9 +49,16 @@
                                     <span [innerHTML]="row.gradeitem"></span>
                                 </th>
                                 <ng-container *ngFor="let column of columns">
-                                    <td *ngIf="column.name != 'gradeitem' && row[column.name] != undefined"
+                                    <td *ngIf="column.name !== 'gradeitem' && column.name !== 'feedback' && row[column.name] != undefined"
                                         [class]="'ion-text-start core-grades-table-' + column.name"
-                                        [class.ion-hide-md-down]="column.hiddenPhone" [innerHTML]="row[column.name]"></td>
+                                        [class.ion-hide-md-down]="column.hiddenPhone" [innerHTML]="row[column.name]">
+                                    </td>
+                                    <td *ngIf="column.name === 'feedback' && row.feedback !== undefined"
+                                        class="ion-text-start core-grades-table-feedback" [class.ion-hide-md-down]="column.hiddenPhone">
+                                        <core-format-text [maxHeight]="120" [text]="row.feedback" contextLevel="course"
+                                            [contextInstanceId]="courseId">
+                                        </core-format-text>
+                                    </td>
                                 </ng-container>
                             </ng-container>
                         </tr>
