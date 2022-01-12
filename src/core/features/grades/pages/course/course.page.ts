@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ActivatedRoute } from '@angular/router';
-import { AfterViewInit, Component, ElementRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreDomUtils } from '@services/utils/dom';
@@ -28,6 +28,9 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { Translate } from '@singletons';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses-source';
 
 /**
  * Page that displays a course grades.
@@ -37,12 +40,14 @@ import { Translate } from '@singletons';
     templateUrl: 'course.html',
     styleUrls: ['course.scss'],
 })
-export class CoreGradesCoursePage implements AfterViewInit {
+export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
     courseId!: number;
     userId!: number;
     expandLabel!: string;
     collapseLabel!: string;
+    title?: string;
+    courses?: CoreSwipeNavigationItemsManager;
     columns?: CoreGradesFormattedTableColumn[];
     rows?: CoreGradesFormattedTableRow[];
     totalColumnsSpan?: number;
@@ -54,6 +59,12 @@ export class CoreGradesCoursePage implements AfterViewInit {
             this.userId = CoreNavigator.getRouteNumberParam('userId', { route }) ?? CoreSites.getCurrentSiteUserId();
             this.expandLabel = Translate.instant('core.expand');
             this.collapseLabel = Translate.instant('core.collapse');
+
+            if (route.snapshot.data.swipeEnabled ?? true) {
+                const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreGradesCoursesSource, []);
+
+                this.courses = new CoreSwipeNavigationItemsManager(source);
+            }
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -73,8 +84,16 @@ export class CoreGradesCoursePage implements AfterViewInit {
     async ngAfterViewInit(): Promise<void> {
         this.withinSplitView = !!this.element.nativeElement.parentElement?.closest('core-split-view');
 
+        await this.courses?.start();
         await this.fetchInitialGrades();
         await CoreGrades.logCourseGradesView(this.courseId, this.userId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.courses?.destroy();
     }
 
     /**
@@ -151,6 +170,7 @@ export class CoreGradesCoursePage implements AfterViewInit {
         const table = await CoreGrades.getCourseGradesTable(this.courseId, this.userId);
         const formattedTable = await CoreGradesHelper.formatGradesTable(table);
 
+        this.title = formattedTable.rows[0]?.gradeitem ?? Translate.instant('core.grades.grades');
         this.columns = formattedTable.columns;
         this.rows = formattedTable.rows;
         this.totalColumnsSpan = formattedTable.columns.reduce((total, column) => total + column.colspan, 0);

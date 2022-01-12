@@ -13,11 +13,12 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { CorePageItemsListManager } from '@classes/page-items-list-manager';
+import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses-source';
 import { CoreGrades } from '@features/grades/services/grades';
-import { CoreGradesGradeOverviewWithCourseData, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -31,9 +32,15 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
 
-    courses: CoreGradesCoursesManager = new CoreGradesCoursesManager(CoreGradesCoursesPage);
+    courses: CoreGradesCoursesManager;
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+
+    constructor() {
+        const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreGradesCoursesSource, []);
+
+        this.courses = new CoreGradesCoursesManager(source, CoreGradesCoursesPage);
+    }
 
     /**
      * @inheritdoc
@@ -58,7 +65,7 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      */
     async refreshCourses(refresher: IonRefresher): Promise<void> {
         await CoreUtils.ignoreErrors(CoreGrades.invalidateCoursesGradesData());
-        await CoreUtils.ignoreErrors(this.fetchCourses());
+        await CoreUtils.ignoreErrors(this.courses.reload());
 
         refresher?.complete();
     }
@@ -68,22 +75,10 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      */
     private async fetchInitialCourses(): Promise<void> {
         try {
-            await this.fetchCourses();
+            await this.courses.load();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading courses');
-
-            this.courses.setItems([]);
         }
-    }
-
-    /**
-     * Update the list of courses.
-     */
-    private async fetchCourses(): Promise<void> {
-        const grades = await CoreGrades.getCoursesGrades();
-        const courses = await CoreGradesHelper.getGradesCourseData(grades);
-
-        this.courses.setItems(courses);
     }
 
 }
@@ -91,14 +86,7 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
 /**
  * Helper class to manage courses.
  */
-class CoreGradesCoursesManager extends CorePageItemsListManager<CoreGradesGradeOverviewWithCourseData> {
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(courseGrade: CoreGradesGradeOverviewWithCourseData): string {
-        return courseGrade.courseid.toString();
-    }
+class CoreGradesCoursesManager extends CoreListItemsManager {
 
     /**
      * @inheritdoc

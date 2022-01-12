@@ -22,6 +22,7 @@ const routes: Routes = [
     {
         path: '',
         component: CoreGradesCoursePage,
+        data: { swipeEnabled: false },
     },
 ];
 

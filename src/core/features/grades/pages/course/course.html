@@ -4,11 +4,11 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
-            <h1>{{ 'core.grades.grades' | translate }}</h1>
+            <h1>{{ title }}</h1>
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content [core-swipe-navigation]="courses">
     <ion-refresher slot="fixed" [disabled]="!columns || !rows" (ionRefresh)="refreshGrades($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
