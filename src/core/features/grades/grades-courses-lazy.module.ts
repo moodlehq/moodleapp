@@ -22,7 +22,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreGradesCoursePage } from './pages/course/course.page';
 import { CoreGradesCoursePageModule } from './pages/course/course.module';
 import { CoreGradesCoursesPage } from './pages/courses/courses.page';
-import { CoreGradesGradePage } from './pages/grade/grade.page';
 
 const mobileRoutes: Routes = [
     {
@@ -32,10 +31,6 @@ const mobileRoutes: Routes = [
     {
         path: ':courseId',
         component: CoreGradesCoursePage,
-    },
-    {
-        path: ':courseId/:gradeId',
-        component: CoreGradesGradePage,
     },
 ];
 
@@ -47,16 +42,6 @@ const tabletRoutes: Routes = [
             {
                 path: ':courseId',
                 component: CoreGradesCoursePage,
-            },
-        ],
-    },
-    {
-        path: ':courseId',
-        component: CoreGradesCoursePage,
-        children: [
-            {
-                path: ':gradeId',
-                component: CoreGradesGradePage,
             },
         ],
     },
@@ -75,7 +60,6 @@ const routes: Routes = [
     ],
     declarations: [
         CoreGradesCoursesPage,
-        CoreGradesGradePage,
     ],
 })
 export class CoreGradesCoursesLazyModule {}

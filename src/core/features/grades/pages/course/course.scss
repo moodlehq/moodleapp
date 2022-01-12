@@ -61,11 +61,15 @@
         background-color: var(--header-background);
     }
 
+    thead #gradeitem {
+        @include padding(null, null, null, 23px);
+    }
+
     tbody th {
       font-weight: normal;
     }
 
-    #gradeitem {
+    tbody #gradeitem {
         @include padding(null, null, null, 5px);
     }
 
@@ -131,12 +135,15 @@
         }
     }
 
-}
+    ion-list, ion-item::part(native) {
+        background-color: transparent;
+    }
 
-core-split-view.nested .core-grades-table .ion-hide-md-down,
-core-split-view.menu-and-content .core-grades-table .ion-hide-md-down {
-    display: none;
-    opacity: 0;
+    &.summary .ion-hide-md-down {
+        display: none;
+        opacity: 0;
+    }
+
 }
 
 @include media-breakpoint-down(md) {

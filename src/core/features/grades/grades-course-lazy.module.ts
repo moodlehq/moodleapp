@@ -22,10 +22,6 @@ const routes: Routes = [
     {
         path: '',
         component: CoreGradesCoursePage,
-        data: {
-            useSplitView: false,
-            outsideGradesTab: true,
-        },
     },
 ];
 
