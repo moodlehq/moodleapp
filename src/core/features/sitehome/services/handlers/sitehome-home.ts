@@ -28,7 +28,7 @@ export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
     static readonly PAGE_NAME = 'site';
 
     name = 'CoreSiteHomeDashboard';
-    priority = 1200;
+    priority = 1100;
 
     /**
      * Check if the handler is enabled on a site level.
@@ -64,7 +64,7 @@ export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
             page: CoreSiteHomeHomeHandlerService.PAGE_NAME,
             class: 'core-sitehome-dashboard-handler',
             icon: 'fas-home',
-            selectPriority: displaySiteHome ? 1100 : 900,
+            priority: displaySiteHome ? this.priority + 200 : this.priority,
         };
     }
 

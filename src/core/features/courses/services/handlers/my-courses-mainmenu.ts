@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreSiteInfoUserHomepage } from '@classes/site';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreSiteHomeHomeHandler } from '@features/sitehome/services/handlers/sitehome-home';
 import { CoreSites } from '@services/sites';
@@ -59,11 +60,16 @@ export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuH
      * @inheritdoc
      */
     getDisplayData(): CoreMainMenuHandlerData {
+        const site = CoreSites.getCurrentSite();
+
+        const displayMyCourses = site?.getInfo() && site?.getInfo()?.userhomepage === CoreSiteInfoUserHomepage.HOMEPAGE_MYCOURSES;
+
         return {
             title: 'core.courses.mycourses',
             page: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
             class: 'core-courses-my-courses-handler',
             icon: 'fas-graduation-cap',
+            priority: displayMyCourses ? this.priority + 200 : this.priority,
         };
     }
 

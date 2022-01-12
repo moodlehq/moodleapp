@@ -27,7 +27,7 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
     static readonly PAGE_NAME = 'dashboard';
 
     name = 'CoreCoursesDashboard';
-    priority = 1100;
+    priority = 1200;
 
     /**
      * Check if the handler is enabled on a site level.
@@ -92,7 +92,6 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
             page: CoreDashboardHomeHandlerService.PAGE_NAME,
             class: 'core-courses-dashboard-handler',
             icon: 'fas-tachometer-alt',
-            selectPriority: 1000,
         };
     }
 
