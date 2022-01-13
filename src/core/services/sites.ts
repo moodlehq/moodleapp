@@ -257,7 +257,7 @@ export class CoreSitesProvider {
             // The WS didn't return data, probably cannot connect.
             return new CoreSiteError({
                 message: error.message || '',
-                critical: 'status' in error && error.status === -2, // Certificate error.
+                critical: false, // Allow fallback to http if siteUrl uses https.
             });
         }
 
