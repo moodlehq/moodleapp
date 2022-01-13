@@ -26,6 +26,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 
 /**
  * Page that displays the Home.
@@ -39,10 +40,9 @@ export class CoreMainMenuHomePage implements OnInit {
 
     @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
 
-    siteName!: string;
+    siteName = '';
     tabs: CoreTabsOutletTab[] = [];
     loaded = false;
-    selectedTab?: number;
 
     protected subscription?: Subscription;
     protected updateSiteObserver?: CoreEventObserver;
@@ -97,7 +97,7 @@ export class CoreMainMenuHomePage implements OnInit {
             }
 
             return {
-                page: `/main/home/${handler.page}`,
+                page: `/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${handler.page}`,
                 pageParams: handler.pageParams,
                 title: handler.title,
                 class: handler.class,
@@ -108,21 +108,6 @@ export class CoreMainMenuHomePage implements OnInit {
 
         // Sort them by priority so new handlers are in the right position.
         newTabs.sort((a, b) => (handlersMap[b.title].priority || 0) - (handlersMap[a.title].priority || 0));
-
-        if (this.selectedTab === undefined && newTabs.length > 0) {
-            let maxPriority = 0;
-
-            this.selectedTab = Object.entries(newTabs).reduce((maxIndex, [index, tab]) => {
-                const selectPriority = handlersMap[tab.title].selectPriority ?? 0;
-
-                if (selectPriority > maxPriority) {
-                    maxPriority = selectPriority;
-                    maxIndex = Number(index);
-                }
-
-                return maxIndex;
-            }, 0);
-        }
 
         this.tabs = newTabs;
 
@@ -136,7 +121,7 @@ export class CoreMainMenuHomePage implements OnInit {
      * Load the site name.
      */
     protected loadSiteName(): void {
-        this.siteName = CoreSites.getCurrentSite()!.getSiteName();
+        this.siteName = CoreSites.getCurrentSite()?.getSiteName() || '';
     }
 
     /**
@@ -171,8 +156,8 @@ export class CoreMainMenuHomePage implements OnInit {
         const actions = await CoreContentLinksDelegate.getActionsFor(url, undefined);
 
         const action = CoreContentLinksHelper.getFirstValidAction(actions);
-        if (action) {
-            action.action(action.sites![0]);
+        if (action?.sites?.[0]) {
+            action.action(action.sites[0]);
         }
     }
 

@@ -72,12 +72,7 @@ export interface CoreMainMenuHomeHandlerData {
 /**
  * Data returned by the delegate for each handler.
  */
-export interface CoreMainMenuHomeHandlerToDisplay extends CoreDelegateToDisplay, CoreMainMenuHomeHandlerData {
-    /**
-     * Priority to select handler.
-     */
-    selectPriority?: number;
-}
+export interface CoreMainMenuHomeHandlerToDisplay extends CoreDelegateToDisplay, CoreMainMenuHomeHandlerData {}
 
 /**
  * Service to interact with plugins to be shown in the main menu. Provides functions to register a plugin
