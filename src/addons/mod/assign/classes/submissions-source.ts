@@ -164,11 +164,14 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
                 this.submissionsData.submissions,
                 this.groupId,
             );
+
         // Get assignment grades only if workflow is not enabled to check grading date.
-        const grades = !assign.markingworkflow
+        let grades = !assign.markingworkflow
             ? await AddonModAssign.getAssignmentGrades(assign.id, { cmId: assign.cmid })
             : [];
 
+        // Remove grades (not graded) and sort by timemodified DESC to allow finding quicker.
+        grades = grades.filter((grade) => parseInt(grade.grade, 10) >= 0).sort((a, b) => b.timemodified - a.timemodified);
         // Filter the submissions to get only the ones with the right status and add some extra data.
         if (this.SELECTED_STATUS == AddonModAssignListFilterName.NEED_GRADING) {
             const promises: Promise<void>[] = submissions.map(async (submission: AddonModAssignSubmissionForList) => {
@@ -195,17 +198,15 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
                 // Load offline grades.
                 const notSynced = !!gradeData && submission.timemodified < gradeData.timemodified;
 
-                if (submission.gradingstatus == AddonModAssignGradingStates.GRADED && !assign.markingworkflow) {
+                if (!assign.markingworkflow) {
                     // Get the last grade of the submission.
-                    const grade = grades
-                        .filter((grade) => grade.userid == submission.userid)
-                        .reduce(
-                            (a, b) => (a && a.timemodified > b.timemodified ? a : b),
-                                <AddonModAssignGrade | undefined> undefined,
-                        );
+                    const grade = grades.find((grade) => grade.userid == submission.userid);
 
-                    if (grade && grade.timemodified < submission.timemodified) {
-                        submission.gradingstatus = AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT;
+                    if (grade) {
+                        // Override status if grade is found.
+                        submission.gradingstatus = grade.timemodified < submission.timemodified
+                            ? AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT
+                            : AddonModAssignGradingStates.GRADED;
                     }
                 }
                 submission.statusColor = AddonModAssign.getSubmissionStatusColor(submission.status);
@@ -222,7 +223,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
                     submission.gradingColor = '';
                 } else if (submission.statusColor != CoreIonicColorNames.DANGER ||
                     submission.gradingColor != CoreIonicColorNames.DANGER) {
-                // Show grading status if one of the statuses is not done.
+                    // Show grading status if one of the statuses is not done.
                     submission.gradingStatusTranslationId = AddonModAssign.getSubmissionGradingStatusTranslationId(
                         submission.gradingstatus,
                     );

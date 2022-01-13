@@ -44,7 +44,6 @@
     }
 
     .core-loading-content {
-        display: contents;
         @include core-transition(opacity, 200ms);
     }
 

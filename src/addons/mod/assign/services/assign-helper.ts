@@ -150,7 +150,7 @@ export class AddonModAssignHelperProvider {
             attemptnumber: 0,
             timecreated: 0,
             timemodified: 0,
-            status: '',
+            status: AddonModAssignSubmissionStatusValues.NEW,
             groupid: 0,
         };
     }
@@ -404,13 +404,18 @@ export class AddonModAssignHelperProvider {
         const blind = !!assign.blindmarking && !assign.revealidentities;
         const teamsubmission = !!assign.teamsubmission;
 
+        if (teamsubmission) {
+            // On team submission discard user submissions.
+            submissions = submissions.filter((submission) => submission.userid == 0);
+        }
+
         return participants.map((participant) => {
             const groupId = participant.groupid ??
                 (participant.groups && participant.groups[0] ? participant.groups[0].id : 0);
 
             const foundSubmission = submissions.find((submission) => {
                 if (teamsubmission) {
-                    return submission.userid == 0 && submission.groupid == groupId;
+                    return submission.groupid == groupId;
                 }
 
                 const submitId = submission.userid && submission.userid > 0 ? submission.userid : submission.blindid;
@@ -423,6 +428,9 @@ export class AddonModAssignHelperProvider {
                 // Create submission if none.
                 submission = this.createEmptySubmission();
                 submission.groupid = groupId;
+                submission.status = participant.submitted
+                    ? AddonModAssignSubmissionStatusValues.SUBMITTED
+                    : AddonModAssignSubmissionStatusValues.NEW;
             } else {
                 submission = Object.assign({}, foundSubmission);
             }
@@ -443,9 +451,6 @@ export class AddonModAssignHelperProvider {
                 submission.groupid = participant.groupid;
                 submission.groupname = participant.groupname;
             }
-
-            submission.status = submission.status ?? (participant.submitted ? AddonModAssignSubmissionStatusValues.SUBMITTED :
-                AddonModAssignSubmissionStatusValues.NEW);
 
             return submission;
 
