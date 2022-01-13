@@ -375,8 +375,9 @@ Feature: Test basic usage of survey activity in app
       | survey   | Test survey critical incidents | Test survey1 | 5        | C1     | survey1  | 0         |
     When I enter the course "Course 1" as "student1" in the app
     And I press "Display options" in the app
-    And I press "Show download options" in the app
+    And I press "Manage course storage" in the app
     And I press "cloud download" near "Test survey critical incidents" in the app
+    And I press the back button in the app
     And I switch offline mode to "true"
     And I press "Test survey name" in the app
     Then I should see "There was a problem connecting to the site. Please check your connection and try again."

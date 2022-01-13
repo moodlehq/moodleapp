@@ -133,9 +133,10 @@ Feature: Test basic usage of choice activity in app
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
     When I enter the course "Course 1" as "student1" in the app
     And I press "Display options" in the app
-    And I press "Show download options" in the app
-    And I press "Download" near "Test single choice name" in the app
-    Then I should find "Downloaded" near "Test single choice name" in the app
+    And I press "Manage course storage" in the app
+    And I press "Download" within "Test single choice name" "ion-item" in the app
+    Then I should find "Downloaded" within "Test single choice name" "ion-item" in the app
+    And I press the back button in the app
 
     When I switch offline mode to "true"
     And I press "Test multi choice name" in the app
