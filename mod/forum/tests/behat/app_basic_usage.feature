@@ -183,8 +183,9 @@ Feature: Test basic usage of forum activity in app
 
     When I press the back button in the app
     And I press "Display options" in the app
-    And I press "Show download options" in the app
-    And I press "Download" near "Test forum name" in the app
+    And I press "Manage course storage" in the app
+    And I press "Download" within "Test forum name" "ion-item" in the app
+    And I press the back button in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
     Then I should find "Reply" in the app
@@ -209,8 +210,9 @@ Feature: Test basic usage of forum activity in app
 
     When I press the back button in the app
     And I press "Display options" in the app
-    And I press "Show download options" in the app
-    And I press "Download" near "Test forum name" in the app
+    And I press "Manage course storage" in the app
+    And I press "Download" within "Test forum name" "ion-item" in the app
+    And I press the back button in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
     Then I should find "Reply" in the app
@@ -287,8 +289,9 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     And I press the back button in the app
     And I press "Display options" in the app
-    And I press "Show download options" in the app
-    And I press "Download" near "Test forum name" in the app
+    And I press "Manage course storage" in the app
+    And I press "Download" within "Test forum name" "ion-item" in the app
+    And I press the back button in the app
     And I press "Test forum name" in the app
     And I press "DiscussionSubject" in the app
     And I switch offline mode to "true"
@@ -365,9 +368,10 @@ Feature: Test basic usage of forum activity in app
 
     When I press the back button in the app
     And I press "Display options" in the app
-    And I press "Show download options" in the app
-    And I press "Download" near "Test forum name" in the app
-    Then I should find "Downloaded" near "Test forum name" in the app
+    And I press "Manage course storage" in the app
+    And I press "Download" within "Test forum name" "ion-item" in the app
+    Then I should find "Downloaded" within "Test forum name" "ion-item" in the app
+    And I press the back button in the app
 
     When I press "Test forum name" in the app
     And I press "Add a new discussion topic" in the app
