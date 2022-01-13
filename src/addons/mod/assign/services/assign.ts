@@ -955,6 +955,10 @@ export class AddonModAssignProvider {
      * @return Promise resolved with boolean: whether it needs to be graded or not.
      */
     async needsSubmissionToBeGraded(submission: AddonModAssignSubmissionFormatted, assignId: number): Promise<boolean> {
+        if (submission.status != AddonModAssignSubmissionStatusValues.SUBMITTED) {
+            return false;
+        }
+
         if (!submission.gradingstatus) {
             // This should not happen, but it's better to show rather than not showing any of the submissions.
             return true;
