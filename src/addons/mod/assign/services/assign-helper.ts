@@ -25,6 +25,7 @@ import {
     AddonModAssign,
     AddonModAssignPlugin,
     AddonModAssignSavePluginData,
+    AddonModAssignSubmissionStatusValues,
 } from './assign';
 import { AddonModAssignOffline } from './assign-offline';
 import { CoreUtils } from '@services/utils/utils';
@@ -55,8 +56,8 @@ export class AddonModAssignHelperProvider {
             return false;
         }
 
-        if (submission.status == AddonModAssignProvider.SUBMISSION_STATUS_NEW ||
-                submission.status == AddonModAssignProvider.SUBMISSION_STATUS_REOPENED) {
+        if (submission.status == AddonModAssignSubmissionStatusValues.NEW ||
+                submission.status == AddonModAssignSubmissionStatusValues.REOPENED) {
             // It's a new submission, allow creating it in offline.
             return true;
         }
@@ -443,8 +444,8 @@ export class AddonModAssignHelperProvider {
                 submission.groupname = participant.groupname;
             }
 
-            submission.status = submission.status ?? (participant.submitted ? AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED :
-                AddonModAssignProvider.SUBMISSION_STATUS_NEW);
+            submission.status = submission.status ?? (participant.submitted ? AddonModAssignSubmissionStatusValues.SUBMITTED :
+                AddonModAssignSubmissionStatusValues.NEW);
 
             return submission;
 

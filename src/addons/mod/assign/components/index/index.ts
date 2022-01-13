@@ -28,6 +28,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { AddonModAssignListFilterName } from '../../classes/submissions-source';
 import {
     AddonModAssign,
     AddonModAssignAssign,
@@ -75,9 +76,9 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     };
 
     // Status.
-    submissionStatusSubmitted = AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED;
-    submissionStatusDraft = AddonModAssignProvider.SUBMISSION_STATUS_DRAFT;
-    needGrading = AddonModAssignProvider.NEED_GRADING;
+    submissionStatusSubmitted = AddonModAssignListFilterName.SUBMITTED;
+    submissionStatusDraft = AddonModAssignListFilterName.DRAFT;
+    needGrading = AddonModAssignListFilterName.NEED_GRADING;
 
     protected currentUserId!: number; // Current user ID.
     protected currentSite!: CoreSite; // Current site.
@@ -311,7 +312,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      * @param status Status to see.
      * @param hasSubmissions If the status has any submission.
      */
-    goToSubmissionList(status?: string, hasSubmissions = false): void {
+    goToSubmissionList(status?: AddonModAssignListFilterName, hasSubmissions = false): void {
         if (status !== undefined && !hasSubmissions) {
             return;
         }
