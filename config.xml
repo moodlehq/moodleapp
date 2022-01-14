@@ -49,6 +49,8 @@
     <preference name="WKWebViewOnly" value="true" />
     <preference name="WKFullScreenEnabled" value="true" />
     <preference name="AndroidXEnabled" value="true" />
+    <preference name="GradlePluginGoogleServicesEnabled" value="true" />
+    <preference name="GradlePluginGoogleServicesVersion" value="4.3.10" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
@@ -185,12 +187,6 @@
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="StatusBar">
                 <param name="android-package" value="org.apache.cordova.statusbar.StatusBar" />
-                <param name="onload" value="true" />
-            </feature>
-        </config-file>
-        <config-file parent="/*" target="res/xml/config.xml">
-            <feature name="Whitelist">
-                <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
                 <param name="onload" value="true" />
             </feature>
         </config-file>
