@@ -124,6 +124,9 @@ function get_language {
 # Entry function to get all language files.
 function get_languages {
     suffix=$1
+    if [ -z $suffix ]; then
+        suffix=''
+    fi
 
     get_last_version
 
