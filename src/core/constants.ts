@@ -131,8 +131,25 @@ export class CoreConstants {
     static readonly MOD_ARCHETYPE_SYSTEM = 3; // System (not user-addable) module archetype.
 
     // Config & environment constants.
-    static readonly CONFIG = envJson.config as unknown as EnvironmentConfig; // Data parsed from config.json files.
+    static readonly CONFIG = { ...envJson.config } as unknown as EnvironmentConfig; // Data parsed from config.json files.
     static readonly BUILD = envJson.build as unknown as EnvironmentBuild; // Build info.
+
+    /**
+     * Update config with the given values.
+     *
+     * @param config Config updates.
+     */
+    static patchConfig(config: Partial<EnvironmentConfig>): void {
+        Object.assign(this.CONFIG, config);
+    }
+
+    /**
+     * Reset config values to its original state.
+     */
+    static resetConfig(): void {
+        Object.keys(this.CONFIG).forEach(key => delete this.CONFIG[key]);
+        Object.assign(this.CONFIG, envJson.config);
+    }
 
 }
 
