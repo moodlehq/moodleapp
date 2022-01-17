@@ -14,7 +14,7 @@
     <ion-list>
         <ion-radio-group [(ngModel)]="options.timeFilterSelected">
             <ion-item class="ion-text-wrap" *ngIf="options.show.all">
-                <ion-label>{{'addon.block_myoverview.allincludinghidden' | translate}}</ion-label>
+                <ion-label>{{'addon.block_myoverview.all' | translate}}</ion-label>
                 <ion-radio slot="end" value="all"></ion-radio>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="options.show.inprogress">

@@ -3,7 +3,7 @@
     "chatreport": "Chat sessions",
     "confirmloss": "Are you sure? Chat history can be lost.",
     "currentusers": "Current users",
-    "enterchat": "Click here to enter the chat now",
+    "enterchat": "Enter the chat",
     "entermessage": "Enter your message",
     "errorwhileconnecting": "Error while connecting to the chat.",
     "errorwhilegettingchatdata": "Error while getting chat data.",
@@ -25,5 +25,5 @@
     "sessionstart": "The next chat session will start on {{$a.date}}, ({{$a.fromnow}} from now)",
     "showincompletesessions": "Show incomplete sessions",
     "talk": "Talk",
-    "viewreport": "View past chat sessions"
+    "viewreport": "Past sessions"
 }
