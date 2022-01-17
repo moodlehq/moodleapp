@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { COURSE_PAGE_NAME } from '@features/course/course.module';
+import { GRADES_PAGE_NAME } from '@features/grades/grades.module';
 
 import { CoreGrades } from '@features/grades/services/grades';
 import { CoreUserProfile } from '@features/user/services/user';
@@ -21,6 +23,7 @@ import {
     CoreUserProfileHandler,
     CoreUserProfileHandlerData,
 } from '@features/user/services/user-delegate';
+import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -31,8 +34,6 @@ import { makeSingleton } from '@singletons';
  */
 @Injectable({ providedIn: 'root' })
 export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
-
-    static readonly PAGE_NAME = 'grades';
 
     name = 'CoreGrades:viewGrades';
     priority = 400;
@@ -81,9 +82,9 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
                 action: (event, user, courseId): void => {
                     event.preventDefault();
                     event.stopPropagation();
-                    CoreNavigator.navigateToSitePath(`/user-grades/${courseId}`, {
-                        params: { userId: user.id },
-                    });
+                    CoreNavigator.navigateToSitePath(
+                        [COURSE_PAGE_NAME, courseId, PARTICIPANTS_PAGE_NAME, user.id, GRADES_PAGE_NAME].join('/'),
+                    );
                 },
             };
         } else {
@@ -94,7 +95,7 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
                 action: (event): void => {
                     event.preventDefault();
                     event.stopPropagation();
-                    CoreNavigator.navigateToSitePath(CoreGradesUserHandlerService.PAGE_NAME);
+                    CoreNavigator.navigateToSitePath(GRADES_PAGE_NAME);
                 },
             };
         }

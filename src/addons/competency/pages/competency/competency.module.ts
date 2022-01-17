@@ -13,23 +13,16 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
 
-import { CoreGradesCoursePage } from './pages/course/course.page';
-import { CoreGradesCoursePageModule } from './pages/course/course.module';
-
-const routes: Routes = [
-    {
-        path: '',
-        component: CoreGradesCoursePage,
-        data: { swipeEnabled: false },
-    },
-];
+import { CoreSharedModule } from '@/core/shared.module';
+import { AddonCompetencyCompetencyPage } from './competency.page';
 
 @NgModule({
     imports: [
-        RouterModule.forChild(routes),
-        CoreGradesCoursePageModule,
+        CoreSharedModule,
+    ],
+    declarations: [
+        AddonCompetencyCompetencyPage,
     ],
 })
-export class CoreGradesCourseLazyModule {}
+export class AddonCompetencyCompetencyPageModule {}

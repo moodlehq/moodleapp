@@ -15,21 +15,20 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreGradesCoursePage } from './pages/course/course.page';
-import { CoreGradesCoursePageModule } from './pages/course/course.module';
+import { AddonCompetencyCourseCompetenciesPage } from './pages/coursecompetencies/coursecompetencies.page';
+import { AddonCompetencyCourseCompetenciesPageModule } from './pages/coursecompetencies/coursecompetencies.module';
 
 const routes: Routes = [
     {
         path: '',
-        component: CoreGradesCoursePage,
-        data: { swipeEnabled: false },
+        component: AddonCompetencyCourseCompetenciesPage,
     },
 ];
 
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreGradesCoursePageModule,
+        AddonCompetencyCourseCompetenciesPageModule,
     ],
 })
-export class CoreGradesCourseLazyModule {}
+export class AddonCompetencyCourseContentsLazyModule {}

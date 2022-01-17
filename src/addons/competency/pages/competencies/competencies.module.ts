@@ -13,22 +13,16 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
 
-import { AddonCompetencyCourseCompetenciesPageModule } from './pages/coursecompetencies/coursecompetencies.module';
-import { AddonCompetencyCourseCompetenciesPage } from './pages/coursecompetencies/coursecompetencies.page';
-
-const routes: Routes = [
-    {
-        path: '',
-        component: AddonCompetencyCourseCompetenciesPage,
-    },
-];
+import { CoreSharedModule } from '@/core/shared.module';
+import { AddonCompetencyCompetenciesPage } from './competencies.page';
 
 @NgModule({
     imports: [
-        RouterModule.forChild(routes),
-        AddonCompetencyCourseCompetenciesPageModule,
+        CoreSharedModule,
+    ],
+    declarations: [
+        AddonCompetencyCompetenciesPage,
     ],
 })
-export class AddonCompetencyCourseLazyModule {}
+export class AddonCompetencyCompetenciesPageModule {}

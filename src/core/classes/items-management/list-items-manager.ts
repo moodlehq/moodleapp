@@ -64,8 +64,10 @@ export class CoreListItemsManager<
      *
      * @param splitView Split view component.
      */
-    async start(splitView: CoreSplitViewComponent): Promise<void> {
-        this.watchSplitViewOutlet(splitView);
+    async start(splitView?: CoreSplitViewComponent): Promise<void> {
+        if (splitView) {
+            this.watchSplitViewOutlet(splitView);
+        }
 
         // Calculate current selected item.
         this.updateSelectedItem();
@@ -121,7 +123,13 @@ export class CoreListItemsManager<
      *
      * @param item Item.
      */
-    async select(item: Item): Promise<void> {
+    async select(item: Item | null): Promise<void> {
+        if (!item) {
+            await this.navigateToIndex({ reset: this.resetNavigation() });
+
+            return;
+        }
+
         await this.navigateToItem(item, { reset: this.resetNavigation() });
     }
 
@@ -172,17 +180,9 @@ export class CoreListItemsManager<
     protected updateSelectedItem(route: ActivatedRouteSnapshot | null = null): void {
         super.updateSelectedItem(route);
 
-        if (CoreScreen.isMobile || this.selectedItem !== null || this.splitView?.isNested) {
-            return;
-        }
+        const selectDefault = CoreScreen.isTablet && this.selectedItem === null && this.splitView && !this.splitView.isNested;
 
-        const defaultItem = this.getDefaultItem();
-
-        if (!defaultItem) {
-            return;
-        }
-
-        this.select(defaultItem);
+        this.select(selectDefault ? this.getDefaultItem() : this.selectedItem);
     }
 
     /**

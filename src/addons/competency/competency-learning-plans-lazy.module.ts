@@ -20,11 +20,13 @@ import { CoreScreen } from '@services/screen';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonCompetencyPlanPage } from './pages/plan/plan';
 import { AddonCompetencyPlanListPage } from './pages/planlist/planlist';
-import { AddonCompetencyCompetenciesPage } from './pages/competencies/competencies';
-import { AddonCompetencyCompetencyPage } from './pages/competency/competency';
-import { AddonCompetencyCompetencySummaryPage } from './pages/competencysummary/competencysummary';
-import { AddonCompetencyCourseCompetenciesPage } from './pages/coursecompetencies/coursecompetencies.page';
-import { AddonCompetencyCourseCompetenciesPageModule } from './pages/coursecompetencies/coursecompetencies.module';
+import { AddonCompetencyCompetencyPage } from './pages/competency/competency.page';
+import { AddonCompetencyCompetencySummaryPage } from './pages/competencysummary/competencysummary.page';
+import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_SUMMARY_PAGE } from './competency.module';
+import { AddonCompetencyCompetencyPageModule } from './pages/competency/competency.module';
+import { AddonCompetencyCompetencySummaryPageModule } from './pages/competencysummary/competencysummary.module';
+import { AddonCompetencyCompetenciesPage } from './pages/competencies/competencies.page';
+import { AddonCompetencyCompetenciesPageModule } from './pages/competencies/competencies.module';
 
 const mobileRoutes: Routes = [
     {
@@ -33,34 +35,28 @@ const mobileRoutes: Routes = [
         component: AddonCompetencyPlanListPage,
     },
     {
-        path: 'competencies',
-        component: AddonCompetencyCompetenciesPage,
-    },
-    {
-        path: 'competencies/:competencyId',
-        component: AddonCompetencyCompetencyPage,
-    },
-    {
-        path: 'course/:courseId',
-        component: AddonCompetencyCourseCompetenciesPage,
-    },
-    {
-        path: 'summary/:competencyId',
-        component: AddonCompetencyCompetencySummaryPage,
-    },
-    {
-        path: ':planId',
+        path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
         component: AddonCompetencyPlanPage,
+    },
+    {
+        path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}/:competencyId`,
+        component: AddonCompetencyCompetencyPage,
     },
 ];
 
 const tabletRoutes: Routes = [
     {
-        path: 'summary/:competencyId',
-        component: AddonCompetencyCompetencySummaryPage,
+        path: '',
+        component: AddonCompetencyPlanListPage,
+        children: [
+            {
+                path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
+                component: AddonCompetencyPlanPage,
+            },
+        ],
     },
     {
-        path: 'competencies',
+        path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
         component: AddonCompetencyCompetenciesPage,
         children: [
             {
@@ -69,40 +65,28 @@ const tabletRoutes: Routes = [
             },
         ],
     },
-    {
-        path: 'course/:courseId',
-        component: AddonCompetencyCourseCompetenciesPage,
-    },
-    {
-        path: '',
-        component: AddonCompetencyPlanListPage,
-        children: [
-            {
-                path: ':planId',
-                component: AddonCompetencyPlanPage,
-            },
-
-        ],
-    },
 ];
 
 const routes: Routes = [
     ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
     ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+    {
+        path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}/:competencyId/${ADDON_COMPETENCY_SUMMARY_PAGE}`,
+        component: AddonCompetencyCompetencySummaryPage,
+    },
 ];
 
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-        AddonCompetencyCourseCompetenciesPageModule,
+        AddonCompetencyCompetenciesPageModule,
+        AddonCompetencyCompetencyPageModule,
+        AddonCompetencyCompetencySummaryPageModule,
     ],
     declarations: [
         AddonCompetencyPlanPage,
         AddonCompetencyPlanListPage,
-        AddonCompetencyCompetenciesPage,
-        AddonCompetencyCompetencyPage,
-        AddonCompetencyCompetencySummaryPage,
     ],
 })
-export class AddonCompetencyLazyModule {}
+export class AddonCompetencyLearningPlansLazyModule {}

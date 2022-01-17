@@ -10,7 +10,7 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content [core-swipe-navigation]="competencies">
     <ion-refresher slot="fixed" [disabled]="!competencyLoaded" (ionRefresh)="refreshCompetency($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
@@ -36,9 +36,7 @@
                 <ion-label>
                     <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
                     <p>
-                        <a *ngIf="competency.competency.comppath.showlinks" [href]="competency.competency.comppath.pluginbaseurl + '/competencies.php?competencyframeworkid=' +
-                            competency.competency.comppath.framework.id + '&pagecontextid=' +
-                            competency.competency.comppath.pagecontextid" core-link>
+                        <a *ngIf="competency.competency.comppath.showlinks" [href]="competencyFrameworkUrl" core-link>
                             {{ competency.competency.comppath.framework.name }}
                         </a>
                         <ng-container *ngIf="!competency.competency.comppath.showlinks">
@@ -79,7 +77,8 @@
                     </p>
                     <ion-item class="ion-text-wrap" *ngFor="let activity of coursemodules" [href]="activity.url"
                         [attr.aria-label]="activity.name" core-link capture="true">
-                        <core-mod-icon slot="start" [modicon]="activity.iconurl" [showAlt]="false" *ngIf="activity.iconurl"></core-mod-icon>
+                        <core-mod-icon slot="start" [modicon]="activity.iconurl" [showAlt]="false" *ngIf="activity.iconurl">
+                        </core-mod-icon>
                         <ion-label>
                             <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.id"
                                 [courseId]="courseId">

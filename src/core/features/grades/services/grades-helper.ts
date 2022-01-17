@@ -35,6 +35,7 @@ import { CoreNavigator } from '@services/navigator';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { GRADES_PAGE_NAME } from '../grades.module';
 
 /**
  * Service that provides some features regarding grades information.
@@ -53,6 +54,7 @@ export class CoreGradesHelperProvider {
      *
      * @param tableRow JSON object representing row of grades table data.
      * @return Formatted row object.
+     * @deprecated since app 4.0
      */
     protected async formatGradeRow(tableRow: CoreGradesTableRow): Promise<CoreGradesFormattedRow> {
         const row: CoreGradesFormattedRow = {
@@ -123,6 +125,13 @@ export class CoreGradesHelperProvider {
                 name = 'gradeitem';
             } else {
                 content = CoreTextUtils.replaceNewLines(content, '<br>');
+            }
+
+            if (row.itemtype !== 'category') {
+                row.expandable = true;
+                row.expanded = false;
+                row.detailsid = `grade-item-${row.id}-details`;
+                row.ariaLabel = `${row.gradeitem} (${row.grade})`;
             }
 
             if (content == '&nbsp;') {
@@ -279,6 +288,7 @@ export class CoreGradesHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
      * @return Promise to be resolved when the grades are retrieved.
+     * @deprecated since app 4.0
      */
     async getGradeItem(
         courseId: number,
@@ -381,6 +391,7 @@ export class CoreGradesHelperProvider {
      * @param table JSON object representing a table with data.
      * @param gradeId Grade Object identifier.
      * @return Formatted HTML table.
+     * @deprecated since app 4.0
      */
     async getGradesTableRow(table: CoreGradesTable, gradeId: number): Promise<CoreGradesFormattedRow | null> {
         if (table.tabledata) {
@@ -472,10 +483,7 @@ export class CoreGradesHelperProvider {
             const gradeId = item.id;
 
             await CoreUtils.ignoreErrors(
-                CoreNavigator.navigateToSitePath(`/grades/${courseId}/${gradeId}`, {
-                    siteId,
-                    params: { userId },
-                }),
+                CoreNavigator.navigateToSitePath(`/${GRADES_PAGE_NAME}/${courseId}/${gradeId}`, { siteId }),
             );
         } catch (error) {
             try {
@@ -483,10 +491,7 @@ export class CoreGradesHelperProvider {
                 if (userId && userId != currentUserId) {
                     // View another user grades. Open the grades page directly.
                     await CoreUtils.ignoreErrors(
-                        CoreNavigator.navigateToSitePath(`/grades/${courseId}`, {
-                            siteId,
-                            params: { userId },
-                        }),
+                        CoreNavigator.navigateToSitePath(`/${GRADES_PAGE_NAME}/${courseId}`, { siteId }),
                     );
                 }
 
@@ -502,7 +507,7 @@ export class CoreGradesHelperProvider {
                 await CoreCourseHelper.getAndOpenCourse(courseId, { selectedTab: 'CoreGrades' }, siteId);
             } catch (error) {
                 // Cannot get course for some reason, just open the grades page.
-                await CoreNavigator.navigateToSitePath(`/grades/${courseId}`, { siteId });
+                await CoreNavigator.navigateToSitePath(`/${GRADES_PAGE_NAME}/${courseId}`, { siteId });
             }
         } finally {
             modal.dismiss();
@@ -710,8 +715,12 @@ export type CoreGradesFormattedTable = {
 
 export type CoreGradesFormattedTableRow = CoreGradesFormattedRowCommonData & {
     id?: number;
+    detailsid?: string;
     colspan?: number;
     gradeitem?: string; // The item returned data.
+    ariaLabel?: string;
+    expandable?: boolean;
+    expanded?: boolean;
 };
 
 export type CoreGradesFormattedTableColumn = {

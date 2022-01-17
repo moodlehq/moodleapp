@@ -15,16 +15,17 @@
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { COURSE_PAGE_NAME } from '@features/course/course.module';
 import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
-import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
+import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
 import { CoreGradesProvider } from './services/grades';
 import { CoreGradesHelperProvider } from './services/grades-helper';
 import { CoreGradesCourseOptionHandler } from './services/handlers/course-option';
 import { CoreGradesOverviewLinkHandler } from './services/handlers/overview-link';
-import { CoreGradesUserHandler, CoreGradesUserHandlerService } from './services/handlers/user';
+import { CoreGradesUserHandler } from './services/handlers/user';
 import { CoreGradesUserLinkHandler } from './services/handlers/user-link';
 
 export const CORE_GRADES_SERVICES: Type<unknown>[] = [
@@ -32,28 +33,29 @@ export const CORE_GRADES_SERVICES: Type<unknown>[] = [
     CoreGradesHelperProvider,
 ];
 
-const routes: Routes = [
+export const GRADES_PAGE_NAME = 'grades';
+
+const mainMenuChildrenRoutes: Routes = [
     {
-        path: CoreGradesUserHandlerService.PAGE_NAME,
-        loadChildren: () => import('@features/grades/grades-lazy.module').then(m => m.CoreGradesLazyModule),
+        path: GRADES_PAGE_NAME,
+        loadChildren: () => import('./grades-courses-lazy.module').then(m => m.CoreGradesCoursesLazyModule),
     },
     {
-        path: 'user-grades/:courseId',
-        loadChildren: () => import('@features/grades/grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
+        path: `${COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${GRADES_PAGE_NAME}`,
+        loadChildren: () => import('./grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
     },
 ];
 
 const courseIndexRoutes: Routes = [
     {
-        path: 'grades',
-        loadChildren: () => import('@features/grades/grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
+        path: GRADES_PAGE_NAME,
+        loadChildren: () => import('./grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
     },
 ];
 
 @NgModule({
     imports: [
-        CoreMainMenuTabRoutingModule.forChild(routes),
-        CoreMainMenuRoutingModule.forChild({ children: routes }),
+        CoreMainMenuTabRoutingModule.forChild(mainMenuChildrenRoutes),
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
     ],
     providers: [

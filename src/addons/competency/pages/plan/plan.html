@@ -8,11 +8,11 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
-    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshLearningPlan($event.target)">
+<ion-content [core-swipe-navigation]="plans">
+    <ion-refresher slot="fixed" [disabled]="!competencies.loaded" (ionRefresh)="refreshLearningPlan($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="competencies.loaded">
         <ion-card *ngIf="user">
             <ion-item class="ion-text-wrap">
                 <ion-label>
@@ -74,9 +74,8 @@
                         <p>{{ 'addon.competency.nocompetencies' | translate }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngFor="let competency of plan.competencies"
-                    (click)="openCompetency(competency.competency.id)" [attr.aria-label]="competency.competency.shortname" detail="true"
-                    button>
+                <ion-item class="ion-text-wrap" *ngFor="let competency of competencies.items" (click)="competencies.select(competency)"
+                    [attr.aria-label]="competency.competency.shortname" detail="true" button>
                     <ion-label>
                         <p class="item-heading">{{competency.competency.shortname}} <em>{{competency.competency.idnumber}}</em></p>
                     </ion-label>
