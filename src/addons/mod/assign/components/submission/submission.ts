@@ -25,6 +25,9 @@ import {
     AddonModAssign,
     AddonModAssignGetSubmissionStatusWSResponse,
     AddonModAssignSavePluginData,
+    AddonModAssignGradingStates,
+    AddonModAssignSubmissionStatusValues,
+    AddonModAssignAttemptReopenMethodValues,
 } from '../../services/assign';
 import {
     AddonModAssignAutoSyncData,
@@ -125,9 +128,9 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     showDates = false; // Whether to show some dates.
 
     // Some constants.
-    statusNew = AddonModAssignProvider.SUBMISSION_STATUS_NEW;
-    statusReopened = AddonModAssignProvider.SUBMISSION_STATUS_REOPENED;
-    attemptReopenMethodNone = AddonModAssignProvider.ATTEMPT_REOPEN_METHOD_NONE;
+    statusNew = AddonModAssignSubmissionStatusValues.NEW;
+    statusReopened = AddonModAssignSubmissionStatusValues.REOPENED;
+    attemptReopenMethodNone = AddonModAssignAttemptReopenMethodValues.NONE;
     unlimitedAttempts = AddonModAssignProvider.UNLIMITED_ATTEMPTS;
 
     protected siteId: string; // Current site ID.
@@ -214,7 +217,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         // Not submitted.
-        if (!this.userSubmission || this.userSubmission.status != AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED) {
+        if (!this.userSubmission || this.userSubmission.status != AddonModAssignSubmissionStatusValues.SUBMITTED) {
 
             if (response.lastattempt?.submissionsenabled || response.gradingsummary?.submissionsenabled) {
                 this.timeRemaining = Translate.instant(
@@ -612,11 +615,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
             // If we have data about the grader, get its profile.
             if (feedback.grade && feedback.grade.grader > 0) {
-                try {
-                    this.grader = await CoreUser.getProfile(feedback.grade.grader, this.courseId);
-                } catch {
-                    // Ignore errors.
-                }
+                this.grader = await CoreUtils.ignoreErrors(CoreUser.getProfile(feedback.grade.grader, this.courseId));
             } else {
                 delete this.grader;
             }
@@ -633,7 +632,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             if (feedback.grade && feedback.grade.grade && !this.grade.grade) {
                 const parsedGrade = parseFloat(feedback.grade.grade);
 
-                this.grade!.grade = parsedGrade >= 0 ? parsedGrade : undefined;
+                this.grade.grade = parsedGrade >= 0 ? parsedGrade : undefined;
                 this.grade.gradebookGrade = CoreUtils.formatFloat(this.grade.grade);
                 this.originalGrades.grade = this.grade.grade;
             }
@@ -655,7 +654,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         // Treat the grade info.
         await this.treatGradeInfo();
 
-        const isManual = this.assign!.attemptreopenmethod == AddonModAssignProvider.ATTEMPT_REOPEN_METHOD_MANUAL;
+        const isManual = this.assign!.attemptreopenmethod == AddonModAssignAttemptReopenMethodValues.MANUAL;
         const isUnlimited = this.assign!.maxattempts == AddonModAssignProvider.UNLIMITED_ATTEMPTS;
         const isLessThanMaxAttempts = !!this.userSubmission && (this.userSubmission.attemptnumber < (this.assign!.maxattempts - 1));
 
@@ -672,7 +671,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
         if (this.lastAttempt?.gradingstatus == 'graded' && !this.assign!.markingworkflow && this.userSubmission && feedback) {
             if (feedback.gradeddate < this.userSubmission.timemodified) {
-                this.lastAttempt.gradingstatus = AddonModAssignProvider.GRADED_FOLLOWUP_SUBMIT;
+                this.lastAttempt.gradingstatus = AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT;
 
                 // Get grading text and color.
                 this.gradingStatusTranslationId = AddonModAssign.getSubmissionGradingStatusTranslationId(
@@ -753,43 +752,43 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
      * @param status Submission status.
      */
     protected setStatusNameAndClass(status: AddonModAssignGetSubmissionStatusWSResponse): void {
-        const translateService = Translate.instance;
-
         if (this.hasOffline || this.submittedOffline) {
             // Offline data.
-            this.statusTranslated = translateService.instant('core.notsent');
+            this.statusTranslated = Translate.instant('core.notsent');
             this.statusColor = 'warning';
         } else if (!this.assign!.teamsubmission) {
 
             // Single submission.
             if (this.userSubmission && this.userSubmission.status != this.statusNew) {
-                this.statusTranslated = translateService.instant('addon.mod_assign.submissionstatus_' + this.userSubmission.status);
+                this.statusTranslated = Translate.instant('addon.mod_assign.submissionstatus_' + this.userSubmission.status);
                 this.statusColor = AddonModAssign.getSubmissionStatusColor(this.userSubmission.status);
             } else {
                 if (!status.lastattempt?.submissionsenabled) {
-                    this.statusTranslated = translateService.instant('addon.mod_assign.noonlinesubmissions');
-                    this.statusColor = AddonModAssign.getSubmissionStatusColor('noonlinesubmissions');
+                    this.statusTranslated = Translate.instant('addon.mod_assign.noonlinesubmissions');
+                    this.statusColor =
+                        AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_ONLINE_SUBMISSIONS);
                 } else {
-                    this.statusTranslated = translateService.instant('addon.mod_assign.noattempt');
-                    this.statusColor = AddonModAssign.getSubmissionStatusColor('noattempt');
+                    this.statusTranslated = Translate.instant('addon.mod_assign.noattempt');
+                    this.statusColor = AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_ATTEMPT);
                 }
             }
         } else {
 
             // Team submission.
             if (!status.lastattempt?.submissiongroup && this.assign!.preventsubmissionnotingroup) {
-                this.statusTranslated = translateService.instant('addon.mod_assign.nosubmission');
-                this.statusColor = AddonModAssign.getSubmissionStatusColor('nosubmission');
+                this.statusTranslated = Translate.instant('addon.mod_assign.nosubmission');
+                this.statusColor = AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_SUBMISSION);
             } else if (this.userSubmission && this.userSubmission.status != this.statusNew) {
-                this.statusTranslated = translateService.instant('addon.mod_assign.submissionstatus_' + this.userSubmission.status);
+                this.statusTranslated = Translate.instant('addon.mod_assign.submissionstatus_' + this.userSubmission.status);
                 this.statusColor = AddonModAssign.getSubmissionStatusColor(this.userSubmission.status);
             } else {
                 if (!status.lastattempt?.submissionsenabled) {
-                    this.statusTranslated = translateService.instant('addon.mod_assign.noonlinesubmissions');
-                    this.statusColor = AddonModAssign.getSubmissionStatusColor('noonlinesubmissions');
+                    this.statusTranslated = Translate.instant('addon.mod_assign.noonlinesubmissions');
+                    this.statusColor =
+                        AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_ONLINE_SUBMISSIONS);
                 } else {
-                    this.statusTranslated = translateService.instant('addon.mod_assign.nosubmission');
-                    this.statusColor = AddonModAssign.getSubmissionStatusColor('nosubmission');
+                    this.statusTranslated = Translate.instant('addon.mod_assign.nosubmission');
+                    this.statusColor = AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_SUBMISSION);
                 }
             }
         }
@@ -1184,7 +1183,7 @@ type AddonModAssignSubmissionGrade = {
     grade?: number | string;
     gradebookGrade?: string;
     modified?: number;
-    gradingStatus?: string;
+    gradingStatus?: AddonModAssignGradingStates;
     addAttempt: boolean;
     applyToAll: boolean;
     scale?: CoreMenuItem<number>[];

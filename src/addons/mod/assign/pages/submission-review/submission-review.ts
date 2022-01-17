@@ -22,7 +22,7 @@ import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreDomUtils } from '@services/utils/dom';
-import { AddonModAssignSubmissionsSource } from '../../classes/submissions-source';
+import { AddonModAssignListFilterName, AddonModAssignSubmissionsSource } from '../../classes/submissions-source';
 import { AddonModAssignSubmissionComponent } from '../../components/submission/submission';
 import { AddonModAssign, AddonModAssignAssign } from '../../services/assign';
 
@@ -53,7 +53,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
     constructor(protected route: ActivatedRoute) { }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.route.queryParams.subscribe((params) => {
@@ -63,7 +63,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
                 this.submitId = CoreNavigator.getRouteNumberParam('submitId') || 0;
                 this.blindId = CoreNavigator.getRouteNumberParam('blindId', { params });
                 const groupId = CoreNavigator.getRequiredRouteNumberParam('groupId');
-                const selectedStatus = CoreNavigator.getRouteParam('selectedStatus');
+                const selectedStatus = CoreNavigator.getRouteParam<AddonModAssignListFilterName>('selectedStatus');
                 const submissionsSource = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
                     AddonModAssignSubmissionsSource,
                     [this.courseId, this.moduleId, selectedStatus],

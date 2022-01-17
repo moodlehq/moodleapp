@@ -34,6 +34,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { AddonModAssignAutoSyncData, AddonModAssignManualSyncData, AddonModAssignSyncProvider } from './assign-sync';
 import { CoreFormFields } from '@singletons/form';
 import { CoreFileHelper } from '@services/file-helper';
+import { CoreIonicColorNames } from '@singletons/colors';
 
 const ROOT_CACHE_KEY = 'mmaModAssign:';
 
@@ -64,23 +65,6 @@ export class AddonModAssignProvider {
     static readonly SUBMISSION_COMPONENT = 'mmaModAssignSubmission';
     static readonly UNLIMITED_ATTEMPTS = -1;
 
-    // Submission status.
-    static readonly SUBMISSION_STATUS_NEW = 'new';
-    static readonly SUBMISSION_STATUS_REOPENED = 'reopened';
-    static readonly SUBMISSION_STATUS_DRAFT = 'draft';
-    static readonly SUBMISSION_STATUS_SUBMITTED = 'submitted';
-
-    // "Re-open" methods (to retry the assign).
-    static readonly ATTEMPT_REOPEN_METHOD_NONE = 'none';
-    static readonly ATTEMPT_REOPEN_METHOD_MANUAL = 'manual';
-
-    // Grading status.
-    static readonly GRADING_STATUS_GRADED = 'graded';
-    static readonly GRADING_STATUS_NOT_GRADED = 'notgraded';
-    static readonly MARKING_WORKFLOW_STATE_RELEASED = 'released';
-    static readonly NEED_GRADING = 'needgrading';
-    static readonly GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit';
-
     // Group submissions warnings.
     static readonly WARN_GROUPS_REQUIRED = 'warnrequired';
     static readonly WARN_GROUPS_OPTIONAL = 'warnoptional';
@@ -108,17 +92,17 @@ export class AddonModAssignProvider {
         const teamSubmission = submissionStatus.lastattempt?.teamsubmission;
 
         if (teamSubmission) {
-            if (teamSubmission.status === AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED) {
+            if (teamSubmission.status === AddonModAssignSubmissionStatusValues.SUBMITTED) {
                 // The assignment submission has been completed.
                 return false;
-            } else if (userSubmission && userSubmission.status === AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED) {
+            } else if (userSubmission && userSubmission.status === AddonModAssignSubmissionStatusValues.SUBMITTED) {
                 // The user has already clicked the submit button on the team submission.
                 return false;
             } else if (assign.preventsubmissionnotingroup && !submissionStatus.lastattempt?.submissiongroup) {
                 return false;
             }
         } else if (userSubmission) {
-            if (userSubmission.status === AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED) {
+            if (userSubmission.status === AddonModAssignSubmissionStatusValues.SUBMITTED) {
                 // The assignment submission has been completed.
                 return false;
             }
@@ -347,17 +331,17 @@ export class AddonModAssignProvider {
      * @param status Grading status name
      * @return The color name.
      */
-    getSubmissionGradingStatusColor(status?: string): string {
+    getSubmissionGradingStatusColor(status?: AddonModAssignGradingStates): CoreIonicColorNames {
         if (!status) {
-            return '';
+            return CoreIonicColorNames.NONE;
         }
 
-        if (status == AddonModAssignProvider.GRADING_STATUS_GRADED ||
-                status == AddonModAssignProvider.MARKING_WORKFLOW_STATE_RELEASED) {
-            return 'success';
+        if (status == AddonModAssignGradingStates.GRADED
+                || status == AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED) {
+            return CoreIonicColorNames.SUCCESS;
         }
 
-        return 'danger';
+        return CoreIonicColorNames.DANGER;
     }
 
     /**
@@ -366,13 +350,14 @@ export class AddonModAssignProvider {
      * @param status Grading Status name
      * @return The status translation identifier.
      */
-    getSubmissionGradingStatusTranslationId(status?: string): string | undefined {
+    getSubmissionGradingStatusTranslationId(status?: AddonModAssignGradingStates): string | undefined {
         if (!status) {
             return;
         }
 
-        if (status == AddonModAssignProvider.GRADING_STATUS_GRADED || status == AddonModAssignProvider.GRADING_STATUS_NOT_GRADED
-               || status == AddonModAssignProvider.GRADED_FOLLOWUP_SUBMIT) {
+        if (status == AddonModAssignGradingStates.GRADED
+                || status == AddonModAssignGradingStates.NOT_GRADED
+                || status == AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT) {
             return 'addon.mod_assign.' + status;
         }
 
@@ -604,20 +589,20 @@ export class AddonModAssignProvider {
      * @param status Status name
      * @return The color name.
      */
-    getSubmissionStatusColor(status: string): string {
+    getSubmissionStatusColor(status: AddonModAssignSubmissionStatusValues): CoreIonicColorNames {
         switch (status) {
-            case 'submitted':
-                return 'success';
-            case 'draft':
-                return 'info';
-            case 'new':
-            case 'noattempt':
-            case 'noonlinesubmissions':
-            case 'nosubmission':
-            case 'gradedfollowupsubmit':
-                return 'danger';
+            case AddonModAssignSubmissionStatusValues.SUBMITTED:
+                return CoreIonicColorNames.SUCCESS;
+            case AddonModAssignSubmissionStatusValues.DRAFT:
+                return CoreIonicColorNames.INFO;
+            case AddonModAssignSubmissionStatusValues.NEW:
+            case AddonModAssignSubmissionStatusValues.NO_ATTEMPT:
+            case AddonModAssignSubmissionStatusValues.NO_ONLINE_SUBMISSIONS:
+            case AddonModAssignSubmissionStatusValues.NO_SUBMISSION:
+            case AddonModAssignSubmissionStatusValues.GRADED_FOLLOWUP_SUBMIT:
+                return CoreIonicColorNames.DANGER;
             default:
-                return 'light';
+                return CoreIonicColorNames.LIGHT;
         }
     }
 
@@ -878,7 +863,7 @@ export class AddonModAssignProvider {
         }
 
         if (submission) {
-            if (assign.submissiondrafts && submission.status == AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED) {
+            if (assign.submissiondrafts && submission.status == AddonModAssignSubmissionStatusValues.SUBMITTED) {
                 // Drafts are tracked and the student has submitted the assignment.
                 return false;
             }
@@ -970,13 +955,17 @@ export class AddonModAssignProvider {
      * @return Promise resolved with boolean: whether it needs to be graded or not.
      */
     async needsSubmissionToBeGraded(submission: AddonModAssignSubmissionFormatted, assignId: number): Promise<boolean> {
+        if (submission.status != AddonModAssignSubmissionStatusValues.SUBMITTED) {
+            return false;
+        }
+
         if (!submission.gradingstatus) {
             // This should not happen, but it's better to show rather than not showing any of the submissions.
             return true;
         }
 
-        if (submission.gradingstatus != AddonModAssignProvider.GRADING_STATUS_GRADED &&
-                submission.gradingstatus != AddonModAssignProvider.MARKING_WORKFLOW_STATE_RELEASED) {
+        if (submission.gradingstatus != AddonModAssignGradingStates.GRADED &&
+                submission.gradingstatus != AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED) {
             // Not graded.
             return true;
         }
@@ -1349,7 +1338,7 @@ export type AddonModAssignAssign = {
     blindmarking: number; // If enabled, hide identities until reveal identities actioned.
     hidegrader?: number; // @since 3.7. If enabled, hide grader to student.
     revealidentities: number; // Show identities for a blind marking assignment.
-    attemptreopenmethod: string; // Method used to control opening new attempts.
+    attemptreopenmethod: AddonModAssignAttemptReopenMethodValues; // Method used to control opening new attempts.
     maxattempts: number; // Maximum number of attempts allowed.
     markingworkflow: number; // Enable marking workflow.
     markingallocation: number; // Enable marking allocation.
@@ -1400,12 +1389,12 @@ export type AddonModAssignSubmission = {
     attemptnumber: number; // Attempt number.
     timecreated: number; // Submission creation time.
     timemodified: number; // Submission last modified time.
-    status: string; // Submission status.
+    status: AddonModAssignSubmissionStatusValues; // Submission status.
     groupid: number; // Group id.
     assignment?: number; // Assignment id.
     latest?: number; // Latest attempt.
     plugins?: AddonModAssignPlugin[]; // Plugins.
-    gradingstatus?: string; // Grading status.
+    gradingstatus?: AddonModAssignGradingStates; // Grading status.
 };
 
 /**
@@ -1454,7 +1443,7 @@ export type AddonModAssignSubmissionAttempt = {
     cansubmit: boolean; // Whether the user can submit.
     extensionduedate: number; // Extension due date.
     blindmarking: boolean; // Whether blind marking is enabled.
-    gradingstatus: string; // Grading status.
+    gradingstatus: AddonModAssignGradingStates; // Grading status.
     usergroups: number[]; // User groups in the course.
 };
 
@@ -1749,3 +1738,41 @@ export type AddonModAssignSubmissionSavedEventData = AddonModAssignSubmittedForG
  * Data sent by GRADED_EVENT event.
  */
 export type AddonModAssignGradedEventData = AddonModAssignSubmittedForGradingEventData;
+
+/**
+ * Submission status.
+ * Constants on LMS starting with ASSIGN_SUBMISSION_STATUS_
+ */
+export enum AddonModAssignSubmissionStatusValues {
+    SUBMITTED = 'submitted',
+    DRAFT = 'draft',
+    NEW = 'new',
+    REOPENED = 'reopened',
+    // Added by App Statuses.
+    NO_ATTEMPT = 'noattempt',
+    NO_ONLINE_SUBMISSIONS = 'noonlinesubmissions',
+    NO_SUBMISSION = 'nosubmission',
+    GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit',
+};
+
+/**
+ * Grading status.
+ * Constants on LMS starting with ASSIGN_GRADING_STATUS_
+ */
+export enum AddonModAssignGradingStates {
+    GRADED = 'graded',
+    NOT_GRADED = 'notgraded',
+    // Added by App Statuses.
+    MARKING_WORKFLOW_STATE_RELEASED = 'released', // with ASSIGN_MARKING_WORKFLOW_STATE_RELEASED
+    GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit',
+};
+
+/**
+ * Reopen attempt methods.
+ * Constants on LMS starting with ASSIGN_ATTEMPT_REOPEN_METHOD_
+ */
+export enum AddonModAssignAttemptReopenMethodValues {
+    NONE = 'none',
+    MANUAL = 'manual',
+    UNTILPASS = 'untilpass',
+};

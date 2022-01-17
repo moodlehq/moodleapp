@@ -22,6 +22,18 @@ interface ColorComponents {
 }
 
 /**
+ * Ionic color names.
+ */
+export enum CoreIonicColorNames {
+    SUCCESS = 'success',
+    INFO = 'info',
+    DANGER = 'danger',
+    DARK = 'dark',
+    LIGHT = 'light',
+    NONE = '',
+};
+
+/**
  * Singleton with helper functions for colors.
  */
 export class CoreColors {

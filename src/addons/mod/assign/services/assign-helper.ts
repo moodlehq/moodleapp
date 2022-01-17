@@ -25,6 +25,7 @@ import {
     AddonModAssign,
     AddonModAssignPlugin,
     AddonModAssignSavePluginData,
+    AddonModAssignSubmissionStatusValues,
 } from './assign';
 import { AddonModAssignOffline } from './assign-offline';
 import { CoreUtils } from '@services/utils/utils';
@@ -55,8 +56,8 @@ export class AddonModAssignHelperProvider {
             return false;
         }
 
-        if (submission.status == AddonModAssignProvider.SUBMISSION_STATUS_NEW ||
-                submission.status == AddonModAssignProvider.SUBMISSION_STATUS_REOPENED) {
+        if (submission.status == AddonModAssignSubmissionStatusValues.NEW ||
+                submission.status == AddonModAssignSubmissionStatusValues.REOPENED) {
             // It's a new submission, allow creating it in offline.
             return true;
         }
@@ -149,7 +150,7 @@ export class AddonModAssignHelperProvider {
             attemptnumber: 0,
             timecreated: 0,
             timemodified: 0,
-            status: '',
+            status: AddonModAssignSubmissionStatusValues.NEW,
             groupid: 0,
         };
     }
@@ -398,47 +399,41 @@ export class AddonModAssignHelperProvider {
         groupId?: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModAssignSubmissionFormatted[]> {
-        const parts = await this.getParticipants(assign, groupId, options);
+        const participants = await this.getParticipants(assign, groupId, options);
 
-        const blind = assign.blindmarking && !assign.revealidentities;
-        const result: AddonModAssignSubmissionFormatted[] = [];
-        const participants: {[id: number]: AddonModAssignParticipant} = CoreUtils.arrayToObject(parts, 'id');
+        const blind = !!assign.blindmarking && !assign.revealidentities;
+        const teamsubmission = !!assign.teamsubmission;
 
-        submissions.forEach((submission) => {
-            submission.submitid = submission.userid && submission.userid > 0 ? submission.userid : submission.blindid;
-            if (submission.submitid === undefined || submission.submitid <= 0) {
-                return;
+        if (teamsubmission) {
+            // On team submission discard user submissions.
+            submissions = submissions.filter((submission) => submission.userid == 0);
+        }
+
+        return participants.map((participant) => {
+            const groupId = participant.groupid ??
+                (participant.groups && participant.groups[0] ? participant.groups[0].id : 0);
+
+            const foundSubmission = submissions.find((submission) => {
+                if (teamsubmission) {
+                    return submission.groupid == groupId;
+                }
+
+                const submitId = submission.userid && submission.userid > 0 ? submission.userid : submission.blindid;
+
+                return participant.id == submitId;
+            });
+
+            let submission: AddonModAssignSubmissionFormatted | undefined;
+            if (!foundSubmission) {
+                // Create submission if none.
+                submission = this.createEmptySubmission();
+                submission.groupid = groupId;
+                submission.status = participant.submitted
+                    ? AddonModAssignSubmissionStatusValues.SUBMITTED
+                    : AddonModAssignSubmissionStatusValues.NEW;
+            } else {
+                submission = Object.assign({}, foundSubmission);
             }
-
-            const participant = participants[submission.submitid];
-            if (!participant) {
-                // Avoid permission denied error. Participant not found on list.
-                return;
-            }
-
-            delete participants[submission.submitid];
-
-            if (!blind) {
-                submission.userfullname = participant.fullname;
-                submission.userprofileimageurl = participant.profileimageurl;
-            }
-
-            submission.manyGroups = !!participant.groups && participant.groups.length > 1;
-            submission.noGroups = !!participant.groups && participant.groups.length == 0;
-            if (participant.groupname) {
-                submission.groupid = participant.groupid!;
-                submission.groupname = participant.groupname;
-            }
-
-            // Add to the list.
-            if (submission.userfullname || submission.blindid) {
-                result.push(submission);
-            }
-        });
-
-        // Create a submission for each participant left in the list (the participants already treated were removed).
-        CoreUtils.objectToArray(participants).forEach((participant: AddonModAssignParticipant) => {
-            const submission = this.createEmptySubmission();
 
             submission.submitid = participant.id;
 
@@ -453,16 +448,13 @@ export class AddonModAssignHelperProvider {
             submission.manyGroups = !!participant.groups && participant.groups.length > 1;
             submission.noGroups = !!participant.groups && participant.groups.length == 0;
             if (participant.groupname) {
-                submission.groupid = participant.groupid!;
+                submission.groupid = participant.groupid;
                 submission.groupname = participant.groupname;
             }
-            submission.status = participant.submitted ? AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED :
-                AddonModAssignProvider.SUBMISSION_STATUS_NEW;
 
-            result.push(submission);
+            return submission;
+
         });
-
-        return result;
     }
 
     /**
@@ -714,8 +706,9 @@ export const AddonModAssignHelper = makeSingleton(AddonModAssignHelperProvider);
  * Assign submission with some calculated data.
  */
 export type AddonModAssignSubmissionFormatted =
-    Omit<AddonModAssignSubmission, 'userid'> & {
+    Omit<AddonModAssignSubmission, 'userid'|'groupid'> & {
         userid?: number; // Student id.
+        groupid?: number; // Group id.
         blindid?: number; // Calculated in the app. Blindid of the user that did the submission.
         submitid?: number; // Calculated in the app. Userid or blindid of the user that did the submission.
         userfullname?: string; // Calculated in the app. Full name of the user that did the submission.

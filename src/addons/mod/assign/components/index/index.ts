@@ -28,6 +28,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { AddonModAssignListFilterName } from '../../classes/submissions-source';
 import {
     AddonModAssign,
     AddonModAssignAssign,
@@ -75,12 +76,12 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     };
 
     // Status.
-    submissionStatusSubmitted = AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED;
-    submissionStatusDraft = AddonModAssignProvider.SUBMISSION_STATUS_DRAFT;
-    needGrading = AddonModAssignProvider.NEED_GRADING;
+    submissionStatusSubmitted = AddonModAssignListFilterName.SUBMITTED;
+    submissionStatusDraft = AddonModAssignListFilterName.DRAFT;
+    needGrading = AddonModAssignListFilterName.NEED_GRADING;
 
-    protected currentUserId?: number; // Current user ID.
-    protected currentSite?: CoreSite; // Current user ID.
+    protected currentUserId!: number; // Current user ID.
+    protected currentSite!: CoreSite; // Current site.
     protected syncEventName = AddonModAssignSyncProvider.AUTO_SYNCED;
 
     // Observers.
@@ -93,6 +94,9 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         @Optional() courseContentsPage?: CoreCourseContentsPage,
     ) {
         super('AddonModLessonIndexComponent', content, courseContentsPage);
+
+        this.currentSite = CoreSites.getRequiredCurrentSite();
+        this.currentUserId = this.currentSite.getUserId();
     }
 
     /**
@@ -100,9 +104,6 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
-
-        this.currentUserId = CoreSites.getCurrentSiteUserId();
-        this.currentSite = CoreSites.getCurrentSite();
 
         // Listen to events.
         this.savedObserver = CoreEvents.on(
@@ -139,8 +140,12 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         await this.loadContent(false, true);
 
+        if (!this.assign) {
+            return;
+        }
+
         try {
-            await AddonModAssign.logView(this.assign!.id, this.assign!.name);
+            await AddonModAssign.logView(this.assign.id, this.assign.name);
             CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors. Just don't check Module completion.
@@ -148,10 +153,10 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (this.canViewAllSubmissions) {
             // User can see all submissions, log grading view.
-            CoreUtils.ignoreErrors(AddonModAssign.logGradingView(this.assign!.id, this.assign!.name));
+            CoreUtils.ignoreErrors(AddonModAssign.logGradingView(this.assign.id, this.assign.name));
         } else if (this.canViewOwnSubmission) {
             // User can only see their own submission, log view the user submission.
-            CoreUtils.ignoreErrors(AddonModAssign.logSubmissionView(this.assign!.id, this.assign!.name));
+            CoreUtils.ignoreErrors(AddonModAssign.logSubmissionView(this.assign.id, this.assign.name));
         }
     }
 
@@ -266,7 +271,11 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     async setGroup(groupId = 0): Promise<void> {
         this.group = groupId;
 
-        const submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign!.id, {
+        if (!this.assign) {
+            return;
+        }
+
+        const submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, {
             groupId: this.group,
             cmId: this.module.id,
         });
@@ -278,10 +287,10 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        if (this.summary?.warnofungroupedusers === true) {
+        if (this.summary.warnofungroupedusers === true) {
             this.summary.warnofungroupedusers = 'ungroupedusers';
         } else {
-            switch (this.summary?.warnofungroupedusers) {
+            switch (this.summary.warnofungroupedusers) {
                 case AddonModAssignProvider.WARN_GROUPS_REQUIRED:
                     this.summary.warnofungroupedusers = 'ungroupedusers';
                     break;
@@ -294,7 +303,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             }
         }
 
-        this.needsGradingAvailable = (submissionStatus.gradingsummary?.submissionsneedgradingcount || 0) > 0;
+        this.needsGradingAvailable = this.summary.submissionsneedgradingcount > 0;
     }
 
     /**
@@ -303,7 +312,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      * @param status Status to see.
      * @param hasSubmissions If the status has any submission.
      */
-    goToSubmissionList(status?: string, hasSubmissions = false): void {
+    goToSubmissionList(status?: AddonModAssignListFilterName, hasSubmissions = false): void {
         if (status !== undefined && !hasSubmissions) {
             return;
         }
@@ -386,16 +395,16 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      * @return True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModAssignAutoSyncData): boolean {
-        if (this.assign && syncEventData.assignId == this.assign.id) {
-            if (syncEventData.warnings && syncEventData.warnings.length) {
-                // Show warnings.
-                CoreDomUtils.showErrorModal(syncEventData.warnings[0]);
-            }
-
-            return true;
+        if (!this.assign || syncEventData.assignId != this.assign.id) {
+            return false;
         }
 
-        return false;
+        if (syncEventData.warnings && syncEventData.warnings.length) {
+            // Show warnings.
+            CoreDomUtils.showErrorModal(syncEventData.warnings[0]);
+        }
+
+        return true;
     }
 
     /**
@@ -403,8 +412,12 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      *
      * @return Promise resolved when done.
      */
-    protected sync(): Promise<AddonModAssignSyncResult> {
-        return AddonModAssignSync.syncAssign(this.assign!.id);
+    protected async sync(): Promise<AddonModAssignSyncResult | void> {
+        if (!this.assign) {
+            return;
+        }
+
+        await AddonModAssignSync.syncAssign(this.assign.id);
     }
 
     /**

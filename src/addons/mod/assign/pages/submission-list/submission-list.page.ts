@@ -23,7 +23,11 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { AddonModAssignSubmissionForList, AddonModAssignSubmissionsSource } from '../../classes/submissions-source';
+import {
+    AddonModAssignListFilterName,
+    AddonModAssignSubmissionForList,
+    AddonModAssignSubmissionsSource,
+} from '../../classes/submissions-source';
 import { AddonModAssignAssign, AddonModAssignProvider } from '../../services/assign';
 import {
     AddonModAssignSyncProvider,
@@ -85,7 +89,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
             const moduleId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             const courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             const groupId = CoreNavigator.getRouteNumberParam('groupId') || 0;
-            const selectedStatus = CoreNavigator.getRouteParam('status');
+            const selectedStatus = CoreNavigator.getRouteParam<AddonModAssignListFilterName>('status');
             const submissionsSource = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
                 AddonModAssignSubmissionsSource,
                 [courseId, moduleId, selectedStatus],
@@ -143,7 +147,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
         this.title = Translate.instant(
             selectedStatus
                 ? (
-                    selectedStatus === AddonModAssignProvider.NEED_GRADING
+                    selectedStatus === AddonModAssignListFilterName.NEED_GRADING
                         ? 'addon.mod_assign.numberofsubmissionsneedgrading'
                         : `addon.mod_assign.submissionstatus_${selectedStatus}`
                 )

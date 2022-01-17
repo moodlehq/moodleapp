@@ -18,13 +18,14 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
+import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreEvents } from '@singletons/events';
 import {
     AddonModAssign,
     AddonModAssignAssign,
-    AddonModAssignGrade,
-    AddonModAssignProvider,
+    AddonModAssignGradingStates,
     AddonModAssignSubmission,
+    AddonModAssignSubmissionStatusValues,
 } from '../services/assign';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../services/assign-helper';
 import { AddonModAssignOffline } from '../services/assign-offline';
@@ -38,15 +39,15 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
     /**
      * @inheritdoc
      */
-    static getSourceId(courseId: number, moduleId: number, selectedStatus?: string): string {
-        selectedStatus = selectedStatus ?? '__empty__';
+    static getSourceId(courseId: number, moduleId: number, selectedStatus?: AddonModAssignListFilterName): string {
+        const statusId = selectedStatus ?? '__empty__';
 
-        return `submissions-${courseId}-${moduleId}-${selectedStatus}`;
+        return `submissions-${courseId}-${moduleId}-${statusId}`;
     }
 
     readonly COURSE_ID: number;
     readonly MODULE_ID: number;
-    readonly SELECTED_STATUS: string | undefined;
+    readonly SELECTED_STATUS: AddonModAssignListFilterName | undefined;
 
     assign?: AddonModAssignAssign;
     groupId = 0;
@@ -62,7 +63,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
         canviewsubmissions: false,
     };
 
-    constructor(courseId: number, moduleId: number, selectedStatus?: string) {
+    constructor(courseId: number, moduleId: number, selectedStatus?: AddonModAssignListFilterName) {
         super();
 
         this.COURSE_ID = courseId;
@@ -157,90 +158,82 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
         }
 
         // Fetch submissions and grades.
-        const submissions =
+        let submissions =
             await AddonModAssignHelper.getSubmissionsUserData(
                 assign,
                 this.submissionsData.submissions,
                 this.groupId,
             );
+
         // Get assignment grades only if workflow is not enabled to check grading date.
-        const grades = !assign.markingworkflow
+        let grades = !assign.markingworkflow
             ? await AddonModAssign.getAssignmentGrades(assign.id, { cmId: assign.cmid })
             : [];
 
+        // Remove grades (not graded) and sort by timemodified DESC to allow finding quicker.
+        grades = grades.filter((grade) => parseInt(grade.grade, 10) >= 0).sort((a, b) => b.timemodified - a.timemodified);
         // Filter the submissions to get only the ones with the right status and add some extra data.
-        const getNeedGrading = this.SELECTED_STATUS == AddonModAssignProvider.NEED_GRADING;
-        const searchStatus = getNeedGrading ? AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED : this.SELECTED_STATUS;
+        if (this.SELECTED_STATUS == AddonModAssignListFilterName.NEED_GRADING) {
+            const promises: Promise<void>[] = submissions.map(async (submission: AddonModAssignSubmissionForList) => {
+                // Only show the submissions that need to be graded.
+                submission.needsGrading = await AddonModAssign.needsSubmissionToBeGraded(submission, assign.id);
+            });
 
-        const promises: Promise<void>[] = [];
-        const showSubmissions: AddonModAssignSubmissionForList[] = [];
+            await Promise.all(promises);
 
-        submissions.forEach((submission: AddonModAssignSubmissionForList) => {
-            if (!searchStatus || searchStatus == submission.status) {
-                promises.push(
-                    CoreUtils.ignoreErrors(
-                        AddonModAssignOffline.getSubmissionGrade(assign.id, submission.userid),
-                    ).then(async (data) => {
-                        if (getNeedGrading) {
-                            // Only show the submissions that need to be graded.
-                            const add = await AddonModAssign.needsSubmissionToBeGraded(submission, assign.id);
+            submissions = submissions.filter((submission: AddonModAssignSubmissionForList) => submission.needsGrading);
+        } else if (this.SELECTED_STATUS) {
+            const searchStatus = this.SELECTED_STATUS == AddonModAssignListFilterName.DRAFT
+                ? AddonModAssignSubmissionStatusValues.DRAFT
+                : AddonModAssignSubmissionStatusValues.SUBMITTED;
 
-                            if (!add) {
-                                return;
-                            }
-                        }
+            submissions = submissions.filter((submission: AddonModAssignSubmissionForList) => submission.status  == searchStatus);
+        }
 
-                        // Load offline grades.
-                        const notSynced = !!data && submission.timemodified < data.timemodified;
+        const showSubmissions: AddonModAssignSubmissionForList[] = await Promise.all(
+            submissions.map(async (submission: AddonModAssignSubmissionForList) => {
+                const gradeData =
+                    await CoreUtils.ignoreErrors(AddonModAssignOffline.getSubmissionGrade(assign.id, submission.userid));
 
-                        if (submission.gradingstatus == 'graded' && !assign.markingworkflow) {
-                            // Get the last grade of the submission.
-                            const grade = grades
-                                .filter((grade) => grade.userid == submission.userid)
-                                .reduce(
-                                    (a, b) => (a && a.timemodified > b.timemodified ? a : b),
-                                    <AddonModAssignGrade | undefined> undefined,
-                                );
+                // Load offline grades.
+                const notSynced = !!gradeData && submission.timemodified < gradeData.timemodified;
 
-                            if (grade && grade.timemodified < submission.timemodified) {
-                                submission.gradingstatus = AddonModAssignProvider.GRADED_FOLLOWUP_SUBMIT;
-                            }
-                        }
-                        submission.statusColor = AddonModAssign.getSubmissionStatusColor(submission.status);
-                        submission.gradingColor = AddonModAssign.getSubmissionGradingStatusColor(
-                            submission.gradingstatus,
-                        );
+                if (!assign.markingworkflow) {
+                    // Get the last grade of the submission.
+                    const grade = grades.find((grade) => grade.userid == submission.userid);
 
-                        // Show submission status if not submitted for grading.
-                        if (submission.statusColor != 'success' || !submission.gradingstatus) {
-                            submission.statusTranslated = Translate.instant(
-                                'addon.mod_assign.submissionstatus_' + submission.status,
-                            );
-                        } else {
-                            submission.statusTranslated = '';
-                        }
-
-                        if (notSynced) {
-                            submission.gradingStatusTranslationId = 'addon.mod_assign.gradenotsynced';
-                            submission.gradingColor = '';
-                        } else if (submission.statusColor != 'danger' || submission.gradingColor != 'danger') {
-                            // Show grading status if one of the statuses is not done.
-                            submission.gradingStatusTranslationId = AddonModAssign.getSubmissionGradingStatusTranslationId(
-                                submission.gradingstatus,
-                            );
-                        } else {
-                            submission.gradingStatusTranslationId = '';
-                        }
-
-                        showSubmissions.push(submission);
-
-                        return;
-                    }),
+                    if (grade) {
+                        // Override status if grade is found.
+                        submission.gradingstatus = grade.timemodified < submission.timemodified
+                            ? AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT
+                            : AddonModAssignGradingStates.GRADED;
+                    }
+                }
+                submission.statusColor = AddonModAssign.getSubmissionStatusColor(submission.status);
+                submission.gradingColor = AddonModAssign.getSubmissionGradingStatusColor(
+                    submission.gradingstatus,
                 );
-            }
-        });
 
-        await Promise.all(promises);
+                submission.statusTranslated = Translate.instant(
+                    'addon.mod_assign.submissionstatus_' + submission.status,
+                );
+
+                if (notSynced) {
+                    submission.gradingStatusTranslationId = 'addon.mod_assign.gradenotsynced';
+                    submission.gradingColor = '';
+                } else if (submission.statusColor != CoreIonicColorNames.DANGER ||
+                    submission.gradingColor != CoreIonicColorNames.DANGER) {
+                    // Show grading status if one of the statuses is not done.
+                    submission.gradingStatusTranslationId = AddonModAssign.getSubmissionGradingStatusTranslationId(
+                        submission.gradingstatus,
+                    );
+                } else {
+                    submission.gradingStatusTranslationId = '';
+                }
+
+                return submission;
+            }),
+        );
 
         return { items: showSubmissions };
     }
@@ -255,4 +248,15 @@ export type AddonModAssignSubmissionForList = AddonModAssignSubmissionFormatted 
     gradingColor?: string; // Calculated in the app. Color of the submission grading status.
     statusTranslated?: string; // Calculated in the app. Translated text of the submission status.
     gradingStatusTranslationId?: string; // Calculated in the app. Key of the text of the submission grading status.
+    needsGrading?: boolean; // Calculated in the app. If submission and grading status means that it needs grading.
+};
+
+/**
+ * List filter by status name.
+ */
+export enum AddonModAssignListFilterName {
+    ALL = '',
+    NEED_GRADING = 'needgrading',
+    DRAFT = 'draft',
+    SUBMITTED = 'submitted',
 };
