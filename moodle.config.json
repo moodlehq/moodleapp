@@ -30,6 +30,7 @@
         "he": "עברית",
         "hi": "हिंदी",
         "hr": "Hrvatski",
+        "hsb": "Hornjoserbsski",
         "hu": "magyar",
         "hy": "Հայերեն",
         "id": "Indonesian",
@@ -38,6 +39,7 @@
         "km": "ខ្មែរ",
         "kn": "ಕನ್ನಡ",
         "ko": "한국어",
+        "lo": "ລາວ",
         "lt": "Lietuvių",
         "lv": "Latviešu",
         "mn": "Монгол",
@@ -64,12 +66,12 @@
     "wsservice": "moodle_mobile_app",
     "demo_sites": {
         "student": {
-            "url": "https:\/\/school.moodledemo.net",
+            "url": "https://school.moodledemo.net",
             "username": "student",
             "password": "moodle"
         },
         "teacher": {
-            "url": "https:\/\/school.moodledemo.net",
+            "url": "https://school.moodledemo.net",
             "username": "teacher",
             "password": "moodle"
         }
@@ -87,7 +89,7 @@
     "onlyallowlistedsites": false,
     "skipssoconfirmation": false,
     "forcedefaultlanguage": false,
-    "privacypolicy": "https:\/\/moodle.net\/moodle-app-privacy\/",
+    "privacypolicy": "https://moodle.net/moodle-app-privacy/",
     "notificoncolor": "#f98012",
     "enableanalytics": false,
     "enableonboarding": true,

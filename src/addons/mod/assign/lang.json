@@ -75,7 +75,7 @@
     "numberofteamscountdescription": "There are {{count}} teams.",
     "numwords": "{{$a}} words",
     "outof": "{{$a.current}} out of {{$a.total}}",
-    "overdue": "<font color=\"red\">Assignment is overdue by: {{$a}}</font>",
+    "overdue": "Assignment is overdue by: {{$a}}",
     "submission": "Submission",
     "submissioneditable": "Student can edit this submission",
     "submissionnoteditable": "Student cannot edit this submission",

@@ -1,5 +1,5 @@
 {
-    "addanewdiscussion": "Add a new discussion topic",
+    "addanewdiscussion": "Add discussion topic",
     "addanewquestion": "Add a new question",
     "addanewtopic": "Add a new topic",
     "addtofavourites": "Star this discussion",
@@ -45,7 +45,7 @@
     "numreplies": "{{numreplies}} replies",
     "pindiscussion": "Pin this discussion",
     "pinupdated": "The pin option has been updated.",
-    "postisprivatereply": "This is a private reply. It is not visible to other participants.",
+    "postisprivatereply": "This is a private reply. It is only visible to you and anyone with the capability to view private replies, such as teachers or managers.",
     "posttoforum": "Post to forum",
     "posttomygroups": "Post a copy to all groups",
     "privatereply": "Reply privately",
