@@ -49,6 +49,8 @@
     <preference name="WKWebViewOnly" value="true" />
     <preference name="WKFullScreenEnabled" value="true" />
     <preference name="AndroidXEnabled" value="true" />
+    <preference name="GradlePluginGoogleServicesEnabled" value="true" />
+    <preference name="GradlePluginGoogleServicesVersion" value="4.3.10" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
@@ -189,12 +191,6 @@
             </feature>
         </config-file>
         <config-file parent="/*" target="res/xml/config.xml">
-            <feature name="Whitelist">
-                <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
-                <param name="onload" value="true" />
-            </feature>
-        </config-file>
-        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="SQLitePlugin">
                 <param name="android-package" value="io.sqlc.SQLitePlugin" />
             </feature>
@@ -259,7 +255,7 @@
             <true />
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="CFBundleShortVersionString">
-            <string>3.9.5</string>
+            <string>4.0.0</string>
         </edit-config>
         <edit-config file="*-Info.plist" mode="overwrite" target="CFBundleLocalizations">
             <array>

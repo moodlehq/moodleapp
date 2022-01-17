@@ -24,6 +24,7 @@ before_install:
   - npm --version
   - nvm --version
   - npm ci
+  - yes | sdkmanager "build-tools;30.0.3"
 
 before_script:
   - npx gulp
