@@ -44,7 +44,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
     protected contentSubHeadingFontSize = 0;
     protected subHeadingStartDifference = 0;
 
-    constructor(el: ElementRef) {
+    constructor(el: ElementRef<HTMLIonHeaderElement>) {
         this.header = el.nativeElement;
 
         this.loadingObserver = CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, async (data) => {
@@ -122,6 +122,11 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
         }
 
         this.titleTopDifference = contentH1.getBoundingClientRect().top - headerH1.getBoundingClientRect().top;
+        if (this.titleTopDifference <= 0) {
+            this.cannotCollapse();
+
+            return;
+        }
 
         // Split view part.
         const contentAux = this.header.parentElement?.querySelector<HTMLElement>('ion-content.disable-scroll-y');
@@ -210,7 +215,9 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
 
         this.content.scrollEvents = true;
         this.content.addEventListener('ionScroll', (e: CustomEvent<ScrollDetail>): void => {
-            this.onScroll(title, contentH1, contentSubHeading, e.detail);
+            if (e.target == this.content) {
+                this.onScroll(title, contentH1, contentSubHeading, e.detail);
+            }
         });
     }
 
@@ -234,6 +241,8 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
         this.header.classList.toggle('core-header-collapsed', collapsed);
         title.classList.toggle('collapsible-title-collapsed', collapsed);
         title.classList.toggle('collapsible-title-collapse-started', scrollDetail.scrollTop > 0);
+        title.classList.toggle('collapsible-title-collapse-nowrap', progress > 0.5);
+        title.style.setProperty('--collapse-opacity', (1 - progress) +'');
 
         if (collapsed) {
             contentH1.style.transform = 'translateX(-' + this.h1StartDifference + 'px)';

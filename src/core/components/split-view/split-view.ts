@@ -141,14 +141,12 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      * Another manual solution is to add scroll-y=false on the ion-contents outside the split view.
      */
     protected disableScrollOnParent(): void {
-        let outerContent = this.element.nativeElement.parentElement?.closest('ion-content');
-        while (outerContent) {
+        const outerContent = this.element.nativeElement.parentElement?.closest('ion-content');
+        if (outerContent) {
             if (outerContent?.getAttribute('scroll-y') != 'false' && !outerContent?.classList.contains(disabledScrollClass)) {
                 outerContent.classList.add(disabledScrollClass);
                 this.disabledScrollOuterContents.push(outerContent);
             }
-
-            outerContent = outerContent.parentElement?.closest('ion-content');
         }
     }
 

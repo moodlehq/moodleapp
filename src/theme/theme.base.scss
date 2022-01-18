@@ -1257,21 +1257,26 @@ ion-app.md .collapsible-title h1 {
 }
 
 .collapsible-title.collapsible-title-collapsed {
-    ion-label, h1, h2, .subheading {
+    ion-label, h1, h2, ion-row, ion-col, .subheading {
         opacity: 0;
     }
 }
 
 .collapsible-title.collapsible-title-collapse-started {
     * {
-        opacity: 0;
+        opacity: var(--collapse-opacity, 0);
     }
-    ion-label, h1, h2, .subheading {
+
+    ion-label, h1, h2, ion-row, ion-col, .subheading {
         opacity: 1;
     }
+}
+
+.collapsible-title.collapsible-title-collapse-nowrap {
     h1, h2, .subheading {
         max-width: var(--max-width);
         white-space: nowrap;
         overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
