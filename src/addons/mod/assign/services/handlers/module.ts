@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { AddonModAssignIndexComponent } from '../../components/index';
@@ -44,6 +44,7 @@ export class AddonModAssignModuleHandlerService extends CoreModuleHandlerBase im
         [CoreConstants.FEATURE_ADVANCED_GRADING]: true,
         [CoreConstants.FEATURE_PLAGIARISM]: true,
         [CoreConstants.FEATURE_COMMENT]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_ASSESSMENT,
     };
 
     /**
