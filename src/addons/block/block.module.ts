@@ -24,6 +24,7 @@ import { AddonBlockCalendarMonthModule } from './calendarmonth/calendarmonth.mod
 import { AddonBlockCalendarUpcomingModule } from './calendarupcoming/calendarupcoming.module';
 import { AddonBlockCommentsModule } from './comments/comments.module';
 import { AddonBlockCompletionStatusModule } from './completionstatus/completionstatus.module';
+import { AddonBlockCourseListModule } from './courselist/courselist.module';
 import { AddonBlockGlossaryRandomModule } from './glossaryrandom/glossaryrandom.module';
 import { AddonBlockHtmlModule } from './html/html.module';
 import { AddonBlockLearningPlansModule } from './learningplans/learningplans.module';
@@ -53,6 +54,7 @@ import { AddonBlockTimelineModule } from './timeline/timeline.module';
         AddonBlockCalendarUpcomingModule,
         AddonBlockCommentsModule,
         AddonBlockCompletionStatusModule,
+        AddonBlockCourseListModule,
         AddonBlockGlossaryRandomModule,
         AddonBlockHtmlModule,
         AddonBlockLearningPlansModule,
