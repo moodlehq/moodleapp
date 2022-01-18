@@ -46,7 +46,7 @@ import { AddonCalendarReminderTimeModalComponent } from '@addons/calendar/compon
 @Component({
     selector: 'page-addon-calendar-event',
     templateUrl: 'event.html',
-    styleUrls: ['event.scss'],
+    styleUrls: ['../../calendar-common.scss', 'event.scss'],
 })
 export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
