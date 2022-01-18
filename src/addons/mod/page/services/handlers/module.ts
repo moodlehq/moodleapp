@@ -15,7 +15,7 @@
 import { Injectable, Type } from '@angular/core';
 import { AddonModPage } from '../page';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { AddonModPageIndexComponent } from '../../components/index';
 import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
@@ -42,6 +42,7 @@ export class AddonModPageModuleHandlerService extends CoreModuleHandlerBase impl
         [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
         [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
         [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_CONTENT,
     };
 
     /**

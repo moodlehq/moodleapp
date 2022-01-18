@@ -19,7 +19,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { AddonModForumIndexComponent } from '../../components/index';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
@@ -48,6 +48,7 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
         [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
         [CoreConstants.FEATURE_RATE]: true,
         [CoreConstants.FEATURE_PLAGIARISM]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_COLLABORATION,
     };
 
     /**
