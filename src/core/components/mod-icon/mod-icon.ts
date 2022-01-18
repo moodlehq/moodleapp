@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
+import { CoreConstants } from '@/core/constants';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
+import { CoreSites } from '@services/sites';
 
 const assetsPath = 'assets/img/';
 const fallbackModName = 'external-tool';
@@ -38,11 +41,31 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     isLocalUrl = true;
     linkIconWithComponent = false;
 
+    protected legacyIcon = true; // @deprecatedonmoodle since Moodle 3.11.
+
+    constructor(protected el: ElementRef) { }
+
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        if (!this.modname && this.modicon) {
+            // Guess module from the icon url.
+            const matches = this.modicon.match('/theme/image.php/[^/]+/([^/]+)/[-0-9]*/');
+            this.modname = (matches && matches[1]) || '';
+        }
+
         this.modNameTranslated = this.modname ? CoreCourse.translateModuleName(this.modname) || '' : '';
+        if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
+            this.legacyIcon = false;
+            const purposeClass =
+                CoreCourseModuleDelegate.supportsFeature<string>(this.modname, CoreConstants.FEATURE_MOD_PURPOSE, '');
+
+            if (purposeClass != '') {
+                const element: HTMLElement = this.el.nativeElement;
+                element.classList.add(purposeClass);
+            }
+        }
 
         this.setIcon();
     }
@@ -82,7 +105,13 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             ? fallbackModName
             : this.modname;
 
-        this.icon = assetsPath + moduleName + '.svg';
+        let path = assetsPath + 'mod/';
+        if (this.legacyIcon) {
+            // @deprecatedonmoodle since Moodle 3.11.
+            path = assetsPath + 'mod_legacy/';
+        }
+
+        this.icon = path + moduleName + '.svg';
     }
 
 }

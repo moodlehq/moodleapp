@@ -125,9 +125,8 @@ export class CoreCourseProvider {
     static readonly COMPONENT = 'CoreCourse';
 
     readonly CORE_MODULES = [
-        'assign', 'assignment', 'book', 'chat', 'choice', 'data', 'database', 'date', 'external-tool',
-        'feedback', 'file', 'folder', 'forum', 'glossary', 'ims', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz',
-        'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop', 'h5pactivity', 'bigbluebuttonbn',
+        'assign', 'bigbluebuttonbn', 'book', 'chat', 'choice', 'data', 'feedback', 'folder', 'forum', 'glossary', 'h5pactivity',
+        'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop',
     ];
 
     protected logger: CoreLogger;
@@ -726,8 +725,14 @@ export class CoreCourseProvider {
             moduleName = 'external-tool';
         }
 
+        let path = 'assets/img/mod/';
+        if (!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
+            // @deprecatedonmoodle since Moodle 3.11.
+            path = 'assets/img/mod_legacy/';
+        }
+
         // Use default icon on core modules.
-        return 'assets/img/mod/' + moduleName + '.svg';
+        return path + moduleName + '.svg';
     }
 
     /**
