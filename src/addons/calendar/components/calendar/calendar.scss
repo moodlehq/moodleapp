@@ -148,17 +148,6 @@
         }
     }
 
-    core-mod-icon {
-        margin-right: 1px;
-        margin-left: 1px;
-        --size: 16px;
-        display: inline-block;
-        vertical-align: bottom;
-        ::ng-deep img {
-            display: block;
-        }
-    }
-
     ion-slide {
         display: block;
         font-size: inherit;
