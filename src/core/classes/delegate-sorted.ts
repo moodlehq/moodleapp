@@ -46,6 +46,8 @@ export class CoreSortedDelegate<
                 this.clearSortedHandlers();
             }
         });
+        // Clear loaded handlers on login, there could be an invalid list loaded when user reconnects after token expired.
+        CoreEvents.on(CoreEvents.LOGIN, this.clearSortedHandlers.bind(this));
     }
 
     /**
