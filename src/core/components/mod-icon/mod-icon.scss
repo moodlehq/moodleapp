@@ -1,3 +1,5 @@
+@import "~theme/globals";
+
 :host {
     --size: var(--module-icon-size);
     --margin-end: 0px;
@@ -6,6 +8,19 @@
     margin-top: var(--margin-vertical);
     margin-bottom: var(--margin-vertical);
     margin-right: var(--margin-end);
+    border-radius: 4px;
+    padding: 0.7rem;
+    background-color: $gray-lighter;
+
+    @each $type, $value in $activity-icon-colors {
+        &.#{$type} {
+            background-color: var(--activity#{$type});
+            img {
+                filter: brightness(0) invert(1);
+            }
+        }
+    }
+
 }
 
 img {
@@ -23,7 +38,7 @@ img {
 
 :host-context(ion-item) {
     --margin-vertical: 12px;
-    --margin-end: 32px;
+    --margin-end: 1rem;
 }
 
 :host-context(ion-card ion-item) {

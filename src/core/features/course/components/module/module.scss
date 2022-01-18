@@ -31,7 +31,7 @@
         }
     }
 
-    .core-module-module-info {
+    .core-course-module-info {
         ion-badge {
             text-align: start;
         }
@@ -51,16 +51,12 @@
         clear: both;
     }
 
-    .core-module-main-item + .core-module-module-info ion-label {
+    .core-module-main-item + .core-course-module-info ion-label {
         margin-top: 0px;
     }
 
     .core-module-main-item.has-module-info {
         --inner-border-width: 0px;
-    }
-
-    .core-module-module-info ion-label {
-        margin-inline-start: 50px;
     }
 
 }

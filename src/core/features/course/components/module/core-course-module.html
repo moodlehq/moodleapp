@@ -58,7 +58,7 @@
             </div>
         </ion-item>
         <ion-item *ngIf="hasInfo" id="core-course-module-{{module.id}}-info"
-            class="ion-text-wrap core-course-module-handler core-module-module-info {{module.handlerData.class}}" [ngClass]="{
+            class="ion-text-wrap core-course-module-handler core-course-module-info {{module.handlerData.class}}" [ngClass]="{
                 'item-media': module.handlerData.icon,
                 'item-dimmed': module.visible === 0 || module.uservisible === false
             }" detail="false">
