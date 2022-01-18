@@ -19,7 +19,7 @@ import { BackButtonEvent } from '@ionic/core';
 import { CoreLang } from '@services/lang';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreEvents } from '@singletons/events';
-import { Network, NgZone, Platform, SplashScreen } from '@singletons';
+import { Network, NgZone, Platform, SplashScreen, Translate } from '@singletons';
 import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
@@ -30,6 +30,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreConstants } from '@/core/constants';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
+import { CoreDomUtils } from '@services/utils/dom';
 
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
@@ -111,6 +112,8 @@ export class AppComponent implements OnInit, AfterViewInit {
             // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
             const protocol = CoreUrlUtils.getUrlProtocol(event.url);
             const url = event.url.replace(/^https?:\/\//, '');
+            const urlScheme = CoreUrlUtils.getUrlProtocol(url);
+            const isExternalApp = urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile';
 
             if (CoreCustomURLSchemes.isCustomURL(url)) {
                 // Close the browser if it's a valid SSO URL.
@@ -119,10 +122,16 @@ export class AppComponent implements OnInit, AfterViewInit {
                 });
                 CoreUtils.closeInAppBrowser();
 
+            } else if (isExternalApp && url.includes('://token=')) {
+                // It's an SSO token for another app. Close the IAB and show an error.
+                CoreUtils.closeInAppBrowser();
+                CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidschemessologin', {
+                    $a: urlScheme,
+                }));
+
             } else if (CoreApp.isAndroid()) {
                 // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
-                const urlScheme = CoreUrlUtils.getUrlProtocol(url);
-                if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
+                if (isExternalApp) {
                     // Open in browser should launch the right app if found and do nothing if not found.
                     CoreUtils.openInBrowser(url, { showBrowserWarning: false });
 
