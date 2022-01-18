@@ -581,7 +581,7 @@ export class CoreNavigatorService {
             return '';
         }
 
-        const handlers = CoreMainMenuDelegate.getHandlers();
+        const handlers = CoreMainMenuDelegate.getHandlers().filter((handler) => !handler.onlyInMore);
 
         return handlers[0]?.page || '';
     }
