@@ -138,7 +138,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     /**
      * Init handlers on change (size or handlers).
      */
-    initHandlers(): void {
+    async initHandlers(): Promise<void> {
         if (!this.allHandlers) {
             return;
         }
@@ -175,6 +175,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
         if (this.loaded && this.tabs[0] && !CoreNavigator.getCurrentMainMenuTab()) {
             // No tab selected, select the first one.
+            await CoreUtils.nextTick();
             this.mainTabs?.select(this.tabs[0].page);
         }
     }

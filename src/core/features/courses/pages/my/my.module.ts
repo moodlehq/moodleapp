@@ -21,12 +21,16 @@ import { CoreBlockComponentsModule } from '@features/block/components/components
 import { CoreCoursesMyCoursesPage } from './my';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreCoursesMyCoursesMainMenuHandlerService } from '@features/courses/services/handlers/my-courses-mainmenu';
 
 function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: '',
             component: CoreCoursesMyCoursesPage,
+            data: {
+                mainMenuTabRoot: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
+            },
         },
         {
             path: 'list',
