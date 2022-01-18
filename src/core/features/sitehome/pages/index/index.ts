@@ -36,6 +36,7 @@ import { CoreUtils } from '@services/utils/utils';
 @Component({
     selector: 'page-core-sitehome-index',
     templateUrl: 'index.html',
+    styleUrls: ['index.scss'],
 })
 export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 

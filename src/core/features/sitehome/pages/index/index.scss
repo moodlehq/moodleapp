@@ -1,0 +1,11 @@
+@import "~theme/globals";
+
+ion-item ion-icon {
+    display: inline-block;
+    border-radius: 4px;
+    padding: 0.7rem;
+    background-color: $gray-lighter;
+    line-height: var(--size);
+    --margin-end: 1rem;
+    @include margin-horizontal(null, var(--margin-end));
+}
