@@ -125,8 +125,10 @@ export class AppComponent implements OnInit, AfterViewInit {
             } else if (isExternalApp && url.includes('://token=')) {
                 // It's an SSO token for another app. Close the IAB and show an error.
                 CoreUtils.closeInAppBrowser();
-                CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidschemessologin', {
-                    $a: urlScheme,
+                CoreDomUtils.showErrorModal(Translate.instant('core.login.contactyouradministratorissue', {
+                    $a: '<br><br>' + Translate.instant('core.errorurlschemeinvalidscheme', {
+                        $a: urlScheme,
+                    }),
                 }));
 
             } else if (CoreApp.isAndroid()) {

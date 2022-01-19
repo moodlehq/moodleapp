@@ -1658,7 +1658,6 @@
   "core.errorsync": "local_moodlemobileapp",
   "core.errorsyncblocked": "local_moodlemobileapp",
   "core.errorurlschemeinvalidscheme": "local_moodlemobileapp",
-  "core.errorurlschemeinvalidschemessologin": "local_moodlemobileapp",
   "core.errorurlschemeinvalidsite": "local_moodlemobileapp",
   "core.expand": "moodle",
   "core.explanationdigitalminor": "moodle",
