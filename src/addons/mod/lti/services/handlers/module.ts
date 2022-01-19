@@ -14,7 +14,7 @@
 
 import { Injectable, Type } from '@angular/core';
 
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { makeSingleton } from '@singletons';
@@ -43,6 +43,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
         [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
         [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
         [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_CONTENT,
     };
 
     /**

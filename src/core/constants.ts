@@ -27,6 +27,16 @@ export const enum ContextLevel {
     BLOCK = 'block',
 }
 
+export const enum ModPurpose {
+    MOD_PURPOSE_COMMUNICATION = 'communication',
+    MOD_PURPOSE_ASSESSMENT = 'assessment',
+    MOD_PURPOSE_COLLABORATION = 'collaboration',
+    MOD_PURPOSE_CONTENT = 'content',
+    MOD_PURPOSE_ADMINISTRATION = 'administration',
+    MOD_PURPOSE_INTERFACE = 'interface',
+    MOD_PURPOSE_OTHER = 'other',
+};
+
 /**
  * Static class to contain all the core constants.
  */
@@ -119,6 +129,7 @@ export class CoreConstants {
     static readonly FEATURE_MOD_INTRO = 'mod_intro'; // True if module supports intro editor.
     static readonly FEATURE_MODEDIT_DEFAULT_COMPLETION = 'modedit_default_completion'; // True if module has default completion.
     static readonly FEATURE_COMMENT = 'comment';
+    static readonly FEATURE_MOD_PURPOSE = 'mod_purpose'; // Type of module.
     static readonly FEATURE_RATE = 'rate';
     static readonly FEATURE_BACKUP_MOODLE2 = 'backup_moodle2'; // True if module supports backup/restore of moodle2 format.
     static readonly FEATURE_SHOW_DESCRIPTION = 'showdescription'; // True if module can show description on course main page.
