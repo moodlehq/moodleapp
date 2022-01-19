@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseModuleData, CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
 
@@ -36,7 +36,6 @@ import { CoreSites } from '@services/sites';
 export class CoreCourseModuleInfoComponent implements OnInit {
 
     @Input() module!: CoreCourseModuleData; // The module to render.
-    @Input() showManualCompletion = true; // Whether to show manual completion, true by default.
     @Input() courseId!: number; // The courseId the module belongs to.
 
     @Input() component!: string; // Component for format text directive.
@@ -46,8 +45,6 @@ export class CoreCourseModuleInfoComponent implements OnInit {
     @Input() expandDescription = false; // If the description should be expanded by default.
 
     @Input() hasDataToSync = false; // If the activity has any data to be synced.
-
-    @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when completion changes.
 
     modicon = '';
     showCompletion = false; // Whether to show completion.
@@ -60,7 +57,6 @@ export class CoreCourseModuleInfoComponent implements OnInit {
         this.modicon = await CoreCourseModuleDelegate.getModuleIconSrc(this.module.modname, this.module.modicon, this.module);
 
         this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname || '');
-
         this.showCompletion = CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
     }
 

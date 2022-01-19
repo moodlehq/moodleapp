@@ -21,7 +21,7 @@
 <core-loading [hideUntil]="loaded" class="safe-area-padding">
 
     <!-- Activity info. -->
-    <core-course-module-info [module]="module" [courseId]="courseId" (completionChanged)="onCompletionChange()"
+    <core-course-module-info [module]="module" [courseId]="courseId"
         [description]="mode != 'iframe' && (mode != 'embedded' || displayDescription) && description" [component]="component"
         [componentId]="componentId">
     </core-course-module-info>
@@ -61,5 +61,5 @@
     </ng-container>
 </core-loading>
 
-<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>
