@@ -209,7 +209,7 @@
         --vertical-margin: 10px;
         --horizontal-margin: 10px;
 
-        width: calc(100% - var(--vertical-margin) - var(--vertical-margin));
+        width: calc(100% - var(--horizontal-margin) - var(--horizontal-margin));
         height: calc(100% - var(--vertical-margin) - var(--vertical-margin));
         margin: var(--vertical-margin) var(--horizontal-margin);
 

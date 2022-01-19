@@ -215,6 +215,10 @@
         --color: var(--item-divider-color);
         --min-height: var(--item-divider-min-height);
         min-height: var(--min-height);
+
+        .expandable-status-icon {
+            font-size: 18px;
+        }
     }
 
     --spacer-background: var(--item-divider-background);
