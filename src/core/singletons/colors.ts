@@ -112,7 +112,7 @@ export class CoreColors {
      */
     static hexToRGB(color: string): ColorComponents {
         if (color.charAt(0) == '#') {
-            color = color.substr(1);
+            color = color.substring(1);
         }
 
         if (color.length === 3) {
@@ -122,9 +122,9 @@ export class CoreColors {
         }
 
         return {
-            red: parseInt(color.substr(0, 2), 16),
-            green: parseInt(color.substr(2, 2), 16),
-            blue: parseInt(color.substr(4, 2), 16),
+            red: parseInt(color.substring(0, 2), 16),
+            green: parseInt(color.substring(2, 2), 16),
+            blue: parseInt(color.substring(4, 2), 16),
         };
 
     }

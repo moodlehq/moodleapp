@@ -1254,7 +1254,7 @@ export class CoreUtilsProvider {
         const mapped = {};
         objects.forEach((item) => {
             const keyValue = item[keyName] as string;
-            const key = prefixSubstr > 0 ? keyValue.substr(prefixSubstr) : keyValue;
+            const key = prefixSubstr > 0 ? keyValue.substring(prefixSubstr) : keyValue;
             mapped[key] = item[valueName];
         });
 

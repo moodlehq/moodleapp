@@ -329,9 +329,9 @@ export class CoreUrlUtilsProvider {
      * @return Last file without params.
      */
     getLastFileWithoutParams(url: string): string {
-        let filename = url.substr(url.lastIndexOf('/') + 1);
+        let filename = url.substring(url.lastIndexOf('/') + 1);
         if (filename.indexOf('?') != -1) {
-            filename = filename.substr(0, filename.indexOf('?'));
+            filename = filename.substring(0, filename.indexOf('?'));
         }
 
         return filename;

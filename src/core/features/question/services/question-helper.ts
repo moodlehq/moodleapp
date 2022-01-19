@@ -303,7 +303,7 @@ export class CoreQuestionHelperProvider {
 
                 // Remove start and end of the match, we only want the object.
                 initMatch = initMatch.replace('M.qtype_' + question.type + '.init_question(', '');
-                initMatch = initMatch.substr(0, initMatch.length - 2);
+                initMatch = initMatch.substring(0, initMatch.length - 2);
 
                 // Try to convert it to an object and add it to the question.
                 question.initObjects = CoreTextUtils.parseJSON(initMatch, null);

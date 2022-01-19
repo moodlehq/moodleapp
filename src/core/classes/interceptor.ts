@@ -58,7 +58,7 @@ export class CoreInterceptor implements HttpInterceptor {
             }
         }
 
-        return query.length ? query.substr(0, query.length - 1) : query;
+        return query.length ? query.substring(0, query.length - 1) : query;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

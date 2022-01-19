@@ -216,7 +216,7 @@ export class CoreH5PCore {
 
         // Prevent too long slug.
         if (newInput.length > 91) {
-            newInput = newInput.substr(0, 92);
+            newInput = newInput.substring(0, 92);
         }
 
         // Prevent empty slug

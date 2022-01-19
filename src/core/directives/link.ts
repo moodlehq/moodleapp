@@ -140,7 +140,7 @@ export class CoreLinkDirective implements OnInit {
 
         if (href.charAt(0) == '#') {
             // Look for id or name.
-            href = href.substr(1);
+            href = href.substring(1);
             CoreDomUtils.scrollToElementBySelector(
                 this.element.closest('ion-content'),
                 this.content,
@@ -170,7 +170,7 @@ export class CoreLinkDirective implements OnInit {
      * @return Promise resolved when done.
      */
     protected async openLocalFile(path: string): Promise<void> {
-        const filename = path.substr(path.lastIndexOf('/') + 1);
+        const filename = path.substring(path.lastIndexOf('/') + 1);
 
         if (!CoreFileHelper.isOpenableInApp({ filename })) {
             try {

@@ -155,7 +155,7 @@ export class AddonModImscpProvider {
             }
 
             const filePath = CoreTextUtils.concatenatePaths(item.filepath, item.filename);
-            const filePathAlt = filePath.charAt(0) === '/' ? filePath.substr(1) : '/' + filePath;
+            const filePathAlt = filePath.charAt(0) === '/' ? filePath.substring(1) : '/' + filePath;
 
             // Check if it's main file.
             return filePath === targetFilePath || filePathAlt === targetFilePath;

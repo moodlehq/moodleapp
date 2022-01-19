@@ -760,8 +760,8 @@ export class AddonModLessonProvider {
             let ignoreCase = '';
 
             if (useRegExp) {
-                if (expectedAnswer.substr(-2) == '/i') {
-                    expectedAnswer = expectedAnswer.substr(0, expectedAnswer.length - 2);
+                if (expectedAnswer.substring(-2) == '/i') {
+                    expectedAnswer = expectedAnswer.substring(0, expectedAnswer.length - 2);
                     ignoreCase = 'i';
                 }
             } else {
@@ -792,12 +792,12 @@ export class AddonModLessonProvider {
                         isMatch = true;
                     }
                 } else { // We are using regular expressions analysis.
-                    const startCode = expectedAnswer.substr(0, 2);
+                    const startCode = expectedAnswer.substring(0, 2);
 
                     switch (startCode){
                         // 1- Check for absence of required string in studentAnswer (coded by initial '--').
                         case '--':
-                            expectedAnswer = expectedAnswer.substr(2);
+                            expectedAnswer = expectedAnswer.substring(2);
                             if (!studentAnswer.match(new RegExp('^' + expectedAnswer + '$', ignoreCase))) {
                                 isMatch = true;
                             }
@@ -805,7 +805,7 @@ export class AddonModLessonProvider {
 
                         // 2- Check for code for marking wrong strings (coded by initial '++').
                         case '++': {
-                            expectedAnswer = expectedAnswer.substr(2);
+                            expectedAnswer = expectedAnswer.substring(2);
 
                             // Check for one or several matches.
                             const matches = studentAnswer.match(new RegExp(expectedAnswer, 'g' + ignoreCase));

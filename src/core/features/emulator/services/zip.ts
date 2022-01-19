@@ -65,7 +65,7 @@ export class ZipMock extends Zip {
         destination = destination.replace(/%20/g, ' ');
 
         const sourceDir = source.substring(0, source.lastIndexOf('/'));
-        const sourceName = source.substr(source.lastIndexOf('/') + 1);
+        const sourceName = source.substring(source.lastIndexOf('/') + 1);
         const zip = new JSZip();
 
         try {
@@ -82,7 +82,7 @@ export class ZipMock extends Zip {
 
             // First of all, create the directory where the files will be unzipped.
             const destParent = destination.substring(0, destination.lastIndexOf('/'));
-            const destFolderName = destination.substr(destination.lastIndexOf('/') + 1);
+            const destFolderName = destination.substring(destination.lastIndexOf('/') + 1);
 
             await this.file.createDir(destParent, destFolderName, true);
 
@@ -95,7 +95,7 @@ export class ZipMock extends Zip {
                 if (!file.dir) {
                     // It's a file.
                     const fileDir = name.substring(0, name.lastIndexOf('/'));
-                    const fileName = name.substr(name.lastIndexOf('/') + 1);
+                    const fileName = name.substring(name.lastIndexOf('/') + 1);
 
                     if (fileDir) {
                         // The file is in a subfolder, create it first.

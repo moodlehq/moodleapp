@@ -154,7 +154,7 @@ export class CoreGradesHelperProvider {
         for (const name in item) {
             const index = name.indexOf('formatted');
             if (index > 0) {
-                item[name.substr(0, index)] = item[name];
+                item[name.substring(0, index)] = item[name];
             }
         }
 
@@ -399,7 +399,7 @@ export class CoreGradesHelperProvider {
                 (row) =>
                     row.itemname &&
                     row.itemname.id &&
-                    row.itemname.id.substr(0, 3) == 'row' &&
+                    row.itemname.id.substring(0, 3) == 'row' &&
                     parseInt(row.itemname.id.split('_')[1], 10) == gradeId,
             );
 

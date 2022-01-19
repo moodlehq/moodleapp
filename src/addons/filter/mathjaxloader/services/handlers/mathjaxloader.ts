@@ -190,7 +190,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
     protected insertSpan(text: string, start: number, end: number): string {
         return CoreTextUtils.substrReplace(
             text,
-            '<span class="nolink">' + text.substr(start, end - start + 1) + '</span>',
+            '<span class="nolink">' + text.substring(start, end - start + 1) + '</span>',
             start,
             end - start + 1,
         );
@@ -265,7 +265,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      */
     protected fixUseUrls(node: Element): void {
         Array.from(node.querySelectorAll('use')).forEach((useElem) => {
-            useElem.setAttribute('href', useElem.href.baseVal.substr(useElem.href.baseVal.indexOf('#')));
+            useElem.setAttribute('href', useElem.href.baseVal.substring(useElem.href.baseVal.indexOf('#')));
         });
     }
 

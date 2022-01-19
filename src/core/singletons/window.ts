@@ -82,7 +82,7 @@ export class CoreWindow {
      */
     static async open(url: string, name?: string): Promise<void> {
         if (CoreUrlUtils.isLocalFileUrl(url)) {
-            const filename = url.substr(url.lastIndexOf('/') + 1);
+            const filename = url.substring(url.lastIndexOf('/') + 1);
 
             if (!CoreFileHelper.isOpenableInApp({ filename })) {
                 try {

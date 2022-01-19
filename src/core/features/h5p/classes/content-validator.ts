@@ -169,7 +169,7 @@ export class CoreH5PContentValidator {
 
         // Check if string is within allowed length.
         if (semantics.maxLength !== undefined) {
-            text = text.substr(0, semantics.maxLength);
+            text = text.substring(0, semantics.maxLength);
         }
 
         return text;
@@ -357,8 +357,8 @@ export class CoreH5PContentValidator {
         }
 
         // Remove temporary files suffix.
-        if (file.path.substr(-4, 4) === '#tmp') {
-            file.path = file.path.substr(0, file.path.length - 4);
+        if (file.path.substring(-4, 4) === '#tmp') {
+            file.path = file.path.substring(0, file.path.length - 4);
         }
 
         // Make sure path and mime does not have any special chars
@@ -670,7 +670,7 @@ export class CoreH5PContentValidator {
 
         const tag = tags[0];
 
-        if (tag.substr(0, 1) != '<') {
+        if (tag.substring(0, 1) != '<') {
             // We matched a lone ">" character.
             return '&gt;';
         } else if (tag.length == 1) {
@@ -746,7 +746,7 @@ export class CoreH5PContentValidator {
                     matches = attr.match(/^([-a-zA-Z]+)/);
                     if (matches && matches.length > 1) {
                         attrName = matches[1].toLowerCase();
-                        skip = attrName == 'style' || attrName.substr(0, 2) == 'on' || attrName.substr(0, 1) == '-' ||
+                        skip = attrName == 'style' || attrName.substring(0, 2) == 'on' || attrName.substring(0, 1) == '-' ||
                                 attrName.length > 96; // Ignore long attributes to avoid unnecessary processing overhead.
                         working = mode = 1;
                         attr = attr.replace(/^[-a-zA-Z]+/, '');
@@ -883,7 +883,7 @@ export class CoreH5PContentValidator {
 
             if (colonPos > 0) {
                 // We found a colon, possibly a protocol. Verify.
-                const protocol = uri.substr(0, colonPos);
+                const protocol = uri.substring(0, colonPos);
                 // If a colon is preceded by a slash, question mark or hash, it cannot possibly be part of the URL scheme.
                 // This must be a relative URL, which inherits the (safe) protocol of the base document.
                 if (protocol.match(/[/?#]/)) {
@@ -891,7 +891,7 @@ export class CoreH5PContentValidator {
                 }
                 // Check if this is a disallowed protocol.
                 if (!allowedProtocols[protocol.toLowerCase()]) {
-                    uri = uri.substr(colonPos + 1);
+                    uri = uri.substring(colonPos + 1);
                 }
             }
         } while (before != uri);

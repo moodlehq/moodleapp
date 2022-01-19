@@ -216,7 +216,7 @@ export class CoreUrl {
             return;
         }
 
-        return url.substr(firstAnchorIndex);
+        return url.substring(firstAnchorIndex);
     }
 
     /**

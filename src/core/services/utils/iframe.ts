@@ -443,7 +443,7 @@ export class CoreIframeUtilsProvider {
             }
         } else if (CoreUrlUtils.isLocalFileUrl(url)) {
             // It's a local file.
-            const filename = url.substr(url.lastIndexOf('/') + 1);
+            const filename = url.substring(url.lastIndexOf('/') + 1);
 
             if (!CoreFileHelper.isOpenableInApp({ filename })) {
                 try {
@@ -522,7 +522,7 @@ export class CoreIframeUtilsProvider {
             // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
             event && event.preventDefault();
 
-            const filename = link.href.substr(link.href.lastIndexOf('/') + 1);
+            const filename = link.href.substring(link.href.lastIndexOf('/') + 1);
 
             if (!CoreFileHelper.isOpenableInApp({ filename })) {
                 try {

@@ -256,7 +256,7 @@ export class CoreLangProvider {
             // Language code defined by locale has a dash, like en-US or es-ES. Check if it's supported.
             if (CoreConstants.CONFIG.languages && CoreConstants.CONFIG.languages[preferredLanguage] === undefined) {
                 // Code is NOT supported. Fallback to language without dash. E.g. 'en-US' would fallback to 'en'.
-                preferredLanguage = preferredLanguage.substr(0, preferredLanguage.indexOf('-'));
+                preferredLanguage = preferredLanguage.substring(0, preferredLanguage.indexOf('-'));
             }
         }
 

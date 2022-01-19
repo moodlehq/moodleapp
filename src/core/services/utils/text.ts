@@ -279,7 +279,7 @@ export class CoreTextUtilsProvider {
         const firstCharRight = rightPath.charAt(0);
 
         if (lastCharLeft === '/' && firstCharRight === '/') {
-            return leftPath + rightPath.substr(1);
+            return leftPath + rightPath.substring(1);
         } else if (lastCharLeft !== '/' && firstCharRight !== '/') {
             return leftPath + '/' + rightPath;
         } else {
@@ -539,7 +539,7 @@ export class CoreTextUtilsProvider {
             const url = CoreFileHelper.getFileUrl(files[0]);
 
             // Remove text after last slash (encoded or not).
-            return url?.substr(0, Math.max(url.lastIndexOf('/'), url.lastIndexOf('%2F')));
+            return url?.substring(0, Math.max(url.lastIndexOf('/'), url.lastIndexOf('%2F')));
         }
 
         return undefined;
@@ -778,9 +778,9 @@ export class CoreTextUtilsProvider {
             }
 
             // Get the filename from the URL.
-            let filename = url.substr(url.lastIndexOf('/') + 1);
+            let filename = url.substring(url.lastIndexOf('/') + 1);
             if (filename.indexOf('?') != -1) {
-                filename = filename.substr(0, filename.indexOf('?'));
+                filename = filename.substring(0, filename.indexOf('?'));
             }
 
             if (pluginfileMap[filename]) {
@@ -904,12 +904,12 @@ export class CoreTextUtilsProvider {
      */
     shortenText(text: string, length: number): string {
         if (text.length > length) {
-            text = text.substr(0, length);
+            text = text.substring(0, length);
 
             // Now, truncate at the last word boundary (if exists).
             const lastWordPos = text.lastIndexOf(' ');
             if (lastWordPos > 0) {
-                text = text.substr(0, lastWordPos);
+                text = text.substring(0, lastWordPos);
             }
             text += '&hellip;';
         }
