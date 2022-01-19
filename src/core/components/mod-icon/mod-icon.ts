@@ -53,6 +53,10 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             // Guess module from the icon url.
             const matches = this.modicon.match('/theme/image.php/[^/]+/([^/]+)/[-0-9]*/');
             this.modname = (matches && matches[1]) || '';
+
+            if (this.modname.startsWith('mod_')) {
+                this.modname = this.modname.substring(4);
+            }
         }
 
         this.modNameTranslated = this.modname ? CoreCourse.translateModuleName(this.modname) || '' : '';

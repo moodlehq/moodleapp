@@ -12,7 +12,11 @@
     <core-loading [hideUntil]="loaded">
         <ion-item class="ion-text-wrap" lines="none" [attr.aria-label]="subject">
             <core-user-avatar *ngIf="userIdFrom > 0" slot="start" [userId]="userIdFrom" [profileUrl]="profileImageUrlFrom"
-                [fullname]="userFromFullName" [extraIcon]="iconUrl"></core-user-avatar>
+                [fullname]="userFromFullName">
+                <img *ngIf="iconUrl && !modname" [src]="iconUrl" alt="" role="presentation" class="core-avatar-extra">
+                <core-mod-icon *ngIf="modname" [modicon]="iconUrl" [modname]="modname" [showAlt]="false" class="core-avatar-extra">
+                </core-mod-icon>
+            </core-user-avatar>
 
             <img *ngIf="userIdFrom <= 0 && iconUrl" [src]="iconUrl" alt="" role="presentation" class="core-notification-icon" slot="start">
 

@@ -1,6 +1,25 @@
 @import "~theme/globals";
 
 :host {
+    ::ng-deep {
+        core-user-avatar .core-avatar-extra {
+            margin: 0 !important;
+            position: absolute;
+            right: -4px;
+            bottom: -4px;
+        }
+        core-user-avatar img.core-avatar-extra {
+            background: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 0 !important;
+        }
+        core-user-avatar core-mod-icon.core-avatar-extra {
+            --size: 16px;
+            padding: 0.2rem;
+        }
+    }
+
     .core-notification-icon {
         width: 34px;
         height: 34px;
