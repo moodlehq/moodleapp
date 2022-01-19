@@ -50,7 +50,6 @@
     <!-- Activity info. -->
     <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
         [component]="component" [componentId]="componentId" [courseId]="courseId">
-        <h2 *ngIf="pageTitle" title>{{pageTitle}}</h2>
     </core-course-module-info>
 
     <div *ngIf="pageIsOffline || hasOffline || pageWarning">
@@ -74,6 +73,7 @@
         </ion-card>
     </div>
     <div class="ion-padding addon-mod_wiki-page-content">
+        <h2 *ngIf="pageTitle">{{pageTitle}}</h2>
         <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
             <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"
                 contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">

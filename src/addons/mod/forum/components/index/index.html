@@ -41,7 +41,7 @@
         <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()"
             [description]="forum && forum.type != 'single' && description" [component]="component" [componentId]="componentId"
             [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings">
-            <ion-item>
+            <ion-item lines="none" class="ion-text-wrap">
                 <ion-label>
                     {{descriptionNote}}
                 </ion-label>
