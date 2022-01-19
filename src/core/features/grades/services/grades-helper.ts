@@ -543,11 +543,11 @@ export class CoreGradesHelperProvider {
         text = text.replace('%2F', '/').replace('%2f', '/');
         if (text.indexOf('/agg_mean') > -1) {
             row.itemtype = 'agg_mean';
-            row.image = 'assets/img/grades/agg_mean.png';
+            row.image = 'assets/img/grades/agg_mean.svg';
             row.iconAlt = Translate.instant('core.grades.aggregatemean');
         } else if (text.indexOf('/agg_sum') > -1) {
             row.itemtype = 'agg_sum';
-            row.image = 'assets/img/grades/agg_sum.png';
+            row.image = 'assets/img/grades/agg_sum.svg';
             row.iconAlt = Translate.instant('core.grades.aggregatesum');
         } else if (text.indexOf('/outcomes') > -1 || text.indexOf('fa-tasks') > -1) {
             row.itemtype = 'outcome';
@@ -555,7 +555,7 @@ export class CoreGradesHelperProvider {
             row.iconAlt = Translate.instant('core.grades.outcome');
         } else if (text.indexOf('i/folder') > -1 || text.indexOf('fa-folder') > -1) {
             row.itemtype = 'category';
-            row.icon = 'fas-cubes';
+            row.icon = 'fas-folder';
             row.iconAlt = Translate.instant('core.grades.category');
         } else if (text.indexOf('/manual_item') > -1 || text.indexOf('fa-square-o') > -1) {
             row.itemtype = 'manual';
