@@ -400,7 +400,7 @@ export class AddonCalendarHelperProvider {
     ): Promise<{ daynames: Partial<AddonCalendarDayName>[]; weeks: AddonCalendarWeek[] }> {
         const site = await CoreSites.getSite(siteId);
         // Get starting week day user preference, fallback to site configuration.
-        let startWeekDayStr = site.getStoredConfig('calendar_startwday');
+        let startWeekDayStr = site.getStoredConfig('calendar_startwday') || '1';
         startWeekDayStr = await CoreConfig.get(AddonCalendarProvider.STARTING_WEEK_DAY, startWeekDayStr);
         const startWeekDay = parseInt(startWeekDayStr, 10);
 
