@@ -29,6 +29,7 @@ import { CoreEvents } from '@singletons/events';
 @Component({
     selector: 'page-core-login-site-policy',
     templateUrl: 'site-policy.html',
+    styleUrls: ['site-policy.scss'],
 })
 export class CoreLoginSitePolicyPage implements OnInit {
 
