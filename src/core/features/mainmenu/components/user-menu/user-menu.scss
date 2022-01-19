@@ -3,14 +3,23 @@
 :host {
     .core-user-menu-preferences {
         --inner-border-width: 0;
-        --border-width: 1px 0 0 0; 
+        --border-width: 1px 0 0 0;
     }
+}
+
+.core-usermenu-siteinfo {
+    --padding-top: 10px;
+    --padding-bottom: 10px;
 }
 
 @if ($core-user-hide-siteinfo) {
     .core-usermenu-siteinfo {
         display: none;
     }
+}
+
+.core-usermenu-sitename {
+    font-size: 16px;
 }
 
 @if ($core-user-hide-sitename) {
@@ -23,4 +32,8 @@
     .core-usermenu-siteurl {
         display: none;
     }
+}
+
+ion-footer {
+    background: var(--contrast-background);
 }

@@ -14,23 +14,21 @@
 </ion-header>
 <ion-content>
     <ion-list>
-        <ion-item button class="core-user-profile-maininfo" *ngIf="siteInfo" lines="full" (click)="switchAccounts($event)" detail="true"
-            [attr.aria-label]="'core.mainmenu.switchaccount' | translate">
-            <core-user-avatar [user]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start"></core-user-avatar>
+        <ion-item button class="core-usermenu-siteinfo ion-text-wrap" *ngIf="siteInfo" lines="full" detail="false" [href]="siteUrl"
+            core-link auto-login="yes">
             <ion-label>
-                <h2>{{ siteInfo.fullname }}</h2>
-                <p class="core-usermenu-siteinfo core-usermenu-sitename">
+                <p class="core-usermenu-sitename">
                     <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true">
                     </core-format-text>
                 </p>
+                <a [href]="siteUrl" core-link auto-login="yes" class="core-usermenu-siteurl">{{ siteUrl }}</a>
             </ion-label>
         </ion-item>
-
-        <ion-item button class="ion-text-wrap core-usermenu-handler" (click)="openUserProfile($event)"
-            [attr.aria-label]="'core.user.details' | translate" detail="true" lines="none">
-            <ion-icon name="fas-user" slot="start" aria-hidden="true"></ion-icon>
+        <ion-item button class="core-usermenu-handler ion-text-wrap" *ngIf="siteInfo" lines="full" (click)="openUserProfile($event)"
+            detail="true" [attr.aria-label]="'core.user.profile' | translate">
+            <core-user-avatar [user]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start"></core-user-avatar>
             <ion-label>
-                <p class="item-heading">{{ 'core.user.profile' | translate }}</p>
+                <h2>{{ siteInfo.fullname }}</h2>
             </ion-label>
         </ion-item>
 
@@ -66,10 +64,18 @@
         </ion-item>
     </ion-list>
 </ion-content>
-<ion-footer class="ion-padding">
-    <ion-button (click)="logout($event)" expand="block" color="danger" [attr.aria-label]="'core.mainmenu.logout' | translate"
-        class="ion-text-wrap">
-        <ion-icon name="fas-sign-out-alt" slot="start" aria-hidden="true"></ion-icon>
-        {{ 'core.mainmenu.logout' | translate }}
-    </ion-button>
+<ion-footer>
+    <ion-item button lines="full" (click)="switchAccounts($event)" detail="true" class="ion-text-wrap">
+        <ion-icon name="fas-exchange-alt" slot="start" aria-hidden="true"></ion-icon>
+        <ion-label>
+            <p class="item-heading">{{ 'core.mainmenu.switchaccount' | translate }}</p>
+        </ion-label>
+    </ion-item>
+    <div class="ion-padding">
+        <ion-button (click)="logout($event)" expand="block" color="danger" [attr.aria-label]="'core.mainmenu.logout' | translate"
+            class="ion-text-wrap">
+            <ion-icon name="fas-sign-out-alt" slot="start" aria-hidden="true"></ion-icon>
+            {{ 'core.mainmenu.logout' | translate }}
+        </ion-button>
+    </div>
 </ion-footer>
