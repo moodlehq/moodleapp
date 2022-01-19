@@ -41,7 +41,16 @@ export class AddonNotificationsHelperProvider {
         notification: AddonNotificationsNotificationMessageFormatted,
     ): AddonNotificationsNotificationToRender {
         const formattedNotification: AddonNotificationsNotificationToRender = notification;
-        formattedNotification.iconurl = formattedNotification.iconurl || undefined; // Make sure the property exists.
+
+        if (notification.moodlecomponent?.startsWith('mod_') && notification.iconurl) {
+            const modname = notification.moodlecomponent.substring(4);
+            if (notification.iconurl.match('/theme/image.php/[^/]+/' + modname + '/[-0-9]*/') ||
+                    notification.iconurl.match('/theme/image.php/[^/]+/' + notification.moodlecomponent + '/[-0-9]*/')) {
+                formattedNotification.modname = modname;
+            }
+        } else {
+            formattedNotification.iconurl = formattedNotification.iconurl || undefined; // Make sure the property exists.
+        }
 
         return formattedNotification;
     }
@@ -172,4 +181,5 @@ export type AddonNotificationsPreferencesProcessorFormatted = AddonNotifications
  */
 export type AddonNotificationsNotificationToRender = AddonNotificationsNotificationMessageFormatted & {
     iconurl?: string;
+    modname?: string;
 };

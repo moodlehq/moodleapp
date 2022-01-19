@@ -39,6 +39,7 @@ export class AddonNotificationsNotificationPage implements OnInit {
     profileImageUrlFrom?: string; // Avatar of the user who sent the notification.
     userFromFullName?: string; // Name of the user who sent the notification.
     iconUrl?: string; // Icon URL.
+    modname?: string; // Module name.
     loaded = false;
 
     /**
@@ -77,6 +78,13 @@ export class AddonNotificationsNotificationPage implements OnInit {
             this.profileImageUrlFrom = notification.profileimageurlfrom;
             this.userFromFullName = notification.userfromfullname;
             this.iconUrl = notification.iconurl;
+            if (notification.moodlecomponent?.startsWith('mod_') && notification.iconurl) {
+                const modname = notification.moodlecomponent.substring(4);
+                if (notification.iconurl.match('/theme/image.php/[^/]+/' + modname + '/[-0-9]*/') ||
+                        notification.iconurl.match('/theme/image.php/[^/]+/' + notification.moodlecomponent + '/[-0-9]*/')) {
+                    this.modname = modname;
+                }
+            }
         } else {
             this.subject = notification.title || '';
             this.content = notification.message || '';

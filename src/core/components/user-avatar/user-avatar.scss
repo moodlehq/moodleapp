@@ -44,7 +44,7 @@
         max-height: var(--core-header-toolbar-button-image-size);
         border-radius: 50%;
         display: block;
-        
+
         img {
             padding: 4px;
             border-radius: 50%;
@@ -62,17 +62,6 @@
             border: 1px solid white;
             background-color: var(--core-online-color);
         }
-    }
-
-    .core-avatar-extra-icon {
-        margin: 0 !important;
-        border-radius: 0 !important;
-        background: none;
-        position: absolute;
-        right: -4px;
-        bottom: -4px;
-        width: 24px;
-        height: 24px;
     }
 }
 

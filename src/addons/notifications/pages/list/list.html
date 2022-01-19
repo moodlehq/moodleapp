@@ -32,7 +32,13 @@
                     : 'addon.notifications.unreadnotification' | translate: {$a: notification.subject}">
                 <core-user-avatar *ngIf="notification.useridfrom > 0" [user]="notification" slot="start"
                     [profileUrl]="notification.profileimageurlfrom" [fullname]="notification.userfromfullname"
-                    [userId]="notification.useridfrom" [extraIcon]="notification.iconurl"></core-user-avatar>
+                    [userId]="notification.useridfrom">
+                    <img *ngIf="notification.iconurl && !notification.modname" [src]="notification.iconurl" alt="" role="presentation"
+                        class="core-avatar-extra">
+                    <core-mod-icon *ngIf="notification.modname" [modicon]="notification.iconurl" [modname]="notification.modname"
+                        [showAlt]="false" class="core-avatar-extra">
+                    </core-mod-icon>
+                </core-user-avatar>
 
                 <img *ngIf="notification.useridfrom <= 0 && notification.iconurl" [src]="notification.iconurl" alt="" role="presentation"
                     class="core-notification-icon" slot="start">
