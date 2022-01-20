@@ -29,9 +29,8 @@
 <core-loading [hideUntil]="loaded">
 
     <!-- Activity info. -->
-    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
-        [component]="component" [componentId]="componentId" [courseId]="courseId"
-        [hasDataToSync]="buttonText && hasOffline && !showStatusSpinner">
+    <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
+        [courseId]="courseId" [hasDataToSync]="buttonText && hasOffline && !showStatusSpinner">
     </core-course-module-info>
 
     <!-- Access rules description messages. -->
@@ -227,5 +226,5 @@
     </ion-card>
 </core-loading>
 
-<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>

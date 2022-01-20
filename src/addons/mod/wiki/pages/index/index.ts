@@ -50,18 +50,6 @@ export class AddonModWikiIndexPage extends CoreCourseModuleMainActivityPage<Addo
     }
 
     /**
-     * @inheritdoc
-     */
-    updateData(data: { name: string } | string): void {
-        if (typeof data == 'string') {
-            // We received the title to display.
-            this.pageTitle = data;
-        } else {
-            super.updateData(data);
-        }
-    }
-
-    /**
      * User entered the page.
      */
     ionViewDidEnter(): void {

@@ -30,9 +30,8 @@
 <core-loading [hideUntil]="loaded" class="safe-area-padding">
 
     <!-- Activity info. -->
-    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()"
-        [description]="survey && !survey.surveydone && !hasOffline && description" [component]="component" [componentId]="componentId"
-        [courseId]="courseId" [hasDataToSync]="hasOffline">
+    <core-course-module-info [module]="module" [description]="survey && !survey.surveydone && !hasOffline && description"
+        [component]="component" [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline">
     </core-course-module-info>
 
     <!-- Survey already done -->
@@ -148,5 +147,5 @@
 
 </core-loading>
 
-<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>

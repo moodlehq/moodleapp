@@ -25,8 +25,7 @@
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <core-course-module-info [module]="module" [courseId]="courseId" [description]="module.description" [component]="module.modname"
-            [componentId]="module.id" (completionChanged)="onCompletionChange()" [expandDescription]="true"
-            [showManualCompletion]="showManualCompletion">
+            [componentId]="module.id" [expandDescription]="true">
 
             <div class="safe-area-padding-horizontal ion-padding" *ngIf="module.handlerData?.extraBadge">
                 <ion-badge class="ion-text-wrap ion-text-start" [color]="module.handlerData?.extraBadgeColor">
@@ -61,5 +60,6 @@
         </core-course-module-info>
     </core-loading>
 
-    <core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id"></core-course-module-navigation>
+    <core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module"
+        (completionChanged)="onCompletionChange()" [showManualCompletion]="showManualCompletion"></core-course-module-navigation>
 </ion-content>

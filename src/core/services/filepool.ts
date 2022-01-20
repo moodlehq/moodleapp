@@ -777,7 +777,7 @@ export class CoreFilepoolProvider {
                 // Calculate the path to the file.
                 path = file.filename || '';
                 if (file.filepath && file.filepath !== '/') {
-                    path = file.filepath.substr(1) + path;
+                    path = file.filepath.substring(1) + path;
                 }
                 path = CoreTextUtils.concatenatePaths(dirPath, path);
             }
@@ -871,7 +871,7 @@ export class CoreFilepoolProvider {
                     // Calculate the path to the file.
                     path = file.filename || '';
                     if (file.filepath && file.filepath !== '/') {
-                        path = file.filepath.substr(1) + path;
+                        path = file.filepath.substring(1) + path;
                     }
                     path = CoreTextUtils.concatenatePaths(dirPath, path);
                 }
@@ -1837,7 +1837,7 @@ export class CoreFilepoolProvider {
             return;
         }
 
-        const relativePath = url.substr(url.indexOf('/pluginfile.php') + 16);
+        const relativePath = url.substring(url.indexOf('/pluginfile.php') + 16);
         const args = relativePath.split('/');
 
         if (args.length < 3) {
@@ -2084,7 +2084,7 @@ export class CoreFilepoolProvider {
             // It's a pluginfile URL. Search for the 'file' param to extract the name.
             const params = CoreUrlUtils.extractUrlParams(fileUrl);
             if (params.file) {
-                filename = params.file.substr(params.file.lastIndexOf('/') + 1);
+                filename = params.file.substring(params.file.lastIndexOf('/') + 1);
             } else {
                 // 'file' param not found. Extract what's after the last '/' without params.
                 filename = CoreUrlUtils.getLastFileWithoutParams(fileUrl);
@@ -2115,7 +2115,7 @@ export class CoreFilepoolProvider {
             // Remove the URL from the array.
             hashes.shift();
 
-            filename = filename.substr(0, index);
+            filename = filename.substring(0, index);
         }
 
         // Remove the extension from the filename.

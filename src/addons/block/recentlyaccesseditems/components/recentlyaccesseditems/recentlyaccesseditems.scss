@@ -3,6 +3,9 @@
 :host {
     .core-horizontal-scroll div.core-horizontal-scroll-item {
         @include horizontal_scroll_item(80%, 250px, 300px);
+        ion-card {
+            height: auto;
+        }
     }
 
     .core-course-module-handler {

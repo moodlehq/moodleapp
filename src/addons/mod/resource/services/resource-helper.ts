@@ -70,7 +70,7 @@ export class AddonModResourceHelperProvider {
         let mainFilePath = mainFile.filename;
 
         if (mainFile.filepath !== '/') {
-            mainFilePath = mainFile.filepath.substr(1) + mainFilePath;
+            mainFilePath = mainFile.filepath.substring(1) + mainFilePath;
         }
 
         try {

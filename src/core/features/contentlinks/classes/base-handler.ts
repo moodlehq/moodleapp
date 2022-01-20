@@ -95,7 +95,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
         if (this.pattern) {
             const position = url.search(this.pattern);
             if (position > -1) {
-                return url.substr(0, position);
+                return url.substring(0, position);
             }
         }
     }

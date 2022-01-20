@@ -198,7 +198,7 @@ export class FileTransferObjectMock extends FileTransferObject {
                 const headerString = headers[i];
                 const separatorPos = headerString.indexOf(':');
                 if (separatorPos != -1) {
-                    result[headerString.substr(0, separatorPos)] = headerString.substr(separatorPos + 1).trim();
+                    result[headerString.substring(0, separatorPos)] = headerString.substring(separatorPos + 1).trim();
                 }
             }
         }

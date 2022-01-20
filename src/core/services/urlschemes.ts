@@ -249,7 +249,7 @@ export class CoreCustomURLSchemesProvider {
 
         // Remove the params to get the site URL.
         if (url.indexOf('?') != -1) {
-            url = url.substr(0, url.indexOf('?'));
+            url = url.substring(0, url.indexOf('?'));
         }
 
         if (!url.match(/https?:\/\//)) {

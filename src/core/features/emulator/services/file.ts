@@ -444,7 +444,7 @@ export class FileMock extends File {
 
         return {
             path: fullPath.substring(0, fullPath.lastIndexOf('/')),
-            name: fullPath.substr(fullPath.lastIndexOf('/') + 1),
+            name: fullPath.substring(fullPath.lastIndexOf('/') + 1),
         };
     }
 

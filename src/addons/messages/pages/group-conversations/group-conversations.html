@@ -40,9 +40,11 @@
                     [attr.aria-label]="(favourites.expanded ? 'core.collapse' : 'core.expand') | translate"
                     [attr.aria-expanded]="favourites.expanded" aria-controls="addon-messages-groupconversations-favourite" role="heading"
                     detail="false">
-                    <ion-icon *ngIf="!favourites.expanded" name="fas-caret-right" flip-rtl slot="start" aria-hidden="true">
+                    <ion-icon *ngIf="!favourites.expanded" name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true"
+                        class="expandable-status-icon">
                     </ion-icon>
-                    <ion-icon *ngIf="favourites.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon *ngIf="favourites.expanded" name="fas-chevron-down" slot="start" aria-hidden="true"
+                        class="expandable-status-icon"></ion-icon>
                     <ion-label>
                         <h2>{{ 'core.favourites' | translate }} ({{ favourites.count }})</h2>
                     </ion-label>
@@ -74,8 +76,10 @@
                 <ion-item button class="divider ion-text-wrap" (click)="toggle(group)" sticky="true"
                     [attr.aria-label]="(group.expanded ? 'core.collapse' : 'core.expand') | translate" [attr.aria-expanded]="group.expanded"
                     aria-controls="addon-messages-groupconversations-group" role="heading" detail="false">
-                    <ion-icon *ngIf="!group.expanded" name="fas-caret-right" flip-rtl slot="start" aria-hidden="true"></ion-icon>
-                    <ion-icon *ngIf="group.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon *ngIf="!group.expanded" name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true"
+                        class="expandable-status-icon"></ion-icon>
+                    <ion-icon *ngIf="group.expanded" name="fas-chevron-down" slot="start" aria-hidden="true" class="expandable-status-icon">
+                    </ion-icon>
                     <ion-label>
                         <h2>{{ 'addon.messages.groupconversations' | translate }} ({{ group.count }})</h2>
                     </ion-label>
@@ -107,9 +111,11 @@
                     [attr.aria-label]="(individual.expanded ? 'core.collapse' : 'core.expand') | translate"
                     [attr.aria-expanded]="individual.expanded" aria-controls="addon-messages-groupconversations-individual" role="heading"
                     detail="false">
-                    <ion-icon *ngIf="!individual.expanded" name="fas-caret-right" flip-rtl slot="start" aria-hidden="true">
+                    <ion-icon *ngIf="!individual.expanded" name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true"
+                        class="expandable-status-icon">
                     </ion-icon>
-                    <ion-icon *ngIf="individual.expanded" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon *ngIf="individual.expanded" name="fas-chevron-down" slot="start" aria-hidden="true"
+                        class="expandable-status-icon"></ion-icon>
                     <ion-label>
                         <h2>{{ 'addon.messages.individualconversations' | translate }} ({{ individual.count }})</h2>
                     </ion-label>

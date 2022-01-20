@@ -26,8 +26,8 @@
 <core-loading [hideUntil]="loaded" class="safe-area-padding">
 
     <!-- Activity info. -->
-    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="displayDescription && description"
-        [component]="component" [componentId]="componentId" [courseId]="courseId">
+    <core-course-module-info [module]="module" [description]="displayDescription && description" [component]="component"
+        [componentId]="componentId" [courseId]="courseId">
     </core-course-module-info>
 
     <ion-card class="core-warning-card" *ngIf="warning">
@@ -49,5 +49,5 @@
 
 </core-loading>
 
-<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>

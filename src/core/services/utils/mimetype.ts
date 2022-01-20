@@ -84,13 +84,13 @@ export class CoreMimetypeUtilsProvider {
         // If the extension has parameters, remove them.
         let position = extension.indexOf('?');
         if (position > -1) {
-            extension = extension.substr(0, position);
+            extension = extension.substring(0, position);
         }
 
         // If the extension has an anchor, remove it.
         position = extension.indexOf('#');
         if (position > -1) {
-            extension = extension.substr(0, position);
+            extension = extension.substring(0, position);
         }
 
         // Remove hash in extension if there's any (added by filepool).
@@ -98,7 +98,7 @@ export class CoreMimetypeUtilsProvider {
 
         // Remove dot from the extension if found.
         if (extension && extension[0] == '.') {
-            extension = extension.substr(1);
+            extension = extension.substring(1);
         }
 
         return extension;
@@ -311,12 +311,12 @@ export class CoreMimetypeUtilsProvider {
             // Remove params if any.
             position = candidate.indexOf('?');
             if (position > -1) {
-                candidate = candidate.substr(0, position);
+                candidate = candidate.substring(0, position);
             }
             // Remove anchor if any.
             position = candidate.indexOf('#');
             if (position > -1) {
-                candidate = candidate.substr(0, position);
+                candidate = candidate.substring(0, position);
             }
 
             if (EXTENSION_REGEX.test(candidate)) {
@@ -346,7 +346,7 @@ export class CoreMimetypeUtilsProvider {
         let ext;
 
         if (dot > -1) {
-            ext = filename.substr(dot + 1).toLowerCase();
+            ext = filename.substring(dot + 1).toLowerCase();
             ext = this.cleanExtension(ext);
 
             // Check extension corresponds to a mimetype to know if it's valid.
@@ -589,9 +589,9 @@ export class CoreMimetypeUtilsProvider {
 
         if (position > -1) {
             // Check extension corresponds to a mimetype to know if it's valid.
-            extension = path.substr(position + 1).toLowerCase();
+            extension = path.substring(position + 1).toLowerCase();
             if (this.getMimeType(extension) !== undefined) {
-                return path.substr(0, position); // Remove extension.
+                return path.substring(0, position); // Remove extension.
             }
         }
 

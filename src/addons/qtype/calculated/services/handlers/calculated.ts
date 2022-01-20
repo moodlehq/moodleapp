@@ -226,7 +226,7 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
         }
 
         const numberString = match[0];
-        const unit = unitsLeft ? answer.substr(0, answer.length - match[0].length) : answer.substr(match[0].length);
+        const unit = unitsLeft ? answer.substring(0, answer.length - match[0].length) : answer.substring(match[0].length);
 
         // No need to calculate the multiplier.
         return { answer: Number(numberString), unit };

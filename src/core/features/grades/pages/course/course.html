@@ -37,7 +37,7 @@
                                 </td>
                                 <th class="core-grades-table-gradeitem ion-text-start" [attr.colspan]="row.colspan">
                                     <ion-icon *ngIf="row.expandable && showSummary" aria-hidden="true" slot="start"
-                                        [name]="row.expanded ? 'fas-caret-down' : 'fas-caret-right'">
+                                        [name]="row.expanded ? 'fas-chevron-down' : 'fas-chevron-right'" class="expandable-status-icon">
                                     </ion-icon>
                                     <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start" [attr.aria-label]="row.iconAlt">
                                     </ion-icon>

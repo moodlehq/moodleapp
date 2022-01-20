@@ -100,7 +100,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
 
         if (window.location && window.location.href) {
             const url = window.location.href;
-            this.deviceInfo.locationHref = url.indexOf('#') > 0 ? url.substr(0, url.indexOf('#')) : url;
+            this.deviceInfo.locationHref = url.indexOf('#') > 0 ? url.substring(0, url.indexOf('#')) : url;
         }
 
         if (window.screen) {

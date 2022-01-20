@@ -29,8 +29,8 @@
 <core-loading [hideUntil]="loaded" class="safe-area-padding">
 
     <!-- Activity info. -->
-    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
-        [component]="component" [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="!errorMessage && hasOffline">
+    <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
+        [courseId]="courseId" [hasDataToSync]="!errorMessage && hasOffline">
     </core-course-module-info>
 
     <!-- Warning message. -->
@@ -237,5 +237,5 @@
     </ng-container>
 </core-loading>
 
-<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>

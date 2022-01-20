@@ -34,7 +34,7 @@ export class CoreText {
         }
 
         if (text.slice(-1) == '/') {
-            return text.substr(0, text.length - 1);
+            return text.substring(0, text.length - 1);
         }
 
         return text;

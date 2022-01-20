@@ -39,8 +39,8 @@
 <core-loading [hideUntil]="loaded">
 
     <!-- Activity info. -->
-    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="description"
-        [component]="component" [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings">
+    <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
+        [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings">
     </core-course-module-info>
 
     <ion-item class="ion-text-wrap" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
@@ -138,7 +138,7 @@
 
 </core-loading>
 
-<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>
 
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canAdd">

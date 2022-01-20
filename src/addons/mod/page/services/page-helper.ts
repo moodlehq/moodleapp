@@ -52,7 +52,7 @@ export class AddonModPageHelperProvider {
                 let key = content.filename;
                 if (content.filepath !== '/') {
                     // Add the folders without the leading slash.
-                    key = content.filepath.substr(1) + key;
+                    key = content.filepath.substring(1) + key;
                 }
                 paths[CoreTextUtils.decodeURIComponent(key)] = url;
             }

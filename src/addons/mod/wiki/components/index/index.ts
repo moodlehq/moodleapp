@@ -427,7 +427,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         const pageContents = await this.fetchPageContents(this.currentPage);
 
         if (pageContents) {
-            this.dataRetrieved.emit(pageContents.title);
             this.setSelectedWiki(pageContents.subwikiid, pageContents.userid, pageContents.groupid);
 
             this.pageTitle = pageContents.title;

@@ -52,16 +52,16 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
             switch (parts[0]) {
                 case 'far':
                     library = 'regular';
-                    iconName = iconName.substr(4);
+                    iconName = iconName.substring(4);
                     break;
                 case 'fa':
                 case 'fas':
                     library = 'solid';
-                    iconName = iconName.substr(parts[0].length + 1);
+                    iconName = iconName.substring(parts[0].length + 1);
                     break;
                 case 'fab':
                     library = 'brands';
-                    iconName = iconName.substr(4);
+                    iconName = iconName.substring(4);
                     break;
                 default:
                     break;

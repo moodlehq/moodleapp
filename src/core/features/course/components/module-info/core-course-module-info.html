@@ -2,6 +2,7 @@
     <core-mod-icon slot="start" [modicon]="modicon" [modname]="module.modname" [componentId]="module.instance">
     </core-mod-icon>
     <ion-label>
+        <p class="core-modulename" *ngIf="moduleNameTranslated">{{moduleNameTranslated}}</p>
         <h1>
             <core-format-text [text]="module.name" contextLevel="module" [component]="component" [componentId]="componentId"
                 [contextInstanceId]="module.id" [courseId]="courseId">
@@ -18,21 +19,12 @@
     </ion-label>
 </ion-item>
 <ng-content select="[description]"></ng-content>
-<ion-item class="ion-text-wrap" lines="none" *ngIf="showCompletion && (module.dates?.length ||
-        (module.completiondata && (module.completiondata.isautomatic || showManualCompletion) && module.uservisible))">
+<!-- Activity dates. -->
+<ion-item class="ion-text-wrap core-module-dates" lines="none" *ngIf="showCompletion && module.dates?.length">
     <ion-label>
-        <!-- Activity dates. -->
-        <div *ngIf="module.dates?.length" class="core-module-dates">
-            <p *ngFor="let date of module.dates">
-                <strong>{{ date.label }}</strong> {{ date.timestamp * 1000 | coreFormatDate:'strftimedatetime' }}
-            </p>
-        </div>
-
-        <!-- Module completion. -->
-        <core-course-module-completion *ngIf="module.completiondata && module.uservisible" [completion]="module.completiondata"
-            [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="true"
-            [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)">
-        </core-course-module-completion>
+        <p *ngFor="let date of module.dates">
+            <strong>{{ date.label }}</strong> {{ date.timestamp * 1000 | coreFormatDate:'strftimedatetime' }}
+        </p>
     </ion-label>
 </ion-item>
 <ng-content></ng-content>

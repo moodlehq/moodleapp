@@ -554,7 +554,7 @@ body.core-iframe-fullscreen ion-router-outlet {
             display: block;
             height: 100% !important;
             width: auto;
-            min-width: #{$modal-lateral-width};
+            min-width: calc(#{$modal-lateral-width} - 16px);
             box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
         }
         ion-backdrop {

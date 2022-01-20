@@ -947,7 +947,7 @@ export class AddonModScormProvider {
         if (parameters) {
             const connector = launchUrl.indexOf('?') > -1 ? '&' : '?';
             if (parameters.charAt(0) == '?') {
-                parameters = parameters.substr(1);
+                parameters = parameters.substring(1);
             }
 
             launchUrl += connector + parameters;
@@ -1315,7 +1315,7 @@ export class AddonModScormProvider {
 
         if (link.match(/^https?:\/\//i) && !CoreUrlUtils.isLocalFileUrl(link)) {
             return true;
-        } else if (link.substr(0, 4) == 'www.') {
+        } else if (link.substring(0, 4) == 'www.') {
             return true;
         }
 

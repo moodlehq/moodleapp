@@ -232,8 +232,8 @@ export class CoreFileProvider {
         } else {
             // The file plugin doesn't allow creating more than 1 level at a time (e.g. tmp/folder).
             // We need to create them 1 by 1.
-            const firstDir = path.substr(0, path.indexOf('/'));
-            const restOfPath = path.substr(path.indexOf('/') + 1);
+            const firstDir = path.substring(0, path.indexOf('/'));
+            const restOfPath = path.substring(path.indexOf('/') + 1);
 
             this.logger.debug('Create dir ' + firstDir + ' in ' + base);
 
@@ -692,7 +692,7 @@ export class CoreFileProvider {
      */
     async removeExternalFile(fullPath: string): Promise<void> {
         const directory = fullPath.substring(0, fullPath.lastIndexOf('/'));
-        const filename = fullPath.substr(fullPath.lastIndexOf('/') + 1);
+        const filename = fullPath.substring(fullPath.lastIndexOf('/') + 1);
 
         await File.removeFile(directory, filename);
     }
@@ -885,7 +885,7 @@ export class CoreFileProvider {
         };
 
         file.directory = path.substring(0, path.lastIndexOf('/'));
-        file.name = path.substr(path.lastIndexOf('/') + 1);
+        file.name = path.substring(path.lastIndexOf('/') + 1);
 
         return file;
     }
@@ -1035,7 +1035,7 @@ export class CoreFileProvider {
      */
     removeStartingSlash(path: string): string {
         if (path[0] == '/') {
-            return path.substr(1);
+            return path.substring(1);
         }
 
         return path;
@@ -1232,7 +1232,7 @@ export class CoreFileProvider {
         const position = window.location.href.indexOf(window.location.pathname);
 
         if (position != -1) {
-            return window.location.href.substr(0, position);
+            return window.location.href.substring(0, position);
         }
 
         return window.location.href;

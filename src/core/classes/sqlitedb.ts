@@ -600,7 +600,7 @@ export class SQLiteDB {
             sql = equal ? '= ?' : '<> ?';
             params = Array.isArray(items) ? items : [items];
         } else {
-            sql = (equal ? '' : 'NOT ') + 'IN (' + ',?'.repeat(items.length).substr(1) + ')';
+            sql = (equal ? '' : 'NOT ') + 'IN (' + ',?'.repeat(items.length).substring(1) + ')';
             params = items;
         }
 
@@ -801,7 +801,7 @@ export class SQLiteDB {
 
         const keys = Object.keys(data);
         const fields = keys.join(',');
-        const questionMarks = ',?'.repeat(keys.length).substr(1);
+        const questionMarks = ',?'.repeat(keys.length).substring(1);
 
         return {
             sql: `INSERT OR REPLACE INTO ${table} (${fields}) VALUES (${questionMarks})`,
@@ -1139,7 +1139,7 @@ export class SQLiteDB {
             if (params.length == 1) {
                 sql = sql + field + ' = ?';
             } else {
-                const questionMarks = ',?'.repeat(params.length).substr(1);
+                const questionMarks = ',?'.repeat(params.length).substring(1);
                 sql = sql + field + ' IN (' + questionMarks + ')';
             }
         }

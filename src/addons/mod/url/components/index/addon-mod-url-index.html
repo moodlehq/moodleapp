@@ -16,8 +16,8 @@
 <core-loading [hideUntil]="loaded">
 
     <!-- Activity info. -->
-    <core-course-module-info [module]="module" (completionChanged)="onCompletionChange()" [description]="displayDescription && description"
-        [component]="component" [componentId]="componentId" [courseId]="courseId">
+    <core-course-module-info [module]="module" [description]="displayDescription && description" [component]="component"
+        [componentId]="componentId" [courseId]="courseId">
     </core-course-module-info>
 
     <div *ngIf="shouldIframe || (shouldEmbed && isOther)" class="addon-mod_url-embedded-url">
@@ -53,5 +53,5 @@
     </ion-list>
 </core-loading>
 
-<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>
