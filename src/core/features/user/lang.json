@@ -1,6 +1,6 @@
 {
     "address": "Address",
-    "account": "Account",
+    "useraccount": "User account",
     "city": "City/town",
     "contact": "Contact",
     "country": "Country",
