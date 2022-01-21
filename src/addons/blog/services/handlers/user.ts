@@ -31,7 +31,7 @@ import { AddonBlog } from '../blog';
 export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
 
     name = 'AddonBlog'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
-    priority = 300;
+    priority = 200;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
 
     /**

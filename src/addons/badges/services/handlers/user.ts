@@ -32,7 +32,7 @@ import { AddonBadges } from '../badges';
 export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
 
     name = 'AddonBadges:fakename'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
-    priority = 50;
+    priority = 300;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
 
     /**

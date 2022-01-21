@@ -37,7 +37,7 @@ import { makeSingleton } from '@singletons';
 export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
 
     name = 'CoreGrades'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
-    priority = 400;
+    priority = 500;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
     cacheEnabled = true;
 

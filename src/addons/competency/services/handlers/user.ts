@@ -35,7 +35,7 @@ import { AddonCompetency } from '../competency';
 export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler {
 
     name = 'AddonCompetency'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
-    priority = 900;
+    priority = 100;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
     cacheEnabled = true;
 

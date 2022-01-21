@@ -32,7 +32,7 @@ import { AddonNotes } from '../notes';
 export class AddonNotesUserHandlerService implements CoreUserProfileHandler {
 
     name = 'AddonNotes:notes';
-    priority = 100;
+    priority = 250;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
     cacheEnabled = true;
 

@@ -35,7 +35,7 @@ export class AddonPrivateFilesUserHandlerService implements CoreUserProfileHandl
     static readonly PAGE_NAME = 'private';
 
     name = 'AddonPrivateFiles';
-    priority = 300;
+    priority = 400;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
     cacheEnabled = true;
 

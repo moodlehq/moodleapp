@@ -32,7 +32,7 @@ export class AddonCourseCompletionUserHandlerService implements CoreUserProfileH
 
     name = 'AddonCourseCompletion:viewCompletion';
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
-    priority = 200;
+    priority = 350;
     cacheEnabled = true;
 
     /**
