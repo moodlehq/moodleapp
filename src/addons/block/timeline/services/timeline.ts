@@ -184,6 +184,7 @@ export class AddonBlockTimelineProvider {
         if (searchValue != '') {
             data.searchvalue = searchValue;
             preSets.getFromCache = false;
+            preSets.cacheKey += ':' + searchValue;
         }
 
         const result = await site.read<AddonCalendarEvents>(

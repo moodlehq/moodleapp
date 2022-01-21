@@ -9,7 +9,7 @@
 <ion-item-group *ngFor="let dayEvents of filteredEvents">
     <ion-item lines="none">
         <ion-label>
-            <h4 [class.core-bold]="!course">{{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedayshort" }}</h4>
+            <h4 [class.core-bold]="!course">{{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedaydate" }}</h4>
         </ion-label>
     </ion-item>
     <ng-container *ngFor="let event of dayEvents.events">
