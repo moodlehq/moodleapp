@@ -33,21 +33,24 @@
                                     <ion-badge *ngIf="event.overdue" color="danger">{{ 'addon.block_timeline.overdue' | translate }}
                                     </ion-badge>
                                 </p>
-                                <p *ngIf="(showCourse && event.course) || event.activitystr">
+                                <p *ngIf="(showCourse && event.course) || event.activitystr"
+                                    class="addon-block-timeline-activity-course-activity">
                                     <span *ngIf="showCourse && event.course">
                                         <core-format-text [text]="event.course.fullnamedisplay" contextLevel="course"
                                             [contextInstanceId]="event.course.id">
-                                        </core-format-text> ·
+                                        </core-format-text>
                                     </span>
-                                    <core-format-text [text]="event.activitystr" contextLevel="module" [contextInstanceId]="event.id">
-                                    </core-format-text>
+                                    <span *ngIf="event.activitystr">
+                                        <core-format-text *ngIf="event.activitystr" [text]="event.activitystr" contextLevel="module"
+                                            [contextInstanceId]="event.id">
+                                        </core-format-text>
+                                    </span>
                                 </p>
                             </ion-col>
                         </ion-row>
                     </ion-col>
-                    <ion-col class="addon-block-timeline-activity-action ion-no-padding">
-                        <ion-button fill="clear" (click)="action($event, event.action.url)" [title]="event.action.name"
-                            [disabled]="!event.action.actionable" *ngIf="event.action">
+                    <ion-col class="addon-block-timeline-activity-action ion-no-padding" *ngIf="event.action?.actionable">
+                        <ion-button fill="clear" (click)="action($event, event.action.url)" [title]="event.action.name">
                             {{event.action.name}}
                             <ion-badge slot="end" class="ion-margin-start" *ngIf="event.action.showitemcount">
                                 {{event.action.itemcount}}
