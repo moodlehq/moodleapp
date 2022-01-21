@@ -14,7 +14,12 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
-import { CoreUserDelegateService, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import {
+    CoreUserDelegateContext,
+    CoreUserDelegateService,
+    CoreUserProfileHandler,
+    CoreUserProfileHandlerData,
+} from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonBadges } from '../badges';
@@ -30,22 +35,17 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
 
     /**
-     * Check if handler is enabled.
-     *
-     * @return Always enabled.
+     * @inheritdoc
      */
     isEnabled(): Promise<boolean> {
         return AddonBadges.isPluginEnabled();
     }
 
     /**
-     * Check if handler is enabled for this user in this context.
-     *
-     * @param courseId Course ID.
-     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @return True if enabled, false otherwise.
+     * @inheritdoc
      */
-    async isEnabledForCourse(
+    async isEnabledForContext(
+        context: CoreUserDelegateContext,
         courseId: number,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean> {
@@ -58,19 +58,17 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
     }
 
     /**
-     * Returns the data needed to render the handler.
-     *
-     * @return Data needed to render the handler.
+     * @inheritdoc
      */
     getDisplayData(): CoreUserProfileHandlerData {
         return {
             icon: 'fas-trophy',
             title: 'addon.badges.badges',
-            action: (event, user, courseId): void => {
+            action: (event, user, context, contextId): void => {
                 event.preventDefault();
                 event.stopPropagation();
                 CoreNavigator.navigateToSitePath('/badges', {
-                    params: { courseId, userId: user.id },
+                    params: { courseId: contextId, userId: user.id },
                 });
             },
         };

@@ -18,7 +18,12 @@ import { CoreSite, CoreSiteInfo } from '@classes/site';
 import { CoreLoginSitesComponent } from '@features/login/components/sites/sites';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
-import { CoreUserProfileHandlerData, CoreUserDelegate, CoreUserDelegateService } from '@features/user/services/user-delegate';
+import {
+    CoreUserProfileHandlerData,
+    CoreUserDelegate,
+    CoreUserDelegateService,
+    CoreUserDelegateContext,
+} from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -64,20 +69,21 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         if (this.siteInfo) {
             this.user = await CoreUser.getProfile(this.siteInfo.userid);
 
-            this.subscription = CoreUserDelegate.getProfileHandlersFor(this.user).subscribe((handlers) => {
-                if (!handlers || !this.user) {
-                    return;
-                }
-
-                this.handlers = [];
-                handlers.forEach((handler) => {
-                    if (handler.type == CoreUserDelegateService.TYPE_NEW_PAGE) {
-                        this.handlers.push(handler.data);
+            this.subscription = CoreUserDelegate.getProfileHandlersFor(this.user, CoreUserDelegateContext.USER_MENU)
+                .subscribe((handlers) => {
+                    if (!handlers || !this.user) {
+                        return;
                     }
-                });
 
-                this.handlersLoaded = CoreUserDelegate.areHandlersLoaded(this.user.id);
-            });
+                    this.handlers = [];
+                    handlers.forEach((handler) => {
+                        if (handler.type == CoreUserDelegateService.TYPE_NEW_PAGE) {
+                            this.handlers.push(handler.data);
+                        }
+                    });
+
+                    this.handlersLoaded = CoreUserDelegate.areHandlersLoaded(this.user.id, CoreUserDelegateContext.USER_MENU);
+                });
 
         }
     }
@@ -150,7 +156,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
         await this.close(event);
 
-        handler.action(event, this.user);
+        handler.action(event, this.user, CoreUserDelegateContext.USER_MENU);
     }
 
     /**

@@ -23,7 +23,12 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreUser, CoreUserProfile, CoreUserProvider } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
-import { CoreUserDelegate, CoreUserDelegateService, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import {
+    CoreUserDelegate,
+    CoreUserDelegateContext,
+    CoreUserDelegateService,
+    CoreUserProfileHandlerData,
+} from '@features/user/services/user-delegate';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourses } from '@features/courses/services/courses';
@@ -131,7 +136,9 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             // If there's already a subscription, unsubscribe because we'll get a new one.
             this.subscription?.unsubscribe();
 
-            this.subscription = CoreUserDelegate.getProfileHandlersFor(user, this.courseId).subscribe((handlers) => {
+            const context = this.courseId ? CoreUserDelegateContext.COURSE : CoreUserDelegateContext.SITE;
+
+            this.subscription = CoreUserDelegate.getProfileHandlersFor(user, context, this.courseId).subscribe((handlers) => {
                 this.actionHandlers = [];
                 this.newPageHandlers = [];
                 this.communicationHandlers = [];
@@ -150,7 +157,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
                     }
                 });
 
-                this.isLoadingHandlers = !CoreUserDelegate.areHandlersLoaded(user.id);
+                this.isLoadingHandlers = !CoreUserDelegate.areHandlersLoaded(user.id, context, this.courseId);
             });
 
         } catch (error) {
@@ -208,7 +215,8 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             return;
         }
 
-        handler.action(event, this.user, this.courseId);
+        const context = this.courseId ? CoreUserDelegateContext.COURSE : CoreUserDelegateContext.SITE;
+        handler.action(event, this.user, context, this.courseId);
     }
 
     /**

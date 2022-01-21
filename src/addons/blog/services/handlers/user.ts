@@ -43,11 +43,11 @@ export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
             icon: 'far-newspaper',
             title: 'addon.blog.blogentries',
             class: 'addon-blog-handler',
-            action: (event, user, courseId): void => {
+            action: (event, user, context, contextId): void => {
                 event.preventDefault();
                 event.stopPropagation();
                 CoreNavigator.navigateToSitePath('/blog', {
-                    params: { courseId, userId: user.id },
+                    params: { courseId: contextId, userId: user.id },
                 });
             },
         };
