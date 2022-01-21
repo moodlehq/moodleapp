@@ -55,7 +55,7 @@ export class CoreMainMenuHomePage implements OnInit {
     }
 
     /**
-     * Initialize the component.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.route.queryParams.subscribe((params: Partial<CoreRedirectPayload> & { urlToOpen?: string }) => {
@@ -121,7 +121,7 @@ export class CoreMainMenuHomePage implements OnInit {
      * Load the site name.
      */
     protected loadSiteName(): void {
-        this.siteName = CoreSites.getCurrentSite()?.getSiteName() || '';
+        this.siteName = CoreSites.getRequiredCurrentSite().getSiteName() || '';
     }
 
     /**
