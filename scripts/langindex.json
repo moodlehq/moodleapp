@@ -1515,7 +1515,6 @@
   "core.course.confirmdownloadzerosize": "local_moodlemobileapp",
   "core.course.confirmlimiteddownload": "local_moodlemobileapp",
   "core.course.confirmpartialdownloadsize": "local_moodlemobileapp",
-  "core.course.contents": "local_moodlemobileapp",
   "core.course.couldnotloadsectioncontent": "local_moodlemobileapp",
   "core.course.couldnotloadsections": "local_moodlemobileapp",
   "core.course.coursesummary": "moodle",
