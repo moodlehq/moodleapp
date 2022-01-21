@@ -22,9 +22,32 @@ h4.core-bold {
     --margin-vertical: 0;
 }
 
-.addon-block-timeline-activity-time,
-.addon-block-timeline-activity-action {
+.addon-block-timeline-activity-time {
     flex-grow: 0;
+}
+
+.addon-block-timeline-activity-action {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.addon-block-timeline-activity-course-activity {
+    display: flex;
+    flex-wrap: wrap;
+    span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    span::after {
+        content: "·";
+        display: inline;
+        padding-left: .3rem;
+        padding-right: .3rem;
+    }
+
+    span:last-child::after {
+        display: none;
+    }
 }
 
 .addon-block-timeline-activity-main,
