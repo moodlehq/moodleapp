@@ -13,12 +13,6 @@
 
 <ion-content>
     <ion-list>
-        <ion-item button class="ion-text-wrap" detail="false" (click)="openPage('deviceinfo')">
-            <ion-icon name="fas-mobile" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>
-                <h2>{{ appName }} {{ versionName }}</h2>
-            </ion-label>
-        </ion-item>
         <ion-item button class="ion-text-wrap" (click)="openPage('licenses')" detail="true">
             <ion-icon name="far-copyright" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'core.settings.opensourcelicenses' | translate }}</ion-label>
@@ -40,3 +34,12 @@
         </ion-item>
     </ion-list>
 </ion-content>
+
+<ion-footer class="ion-no-border">
+    <ion-item button class="ion-text-wrap ion-text-center core-about-deviceinfo" detail="false" (click)="openPage('deviceinfo')"
+        lines="none">
+        <ion-label>
+            <h2>{{ appName }} {{ versionName }}</h2>
+        </ion-label>
+    </ion-item>
+</ion-footer>
