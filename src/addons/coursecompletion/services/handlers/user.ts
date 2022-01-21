@@ -30,7 +30,7 @@ import { AddonCourseCompletion } from '../coursecompletion';
 @Injectable({ providedIn: 'root' })
 export class AddonCourseCompletionUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'AddonCourseCompletion';
+    name = 'AddonCourseCompletion:viewCompletion';
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
     priority = 200;
     cacheEnabled = true;

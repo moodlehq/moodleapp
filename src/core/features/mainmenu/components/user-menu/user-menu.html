@@ -68,7 +68,7 @@
     </ion-list>
 </ion-content>
 <ion-footer>
-    <ion-item button lines="full" (click)="switchAccounts($event)" detail="true" class="ion-text-wrap">
+    <ion-item *ngIf="displaySwitchAccount" button lines="full" (click)="switchAccounts($event)" detail="true" class="ion-text-wrap">
         <ion-icon name="fas-exchange-alt" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>
             <p class="item-heading">{{ 'core.mainmenu.switchaccount' | translate }}</p>

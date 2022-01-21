@@ -49,6 +49,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     handlersLoaded = false;
     loaded = false;
     user?: CoreUserProfile;
+    displaySwitchAccount = true;
 
     protected subscription!: Subscription;
 
@@ -60,6 +61,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         this.siteInfo = currentSite.getInfo();
         this.siteName = currentSite.getSiteName();
         this.siteUrl = currentSite.getURL();
+        this.displaySwitchAccount = !currentSite.isFeatureDisabled('NoDelegate_SwitchAccount');
 
         this.loaded = true;
 

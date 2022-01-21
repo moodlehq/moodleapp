@@ -67,6 +67,7 @@ export class CoreTextUtilsProvider {
         { old: /files_sitefiles/g, new: 'AddonPrivateFilesSiteFiles' },
         { old: /files_upload/g, new: 'AddonPrivateFilesUpload' },
         { old: /_mmaModAssign/g, new: '_AddonModAssign' },
+        { old: /_mmaModBigbluebuttonbn/g, new: '_AddonModBBB' },
         { old: /_mmaModBook/g, new: '_AddonModBook' },
         { old: /_mmaModChat/g, new: '_AddonModChat' },
         { old: /_mmaModChoice/g, new: '_AddonModChoice' },

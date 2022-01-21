@@ -21,6 +21,7 @@ import {
     CoreUserProfileHandlerData,
 } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { AddonBadges } from '../badges';
 
@@ -30,7 +31,7 @@ import { AddonBadges } from '../badges';
 @Injectable({ providedIn: 'root' })
 export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'AddonBadges';
+    name = 'AddonBadges:fakename'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
     priority = 50;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
 
@@ -49,11 +50,24 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
         courseId: number,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean> {
+        // Check if feature is disabled.
+        const currentSite = CoreSites.getCurrentSite();
+        if (!currentSite) {
+            return false;
+        }
+
+        if (context === CoreUserDelegateContext.USER_MENU) {
+            if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonBadges:account')) {
+                return false;
+            }
+        } else if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonBadges')) {
+            return false;
+        }
+
         if (navOptions && navOptions.badges !== undefined) {
             return navOptions.badges;
         }
 
-        // If we reach here, it means we are opening the user site profile.
         return true;
     }
 

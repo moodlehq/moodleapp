@@ -36,7 +36,7 @@ import { makeSingleton } from '@singletons';
 @Injectable({ providedIn: 'root' })
 export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'CoreGrades:viewGrades';
+    name = 'CoreGrades'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
     priority = 400;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
     cacheEnabled = true;
@@ -52,6 +52,21 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
      * @inheritdoc
      */
     async isEnabledForContext(context: CoreUserDelegateContext, courseId: number): Promise<boolean> {
+        // Check if feature is disabled.
+        const currentSite = CoreSites.getCurrentSite();
+        if (!currentSite) {
+            return false;
+        }
+
+        if (context === CoreUserDelegateContext.USER_MENU) {
+            // This option used to belong to main menu, check the original disabled feature value.
+            if (currentSite.isFeatureDisabled('CoreMainMenuDelegate_CoreGrades')) {
+                return false;
+            }
+        } else if (currentSite.isFeatureDisabled('CoreUserDelegate_CoreGrades:viewGrades')) {
+            return false;
+        }
+
         if (context === CoreUserDelegateContext.COURSE) {
             return CoreUtils.ignoreErrors(CoreGrades.isPluginEnabledForCourse(courseId), false);
         } else {

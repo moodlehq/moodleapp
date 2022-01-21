@@ -24,6 +24,7 @@ import {
 } from '@features/user/services/user-delegate';
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { AddonCompetency } from '../competency';
 
@@ -33,7 +34,7 @@ import { AddonCompetency } from '../competency';
 @Injectable( { providedIn: 'root' })
 export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'AddonCompetency:learningPlan';
+    name = 'AddonCompetency'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
     priority = 900;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
     cacheEnabled = true;
@@ -42,6 +43,28 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabledForContext(context: CoreUserDelegateContext): Promise<boolean> {
+        // Check if feature is disabled.
+        const currentSite = CoreSites.getCurrentSite();
+        if (!currentSite) {
+            return false;
+        }
+
+        if (context === CoreUserDelegateContext.USER_MENU) {
+            // This option used to belong to main menu, check the original disabled feature value.
+            if (currentSite.isFeatureDisabled('CoreMainMenuDelegate_AddonCompetency')) {
+                return false;
+            }
+        } else if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonCompetency:learningPlan')) {
+            return false;
+        }
+
         return true;
     }
 
