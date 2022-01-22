@@ -31,6 +31,15 @@ h4.core-bold {
     justify-content: flex-end;
 }
 
+.addon-block-timeline-activity-name-with-status {
+    display: flex;
+    flex-wrap: wrap;
+    span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
 .addon-block-timeline-activity-course-activity {
     display: flex;
     flex-wrap: wrap;
