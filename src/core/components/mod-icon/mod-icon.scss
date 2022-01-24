@@ -31,6 +31,8 @@ img {
     height: var(--size);
     max-width: var(--size);
     max-height: var(--size);
+    min-width: var(--size);
+    min-height: var(--size);
     vertical-align: top;
 
     &[alt] {

@@ -26,10 +26,12 @@
                                 </core-mod-icon>
                             </ion-col>
                             <ion-col class="addon-block-timeline-activity-name ion-no-padding">
-                                <p class="item-heading">
-                                    <core-format-text [text]="event.activityname || event.name" contextLevel="module"
-                                        [contextInstanceId]="event.id" [courseId]="event.course && event.course.id">
-                                    </core-format-text>
+                                <p class="item-heading addon-block-timeline-activity-name-with-status">
+                                    <span>
+                                        <core-format-text [text]="event.activityname || event.name" contextLevel="module"
+                                            [contextInstanceId]="event.id" [courseId]="event.course && event.course.id">
+                                        </core-format-text>
+                                    </span>
                                     <ion-badge *ngIf="event.overdue" color="danger">{{ 'addon.block_timeline.overdue' | translate }}
                                     </ion-badge>
                                 </p>
