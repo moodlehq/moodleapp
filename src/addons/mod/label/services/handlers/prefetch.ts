@@ -63,5 +63,13 @@ export class AddonModLabelPrefetchHandlerService extends CoreCourseResourcePrefe
         await CoreUtils.allPromises(promises);
     }
 
+    /**
+     * @inheritdoc
+     */
+    async loadContents(module: CoreCourseAnyModuleData): Promise<void> {
+        // Labels don't have contents.
+        module.contents = [];
+    }
+
 }
 export const AddonModLabelPrefetchHandler = makeSingleton(AddonModLabelPrefetchHandlerService);
