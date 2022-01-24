@@ -204,7 +204,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
 
         // Chapter loaded, log view.
         await CoreUtils.ignoreErrors(AddonModBook.logView(
-            this.module.instance!,
+            this.module.instance,
             logChapterId ? chapterId : undefined,
             this.module.name,
         ));

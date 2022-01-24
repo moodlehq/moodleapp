@@ -307,7 +307,7 @@ export class CoreMimetypeUtilsProvider {
         let position;
 
         if (split.length > 1) {
-            candidate = split.pop()!.toLowerCase();
+            candidate = split[split.length - 1].toLowerCase();
             // Remove params if any.
             position = candidate.indexOf('?');
             if (position > -1) {
@@ -554,17 +554,14 @@ export class CoreMimetypeUtilsProvider {
         }
 
         extension = this.cleanExtension(extension);
+        const extensionGroups = this.extToMime[extension] && this.extToMime[extension].groups;
+        let found = false;
 
-        if (groups?.length && this.extToMime[extension]?.groups) {
-            for (let i = 0; i < this.extToMime[extension].groups!.length; i++) {
-                const group = this.extToMime[extension].groups![i];
-                if (groups.indexOf(group) != -1) {
-                    return true;
-                }
-            }
+        if (groups.length && extensionGroups) {
+            found = extensionGroups.some((group => groups.includes(group)));
         }
 
-        return false;
+        return found;
     }
 
     /**

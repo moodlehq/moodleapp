@@ -1252,7 +1252,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         // Treat warnings, adding the not supported modules.
         response.warnings?.forEach((warning) => {
             if (warning.warningcode == 'missingcallback') {
-                result[warning.itemid!] = false;
+                result[warning.itemid || -1] = false;
             }
         });
 
@@ -1304,10 +1304,10 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         this.statusCache.invalidate(packageId);
         this.statusCache.setValue(packageId, 'status', status);
 
-        if (sectionId) {
+        if (courseId && sectionId) {
             const data: CoreEventSectionStatusChangedData = {
                 sectionId,
-                courseId: courseId!,
+                courseId: courseId,
             };
             CoreEvents.trigger(CoreEvents.SECTION_STATUS_CHANGED, data, CoreSites.getCurrentSiteId());
         }
