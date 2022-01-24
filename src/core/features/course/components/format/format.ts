@@ -39,6 +39,7 @@ import {
     CoreCourseModuleData,
     CoreCourseModuleCompletionData,
     CoreCourseSection,
+    CoreCourseSectionWithStatus,
 } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -46,6 +47,7 @@ import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseSectionSelectorComponent } from '../section-selector/section-selector';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -66,7 +68,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     static readonly LOAD_MORE_ACTIVITIES = 20; // How many activities should load each time showMoreActivities is called.
 
-    @Input() course?: CoreCourseAnyCourseData; // The course to render.
+    @Input() course!: CoreCourseAnyCourseData; // The course to render.
     @Input() sections?: CoreCourseSection[]; // List of course sections.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
@@ -116,9 +118,17 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
+        if (this.course === undefined) {
+            CoreDomUtils.showErrorModal('Course not set');
+
+            CoreNavigator.back();
+
+            return;
+        }
+
         // Listen for select course tab events to select the right section if needed.
         this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
             if (data.name) {
@@ -207,7 +217,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadCourseFormatComponent(): Promise<void> {
-        this.courseFormatComponent = await CoreCourseFormatDelegate.getCourseFormatComponent(this.course!);
+        this.courseFormatComponent = await CoreCourseFormatDelegate.getCourseFormatComponent(this.course);
     }
 
     /**
@@ -216,7 +226,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadCourseSummaryComponent(): Promise<void> {
-        this.courseSummaryComponent = await CoreCourseFormatDelegate.getCourseSummaryComponent(this.course!);
+        this.courseSummaryComponent = await CoreCourseFormatDelegate.getCourseSummaryComponent(this.course);
     }
 
     /**
@@ -225,7 +235,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadSectionSelectorComponent(): Promise<void> {
-        this.sectionSelectorComponent = await CoreCourseFormatDelegate.getSectionSelectorComponent(this.course!);
+        this.sectionSelectorComponent = await CoreCourseFormatDelegate.getSectionSelectorComponent(this.course);
     }
 
     /**
@@ -234,7 +244,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadSingleSectionComponent(): Promise<void> {
-        this.singleSectionComponent = await CoreCourseFormatDelegate.getSingleSectionComponent(this.course!);
+        this.singleSectionComponent = await CoreCourseFormatDelegate.getSingleSectionComponent(this.course);
     }
 
     /**
@@ -243,7 +253,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadAllSectionsComponent(): Promise<void> {
-        this.allSectionsComponent = await CoreCourseFormatDelegate.getAllSectionsComponent(this.course!);
+        this.allSectionsComponent = await CoreCourseFormatDelegate.getAllSectionsComponent(this.course);
     }
 
     /**
@@ -262,7 +272,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             if (!newSection) {
                 // Section not found, calculate which one to use.
-                newSection = await CoreCourseFormatDelegate.getCurrentSection(this.course!, sections);
+                newSection = await CoreCourseFormatDelegate.getCurrentSection(this.course, sections);
             }
 
             this.sectionChanged(newSection);
@@ -289,7 +299,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         if (!this.loaded) {
             // No section specified, not found or not visible, get current section.
-            const section = await CoreCourseFormatDelegate.getCurrentSection(this.course!, sections);
+            const section = await CoreCourseFormatDelegate.getCurrentSection(this.course, sections);
 
             this.loaded = true;
             this.sectionChanged(section);
@@ -368,7 +378,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (!previousValue || previousValue.id != newSection.id) {
             // First load or section changed, add log in Moodle.
             CoreUtils.ignoreErrors(
-                CoreCourse.logView(this.course!.id, newSection.section, undefined, this.course!.fullname),
+                CoreCourse.logView(this.course.id, newSection.section, undefined, this.course.fullname),
             );
         }
 
@@ -556,6 +566,16 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         this.progress = this.course.progress;
+    }
+
+    /**
+     * Open the course summary
+     */
+    openCourseSummary(): void {
+        CoreNavigator.navigateToSitePath(
+            '/course/' + this.course.id + '/preview',
+            { params: { course: this.course, avoidOpenCourse: true } },
+        );
     }
 
 }

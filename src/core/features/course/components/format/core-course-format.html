@@ -9,6 +9,53 @@
 <core-dynamic-component [component]="courseFormatComponent" [data]="data">
     <!-- Default course format. -->
     <core-loading [hideUntil]="loaded">
+
+        <!-- Course summary. By default we only display the course progress. -->
+        <core-dynamic-component [component]="courseSummaryComponent" [data]="data">
+            <ion-item lines="full" class="core-format-progress-list ion-text-wrap">
+                <ion-avatar slot="start" class="core-course-thumb" *ngIf="imageThumb">
+                    <img [src]="imageThumb" core-external-content alt="" />
+                </ion-avatar>
+                <ion-label>
+                    <p *ngIf="course.categoryname">
+                        <core-format-text [text]="course.categoryname" contextLevel="coursecat" [contextInstanceId]="course.categoryid">
+                        </core-format-text>
+                    </p>
+                    <p class="item-heading">{{ course.displayname || course.fullname }}</p>
+                    <div class="core-course-progress" *ngIf="progress !== undefined">
+                        <core-progress-bar [progress]="progress" a11yText="core.course.aria:sectionprogress">
+                        </core-progress-bar>
+                    </div>
+                </ion-label>
+                <ion-button fill="clear" slot="end" (click)="openCourseSummary()" [attr.aria-label]="'core.course.coursesummary' |translate"
+                    color="dark">
+                    <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </ion-item>
+            <ion-item *ngIf="selectedSection && selectedSection.id != allSectionsId" class="ion-text-wrap">
+                <ion-icon name="fas-folder" aria-label="hidden" slot="start"></ion-icon>
+                <ion-label>
+                    <p class="item-heading">
+                        <core-format-text *ngIf="selectedSection" [text]="selectedSection.name" contextLevel="course"
+                            [contextInstanceId]="course.id" [clean]="true" [singleLine]="true">
+                        </core-format-text>
+                    </p>
+                    <ion-badge color="info" class="ion-text-wrap"
+                        *ngIf="selectedSection.visible === 0 && selectedSection.uservisible !== false">
+                        {{ 'core.course.hiddenfromstudents' | translate }}
+                    </ion-badge>
+                    <ion-badge color="info" class="ion-text-wrap"
+                        *ngIf="selectedSection.visible === 0 && selectedSection.uservisible === false">
+                        {{ 'core.notavailable' | translate }}
+                    </ion-badge>
+                    <ion-badge color="info" class="ion-text-wrap" *ngIf="selectedSection.availabilityinfo">
+                        <core-format-text [text]="selectedSection.availabilityinfo" contextLevel="course" [contextInstanceId]="course.id">
+                        </core-format-text>
+                    </ion-badge>
+                </ion-label>
+            </ion-item>
+        </core-dynamic-component>
+
         <!-- Section selector. -->
         <core-dynamic-component [component]="sectionSelectorComponent" [data]="data">
             <div *ngIf="displaySectionSelector && sections && hasSeveralSections"
@@ -19,45 +66,12 @@
                     (onChange)="sectionChanged($event)">
                     <span slot="text">
                         <core-format-text *ngIf="selectedSection" [text]="selectedSection.name" contextLevel="course"
-                            [contextInstanceId]="course?.id" [clean]="true" [singleLine]="true">
+                            [contextInstanceId]="course.id" [clean]="true" [singleLine]="true">
                         </core-format-text>
                         <ng-container *ngIf="!selectedSection">{{ 'core.course.sections' | translate }}</ng-container>
                     </span>
                 </core-combobox>
             </div>
-        </core-dynamic-component>
-
-        <!-- Course summary. By default we only display the course progress. -->
-        <core-dynamic-component [component]="courseSummaryComponent" [data]="data">
-            <ion-list *ngIf="imageThumb || (selectedSection?.id == allSectionsId && progress !== undefined) ||
-                    (selectedSection && selectedSection.id != allSectionsId &&
-                    (selectedSection.availabilityinfo || selectedSection.visible === 0))" lines="none" class="core-format-progress-list">
-                <div *ngIf="imageThumb" class="core-course-thumb">
-                    <img [src]="imageThumb" core-external-content alt="" />
-                </div>
-                <ng-container *ngIf="selectedSection">
-                    <ion-item class="core-course-progress" *ngIf="selectedSection?.id == allSectionsId && progress !== undefined">
-                        <core-progress-bar [progress]="progress" a11yText="core.course.aria:sectionprogress">
-                        </core-progress-bar>
-                    </ion-item>
-                    <ion-item *ngIf="selectedSection && selectedSection.id != allSectionsId &&
-                        (selectedSection.availabilityinfo || selectedSection.visible === 0)">
-                        <ion-badge color="info" class="ion-text-wrap"
-                            *ngIf="selectedSection.visible === 0 && selectedSection.uservisible !== false">
-                            {{ 'core.course.hiddenfromstudents' | translate }}
-                        </ion-badge>
-                        <ion-badge color="info" class="ion-text-wrap"
-                            *ngIf="selectedSection.visible === 0 && selectedSection.uservisible === false">
-                            {{ 'core.notavailable' | translate }}
-                        </ion-badge>
-                        <ion-badge color="info" class="ion-text-wrap" *ngIf="selectedSection.availabilityinfo">
-                            <core-format-text [text]="selectedSection.availabilityinfo" contextLevel="course"
-                                [contextInstanceId]="course?.id">
-                            </core-format-text>
-                        </ion-badge>
-                    </ion-item>
-                </ng-container>
-            </ion-list>
         </core-dynamic-component>
 
         <!-- Single section. -->
@@ -88,12 +102,12 @@
             <ion-button *ngIf="previousSection" (click)="sectionChanged(previousSection)" fill="outline" color="primary"
                 [attr.aria-label]="('core.previous' | translate) + ': ' + previousSection.name">
                 <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
-                <core-format-text class="sr-only" [text]="previousSection.name" contextLevel="course" [contextInstanceId]="course?.id">
+                <core-format-text class="sr-only" [text]="previousSection.name" contextLevel="course" [contextInstanceId]="course.id">
                 </core-format-text>
             </ion-button>
             <ion-button *ngIf="nextSection" (click)="sectionChanged(nextSection)" fill="solid" color="primary"
                 [attr.aria-label]="('core.next' | translate) + ': ' + nextSection.name">
-                <core-format-text class="sr-only" [text]="nextSection.name" contextLevel="course" [contextInstanceId]="course?.id">
+                <core-format-text class="sr-only" [text]="nextSection.name" contextLevel="course" [contextInstanceId]="course.id">
                 </core-format-text>
                 <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
@@ -112,7 +126,7 @@
             [class.item-dimmed]="section.visible === 0 || section.uservisible === false">
             <ion-label>
                 <h2>
-                    <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="course?.id">
+                    <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="course.id">
                     </core-format-text>
                 </h2>
                 <p *ngIf="section.visible === 0 || section.availabilityinfo">
@@ -123,7 +137,7 @@
                         {{ 'core.notavailable' | translate }}
                     </ion-badge>
                     <ion-badge color="info" *ngIf="section.availabilityinfo" class="ion-text-wrap">
-                        <core-format-text [text]=" section.availabilityinfo" contextLevel="course" [contextInstanceId]="course?.id">
+                        <core-format-text [text]=" section.availabilityinfo" contextLevel="course" [contextInstanceId]="course.id">
                         </core-format-text>
                     </ion-badge>
                 </p>
@@ -132,15 +146,15 @@
 
         <ion-item class="ion-text-wrap" *ngIf="section.summary">
             <ion-label>
-                <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="course?.id">
+                <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="course.id">
                 </core-format-text>
             </ion-label>
         </ion-item>
 
         <ng-container *ngFor="let module of section.modules">
             <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section"
-                (completionChanged)="onCompletionChange($event)" [showActivityDates]="course?.showactivitydates"
-                [showCompletionConditions]="course?.showcompletionconditions">
+                (completionChanged)="onCompletionChange($event)" [showActivityDates]="course.showactivitydates"
+                [showCompletionConditions]="course.showcompletionconditions">
             </core-course-module>
         </ng-container>
     </section>
