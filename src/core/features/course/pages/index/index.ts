@@ -26,6 +26,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreNavigator } from '@services/navigator';
 import { CONTENTS_PAGE_NAME } from '@features/course/course.module';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreCollapsibleHeaderDirective } from '@directives/collapsible-header';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -33,23 +35,28 @@ import { CONTENTS_PAGE_NAME } from '@features/course/course.module';
 @Component({
     selector: 'page-core-course-index',
     templateUrl: 'index.html',
+    styleUrls: ['index.scss'],
 })
 export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
+    @ViewChild(CoreCollapsibleHeaderDirective) ionCollapsibleHeader?: CoreCollapsibleHeaderDirective;
 
-    title?: string;
+    title = '';
+    category = '';
     course?: CoreCourseAnyCourseData;
     tabs: CourseTab[] = [];
     loaded = false;
+    imageThumb?: string;
+    progress?: number;
 
     protected currentPagePath = '';
     protected selectTabObserver: CoreEventObserver;
     protected firstTabName?: string;
     protected module?: CoreCourseModuleData;
     protected modParams?: Params;
-    protected isGuest?: boolean;
-    protected contentsTab: CoreTabsOutletTab = {
+    protected isGuest = false;
+    protected contentsTab: CoreTabsOutletTab & { pageParams: Params } = {
         page: CONTENTS_PAGE_NAME,
         title: 'core.course',
         pageParams: {},
@@ -60,10 +67,10 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
             if (!data.name) {
                 // If needed, set sectionId and sectionNumber. They'll only be used if the content tabs hasn't been loaded yet.
                 if (data.sectionId) {
-                    this.contentsTab.pageParams!.sectionId = data.sectionId;
+                    this.contentsTab.pageParams.sectionId = data.sectionId;
                 }
                 if (data.sectionNumber) {
-                    this.contentsTab.pageParams!.sectionNumber = data.sectionNumber;
+                    this.contentsTab.pageParams.sectionNumber = data.sectionNumber;
                 }
 
                 // Select course contents.
@@ -79,7 +86,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         // Increase route depth.
@@ -87,12 +94,19 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
         CoreNavigator.increaseRouteDepth(path.replace(/(\/deep)+/, ''));
 
-        // Get params.
-        this.course = CoreNavigator.getRouteParam('course');
+        try {
+            this.course = CoreNavigator.getRequiredRouteParam('course');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+            CoreNavigator.back();
+
+            return;
+        }
+
         this.firstTabName = CoreNavigator.getRouteParam('selectedTab');
         this.module = CoreNavigator.getRouteParam<CoreCourseModuleData>('module');
         this.modParams = CoreNavigator.getRouteParam<Params>('modParams');
-        this.isGuest = CoreNavigator.getRouteBooleanParam('isGuest');
+        this.isGuest = !!CoreNavigator.getRouteBooleanParam('isGuest');
 
         this.currentPagePath = CoreNavigator.getCurrentPath();
         this.contentsTab.page = CoreTextUtils.concatenatePaths(this.currentPagePath, this.contentsTab.page);
@@ -104,7 +118,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         };
 
         if (this.module) {
-            this.contentsTab.pageParams!.moduleId = this.module.id;
+            this.contentsTab.pageParams.moduleId = this.module.id;
         }
 
         this.tabs.push(this.contentsTab);
@@ -112,20 +126,23 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
         await Promise.all([
             this.loadCourseHandlers(),
-            this.loadTitle(),
+            this.loadBasinInfo(),
         ]);
     }
 
     /**
      * A tab was selected.
      */
-    tabSelected(): void {
-        if (this.module) {
-            // Now that the first tab has been selected we can load the module.
-            CoreCourseHelper.openModule(this.module, this.course!.id, this.contentsTab.pageParams!.sectionId, this.modParams);
+    tabSelected(tabToSelect: CoreTabsOutletTab): void {
+        this.ionCollapsibleHeader?.setupContent(tabToSelect.id);
 
-            delete this.module;
+        if (!this.module || !this.course) {
+            return;
         }
+        // Now that the first tab has been selected we can load the module.
+        CoreCourseHelper.openModule(this.module, this.course.id, this.contentsTab.pageParams.sectionId, this.modParams);
+
+        delete this.module;
     }
 
     /**
@@ -134,8 +151,12 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadCourseHandlers(): Promise<void> {
+        if (!this.course) {
+            return;
+        }
+
         // Load the course handlers.
-        const handlers = await CoreCourseOptionsDelegate.getHandlersToDisplay(this.course!, false, this.isGuest);
+        const handlers = await CoreCourseOptionsDelegate.getHandlersToDisplay(this.course, false, this.isGuest);
 
         let tabToLoad: number | undefined;
 
@@ -169,23 +190,34 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      *
      * @return Promise resolved when done.
      */
-    protected async loadTitle(): Promise<void> {
+    protected async loadBasinInfo(): Promise<void> {
+        if (!this.course) {
+            return;
+        }
+
         // Get the title to display initially.
-        this.title = CoreCourseFormatDelegate.getCourseTitle(this.course!);
+        this.title = CoreCourseFormatDelegate.getCourseTitle(this.course);
+        this.category = 'categoryname' in this.course ? this.course.categoryname : '';
+
+        if ('overviewfiles' in this.course) {
+            this.imageThumb = this.course.overviewfiles?.[0]?.fileurl;
+        }
+
+        this.updateProgress();
 
         // Load sections.
-        const sections = await CoreUtils.ignoreErrors(CoreCourse.getSections(this.course!.id, false, true));
+        const sections = await CoreUtils.ignoreErrors(CoreCourse.getSections(this.course.id, false, true));
 
         if (!sections) {
             return;
         }
 
         // Get the title again now that we have sections.
-        this.title = CoreCourseFormatDelegate.getCourseTitle(this.course!, sections);
+        this.title = CoreCourseFormatDelegate.getCourseTitle(this.course, sections);
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         const path = CoreNavigator.getRouteFullPath(this.route.snapshot);
@@ -206,6 +238,39 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      */
     ionViewDidLeave(): void {
         this.tabsComponent?.ionViewDidLeave();
+    }
+
+    /**
+     * Open the course summary
+     */
+    openCourseSummary(): void {
+        if (!this.course) {
+            return;
+        }
+
+        CoreNavigator.navigateToSitePath(
+            '/course/' + this.course.id + '/preview',
+            { params: { course: this.course, avoidOpenCourse: true } },
+        );
+    }
+
+    /**
+     * Update course progress.
+     */
+    protected updateProgress(): void {
+        if (
+            !this.course ||
+                !('progress' in this.course) ||
+                typeof this.course.progress !== 'number' ||
+                this.course.progress < 0 ||
+                this.course.completionusertracked === false
+        ) {
+            this.progress = undefined;
+
+            return;
+        }
+
+        this.progress = this.course.progress;
     }
 
 }

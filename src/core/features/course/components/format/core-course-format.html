@@ -10,30 +10,6 @@
     <!-- Default course format. -->
     <core-loading [hideUntil]="loaded">
 
-        <!-- Course summary. By default we only display the course progress. -->
-        <core-dynamic-component [component]="courseSummaryComponent" [data]="data">
-            <ion-item lines="full" class="core-format-progress-list ion-text-wrap">
-                <ion-avatar slot="start" class="core-course-thumb" *ngIf="imageThumb">
-                    <img [src]="imageThumb" core-external-content alt="" />
-                </ion-avatar>
-                <ion-label>
-                    <p *ngIf="course.categoryname">
-                        <core-format-text [text]="course.categoryname" contextLevel="coursecat" [contextInstanceId]="course.categoryid">
-                        </core-format-text>
-                    </p>
-                    <p class="item-heading">{{ course.displayname || course.fullname }}</p>
-                    <div class="core-course-progress" *ngIf="progress !== undefined">
-                        <core-progress-bar [progress]="progress" a11yText="core.course.aria:sectionprogress">
-                        </core-progress-bar>
-                    </div>
-                </ion-label>
-                <ion-button fill="clear" slot="end" (click)="openCourseSummary()" [attr.aria-label]="'core.course.coursesummary' |translate"
-                    color="dark">
-                    <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
-                </ion-button>
-            </ion-item>
-        </core-dynamic-component>
-
         <!-- Single section. -->
         <div *ngIf="selectedSection && selectedSection.id != allSectionsId">
             <core-dynamic-component [component]="singleSectionComponent" [data]="data">
@@ -72,15 +48,15 @@
                 <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
-
-        <core-block-side-blocks-button *ngIf="course && displayBlocks && hasBlocks" [courseId]="course.id">
-        </core-block-side-blocks-button>
-
     </core-loading>
 </core-dynamic-component>
 
+
+<core-block-side-blocks-button slot="fixed" *ngIf="loaded && course && displayBlocks && hasBlocks" [courseId]="course.id">
+</core-block-side-blocks-button>
+
 <!-- Course Index button. -->
-<ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="displayCourseIndex">
+<ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="loaded && displayCourseIndex">
     <ion-fab-button (click)="openCourseIndex()" [attr.aria-label]="'core.course.courseindex' | translate">
         <ion-icon name="fas-list-ul" aria-hidden="true"></ion-icon>
         <span class="sr-only">{{'core.course.courseindex' | translate }}</span>
@@ -121,8 +97,7 @@
 
         <ng-container *ngFor="let module of section.modules">
             <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section"
-                (completionChanged)="onCompletionChange($event)" [showActivityDates]="course.showactivitydates"
-                [showCompletionConditions]="course.showcompletionconditions">
+                [showActivityDates]="course.showactivitydates" [showCompletionConditions]="course.showcompletionconditions">
             </core-course-module>
         </ng-container>
     </section>

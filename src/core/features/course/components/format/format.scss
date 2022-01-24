@@ -1,55 +1,11 @@
-@import '~theme/globals.scss';
+.core-course-section-nav-buttons {
+    display: flex;
+    justify-content: flex-end;
 
-:host {
-
-    .core-format-progress-list {
-        margin-bottom: 0;
-
-        .item {
-            background: transparent;
-
-            .label {
-                margin-top: 0;
-                margin-bottom: 0;
-            }
-        }
+    core-format-text {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-transform: none;
     }
-
-    .core-course-thumb {
-        height: var(--core-courseimage-on-course-size);
-        width: var(--core-courseimage-on-course-size);
-    }
-
-    @if ($core-show-courseimage-on-course) {
-        .core-course-thumb {
-            display: block;
-        }
-    }
-
-    @if ($core-hide-progress-on-course) {
-        .core-course-progress {
-            display: none;
-        }
-    }
-
-
-    .core-button-selector-row {
-        display: flex;
-        core-combobox {
-            flex-grow: 1;
-        }
-    }
-
-    .core-course-section-nav-buttons {
-        display: flex;
-        justify-content: flex-end;
-
-        core-format-text {
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            text-transform: none;
-        }
-    }
-
 }

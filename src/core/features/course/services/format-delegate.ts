@@ -267,8 +267,8 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      * @param sections List of sections.
      * @return Course title.
      */
-    getCourseTitle(course: CoreCourseAnyCourseData, sections?: CoreCourseWSSection[]): string | undefined {
-        return this.executeFunctionOnEnabled(course.format || '', 'getCourseTitle', [course, sections]);
+    getCourseTitle(course: CoreCourseAnyCourseData, sections?: CoreCourseWSSection[]): string {
+        return this.executeFunctionOnEnabled(course.format || '', 'getCourseTitle', [course, sections]) || '';
     }
 
     /**

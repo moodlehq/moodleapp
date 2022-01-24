@@ -4,6 +4,7 @@
     @include position(50%, 0px, null, null);
     position: fixed;
     z-index: 10;
+    transform: translateY(-50%);
 
     ion-button {
         margin: 0;

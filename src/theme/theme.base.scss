@@ -1225,6 +1225,13 @@ ion-grid.core-no-grid > ion-row {
     display: block;
 }
 
+.core-underheader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
 ion-header[collapsible] {
     @include core-transition(all, 500ms);
 
@@ -1247,7 +1254,14 @@ ion-header[collapsible] {
 
 .collapsible-title {
     overflow: visible;
-    *, h1, h2, .subheading {
+    --inner-padding-top: 0px;
+    --padding-top: 0px;
+
+    ion-label {
+        margin-top: 0px;
+    }
+
+    *, h1 {
         @include core-transition(all, 200ms, linear);
     }
 
@@ -1255,8 +1269,11 @@ ion-header[collapsible] {
         overflow: visible !important;
     }
 
-    h1, h2, .subheading {
+    h1 {
         --max-width: none;
+    }
+    h1.cloned {
+        opacity: 0 !important;
     }
 }
 
@@ -1269,7 +1286,7 @@ ion-app.md .collapsible-title h1 {
 }
 
 .collapsible-title.collapsible-title-collapsed {
-    ion-label, h1, h2, ion-row, ion-col, .subheading {
+    ion-label, h1, ion-row, ion-col {
         opacity: 0;
     }
 }
@@ -1279,13 +1296,13 @@ ion-app.md .collapsible-title h1 {
         opacity: var(--collapse-opacity, 0);
     }
 
-    ion-label, h1, h2, ion-row, ion-col, .subheading {
+    ion-label, h1, ion-row, ion-col, .subheading {
         opacity: 1;
     }
 }
 
 .collapsible-title.collapsible-title-collapse-nowrap {
-    h1, h2, .subheading {
+    h1:not(.cloned) {
         max-width: var(--max-width);
         white-space: nowrap;
         overflow: hidden;

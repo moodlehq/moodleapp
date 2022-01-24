@@ -12,14 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreUser } from '@features/user/services/user';
-import { CoreCourseModuleCompletionStatus, CoreCourseModuleCompletionTracking } from '@features/course/services/course';
+import {
+    CoreCourseCompletionType,
+    CoreCourseModuleCompletionStatus,
+    CoreCourseModuleCompletionTracking,
+} from '@features/course/services/course';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { Translate } from '@singletons';
 import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
  * Component to handle activity completion in sites previous to 3.11.
@@ -35,10 +40,28 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
     templateUrl: 'core-course-module-completion-legacy.html',
     styleUrls: ['module-completion-legacy.scss'],
 })
-export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleCompletionBaseComponent {
+export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleCompletionBaseComponent
+    implements OnInit, OnDestroy {
 
     completionImage?: string;
     completionDescription?: string;
+
+    protected completionObserver?: CoreEventObserver;
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_CHANGED, (data) => {
+            if (!this.completion || this.completion.cmid != data.completion.cmid && data.type != CoreCourseCompletionType.MANUAL) {
+                return;
+            }
+
+            this.completion = data.completion;
+            this.calculateData();
+            this.completionChanged.emit(this.completion);
+        });
+    }
 
     /**
      * @inheritdoc
@@ -126,9 +149,16 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
 
         await CoreCourseHelper.changeManualCompletion(this.completion, event);
 
-        this.calculateData();
+        // @deprecated MANUAL_COMPLETION_CHANGED is deprecated since 4.0 use COMPLETION_CHANGED instead.
+        CoreEvents.trigger(CoreEvents.MANUAL_COMPLETION_CHANGED, { completion: this.completion });
+        CoreEvents.trigger(CoreEvents.COMPLETION_CHANGED, { completion: this.completion, type: CoreCourseCompletionType.MANUAL });
+    }
 
-        this.completionChanged.emit(this.completion);
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.completionObserver?.off();
     }
 
 }

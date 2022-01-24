@@ -71,6 +71,11 @@ export enum CoreCourseModuleCompletionStatus {
     COMPLETION_COMPLETE_FAIL = 3,
 }
 
+export enum CoreCourseCompletionType {
+    MANUAL = 0,
+    AUTO = 1,
+}
+
 /**
  * Completion tracking valid values.
  */
