@@ -384,8 +384,8 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      */
     openCourseSummary(): void {
         CoreNavigator.navigateToSitePath(
-            '/course/' + this.course.id + '/preview',
-            { params: { course: this.course } },
+            `/course/${this.course.id}/preview`,
+            { params: { course: this.course, avoidOpenCourse: true } },
         );
     }
 

@@ -249,7 +249,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         }
 
         CoreNavigator.navigateToSitePath(
-            '/course/' + this.course.id + '/preview',
+            `/course/${this.course.id}/preview`,
             { params: { course: this.course, avoidOpenCourse: true } },
         );
     }

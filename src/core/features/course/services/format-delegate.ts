@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
-import { Params } from '@angular/router';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
+import { CoreNavigationOptions } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { CoreCourseWSSection } from './course';
 import { CoreCourseSection } from './course-helper';
@@ -100,10 +100,10 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      * Your page should include the course handlers using CoreCoursesDelegate.
      *
      * @param course The course to open. It should contain a "format" attribute.
-     * @param params Params to pass to the course page.
+     * @param navOptions Navigation options that includes params to pass to the page.
      * @return Promise resolved when done.
      */
-    openCourse?(course: CoreCourseAnyCourseData, params?: Params): Promise<void>;
+    openCourse?(course: CoreCourseAnyCourseData, navOptions?: CoreNavigationOptions): Promise<void>;
 
     /**
      * Return the Component to use to display the course format instead of using the default one.
@@ -323,11 +323,11 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      * Open a course. Should not be called directly. Call CoreCourseHelper.openCourse instead.
      *
      * @param course The course to open. It should contain a "format" attribute.
-     * @param params Params to pass to the course page.
+     * @param navOptions Navigation options that includes params to pass to the page.
      * @return Promise resolved when done.
      */
-    async openCourse(course: CoreCourseAnyCourseData, params?: Params): Promise<void> {
-        await this.executeFunctionOnEnabled(course.format || '', 'openCourse', [course, params]);
+    async openCourse(course: CoreCourseAnyCourseData, navOptions?: CoreNavigationOptions): Promise<void> {
+        await this.executeFunctionOnEnabled(course.format || '', 'openCourse', [course, navOptions]);
     }
 
     /**

@@ -31,6 +31,7 @@ import { CoreCourse } from '@features/course/services/course';
 @Component({
     selector: 'core-course-format-single-activity',
     templateUrl: 'core-course-format-single-activity.html',
+    styleUrls: ['single-activity.scss'],
 })
 export class CoreCourseFormatSingleActivityComponent implements OnChanges {
 

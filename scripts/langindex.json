@@ -2257,6 +2257,7 @@
   "core.strftimetime24": "langconfig",
   "core.submit": "moodle",
   "core.success": "moodle",
+  "core.summary": "moodle",
   "core.tablet": "local_moodlemobileapp",
   "core.tag.defautltagcoll": "tag",
   "core.tag.errorareanotsupported": "local_moodlemobileapp",

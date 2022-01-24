@@ -301,6 +301,7 @@
     "strftimetime24": "%H:%M",
     "submit": "Submit",
     "success": "Success",
+    "summary": "Summary",
     "tablet": "Tablet",
     "teachers": "Teachers",
     "thereisdatatosync": "There are offline {{$a}} to be synchronised.",

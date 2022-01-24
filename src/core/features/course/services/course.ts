@@ -43,7 +43,7 @@ import { CoreCourseLogCronHandler } from './handlers/log-cron';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreCourseAutoSyncData, CoreCourseSyncProvider } from './sync';
 import { CoreTagItem } from '@features/tag/services/tag';
-import { CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleDelegate } from './module-delegate';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
@@ -1177,10 +1177,13 @@ export class CoreCourseProvider {
      * This function must be in here instead of course helper to prevent circular dependencies.
      *
      * @param course Course to open
-     * @param params Other params to pass to the course page.
+     * @param navOptions Navigation options that includes params to pass to the page.
      * @return Promise resolved when done.
      */
-    async openCourse(course: CoreCourseAnyCourseData | { id: number }, params?: Params): Promise<void> {
+    async openCourse(
+        course: CoreCourseAnyCourseData | { id: number },
+        navOptions?: CoreNavigationOptions,
+    ): Promise<void> {
         const loading = await CoreDomUtils.showModalLoading();
 
         // Wait for site plugins to be fetched.
@@ -1197,7 +1200,7 @@ export class CoreCourseProvider {
         if (!format || !CoreSitePlugins.sitePluginPromiseExists(`format_${format}`)) {
             // No custom format plugin. We don't need to wait for anything.
             loading.dismiss();
-            await CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, params);
+            await CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, navOptions);
 
             return;
         }
@@ -1208,7 +1211,7 @@ export class CoreCourseProvider {
 
             // The format loaded successfully, but the handlers wont be registered until all site plugins have loaded.
             if (CoreSitePlugins.sitePluginsFinishedLoading) {
-                return CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, params);
+                return CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, navOptions);
             }
 
             // Wait for plugins to be loaded.
@@ -1217,7 +1220,7 @@ export class CoreCourseProvider {
             const observer = CoreEvents.on(CoreEvents.SITE_PLUGINS_LOADED, () => {
                 observer?.off();
 
-                CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, params)
+                CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, navOptions)
                     .then(deferred.resolve).catch(deferred.reject);
             });
 

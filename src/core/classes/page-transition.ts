@@ -93,6 +93,7 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
     }
 
     rootAnimation.addAnimation(enteringContentAnimation);
+    enteringContentAnimation.beforeAddClass('animating').afterRemoveClass('animating');
 
     if (backDirection) {
         enteringContentAnimation
@@ -214,6 +215,8 @@ export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOp
     // setup leaving view
     if (leavingEl) {
         const leavingContent = createAnimation();
+        leavingContent.beforeAddClass('animating').afterRemoveClass('animating');
+
         const leavingContentEl = leavingEl.querySelector(':scope > ion-content');
         const leavingToolBarEls = leavingEl.querySelectorAll(':scope > ion-header > ion-toolbar');
         const leavingHeaderEls = leavingEl.querySelectorAll(':scope > ion-header > *:not(ion-toolbar), :scope > ion-footer > *');
