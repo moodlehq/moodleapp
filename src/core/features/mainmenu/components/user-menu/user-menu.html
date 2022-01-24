@@ -2,7 +2,7 @@
     <ion-toolbar>
         <ion-title>
             <h2>
-                {{'core.user.account' | translate}}
+                {{'core.user.useraccount' | translate}}
             </h2>
         </ion-title>
         <ion-buttons slot="end">
@@ -17,6 +17,9 @@
         <ion-item button class="core-usermenu-siteinfo ion-text-wrap" *ngIf="siteInfo" lines="full" detail="false" [href]="siteUrl"
             core-link auto-login="yes">
             <ion-label>
+                <!-- Show site logo. -->
+                <img class="core-usermenu-site-logo" *ngIf="siteLogo && siteLogoLoaded" [src]="siteLogo" role="presentation" alt=""
+                    onError="this.class='image-not-found'">
                 <p class="core-usermenu-sitename">
                     <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true">
                     </core-format-text>

@@ -26,7 +26,6 @@
     "confirmdownloadzerosize": "You are about to start downloading.{{availableSpace}} Are you sure you want to continue?",
     "confirmpartialdownloadsize": "You are about to download <strong>at least</strong> {{size}}.{{availableSpace}} Are you sure you want to continue?",
     "confirmlimiteddownload": "You are not currently connected to Wi-Fi. ",
-    "contents": "Contents",
     "gotonextactivity": "Continue to next activity",
     "gotonextactivitynotfound": "Next activity not found. It's possible that it has been hidden or deleted.",
     "gotopreviousactivity": "Continue to previous activity",

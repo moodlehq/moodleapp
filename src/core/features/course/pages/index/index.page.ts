@@ -51,7 +51,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     protected isGuest?: boolean;
     protected contentsTab: CoreTabsOutletTab = {
         page: CONTENTS_PAGE_NAME,
-        title: 'core.course.contents',
+        title: 'core.course',
         pageParams: {},
     };
 

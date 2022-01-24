@@ -8,6 +8,10 @@
 }
 
 .core-usermenu-siteinfo {
+    text-align: center;
+    ion-label {
+        margin: 0;
+    }
     --padding-top: 10px;
     --padding-bottom: 10px;
 }
@@ -19,8 +23,20 @@
 }
 
 .core-usermenu-sitename {
-    font-size: 16px;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 24px;
 }
+
+img.core-usermenu-site-logo {
+    margin-bottom: 8px;
+    max-height: var(--core-user-menu-site-logo-max-height);
+}
+
+img.image-not-found {
+    display: none;
+}
+
 
 @if ($core-user-hide-sitename) {
     .core-usermenu-sitename {

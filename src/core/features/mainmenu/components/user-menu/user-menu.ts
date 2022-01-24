@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CoreSiteInfo } from '@classes/site';
+import { CoreSite, CoreSiteInfo } from '@classes/site';
 import { CoreLoginSitesComponent } from '@features/login/components/sites/sites';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
@@ -36,12 +37,13 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     siteInfo?: CoreSiteInfo;
     siteName?: string;
+    siteLogo?: string;
+    siteLogoLoaded = false;
     siteUrl?: string;
     handlers: CoreUserProfileHandlerData[] = [];
     handlersLoaded = false;
     loaded = false;
     user?: CoreUserProfile;
-    moreSites = false;
 
     protected subscription!: Subscription;
 
@@ -49,16 +51,14 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        // Check if there are more sites to switch.
-        const sites = await CoreSites.getSites();
-        this.moreSites = sites.length > 1;
-
         const currentSite = CoreSites.getRequiredCurrentSite();
         this.siteInfo = currentSite.getInfo();
         this.siteName = currentSite.getSiteName();
         this.siteUrl = currentSite.getURL();
 
         this.loaded = true;
+
+        this.loadSiteLogo(currentSite);
 
         // Load the handlers.
         if (this.siteInfo) {
@@ -79,6 +79,31 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
                 this.handlersLoaded = CoreUserDelegate.areHandlersLoaded(this.user.id);
             });
 
+        }
+    }
+
+    /**
+     * Load site logo from current site public config.
+     *
+     * @param currentSite Current site object.
+     * @return Promise resolved when done.
+     */
+    protected async loadSiteLogo(currentSite: CoreSite): Promise<void> {
+        if (CoreConstants.CONFIG.forceLoginLogo) {
+            this.siteLogo = 'assets/img/login_logo.png';
+            this.siteLogoLoaded = true;
+
+            return;
+        }
+
+        try {
+            const siteConfig = await currentSite.getPublicConfig();
+
+            this.siteLogo = CoreLoginHelper.getLogoUrl(siteConfig);
+        } catch {
+            // Ignore errors.
+        } finally {
+            this.siteLogoLoaded = true;
         }
     }
 

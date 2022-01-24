@@ -4,7 +4,10 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
-            <h1>{{ 'core.courses.mycourses' | translate }}</h1>
+            <h1>
+                <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0"></core-format-text>
+                <img src="assets/img/top_logo.png" class="core-header-logo" [alt]="siteName">
+            </h1>
         </ion-title>
         <ion-buttons slot="end">
             <ion-button *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
@@ -30,6 +33,9 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
+        <div class="ion-padding-horizontal">
+            <h2>{{ 'core.courses.mycourses' | translate }}</h2>
+        </div>
         <ion-list>
             <core-block *ngIf="loadedBlock?.visible" [block]="loadedBlock" contextLevel="user" [instanceId]="userId"
                 [extraData]="{'downloadEnabled': true}"></core-block>

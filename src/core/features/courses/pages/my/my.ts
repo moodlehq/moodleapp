@@ -36,6 +36,7 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreBlockComponent) block!: CoreBlockComponent;
 
+    siteName = '';
     searchEnabled = false;
     downloadCoursesEnabled = false;
     userId: number;
@@ -50,6 +51,8 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
+            this.loadSiteName();
+
         }, CoreSites.getCurrentSiteId());
 
         this.userId = CoreSites.getCurrentSiteUserId();
@@ -62,8 +65,9 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
         this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
-        this.loadContent();
+        this.loadSiteName();
 
+        this.loadContent();
     }
 
     /**
@@ -95,6 +99,13 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
         }
 
         this.loaded = true;
+    }
+
+    /**
+     * Load the site name.
+     */
+    protected loadSiteName(): void {
+        this.siteName = CoreSites.getRequiredCurrentSite().getSiteName() || '';
     }
 
     /**
