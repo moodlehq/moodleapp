@@ -15,6 +15,8 @@
 /* tslint:disable:no-console */
 
 import { SQLiteDB } from '@classes/sqlitedb';
+import { DbTransaction, SQLiteObject } from '@ionic-native/sqlite/ngx';
+import { CoreDB } from '@services/db';
 
 /**
  * Class to mock the interaction with the SQLite database.
@@ -159,16 +161,6 @@ export class SQLiteDBMock extends SQLiteDB {
     }
 
     /**
-     * Initialize the database.
-     */
-    init(): void {
-        // This DB is for desktop apps, so use a big size to be sure it isn't filled.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this.db = (<any> window).openDatabase(this.name, '1.0', this.name, 500 * 1024 * 1024);
-        this.promise = Promise.resolve();
-    }
-
-    /**
      * Open the database. Only needed if it was closed before, a database is automatically opened when created.
      *
      * @return Promise resolved when done.
@@ -178,4 +170,40 @@ export class SQLiteDBMock extends SQLiteDB {
         return Promise.resolve();
     }
 
+    /**
+     * @inheritdoc
+     */
+    protected async createDatabase(): Promise<SQLiteObject> {
+        // This DB is for desktop apps, so use a big size to be sure it isn't filled.
+        return (window as unknown as WebSQLWindow).openDatabase(this.name, '1.0', this.name, 500 * 1024 * 1024);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getDatabaseSpies(db: SQLiteObject): Partial<SQLiteObject> {
+        return {
+            transaction: (callback) => db.transaction((transaction) => {
+                const transactionSpy: DbTransaction = {
+                    executeSql(sql, params, success, error) {
+                        const start = performance.now();
+                        const resolve = callback => (...args) => {
+                            CoreDB.logQuery(sql, performance.now() - start, params);
+
+                            return callback(...args);
+                        };
+
+                        return transaction.executeSql(sql, params, resolve(success), resolve(error));
+                    },
+                };
+
+                return callback(transactionSpy);
+            }),
+        };
+    }
+
+}
+
+interface WebSQLWindow extends Window {
+    openDatabase(name: string, version: string, displayName: string, estimatedSize: number): SQLiteObject;
 }

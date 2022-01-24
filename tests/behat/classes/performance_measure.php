@@ -61,6 +61,16 @@ class performance_measure implements behat_app_listener {
     /**
      * @var int
      */
+    public $databaseStart;
+
+    /**
+     * @var int
+     */
+    public $database;
+
+    /**
+     * @var int
+     */
     public $networking;
 
     /**
@@ -90,6 +100,7 @@ class performance_measure implements behat_app_listener {
         $this->start = $this->now();
 
         $this->observeLongTasks();
+        $this->startDatabaseCount();
 
         $this->behatAppUnsubscribe = behat_app::listen($this);
     }
@@ -107,6 +118,7 @@ class performance_measure implements behat_app_listener {
 
         $this->analyseDuration();
         $this->analyseLongTasks();
+        $this->analyseDatabaseUsage();
         $this->analysePerformanceLogs();
     }
 
@@ -131,6 +143,7 @@ class performance_measure implements behat_app_listener {
             'styling' => $this->styling,
             'blocking' => $this->blocking,
             'longTasks' => count($this->longTasks),
+            'database' => $this->database,
             'networking' => $this->networking,
         ];
 
@@ -182,6 +195,17 @@ class performance_measure implements behat_app_listener {
     }
 
     /**
+     * Record how many database queries have been logged so far.
+     */
+    private function startDatabaseCount(): void {
+        try {
+            $this->databaseStart = $this->driver->evaluateScript('dbProvider.queryLogs.length') ?? 0;
+        } catch (Exception $e) {
+            $this->databaseStart = 0;
+        }
+    }
+
+    /**
      * Flush Performance observer.
      */
     private function stopLongTasksObserver(): void {
@@ -226,6 +250,13 @@ class performance_measure implements behat_app_listener {
         }
 
         $this->blocking = $blocking;
+    }
+
+    /**
+     * Analyse database usage.
+     */
+    private function analyseDatabaseUsage(): void {
+        $this->database = $this->driver->evaluateScript('dbProvider.queryLogs.length') - $this->databaseStart;
     }
 
     /**
