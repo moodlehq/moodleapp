@@ -1,4 +1,9 @@
+@import "~theme/globals";
+
 :host {
+    --core-format-text-background-gradient-rgb: var(--background-rgb, #{$ion-item-background-rgb});
+    --course-storage-max-activity-height: 120px;
+
     ion-card.section ion-card-header {
         margin-bottom: 8px;
         padding-top: 8px;
@@ -7,6 +12,22 @@
     ion-card.section .item-heading {
         font-weight: bold;
         font-size: 1.2rem;
+    }
+
+    .core-course-storage-activity ion-label {
+        max-height: var(--course-storage-max-activity-height);
+
+        &:before {
+            content: '';
+            height: 100%;
+            min-height: var(--course-storage-max-activity-height);
+            position: absolute;
+            @include position(0, 0, null, 0);
+            background: -webkit-linear-gradient(top, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 30px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 20px));
+            background: linear-gradient(to bottom, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 30px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 20px));
+            z-index: 6;
+            pointer-events: none;
+        }
     }
 }
 
