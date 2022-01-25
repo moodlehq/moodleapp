@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
+import { Translate } from '@singletons';
 import { CoreCourseSection } from '../course-helper';
 import { CoreCourseFormatHandler } from '../format-delegate';
 
@@ -65,7 +66,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     /**
      * @inheritdoc
      */
-    displaySectionSelector(): boolean {
+    displayCourseIndex(): boolean {
         return true;
     }
 
@@ -104,6 +105,13 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
 
         // Marked section not found or we couldn't retrieve the marker. Return all sections.
         return sections[0];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getSectionHightlightedName(): string {
+        return Translate.instant('core.course.highlighted');
     }
 
     /**

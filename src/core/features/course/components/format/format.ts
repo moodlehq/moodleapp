@@ -44,9 +44,11 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreCourseCourseIndexComponent } from '../course-index/course-index';
+import { CoreCourseCourseIndexComponent, CoreCourseIndexSectionWithModule } from '../course-index/course-index';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreNavigator } from '@services/navigator';
+import { database } from 'faker';
+import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -182,7 +184,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             // Course has changed, try to get the components.
             this.getComponents();
 
-            this.displayCourseIndex = CoreCourseFormatDelegate.displaySectionSelector(this.course);
+            this.displayCourseIndex = CoreCourseFormatDelegate.displayCourseIndex(this.course);
             this.displayBlocks = CoreCourseFormatDelegate.displayBlocks(this.course);
 
             this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(this.course.id);
@@ -319,17 +321,28 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Display the course index modal.
      */
     async openCourseIndex(): Promise<void> {
-        const data = await CoreDomUtils.openModal<CoreCourseSection>({
+        const data = await CoreDomUtils.openModal<CoreCourseIndexSectionWithModule>({
             component: CoreCourseCourseIndexComponent,
             componentProps: {
                 course: this.course,
                 sections: this.sections,
-                selected: this.selectedSection,
+                selectedId: this.selectedSection?.id,
             },
         });
 
         if (data) {
-            this.sectionChanged(data);
+            this.sectionChanged(data.section);
+            if (data.module) {
+                if (!data.module.handlerData) {
+                    data.module.handlerData =
+                        await CoreCourseModuleDelegate.getModuleDataFor(data.module.modname, data.module, this.course.id);
+                }
+
+                if (data.module.uservisible !== false && data.module.handlerData?.action) {
+                    data.module.handlerData.action(data.event, data.module, data.module.course);
+                }
+                this.moduleId = data.module.id;
+            }
         }
     }
 

@@ -67,12 +67,21 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
     displayEnableDownload?(course: CoreCourseAnyCourseData): boolean;
 
     /**
+     * Whether the default course index should be displayed. Defaults to true.
+     *
+     * @deprecated on 4.0. Please use displayCourseIndex instead.
+     * @param course The course to check.
+     * @return Whether the default course index should be displayed.
+     */
+    displaySectionSelector?(course: CoreCourseAnyCourseData): boolean;
+
+    /**
      * Whether the default section selector should be displayed. Defaults to true.
      *
      * @param course The course to check.
      * @return Whether the default section selector should be displayed.
      */
-    displaySectionSelector?(course: CoreCourseAnyCourseData): boolean;
+    displayCourseIndex?(course: CoreCourseAnyCourseData): boolean;
 
     /**
      * Whether the course refresher should be displayed. If it returns false, a refresher must be included in the course format,
@@ -92,6 +101,13 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      * @return Promise resolved with current section.
      */
     getCurrentSection?(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): Promise<CoreCourseSection>;
+
+    /**
+     * Returns the name for the highlighted section.
+     *
+     * @return The name for the highlighted section based on the given course format.
+     */
+    getSectionHightlightedName?(): string;
 
     /**
      * Open the page to display a course. If not defined, the page CoreCourseSectionPage will be opened.
@@ -209,12 +225,19 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
     }
 
     /**
-     * Whether the default section selector should be displayed. Defaults to true.
+     * Whether the default course index should be displayed. Defaults to true.
      *
      * @param course The course to check.
-     * @return Whether the section selector should be displayed.
+     * @return Whether the course index should be displayed.
      */
-    displaySectionSelector(course: CoreCourseAnyCourseData): boolean {
+    displayCourseIndex(course: CoreCourseAnyCourseData): boolean {
+        const display = this.executeFunctionOnEnabled<boolean>(course.format || '', 'displayCourseIndex', [course]);
+
+        if (display !== undefined) {
+            return display;
+        }
+
+        // Use displaySectionSelector while is not completely deprecated.
         return !!this.executeFunctionOnEnabled<boolean>(course.format || '', 'displaySectionSelector', [course]);
     }
 
@@ -278,9 +301,9 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      * @param sections List of sections.
      * @return Promise resolved with current section.
      */
-    async getCurrentSection(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): Promise<CoreCourseSection> {
+    async getCurrentSection<T = CoreCourseSection>(course: CoreCourseAnyCourseData, sections: T[]): Promise<T> {
         try {
-            const section = await this.executeFunctionOnEnabled<CoreCourseSection>(
+            const section = await this.executeFunctionOnEnabled<T>(
                 course.format || '',
                 'getCurrentSection',
                 [course, sections],
@@ -291,6 +314,19 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
             // This function should never fail. Just return the first section (usually, "All sections").
             return sections[0];
         }
+    }
+
+    /**
+     * Returns the name for the highlighted section.
+     *
+     * @param course The course to get the text.
+     * @return The name for the highlighted section based on the given course format.
+     */
+    getSectionHightlightedName(course: CoreCourseAnyCourseData): string | undefined {
+        return this.executeFunctionOnEnabled<string>(
+            course.format || '',
+            'getSectionHightlightedName',
+        );
     }
 
     /**

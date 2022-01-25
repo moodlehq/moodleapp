@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 
-import { CoreCourseModuleData, CoreCourseSection, CoreCourseSectionWithStatus } from '@features/course/services/course-helper';
+import { CoreCourseModuleData, CoreCourseSectionWithStatus } from '@features/course/services/course-helper';
 import {
     CoreCourseModuleCompletionStatus,
     CoreCourseModuleCompletionTracking,
@@ -23,6 +23,9 @@ import {
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController } from '@singletons';
+import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
+import { IonContent } from '@ionic/angular';
+import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Component to display course index modal.
@@ -34,19 +37,30 @@ import { ModalController } from '@singletons';
 })
 export class CoreCourseCourseIndexComponent implements OnInit {
 
-    @Input() sections?: SectionWithProgress[];
-    @Input() selected?: CoreCourseSection;
+    @ViewChild(IonContent) content?: IonContent;
+
+    @Input() sections?: CourseIndexSection[];
+    @Input() selectedId?: number;
     @Input() course?: CoreCourseAnyCourseData;
 
     stealthModulesSectionId = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
+    allSectionId = CoreCourseProvider.ALL_SECTIONS_ID;
+    highlighted?: string;
+
+    constructor(
+        protected elementRef: ElementRef,
+    ) {
+    }
 
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
 
         if (!this.course || !this.sections || !this.course.enablecompletion || !('courseformatoptions' in this.course) ||
                 !this.course.courseformatoptions) {
+            this.closeModal();
+
             return;
         }
 
@@ -55,32 +69,48 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         if (!formatOptions || formatOptions.completionusertracked === false) {
             return;
         }
+        const currentSection = await CoreCourseFormatDelegate.getCurrentSection(this.course, this.sections);
+        currentSection.highlighted = true;
+        if (this.selectedId === undefined) {
+            currentSection.expanded = true;
+            this.selectedId = currentSection.id;
+        } else {
+            const selectedSection = this.sections.find((section) => section.id == this.selectedId);
+            if (selectedSection) {
+                selectedSection.expanded = true;
+            }
+        }
 
         this.sections.forEach((section) => {
-            let complete = 0;
-            let total = 0;
             section.modules.forEach((module) => {
-                console.error(module);
-                if (!module.uservisible || module.completiondata === undefined ||
-                        module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE) {
-                    module.completionStatus = undefined;
-
-                    return;
-                }
-
-                module.completionStatus = module.completiondata.state;
-
-                total++;
-                if (module.completiondata.state == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE ||
-                        module.completiondata.state == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_PASS) {
-                    complete++;
-                }
+                module.completionStatus = module.completiondata === undefined ||
+                    module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE
+                    ? undefined
+                    : module.completiondata.state;
             });
-
-            if (total > 0) {
-                section.progress = complete / total * 100;
-            }
         });
+
+        this.highlighted = CoreCourseFormatDelegate.getSectionHightlightedName(this.course);
+
+        setTimeout(() => {
+            CoreDomUtils.scrollToElementBySelector(
+                this.elementRef.nativeElement,
+                this.content,
+                '.item.item-current',
+            );
+        }, 200);
+    }
+
+    /**
+     * Toggle expand status.
+     *
+     * @param event Event object.
+     * @param section Section to expand / collapse.
+     */
+    toggleExpand(event: Event, section: CourseIndexSection): void {
+        section.expanded = !section.expanded;
+        event.stopPropagation();
+        event.preventDefault();
     }
 
     /**
@@ -93,19 +123,40 @@ export class CoreCourseCourseIndexComponent implements OnInit {
     /**
      * Select a section.
      *
+     * @param event Event.
      * @param section Selected section object.
      */
-    selectSection(section: SectionWithProgress): void {
+    selectSection(event: Event, section: CoreCourseSectionWithStatus): void {
         if (section.uservisible !== false) {
-            ModalController.dismiss(section);
+            ModalController.dismiss({ event, section });
+        }
+    }
+
+    /**
+     * Select a section and open a module
+     *
+     * @param event Event.
+     * @param section Selected section object.
+     * @param module Selected module object.
+     */
+    selectModule(event: Event,section: CoreCourseSectionWithStatus, module: CoreCourseModuleData): void {
+        if (module.uservisible !== false) {
+            ModalController.dismiss({ event, section, module });
         }
     }
 
 }
 
-type SectionWithProgress = Omit<CoreCourseSectionWithStatus, 'modules'> & {
-    progress?: number;
+type CourseIndexSection = Omit<CoreCourseSectionWithStatus, 'modules'> & {
+    highlighted?: boolean;
+    expanded?: boolean;
     modules: (CoreCourseModuleData & {
         completionStatus?: CoreCourseModuleCompletionStatus;
     })[];
+};
+
+export type CoreCourseIndexSectionWithModule = {
+    event: Event;
+    section: CourseIndexSection;
+    module?: CoreCourseModuleData;
 };

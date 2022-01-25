@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreCourseFormatHandler } from '@features/course/services/format-delegate';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseWSSection } from '@features/course/services/course';
 import { CoreConstants } from '@/core/constants';
@@ -32,20 +32,14 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
     format = 'weeks';
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Given a list of sections, get the "current" section that should be displayed first.
-     *
-     * @param course The course to get the title.
-     * @param sections List of sections.
-     * @return Current section (or promise resolved with current section).
+     * @inheritdoc
      */
     async getCurrentSection(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): Promise<CoreCourseSection> {
         const now = CoreTimeUtils.timestamp();
@@ -72,6 +66,13 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
     }
 
     /**
+     * @inheritdoc
+     */
+    getSectionHightlightedName(): string {
+        return Translate.instant('core.course.thisweek');
+    }
+
+    /**
      * Return the start and end date of a section.
      *
      * @param section The section to treat.
@@ -83,7 +84,7 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
         startDate = startDate + 7200;
 
         const dates = {
-            start: startDate + (CoreConstants.SECONDS_WEEK * (section.section! - 1)),
+            start: startDate + (CoreConstants.SECONDS_WEEK * ((section.section || 0) - 1)),
             end: 0,
         };
         dates.end = dates.start + CoreConstants.SECONDS_WEEK;

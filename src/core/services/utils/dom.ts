@@ -1118,7 +1118,7 @@ export class CoreDomUtilsProvider {
             content.scrollToPoint(position[0], position[1], duration || 0);
 
             return true;
-        } catch (error) {
+        } catch {
             return false;
         }
     }
