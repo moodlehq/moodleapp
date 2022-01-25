@@ -15,9 +15,10 @@
 import { Injectable } from '@angular/core';
 
 import { CoreApp } from '@services/app';
-import { SQLiteDB } from '@classes/sqlitedb';
 import { makeSingleton } from '@singletons';
 import { CONFIG_TABLE_NAME, APP_SCHEMA, ConfigDBEntry } from '@services/database/config';
+import { CoreDatabaseTable } from '@classes/database-table';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Factory to provide access to dynamic and permanent config and settings.
@@ -26,11 +27,10 @@ import { CONFIG_TABLE_NAME, APP_SCHEMA, ConfigDBEntry } from '@services/database
 @Injectable({ providedIn: 'root' })
 export class CoreConfigProvider {
 
-    protected appDB: Promise<SQLiteDB>;
-    protected resolveAppDB!: (appDB: SQLiteDB) => void;
+    protected dbTable: CorePromisedValue<CoreConfigTable>;
 
     constructor() {
-        this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
+        this.dbTable = new CorePromisedValue();
     }
 
     /**
@@ -43,7 +43,10 @@ export class CoreConfigProvider {
             // Ignore errors.
         }
 
-        this.resolveAppDB(CoreApp.getDB());
+        const db = CoreApp.getDB();
+        const table = await CoreConfigTable.create(db);
+
+        this.dbTable.resolve(table);
     }
 
     /**
@@ -53,9 +56,9 @@ export class CoreConfigProvider {
      * @return Promise resolved when done.
      */
     async delete(name: string): Promise<void> {
-        const db = await this.appDB;
+        const table = await this.dbTable;
 
-        await db.deleteRecords(CONFIG_TABLE_NAME, { name });
+        await table.deleteByPrimaryKey({ name });
     }
 
     /**
@@ -66,19 +69,18 @@ export class CoreConfigProvider {
      * @return Resolves upon success along with the config data. Reject on failure.
      */
     async get<T>(name: string, defaultValue?: T): Promise<T> {
-        const db = await this.appDB;
+        const table = await this.dbTable;
+        const record = table.findByPrimaryKey({ name });
 
-        try {
-            const entry = await db.getRecord<ConfigDBEntry>(CONFIG_TABLE_NAME, { name });
-
-            return entry.value;
-        } catch (error) {
-            if (defaultValue !== undefined) {
-                return defaultValue;
-            }
-
-            throw error;
+        if (record !== null) {
+            return record.value;
         }
+
+        if (defaultValue !== undefined) {
+            return defaultValue;
+        }
+
+        throw new Error(`Couldn't get config with name '${name}'`);
     }
 
     /**
@@ -89,11 +91,21 @@ export class CoreConfigProvider {
      * @return Promise resolved when done.
      */
     async set(name: string, value: number | string): Promise<void> {
-        const db = await this.appDB;
+        const table = await this.dbTable;
 
-        await db.insertRecord(CONFIG_TABLE_NAME, { name, value });
+        await table.insert({ name, value });
     }
 
 }
 
 export const CoreConfig = makeSingleton(CoreConfigProvider);
+
+/**
+ * Config database table.
+ */
+class CoreConfigTable extends CoreDatabaseTable<ConfigDBEntry, 'name'> {
+
+    protected table = CONFIG_TABLE_NAME;
+    protected primaryKeys = ['name'];
+
+}
