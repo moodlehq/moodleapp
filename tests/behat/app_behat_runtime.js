@@ -617,7 +617,7 @@
                 return 'ERROR: All items are already loaded';
             }
 
-            infiniteLoading.scrollIntoView();
+            infiniteLoading.scrollIntoView({ behavior: 'smooth' });
 
             // Wait 100ms
             await new Promise(resolve => setTimeout(resolve, 100));
