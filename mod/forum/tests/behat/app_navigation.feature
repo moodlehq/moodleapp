@@ -102,12 +102,12 @@ Feature: Test forum navigation
 
     # Offline
     When I press the back button in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I switch offline mode to "true"
     And I set the field "Subject" to "Offline discussion 1" in the app
     And I set the field "Message" to "Offline discussion 1 message" in the app
     And I press "Post to forum" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Offline discussion 2" in the app
     And I set the field "Message" to "Offline discussion 2 message" in the app
     And I press "Post to forum" in the app
@@ -194,12 +194,12 @@ Feature: Test forum navigation
     And I should find "Discussion 05 first reply" inside the split-view content in the app
 
     # Offline
-    When I press "Add a new discussion topic" in the app
+    When I press "Add discussion topic" in the app
     And I switch offline mode to "true"
     And I set the field "Subject" to "Offline discussion 1" in the app
     And I set the field "Message" to "Offline discussion 1 message" in the app
     And I press "Post to forum" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Offline discussion 2" in the app
     And I set the field "Message" to "Offline discussion 2 message" in the app
     And I press "Post to forum" in the app

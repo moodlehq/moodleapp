@@ -28,7 +28,7 @@ Feature: It navigates properly using deep links.
     And I press the user menu button in the app
     And I press "Log out" in the app
     And I wait the app to restart
-    And I press "Add a new account" in the app
+    And I press "Add" in the app
     And I set the field "Your site" to "$WWWROOT" in the app
     And I press "Connect to your site" in the app
     And I log in as "student1"

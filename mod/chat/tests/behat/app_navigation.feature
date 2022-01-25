@@ -31,7 +31,7 @@ Feature: Test chat navigation
 
     # Sessions
     When I press "Test chat name" in the app
-    And I press "View past chat sessions" in the app
+    And I press "Past sessions" in the app
     Then I should find "No sessions found" in the app
 
     # Sessions — split view

@@ -23,10 +23,10 @@ Feature: Test basic usage of chat in app
     # Send messages as student1
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test chat name" in the app
-    Then I should find "Click here to enter the chat now" in the app
-    And I should find "View past chat sessions" in the app
+    Then I should find "Enter the chat" in the app
+    And I should find "Past sessions" in the app
 
-    When I press "Click here to enter the chat now" in the app
+    When I press "Enter the chat" in the app
     And I set the field "New message" to "Hi!" in the app
     And I press "Send" in the app
     Then I should find "Hi!" in the app
@@ -39,7 +39,7 @@ Feature: Test basic usage of chat in app
     # Read messages, view connected users, send beep and reply as student2
     When I enter the course "Course 1" as "student2" in the app
     And I press "Test chat name" in the app
-    And I press "Click here to enter the chat now" in the app
+    And I press "Enter the chat" in the app
     Then I should find "Hi!" in the app
     And I should find "I am David" in the app
 
@@ -57,7 +57,7 @@ Feature: Test basic usage of chat in app
     # Send messages as student1
     Given I enter the course "Course 1" as "student1" in the app
     And I press "Test chat name" in the app
-    And I press "Click here to enter the chat now" in the app
+    And I press "Enter the chat" in the app
     And I set the field "New message" to "Hi!" in the app
     And I press "Send" in the app
     Then I should find "Hi!" in the app
@@ -69,7 +69,7 @@ Feature: Test basic usage of chat in app
     # Read messages from past sessions as student2
     When I enter the course "Course 1" as "student2" in the app
     And I press "Test chat name" in the app
-    And I press "View past chat sessions" in the app
+    And I press "Past sessions" in the app
     And I press "Show incomplete sessions" in the app
     And I press "david student" near "(2)" in the app
     Then I should find "Hi!" in the app
