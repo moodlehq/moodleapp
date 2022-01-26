@@ -27,33 +27,35 @@
         <core-course-module-info [module]="module" [courseId]="courseId" [description]="module.description" [component]="module.modname"
             [componentId]="module.id" [expandDescription]="true">
 
-            <div class="safe-area-padding-horizontal ion-padding" *ngIf="module.handlerData?.extraBadge">
-                <ion-badge class="ion-text-wrap ion-text-start" [color]="module.handlerData?.extraBadgeColor">
-                    <span [innerHTML]="module.handlerData?.extraBadge"></span>
-                </ion-badge>
+            <div class="ion-padding" *ngIf="module.handlerData?.extraBadge">
+                <ion-chip class="ion-text-wrap ion-text-start" [color]="module.handlerData?.extraBadgeColor">
+                    <ion-label><span [innerHTML]="module.handlerData?.extraBadge"></span></ion-label>
+                </ion-chip>
             </div>
-            <div class="safe-area-padding-horizontal ion-padding" *ngIf="module.visible === 0 && (!section || section.visible)">
-                <ion-badge class="ion-text-wrap">
-                    {{ 'core.course.hiddenfromstudents' | translate }}
-                </ion-badge>
+            <div class="ion-padding" *ngIf="module.visible === 0 && (!section || section.visible)">
+                <ion-chip class="ion-text-wrap">
+                    <ion-icon name="fas-eye-slash" aria-hidden="true"></ion-icon>
+                    <ion-label>{{ 'core.course.hiddenfromstudents' | translate }}</ion-label>
+                </ion-chip>
             </div>
-            <div class="safe-area-padding-horizontal ion-padding" *ngIf="module.visible !== 0 && module.isStealth">
-                <ion-badge class="ion-text-wrap">
-                    {{ 'core.course.hiddenoncoursepage' | translate }}
-                </ion-badge>
+            <div class="ion-padding" *ngIf="module.visible !== 0 && module.isStealth">
+                <ion-chip class="ion-text-wrap">
+                    <ion-icon name="fas-eye-slash" aria-hidden="true"></ion-icon>
+                    <ion-label>{{ 'core.course.hiddenoncoursepage' | translate }}</ion-label>
+                </ion-chip>
             </div>
-            <div class="safe-area-padding-horizontal ion-padding core-module-availabilityinfo" *ngIf="module.availabilityinfo">
-                <ion-badge class="ion-text-wrap">{{ 'core.restricted' | translate }}</ion-badge>
-                <div>
+            <div class="ion-padding core-module-availabilityinfo" *ngIf="module.availabilityinfo">
+                <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
+                <ion-label>
                     <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
                         [courseId]="courseId" class="ion-text-wrap">
                     </core-format-text>
-                </div>
+                </ion-label>
             </div>
-            <div class="safe-area-padding-horizontal ion-padding" *ngIf="module.completiondata?.offline">
-                <ion-badge color="warning" class="ion-text-wrap">
-                    {{ 'core.course.manualcompletionnotsynced' | translate }}
-                </ion-badge>
+            <div class="ion-padding" *ngIf="module.completiondata?.offline">
+                <ion-chip color="warning" class="ion-text-wrap">
+                    <ion-label>{{ 'core.course.manualcompletionnotsynced' | translate }}</ion-label>
+                </ion-chip>
             </div>
 
             <core-course-unsupported-module *ngIf="unsupported" [module]="module" [courseId]="courseId"></core-course-unsupported-module>

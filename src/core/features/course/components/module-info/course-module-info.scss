@@ -16,4 +16,9 @@
     core-mod-icon {
         align-self: flex-start;
     }
+
+    .core-module-dates ion-icon {
+        @include margin-horizontal(null, 8px);
+    }
+
 }

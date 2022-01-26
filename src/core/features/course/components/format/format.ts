@@ -38,7 +38,6 @@ import {
     CoreCourseModuleData,
     CoreCourseModuleCompletionData,
     CoreCourseSection,
-    CoreCourseSectionWithStatus,
 } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -47,7 +46,6 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseCourseIndexComponent, CoreCourseIndexSectionWithModule } from '../course-index/course-index';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreNavigator } from '@services/navigator';
-import { database } from 'faker';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
 /**
@@ -70,7 +68,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     static readonly LOAD_MORE_ACTIVITIES = 20; // How many activities should load each time showMoreActivities is called.
 
     @Input() course!: CoreCourseAnyCourseData; // The course to render.
-    @Input() sections: CoreCourseSectionWithStatus[] = []; // List of course sections.
+    @Input() sections: CoreCourseSectionToDisplay[] = []; // List of course sections.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
@@ -98,6 +96,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     stealthModulesSectionId: number = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     loaded = false;
     progress?: number;
+    highlighted?: string;
 
     protected selectTabObserver?: CoreEventObserver;
     protected completionObserver?: CoreEventObserver;
@@ -219,6 +218,10 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         // Format has changed or it's the first time, load all the components.
         this.lastCourseFormat = this.course.format;
+
+        this.highlighted = CoreCourseFormatDelegate.getSectionHightlightedName(this.course);
+        const currentSection = await CoreCourseFormatDelegate.getCurrentSection(this.course, this.sections);
+        currentSection.highlighted = true;
 
         await Promise.all([
             this.loadCourseFormatComponent(),
@@ -559,3 +562,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
 }
+
+type CoreCourseSectionToDisplay = CoreCourseSection & {
+    highlighted?: boolean;
+};

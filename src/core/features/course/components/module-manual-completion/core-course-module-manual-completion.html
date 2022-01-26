@@ -2,22 +2,20 @@
 
     <ng-container *ngIf="completion.istrackeduser">
         <ng-container *ngIf="completion.state">
-            <ion-button color="success" expand="block" fill="outline" [attr.aria-label]="accessibleDescription"
-                (click)="completionClicked($event)">
+            <ion-button color="success" fill="outline" [attr.aria-label]="accessibleDescription" (click)="completionClicked($event)">
                 <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
                 {{ 'core.course.completion_manual:done' | translate }}
             </ion-button>
         </ng-container>
         <ng-container *ngIf="!completion.state">
-            <ion-button color="dark" expand="block" fill="outline" [attr.aria-label]="accessibleDescription"
-                (click)="completionClicked($event)">
+            <ion-button color="dark" fill="outline" [attr.aria-label]="accessibleDescription" (click)="completionClicked($event)">
                 {{ 'core.course.completion_manual:markdone' | translate }}
             </ion-button>
         </ng-container>
     </ng-container>
 
     <ng-container *ngIf="!completion.istrackeduser">
-        <ion-button disabled="true" color="dark" expand="block" fill="outline">
+        <ion-button disabled="true" color="dark" fill="outline">
             {{ 'core.course.completion_manual:markdone' | translate }}
         </ion-button>
     </ng-container>

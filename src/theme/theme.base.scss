@@ -844,6 +844,8 @@ ion-select-popover ion-item.core-select-option-title {
 
 ion-chip {
     line-height: 1.1;
+    border-radius: var(--big-radius);
+    @include padding-horizontal(16px);
 }
 
 ion-searchbar {
@@ -1167,9 +1169,8 @@ ion-item.item-input ion-input.has-focus {
     }
 }
 
-// Ionic set this value to 0 without px that provoked miscalculations.
 ion-item-divider {
-    --inner-padding-end: 0px;
+    --inner-padding-end: 8px;
 }
 
 // Change default outline.

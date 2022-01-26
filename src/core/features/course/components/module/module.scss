@@ -1,3 +1,5 @@
+@import "~theme/globals";
+
 :host {
 
     .item.core-module-main-item {
@@ -57,6 +59,11 @@
 
     .core-module-main-item.has-module-info {
         --inner-border-width: 0px;
+    }
+
+    .core-module-availabilityinfo  ion-icon,
+    .core-module-dates ion-icon {
+        @include margin-horizontal(null, 8px);
     }
 
 }

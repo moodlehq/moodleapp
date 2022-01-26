@@ -19,7 +19,7 @@ import { CoreCourseUnsupportedModuleComponent } from '@features/course/component
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { IonRefresher } from '@ionic/angular';
-import { CoreCourseModuleCompletionData, CoreCourseSectionWithStatus } from '@features/course/services/course-helper';
+import { CoreCourseModuleCompletionData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreCourse } from '@features/course/services/course';
 
@@ -36,7 +36,7 @@ import { CoreCourse } from '@features/course/services/course';
 export class CoreCourseFormatSingleActivityComponent implements OnChanges {
 
     @Input() course?: CoreCourseAnyCourseData; // The course to render.
-    @Input() sections?: CoreCourseSectionWithStatus[]; // List of course sections.
+    @Input() sections?: CoreCourseSection[]; // List of course sections.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.

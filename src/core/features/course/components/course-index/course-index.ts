@@ -14,7 +14,7 @@
 
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 
-import { CoreCourseModuleData, CoreCourseSectionWithStatus } from '@features/course/services/course-helper';
+import { CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import {
     CoreCourseModuleCompletionStatus,
     CoreCourseModuleCompletionTracking,
@@ -126,7 +126,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
      * @param event Event.
      * @param section Selected section object.
      */
-    selectSection(event: Event, section: CoreCourseSectionWithStatus): void {
+    selectSection(event: Event, section: CoreCourseSection): void {
         if (section.uservisible !== false) {
             ModalController.dismiss({ event, section });
         }
@@ -139,7 +139,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
      * @param section Selected section object.
      * @param module Selected module object.
      */
-    selectModule(event: Event,section: CoreCourseSectionWithStatus, module: CoreCourseModuleData): void {
+    selectModule(event: Event,section: CoreCourseSection, module: CoreCourseModuleData): void {
         if (module.uservisible !== false) {
             ModalController.dismiss({ event, section, module });
         }
@@ -147,7 +147,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
 
 }
 
-type CourseIndexSection = Omit<CoreCourseSectionWithStatus, 'modules'> & {
+type CourseIndexSection = Omit<CoreCourseSection, 'modules'> & {
     highlighted?: boolean;
     expanded?: boolean;
     modules: (CoreCourseModuleData & {
