@@ -576,9 +576,13 @@ export class CoreSite {
 
             // Call the WS.
             try {
-                // Send the language to use. Do it after checking cache to prevent losing offline data when changing language.
-                data.moodlewssettinglang = preSets.lang ?? await CoreLang.getCurrentLanguage();
-                data.moodlewssettinglang = data.moodlewssettinglang.replace('-', '_'); // Moodle uses underscore instead of dash.
+                if (method !== 'core_webservice_get_site_info') {
+                    // Send the language to use. Do it after checking cache to prevent losing offline data when changing language.
+                    // Don't send it to core_webservice_get_site_info, that WS is used to check if Moodle version is supported.
+                    data.moodlewssettinglang = preSets.lang ?? await CoreLang.getCurrentLanguage();
+                    // Moodle uses underscore instead of dash.
+                    data.moodlewssettinglang = data.moodlewssettinglang.replace('-', '_');
+                }
 
                 const response = await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
 

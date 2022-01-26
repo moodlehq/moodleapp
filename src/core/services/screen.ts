@@ -121,11 +121,16 @@ export class CoreScreenService {
      */
     watchOrientation(): void {
         // Listen media orientation CSS queries.
-        window.matchMedia('(orientation: portrait)').addEventListener('change', (m) => {
+        const changeListener = (m: MediaQueryListEvent) => {
             const orientation = m.matches ? CoreScreenOrientation.PORTRAIT : CoreScreenOrientation.LANDSCAPE;
 
             CoreEvents.trigger(CoreEvents.ORIENTATION_CHANGE, { orientation });
-        });
+        };
+
+        const mql = window.matchMedia('(orientation: portrait)');
+        mql.addEventListener ?
+            mql.addEventListener('change', changeListener) :
+            mql.addListener(changeListener);
     }
 
     /**
