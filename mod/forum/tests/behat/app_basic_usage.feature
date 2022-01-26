@@ -27,7 +27,7 @@ Feature: Test basic usage of forum activity in app
   Scenario: Create new discussion
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "My happy subject" in the app
     And I set the field "Message" to "An awesome message" in the app
     And I press "Post to forum" in the app
@@ -39,7 +39,7 @@ Feature: Test basic usage of forum activity in app
   Scenario: Reply a post
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "DiscussionSubject" in the app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
@@ -55,11 +55,11 @@ Feature: Test basic usage of forum activity in app
   Scenario: Star and pin discussions (student)
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "starred subject" in the app
     And I set the field "Message" to "starred message" in the app
     And I press "Post to forum" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "normal subject" in the app
     And I set the field "Message" to "normal message" in the app
     And I press "Post to forum" in the app
@@ -89,15 +89,15 @@ Feature: Test basic usage of forum activity in app
   Scenario: Star and pin discussions (teacher)
     When I enter the course "Course 1" as "teacher1" in the app
     And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test star" in the app
     And I set the field "Message" to "Auto-test star message" in the app
     And I press "Post to forum" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test pin" in the app
     And I set the field "Message" to "Auto-test pin message" in the app
     And I press "Post to forum" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test plain" in the app
     And I set the field "Message" to "Auto-test plain message" in the app
     And I press "Post to forum" in the app
@@ -119,7 +119,7 @@ Feature: Test basic usage of forum activity in app
   Scenario: Edit a not sent reply offline
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
@@ -153,7 +153,7 @@ Feature: Test basic usage of forum activity in app
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
     And I switch offline mode to "true"
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
@@ -175,7 +175,7 @@ Feature: Test basic usage of forum activity in app
   Scenario: Edit a forum post (only online)
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
@@ -202,7 +202,7 @@ Feature: Test basic usage of forum activity in app
   Scenario: Delete a forum post (only online)
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
@@ -236,7 +236,7 @@ Feature: Test basic usage of forum activity in app
   Scenario: Add/view ratings
     Given I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
     And I press "Post to forum" in the app
@@ -283,7 +283,7 @@ Feature: Test basic usage of forum activity in app
   Scenario: Reply a post offline
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "DiscussionSubject" in the app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
@@ -315,7 +315,7 @@ Feature: Test basic usage of forum activity in app
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
     And I switch offline mode to "true"
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "DiscussionSubject" in the app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
@@ -338,7 +338,7 @@ Feature: Test basic usage of forum activity in app
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
     And I switch offline mode to "true"
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "DiscussionSubject" in the app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
@@ -360,7 +360,7 @@ Feature: Test basic usage of forum activity in app
   Scenario: Prefetch
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "DiscussionSubject 1" in the app
     And I set the field "Message" to "DiscussionMessage 1" in the app
     And I press "Post to forum" in the app
@@ -374,7 +374,7 @@ Feature: Test basic usage of forum activity in app
     And I press the back button in the app
 
     When I press "Test forum name" in the app
-    And I press "Add a new discussion topic" in the app
+    And I press "Add discussion topic" in the app
     And I set the field "Subject" to "DiscussionSubject 2" in the app
     And I set the field "Message" to "DiscussionMessage 2" in the app
     And I press "Post to forum" in the app

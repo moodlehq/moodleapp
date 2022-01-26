@@ -57,19 +57,19 @@ Feature: Test assignments navigation
     And I should not find "Third Student" in the app
 
     When I swipe to the left in the app
+    Then I should find "Second Student" in the app
+    But I should not find "First Student" in the app
+    And I should not find "Third Student" in the app
+
+    When I swipe to the left in the app
     Then I should find "Third Student" in the app
     But I should not find "First Student" in the app
     And I should not find "Second Student" in the app
 
     When I swipe to the left in the app
-    Then I should find "Second Student" in the app
+    Then I should find "Third Student" in the app
     But I should not find "First Student" in the app
-    And I should not find "Third Student" in the app
-
-    When I swipe to the left in the app
-    Then I should find "Second Student" in the app
-    But I should not find "First Student" in the app
-    And I should not find "Third Student" in the app
+    And I should not find "Second Student" in the app
 
     # Drafts
     When I press the back button in the app
@@ -133,21 +133,21 @@ Feature: Test assignments navigation
     And I should find "Third Student" in the app
     But I should not find "First Student" in the app
 
-    When I press "Third Student" in the app
+    When I press "Second Student" in the app
     And I swipe to the right in the app
+    Then I should find "Second Student" in the app
+    But I should not find "First Student" in the app
+    And I should not find "Third Student" in the app
+
+    When I swipe to the left in the app
     Then I should find "Third Student" in the app
     But I should not find "First Student" in the app
     And I should not find "Second Student" in the app
 
     When I swipe to the left in the app
-    Then I should find "Second Student" in the app
+    Then I should find "Third Student" in the app
     But I should not find "First Student" in the app
-    And I should not find "Third Student" in the app
-
-    When I swipe to the left in the app
-    Then I should find "Second Student" in the app
-    But I should not find "First Student" in the app
-    And I should not find "Third Student" in the app
+    And I should not find "Second Student" in the app
 
   Scenario: Tablet navigation
     Given I enter the course "Course 1" as "teacher1" in the app
@@ -212,13 +212,13 @@ Feature: Test assignments navigation
     And I press "Group 2" in the app
     Then I should find "Second Student" in the app
     And I should find "Third Student" in the app
-    And "Third Student" near "Second Student" should be selected in the app
-    And I should find "Third Student" inside the split-view content in the app
-    But I should not find "First Student" in the app
-    And I should not find "Second Student" inside the split-view content in the app
-
-    When I press "Second Student" in the app
-    Then "Second Student" near "Third Student" should be selected in the app
+    And "Second Student" near "Third Student" should be selected in the app
     And I should find "Second Student" inside the split-view content in the app
-    But I should not find "Third Student" inside the split-view content in the app
+    But I should not find "First Student" in the app
+    And I should not find "Third Student" inside the split-view content in the app
+
+    When I press "Third Student" in the app
+    Then "Third Student" near "Second Student" should be selected in the app
+    And I should find "Third Student" inside the split-view content in the app
+    But I should not find "Second Student" inside the split-view content in the app
     And I should not find "First Student" in the app

@@ -36,7 +36,7 @@ Feature: Test basic usage of login in app
     And I press the user menu button in the app
     And I press "Log out" in the app
     And I wait the app to restart
-    And I press "Add a new account" in the app
+    And I press "Add" in the app
     And I set the field "Your site" to "Wrong Site Address" in the app
     And I press enter in the app
     Then I should find "Cannot connect" in the app
@@ -47,7 +47,7 @@ Feature: Test basic usage of login in app
     And I log in as "student1"
     And I press the user menu button in the app
     And I press "Switch account" in the app
-    And I press "Add a new account" in the app
+    And I press "Add" in the app
     And I wait the app to restart
     And I set the field "Your site" to "Wrong Site Address" in the app
     And I press enter in the app

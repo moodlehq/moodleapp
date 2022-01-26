@@ -497,7 +497,7 @@
                 })[0];
                 break;
             case 'user menu' :
-                foundButton = findElementsBasedOnText({ text: 'Account' })[0];
+                foundButton = findElementsBasedOnText({ text: 'User account' })[0];
                 break;
             case 'page menu':
                 foundButton = findElementsBasedOnText({ text: 'Display options' })[0];
@@ -617,7 +617,7 @@
                 return 'ERROR: All items are already loaded';
             }
 
-            infiniteLoading.scrollIntoView();
+            infiniteLoading.scrollIntoView({ behavior: 'smooth' });
 
             // Wait 100ms
             await new Promise(resolve => setTimeout(resolve, 100));
