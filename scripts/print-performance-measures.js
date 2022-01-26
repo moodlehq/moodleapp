@@ -40,6 +40,7 @@ for (const file of files) {
         styling: [],
         blocking: [],
         longTasks: [],
+        database: [],
         networking: [],
     };
     performanceMeasures[performanceMeasure.name].duration.push(performanceMeasure.duration);
@@ -47,17 +48,19 @@ for (const file of files) {
     performanceMeasures[performanceMeasure.name].styling.push(performanceMeasure.styling);
     performanceMeasures[performanceMeasure.name].blocking.push(performanceMeasure.blocking);
     performanceMeasures[performanceMeasure.name].longTasks.push(performanceMeasure.longTasks);
+    performanceMeasures[performanceMeasure.name].database.push(performanceMeasure.database);
     performanceMeasures[performanceMeasure.name].networking.push(performanceMeasure.networking);
 }
 
 // Calculate averages
-for (const [name, { duration, scripting, styling, blocking, longTasks, networking }] of Object.entries(performanceMeasures)) {
+for (const [name, { duration, scripting, styling, blocking, longTasks, database, networking }] of Object.entries(performanceMeasures)) {
     const totalRuns = duration.length;
     const averageDuration = Math.round(duration.reduce((total, duration) => total + duration) / totalRuns);
     const averageScripting = Math.round(scripting.reduce((total, scripting) => total + scripting) / totalRuns);
     const averageStyling = Math.round(styling.reduce((total, styling) => total + styling) / totalRuns);
     const averageBlocking = Math.round(blocking.reduce((total, blocking) => total + blocking) / totalRuns);
     const averageLongTasks = Math.round(longTasks.reduce((total, longTasks) => total + longTasks) / totalRuns);
+    const averageDatabase = Math.round(database.reduce((total, database) => total + database) / totalRuns);
     const averageNetworking = Math.round(networking.reduce((total, networking) => total + networking) / totalRuns);
 
     performanceMeasures[name] = {
@@ -66,6 +69,7 @@ for (const [name, { duration, scripting, styling, blocking, longTasks, networkin
         'Styling': `${averageStyling}ms`,
         'Blocking': `${averageBlocking}ms`,
         '# Network requests': averageNetworking,
+        '# DB Queries': averageDatabase,
         '# Long Tasks': averageLongTasks,
         '# runs': totalRuns,
     };

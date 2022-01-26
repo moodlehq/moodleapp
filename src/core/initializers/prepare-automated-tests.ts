@@ -16,12 +16,14 @@ import { ApplicationRef, NgZone as NgZoneService } from '@angular/core';
 import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
+import { CoreDB, CoreDbProvider } from '@services/db';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
 import { Application, NgZone } from '@singletons';
 
 type AutomatedTestsWindow = Window & {
     appRef?: ApplicationRef;
     appProvider?: CoreAppProvider;
+    dbProvider?: CoreDbProvider;
     cronProvider?: CoreCronDelegateService;
     ngZone?: NgZoneService;
     pushNotifications?: CorePushNotificationsProvider;
@@ -31,6 +33,7 @@ type AutomatedTestsWindow = Window & {
 function initializeAutomatedTestsWindow(window: AutomatedTestsWindow) {
     window.appRef = Application.instance;
     window.appProvider = CoreApp.instance;
+    window.dbProvider = CoreDB.instance;
     window.cronProvider = CoreCronDelegate.instance;
     window.ngZone = NgZone.instance;
     window.pushNotifications = CorePushNotifications.instance;

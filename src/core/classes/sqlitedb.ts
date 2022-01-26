@@ -16,6 +16,7 @@ import { SQLiteObject } from '@ionic-native/sqlite/ngx';
 
 import { SQLite, Platform } from '@singletons';
 import { CoreError } from '@classes/errors/error';
+import { CoreDB } from '@services/db';
 
 type SQLiteDBColumnType = 'INTEGER' | 'REAL' | 'TEXT' | 'BLOB';
 
@@ -813,16 +814,19 @@ export class SQLiteDB {
      * Initialize the database.
      */
     init(): void {
-        this.promise = Platform.ready()
-            .then(() => SQLite.create({
-                name: this.name,
-                location: 'default',
-            }))
-            .then((db: SQLiteObject) => {
-                this.db = db;
+        this.promise = this.createDatabase().then(db => {
+            if (CoreDB.loggingEnabled()) {
+                const spies = this.getDatabaseSpies(db);
 
-                return;
-            });
+                db = new Proxy(db, {
+                    get: (target, property, receiver) => spies[property] ?? Reflect.get(target, property, receiver),
+                });
+            }
+
+            this.db = db;
+
+            return;
+        });
     }
 
     /**
@@ -1145,6 +1149,50 @@ export class SQLiteDB {
         }
 
         return { sql, params };
+    }
+
+    /**
+     * Open a database connection.
+     *
+     * @returns Database.
+     */
+    protected async createDatabase(): Promise<SQLiteObject> {
+        await Platform.ready();
+
+        return SQLite.create({ name: this.name, location: 'default' });
+    }
+
+    /**
+     * Get database spy methods to intercept database calls and track logging information.
+     *
+     * @param db Database to spy.
+     * @returns Spy methods.
+     */
+    protected getDatabaseSpies(db: SQLiteObject): Partial<SQLiteObject> {
+        return {
+            executeSql(statement, params) {
+                const start = performance.now();
+
+                return db.executeSql(statement, params).then(result => {
+                    CoreDB.logQuery(statement, performance.now() - start, params);
+
+                    return result;
+                });
+            },
+            sqlBatch(statements) {
+                const start = performance.now();
+
+                return db.sqlBatch(statements).then(result => {
+                    const sql = Array.isArray(statements)
+                        ? statements.join(' | ')
+                        : String(statements);
+
+                    CoreDB.logQuery(sql, performance.now() - start);
+
+                    return result;
+                });
+            },
+        };
     }
 
 }

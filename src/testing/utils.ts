@@ -133,12 +133,10 @@ export type WrapperComponentFixture<T> = ComponentFixture<WrapperComponent<T>>;
  * @param overrides Object with the properties or methods to override, or a list of methods to override with an empty function.
  * @return Mock instance.
  */
-export function mock<T>(instance?: T, overrides?: string[] | Record<string, unknown>): T;
-export function mock<T>(instance?: Partial<T>, overrides?: string[] | Record<string, unknown>): Partial<T>;
 export function mock<T>(
     instance: T | Partial<T> = {},
     overrides: string[] | Record<string, unknown> = {},
-): T | Partial<T> {
+): T {
     // If overrides is an object, apply them to the instance.
     if (!Array.isArray(overrides)) {
         Object.assign(instance, overrides);
@@ -162,7 +160,7 @@ export function mock<T>(
         }
     }
 
-    return instance;
+    return instance as T;
 }
 
 export function mockSingleton<T>(singletonClass: CoreSingletonProxy<T>, instance: T): T;
