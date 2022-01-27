@@ -75,6 +75,13 @@
     --subdued-text-color: #595959;
 
     --ion-card-color: var(--text-color);
+    ion-card {
+        --border-width: 1px;
+        --border-style: solid;
+        --border-color: var(--gray);
+        --box-shadow: none;
+        --border-radius: 8px;
+    }
 
     --text-hightlight-background-color: #{$core-text-hightlight-background-color};
 
@@ -85,8 +92,8 @@
         --background-alternative: var(--gray-lighter);
     }
 
-    --core-bottom-tabs-background: var(--black);
-    --core-bottom-tabs-color: var(--gray-lighter);
+    --core-bottom-tabs-background: var(--white);
+    --core-bottom-tabs-color: var(--gray-darker);
     --core-bottom-tabs-color-selected: var(--brand-color);
     --core-bottom-tabs-background-selected: transparent;
     --core-bottom-tabs-badge-color: var(--brand-color);
