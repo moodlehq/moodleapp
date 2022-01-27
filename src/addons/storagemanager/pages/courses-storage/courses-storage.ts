@@ -18,6 +18,7 @@ import { CoreCourse, CoreCourseProvider } from '@features/course/services/course
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
+import { CoreSettingsHelper, CoreSiteSpaceUsage } from '@features/settings/services/settings-helper';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -41,8 +42,17 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
     completelyDownloadedCourses: DownloadedCourse[] = [];
     totalSize = 0;
     loaded = false;
+    spaceUsage: CoreSiteSpaceUsage = {
+        cacheEntries: 0,
+        spaceUsage: 0,
+    };
 
     courseStatusObserver?: CoreEventObserver;
+    siteId: string;
+
+    constructor() {
+        this.siteId = CoreSites.getCurrentSiteId();
+    }
 
     /**
      * @inheritdoc
@@ -76,6 +86,8 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
                 });
             }
         }
+
+        this.spaceUsage = await CoreSettingsHelper.getSiteSpaceUsage(this.siteId);
 
         this.setDownloadedCourses(downloadedCourses);
 
@@ -225,6 +237,21 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
      */
     openCourse(courseId: number, title: string): void {
         CoreNavigator.navigateToSitePath('/storage/' + courseId, { params: { title } });
+    }
+
+    /**
+     * Deletes files of a site and the tables that can be cleared.
+     *
+     * @param siteData Site object with space usage.
+     */
+    async deleteSiteStorage(): Promise<void> {
+        try {
+            const siteName = CoreSites.getRequiredCurrentSite().getSiteName();
+
+            this.spaceUsage = await CoreSettingsHelper.deleteSiteStorage(siteName, this.siteId);
+        } catch {
+            // Ignore cancelled confirmation modal.
+        }
     }
 
 }

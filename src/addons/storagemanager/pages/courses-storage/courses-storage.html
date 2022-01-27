@@ -10,12 +10,31 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
+
+        <ion-card>
+            <ion-item class="ion-text-wrap">
+                <ion-label>{{ 'addon.storagemanager.info' | translate }}</ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="spaceUsage">
+                <ion-label>
+                    <p class="item-heading ion-text-wrap">{{ 'core.settings.spaceusage' | translate }}</p>
+                    <ion-badge color="light" *ngIf="spaceUsage.spaceUsage">{{ spaceUsage.spaceUsage | coreBytesToSize }}</ion-badge>
+                    <p>
+                        {{ 'core.settings.spaceusagehelp' | translate }}
+                    </p>
+                </ion-label>
+                <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage()"
+                    [hidden]="spaceUsage.spaceUsage! + spaceUsage.cacheEntries! <= 0"
+                    [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
+                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </ion-item>
+        </ion-card>
+
         <ion-card>
             <ion-card-header>
-                <p class="ion-text-wrap">{{ 'addon.storagemanager.info' | translate }}</p>
                 <ion-card-title class="ion-text-wrap">{{ 'core.courses.courses' | translate }}</ion-card-title>
                 <ion-item class="size ion-text-wrap ion-no-padding" lines="none">
-                    <ion-icon name="fas-archive" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>
                         <h2 class="ion-text-wrap">{{ 'addon.storagemanager.storageused' | translate }}</h2>
                         <ion-badge color="light">{{ totalSize | coreBytesToSize }}</ion-badge>
@@ -28,10 +47,11 @@
                 </ion-item>
             </ion-card-header>
         </ion-card>
+
         <ion-card *ngIf="downloadedCourses.length">
             <ion-card-content class="ion-no-padding">
                 <ion-list>
-                    <ion-item *ngFor="let course of downloadedCourses" class="course" (click)="openCourse(course.id)" button>
+                    <ion-item *ngFor="let course of downloadedCourses" class="course" (click)="openCourse(course.id, course.title)" button>
                         <ion-label class="ion-text-wrap">
                             <p class="item-heading">{{ course.title }}</p>
                             <p class="item-heading item-heading-secondary" *ngIf="course.isDownloading">

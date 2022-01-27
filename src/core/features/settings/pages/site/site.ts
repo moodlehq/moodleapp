@@ -18,15 +18,13 @@ import { IonRefresher } from '@ionic/angular';
 import { CoreSettingsHandlerToDisplay } from '../../services/settings-delegate';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../services/settings-helper';
-import { CoreApp } from '@services/app';
-import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSettingsHandlersSource } from '@features/settings/classes/settings-handlers-source';
+import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
+import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Page that displays the list of site settings pages.
@@ -41,18 +39,11 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
 
     handlers: CoreListItemsManager<CoreSettingsHandlerToDisplay>;
 
-    isIOS: boolean;
-    siteId: string;
-    spaceUsage: CoreSiteSpaceUsage = {
-        cacheEntries: 0,
-        spaceUsage: 0,
-    };
-
+    protected siteId: string;
     protected sitesObserver: CoreEventObserver;
     protected isDestroyed = false;
 
     constructor() {
-        this.isIOS = CoreApp.isIOS();
         this.siteId = CoreSites.getCurrentSiteId();
 
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreSettingsHandlersSource, []);
@@ -90,8 +81,6 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
      */
     protected async fetchData(): Promise<void> {
         await this.handlers.load();
-
-        this.spaceUsage = await CoreSettingsHelper.getSiteSpaceUsage(this.siteId);
     }
 
     /**
@@ -129,41 +118,6 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
         this.fetchData().finally(() => {
             refresher?.complete();
         });
-    }
-
-    /**
-     * Deletes files of a site and the tables that can be cleared.
-     *
-     * @param siteData Site object with space usage.
-     */
-    async deleteSiteStorage(): Promise<void> {
-        try {
-            const siteName = CoreSites.getRequiredCurrentSite().getSiteName();
-
-            this.spaceUsage = await CoreSettingsHelper.deleteSiteStorage(siteName, this.siteId);
-        } catch {
-            // Ignore cancelled confirmation modal.
-        }
-    }
-
-    /**
-     * Show information about space usage actions.
-     */
-    showSpaceInfo(): void {
-        CoreDomUtils.showAlert(
-            Translate.instant('core.help'),
-            Translate.instant('core.settings.spaceusagehelp'),
-        );
-    }
-
-    /**
-     * Show information about sync actions.
-     */
-    showSyncInfo(): void {
-        CoreDomUtils.showAlert(
-            Translate.instant('core.help'),
-            Translate.instant('core.settings.synchronizenowhelp'),
-        );
     }
 
     /**
