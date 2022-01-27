@@ -31,7 +31,6 @@ import { CoreApp } from './app';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreError } from '@classes/errors/error';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
-import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 
 /**
  * Redirect payload.
@@ -560,11 +559,11 @@ export class CoreNavigatorService {
             return this.navigate(`/main/${path}`, options);
         }
 
-        // Open the path within the home tab.
-        return this.navigate(`/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}`, {
+        // Open the path within in main menu.
+        return this.navigate('/main', {
             ...options,
             params: {
-                redirectPath: `/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${path}`,
+                redirectPath: path,
                 redirectOptions: options.params || options.nextNavigation ? options : undefined,
             } as CoreRedirectPayload,
         });

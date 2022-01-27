@@ -20,13 +20,8 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTabsOutletComponent, CoreTabsOutletTab } from '@components/tabs-outlet/tabs-outlet';
 import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../../services/home-delegate';
 import { CoreUtils } from '@services/utils/utils';
-import { ActivatedRoute } from '@angular/router';
-import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { CoreCourse } from '@features/course/services/course';
-import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
+import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 
 /**
  * Page that displays the Home.
@@ -46,28 +41,13 @@ export class CoreMainMenuHomePage implements OnInit {
 
     protected subscription?: Subscription;
     protected updateSiteObserver?: CoreEventObserver;
-    protected pendingRedirect?: CoreRedirectPayload;
-    protected urlToOpen?: string;
-
-    constructor(
-        protected route: ActivatedRoute,
-    ) {
-    }
+    protected deepLinkManager?: CoreMainMenuDeepLinkManager;
 
     /**
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.route.queryParams.subscribe((params: Partial<CoreRedirectPayload> & { urlToOpen?: string }) => {
-            this.urlToOpen = params.urlToOpen ?? this.urlToOpen;
-
-            if (params.redirectPath) {
-                this.pendingRedirect = {
-                    redirectPath: params.redirectPath,
-                    redirectOptions: params.redirectOptions,
-                };
-            }
-        });
+        this.deepLinkManager = new CoreMainMenuDeepLinkManager();
 
         this.loadSiteName();
 
@@ -125,54 +105,10 @@ export class CoreMainMenuHomePage implements OnInit {
     }
 
     /**
-     * Handle a redirect.
-     *
-     * @param data Data received.
-     */
-    protected handleRedirect(data: CoreRedirectPayload): void {
-        const params = data.redirectOptions?.params;
-        const coursePathMatches = data.redirectPath.match(/^course\/(\d+)\/?$/);
-
-        if (coursePathMatches) {
-            if (!params?.course) {
-                CoreCourseHelper.getAndOpenCourse(Number(coursePathMatches[1]), params);
-            } else {
-                CoreCourse.openCourse(params.course, params);
-            }
-        } else {
-            CoreNavigator.navigateToSitePath(data.redirectPath, {
-                ...data.redirectOptions,
-                preferCurrentTab: false,
-            });
-        }
-    }
-
-    /**
-     * Handle a URL to open.
-     *
-     * @param url URL to open.
-     */
-    protected async handleUrlToOpen(url: string): Promise<void> {
-        const actions = await CoreContentLinksDelegate.getActionsFor(url, undefined);
-
-        const action = CoreContentLinksHelper.getFirstValidAction(actions);
-        if (action?.sites?.[0]) {
-            action.action(action.sites[0]);
-        }
-    }
-
-    /**
      * Tab was selected.
      */
     tabSelected(): void {
-        if (this.pendingRedirect) {
-            this.handleRedirect(this.pendingRedirect);
-        } else if (this.urlToOpen) {
-            this.handleUrlToOpen(this.urlToOpen);
-        }
-
-        delete this.pendingRedirect;
-        delete this.urlToOpen;
+        this.deepLinkManager?.treatLink();
     }
 
     /**

@@ -17,6 +17,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreBlockComponent } from '@features/block/components/block/block';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreCoursesDashboard, CoreCoursesDashboardProvider } from '@features/courses/services/dashboard';
+import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -64,6 +65,9 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
+
+        const deepLinkManager = new CoreMainMenuDeepLinkManager();
+        deepLinkManager.treatLink();
 
         this.loadSiteName();
 

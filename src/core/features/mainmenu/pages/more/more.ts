@@ -25,6 +25,7 @@ import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreTextUtils } from '@services/utils/text';
 import { Translate } from '@singletons';
+import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 
 /**
  * Page that displays the more page of the app.
@@ -71,6 +72,9 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
         });
 
         window.addEventListener('resize', this.initHandlers.bind(this));
+
+        const deepLinkManager = new CoreMainMenuDeepLinkManager();
+        deepLinkManager.treatLink();
     }
 
     /**
