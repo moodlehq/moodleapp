@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
 import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
@@ -21,6 +22,7 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreApp } from '@services/app';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils, OpenFileAction } from '@services/utils/utils';
@@ -39,6 +41,7 @@ import { AddonModResourceHelper } from '../../services/resource-helper';
 @Component({
     selector: 'addon-mod-resource-index',
     templateUrl: 'addon-mod-resource-index.html',
+    styleUrls: ['index.scss'],
 })
 export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 
@@ -55,6 +58,14 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     isStreamedFile = false;
     shouldOpenInBrowser = false;
 
+    // Variables for 'external' mode.
+    type = '';
+    readableSize = '';
+    timecreated = -1;
+    timemodified = -1;
+    isExternalFile = false;
+    outdatedStatus = CoreConstants.OUTDATED;
+
     protected onlineObserver?: Subscription;
 
     constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
@@ -70,15 +81,13 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         this.isIOS = CoreApp.isIOS();
         this.isOnline = CoreApp.isOnline();
 
-        if (this.isIOS) {
-            // Refresh online status when changes.
-            this.onlineObserver = Network.onChange().subscribe(() => {
-                // Execute the callback in the Angular zone, so change detection doesn't stop working.
-                NgZone.run(() => {
-                    this.isOnline = CoreApp.isOnline();
-                });
+        // Refresh online status when changes.
+        this.onlineObserver = Network.onChange().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            NgZone.run(() => {
+                this.isOnline = CoreApp.isOnline();
             });
-        }
+        });
 
         await this.loadContent();
         try {
@@ -153,13 +162,25 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             } else {
                 this.mode = 'external';
                 this.warning = '';
+                let mimetype: string;
 
                 if (this.isIOS) {
                     this.shouldOpenInBrowser = CoreFileHelper.shouldOpenInBrowser(contents[0]);
                 }
 
-                const mimetype = await CoreUtils.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(contents[0]));
+                if ('contentsinfo' in this.module && this.module.contentsinfo) {
+                    mimetype = this.module.contentsinfo.mimetypes[0];
+                    this.readableSize = CoreTextUtils.bytesToSize(this.module.contentsinfo.filessize, 1);
+                    this.timemodified = this.module.contentsinfo.lastmodified * 1000;
+                } else {
+                    mimetype = await CoreUtils.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(contents[0]));
+                    this.readableSize = CoreTextUtils.bytesToSize(contents[0].filesize, 1);
+                    this.timemodified = contents[0].timemodified * 1000;
+                }
 
+                this.timecreated = contents[0].timecreated * 1000;
+                this.isExternalFile = !!contents[0].isexternalfile;
+                this.type = CoreMimetypeUtils.getMimetypeDescription(mimetype);
                 this.isStreamedFile = CoreMimetypeUtils.isStreamedMimetype(mimetype);
             }
         } finally {
@@ -183,6 +204,16 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             downloadable = await AddonModResourceHelper.isMainFileDownloadable(this.module);
 
             if (downloadable) {
+                if (this.prefetchStatus === CoreConstants.OUTDATED && !this.isOnline) {
+                    // Warn the user that the file isn't updated.
+                    const alert = await CoreDomUtils.showAlert(
+                        undefined,
+                        Translate.instant('addon.mod_resource.resourcestatusoutdated'),
+                    );
+
+                    await alert.onWillDismiss();
+                }
+
                 return AddonModResourceHelper.openModuleFile(this.module, this.courseId, { iOSOpenFileAction });
             }
         }

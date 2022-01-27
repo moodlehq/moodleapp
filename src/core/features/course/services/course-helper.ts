@@ -905,17 +905,30 @@ export class CoreCourseHelperProvider {
         }
 
         if (!path) {
-            path = await this.downloadModuleWithMainFile(
-                module,
-                courseId,
-                fixedUrl,
-                files,
-                status,
-                component,
-                componentId,
-                siteId,
-                options,
-            );
+            try {
+                path = await this.downloadModuleWithMainFile(
+                    module,
+                    courseId,
+                    fixedUrl,
+                    files,
+                    status,
+                    component,
+                    componentId,
+                    siteId,
+                    options,
+                );
+            } catch (error) {
+                if (status !== CoreConstants.OUTDATED) {
+                    throw error;
+                }
+
+                // Use the local file even if it's outdated.
+                try {
+                    path = await CoreFilepool.getInternalUrlByUrl(siteId, mainFile.fileurl);
+                } catch {
+                    throw error;
+                }
+            }
         }
 
         return {
@@ -1056,6 +1069,7 @@ export class CoreCourseHelperProvider {
         instance.size = moduleInfo.sizeReadable;
         instance.prefetchStatusIcon = moduleInfo.statusIcon;
         instance.prefetchStatus = moduleInfo.status;
+        instance.downloadTimeReadable = CoreTextUtils.ucFirst(moduleInfo.downloadTimeReadable);
 
         if (moduleInfo.status != CoreConstants.NOT_DOWNLOADABLE) {
             // Module is downloadable, get the text to display to prefetch.
@@ -1478,6 +1492,8 @@ export class CoreCourseHelperProvider {
             // Currently, some modules pass invalidateCache=false because they already invalidate data in downloadResourceIfNeeded.
             // If this function is changed to do more actions if invalidateCache=true, please review those modules.
             CoreCourseModulePrefetchDelegate.invalidateModuleStatusCache(module);
+
+            await CoreUtils.ignoreErrors(CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(courseId));
         }
 
         const results = await Promise.all([
@@ -2191,6 +2207,7 @@ type ComponentWithContextMenu = {
     size?: string;
     prefetchStatus?: string;
     prefetchText?: string;
+    downloadTimeReadable?: string;
     contextMenuStatusObserver?: CoreEventObserver;
     contextFileStatusObserver?: CoreEventObserver;
 };
