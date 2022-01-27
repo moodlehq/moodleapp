@@ -37,19 +37,13 @@ Feature: It navigates properly in pages with a split-view component.
 
     # Open C1 course grades
     When I press "Course 1" in the app
-    Then the header should be "Grades" in the app
+    Then the header should be "Course 1" in the app
     And I should find "Grade category C1" in the app
 
     # Open C1 grade item
     When I press "Grade item C1" in the app
-    Then the header should be "Grade" in the app
-    And I should find "20" near "Range" in the app
+    Then I should find "20" near "Range" in the app
     And I should find "40" near "Range" in the app
-
-    # Go back to course grades
-    When I press the back button in the app
-    Then the header should be "Grades" in the app
-    And I should find "Grade category C1" in the app
 
     # Go back to grades page
     When I press the back button in the app
@@ -59,19 +53,13 @@ Feature: It navigates properly in pages with a split-view component.
 
     # Open C2 course grades
     When I press "Course 2" in the app
-    Then the header should be "Grades" in the app
+    Then the header should be "Course 2" in the app
     And I should find "Grade category C2" in the app
 
     # Open C2 grade item
     When I press "Grade item C2" in the app
-    Then the header should be "Grade" in the app
-    And I should find "60" near "Range" in the app
+    Then I should find "60" near "Range" in the app
     And I should find "80" near "Range" in the app
-
-    # Go back to course grades
-    When I press the back button in the app
-    Then the header should be "Grades" in the app
-    And I should find "Grade category C2" in the app
 
     # Go back to grades page
     When I press the back button in the app
@@ -82,7 +70,7 @@ Feature: It navigates properly in pages with a split-view component.
     # Go back to main page
     When I press the back button in the app
     Then I should find "Acceptance test site" in the app
-    And I should find "Account" in the app
+    And I should find "User account" in the app
     But I should not find "Back" in the app
 
   Scenario: Navigate in grades tab on tablet
@@ -102,39 +90,22 @@ Feature: It navigates properly in pages with a split-view component.
 
     # Open C1 course grades
     When I press "Grade item C1" in the app
-    Then the header should be "Grades" in the app
-    And I should find "Grade category C1" in the app
+    Then I should find "Grade category C1" in the app
     And I should find "20" near "Range" in the app
     And I should find "40" near "Range" in the app
 
-    # Go back to grades page
-    When I press the back button in the app
-    Then the header should be "Grades" in the app
-    And I should find "Course 1" in the app
-    And I should find "Course 2" in the app
-
     # Select C2 course
     When I press "Course 2" in the app
-    Then the header should be "Grades" in the app
-    And "Course 2" should be selected in the app
+    Then "Course 2" should be selected in the app
     And I should find "Grade category C2" in the app
 
     # Open C2 course grades
     When I press "Grade item C2" in the app
-    Then the header should be "Grades" in the app
-    And I should find "Grade category C2" in the app
-    And I should find "60" near "Range" in the app
+    Then I should find "60" near "Range" in the app
     And I should find "80" near "Range" in the app
-
-    # Go back to grades page
-    When I press the back button in the app
-    Then the header should be "Grades" in the app
-    And I should find "Course 1" in the app
-    And I should find "Course 2" in the app
-    And I should find "Back" in the app
 
     # Go back to main page
     When I press the back button in the app
     Then I should find "Acceptance test site" in the app
-    And I should find "Account" in the app
+    And I should find "User account" in the app
     But I should not find "Back" in the app
