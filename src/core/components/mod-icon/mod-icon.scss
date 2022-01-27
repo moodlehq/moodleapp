@@ -12,7 +12,7 @@
 
     border-radius: 4px;
     padding: 0.7rem;
-    background-color: $gray-lighter;
+    background-color: $gray-100;
     line-height: var(--size);
 
     @each $type, $value in $activity-icon-colors {

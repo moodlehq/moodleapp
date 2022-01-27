@@ -371,7 +371,7 @@ core-rich-text-editor .core-rte-editor {
     input:not([type=checkbox]):not([type=radio]):not([type=hidden]) {
         height: 30px;
         display: inline-block;
-        border: 1px solid var(--gray-dark);
+        border: 1px solid var(--gray-500);
         background: var(--contrast-background);
         padding: 6px 8px;
         border-radius: 4px;
@@ -582,11 +582,11 @@ core-rich-text-editor .core-rte-editor {
     .align-text-top    { vertical-align: text-top !important; }
 
     // utilities/_border.scss
-    .border         { border: 1px solid var(--gray-dark) !important; }
-    .border-top     { border-top: 1px solid var(--gray-dark) !important; }
-    .border-right   { border-right: 1px solid var(--gray-dark) !important; }
-    .border-bottom  { border-bottom: 1px solid var(--gray-dark) !important; }
-    .border-left    { border-left: 1px solid var(--gray-dark) !important; }
+    .border         { border: 1px solid var(--gray-500) !important; }
+    .border-top     { border-top: 1px solid var(--gray-500) !important; }
+    .border-right   { border-right: 1px solid var(--gray-500) !important; }
+    .border-bottom  { border-bottom: 1px solid var(--gray-500) !important; }
+    .border-left    { border-left: 1px solid var(--gray-500) !important; }
 
     .border-0        { border: 0 !important; }
     .border-top-0    { border-top: 0 !important; }
@@ -706,7 +706,7 @@ core-rich-text-editor .core-rte-editor {
         vertical-align: baseline;
         transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
         color: var(--white);
-        background-color: var(--gray-darker);
+        background-color: var(--medium);
     }
 
     .label-important {

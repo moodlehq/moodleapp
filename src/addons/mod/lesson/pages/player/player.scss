@@ -1,9 +1,9 @@
 :host {
-   --background-odd: var(--gray-lighter);
+   --background-odd: var(--light);
 }
 
 :host-context(body.dark) {
-   --background-odd: var(--gray-darker);
+   --background-odd: var(--medium);
 }
 
 :host ::ng-deep {
@@ -32,7 +32,7 @@
         td {
             padding: 5px;
             line-height: 1.5;
-            border-bottom: 1px solid var(--gray);
+            border-bottom: 1px solid var(--stroke);
         }
     }
 }

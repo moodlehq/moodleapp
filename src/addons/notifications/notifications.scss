@@ -28,7 +28,7 @@
 
     .item core-format-text ::ng-deep {
         .forumpost {
-            border: 1px solid var(--gray-light);
+            border: 1px solid var(--gray-200);
             width: 100%;
             margin: 0 0 1em 0;
 
@@ -37,7 +37,7 @@
             }
 
             .header {
-                background-color: var(--gray-lighter);
+                background-color: var(--light);
 
                 .picture {
                     width: 48px;
@@ -82,7 +82,7 @@
         hr {
             margin-top: 1.5rem;
             margin-bottom: 1.5rem;
-            background-color: var(--gray-light);
+            background-color: var(--gray-200);
         }
     }
 }

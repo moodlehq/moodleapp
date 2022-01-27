@@ -123,7 +123,7 @@ core-format-text ::ng-deep {
         border-width: 2px;
         border-color: var(--yellow);
         position: absolute;
-        color: var(--black);
+        color: var(--gray-900);
     }
     span.wrongpart {
         background-color: var(--yellow-light);
@@ -135,7 +135,7 @@ core-format-text ::ng-deep {
         opacity: 0.6;
         margin: 5px;
         display: inline-block;
-        color: var(--black);
+        color: var(--gray-900);
     }
     div.dragitems img.target,
     div.draghomes img.target {
