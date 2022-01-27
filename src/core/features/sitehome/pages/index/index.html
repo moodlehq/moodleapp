@@ -2,12 +2,6 @@
     <ion-button *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
         <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
-    <core-context-menu>
-        <core-context-menu-item [priority]="500" [content]="'addon.storagemanager.managestorage' | translate"
-            (action)="manageCoursesStorage()" iconAction="fas-archive"></core-context-menu-item>
-        <core-context-menu-item [priority]="400" [content]="'addon.storagemanager.managecoursestorage' | translate"
-            (action)="manageCourseStorage()" iconAction="fas-archive"></core-context-menu-item>
-    </core-context-menu>
 </core-navbar-buttons>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!dataLoaded" (ionRefresh)="doRefresh($event.target)">

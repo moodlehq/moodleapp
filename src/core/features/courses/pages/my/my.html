@@ -13,17 +13,6 @@
             <ion-button *ngIf="searchEnabled" (click)="openSearch()" [attr.aria-label]="'core.courses.searchcourses' | translate">
                 <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
-            <core-context-menu>
-                <core-context-menu-item *ngIf="downloadCoursesEnabled && myOverviewBlock && myOverviewBlock.filteredCourses.length > 1"
-                    [priority]="1000" [content]="myOverviewBlock?.prefetchCoursesData.statusTranslatable | translate"
-                    (action)="myOverviewBlock?.prefetchCourses()"
-                    [iconAction]="myOverviewBlock?.prefetchCoursesData.loading ? 'spinner' : myOverviewBlock?.prefetchCoursesData.icon"
-                    [badge]="myOverviewBlock?.prefetchCoursesData.badge"
-                    [badgeA11yText]="myOverviewBlock?.prefetchCoursesData.badgeA11yText">
-                </core-context-menu-item>
-                <core-context-menu-item [priority]="500" [content]="'addon.storagemanager.managestorage' | translate"
-                    (action)="manageCoursesStorage()" iconAction="fas-archive"></core-context-menu-item>
-            </core-context-menu>
             <core-user-menu-button></core-user-menu-button>
         </ion-buttons>
     </ion-toolbar>
@@ -33,9 +22,31 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <div class="ion-padding-horizontal">
-            <h2>{{ 'core.courses.mycourses' | translate }}</h2>
-        </div>
+        <ion-item class="ion-text-wrap divider" lines="none">
+            <ion-label>
+                <h2>{{ 'core.courses.mycourses' | translate }}</h2>
+            </ion-label>
+            <div slot="end" class="flex-row">
+                <!-- Download all courses. -->
+                <div *ngIf="downloadCoursesEnabled && myOverviewBlock && myOverviewBlock.filteredCourses.length > 1"
+                    class="core-button-spinner">
+                    <ion-button *ngIf="!myOverviewBlock.prefetchCoursesData.loading" fill="clear" color="dark"
+                        (click)="myOverviewBlock.prefetchCourses()"
+                        [attr.aria-label]="myOverviewBlock.prefetchCoursesData.statusTranslatable | translate">
+                        <ion-icon [name]="myOverviewBlock.prefetchCoursesData.icon" slot="icon-only" aria-hidden="true">
+                        </ion-icon>
+                    </ion-button>
+                    <ion-badge class="core-course-download-courses-progress" *ngIf="myOverviewBlock.prefetchCoursesData.badge"
+                        role="progressbar" [attr.aria-valuemax]="myOverviewBlock.prefetchCoursesData.total"
+                        [attr.aria-valuenow]="myOverviewBlock.prefetchCoursesData.count"
+                        [attr.aria-valuetext]="myOverviewBlock.prefetchCoursesData.badgeA11yText">
+                        {{myOverviewBlock.prefetchCoursesData.badge}}
+                    </ion-badge>
+                    <ion-spinner *ngIf="myOverviewBlock.prefetchCoursesData.loading" [attr.aria-label]="'core.loading' | translate">
+                    </ion-spinner>
+                </div>
+            </div>
+        </ion-item>
         <ion-list>
             <core-block *ngIf="loadedBlock?.visible" [block]="loadedBlock" contextLevel="user" [instanceId]="userId"
                 [extraData]="{'downloadEnabled': true}"></core-block>
