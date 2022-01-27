@@ -53,6 +53,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     isLoadingHandlers = false;
     user?: CoreUserProfile;
     isDeleted = false;
+    isSuspended = false;
     isEnrolled = true;
     rolesFormatted?: string;
     actionHandlers: CoreUserProfileHandlerData[] = [];
@@ -114,6 +115,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
                 await CoreUser.logView(this.userId, this.courseId, this.user.fullname);
             } catch (error) {
                 this.isDeleted = error?.errorcode === 'userdeleted';
+                this.isSuspended = error?.errorcode === 'wsaccessusersuspended';
                 this.isEnrolled = error?.errorcode !== 'notenrolledprofile';
             }
         } finally {

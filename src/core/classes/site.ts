@@ -616,6 +616,12 @@ export class CoreSite {
                     error.message = Translate.instant('core.userdeleted');
 
                     throw new CoreWSError(error);
+                } else if (error.errorcode === 'wsaccessusersuspended') {
+                    // User suspended, trigger event.
+                    CoreEvents.trigger(CoreEvents.USER_SUSPENDED, { params: data }, this.id);
+                    error.message = Translate.instant('core.usersuspended');
+
+                    throw new CoreWSError(error);
                 } else if (error.errorcode === 'forcepasswordchangenotice') {
                     // Password Change Forced, trigger event. Try to get data from cache, the event will handle the error.
                     CoreEvents.trigger(CoreEvents.PASSWORD_CHANGE_FORCED, {}, this.id);
