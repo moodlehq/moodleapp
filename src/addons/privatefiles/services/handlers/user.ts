@@ -16,7 +16,12 @@ import { Injectable } from '@angular/core';
 
 import { AddonPrivateFiles } from '@/addons/privatefiles/services/privatefiles';
 import { makeSingleton } from '@singletons';
-import { CoreUserDelegateService, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import {
+    CoreUserDelegateContext,
+    CoreUserDelegateService,
+    CoreUserProfileHandler,
+    CoreUserProfileHandlerData,
+} from '@features/user/services/user-delegate';
 import { CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -30,7 +35,7 @@ export class AddonPrivateFilesUserHandlerService implements CoreUserProfileHandl
     static readonly PAGE_NAME = 'private';
 
     name = 'AddonPrivateFiles';
-    priority = 300;
+    priority = 400;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
     cacheEnabled = true;
 
@@ -44,9 +49,28 @@ export class AddonPrivateFilesUserHandlerService implements CoreUserProfileHandl
     /**
      * @inheritdoc
      */
-    async isEnabledForUser(user: CoreUserProfile): Promise<boolean> {
+    async isEnabledForContext(context: CoreUserDelegateContext): Promise<boolean> {
+        // Private files only available in user menu.
+        if (context !== CoreUserDelegateContext.USER_MENU) {
+            return false;
+        }
+
+        // Check if feature is disabled.
+        const currentSite = CoreSites.getCurrentSite();
+        if (!currentSite) {
+            return false;
+        }
+
+        // This option used to belong to main menu, check the original disabled feature value.
+        return !currentSite.isFeatureDisabled('CoreMainMenuDelegate_AddonPrivateFiles');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabledForUser(user: CoreUserProfile, context: CoreUserDelegateContext): Promise<boolean> {
         // Private files only available for the current user.
-        return user.id == CoreSites.getCurrentSiteUserId();
+        return user.id == CoreSites.getCurrentSiteUserId() && context === CoreUserDelegateContext.USER_MENU;
     }
 
     /**

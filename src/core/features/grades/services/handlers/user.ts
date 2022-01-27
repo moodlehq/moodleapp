@@ -19,6 +19,7 @@ import { GRADES_PAGE_NAME } from '@features/grades/grades.module';
 import { CoreGrades } from '@features/grades/services/grades';
 import { CoreUserProfile } from '@features/user/services/user';
 import {
+    CoreUserDelegateContext,
     CoreUserDelegateService ,
     CoreUserProfileHandler,
     CoreUserProfileHandlerData,
@@ -35,8 +36,8 @@ import { makeSingleton } from '@singletons';
 @Injectable({ providedIn: 'root' })
 export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'CoreGrades:viewGrades';
-    priority = 400;
+    name = 'CoreGrades'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    priority = 500;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
     cacheEnabled = true;
 
@@ -50,8 +51,23 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
     /**
      * @inheritdoc
      */
-    async isEnabledForCourse(courseId?: number): Promise<boolean> {
-        if (courseId) {
+    async isEnabledForContext(context: CoreUserDelegateContext, courseId: number): Promise<boolean> {
+        // Check if feature is disabled.
+        const currentSite = CoreSites.getCurrentSite();
+        if (!currentSite) {
+            return false;
+        }
+
+        if (context === CoreUserDelegateContext.USER_MENU) {
+            // This option used to belong to main menu, check the original disabled feature value.
+            if (currentSite.isFeatureDisabled('CoreMainMenuDelegate_CoreGrades')) {
+                return false;
+            }
+        } else if (currentSite.isFeatureDisabled('CoreUserDelegate_CoreGrades:viewGrades')) {
+            return false;
+        }
+
+        if (context === CoreUserDelegateContext.COURSE) {
             return CoreUtils.ignoreErrors(CoreGrades.isPluginEnabledForCourse(courseId), false);
         } else {
             return CoreGrades.isCourseGradesEnabled();
@@ -61,9 +77,9 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
     /**
      * @inheritdoc
      */
-    async isEnabledForUser(user: CoreUserProfile, courseId?: number): Promise<boolean> {
-        if (courseId) {
-            return CoreUtils.promiseWorks(CoreGrades.getCourseGradesTable(courseId, user.id));
+    async isEnabledForUser(user: CoreUserProfile, context: CoreUserDelegateContext, contextId: number): Promise<boolean> {
+        if (context === CoreUserDelegateContext.COURSE) {
+            return CoreUtils.promiseWorks(CoreGrades.getCourseGradesTable(contextId, user.id));
         }
 
         // All course grades only available for the current user.
@@ -73,17 +89,17 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
     /**
      * @inheritdoc
      */
-    getDisplayData(user: CoreUserProfile, courseId?: number): CoreUserProfileHandlerData {
-        if (courseId) {
+    getDisplayData(user: CoreUserProfile, context: CoreUserDelegateContext): CoreUserProfileHandlerData {
+        if (context === CoreUserDelegateContext.COURSE) {
             return {
                 icon: 'fas-chart-bar',
                 title: 'core.grades.grades',
                 class: 'core-grades-user-handler',
-                action: (event, user, courseId): void => {
+                action: (event, user, context, contextId): void => {
                     event.preventDefault();
                     event.stopPropagation();
                     CoreNavigator.navigateToSitePath(
-                        [COURSE_PAGE_NAME, courseId, PARTICIPANTS_PAGE_NAME, user.id, GRADES_PAGE_NAME].join('/'),
+                        [COURSE_PAGE_NAME, contextId, PARTICIPANTS_PAGE_NAME, user.id, GRADES_PAGE_NAME].join('/'),
                     );
                 },
             };

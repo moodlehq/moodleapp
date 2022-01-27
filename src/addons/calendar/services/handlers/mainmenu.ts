@@ -26,7 +26,7 @@ export class AddonCalendarMainMenuHandlerService implements CoreMainMenuHandler 
     static readonly PAGE_NAME = 'calendar';
 
     name = 'AddonCalendar';
-    priority = 800;
+    priority = 550;
 
     /**
      * Check if the handler is enabled on a site level.

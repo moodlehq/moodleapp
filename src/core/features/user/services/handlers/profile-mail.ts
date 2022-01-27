@@ -52,7 +52,7 @@ export class CoreUserProfileMailHandlerService implements CoreUserProfileHandler
             icon: 'mail',
             title: 'core.user.sendemail',
             class: 'core-user-profile-mail',
-            action: (event: Event, user: CoreUserProfile): void => {
+            action: (event, user): void => {
                 event.preventDefault();
                 event.stopPropagation();
 

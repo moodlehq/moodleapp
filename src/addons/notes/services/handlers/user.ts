@@ -14,7 +14,12 @@
 
 import { Injectable } from '@angular/core';
 import { CoreUserProfile } from '@features/user/services/user';
-import { CoreUserProfileHandler, CoreUserDelegateService, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import {
+    CoreUserProfileHandler,
+    CoreUserDelegateService,
+    CoreUserProfileHandlerData,
+    CoreUserDelegateContext,
+} from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
@@ -27,7 +32,7 @@ import { AddonNotes } from '../notes';
 export class AddonNotesUserHandlerService implements CoreUserProfileHandler {
 
     name = 'AddonNotes:notes';
-    priority = 100;
+    priority = 250;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
     cacheEnabled = true;
 
@@ -41,14 +46,14 @@ export class AddonNotesUserHandlerService implements CoreUserProfileHandler {
     /**
      * @inheritdoc
      */
-    async isEnabledForUser(user: CoreUserProfile, courseId?: number): Promise<boolean> {
+    async isEnabledForUser(user: CoreUserProfile, context: CoreUserDelegateContext, contextId: number): Promise<boolean> {
         // Active course required.
-        if (!courseId || user.id == CoreSites.getCurrentSiteUserId()) {
+        if (context !== CoreUserDelegateContext.COURSE || !contextId || user.id == CoreSites.getCurrentSiteUserId()) {
             return false;
         }
 
         // We are not using isEnabledForCourse because we need to cache the call.
-        return AddonNotes.isPluginViewNotesEnabledForCourse(courseId);
+        return AddonNotes.isPluginViewNotesEnabledForCourse(contextId);
     }
 
     /**
@@ -59,11 +64,11 @@ export class AddonNotesUserHandlerService implements CoreUserProfileHandler {
             icon: 'fas-receipt',
             title: 'addon.notes.notes',
             class: 'addon-notes-handler',
-            action: (event, user, courseId): void => {
+            action: (event, user, context, contextId): void => {
                 event.preventDefault();
                 event.stopPropagation();
                 CoreNavigator.navigateToSitePath('/notes', {
-                    params: { courseId, userId: user.id },
+                    params: { courseId: contextId, userId: user.id },
                 });
             },
         };

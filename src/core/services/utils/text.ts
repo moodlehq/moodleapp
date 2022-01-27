@@ -67,6 +67,7 @@ export class CoreTextUtilsProvider {
         { old: /files_sitefiles/g, new: 'AddonPrivateFilesSiteFiles' },
         { old: /files_upload/g, new: 'AddonPrivateFilesUpload' },
         { old: /_mmaModAssign/g, new: '_AddonModAssign' },
+        { old: /_mmaModBigbluebuttonbn/g, new: '_AddonModBBB' },
         { old: /_mmaModBook/g, new: '_AddonModBook' },
         { old: /_mmaModChat/g, new: '_AddonModChat' },
         { old: /_mmaModChoice/g, new: '_AddonModChoice' },
@@ -89,6 +90,7 @@ export class CoreTextUtilsProvider {
         { old: /_mmaModWiki/g, new: '_AddonModWiki' },
         { old: /_mmaModWorkshop/g, new: '_AddonModWorkshop' },
         { old: /remoteAddOn_/g, new: 'sitePlugin_' },
+        { old: /AddonNotes:addNote/g, new: 'AddonNotes:notes' },
     ];
 
     protected template: HTMLTemplateElement = document.createElement('template'); // A template element to convert HTML to element.

@@ -16,9 +16,15 @@ import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_LEARNING_PLANS_PAG
 import { Injectable } from '@angular/core';
 import { COURSE_PAGE_NAME } from '@features/course/course.module';
 import { CoreUserProfile } from '@features/user/services/user';
-import { CoreUserProfileHandler, CoreUserDelegateService, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import {
+    CoreUserProfileHandler,
+    CoreUserDelegateService,
+    CoreUserProfileHandlerData,
+    CoreUserDelegateContext,
+} from '@features/user/services/user-delegate';
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { AddonCompetency } from '../competency';
 
@@ -28,8 +34,8 @@ import { AddonCompetency } from '../competency';
 @Injectable( { providedIn: 'root' })
 export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'AddonCompetency:learningPlan';
-    priority = 900;
+    name = 'AddonCompetency'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    priority = 100;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
     cacheEnabled = true;
 
@@ -43,10 +49,32 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
     /**
      * @inheritdoc
      */
-    async isEnabledForUser(user: CoreUserProfile, courseId?: number): Promise<boolean> {
+    async isEnabledForContext(context: CoreUserDelegateContext): Promise<boolean> {
+        // Check if feature is disabled.
+        const currentSite = CoreSites.getCurrentSite();
+        if (!currentSite) {
+            return false;
+        }
+
+        if (context === CoreUserDelegateContext.USER_MENU) {
+            // This option used to belong to main menu, check the original disabled feature value.
+            if (currentSite.isFeatureDisabled('CoreMainMenuDelegate_AddonCompetency')) {
+                return false;
+            }
+        } else if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonCompetency:learningPlan')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabledForUser(user: CoreUserProfile, context: CoreUserDelegateContext, contextId: number): Promise<boolean> {
         try {
-            if (courseId) {
-                return AddonCompetency.canViewUserCompetenciesInCourse(courseId, user.id);
+            if (context === CoreUserDelegateContext.COURSE) {
+                return await AddonCompetency.canViewUserCompetenciesInCourse(contextId, user.id);
             } else {
                 const plans = await AddonCompetency.getLearningPlans(user.id);
 
@@ -61,21 +89,8 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
     /**
      * @inheritdoc
      */
-    getDisplayData(user: CoreUserProfile, courseId: number): CoreUserProfileHandlerData {
-        if (courseId) {
-            return {
-                icon: 'fas-award',
-                title: 'addon.competency.competencies',
-                class: 'addon-competency-handler',
-                action: (event, user, courseId): void => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    CoreNavigator.navigateToSitePath(
-                        [COURSE_PAGE_NAME, courseId, PARTICIPANTS_PAGE_NAME, user.id, ADDON_COMPETENCY_COMPETENCIES_PAGE].join('/'),
-                    );
-                },
-            };
-        } else {
+    getDisplayData(user: CoreUserProfile, context: CoreUserDelegateContext): CoreUserProfileHandlerData {
+        if (context !== CoreUserDelegateContext.COURSE) {
             return {
                 icon: 'fas-route',
                 title: 'addon.competency.learningplans',
@@ -89,6 +104,19 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
                 },
             };
         }
+
+        return {
+            icon: 'fas-award',
+            title: 'addon.competency.competencies',
+            class: 'addon-competency-handler',
+            action: (event, user, context, contextId): void => {
+                event.preventDefault();
+                event.stopPropagation();
+                CoreNavigator.navigateToSitePath(
+                    [COURSE_PAGE_NAME, contextId, PARTICIPANTS_PAGE_NAME, user.id, ADDON_COMPETENCY_COMPETENCIES_PAGE].join('/'),
+                );
+            },
+        };
     }
 
 }
