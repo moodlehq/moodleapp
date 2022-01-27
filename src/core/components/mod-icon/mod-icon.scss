@@ -10,7 +10,7 @@
     margin-bottom: var(--margin-vertical);
     @include margin-horizontal(null, var(--margin-end));
 
-    border-radius: 4px;
+    border-radius: var(--small-radius);
     padding: 0.7rem;
     background-color: $gray-100;
     line-height: var(--size);

@@ -1,6 +1,7 @@
 @import "~theme/globals";
 
-.core-course-list-item {
+
+ion-card.core-course-list-item {
     .course-icon {
         color: white;
         background: var(--gray-200);
@@ -37,7 +38,7 @@
     color: var(--core-star-color);
 }
 
-ion-card {
+ion-card.core-course-list-card {
     --vertical-margin: 12px;
     --border-radius: 16px;
     display: flex;
@@ -162,7 +163,7 @@ button {
 :host-context(.core-horizontal-scroll) {
     @include horizontal_scroll_item(80%, 250px, 300px);
 
-    ion-card {
+    ion-card.core-course-list-card {
         .core-course-thumb {
             padding-top: 30%;
         }

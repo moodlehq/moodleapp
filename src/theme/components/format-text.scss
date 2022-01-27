@@ -374,7 +374,7 @@ core-rich-text-editor .core-rte-editor {
         border: 1px solid var(--gray-500);
         background: var(--contrast-background);
         padding: 6px 8px;
-        border-radius: 4px;
+        border-radius: var(--small-radius);
         margin-left: 2px;
         margin-right: 2px;
         margin-bottom: 10px;

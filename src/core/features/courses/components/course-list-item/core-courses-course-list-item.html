@@ -1,33 +1,34 @@
-<ion-item class="ion-text-wrap core-course-list-item" (click)="openCourse()" [class.item-disabled]="course.visible == 0"
-    [class.item-dimmed]="course.hidden" [attr.aria-label]="course.displayname || course.fullname" detail="true" button
-    *ngIf="layout == 'list' || layout == 'listwithenrol'">
-    <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb"
-        [attr.course-color]="course.color ? null : course.colorNumber" [style.color]="course.color">
-    </ion-icon>
-    <ion-avatar *ngIf="course.courseImage" slot="start" class="core-course-thumb">
-        <img [src]="course.courseImage" core-external-content alt="" />
-    </ion-avatar>
-    <ion-label>
-        <ion-row>
-            <ion-col class="ion-align-self-center">
-                <ng-container *ngTemplateOutlet="mainInfo"></ng-container>
-            </ion-col>
-            <ion-col size="auto" class="ion-align-self-center">
-                <ng-container *ngIf="!isEnrolled">
-                    <ion-icon *ngFor="let icon of enrolmentIcons" color="dark" size="small" [name]="icon.icon"
-                        [title]="icon.label | translate" [attr.aria-label]="icon.label | translate">
-                    </ion-icon>
-                </ng-container>
-                <ng-container *ngIf="isEnrolled">
-                    <ng-container *ngTemplateOutlet="download"></ng-container>
-                </ng-container>
-            </ion-col>
-        </ion-row>
-        <p *ngIf="isEnrolled && progress! >= 0 && completionUserTracked !== false">
-            <core-progress-bar [progress]="progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
-        </p>
-    </ion-label>
-</ion-item>
+<ion-card class="core-course-list-item" *ngIf="layout == 'list' || layout == 'listwithenrol'" [class.item-dimmed]="course.hidden">
+    <ion-item class="ion-text-wrap" (click)="openCourse()" [class.item-disabled]="course.visible == 0"
+        [attr.aria-label]="course.displayname || course.fullname" button>
+        <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb"
+            [attr.course-color]="course.color ? null : course.colorNumber" [style.color]="course.color">
+        </ion-icon>
+        <ion-avatar *ngIf="course.courseImage" slot="start" class="core-course-thumb">
+            <img [src]="course.courseImage" core-external-content alt="" />
+        </ion-avatar>
+        <ion-label>
+            <ion-row>
+                <ion-col class="ion-align-self-center">
+                    <ng-container *ngTemplateOutlet="mainInfo"></ng-container>
+                </ion-col>
+                <ion-col size="auto" class="ion-align-self-center">
+                    <ng-container *ngIf="!isEnrolled">
+                        <ion-icon *ngFor="let icon of enrolmentIcons" color="dark" size="small" [name]="icon.icon"
+                            [title]="icon.label | translate" [attr.aria-label]="icon.label | translate">
+                        </ion-icon>
+                    </ng-container>
+                    <ng-container *ngIf="isEnrolled">
+                        <ng-container *ngTemplateOutlet="download"></ng-container>
+                    </ng-container>
+                </ion-col>
+            </ion-row>
+            <p *ngIf="isEnrolled && progress! >= 0 && completionUserTracked !== false">
+                <core-progress-bar [progress]="progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
+            </p>
+        </ion-label>
+    </ion-item>
+</ion-card>
 
 <ion-card [attr.course-color]="course.color ? null : course.colorNumber" *ngIf="layout == 'card' || layout == 'summarycard'"
     class="core-course-list-card" [class.item-dimmed]="course.hidden">

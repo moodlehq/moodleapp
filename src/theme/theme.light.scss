@@ -104,13 +104,16 @@
     --ion-text-color-rgb: #{$text-color-rgb};
     --subdued-text-color: #595959;
 
+    --small-radius: 4px;
+    --big-radius: 8px;
+
     --ion-card-color: var(--text-color);
     ion-card {
         --border-width: 1px;
         --border-style: solid;
         --border-color: var(--stroke);
         --box-shadow: none;
-        --border-radius: 8px;
+        --border-radius: var(--big-radius);
     }
 
     --text-hightlight-background-color: #{$core-text-hightlight-background-color};
@@ -176,6 +179,9 @@
         --background: var(--ion-item-background);
         .searchbar-input {
             height: var(--a11y-min-target-size);
+            border: 1px solid var(--stroke);
+            box-shadow: none;
+            border-radius: var(--big-radius);
         }
     }
 
@@ -274,11 +280,10 @@
 
     --core-combobox-background: var(--ion-item-background);
     --core-combobox-color: var(--gray-900);
-    --core-combobox-border-color: var(--primary);
-    --core-combobox-border-width: 3px;
-    --core-combobox-border-all-width: 0 0 var(--core-combobox-border-width) 0;
-    --core-combobox-radius: 0px;
-    --core-combobox-box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
+    --core-combobox-border-color: var(--stroke);
+    --core-combobox-border-width: 1px;
+    --core-combobox-radius: var(--big-radius);
+    --core-combobox-box-shadow: none;
 
     --selected-item-color: var(--primary);
     --selected-item-border-width: 5px;
