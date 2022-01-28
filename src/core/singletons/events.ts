@@ -17,7 +17,7 @@ import { Subject } from 'rxjs';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreFilepoolComponentFileEventData } from '@services/filepool';
-import { CoreNavigationOptions } from '@services/navigator';
+import { CoreRedirectPayload } from '@services/navigator';
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreScreenOrientation } from '@services/screen';
 import { CoreCourseCompletionType } from '@features/course/services/course';
@@ -270,10 +270,7 @@ export type CoreEventSiteAddedData = CoreSiteInfoResponse;
 /**
  * Data passed to SESSION_EXPIRED event.
  */
-export type CoreEventSessionExpiredData = {
-    pageName?: string;
-    options?: CoreNavigationOptions;
-};
+export type CoreEventSessionExpiredData = CoreRedirectPayload;
 
 /**
  * Data passed to CORE_LOADING_CHANGED event.

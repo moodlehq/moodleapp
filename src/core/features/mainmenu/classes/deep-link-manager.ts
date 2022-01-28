@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 
 /**
  * A class to handle opening deep links in a main menu page. There are 2 type of deep links:
@@ -26,15 +25,15 @@ import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 export class CoreMainMenuDeepLinkManager {
 
     protected pendingRedirect?: CoreRedirectPayload;
-    protected urlToOpen?: string;
 
     constructor() {
-        this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
+        const urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
         const redirectPath = CoreNavigator.getRouteParam('redirectPath');
-        if (redirectPath) {
+        if (urlToOpen || redirectPath) {
             this.pendingRedirect = {
                 redirectPath,
                 redirectOptions: CoreNavigator.getRouteParam('redirectOptions'),
+                urlToOpen,
             };
         }
     }
@@ -45,31 +44,35 @@ export class CoreMainMenuDeepLinkManager {
      * @return Whether there is a deep link to be treated.
      */
     hasDeepLinkToTreat(): boolean {
-        return !!this.urlToOpen || !!this.pendingRedirect;
+        return !!this.pendingRedirect?.urlToOpen || !!this.pendingRedirect?.redirectPath;
     }
 
     /**
      * Treat a deep link if there's any to treat.
      */
     treatLink(): void {
-        if (this.pendingRedirect) {
-            this.treatRedirect(this.pendingRedirect);
-        } else if (this.urlToOpen) {
-            this.treatUrlToOpen(this.urlToOpen);
+        if (!this.pendingRedirect) {
+            return;
+        }
+
+        if (this.pendingRedirect.redirectPath) {
+            this.treatPath(this.pendingRedirect.redirectPath, this.pendingRedirect.redirectOptions);
+        } else if (this.pendingRedirect.urlToOpen) {
+            this.treatUrlToOpen(this.pendingRedirect.urlToOpen);
         }
 
         delete this.pendingRedirect;
-        delete this.urlToOpen;
     }
 
     /**
-     * Treat a redirect.
+     * Open a path.
      *
-     * @param data Data received.
+     * @param path Path.
+     * @param navOptions Navigation options.
      */
-    protected treatRedirect(data: CoreRedirectPayload): void {
-        const params = data.redirectOptions?.params;
-        const coursePathMatches = data.redirectPath.match(/^course\/(\d+)\/?$/);
+    protected treatPath(path: string, navOptions: CoreNavigationOptions = {}): void {
+        const params = navOptions.params;
+        const coursePathMatches = path.match(/^course\/(\d+)\/?$/);
 
         if (coursePathMatches) {
             if (!params?.course) {
@@ -78,8 +81,8 @@ export class CoreMainMenuDeepLinkManager {
                 CoreCourse.openCourse(params.course, params);
             }
         } else {
-            CoreNavigator.navigateToSitePath(data.redirectPath, {
-                ...data.redirectOptions,
+            CoreNavigator.navigateToSitePath(path, {
+                ...navOptions,
                 preferCurrentTab: false,
             });
         }
@@ -91,9 +94,7 @@ export class CoreMainMenuDeepLinkManager {
      * @param url URL to open.
      */
     protected async treatUrlToOpen(url: string): Promise<void> {
-        const actions = await CoreContentLinksDelegate.getActionsFor(url, undefined);
-
-        const action = CoreContentLinksHelper.getFirstValidAction(actions);
+        const action = await CoreContentLinksHelper.getFirstValidActionFor(url);
         if (action?.sites?.[0]) {
             action.action(action.sites[0]);
         }

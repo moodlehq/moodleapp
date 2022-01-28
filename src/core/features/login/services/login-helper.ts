@@ -32,10 +32,9 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
-import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 
 /**
@@ -132,6 +131,7 @@ export class CoreLoginHelperProvider {
      * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
      * @param service The service to use. If not defined, core service will be used.
      * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
+     * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
      * @return Promise resolved when done or if user cancelled.
      */
     async confirmAndOpenBrowserForSSOLogin(
@@ -139,6 +139,7 @@ export class CoreLoginHelperProvider {
         typeOfLogin: number,
         service?: string,
         launchUrl?: string,
+        redirectData?: CoreRedirectPayload,
     ): Promise<void> {
         // Show confirm only if it's needed. Treat "false" (string) as false to prevent typing errors.
         const showConfirmation = this.shouldShowSSOConfirm(typeOfLogin);
@@ -152,7 +153,7 @@ export class CoreLoginHelperProvider {
             }
         }
 
-        this.openBrowserForSSOLogin(siteUrl, typeOfLogin, service, launchUrl);
+        this.openBrowserForSSOLogin(siteUrl, typeOfLogin, service, launchUrl, redirectData);
     }
 
     /**
@@ -414,17 +415,14 @@ export class CoreLoginHelperProvider {
         let params: Params = { openAddSite: true , showKeyboard };
 
         if (CoreSites.isLoggedIn()) {
+            const willReload = await CoreSites.logoutForRedirect(CoreConstants.NO_SITE_ID, {
+                redirectPath: path,
+                redirectOptions: { params },
+            });
 
-            if (CoreSitePlugins.hasSitePluginsLoaded) {
-                // The site has site plugins so the app will be restarted. Store the data and logout.
-                CoreApp.storeRedirect(CoreConstants.NO_SITE_ID, path, { params });
-
-                await CoreSites.logout();
-
+            if (willReload) {
                 return;
             }
-
-            await CoreSites.logout();
         } else {
             [path, params] = this.getAddSiteRouteInfo(showKeyboard);
         }
@@ -477,7 +475,7 @@ export class CoreLoginHelperProvider {
     async goToSiteInitialPage(navCtrlUnused?: unknown, page?: string, params?: any, options?: any, url?: string): Promise<void> {
         await CoreNavigator.navigateToSiteHome({
             ...options,
-            params: {
+            params: <CoreRedirectPayload> {
                 redirectPath: page,
                 redirectOptions: { params },
                 urlToOpen: url,
@@ -564,23 +562,19 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Check if current site is logged out, triggering mmCoreEventSessionExpired if it is.
+     * Check if current site is logged out, triggering session expired event if it is.
      *
-     * @param pageName Name of the page to go once authenticated if logged out. If not defined, site initial page.
-     * @param options Options of the page to go once authenticated if logged out.
+     * @param redirectData Data of the path/url to open once authenticated if logged out. If not defined, site initial page.
      * @return True if user is logged out, false otherwise.
      */
-    isSiteLoggedOut(pageName?: string, options?: CoreNavigationOptions): boolean {
+    isSiteLoggedOut(redirectData?: CoreRedirectPayload): boolean {
         const site = CoreSites.getCurrentSite();
         if (!site) {
             return false;
         }
 
         if (site.isLoggedOut()) {
-            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {
-                pageName,
-                options,
-            }, site.getId());
+            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, redirectData || {}, site.getId());
 
             return true;
         }
@@ -652,16 +646,14 @@ export class CoreLoginHelperProvider {
      * @param siteUrl URL of the site where the login will be performed.
      * @param provider The identity provider.
      * @param launchUrl The URL to open for SSO. If not defined, tool/mobile launch URL will be used.
-     * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
-     * @param pageOptions Options of the page to go once authenticated.
+     * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
      * @return True if success, false if error.
      */
     openBrowserForOAuthLogin(
         siteUrl: string,
         provider: CoreSiteIdentityProvider,
         launchUrl?: string,
-        pageName?: string,
-        pageOptions?: CoreNavigationOptions,
+        redirectData?: CoreRedirectPayload,
     ): boolean {
         launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
         if (!provider || !provider.url) {
@@ -674,7 +666,7 @@ export class CoreLoginHelperProvider {
             return false;
         }
 
-        const loginUrl = this.prepareForSSOLogin(siteUrl, undefined, launchUrl, pageName, pageOptions, {
+        const loginUrl = this.prepareForSSOLogin(siteUrl, undefined, launchUrl, redirectData, {
             oauthsso: params.id,
         });
 
@@ -692,18 +684,16 @@ export class CoreLoginHelperProvider {
      * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
      * @param service The service to use. If not defined, core service will be used.
      * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
-     * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
-     * @param pageOptions Options of the state to go once authenticated.
+     * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
      */
     openBrowserForSSOLogin(
         siteUrl: string,
         typeOfLogin: number,
         service?: string,
         launchUrl?: string,
-        pageName?: string,
-        pageOptions?: CoreNavigationOptions,
+        redirectData?: CoreRedirectPayload,
     ): void {
-        const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, pageName, pageOptions);
+        const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, redirectData);
 
         if (this.isSSOEmbeddedBrowser(typeOfLogin)) {
             CoreUtils.openInApp(loginUrl, {
@@ -819,8 +809,7 @@ export class CoreLoginHelperProvider {
         siteUrl: string,
         service?: string,
         launchUrl?: string,
-        pageName?: string,
-        pageOptions?: CoreNavigationOptions,
+        redirectData: CoreRedirectPayload = {},
         urlParams?: CoreUrlParams,
     ): string {
 
@@ -842,8 +831,7 @@ export class CoreLoginHelperProvider {
         CoreConfig.set(CoreConstants.LOGIN_LAUNCH_DATA, JSON.stringify(<StoredLoginLaunchData> {
             siteUrl: siteUrl,
             passport: passport,
-            pageName: pageName || '',
-            pageOptions: pageOptions || {},
+            ...redirectData,
             ssoUrlParams: urlParams || {},
         }));
 
@@ -909,6 +897,11 @@ export class CoreLoginHelperProvider {
         }
 
         this.sessionExpiredCheckingSite[siteId || ''] = true;
+        const redirectData: CoreRedirectPayload = {
+            redirectPath: data.redirectPath,
+            redirectOptions: data.redirectOptions,
+            urlToOpen: data.urlToOpen,
+        };
 
         try {
             // Check authentication method.
@@ -930,8 +923,7 @@ export class CoreLoginHelperProvider {
                             result.code,
                             result.service,
                             result.config?.launchurl,
-                            data.pageName,
-                            data.options,
+                            redirectData,
                         );
                     } catch (error) {
                         // User cancelled, logout him.
@@ -964,8 +956,7 @@ export class CoreLoginHelperProvider {
                                     siteUrl,
                                     providerToUse,
                                     result.config?.launchurl,
-                                    data.pageName,
-                                    data.options,
+                                    redirectData,
                                 );
                             } catch (error) {
                                 // User cancelled, logout him.
@@ -987,8 +978,7 @@ export class CoreLoginHelperProvider {
                     await CoreUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
                         params: {
                             siteId,
-                            pageName: data.pageName,
-                            pageOptions: data.options,
+                            ...redirectData,
                         },
                         reset: true,
                     }));
@@ -1213,8 +1203,9 @@ export class CoreLoginHelperProvider {
                 siteUrl: launchSiteURL,
                 token: params[1],
                 privateToken: params[2],
-                pageName: data.pageName,
-                pageOptions: data.pageOptions,
+                redirectPath: data.redirectPath,
+                redirectOptions: data.redirectOptions,
+                urlToOpen: data.urlToOpen,
                 ssoUrlParams: data.ssoUrlParams,
             };
         } else {
@@ -1443,12 +1434,10 @@ export type CoreAccountsList = {
 /**
  * Data related to a SSO authentication.
  */
-export interface CoreLoginSSOData {
+export type CoreLoginSSOData = CoreRedirectPayload & {
     siteUrl: string; // The site's URL.
     token?: string; // User's token.
     privateToken?: string; // User's private token.
-    pageName?: string; // Name of the page to go after authenticated.
-    pageOptions?: CoreNavigationOptions; // Options of the navigation to the page.
     ssoUrlParams?: CoreUrlParams; // Other params added to the login url.
 };
 
@@ -1531,11 +1520,9 @@ type ResendConfirmationEmailResult = {
     warnings?: CoreWSExternalWarning[];
 };
 
-type StoredLoginLaunchData = {
+type StoredLoginLaunchData = CoreRedirectPayload & {
     siteUrl: string;
     passport: number;
-    pageName: string;
-    pageOptions: CoreNavigationOptions;
     ssoUrlParams: CoreUrlParams;
 };
 
