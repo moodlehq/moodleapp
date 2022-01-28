@@ -27,6 +27,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreConstants } from '@/core/constants';
 import { IonRefresher } from '@ionic/angular';
+import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
 
 /**
  * Page that displays the messages settings page.
@@ -50,14 +51,16 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     groupMessagingEnabled = false;
     sendOnEnter = false;
 
+    protected loggedInOffLegacyMode = false;
     protected previousContactableValue?: number | boolean;
 
     constructor() {
 
-        const currentSite = CoreSites.getCurrentSite();
-        this.advancedContactable = !!currentSite?.isVersionGreaterEqualThan('3.6');
-        this.allowSiteMessaging = !!currentSite?.canUseAdvancedFeature('messagingallusers');
+        const currentSite = CoreSites.getRequiredCurrentSite();
+        this.advancedContactable = !!currentSite.isVersionGreaterEqualThan('3.6');
+        this.allowSiteMessaging = !!currentSite.canUseAdvancedFeature('messagingallusers');
         this.groupMessagingEnabled = AddonMessages.isGroupMessagingEnabled();
+        this.loggedInOffLegacyMode = !currentSite.isVersionGreaterEqualThan('4.0');
 
         this.asyncInit();
     }
@@ -90,13 +93,16 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
                     component.notifications = component.notifications.filter((notification) =>
                         notification.preferencekey == AddonMessagesProvider.NOTIFICATION_PREFERENCES_KEY);
 
-                    component.notifications.forEach((notification) => {
-                        notification.processors.forEach(
-                            (processor: AddonMessagesMessagePreferencesNotificationProcessorFormatted) => {
-                                processor.checked = processor.loggedin.checked || processor.loggedoff.checked;
-                            },
-                        );
-                    });
+                    if (this.loggedInOffLegacyMode) {
+                        // Load enabled from loggedin / loggedoff values.
+                        component.notifications.forEach((notification) => {
+                            notification.processors.forEach(
+                                (processor) => {
+                                    processor.enabled = processor.loggedin.checked || processor.loggedoff.checked;
+                                },
+                            );
+                        });
+                    }
                 }
             }
 
@@ -165,74 +171,70 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Change the value of a certain preference.
+     * Change the value of a certain preference. Versions 3.6 onwards.
      *
      * @param notification Notification object.
-     * @param state State name, ['loggedin', 'loggedoff'].
      * @param processor Notification processor.
      */
     async changePreference(
         notification: AddonMessagesMessagePreferencesNotificationFormatted,
-        state: string,
-        processor: AddonMessagesMessagePreferencesNotificationProcessorFormatted,
+        processor: AddonMessagesMessagePreferencesNotificationProcessor,
     ): Promise<void> {
+        // Update both states at the same time.
+        let value = notification.processors
+            .filter((processor) => processor.enabled)
+            .map((processor) => processor.name)
+            .join(',');
 
-        const valueArray: string[] = [];
-        let value = 'none';
+        if (value == '') {
+            value = 'none';
+        }
 
-        if (this.groupMessagingEnabled) {
-            // Update both states at the same time.
-            const promises: Promise<void>[] = [];
+        notification.updating = true;
 
-            notification.processors.forEach((processor: AddonMessagesMessagePreferencesNotificationProcessorFormatted) => {
-                if (processor.checked) {
-                    valueArray.push(processor.name);
-                }
-            });
-
-            if (value.length > 0) {
-                value = valueArray.join(',');
-            }
-
-            notification.updating = true;
-
+        const promises: Promise<void>[] = [];
+        if (this.loggedInOffLegacyMode) {
             promises.push(CoreUser.updateUserPreference(notification.preferencekey + '_loggedin', value));
             promises.push(CoreUser.updateUserPreference(notification.preferencekey + '_loggedoff', value));
-
-            try {
-                await Promise.all(promises);
-                // Update the preferences since they were modified.
-                this.updatePreferencesAfterDelay();
-            } catch (error) {
-                // Show error and revert change.
-                CoreDomUtils.showErrorModal(error);
-                processor.checked = !processor.checked;
-            } finally {
-                notification.updating = false;
-            }
-
-            return;
+        }  else {
+            promises.push(CoreUser.updateUserPreference(notification.preferencekey + '_enabled', value));
         }
 
+        try {
+            await Promise.all(promises);
+            // Update the preferences since they were modified.
+            this.updatePreferencesAfterDelay();
+        } catch (error) {
+            // Show error and revert change.
+            CoreDomUtils.showErrorModal(error);
+            processor.enabled = !processor.enabled;
+        } finally {
+            notification.updating = false;
+        }
+    }
+
+    /**
+     * Change the value of a certain preference. Only on version 3.5.
+     *
+     * @param notification Notification object.
+     * @param processor Notification processor.
+     * @param state State name, ['loggedin', 'loggedoff'].
+     */
+    async changePreferenceLegacy(
+        notification: AddonMessagesMessagePreferencesNotificationFormatted,
+        processor: AddonMessagesMessagePreferencesNotificationProcessor,
+        state: 'loggedin' | 'loggedoff',
+    ): Promise<void> {
         // Update only the specified state.
-        const processorState = processor[state];
+        const processorState: AddonNotificationsPreferencesNotificationProcessorState = processor[state];
         const preferenceName = notification.preferencekey + '_' + processorState.name;
 
-        notification.processors.forEach((processor) => {
-            if (processor[state].checked) {
-                valueArray.push(processor.name);
-            }
-        });
+        const value = notification.processors
+            .filter((processor) => processor[state].checked)
+            .map((processor) => processor.name)
+            .join(',');
 
-        if (value.length > 0) {
-            value = valueArray.join(',');
-        }
-
-        if (!notification.updating) {
-            notification.updating = {};
-        }
-
-        notification.updating[state] = true;
+        notification['updating'+state] = true;
         try {
             await CoreUser.updateUserPreference(preferenceName, value);
             // Update the preferences since they were modified.
@@ -242,7 +244,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
             CoreDomUtils.showErrorModal(error);
             processorState.checked = !processorState.checked;
         } finally {
-            notification.updating[state] = false;
+            notification['updating'+state] = false;
         }
     }
 
@@ -288,12 +290,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
  * Message preferences notification with some caclulated data.
  */
 type AddonMessagesMessagePreferencesNotificationFormatted = AddonMessagesMessagePreferencesNotification & {
-    updating?: boolean | {[state: string]: boolean}; // Calculated in the app. Whether the notification is being updated.
-};
-
-/**
- * Message preferences notification processor with some caclulated data.
- */
-type AddonMessagesMessagePreferencesNotificationProcessorFormatted = AddonMessagesMessagePreferencesNotificationProcessor & {
-    checked?: boolean; // Calculated in the app. Whether the processor is checked either for loggedin or loggedoff.
+    updating?: boolean; // Calculated in the app. Whether the notification is being updated.
+    updatingloggedin?: boolean; // Calculated in the app. Whether the notification is being updated.
+    updatingloggedoff?: boolean; // Calculated in the app. Whether the notification is being updated.
 };
