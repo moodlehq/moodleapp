@@ -21,14 +21,14 @@
 
         --border-color: var(--core-combobox-border-color);
         --border-style: solid;
-        --border-width: var(--core-combobox-border-all-width);
+        --border-width: var(--core-combobox-border-width);
 
         --box-shadow: var(--core-combobox-box-shadow);
 
-        --padding-top: 10px;
-        --padding-end: 10px;
-        --padding-bottom: 10px;
-        --padding-start: 16px;
+        --padding-top: 8px;
+        --padding-end: 8px;
+        --padding-bottom: 8px;
+        --padding-start: 8px;
 
         &.md {
             --background-activated-opacity: 0;
@@ -105,7 +105,7 @@ ion-button {
         font-weight: 400;
         font-size: 16px;
         line-height: 20px;
-        border-radius: 0;
+        border-radius: var(--core-combobox-radius);
     }
 
     .select-text {

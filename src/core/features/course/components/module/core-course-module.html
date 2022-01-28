@@ -1,4 +1,4 @@
-<ng-container *ngIf="module.handlerData && module.visibleoncoursepage !== 0">
+<ion-card *ngIf="module.handlerData && module.visibleoncoursepage !== 0">
     <ng-container *ngIf="!module.handlerData.loading">
         <ion-item id="core-course-module-{{module.id}}"
             class="ion-text-wrap core-course-module-handler core-module-main-item {{module.handlerData.class}}"
@@ -91,4 +91,4 @@
             <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
         </ion-label>
     </ion-item>
-</ng-container>
+</ion-card>
