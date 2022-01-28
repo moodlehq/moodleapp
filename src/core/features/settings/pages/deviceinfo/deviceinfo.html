@@ -33,7 +33,7 @@
         <ion-item (longPress)="copyItemInfo($event)" (click)="enableDevOptions()">
             <ion-label class="ion-text-wrap">
                 <h2>{{ 'core.settings.compilationinfo' | translate }}</h2>
-                <p *ngIf="deviceInfo.compilationTime">{{ deviceInfo.compilationTime | coreFormatDate: "LLL Z": false }}</p>
+                <p *ngIf="deviceInfo.compilationTime">{{ deviceInfo.compilationTime | coreFormatDate: "LLL Z": false }}</p>
                 <p *ngIf="deviceInfo.lastCommit">{{ deviceInfo.lastCommit }}</p>
             </ion-label>
         </ion-item>

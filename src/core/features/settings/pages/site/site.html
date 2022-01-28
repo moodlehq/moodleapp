@@ -18,7 +18,7 @@
         <core-loading [hideUntil]="handlers.loaded">
             <ion-list>
                 <ion-item *ngFor="let handler of handlers.items" [ngClass]="['core-settings-handler', handler.class]"
-                    [attr.aria-label]="handler.title | translate" detail="true" (click)="handlers.select(handler)" button
+                    [attr.aria-label]="handler.title | translate" detail="true" (click)="handlers.select(handler)" button
                     [attr.aria-current]="handlers.getItemAriaCurrent(handler)">
                     <ion-icon [name]="handler.icon" slot="start" *ngIf="handler.icon" aria-hidden="true">
                     </ion-icon>
