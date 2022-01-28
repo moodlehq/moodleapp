@@ -95,7 +95,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
 
         this.getResourceData(module, courseId, handlerData).then((extra) => {
             handlerData.extraBadge = extra;
-            handlerData.extraBadgeColor = 'light';
+            handlerData.extraBadgeColor = '';
 
             return;
         }).catch(() => {

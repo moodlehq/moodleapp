@@ -62,7 +62,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     @Input() layout: 'icon-top' | 'icon-start' | 'icon-end' | 'icon-bottom' | 'icon-hide' | 'label-hide' = 'icon-hide';
     @Input() tabs: CoreTabsOutletTab[] = [];
 
-    @ViewChild(IonTabs) protected ionTabs?: IonTabs;
+    @ViewChild(IonTabs) protected ionTabs!: IonTabs;
 
     protected stackEventsSubscription?: Subscription;
     protected outletActivatedSubscription?: Subscription;
@@ -96,9 +96,15 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
         }
 
         this.tabsElement = this.element.nativeElement.querySelector('ion-tabs');
-        this.stackEventsSubscription = this.ionTabs?.outlet.stackEvents.subscribe(async (stackEvent: StackEvent) => {
+        this.stackEventsSubscription = this.ionTabs.outlet.stackEvents.subscribe(async (stackEvent: StackEvent) => {
             if (!this.isCurrentView) {
                 return;
+            }
+
+            // Add tabid to the tab content element.
+            if (stackEvent.enteringView.element.id == '') {
+                const tab = this.tabs.find((tab) => tab.page == stackEvent.enteringView.url);
+                stackEvent.enteringView.element.id = tab?.id || '';
             }
 
             this.showHideNavBarButtons(stackEvent.enteringView.element.tagName);
@@ -111,8 +117,8 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
                 this.showHideTabs(scrollElement.scrollTop, scrollElement);
             }
         });
-        this.outletActivatedSubscription = this.ionTabs?.outlet.activateEvents.subscribe(() => {
-            this.lastActiveComponent = this.ionTabs?.outlet.component;
+        this.outletActivatedSubscription = this.ionTabs.outlet.activateEvents.subscribe(() => {
+            this.lastActiveComponent = this.ionTabs.outlet.component;
         });
     }
 
@@ -140,8 +146,8 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
         // The `ionViewDidEnter` method is not called on nested outlets unless the parent page is leaving the navigation stack,
         // that's why we need to call it manually if the page that is entering already existed in the stack (meaning that it is
         // entering in response to a back navigation from the page on top).
-        if (this.existsInNavigationStack && this.ionTabs?.outlet.isActivated) {
-            (this.ionTabs?.outlet.component as Partial<ViewDidEnter>).ionViewDidEnter?.();
+        if (this.existsInNavigationStack && this.ionTabs.outlet.isActivated) {
+            (this.ionTabs.outlet.component as Partial<ViewDidEnter>).ionViewDidEnter?.();
         }
 
         // After the view has entered for the first time, we can assume that it'll always be in the navigation stack
@@ -180,10 +186,9 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
      * @param activatedPageName Activated page name.
      */
     protected showHideNavBarButtons(activatedPageName: string): void {
-        const elements = this.ionTabs!.outlet.nativeEl.querySelectorAll('core-navbar-buttons');
-        const domUtils = CoreDomUtils.instance;
+        const elements = this.ionTabs.outlet.nativeEl.querySelectorAll('core-navbar-buttons');
         elements.forEach((element) => {
-            const instance = domUtils.getInstanceByElement<CoreNavBarButtonsComponent>(element);
+            const instance = CoreDomUtils.getInstanceByElement<CoreNavBarButtonsComponent>(element);
 
             if (instance) {
                 const pagetagName = element.closest('.ion-page')?.tagName;

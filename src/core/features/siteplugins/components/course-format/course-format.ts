@@ -16,7 +16,7 @@ import { Component, OnChanges, Input, ViewChild, Output, EventEmitter } from '@a
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreCourseFormatComponent } from '@features/course/components/format/format';
-import { CoreCourseModuleCompletionData, CoreCourseSectionWithStatus } from '@features/course/services/course-helper';
+import { CoreCourseModuleCompletionData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
@@ -33,7 +33,7 @@ import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-
 export class CoreSitePluginsCourseFormatComponent implements OnChanges {
 
     @Input() course?: CoreCourseAnyCourseData; // The course to render.
-    @Input() sections?: CoreCourseSectionWithStatus[]; // List of course sections. The status will be calculated in this component.
+    @Input() sections?: CoreCourseSection[]; // List of course sections. The status will be calculated in this component.
     @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).

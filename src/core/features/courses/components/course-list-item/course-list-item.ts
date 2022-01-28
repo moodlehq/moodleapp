@@ -171,7 +171,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
             CoreCourseHelper.openCourse(this.course);
         } else {
             CoreNavigator.navigateToSitePath(
-                '/course/' + this.course.id + '/preview',
+                `/course/${this.course.id}/preview`,
                 { params: { course: this.course } },
             );
         }

@@ -4,16 +4,19 @@
     <ng-container *ngIf="completion.istrackeduser">
         <ng-container *ngFor="let rule of details">
             <ion-chip *ngIf="rule.statuscomplete" color="success" role="listitem" [attr.aria-label]="rule.accessibleDescription">
+                <ion-icon name="fas-check" aria-hidden="true"></ion-icon>
                 <ion-label><strong>{{ 'core.course.completion_automatic:done' | translate }}</strong> {{ rule.rulevalue.description }}
                 </ion-label>
             </ion-chip>
 
             <ion-chip *ngIf="rule.statuscompletefail" color="danger" role="listitem" [attr.aria-label]="rule.accessibleDescription">
+                <ion-icon name="fas-times" aria-hidden="true"></ion-icon>
                 <ion-label><strong>{{ 'core.course.completion_automatic:failed' | translate }}</strong> {{ rule.rulevalue.description }}
                 </ion-label>
             </ion-chip>
 
-            <ion-chip *ngIf="rule.statusincomplete" color="medium" role="listitem" [attr.aria-label]="rule.accessibleDescription">
+            <ion-chip *ngIf="rule.statusincomplete" role="listitem" [attr.aria-label]="rule.accessibleDescription">
+                <ion-icon name="fas-edit" aria-hidden="true"></ion-icon>
                 <ion-label><strong>{{ 'core.course.completion_automatic:todo' | translate }}</strong> {{ rule.rulevalue.description }}
                 </ion-label>
             </ion-chip>

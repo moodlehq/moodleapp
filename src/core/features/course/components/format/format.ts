@@ -26,7 +26,6 @@ import {
     Type,
     ElementRef,
 } from '@angular/core';
-import { ModalOptions } from '@ionic/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
@@ -44,8 +43,10 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreCourseSectionSelectorComponent } from '../section-selector/section-selector';
+import { CoreCourseCourseIndexComponent, CoreCourseIndexSectionWithModule } from '../course-index/course-index';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
+import { CoreNavigator } from '@services/navigator';
+import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -66,8 +67,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     static readonly LOAD_MORE_ACTIVITIES = 20; // How many activities should load each time showMoreActivities is called.
 
-    @Input() course?: CoreCourseAnyCourseData; // The course to render.
-    @Input() sections?: CoreCourseSection[]; // List of course sections.
+    @Input() course!: CoreCourseAnyCourseData; // The course to render.
+    @Input() sections: CoreCourseSectionToDisplay[] = []; // List of course sections.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
@@ -78,7 +79,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     // All the possible component classes.
     courseFormatComponent?: Type<unknown>;
     courseSummaryComponent?: Type<unknown>;
-    sectionSelectorComponent?: Type<unknown>;
     singleSectionComponent?: Type<unknown>;
     allSectionsComponent?: Type<unknown>;
 
@@ -86,7 +86,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     showSectionId = 0;
     data: Record<string, unknown> = {}; // Data to pass to the components.
 
-    displaySectionSelector = false;
+    displayCourseIndex = false;
     displayBlocks = false;
     hasBlocks = false;
     selectedSection?: CoreCourseSection;
@@ -95,17 +95,12 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     allSectionsId: number = CoreCourseProvider.ALL_SECTIONS_ID;
     stealthModulesSectionId: number = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     loaded = false;
-    hasSeveralSections?: boolean;
-    imageThumb?: string;
     progress?: number;
-    sectionSelectorModalOptions: ModalOptions = {
-        component: CoreCourseSectionSelectorComponent,
-        componentProps: {},
-    };
+    highlighted?: string;
 
     protected selectTabObserver?: CoreEventObserver;
+    protected completionObserver?: CoreEventObserver;
     protected lastCourseFormat?: string;
-    protected sectionSelectorExpanded = false;
 
     constructor(
         protected content: IonContent,
@@ -116,9 +111,17 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
+        if (this.course === undefined) {
+            CoreDomUtils.showErrorModal('Course not set');
+
+            CoreNavigator.back();
+
+            return;
+        }
+
         // Listen for select course tab events to select the right section if needed.
         this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
             if (data.name) {
@@ -137,6 +140,37 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 this.sectionChanged(section);
             }
         });
+
+        // The completion of any of the modules have changed.
+        this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_CHANGED, (data) => {
+            if (data.completion.courseId != this.course.id) {
+                return;
+            }
+
+            // Emit a new event for other components.
+            this.completionChanged.emit(data.completion);
+
+            if (data.completion.valueused !== false || !this.course || !('progress' in this.course) ||
+                    typeof this.course.progress != 'number') {
+                return;
+            }
+
+            // If the completion value is not used, the page won't be reloaded, so update the progress bar.
+            const completionModules = (<CoreCourseModuleData[]> [])
+                .concat(...this.sections.map((section) => section.modules))
+                .map((module) => module.completion && module.completion > 0 ? 1 : module.completion)
+                .reduce((accumulator, currentValue) => (accumulator || 0) + (currentValue || 0), 0);
+
+            const moduleProgressPercent = 100 / (completionModules || 1);
+            // Use min/max here to avoid floating point rounding errors over/under-flowing the progress bar.
+            if (data.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
+                this.course.progress = Math.min(100, this.course.progress + moduleProgressPercent);
+            } else {
+                this.course.progress = Math.max(0, this.course.progress - moduleProgressPercent);
+            }
+
+            this.updateProgress();
+        });
     }
 
     /**
@@ -144,27 +178,20 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     async ngOnChanges(changes: { [name: string]: SimpleChange }): Promise<void> {
         this.setInputData();
-        this.sectionSelectorModalOptions.componentProps!.course = this.course;
-        this.sectionSelectorModalOptions.componentProps!.sections = this.sections;
 
         if (changes.course && this.course) {
             // Course has changed, try to get the components.
             this.getComponents();
 
-            this.displaySectionSelector = CoreCourseFormatDelegate.displaySectionSelector(this.course);
+            this.displayCourseIndex = CoreCourseFormatDelegate.displayCourseIndex(this.course);
             this.displayBlocks = CoreCourseFormatDelegate.displayBlocks(this.course);
 
             this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(this.course.id);
 
             this.updateProgress();
-
-            if ('overviewfiles' in this.course) {
-                this.imageThumb = this.course.overviewfiles?.[0]?.fileurl;
-            }
         }
 
         if (changes.sections && this.sections) {
-            this.sectionSelectorModalOptions.componentProps!.sections = this.sections;
             this.treatSections(this.sections);
         }
     }
@@ -192,10 +219,13 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         // Format has changed or it's the first time, load all the components.
         this.lastCourseFormat = this.course.format;
 
+        this.highlighted = CoreCourseFormatDelegate.getSectionHightlightedName(this.course);
+        const currentSection = await CoreCourseFormatDelegate.getCurrentSection(this.course, this.sections);
+        currentSection.highlighted = true;
+
         await Promise.all([
             this.loadCourseFormatComponent(),
             this.loadCourseSummaryComponent(),
-            this.loadSectionSelectorComponent(),
             this.loadSingleSectionComponent(),
             this.loadAllSectionsComponent(),
         ]);
@@ -207,7 +237,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadCourseFormatComponent(): Promise<void> {
-        this.courseFormatComponent = await CoreCourseFormatDelegate.getCourseFormatComponent(this.course!);
+        this.courseFormatComponent = await CoreCourseFormatDelegate.getCourseFormatComponent(this.course);
     }
 
     /**
@@ -216,16 +246,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadCourseSummaryComponent(): Promise<void> {
-        this.courseSummaryComponent = await CoreCourseFormatDelegate.getCourseSummaryComponent(this.course!);
-    }
-
-    /**
-     * Load section selector component.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async loadSectionSelectorComponent(): Promise<void> {
-        this.sectionSelectorComponent = await CoreCourseFormatDelegate.getSectionSelectorComponent(this.course!);
+        this.courseSummaryComponent = await CoreCourseFormatDelegate.getCourseSummaryComponent(this.course);
     }
 
     /**
@@ -234,7 +255,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadSingleSectionComponent(): Promise<void> {
-        this.singleSectionComponent = await CoreCourseFormatDelegate.getSingleSectionComponent(this.course!);
+        this.singleSectionComponent = await CoreCourseFormatDelegate.getSingleSectionComponent(this.course);
     }
 
     /**
@@ -243,7 +264,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadAllSectionsComponent(): Promise<void> {
-        this.allSectionsComponent = await CoreCourseFormatDelegate.getAllSectionsComponent(this.course!);
+        this.allSectionsComponent = await CoreCourseFormatDelegate.getAllSectionsComponent(this.course);
     }
 
     /**
@@ -254,15 +275,16 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     protected async treatSections(sections: CoreCourseSection[]): Promise<void> {
         const hasAllSections = sections[0].id == CoreCourseProvider.ALL_SECTIONS_ID;
-        this.hasSeveralSections = sections.length > 2 || (sections.length == 2 && !hasAllSections);
+        const hasSeveralSections = sections.length > 2 || (sections.length == 2 && !hasAllSections);
 
         if (this.selectedSection) {
+            const selectedSection = this.selectedSection;
             // We have a selected section, but the list has changed. Search the section in the list.
-            let newSection = sections.find(section => this.compareSections(section, this.selectedSection!));
+            let newSection = sections.find(section => this.compareSections(section, selectedSection));
 
             if (!newSection) {
                 // Section not found, calculate which one to use.
-                newSection = await CoreCourseFormatDelegate.getCurrentSection(this.course!, sections);
+                newSection = await CoreCourseFormatDelegate.getCurrentSection(this.course, sections);
             }
 
             this.sectionChanged(newSection);
@@ -271,7 +293,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         // There is no selected section yet, calculate which one to load.
-        if (!this.hasSeveralSections) {
+        if (!hasSeveralSections) {
             // Always load "All sections" to display the section title. If it isn't there just load the section.
             this.loaded = true;
             this.sectionChanged(sections[0]);
@@ -289,7 +311,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         if (!this.loaded) {
             // No section specified, not found or not visible, get current section.
-            const section = await CoreCourseFormatDelegate.getCurrentSection(this.course!, sections);
+            const section = await CoreCourseFormatDelegate.getCurrentSection(this.course, sections);
 
             this.loaded = true;
             this.sectionChanged(section);
@@ -299,20 +321,31 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Display the section selector modal.
+     * Display the course index modal.
      */
-    async showSectionSelector(): Promise<void> {
-        if (this.sectionSelectorExpanded) {
-            return;
-        }
+    async openCourseIndex(): Promise<void> {
+        const data = await CoreDomUtils.openModal<CoreCourseIndexSectionWithModule>({
+            component: CoreCourseCourseIndexComponent,
+            componentProps: {
+                course: this.course,
+                sections: this.sections,
+                selectedId: this.selectedSection?.id,
+            },
+        });
 
-        this.sectionSelectorExpanded = true;
-
-        const data = await CoreDomUtils.openModal<CoreCourseSection>(this.sectionSelectorModalOptions);
-
-        this.sectionSelectorExpanded = false;
         if (data) {
-            this.sectionChanged(data);
+            this.sectionChanged(data.section);
+            if (data.module) {
+                if (!data.module.handlerData) {
+                    data.module.handlerData =
+                        await CoreCourseModuleDelegate.getModuleDataFor(data.module.modname, data.module, this.course.id);
+                }
+
+                if (data.module.uservisible !== false && data.module.handlerData?.action) {
+                    data.module.handlerData.action(data.event, data.module, data.module.course);
+                }
+                this.moduleId = data.module.id;
+            }
         }
     }
 
@@ -324,27 +357,26 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     sectionChanged(newSection: CoreCourseSection): void {
         const previousValue = this.selectedSection;
         this.selectedSection = newSection;
-        this.sectionSelectorModalOptions.componentProps!.selected = this.selectedSection;
         this.data.section = this.selectedSection;
 
         if (newSection.id != this.allSectionsId) {
             // Select next and previous sections to show the arrows.
-            const i = this.sections!.findIndex((value) => this.compareSections(value, this.selectedSection!));
+            const i = this.sections.findIndex((value) => this.compareSections(value, newSection));
 
             let j: number;
             for (j = i - 1; j >= 1; j--) {
-                if (this.canViewSection(this.sections![j])) {
+                if (this.canViewSection(this.sections[j])) {
                     break;
                 }
             }
-            this.previousSection = j >= 1 ? this.sections![j] : undefined;
+            this.previousSection = j >= 1 ? this.sections[j] : undefined;
 
-            for (j = i + 1; j < this.sections!.length; j++) {
-                if (this.canViewSection(this.sections![j])) {
+            for (j = i + 1; j < this.sections.length; j++) {
+                if (this.canViewSection(this.sections[j])) {
                     break;
                 }
             }
-            this.nextSection = j < this.sections!.length ? this.sections![j] : undefined;
+            this.nextSection = j < this.sections.length ? this.sections[j] : undefined;
         } else {
             this.previousSection = undefined;
             this.nextSection = undefined;
@@ -368,7 +400,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (!previousValue || previousValue.id != newSection.id) {
             // First load or section changed, add log in Moodle.
             CoreUtils.ignoreErrors(
-                CoreCourse.logView(this.course!.id, newSection.section, undefined, this.course!.fullname),
+                CoreCourse.logView(this.course.id, newSection.section, undefined, this.course.fullname),
             );
         }
 
@@ -475,7 +507,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.selectTabObserver && this.selectTabObserver.off();
@@ -511,35 +543,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * The completion of any of the modules have changed.
-     */
-    onCompletionChange(completionData: CoreCourseModuleCompletionData): void {
-        // Emit a new event for other components.
-        this.completionChanged.emit(completionData);
-
-        if (completionData.valueused !== false || !this.course || !('progress' in this.course) ||
-                typeof this.course.progress != 'number') {
-            return;
-        }
-
-        // If the completion value is not used, the page won't be reloaded, so update the progress bar.
-        const completionModules = (<CoreCourseModuleData[]> [])
-            .concat(...this.sections!.map((section) => section.modules))
-            .map((module) => module.completion && module.completion > 0 ? 1 : module.completion)
-            .reduce((accumulator, currentValue) => (accumulator || 0) + (currentValue || 0), 0);
-
-        const moduleProgressPercent = 100 / (completionModules || 1);
-        // Use min/max here to avoid floating point rounding errors over/under-flowing the progress bar.
-        if (completionData.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
-            this.course.progress = Math.min(100, this.course.progress + moduleProgressPercent);
-        } else {
-            this.course.progress = Math.max(0, this.course.progress - moduleProgressPercent);
-        }
-
-        this.updateProgress();
-    }
-
-    /**
      * Update course progress.
      */
     protected updateProgress(): void {
@@ -559,3 +562,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
 }
+
+type CoreCourseSectionToDisplay = CoreCourseSection & {
+    highlighted?: boolean;
+};

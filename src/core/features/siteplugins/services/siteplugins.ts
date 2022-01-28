@@ -884,7 +884,11 @@ export type CoreSitePluginsCourseModuleHandlerData = CoreSitePluginsHandlerCommo
 export type CoreSitePluginsCourseFormatHandlerData = CoreSitePluginsHandlerCommonData & {
     canviewallsections?: boolean;
     displayenabledownload?: boolean;
+    /**
+     * @deprecated on 4.0, use displaycourseindex instead.
+     */
     displaysectionselector?: boolean;
+    displaycourseindex?: boolean;
 };
 
 /**

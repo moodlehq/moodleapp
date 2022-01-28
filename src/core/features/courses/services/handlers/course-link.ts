@@ -156,7 +156,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
         modal.dismiss();
 
         // Now open the course.
-        CoreCourseHelper.openCourse(course, pageParams);
+        CoreCourseHelper.openCourse(course, { params: pageParams });
     }
 
     /**

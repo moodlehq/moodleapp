@@ -105,7 +105,9 @@
     --subdued-text-color: #595959;
 
     --small-radius: 4px;
-    --big-radius: 8px;
+    --medium-radius: 8px;
+    --big-radius: 16px;
+    --huge-radius: 24px;
 
     --ion-card-color: var(--text-color);
     ion-card {
@@ -113,7 +115,7 @@
         --border-style: solid;
         --border-color: var(--stroke);
         --box-shadow: none;
-        --border-radius: var(--big-radius);
+        --border-radius: var(--medium-radius);
     }
 
     --text-hightlight-background-color: #{$core-text-hightlight-background-color};
@@ -181,7 +183,7 @@
             height: var(--a11y-min-target-size);
             border: 1px solid var(--stroke);
             box-shadow: none;
-            border-radius: var(--big-radius);
+            border-radius: var(--medium-radius);
         }
     }
 
@@ -282,7 +284,7 @@
     --core-combobox-color: var(--gray-900);
     --core-combobox-border-color: var(--stroke);
     --core-combobox-border-width: 1px;
-    --core-combobox-radius: var(--big-radius);
+    --core-combobox-radius: var(--medium-radius);
     --core-combobox-box-shadow: none;
 
     --selected-item-color: var(--primary);
@@ -301,7 +303,7 @@
     --core-send-message-input-background: var(--gray-200);
     --core-send-message-input-color: var(--gray-900);
 
-    --core-courseimage-on-course-height: 150px;
+    --core-courseimage-on-course-size: 72px;
 
     --core-course-module-navigation-max-height: 56px;
     --core-course-module-navigation-background: var(--contrast-background);

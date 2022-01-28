@@ -1,0 +1,26 @@
+@import '~theme/globals.scss';
+
+:host {
+    .core-course-thumb {
+        height: var(--core-courseimage-on-course-size);
+        min-height: var(--core-courseimage-on-course-size);
+        width: var(--core-courseimage-on-course-size);
+        min-width: var(--core-courseimage-on-course-size);
+    }
+
+    @if ($core-show-courseimage-on-course) {
+        .core-course-thumb {
+            display: block;
+        }
+    }
+
+    @if ($core-hide-progress-on-course) {
+        .core-course-progress {
+            display: none;
+        }
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+}

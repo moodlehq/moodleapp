@@ -71,7 +71,7 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
     /**
      * @inheritdoc
      */
-    displaySectionSelector(): boolean {
+    displayCourseIndex(): boolean {
         return false;
     }
 

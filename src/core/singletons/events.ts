@@ -20,6 +20,7 @@ import { CoreFilepoolComponentFileEventData } from '@services/filepool';
 import { CoreNavigationOptions } from '@services/navigator';
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreScreenOrientation } from '@services/screen';
+import { CoreCourseCompletionType } from '@features/course/services/course';
 
 /**
  * Observer instance to stop listening to an event.
@@ -48,6 +49,7 @@ export interface CoreEventsData {
     [CoreEvents.SELECT_COURSE_TAB]: CoreEventSelectCourseTabData;
     [CoreEvents.COMPLETION_MODULE_VIEWED]: CoreEventCompletionModuleViewedData;
     [CoreEvents.MANUAL_COMPLETION_CHANGED]: CoreEventManualCompletionChangedData;
+    [CoreEvents.COMPLETION_CHANGED]: CoreEventCompletionChangedData;
     [CoreEvents.SECTION_STATUS_CHANGED]: CoreEventSectionStatusChangedData;
     [CoreEvents.ACTIVITY_DATA_SENT]: CoreEventActivityDataSentData;
     [CoreEvents.IAB_LOAD_START]: InAppBrowserEvent;
@@ -77,7 +79,11 @@ export class CoreEvents {
     static readonly SITE_UPDATED = 'site_updated';
     static readonly SITE_DELETED = 'site_deleted';
     static readonly COMPLETION_MODULE_VIEWED = 'completion_module_viewed';
+    /**
+     * Deprecated on 4.0 use COMPLETION_CHANGED instead.
+     */
     static readonly MANUAL_COMPLETION_CHANGED = 'manual_completion_changed';
+    static readonly COMPLETION_CHANGED = 'completion_changed';
     static readonly USER_DELETED = 'user_deleted';
     static readonly PACKAGE_STATUS_CHANGED = 'package_status_changed';
     static readonly COURSE_STATUS_CHANGED = 'course_status_changed';
@@ -345,6 +351,14 @@ export type CoreEventCompletionModuleViewedData = {
  */
 export type CoreEventManualCompletionChangedData = {
     completion: CoreCourseModuleCompletionData;
+};
+
+/**
+ * Data passed to COMPLETION_CHANGED event.
+ */
+export type CoreEventCompletionChangedData = {
+    completion: CoreCourseModuleCompletionData;
+    type: CoreCourseCompletionType;
 };
 
 /**

@@ -1,70 +1,17 @@
-@import '~theme/globals.scss';
+.core-course-section-nav-buttons {
+    display: flex;
+    justify-content: flex-end;
 
-:host {
-
-    .core-format-progress-list {
-        margin-bottom: 0;
-
-        .item {
-            background: transparent;
-
-            .label {
-                margin-top: 0;
-                margin-bottom: 0;
-            }
-        }
-    }
-
-    .core-course-thumb {
-        display: none;
-        height: var(--core-courseimage-on-course-height);
-        width: 100%;
+    core-format-text {
+        white-space: nowrap;
+        text-overflow: ellipsis;
         overflow: hidden;
-        cursor: pointer;
-        pointer-events: auto;
-        position: relative;
-        background: var(--ion-item-background);
-        border-bottom: 1px solid var(--stroke);
-
-        img {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            margin: auto;
-            width: 100%;
-        }
+        text-transform: none;
     }
+}
 
-    @if ($core-show-courseimage-on-course) {
-        .core-course-thumb {
-            display: block;
-        }
+.course-section {
+    ion-badge {
+        text-align: start;
     }
-
-    @if ($core-hide-progress-on-course) {
-        .core-course-progress {
-            display: none;
-        }
-    }
-
-
-    .core-button-selector-row {
-        display: flex;
-        core-combobox {
-            flex-grow: 1;
-        }
-    }
-
-    .core-course-section-nav-buttons {
-        display: flex;
-        justify-content: flex-end;
-
-        core-format-text {
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            text-transform: none;
-        }
-    }
-
 }

@@ -19,12 +19,21 @@
     </ion-label>
 </ion-item>
 <ng-content select="[description]"></ng-content>
-<!-- Activity dates. -->
-<ion-item class="ion-text-wrap core-module-dates" lines="none" *ngIf="showCompletion && module.dates?.length">
+
+<ion-item class="ion-text-wrap core-module-dates" lines="none" *ngIf="showCompletion && (module.dates?.length ||
+(module.completiondata && module.completiondata.isautomatic && module.uservisible))">
     <ion-label>
-        <p *ngFor="let date of module.dates">
-            <strong>{{ date.label }}</strong> {{ date.timestamp * 1000 | coreFormatDate:'strftimedatetime' }}
-        </p>
+        <!-- Activity dates. -->
+        <div *ngIf="module.dates?.length" class="core-module-dates">
+            <p *ngFor="let date of module.dates">
+                <ion-icon name="fas-calendar" aria-hidden="true"></ion-icon><strong>{{ date.label }}</strong> {{ date.timestamp * 1000 |
+                coreFormatDate:'strftimedatetime' }}
+            </p>
+        </div>
+        <!-- Module completion. -->
+        <core-course-module-completion [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
+            [showCompletionConditions]="true">
+        </core-course-module-completion>
     </ion-label>
 </ion-item>
 <ng-content></ng-content>

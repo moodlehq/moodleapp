@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChange } from '@angular/core';
+import { CoreCourseCompletionType } from '@features/course/services/course';
 
 import { CoreCourseHelper, CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
@@ -34,14 +35,14 @@ export class CoreCourseModuleManualCompletionComponent implements OnInit, OnChan
 
     accessibleDescription: string | null = null;
 
-    protected manualChangedObserver?: CoreEventObserver;
+    protected completionObserver?: CoreEventObserver;
 
     /**
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.manualChangedObserver = CoreEvents.on(CoreEvents.MANUAL_COMPLETION_CHANGED, (data) => {
-            if (!this.completion || this.completion.cmid != data.completion.cmid) {
+        this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_CHANGED, (data) => {
+            if (!this.completion || this.completion.cmid != data.completion.cmid && data.type != CoreCourseCompletionType.MANUAL) {
                 return;
             }
 
@@ -98,14 +99,16 @@ export class CoreCourseModuleManualCompletionComponent implements OnInit, OnChan
 
         await CoreCourseHelper.changeManualCompletion(this.completion, event);
 
+        // @deprecated MANUAL_COMPLETION_CHANGED is deprecated since 4.0 use COMPLETION_CHANGED instead.
         CoreEvents.trigger(CoreEvents.MANUAL_COMPLETION_CHANGED, { completion: this.completion });
+        CoreEvents.trigger(CoreEvents.COMPLETION_CHANGED, { completion: this.completion, type: CoreCourseCompletionType.MANUAL });
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.manualChangedObserver?.off();
+        this.completionObserver?.off();
     }
 
 }
