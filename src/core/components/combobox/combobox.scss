@@ -28,7 +28,6 @@
         --padding-top: 8px;
         --padding-end: 8px;
         --padding-bottom: 8px;
-        --padding-start: 8px;
 
         &.md {
             --background-activated-opacity: 0;
@@ -40,6 +39,14 @@
             --background-focused-opacity: .15;
         }
     }
+
+    ion-button {
+        --padding-start: 8px;
+    }
+
+    ion-select {
+        --padding-start: 16px;
+    }
 }
 
 ion-select,
@@ -48,7 +55,7 @@ ion-button {
     color: var(--color);
     text-overflow: ellipsis;
     white-space: nowrap;
-    min-height: 25px;
+    min-height: 26px;
     overflow: hidden;
     margin: 8px;
     box-shadow: var(--box-shadow);
@@ -109,7 +116,7 @@ ion-button {
     }
 
     .select-text {
-        margin-inline-end: auto;
+        @include margin-horizontal(null, auto);
         overflow: hidden;
         text-overflow: ellipsis;
     }
