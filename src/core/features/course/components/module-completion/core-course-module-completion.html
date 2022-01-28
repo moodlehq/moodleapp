@@ -3,24 +3,27 @@
 
     <ng-container *ngIf="completion.istrackeduser">
         <ng-container *ngFor="let rule of details">
-            <ion-badge *ngIf="rule.statuscomplete" color="success" role="listitem" [attr.aria-label]="rule.accessibleDescription">
-                <strong>{{ 'core.course.completion_automatic:done' | translate }}</strong> {{ rule.rulevalue.description }}
-            </ion-badge>
+            <ion-chip *ngIf="rule.statuscomplete" color="success" role="listitem" [attr.aria-label]="rule.accessibleDescription">
+                <ion-label><strong>{{ 'core.course.completion_automatic:done' | translate }}</strong> {{ rule.rulevalue.description }}
+                </ion-label>
+            </ion-chip>
 
-            <ion-badge *ngIf="rule.statuscompletefail" color="danger" role="listitem" [attr.aria-label]="rule.accessibleDescription">
-                <strong>{{ 'core.course.completion_automatic:failed' | translate }}</strong> {{ rule.rulevalue.description }}
-            </ion-badge>
+            <ion-chip *ngIf="rule.statuscompletefail" color="danger" role="listitem" [attr.aria-label]="rule.accessibleDescription">
+                <ion-label><strong>{{ 'core.course.completion_automatic:failed' | translate }}</strong> {{ rule.rulevalue.description }}
+                </ion-label>
+            </ion-chip>
 
-            <ion-badge *ngIf="rule.statusincomplete" color="medium" role="listitem" [attr.aria-label]="rule.accessibleDescription">
-                <strong>{{ 'core.course.completion_automatic:todo' | translate }}</strong> {{ rule.rulevalue.description }}
-            </ion-badge>
+            <ion-chip *ngIf="rule.statusincomplete" color="medium" role="listitem" [attr.aria-label]="rule.accessibleDescription">
+                <ion-label><strong>{{ 'core.course.completion_automatic:todo' | translate }}</strong> {{ rule.rulevalue.description }}
+                </ion-label>
+            </ion-chip>
         </ng-container>
     </ng-container>
 
     <ng-container *ngIf="!completion.istrackeduser">
-        <ion-badge *ngFor="let rule of details" color="light" role="listitem">
-            {{ rule.rulevalue.description }}
-        </ion-badge>
+        <ion-chip *ngFor="let rule of details" color="light" role="listitem">
+            <ion-label>{{ rule.rulevalue.description }}</ion-label>
+        </ion-chip>
     </ng-container>
 </div>
 
