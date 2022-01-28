@@ -13,7 +13,7 @@ $grid-column-paddings: (
 ) !default;
 
 :host {
-    --border-color: var(--gray);
+    --border-color: var(--stroke);
 }
 
 .addon-data-contents {

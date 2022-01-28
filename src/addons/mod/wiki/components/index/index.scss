@@ -4,14 +4,14 @@ $addon-mod-wiki-toc-level-padding:    12px !default;
 
 :host {
     --addon-mod-wiki-newentry-link-color: var(--red);
-    --addon-mod-wiki-toc-border-color: var(--gray-dark);
-    --addon-mod-wiki-toc-background-color: var(--gray-light);
+    --addon-mod-wiki-toc-border-color: var(--gray-500);
+    --addon-mod-wiki-toc-background-color: var(--gray-200);
 
     background-color: var(--ion-item-background);
 
     .addon-mod_wiki-page-content {
         background-color: var(--ion-item-background);
-        border-top: 1px solid var(--gray);
+        border-top: 1px solid var(--stroke);
         padding-bottom: 10px;
     }
 
@@ -59,5 +59,5 @@ $addon-mod-wiki-toc-level-padding:    12px !default;
 
 :host-context(body.dark) {
     --addon-mod-wiki-newentry-link-color: var(--red-light);
-    --addon-mod-wiki-toc-background-color: var(--gray-darker);
+    --addon-mod-wiki-toc-background-color: var(--medium);
 }

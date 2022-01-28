@@ -303,7 +303,7 @@ button,
 
 // Clear buttons will be black.
 ion-button.button-clear {
-    --ion-color-primary: var(--brand-color);
+    --ion-color-primary: var(--primary);
 }
 
 [role="button"],
@@ -392,7 +392,7 @@ ion-alert .alert-message {
 }
 
 ion-alert .alert-wrapper button.alert-button {
-    color: var(--brand-color);
+    color: var(--primary);
 }
 
 // Ionic list.
@@ -634,7 +634,7 @@ body.core-iframe-fullscreen ion-router-outlet {
 
 // Extra text colors.
 .text-gray {
-    color: var(--gray-dark);
+    color: var(--gray-500);
 }
 
 // Card styles
@@ -688,7 +688,7 @@ img.large-avatar,
     margin-bottom: 10px;
     border-radius : 50%;
     padding: 4px;
-    border: 1px solid var(--gray);
+    border: 1px solid var(--stroke);
     background-color: transparent;
 }
 
@@ -699,7 +699,7 @@ ion-avatar.large-avatar {
 
 ion-avatar ion-img, ion-avatar img {
     text-indent: -99999px;
-    background-color: var(--gray-light);
+    background-color: var(--gray-200);
 }
 
 // Wait to load before showing the image.
@@ -707,8 +707,16 @@ img[core-external-content]:not([src]) {
     visibility: hidden;
 }
 
-ion-card ion-item:only-child {
-    --inner-border-width: 0px;
+ion-card {
+    border-width: var(--border-width);
+    border-style: var(--border-style);
+    border-color: var(--border-color);
+    box-shadow: var(--box-shadow);
+    border-radius: var(--border-radius);
+
+    ion-item:only-child {
+        --inner-border-width: 0px;
+    }
 }
 
 .core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation div {

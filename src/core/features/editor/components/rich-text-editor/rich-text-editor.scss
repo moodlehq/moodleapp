@@ -3,16 +3,16 @@
     --placeholder-color: var(--ion-placeholder-color);
     --toobar-background: var(--white);
     --button-color: var(--ion-text-color);
-    --button-active-color: var(--gray);
+    --button-active-color: var(--gray-300);
     --background: var(--ion-item-background);
 }
 
 :host-context(body.dark) {
-    --background: var(--gray-darker);
+    --background: var(--medium);
     --color: var(--white);
-    --button-color: var(--gray-light);
-    --button-active-color: var(--gray-dark);
-    --toobar-background: var(--black);
+    --button-color: var(--gray-200);
+    --button-active-color: var(--gray-500);
+    --toobar-background: var(--gray-900);
 }
 
 :host {
@@ -107,7 +107,7 @@
         flex-shrink: 0;
         background-color: var(--toobar-background);
         padding-top: 5px;
-        border-top: 1px solid var(--gray);
+        border-top: 1px solid var(--stroke);
 
         ion-slides {
             width: 240px;

@@ -2,10 +2,10 @@
 
 :host {
     --header-background: var(--white);
-    --odd-cell-background: var(--gray-lighter);
+    --odd-cell-background: var(--light);
     --even-cell-background: var(--white);
-    --odd-cell-hover: var(--gray-light);
-    --even-cell-hover: var(--gray-lighter);
+    --odd-cell-hover: var(--gray-200);
+    --even-cell-hover: var(--light);
     --icon-color: #999999;
 
     .odd {
@@ -21,11 +21,11 @@
 }
 
 :host-context(body.dark) {
-    --header-background: var(--black);
-    --odd-cell-background: var(--gray-darker);
-    --even-cell-background: var(--black);
-    --odd-cell-hover: var(--gray-dark);
-    --even-cell-hover: var(--gray-darker);
+    --header-background: var(--gray-900);
+    --odd-cell-background: var(--medium);
+    --even-cell-background: var(--gray-900);
+    --odd-cell-hover: var(--gray-500);
+    --even-cell-hover: var(--medium);
     --icon-color: #eeeeee;
 }
 

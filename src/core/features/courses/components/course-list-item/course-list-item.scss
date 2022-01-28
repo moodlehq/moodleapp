@@ -3,7 +3,7 @@
 .core-course-list-item {
     .course-icon {
         color: white;
-        background: var(--gray-light);
+        background: var(--gray-200);
         padding: 8px;
         font-size: 24px;
         border-radius: 50%;
@@ -39,7 +39,7 @@
 
 ion-card {
     --vertical-margin: 12px;
-
+    --border-radius: 16px;
     display: flex;
     flex-direction: column;
     align-self: stretch;
@@ -161,7 +161,7 @@ button {
 
 :host-context(.core-horizontal-scroll) {
     @include horizontal_scroll_item(80%, 250px, 300px);
-    
+
     ion-card {
         .core-course-thumb {
             padding-top: 30%;
@@ -169,7 +169,7 @@ button {
 
         ion-item.core-course-header {
             --padding-start: 4px;
-            
+
             .core-course-title {
                 margin: 7px 0;
 
