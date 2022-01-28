@@ -382,17 +382,21 @@ ion-alert.core-nohead {
     }
 }
 
-ion-alert .alert-wrapper {
-    overflow: auto;
-}
+ion-alert {
+    --border-radius: var(--huge-radius);
+    .alert-wrapper {
+        overflow: auto;
+        border-radius: var(--border-radius) !important;
 
-ion-alert .alert-message {
-    user-select: text;
-    flex-shrink: 0;
-}
+        button.alert-button {
+            color: var(--primary);
+        }
+    }
 
-ion-alert .alert-wrapper button.alert-button {
-    color: var(--primary);
+    .alert-message {
+        user-select: text;
+        flex-shrink: 0;
+    }
 }
 
 // Ionic list.
@@ -844,7 +848,7 @@ ion-select-popover ion-item.core-select-option-title {
 
 ion-chip {
     line-height: 1.1;
-    border-radius: var(--big-radius);
+    border-radius: var(--medium-radius);
     @include padding-horizontal(16px);
 }
 
