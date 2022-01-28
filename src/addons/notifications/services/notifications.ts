@@ -451,6 +451,8 @@ export type AddonNotificationsPreferencesNotificationProcessorState = {
     checked: boolean; // Is checked?.
 };
 
+export type AddonNotificationsPreferencesNotificationProcessorStateSetting = 'loggedoff' | 'loggedin' | 'enabled';
+
 /**
  * Params of core_message_get_messages WS.
  */

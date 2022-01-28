@@ -78,34 +78,6 @@ export class AddonNotificationsHelperProvider {
     }
 
     /**
-     * Get a certain processor from a list of processors.
-     *
-     * @param processors List of processors.
-     * @param name Name of the processor to get.
-     * @param fallback True to return first processor if not found, false to not return any. Defaults to true.
-     * @return Processor.
-     */
-    getProcessor(
-        processors: AddonNotificationsPreferencesProcessor[],
-        name: string,
-        fallback: boolean = true,
-    ): AddonNotificationsPreferencesProcessor | undefined {
-        if (!processors || !processors.length) {
-            return;
-        }
-
-        const processor = processors.find((processor) => processor.name == name);
-        if (processor) {
-            return processor;
-        }
-
-        // Processor not found, return first if requested.
-        if (fallback) {
-            return processors[0];
-        }
-    }
-
-    /**
      * Return the components and notifications that have a certain processor.
      *
      * @param processorName Name of the processor to filter.
@@ -166,7 +138,11 @@ export type AddonNotificationsPreferencesComponentFormatted = Omit<AddonNotifica
  * Preferences notification with some calculated data.
  */
 export type AddonNotificationsPreferencesNotificationFormatted = AddonNotificationsPreferencesNotification & {
-    processorsByName?: Record<string, AddonNotificationsPreferencesNotificationProcessor>; // Calculated in the app.
+    processorsByName?: Record<string, AddonNotificationsPreferencesNotificationProcessorFormatted>; // Calculated in the app.
+};
+
+type AddonNotificationsPreferencesNotificationProcessorFormatted = AddonNotificationsPreferencesNotificationProcessor & {
+    updating?: boolean; // Calculated in the app. Whether the state is being updated.
 };
 
 /**
