@@ -19,8 +19,6 @@ import {
     OnChanges,
     OnDestroy,
     SimpleChange,
-    Output,
-    EventEmitter,
     ViewChildren,
     QueryList,
     Type,
@@ -31,12 +29,9 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import {
     CoreCourse,
-    CoreCourseModuleCompletionStatus,
     CoreCourseProvider,
 } from '@features/course/services/course';
 import {
-    CoreCourseModuleData,
-    CoreCourseModuleCompletionData,
     CoreCourseSection,
 } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
@@ -56,7 +51,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
  *
  * Example usage:
  *
- * <core-course-format [course]="course" [sections]="sections" (completionChanged)="onCompletionChange()"></core-course-format>
+ * <core-course-format [course]="course" [sections]="sections"></core-course-format>
  */
 @Component({
     selector: 'core-course-format',
@@ -72,7 +67,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
-    @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when any module completion changes.
 
     @ViewChildren(CoreDynamicComponent) dynamicComponents?: QueryList<CoreDynamicComponent>;
 
@@ -95,11 +89,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     allSectionsId: number = CoreCourseProvider.ALL_SECTIONS_ID;
     stealthModulesSectionId: number = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     loaded = false;
-    progress?: number;
     highlighted?: string;
 
     protected selectTabObserver?: CoreEventObserver;
-    protected completionObserver?: CoreEventObserver;
     protected lastCourseFormat?: string;
 
     constructor(
@@ -141,36 +133,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             }
         });
 
-        // The completion of any of the modules have changed.
-        this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_CHANGED, (data) => {
-            if (data.completion.courseId != this.course.id) {
-                return;
-            }
-
-            // Emit a new event for other components.
-            this.completionChanged.emit(data.completion);
-
-            if (data.completion.valueused !== false || !this.course || !('progress' in this.course) ||
-                    typeof this.course.progress != 'number') {
-                return;
-            }
-
-            // If the completion value is not used, the page won't be reloaded, so update the progress bar.
-            const completionModules = (<CoreCourseModuleData[]> [])
-                .concat(...this.sections.map((section) => section.modules))
-                .map((module) => module.completion && module.completion > 0 ? 1 : module.completion)
-                .reduce((accumulator, currentValue) => (accumulator || 0) + (currentValue || 0), 0);
-
-            const moduleProgressPercent = 100 / (completionModules || 1);
-            // Use min/max here to avoid floating point rounding errors over/under-flowing the progress bar.
-            if (data.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
-                this.course.progress = Math.min(100, this.course.progress + moduleProgressPercent);
-            } else {
-                this.course.progress = Math.max(0, this.course.progress - moduleProgressPercent);
-            }
-
-            this.updateProgress();
-        });
     }
 
     /**
@@ -187,8 +149,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.displayBlocks = CoreCourseFormatDelegate.displayBlocks(this.course);
 
             this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(this.course.id);
-
-            this.updateProgress();
         }
 
         if (changes.sections && this.sections) {
@@ -205,7 +165,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.data.initialSectionId = this.initialSectionId;
         this.data.initialSectionNumber = this.initialSectionNumber;
         this.data.moduleId = this.moduleId;
-        this.data.completionChanged = this.completionChanged;
     }
 
     /**
@@ -540,25 +499,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     canViewSection(section: CoreCourseSection): boolean {
         return section.uservisible !== false && !section.hiddenbynumsections &&
                 section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
-    }
-
-    /**
-     * Update course progress.
-     */
-    protected updateProgress(): void {
-        if (
-            !this.course ||
-            !('progress' in this.course) ||
-            typeof this.course.progress !== 'number' ||
-            this.course.progress < 0 ||
-            this.course.completionusertracked === false
-        ) {
-            this.progress = undefined;
-
-            return;
-        }
-
-        this.progress = this.course.progress;
     }
 
 }

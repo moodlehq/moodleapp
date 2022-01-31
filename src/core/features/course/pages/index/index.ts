@@ -20,7 +20,7 @@ import { CoreCourseFormatDelegate } from '../../services/format-delegate';
 import { CoreCourseOptionsDelegate } from '../../services/course-options-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourse, CoreCourseModuleCompletionStatus, CoreCourseWSSection } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
@@ -52,6 +52,8 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
     protected currentPagePath = '';
     protected selectTabObserver: CoreEventObserver;
+    protected completionObserver: CoreEventObserver;
+    protected sections: CoreCourseWSSection[] = []; // List of course sections.
     protected firstTabName?: string;
     protected module?: CoreCourseModuleData;
     protected modParams?: Params;
@@ -82,6 +84,34 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
                     this.tabsComponent?.selectByIndex(index);
                 }
             }
+        });
+
+        // The completion of any of the modules have changed.
+        this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_CHANGED, (data) => {
+            if (data.completion.courseId != this.course?.id) {
+                return;
+            }
+
+            if (data.completion.valueused !== false || !this.course || !('progress' in this.course) ||
+                    typeof this.course.progress != 'number') {
+                return;
+            }
+
+            // If the completion value is not used, the page won't be reloaded, so update the progress bar.
+            const completionModules = (<CoreCourseModuleData[]> [])
+                .concat(...this.sections.map((section) => section.modules))
+                .map((module) => module.completion && module.completion > 0 ? 1 : module.completion)
+                .reduce((accumulator, currentValue) => (accumulator || 0) + (currentValue || 0), 0);
+
+            const moduleProgressPercent = 100 / (completionModules || 1);
+            // Use min/max here to avoid floating point rounding errors over/under-flowing the progress bar.
+            if (data.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
+                this.course.progress = Math.min(100, this.course.progress + moduleProgressPercent);
+            } else {
+                this.course.progress = Math.max(0, this.course.progress - moduleProgressPercent);
+            }
+
+            this.updateProgress();
         });
     }
 
@@ -206,14 +236,14 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         this.updateProgress();
 
         // Load sections.
-        const sections = await CoreUtils.ignoreErrors(CoreCourse.getSections(this.course.id, false, true));
+        this.sections = await CoreUtils.ignoreErrors(CoreCourse.getSections(this.course.id, false, true), []);
 
-        if (!sections) {
+        if (!this.sections) {
             return;
         }
 
         // Get the title again now that we have sections.
-        this.title = CoreCourseFormatDelegate.getCourseTitle(this.course, sections);
+        this.title = CoreCourseFormatDelegate.getCourseTitle(this.course, this.sections);
     }
 
     /**
@@ -224,6 +254,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
         CoreNavigator.decreaseRouteDepth(path.replace(/(\/deep)+/, ''));
         this.selectTabObserver?.off();
+        this.completionObserver?.off();
     }
 
     /**
