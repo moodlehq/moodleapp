@@ -88,7 +88,7 @@ Feature: Test basic usage of courses in app
 
     When I press "Course 4" in the app
     Then I should find "Course 4" in the app
-    And the header should be "Course 4" in the app
+    And the header should be "Course summary" in the app
 
     When I press the back button in the app
     And I set the field "Search" to "Course" in the app
