@@ -208,7 +208,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                     // Warn the user that the file isn't updated.
                     const alert = await CoreDomUtils.showAlert(
                         undefined,
-                        Translate.instant('addon.mod_resource.resourcestatusoutdated'),
+                        Translate.instant('addon.mod_resource.resourcestatusoutdatedconfirm'),
                     );
 
                     await alert.onWillDismiss();
