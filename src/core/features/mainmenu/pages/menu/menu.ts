@@ -24,7 +24,7 @@ import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../servic
 import { Router } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from '@classes/aria-role-tab';
-import { CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { filter } from 'rxjs/operators';
 import { NavigationEnd } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -77,6 +77,9 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     protected backButtonFunction: (event: BackButtonEvent) => void;
     protected selectHistory: string[] = [];
     protected firstSelectedTab?: string;
+    protected urlToOpen?: string;
+    protected redirectPath?: string;
+    protected redirectOptions?: CoreNavigationOptions;
 
     @ViewChild('mainTabs') mainTabs?: IonTabs;
 
@@ -100,6 +103,9 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         this.showTabs = true;
+        this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
+        this.redirectPath = CoreNavigator.getRouteParam('redirectPath');
+        this.redirectOptions = CoreNavigator.getRouteParam('redirectOptions');
 
         this.isMainScreen = !this.mainTabs?.outlet.canGoBack();
 
@@ -173,10 +179,22 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
         this.loaded = CoreMainMenuDelegate.areHandlersLoaded();
 
-        if (this.loaded && this.tabs[0] && !CoreNavigator.getCurrentMainMenuTab()) {
+        if (this.loaded && !CoreNavigator.getCurrentMainMenuTab()) {
             // No tab selected, select the first one.
             await CoreUtils.nextTick();
-            this.mainTabs?.select(this.tabs[0].page);
+
+            const tabPage = this.tabs[0] ? this.tabs[0].page : this.morePageName;
+            const tabPageParams = this.tabs[0] ? this.tabs[0].pageParams : {};
+
+            // Use navigate instead of mainTabs.select to be able to pass page params.
+            CoreNavigator.navigate(tabPage, {
+                params: {
+                    urlToOpen: this.urlToOpen,
+                    redirectPath: this.redirectPath,
+                    redirectOptions: this.redirectOptions,
+                    ...tabPageParams,
+                },
+            });
         }
     }
 

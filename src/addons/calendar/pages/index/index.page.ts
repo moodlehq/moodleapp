@@ -33,6 +33,7 @@ import { AddonCalendarFilterPopoverComponent } from '../../components/filter/fil
 import { CoreNavigator } from '@services/navigator';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreConstants } from '@/core/constants';
+import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 
 /**
  * Page that displays the calendar events.
@@ -177,6 +178,9 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
             this.fetchData(true, false);
         });
+
+        const deepLinkManager = new CoreMainMenuDeepLinkManager();
+        deepLinkManager.treatLink();
     }
 
     /**

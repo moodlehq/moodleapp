@@ -17,6 +17,7 @@ information provided here is intended especially for developers.
     Some user handler's functions have also changed to accept context + contextId instead of a courseId: isEnabledForUser, getDisplayData, action.
 - CoreCourseHelperProvider.openCourse parameters changed, now it admits CoreNavigationOptions + siteId on the same object that includes Params passed to page.
 - displaySectionSelector has been deprecated on CoreCourseFormatHandler, use displayCourseIndex instead.
+- Most of the functions or callbacks that handle redirects/deeplinks have been modified to accept an object instead of just path + options. E.g.: CoreLoginHelper.isSiteLoggedOut, CoreLoginHelper.openBrowserForSSOLogin, CoreLoginHelper.openBrowserForOAuthLogin, CoreLoginHelper.prepareForSSOLogin, CoreApp.storeRedirect, CoreSites.loadSite.
 
 === 3.9.5 ===
 

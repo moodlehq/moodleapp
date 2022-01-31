@@ -36,6 +36,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
+import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 
 /**
  * Page that displays the list of conversations, including group conversations.
@@ -279,6 +280,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             }
         });
 
+        const deepLinkManager = new CoreMainMenuDeepLinkManager();
+
         await this.fetchData();
 
         if (!this.selectedConversationId && !this.selectedUserId && CoreScreen.isTablet) {
@@ -290,10 +293,13 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 conversation = expandedOption.conversations[0];
 
                 if (conversation) {
-                    this.gotoConversation(conversation.id);
+                    await this.gotoConversation(conversation.id);
                 }
             }
         }
+
+        // Treat deep link now that the conversation route has been loaded if needed.
+        deepLinkManager.treatLink();
     }
 
     /**
@@ -507,7 +513,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param userId User of the conversation. Only if there is no conversationId.
      * @param messageId Message to scroll after loading the discussion. Used when searching.
      */
-    gotoConversation(conversationId?: number, userId?: number, messageId?: number): void {
+    async gotoConversation(conversationId?: number, userId?: number, messageId?: number): Promise<void> {
         this.selectedConversationId = conversationId;
         this.selectedUserId = userId;
 
@@ -524,7 +530,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
         const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/group-conversations/discussion');
         const path = (splitViewLoaded ? '../' : '') + 'discussion';
-        CoreNavigator.navigate(path, { params });
+
+        await CoreNavigator.navigate(path, { params });
     }
 
     /**

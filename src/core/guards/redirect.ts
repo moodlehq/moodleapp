@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CanActivate, CanLoad, UrlTree } from '@angular/router';
-import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 import { CoreApp } from '@services/app';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -55,29 +54,31 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
 
         // Redirect to site path.
         if (redirect.siteId && redirect.siteId !== CoreConstants.NO_SITE_ID) {
+            const redirectData: CoreRedirectPayload = {
+                redirectPath: redirect.redirectPath,
+                redirectOptions: redirect.redirectOptions,
+                urlToOpen: redirect.urlToOpen,
+            };
+
             const loggedIn = await CoreSites.loadSite(
                 redirect.siteId,
-                redirect.page,
-                redirect.options,
+                redirectData,
             );
-            const route = Router.parseUrl(`/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}`);
+            const route = Router.parseUrl('/main');
 
-            route.queryParams = {
-                redirectPath: redirect.page,
-                redirectOptions: redirect.options,
-            } as CoreRedirectPayload;
+            route.queryParams = redirectData;
 
             return loggedIn ? route : true;
         }
 
         // Abort redirect.
-        if (!redirect.page) {
+        if (!redirect.redirectPath) {
             return true;
         }
 
         // Redirect to non-site path.
-        const route = Router.parseUrl(redirect.page);
-        route.queryParams = redirect.options?.params || {};
+        const route = Router.parseUrl(redirect.redirectPath);
+        route.queryParams = redirect.redirectOptions?.params || {};
 
         return route;
     }

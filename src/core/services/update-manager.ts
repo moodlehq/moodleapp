@@ -111,9 +111,12 @@ export class CoreUpdateManagerProvider {
         await CoreSites.removeStoredCurrentSite();
 
         // Tell the app to open add site so the user can add the new site.
-        CoreApp.storeRedirect(CoreConstants.NO_SITE_ID, '/login/sites', {
-            params: {
-                openAddSite: true,
+        CoreApp.storeRedirect(CoreConstants.NO_SITE_ID, {
+            redirectPath: '/login/sites',
+            redirectOptions: {
+                params: {
+                    openAddSite: true,
+                },
             },
         });
     }

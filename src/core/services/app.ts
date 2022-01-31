@@ -24,7 +24,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreColors } from '@singletons/colors';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
 import { CoreObject } from '@singletons/object';
-import { CoreNavigationOptions } from './navigator';
+import { CoreRedirectPayload } from './navigator';
 
 /**
  * Object responsible of managing schema versions.
@@ -593,16 +593,18 @@ export class CoreAppProvider {
      * Store redirect params.
      *
      * @param siteId Site ID.
-     * @param page Page to go.
-     * @param options Navigation options.
+     * @param redirectData Redirect data.
      */
-    storeRedirect(siteId: string, page: string, options: CoreNavigationOptions): void {
+    storeRedirect(siteId: string, redirectData: CoreRedirectPayload = {}): void {
+        if (!redirectData.redirectPath && !redirectData.urlToOpen) {
+            return;
+        }
+
         try {
             const redirect: CoreRedirectData = {
                 siteId,
-                page,
-                options,
                 timemodified: Date.now(),
+                ...redirectData,
             };
 
             localStorage.setItem('CoreRedirect', JSON.stringify(redirect));
@@ -691,26 +693,9 @@ export const CoreApp = makeSingleton(CoreAppProvider);
 /**
  * Data stored for a redirect to another page/site.
  */
-export type CoreRedirectData = {
-    /**
-     * ID of the site to load.
-     */
-    siteId?: string;
-
-    /**
-     * Path of the page to redirect to.
-     */
-    page?: string;
-
-    /**
-     * Options of the navigation.
-     */
-    options?: CoreNavigationOptions;
-
-    /**
-     * Timestamp when this redirect was last modified.
-     */
-    timemodified?: number;
+export type CoreRedirectData = CoreRedirectPayload & {
+    siteId?: string; // ID of the site to load.
+    timemodified?: number; // Timestamp when this redirect was last modified.
 };
 
 /**

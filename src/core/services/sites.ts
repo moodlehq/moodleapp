@@ -49,13 +49,14 @@ import {
 } from '@services/database/sites';
 import { CoreArray } from '../singletons/array';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import { CoreNavigationOptions } from './navigator';
+import { CoreRedirectPayload } from './navigator';
 import { CoreSitesFactory } from './sites-factory';
 import { CoreText } from '@singletons/text';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreErrorWithTitle } from '@classes/errors/errorwithtitle';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
+import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 
@@ -781,11 +782,10 @@ export class CoreSitesProvider {
      * Login a user to a site from the list of sites.
      *
      * @param siteId ID of the site to load.
-     * @param pageName Name of the page to go once authenticated if logged out. If not defined, site initial page.
-     * @param pageOptions Options of the navigation to pageName.
+     * @param redirectData Data of the path/url to open once authenticated if logged out. If not defined, site initial page.
      * @return Promise resolved with true if site is loaded, resolved with false if cannot login.
      */
-    async loadSite(siteId: string, pageName?: string, pageOptions?: CoreNavigationOptions): Promise<boolean> {
+    async loadSite(siteId: string, redirectData?: CoreRedirectPayload): Promise<boolean> {
         this.logger.debug(`Load site ${siteId}`);
 
         const site = await this.getSite(siteId);
@@ -799,10 +799,7 @@ export class CoreSitesProvider {
 
         if (site.isLoggedOut()) {
             // Logged out, trigger session expired event and stop.
-            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {
-                pageName,
-                options: pageOptions,
-            }, site.getId());
+            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, redirectData || {}, site.getId());
 
             return false;
         }
@@ -1206,6 +1203,28 @@ export class CoreSitesProvider {
         await CoreUtils.ignoreErrors(Promise.all(promises));
 
         CoreEvents.trigger(CoreEvents.LOGOUT, {}, siteId);
+    }
+
+    /**
+     * Logout the user if authenticated to open a page/url in another site.
+     *
+     * @param siteId Site that will be opened after logout.
+     * @param redirectData Page/url to open after logout.
+     * @return Promise resolved with boolean: true if app will be reloaded after logout.
+     */
+    async logoutForRedirect(siteId: string, redirectData: CoreRedirectPayload): Promise<boolean> {
+        if (!this.currentSite) {
+            return false;
+        }
+
+        if (CoreSitePlugins.hasSitePluginsLoaded) {
+            // The site has site plugins so the app will be restarted. Store the data and logout.
+            CoreApp.storeRedirect(siteId, redirectData);
+        }
+
+        await CoreSites.logout();
+
+        return CoreSitePlugins.hasSitePluginsLoaded;
     }
 
     /**

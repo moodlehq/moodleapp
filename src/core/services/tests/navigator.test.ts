@@ -108,13 +108,13 @@ describe('CoreNavigator', () => {
         expect(navControllerMock.navigateForward).toHaveBeenCalledWith(['/main/users/user/42'], {});
     });
 
-    it('navigates to site paths using the default tab', async () => {
+    it('navigates to site paths using the main page', async () => {
         const success = await navigator.navigateToSitePath('/user/42');
 
         expect(success).toBe(true);
-        expect(navControllerMock.navigateForward).toHaveBeenCalledWith(['/main/home'], {
+        expect(navControllerMock.navigateForward).toHaveBeenCalledWith(['/main'], {
             queryParams: {
-                redirectPath: '/main/home/user/42',
+                redirectPath: 'user/42',
             },
         });
     });

@@ -28,17 +28,16 @@ import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, NavController, Router } from '@singletons';
 import { CoreScreen } from './screen';
 import { CoreApp } from './app';
-import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreError } from '@classes/errors/error';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
-import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 
 /**
  * Redirect payload.
  */
 export type CoreRedirectPayload = {
-    redirectPath: string;
-    redirectOptions?: CoreNavigationOptions;
+    redirectPath?: string; // Path of the page to redirect to.
+    redirectOptions?: CoreNavigationOptions; // Options of the navigation using redirectPath.
+    urlToOpen?: string; // URL to open instead of a page + options.
 };
 
 /**
@@ -208,16 +207,14 @@ export class CoreNavigatorService {
 
         // If we are logged into a different site, log out first.
         if (CoreSites.isLoggedIn() && CoreSites.getCurrentSiteId() !== siteId) {
-            if (CoreSitePlugins.hasSitePluginsLoaded) {
-                // The site has site plugins so the app will be restarted. Store the data and logout.
-                CoreApp.storeRedirect(siteId, path, options || {});
+            const willReload = await CoreSites.logoutForRedirect(siteId, {
+                redirectPath: path,
+                redirectOptions: options || {},
+            });
 
-                await CoreSites.logout();
-
+            if (willReload) {
                 return true;
             }
-
-            await CoreSites.logout();
         }
 
         // If the path doesn't belong to a site, call standard navigation.
@@ -233,7 +230,10 @@ export class CoreNavigatorService {
             const modal = await CoreDomUtils.showModalLoading();
 
             try {
-                const loggedIn = await CoreSites.loadSite(siteId, path, options.params);
+                const loggedIn = await CoreSites.loadSite(siteId, {
+                    redirectPath: path,
+                    redirectOptions: options,
+                });
 
                 if (!loggedIn) {
                     // User has been redirected to the login page and will be redirected to the site path after login.
@@ -560,11 +560,11 @@ export class CoreNavigatorService {
             return this.navigate(`/main/${path}`, options);
         }
 
-        // Open the path within the home tab.
-        return this.navigate(`/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}`, {
+        // Open the path within in main menu.
+        return this.navigate('/main', {
             ...options,
             params: {
-                redirectPath: `/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${path}`,
+                redirectPath: path,
                 redirectOptions: options.params || options.nextNavigation ? options : undefined,
             } as CoreRedirectPayload,
         });

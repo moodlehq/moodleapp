@@ -191,6 +191,29 @@ export class CoreContentLinksDelegateService {
                         action.message = action.message || 'core.view';
                         action.icon = action.icon || 'fas-eye';
                         action.sites = action.sites || siteIds;
+
+                        // Wrap the action function in our own function to treat logged out sites.
+                        const actionFunction = action.action;
+                        action.action = async (siteId) => {
+                            const site = await CoreSites.getSite(siteId);
+
+                            if (!site.isLoggedOut()) {
+                                // Call the action now.
+                                return actionFunction(siteId);
+                            }
+
+                            // Site is logged out, authenticate first before treating the URL.
+                            const willReload = await CoreSites.logoutForRedirect(siteId, {
+                                urlToOpen: url,
+                            });
+
+                            if (!willReload) {
+                                // Load the site with the redirect data.
+                                await CoreSites.loadSite(siteId, {
+                                    urlToOpen: url,
+                                });
+                            }
+                        };
                     });
 
                     // Add them to the list.

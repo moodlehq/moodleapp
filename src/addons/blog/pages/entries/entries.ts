@@ -16,6 +16,7 @@ import { ContextLevel } from '@/core/constants';
 import { AddonBlog, AddonBlogFilter, AddonBlogPost, AddonBlogProvider } from '@addons/blog/services/blog';
 import { Component, OnInit } from '@angular/core';
 import { CoreComments } from '@features/comments/services/comments';
+import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonRefresher } from '@ionic/angular';
@@ -117,6 +118,9 @@ export class AddonBlogEntriesPage implements OnInit {
 
         this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
         this.tagsEnabled = CoreTag.areTagsAvailableInSite();
+
+        const deepLinkManager = new CoreMainMenuDeepLinkManager();
+        deepLinkManager.treatLink();
 
         await this.fetchEntries();
 
