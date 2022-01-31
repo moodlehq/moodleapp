@@ -65,7 +65,8 @@
 
 <!-- Template to render a section. -->
 <ng-template #sectionTemplate let-section="section">
-    <section *ngIf="!section.hiddenbynumsections && section.id != allSectionsId && section.id != stealthModulesSectionId">
+    <section *ngIf="!section.hiddenbynumsections && section.id != allSectionsId && section.id != stealthModulesSectionId"
+        class="section-wrapper" [id]="section.id">
         <ion-item-divider class="course-section ion-text-wrap" color="light"
             [class.item-dimmed]="section.visible === 0 || section.uservisible === false">
             <ion-icon name="fas-folder" aria-label="hidden" slot="start"></ion-icon>

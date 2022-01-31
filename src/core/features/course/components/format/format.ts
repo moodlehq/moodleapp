@@ -283,12 +283,32 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Display the course index modal.
      */
     async openCourseIndex(): Promise<void> {
+        let selectedId = this.selectedSection?.id;
+
+        if (selectedId == this.allSectionsId) {
+            // Check current scrolled section.
+            const allSectionElements: NodeListOf<HTMLElement> =
+                this.elementRef.nativeElement.querySelectorAll('section.section-wrapper');
+
+            const scroll = await this.content.getScrollElement();
+            const containerTop = scroll.getBoundingClientRect().top;
+
+            const element = Array.from(allSectionElements).find((element) => {
+                const position = element.getBoundingClientRect();
+
+                // The bottom is inside the container or lower.
+                return position.bottom >= containerTop;
+            });
+
+            selectedId = Number(element?.getAttribute('id')) || undefined;
+        }
+
         const data = await CoreDomUtils.openModal<CoreCourseIndexSectionWithModule>({
             component: CoreCourseCourseIndexComponent,
             componentProps: {
                 course: this.course,
                 sections: this.sections,
-                selectedId: this.selectedSection?.id,
+                selectedId: selectedId,
             },
         });
 
