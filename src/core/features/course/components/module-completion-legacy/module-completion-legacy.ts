@@ -53,7 +53,7 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
      */
     ngOnInit(): void {
         this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_CHANGED, (data) => {
-            if (!this.completion || this.completion.cmid != data.completion.cmid && data.type != CoreCourseCompletionType.MANUAL) {
+            if (!this.completion || this.completion.cmid != data.completion.cmid || data.type != CoreCourseCompletionType.MANUAL) {
                 return;
             }
 
