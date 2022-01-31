@@ -33,13 +33,13 @@ jobs:
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
         cp $GITHUB_WORKSPACE/moodle-docker/config.docker-template.php $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "58i\        'capabilities' => [" $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "59i\            'extra_capabilities' => [" $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "60i\                'goog:loggingPrefs' => ['performance' => 'ALL']," $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "61i\                'chromeOptions' => ['perfLoggingPrefs' => ['traceCategories' => 'devtools.timeline']]," $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "62i\            ]," $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "63i\        ]," $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "75i\$CFG->behat_ionic_wwwroot = 'http://moodleapp';" $GITHUB_WORKSPACE/moodle/config.php
+        sed -i "59i\        'capabilities' => [" $GITHUB_WORKSPACE/moodle/config.php
+        sed -i "60i\            'extra_capabilities' => [" $GITHUB_WORKSPACE/moodle/config.php
+        sed -i "61i\                'goog:loggingPrefs' => ['performance' => 'ALL']," $GITHUB_WORKSPACE/moodle/config.php
+        sed -i "62i\                'chromeOptions' => ['perfLoggingPrefs' => ['traceCategories' => 'devtools.timeline']]," $GITHUB_WORKSPACE/moodle/config.php
+        sed -i "63i\            ]," $GITHUB_WORKSPACE/moodle/config.php
+        sed -i "64i\        ]," $GITHUB_WORKSPACE/moodle/config.php
+        sed -i "76i\$CFG->behat_ionic_wwwroot = 'http://moodleapp';" $GITHUB_WORKSPACE/moodle/config.php
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose up -d
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-db
