@@ -18,7 +18,6 @@ import { CoreSites } from '@services/sites';
 import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData, CoreCourses } from '@features/courses/services/courses';
 import {
     CoreCourseSearchedDataWithExtraInfoAndOptions,
-    CoreCoursesHelper,
     CoreEnrolledCourseDataWithOptions,
 } from '@features/courses/services/courses-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
@@ -44,7 +43,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     downloadCourseEnabled = false;
     scrollElementId!: string;
 
-    protected site!: CoreSite;
+    protected site: CoreSite;
     protected isDestroyed = false;
     protected coursesObserver?: CoreEventObserver;
     protected updateSiteObserver?: CoreEventObserver;
@@ -103,12 +102,8 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     protected async invalidateCourses(courseIds: number[]): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        const invalidateCoursePromise = this.site.isVersionGreaterEqualThan('4.0')
-            ? CoreCourses.invalidateUserCourses()
-            : AddonBlockStarredCourses.invalidateStarredCourses();
-
         // Invalidate course completion data.
-        promises.push(invalidateCoursePromise.finally(() =>
+        promises.push(AddonBlockStarredCourses.invalidateStarredCourses().finally(() =>
             CoreUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
@@ -130,12 +125,6 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     protected async fetchContent(): Promise<void> {
         const showCategories = this.block.configsRecord && this.block.configsRecord.displaycategories &&
             this.block.configsRecord.displaycategories.value == '1';
-
-        if (this.site.isVersionGreaterEqualThan('4.0')) {
-            this.courses = await CoreCoursesHelper.getUserCoursesWithOptions('timemodified', 0, 'isfavourite', showCategories);
-
-            return;
-        }
 
         // Timemodified not present, use the block WS to retrieve the info.
         const starredCourses = await AddonBlockStarredCourses.getStarredCourses();
