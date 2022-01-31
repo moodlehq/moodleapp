@@ -610,10 +610,16 @@ export class CoreSite {
                     CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
                     // Change error message. Try to get data from cache, the event will handle the error.
                     error.message = Translate.instant('core.lostconnection');
-                } else if (error.errorcode === 'userdeleted') {
+                } else if (error.errorcode === 'userdeleted' || error.errorcode === 'wsaccessuserdeleted') {
                     // User deleted, trigger event.
                     CoreEvents.trigger(CoreEvents.USER_DELETED, { params: data }, this.id);
                     error.message = Translate.instant('core.userdeleted');
+
+                    throw new CoreWSError(error);
+                } else if (error.errorcode === 'wsaccessusersuspended') {
+                    // User suspended, trigger event.
+                    CoreEvents.trigger(CoreEvents.USER_SUSPENDED, { params: data }, this.id);
+                    error.message = Translate.instant('core.usersuspended');
 
                     throw new CoreWSError(error);
                 } else if (error.errorcode === 'forcepasswordchangenotice') {

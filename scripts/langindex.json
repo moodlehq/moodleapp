@@ -2332,6 +2332,7 @@
   "core.userdeleted": "moodle",
   "core.userdetails": "moodle",
   "core.usernotfullysetup": "error",
+  "core.usersuspended": "moodle",
   "core.users": "moodle",
   "core.view": "moodle",
   "core.viewcode": "local_moodlemobileapp",

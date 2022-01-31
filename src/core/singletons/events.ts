@@ -44,6 +44,7 @@ export interface CoreEventsData {
     [CoreEvents.COURSE_STATUS_CHANGED]: CoreEventCourseStatusChanged;
     [CoreEvents.PACKAGE_STATUS_CHANGED]: CoreEventPackageStatusChanged;
     [CoreEvents.USER_DELETED]: CoreEventUserDeletedData;
+    [CoreEvents.USER_SUSPENDED]: CoreEventUserSuspendedData;
     [CoreEvents.FORM_ACTION]: CoreEventFormActionData;
     [CoreEvents.NOTIFICATION_SOUND_CHANGED]: CoreEventNotificationSoundChangedData;
     [CoreEvents.SELECT_COURSE_TAB]: CoreEventSelectCourseTabData;
@@ -85,6 +86,7 @@ export class CoreEvents {
     static readonly MANUAL_COMPLETION_CHANGED = 'manual_completion_changed';
     static readonly COMPLETION_CHANGED = 'completion_changed';
     static readonly USER_DELETED = 'user_deleted';
+    static readonly USER_SUSPENDED = 'user_suspended';
     static readonly PACKAGE_STATUS_CHANGED = 'package_status_changed';
     static readonly COURSE_STATUS_CHANGED = 'course_status_changed';
     static readonly SECTION_STATUS_CHANGED = 'section_status_changed';
@@ -304,6 +306,14 @@ export type CoreEventPackageStatusChanged = {
  * Data passed to USER_DELETED event.
  */
 export type CoreEventUserDeletedData = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    params: any; // Params sent to the WS that failed.
+};
+
+/**
+ * Data passed to USER_SUSPENDED event.
+ */
+export type CoreEventUserSuspendedData = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     params: any; // Params sent to the WS that failed.
 };
