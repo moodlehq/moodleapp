@@ -164,8 +164,8 @@ Feature: Test basic usage of one course in app
     And I should find "Test scorm name" in the app
     And I should find "Test workshop name" in the app
 
-    When I press "Section:" in the app
-    And I press "General" near "Sections" "h2" in the app
+    When I press "Course index" in the app
+    And I press "General" in the app
     Then I should find "Test forum name" in the app
     And I should find "Test wiki name" in the app
     But I should not find "Choice course 1" in the app
@@ -190,8 +190,8 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test wiki name" in the app
 
     When I press the back button in the app
-    And I press "Section:" in the app
-    And I press "Topic 1" near "Sections" "h2" in the app
+    And I press "Course index" in the app
+    And I press "Topic 1" in the app
     Then I should find "Choice course 1" in the app
     And I should find "assignment" in the app
     And I should find "Test external name" in the app
@@ -223,8 +223,8 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test survey name" in the app
 
     When I press the back button in the app
-    And I press "Section:" in the app
-    And I press "Topic 2" near "Sections" "h2" in the app
+    And I press "Course index" in the app
+    And I press "Topic 2" in the app
     Then I should find "Quiz 1" in the app
     And I should find "Test chat name" in the app
     And I should find "Test scorm name" in the app
@@ -252,8 +252,8 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test scorm name" in the app
 
     When I press the back button in the app
-    And I press "Section:" in the app
-    And I press "Topic 3" near "Sections" "h2" in the app
+    And I press "Course index" in the app
+    And I press "Topic 3" in the app
     Then I should find "Test feedback name" in the app
     And I should find "Test lesson name" in the app
     And I should find "Test workshop name" in the app
@@ -282,8 +282,8 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test workshop name" in the app
 
     When I press the back button in the app
-    And I press "Section:" in the app
-    And I press "Topic 4" near "Sections" "h2" in the app
+    And I press "Course index" in the app
+    And I press "Topic 4" in the app
     Then I should find "Web links" in the app
     But I should not find "Choice course 1" in the app
     And I should not find "assignment" in the app
@@ -303,8 +303,8 @@ Feature: Test basic usage of one course in app
     Then the header should be "Web links" in the app
 
     When I press the back button in the app
-    And I press "Section:" in the app
-    And I press "Topic 5" near "Sections" "h2" in the app
+    And I press "Course index" in the app
+    And I press "Topic 5" in the app
     Then I should find "Test glossary" in the app
     But I should not find "Choice course 1" in the app
     And I should not find "assignment" in the app
@@ -341,8 +341,8 @@ Feature: Test basic usage of one course in app
     And I should find "Test scorm name" in the app
     And I should find "Test workshop name" in the app
 
-    When I press "Section:" in the app
-    And I press "General" near "Sections" "h2" in the app
+    When I press "Course index" in the app
+    And I press "General" in the app
     Then I should find "General" in the app
     And I should find "Next: Topic 1" in the app
     But I should not find "Topic 2" in the app
@@ -419,7 +419,6 @@ Feature: Test basic usage of one course in app
     And I press "Enrol me" in the app
     And I press "OK" in the app
     And I wait loading to finish in the app
-    And I press "Course" in the app
     Then the header should be "Course 1" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
@@ -455,7 +454,7 @@ Feature: Test basic usage of one course in app
     Then I should find "Download course" in the app
     And I should find "Course" in the app
 
-    When I press "Course" in the app
+    When I press "Course" "ion-button" in the app
     Then the header should be "Course 1" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
