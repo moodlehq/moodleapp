@@ -20,7 +20,8 @@ Feature: It navigates properly using deep links.
       | forum      | user     | name        | message       |
       | Test forum | student1 | Forum topic | Forum message |
     And the following config values are set as admin:
-      | forcelogout | 1 | tool_mobile |
+      | forcelogout     | 1 | tool_mobile |
+      | defaulthomepage | 0 |             |
 
   Scenario: Receive a push notification
     When I enter the app
@@ -64,3 +65,22 @@ Feature: It navigates properly using deep links.
     Then I should find "Site home" in the app
     But I should not find "Forum topic" in the app
     And I should not find "Forum message" in the app
+
+  Scenario: Open a link with a custom URL that calls WebServices for a logged out site
+    When I enter the app
+    And I log in as "student2"
+    And I press the user menu button in the app
+    And I press "Log out" in the app
+    And I wait the app to restart
+    And I open a custom link in the app for:
+      | forum      |
+      | Test forum |
+    Then I should find "Reconnect" in the app
+
+    When I set the field "Password" to "student2" in the app
+    And I press "Log in" in the app
+    Then I should find "Test forum" in the app
+
+    When I press the back button in the app
+    Then I should find "Site home" in the app
+    But I should not find "Test forum" in the app

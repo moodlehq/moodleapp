@@ -691,9 +691,27 @@ class behat_app extends behat_base {
     public function i_open_a_custom_link(TableNode $data) {
         global $DB, $CFG;
 
-        $data = (object) $data->getColumnsHash()[0];
-        $discussion = $DB->get_record('forum_discussions', ['name' => $data->discussion]);
-        $pageurl = "{$CFG->behat_wwwroot}/mod/forum/discuss.php?d={$discussion->id}";
+        $data = $data->getColumnsHash()[0];
+        $title = array_keys($data)[0];
+        $data = (object) $data;
+
+        switch ($title) {
+            case 'discussion':
+                $discussion = $DB->get_record('forum_discussions', ['name' => $data->discussion]);
+                $pageurl = "{$CFG->behat_wwwroot}/mod/forum/discuss.php?d={$discussion->id}";
+
+                break;
+
+            case 'forum':
+                $forumdata = $DB->get_record('forum', ['name' => $data->forum]);
+                $cm = get_coursemodule_from_instance('forum', $forumdata->id);
+                $pageurl = "{$CFG->behat_wwwroot}/mod/forum/view.php?id={$cm->id}";
+                break;
+
+            default:
+                throw new DriverException('Invalid custom link title - ' . $title);
+        }
+
         $url = "moodlemobile://link=" . urlencode($pageurl);
 
         $this->evaluate_script("return window.urlSchemes.handleCustomURL('$url')");
