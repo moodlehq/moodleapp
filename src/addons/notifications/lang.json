@@ -4,7 +4,6 @@
     "notificationpreferences": "Notification preferences",
     "notifications": "Notifications",
     "playsound": "Play sound",
-    "pushdisabledwarning": "Your users are not receiving any notification from this site on their mobile devices. Enable mobile notifications in the Notification settings page.",
     "therearentnotificationsyet": "There are no notifications.",
     "unreadnotification": "Unread notification: {{$a}}"
 }

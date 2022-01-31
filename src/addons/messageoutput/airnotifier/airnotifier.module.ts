@@ -21,6 +21,7 @@ import {
     AddonMessageOutputAirnotifierHandler,
     AddonMessageOutputAirnotifierHandlerService,
 } from './services/handlers/messageoutput';
+import { AddonMessageOutputAirnotifier } from './services/airnotifier';
 
 const routes: Routes = [
     {
@@ -41,6 +42,7 @@ const routes: Routes = [
             multi: true,
             useValue: () => {
                 AddonMessageOutputDelegate.registerHandler(AddonMessageOutputAirnotifierHandler.instance);
+                AddonMessageOutputAirnotifier.initialize();
             },
         },
     ],
