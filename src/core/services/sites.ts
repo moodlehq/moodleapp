@@ -1181,9 +1181,10 @@ export class CoreSitesProvider {
     /**
      * Logout the user.
      *
+     * @param forceLogout If true, site will be marked as logged out, no matter the value tool_mobile_forcelogout.
      * @return Promise resolved when the user is logged out.
      */
-    async logout(): Promise<void> {
+    async logout(forceLogout = false): Promise<void> {
         if (!this.currentSite) {
             return;
         }
@@ -1194,7 +1195,7 @@ export class CoreSitesProvider {
 
         this.currentSite = undefined;
 
-        if (siteConfig && siteConfig.tool_mobile_forcelogout == '1') {
+        if (forceLogout || (siteConfig && siteConfig.tool_mobile_forcelogout == '1')) {
             promises.push(this.setSiteLoggedOut(siteId));
         }
 
@@ -1222,7 +1223,7 @@ export class CoreSitesProvider {
             CoreApp.storeRedirect(siteId, redirectData);
         }
 
-        await CoreSites.logout();
+        await this.logout();
 
         return CoreSitePlugins.hasSitePluginsLoaded;
     }
