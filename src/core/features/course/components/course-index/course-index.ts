@@ -69,6 +69,10 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         if (!formatOptions || formatOptions.completionusertracked === false) {
             return;
         }
+
+        // Collapse all sections first.
+        this.sections.forEach((section) => section.expanded = false);
+
         const currentSection = await CoreCourseFormatDelegate.getCurrentSection(this.course, this.sections);
         currentSection.highlighted = true;
         if (this.selectedId === undefined) {
