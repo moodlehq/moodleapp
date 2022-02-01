@@ -101,5 +101,6 @@
         "ios": "id633359593"
     },
     "wsrequestqueuelimit": 10,
-    "wsrequestqueuedelay": 100
+    "wsrequestqueuedelay": 100,
+    "calendarreminderdefaultvalue": 3600
 }
