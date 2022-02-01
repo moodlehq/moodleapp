@@ -26,7 +26,7 @@ import { CoreSite } from '@classes/site';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
+import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import { AddonBlockMyOverviewFilterOptionsComponent } from '../filteroptions/filteroptions';
 import { IonSearchbar } from '@ionic/angular';
 import moment from 'moment';

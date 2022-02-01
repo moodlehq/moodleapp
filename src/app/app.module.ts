@@ -24,7 +24,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { CoreModule } from '@/core/core.module';
-import { AddonsModule } from '@/addons/addons.module';
+import { AddonsModule } from '@addons/addons.module';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';

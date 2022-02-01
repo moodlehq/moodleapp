@@ -24,7 +24,7 @@ import {
 } from './courses';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
-import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
+import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 
 /**
  * Helper to gather some common courses functions.

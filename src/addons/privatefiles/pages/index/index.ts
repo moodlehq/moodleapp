@@ -28,8 +28,8 @@ import {
     AddonPrivateFilesFile,
     AddonPrivateFilesGetUserInfoWSResult,
     AddonPrivateFilesGetFilesWSParams,
-} from '@/addons/privatefiles/services/privatefiles';
-import { AddonPrivateFilesHelper } from '@/addons/privatefiles/services/privatefiles-helper';
+} from '@addons/privatefiles/services/privatefiles';
+import { AddonPrivateFilesHelper } from '@addons/privatefiles/services/privatefiles-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 
