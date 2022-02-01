@@ -57,7 +57,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     newsForumModule?: NewsForum;
 
     protected updateSiteObserver?: CoreEventObserver;
-
+	
     /**
      * Page being initialized.
      */
@@ -83,6 +83,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             const modParams = CoreNavigator.getRouteParam<Params>('modParams');
             CoreCourseHelper.openModule(module, this.siteHomeId, undefined, modParams);
         }
+        
 
         this.loadContent().finally(() => {
             this.dataLoaded = true;
@@ -90,10 +91,20 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             setTimeout(function(){
 	            
 	        
-            document.querySelector("#SectionChechCourseCode").style.display = "block";
+            var codeSection = document.querySelector<HTMLElement>("#SectionChechCourseCode");
+            if(codeSection != null)
+            	codeSection.style.display = "block";
         
-			document.querySelector(".send_code").addEventListener("click", (e) => {
-				var code = document.getElementById('course_code').value;//$("#course_code").val();
+			var send_code = document.querySelector<HTMLElement>(".send_code");
+            if(send_code != null)
+            	send_code.addEventListener("click", (e) => {
+	            	
+	            	
+				var code = "";
+				
+				var codeInput = document.querySelector<HTMLInputElement>("#course_code");
+				if(codeInput != null)
+					code = codeInput.value;
 				
 				var url = "https://art001exe.exentriq.com/93489/isValidCode?code=" + code;
 				
@@ -106,14 +117,22 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 					    
 					    if(!data.valid){
 						
-							document.querySelector(".invalid-course").style.display = "block";
+							var invcourse = document.querySelector<HTMLElement>(".invalid-course");
+							if(invcourse != null)
+								invcourse.style.display = "block";
 							return;
 						}else{
-							document.querySelector("#step1").style.display = "none";
-							document.querySelector("#step2").style.display = "block";
 							
-							window.courseId = data.id;
-							window.couponId = data.coupon;
+							var step1 = document.querySelector<HTMLElement>("#step1");
+							if(step1 != null)
+								step1.style.display = "none";
+							
+							var step2 = document.querySelector<HTMLElement>("#step2");
+							if(step2 != null)
+								step2.style.display = "block";
+							
+							window["courseId"] = data.id;
+							window["couponId"] = data.coupon;
 						}
 					    
 					  }).catch(error => {
@@ -130,13 +149,21 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 				return false;
 			})
 			
-			document.querySelector(".verify_code_nr").addEventListener("click", (e) => {
+			var verify_code_nr = document.querySelector<HTMLElement>(".verify_code_nr");
+            if(verify_code_nr != null)
+				verify_code_nr.addEventListener("click", (e) => {
 				
-				document.querySelector(".invalid-teacher").style.display = "none";
+				var invteacher = document.querySelector<HTMLElement>(".invalid-teacher");
+				if(invteacher != null)
+					invteacher.style.display = "block";
+					
 				
-				var code = document.querySelector('.teacher_code').value;
+				var code = "";
+				var teachercode = document.querySelector<HTMLInputElement>(".teacher_code");
+				if(teachercode != null)
+				 	code = teachercode.value;
 				
-				var url = "https://art001exe.exentriq.com/93489/isValidTeacher?code=" + code + "&course=" + window.courseId;
+				var url = "https://art001exe.exentriq.com/93489/isValidTeacher?code=" + code + "&course=" + window["courseId"];
 				
 				fetch(url)
 					  .then(response => response.json())
@@ -146,17 +173,29 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 					    console.log(data);
 					    
 					    if(!data.valid){
-						
-							document.querySelector(".invalid-teacher").style.display = "block";
+							
+							var invteacher = document.querySelector<HTMLElement>(".invalid-teacher");
+							if(invteacher != null)
+								invteacher.style.display = "block";
+								
 							return;
 						}else{
 							var teacherId = data.id;
 							var teacherName = encodeURIComponent(data.name);
-							var courseCode = document.querySelector("#course_code").value;
-							var studentId = document.querySelector(".verify_code_nr").attributes["data-id"].value
-							var couponId = window.couponId;
+							var courseCode = "";
+				
+							var codeInput = document.querySelector<HTMLInputElement>("#course_code");
+							if(codeInput != null)
+								courseCode = codeInput.value;
 							
-							var url2 = "https://art001exe.exentriq.com/93489/enrol?teacherId=" + teacherId + "&teacherName=" + teacherName + "&courseId=" + window.courseId + "&studentId=" + studentId + "&couponId=" + couponId + "&courseCode=" + courseCode;
+							var studentId = "";
+							var verify_code_nr = document.querySelector<HTMLInputElement>(".verify_code_nr");
+							if(verify_code_nr != null && verify_code_nr.attributes["data-id"] != null)
+								studentId = verify_code_nr.attributes["data-id"].value
+								
+							var couponId = window["couponId"];
+							
+							var url2 = "https://art001exe.exentriq.com/93489/enrol?teacherId=" + teacherId + "&teacherName=" + teacherName + "&courseId=" + window["courseId"] + "&studentId=" + studentId + "&couponId=" + couponId + "&courseCode=" + courseCode;
 							
 							fetch(url2)
 								.then(response => response.json())
@@ -169,7 +208,9 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 										location.href = "/main/home/course/" + data2.courseId + "/contents?course=param-2";
 												
 									}else{
-										document.querySelector(".invalid-teacher").style.display = "block";
+										var invteacher = document.querySelector<HTMLElement>(".invalid-teacher");
+										if(invteacher != null)
+											invteacher.style.display = "block";
 									}
 									
 									
