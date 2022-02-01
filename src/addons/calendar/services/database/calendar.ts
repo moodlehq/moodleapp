@@ -248,7 +248,8 @@ export const CALENDAR_SITE_SCHEMA: CoreSiteSchema = {
 
                     return;
                 } else {
-                    record.time = events[record.eventid].timestart - record.time;
+                    // Remove seconds from the old reminder, it could include seconds by mistake.
+                    record.time = events[record.eventid].timestart - Math.floor(record.time / 60) * 60;
                 }
 
                 return db.insertRecord(REMINDERS_TABLE, record);

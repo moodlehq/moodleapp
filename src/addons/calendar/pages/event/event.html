@@ -140,7 +140,7 @@
                         <p>{{ reminder.label }}</p>
                     </ion-label>
                     <ion-button fill="clear" (click)="cancelNotification(reminder.id, $event)" [attr.aria-label]="'core.delete' | translate"
-                        slot="end" *ngIf="reminder.timestamp > currentTime">
+                        slot="end">
                         <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </ion-item>
