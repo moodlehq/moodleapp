@@ -13,9 +13,10 @@
 // limitations under the License.
 
 import { SQLiteDB } from '@classes/sqlitedb';
+import { CoreConfig } from '@services/config';
 import { CoreSiteSchema } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { AddonCalendar, AddonCalendarEventType } from '../calendar';
+import { AddonCalendar, AddonCalendarEventType, AddonCalendarProvider } from '../calendar';
 
 /**
  * Database variables for AddonDatabase service.
@@ -216,13 +217,17 @@ export const CALENDAR_SITE_SCHEMA: CoreSiteSchema = {
         }
 
         if (oldVersion < 4) {
-            // Migrate reminders. New format @since 4.0.
-            const defaultTime = await CoreUtils.ignoreErrors(AddonCalendar.getDefaultNotificationTime(siteId));
+            // Migrate default notification time if it was changed.
+            // Don't use getDefaultNotificationTime to be able to detect if the value was changed or not.
+            const key = AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+            const defaultTime = await CoreUtils.ignoreErrors(CoreConfig.get(key, null));
+
             if (defaultTime) {
                 // Convert from minutes to seconds.
                 AddonCalendar.setDefaultNotificationTime(defaultTime * 60, siteId);
             }
 
+            // Migrate reminders. New format @since 4.0.
             const records = await db.getAllRecords<AddonCalendarReminderDBRecord>(REMINDERS_TABLE);
             const events: Record<number, AddonCalendarEventDBRecord> = {};
 

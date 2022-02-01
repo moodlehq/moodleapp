@@ -108,7 +108,6 @@ export class AddonCalendarProvider {
     static readonly COMPONENT = 'AddonCalendarEvents';
     static readonly DEFAULT_NOTIFICATION_TIME_CHANGED = 'AddonCalendarDefaultNotificationTimeChangedEvent';
     static readonly DEFAULT_NOTIFICATION_TIME_SETTING = 'mmaCalendarDefaultNotifTime';
-    static readonly DEFAULT_NOTIFICATION_TIME = 3600;
     static readonly STARTING_WEEK_DAY = 'addon_calendar_starting_week_day';
     static readonly NEW_EVENT_EVENT = 'addon_calendar_new_event';
     static readonly NEW_EVENT_DISCARDED_EVENT = 'addon_calendar_new_event_discarded';
@@ -638,7 +637,7 @@ export class AddonCalendarProvider {
 
         const key = AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
 
-        return CoreConfig.get(key, AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME);
+        return CoreConfig.get(key, CoreConstants.CONFIG.calendarreminderdefaultvalue || 3600);
     }
 
     /**
