@@ -16,18 +16,21 @@ ion-icon.completioninfo {
     width: 18px;
 }
 
-ion-item.section::part(native) {
+ion-item::part(native) {
     --padding-start: 0;
 }
 
-ion-icon.expandable-status-icon {
+ion-icon {
     margin: 0;
     @include padding(12px, 32px, 12px, 16px);
 }
 
+ion-item.core-course-index-all::part(native) {
+    --padding-start: 16px;
+}
+
 ion-item.item-current ion-icon.expandable-status-icon {
     @include padding(null, null, null, 11px);
-
 }
 
 ion-icon.restricted {

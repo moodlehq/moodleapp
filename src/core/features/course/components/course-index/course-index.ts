@@ -13,19 +13,18 @@
 // limitations under the License.
 
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-
-import { CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import {
     CoreCourseModuleCompletionStatus,
     CoreCourseModuleCompletionTracking,
     CoreCourseProvider,
 } from '@features/course/services/course';
-import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreUtils } from '@services/utils/utils';
-import { ModalController } from '@singletons';
+import { CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
+import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { IonContent } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreUtils } from '@services/utils/utils';
+import { ModalController } from '@singletons';
 
 /**
  * Component to display course index modal.
@@ -39,13 +38,13 @@ export class CoreCourseCourseIndexComponent implements OnInit {
 
     @ViewChild(IonContent) content?: IonContent;
 
-    @Input() sections?: CourseIndexSection[];
+    @Input() sections: CoreCourseSection[] = [];
     @Input() selectedId?: number;
     @Input() course?: CoreCourseAnyCourseData;
 
-    stealthModulesSectionId = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     allSectionId = CoreCourseProvider.ALL_SECTIONS_ID;
     highlighted?: string;
+    sectionsToRender: CourseIndexSection[] = [];
 
     constructor(
         protected elementRef: ElementRef,
@@ -70,29 +69,47 @@ export class CoreCourseCourseIndexComponent implements OnInit {
             return;
         }
 
-        // Collapse all sections first.
-        this.sections.forEach((section) => section.expanded = false);
-
         const currentSection = await CoreCourseFormatDelegate.getCurrentSection(this.course, this.sections);
-        currentSection.highlighted = true;
+
         if (this.selectedId === undefined) {
-            currentSection.expanded = true;
+            // Highlight current section if none is selected.
             this.selectedId = currentSection.id;
-        } else {
-            const selectedSection = this.sections.find((section) => section.id == this.selectedId);
-            if (selectedSection) {
-                selectedSection.expanded = true;
-            }
         }
 
-        this.sections.forEach((section) => {
-            section.modules.forEach((module) => {
-                module.completionStatus = module.completiondata === undefined ||
-                    module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE
-                    ? undefined
-                    : module.completiondata.state;
+        // Clone sections to add information.
+        this.sectionsToRender = this.sections
+            .filter((section) => !section.hiddenbynumsections &&
+                section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID &&
+                section.uservisible !== false)
+            .map((section) => {
+                const modules = section.modules
+                    .filter((module) => module.visibleoncoursepage !== 0 && !module.noviewlink)
+                    .map((module) => {
+                        const completionStatus = module.completiondata === undefined ||
+                        module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE
+                            ? undefined
+                            : module.completiondata.state;
+
+                        return {
+                            id: module.id,
+                            name: module.name,
+                            course: module.course,
+                            visible: !!module.visible,
+                            uservisible: !!module.uservisible,
+                            completionStatus,
+                        };
+                    });
+
+                return {
+                    id: section.id,
+                    name: section.name,
+                    availabilityinfo: !!section.availabilityinfo,
+                    expanded: section.id === this.selectedId,
+                    highlighted: currentSection?.id === section.id,
+                    hasVisibleModules: modules.length > 0,
+                    modules: modules,
+                };
             });
-        });
 
         this.highlighted = CoreCourseFormatDelegate.getSectionHightlightedName(this.course);
 
@@ -102,7 +119,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
                 this.content,
                 '.item.item-current',
             );
-        }, 200);
+        }, 300);
     }
 
     /**
@@ -128,39 +145,33 @@ export class CoreCourseCourseIndexComponent implements OnInit {
      * Select a section.
      *
      * @param event Event.
-     * @param section Selected section object.
+     * @param sectionId Selected section id.
+     * @param moduleId Selected module id, if any.
      */
-    selectSection(event: Event, section: CoreCourseSection): void {
-        if (section.uservisible !== false) {
-            ModalController.dismiss({ event, section });
-        }
-    }
-
-    /**
-     * Select a section and open a module
-     *
-     * @param event Event.
-     * @param section Selected section object.
-     * @param module Selected module object.
-     */
-    selectModule(event: Event,section: CoreCourseSection, module: CoreCourseModuleData): void {
-        if (module.uservisible !== false) {
-            ModalController.dismiss({ event, section, module });
-        }
+    selectSectionOrModule(event: Event, sectionId: number, moduleId?: number): void {
+        ModalController.dismiss({ event, sectionId, moduleId });
     }
 
 }
 
-type CourseIndexSection = Omit<CoreCourseSection, 'modules'> & {
-    highlighted?: boolean;
-    expanded?: boolean;
-    modules: (CoreCourseModuleData & {
+type CourseIndexSection = {
+    id: number;
+    name: string;
+    highlighted: boolean;
+    expanded: boolean;
+    hasVisibleModules: boolean;
+    availabilityinfo: boolean;
+    modules: {
+        id: number;
+        course: number;
+        visible: boolean;
+        uservisible: boolean;
         completionStatus?: CoreCourseModuleCompletionStatus;
-    })[];
+    }[];
 };
 
 export type CoreCourseIndexSectionWithModule = {
     event: Event;
-    section: CourseIndexSection;
-    module?: CoreCourseModuleData;
+    sectionId: number;
+    moduleId?: number;
 };
