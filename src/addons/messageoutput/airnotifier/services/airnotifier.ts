@@ -222,7 +222,9 @@ export class AddonMessageOutputAirnotifierProvider {
                             );
 
                             // Don't try auto-login, admins cannot use it.
-                            CoreUtils.openInBrowser(url);
+                            CoreUtils.openInBrowser(url, {
+                                showBrowserWarning: false,
+                            });
                         },
                     },
                 ],
