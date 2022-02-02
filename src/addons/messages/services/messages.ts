@@ -32,6 +32,7 @@ import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { AddonMessagesSyncEvents, AddonMessagesSyncProvider } from './messages-sync';
 import { CoreWSError } from '@classes/errors/wserror';
+import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
 
 const ROOT_CACHE_KEY = 'mmaMessages:';
 
@@ -3047,16 +3048,9 @@ export type AddonMessagesMessagePreferencesNotificationProcessor = {
     locked: boolean; // Is locked by admin?.
     lockedmessage?: string; // @since 3.6. Text to display if locked.
     userconfigured: number; // Is configured?.
-    loggedin: {
-        name: string; // Name.
-        displayname: string; // Display name.
-        checked: boolean; // Is checked?.
-    };
-    loggedoff: {
-        name: string; // Name.
-        displayname: string; // Display name.
-        checked: boolean; // Is checked?.
-    };
+    enabled?: boolean; // @since 4.0. Processor enabled.
+    loggedin: AddonNotificationsPreferencesNotificationProcessorState; // @deprecated removed on 4.0.
+    loggedoff: AddonNotificationsPreferencesNotificationProcessorState; // @deprecated removed on 4.0.
 };
 
 /**

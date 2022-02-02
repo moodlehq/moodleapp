@@ -40,10 +40,10 @@
             <core-context-menu-item [hidden]="isSelf || !muteEnabled || !conversation" [priority]="600" [content]="(conversation && conversation.ismuted ? 'addon.messages.unmuteconversation' :
                 'addon.messages.muteconversation') | translate" (action)="changeMute($event)" [closeOnClick]="false"
                 [iconAction]="muteIcon"></core-context-menu-item>
-            <core-context-menu-item [hidden]="!canDelete || !messages || !messages.length" [priority]="400"
+            <core-context-menu-item [hidden]="!canDelete || !messages || !messages.length" [priority]="400"
                 [content]="'addon.messages.showdeletemessages' | translate" iconAction="toggle" [(toggle)]="showDelete">
             </core-context-menu-item>
-            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversationId || isGroup || !messages || !messages.length"
+            <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversationId || isGroup || !messages || !messages.length"
                 [priority]="200" [content]="'addon.messages.deleteconversation' | translate" (action)="deleteConversation($event)"
                 [closeOnClick]="false" [iconAction]="deleteIcon"></core-context-menu-item>
             <core-context-menu-item

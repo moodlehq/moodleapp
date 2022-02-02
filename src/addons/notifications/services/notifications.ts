@@ -435,18 +435,23 @@ export type AddonNotificationsPreferencesNotificationProcessor = {
     locked: boolean; // Is locked by admin?.
     lockedmessage?: string; // @since 3.6. Text to display if locked.
     userconfigured: number; // Is configured?.
-    loggedin: AddonNotificationsPreferencesNotificationProcessorState;
-    loggedoff: AddonNotificationsPreferencesNotificationProcessorState;
+    enabled?: boolean; // @since 4.0. Processor enabled.
+    loggedin: AddonNotificationsPreferencesNotificationProcessorState; // @deprecated removed on 4.0.
+    loggedoff: AddonNotificationsPreferencesNotificationProcessorState; // @deprecated removed on 4.0.
 };
 
 /**
  * State in notification processor in notification preferences component.
+ *
+ * @deprecated removed on 4.0.
  */
 export type AddonNotificationsPreferencesNotificationProcessorState = {
-    name: string; // Name.
+    name: 'loggedoff' | 'loggedin'; // Name.
     displayname: string; // Display name.
     checked: boolean; // Is checked?.
 };
+
+export type AddonNotificationsPreferencesNotificationProcessorStateSetting = 'loggedoff' | 'loggedin' | 'enabled';
 
 /**
  * Params of core_message_get_messages WS.

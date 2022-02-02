@@ -41,12 +41,12 @@
 
         <core-spacer></core-spacer>
         <ion-item *ngIf="options.show.favourite">
-            <ion-label>{{ 'addon.block_myoverview.favouritesonly' | translate }}</ion-label>
+            <ion-label>{{ 'addon.block_myoverview.favouritesonly' | translate }}</ion-label>
             <ion-toggle [(ngModel)]="options.favouriteSelected"></ion-toggle>
         </ion-item>
 
         <ion-item *ngIf="options.show.hidden">
-            <ion-label>{{ 'addon.block_myoverview.aria:hiddencourses' | translate }}</ion-label>
+            <ion-label>{{ 'addon.block_myoverview.aria:hiddencourses' | translate }}</ion-label>
             <ion-toggle [(ngModel)]="options.hiddenSelected"></ion-toggle>
         </ion-item>
     </ion-list>
