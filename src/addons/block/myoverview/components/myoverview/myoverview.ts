@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChange } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ModalOptions } from '@ionic/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -40,9 +40,7 @@ const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] = ['all', 'inprogress',
     selector: 'addon-block-myoverview',
     templateUrl: 'addon-block-myoverview.html',
 })
-export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnChanges, OnDestroy {
-
-    @Input() downloadEnabled = false;
+export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
 
     filteredCourses: CoreEnrolledCourseDataWithOptions[] = [];
 
@@ -195,16 +193,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         Promise.all(promises).finally(() => {
             super.ngOnInit();
         });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        if (changes.downloadEnabled && !changes.downloadEnabled.previousValue && this.downloadEnabled && this.loaded) {
-            // Download all courses is enabled now, initialize it.
-            this.initPrefetchCoursesIcons();
-        }
     }
 
     /**
@@ -431,7 +419,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @return Promise resolved when done.
      */
     async initPrefetchCoursesIcons(): Promise<void> {
-        if (this.prefetchIconsInitialized || !this.downloadEnabled) {
+        if (this.prefetchIconsInitialized) {
             // Already initialized.
             return;
         }

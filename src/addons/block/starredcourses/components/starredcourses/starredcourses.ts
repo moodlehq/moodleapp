@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData, CoreCourses } from '@features/courses/services/courses';
@@ -36,17 +36,13 @@ import { AddonBlockStarredCourse, AddonBlockStarredCourses } from '../../service
 })
 export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
 
-    @Input() downloadEnabled = false;
-
     courses: AddonBlockStarredCoursesCourse[] = [];
 
-    downloadCourseEnabled = false;
     scrollElementId!: string;
 
     protected site: CoreSite;
     protected isDestroyed = false;
     protected coursesObserver?: CoreEventObserver;
-    protected updateSiteObserver?: CoreEventObserver;
     protected fetchContentDefaultError = 'Error getting starred courses data.';
 
     constructor() {
@@ -63,14 +59,6 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
         const scrollId = CoreUtils.getUniqueId('AddonBlockStarredCoursesComponent-Scroll');
 
         this.scrollElementId = `addon-block-starredcourses-scroll-${scrollId}`;
-
-        // Refresh the enabled flags if enabled.
-        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-
-        // Refresh the enabled flags if site is updated.
-        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-        }, CoreSites.getCurrentSiteId());
 
         this.coursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
@@ -194,7 +182,6 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.coursesObserver?.off();
-        this.updateSiteObserver?.off();
     }
 
 }

@@ -24,7 +24,7 @@ import {
 import {
     CoreCourseModulePrefetchDelegate,
     CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
-import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
+import { CoreCourses } from '@features/courses/services/courses';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -43,7 +43,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 })
 export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
-    course?: CoreEnrolledCourseData;
     courseId!: number;
     title = '';
     loaded = false;
@@ -70,7 +69,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     constructor() {
         // Refresh the enabled flags if site is updated.
         this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-            this.downloadCourseEnabled = !!this.course && !CoreCourses.isDownloadCourseDisabledInSite();
+            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
             this.downloadEnabled = !CoreSites.getRequiredCurrentSite().isOfflineDisabled();
 
             this.initCoursePrefetch();
@@ -92,15 +91,14 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             return;
         }
 
-        this.course = CoreNavigator.getRouteParam<CoreEnrolledCourseData>('course');
-        this.title = this.course?.displayname ?? this.course?.fullname ?? '';
+        this.title = CoreNavigator.getRouteParam<string>('title') || '';
         if (!this.title && this.courseId == CoreSites.getCurrentSiteHomeId()) {
             this.title = Translate.instant('core.sitehome.sitehome');
         }
 
         this.isGuest = !!CoreNavigator.getRouteBooleanParam('isGuest');
 
-        this.downloadCourseEnabled = !!this.course && !CoreCourses.isDownloadCourseDisabledInSite();
+        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
         this.downloadEnabled = !CoreSites.getRequiredCurrentSite().isOfflineDisabled();
 
         const sections = await CoreCourse.getSections(this.courseId, false, true);
@@ -551,14 +549,12 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      * Prefetch the whole course.
      */
     async prefetchCourse(): Promise<void> {
-        if (!this.course) {
-            return;
-        }
+        const course = await CoreCourses.getCourse(this.courseId);
 
         try {
             await CoreCourseHelper.confirmAndPrefetchCourse(
                 this.prefetchCourseData,
-                this.course,
+                course,
                 {
                     sections: this.sections,
                     isGuest: this.isGuest,

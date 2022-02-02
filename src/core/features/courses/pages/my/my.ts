@@ -123,13 +123,6 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Open page to manage courses storage.
-     */
-    manageCoursesStorage(): void {
-        CoreNavigator.navigateToSitePath('/storage');
-    }
-
-    /**
      * Go to search courses.
      */
     async openSearch(): Promise<void> {
