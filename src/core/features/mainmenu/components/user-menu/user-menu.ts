@@ -169,7 +169,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     async logout(event: Event): Promise<void> {
         await this.close(event);
 
-        CoreSites.logout();
+        CoreSites.logout(true);
     }
 
     /**
