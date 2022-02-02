@@ -312,20 +312,33 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             },
         });
 
-        if (data) {
-            this.sectionChanged(data.section);
-            if (data.module) {
-                if (!data.module.handlerData) {
-                    data.module.handlerData =
-                        await CoreCourseModuleDelegate.getModuleDataFor(data.module.modname, data.module, this.course.id);
-                }
-
-                if (data.module.uservisible !== false && data.module.handlerData?.action) {
-                    data.module.handlerData.action(data.event, data.module, data.module.course);
-                }
-                this.moduleId = data.module.id;
-            }
+        if (!data) {
+            return;
         }
+        const section = this.sections.find((section) => section.id == data.sectionId);
+        if (!section) {
+            return;
+        }
+        this.sectionChanged(section);
+
+        if (!data.moduleId) {
+            return;
+        }
+        const module = section.modules.find((module) => module.id == data.moduleId);
+        if (!module) {
+            return;
+        }
+
+        if (!module.handlerData) {
+            module.handlerData =
+                            await CoreCourseModuleDelegate.getModuleDataFor(module.modname, module, this.course.id);
+        }
+
+        if (module.uservisible !== false && module.handlerData?.action) {
+            module.handlerData.action(data.event, module, module.course);
+        }
+
+        this.moduleId = data.moduleId;
     }
 
     /**

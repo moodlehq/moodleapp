@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { AddonPrivateFiles } from '@/addons/privatefiles/services/privatefiles';
+import { AddonPrivateFiles } from '@addons/privatefiles/services/privatefiles';
 import { makeSingleton } from '@singletons';
 import {
     CoreUserDelegateContext,

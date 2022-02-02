@@ -21,7 +21,7 @@ import {
     CoreEnrolledCourseDataWithOptions,
 } from '@features/courses/services/courses-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
-import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
+import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/site';

@@ -25,26 +25,26 @@ function buildRoutes(injector: Injector): Routes {
             data: {
                 mainMenuTabRoot: AddonCalendarMainMenuHandlerService.PAGE_NAME,
             },
-            loadChildren: () => import('@/addons/calendar/pages/index/index.module').then(m => m.AddonCalendarIndexPageModule),
+            loadChildren: () => import('@addons/calendar/pages/index/index.module').then(m => m.AddonCalendarIndexPageModule),
         },
         {
             path: 'settings',
             loadChildren: () =>
-                import('@/addons/calendar/pages/settings/settings.module').then(m => m.AddonCalendarSettingsPageModule),
+                import('@addons/calendar/pages/settings/settings.module').then(m => m.AddonCalendarSettingsPageModule),
         },
         {
             path: 'day',
             loadChildren: () =>
-                import('@/addons/calendar/pages/day/day.module').then(m => m.AddonCalendarDayPageModule),
+                import('@addons/calendar/pages/day/day.module').then(m => m.AddonCalendarDayPageModule),
         },
         {
             path: 'event/:id',
-            loadChildren: () => import('@/addons/calendar/pages/event/event.module').then(m => m.AddonCalendarEventPageModule),
+            loadChildren: () => import('@addons/calendar/pages/event/event.module').then(m => m.AddonCalendarEventPageModule),
         },
         {
             path: 'edit/:eventId',
             loadChildren: () =>
-                import('@/addons/calendar/pages/edit-event/edit-event.module').then(m => m.AddonCalendarEditEventPageModule),
+                import('@addons/calendar/pages/edit-event/edit-event.module').then(m => m.AddonCalendarEditEventPageModule),
         },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'index',

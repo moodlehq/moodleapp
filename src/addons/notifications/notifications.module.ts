@@ -37,7 +37,7 @@ export const ADDON_NOTIFICATIONS_SERVICES: Type<unknown>[] = [
 const routes: Routes = [
     {
         path: AddonNotificationsMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('@/addons/notifications/notifications-lazy.module').then(m => m.AddonNotificationsLazyModule),
+        loadChildren: () => import('@addons/notifications/notifications-lazy.module').then(m => m.AddonNotificationsLazyModule),
     },
 ];
 const preferencesRoutes: Routes = [
