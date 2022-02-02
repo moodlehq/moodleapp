@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, NgZone, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
-import { CoreApp } from '@services/app';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -30,12 +29,13 @@ import {
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
-import { Translate } from '@singletons';
+import { NgZone, Platform, Translate } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreCoursesSelfEnrolPasswordComponent } from '../../../courses/components/self-enrol-password/self-enrol-password';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
+import { Subscription } from 'rxjs';
 
 /**
  * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.
@@ -66,7 +66,6 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     downloadCourseEnabled: boolean;
     courseUrl = '';
     courseImageUrl?: string;
-    isMobile: boolean;
     progress?: number;
 
     protected isGuestEnabled = false;
@@ -75,15 +74,13 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     protected enrolmentMethods: CoreCourseEnrolmentMethod[] = [];
     protected waitStart = 0;
     protected enrolUrl = '';
-    protected paypalReturnUrl = '';
     protected pageDestroyed = false;
     protected courseStatusObserver?: CoreEventObserver;
     protected courseId!: number;
+    protected appResumeSubscription: Subscription;
+    protected waitingForBrowserEnrol = false;
 
-    constructor(
-        protected zone: NgZone,
-    ) {
-        this.isMobile = CoreApp.isMobile();
+    constructor() {
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
 
         if (this.downloadCourseEnabled) {
@@ -94,6 +91,20 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
                 }
             }, CoreSites.getCurrentSiteId());
         }
+
+        // Refresh the view when the app is resumed.
+        this.appResumeSubscription = Platform.resume.subscribe(() => {
+            if (!this.waitingForBrowserEnrol || !this.dataLoaded) {
+                return;
+            }
+
+            NgZone.run(async () => {
+                this.waitingForBrowserEnrol = false;
+                this.dataLoaded = false;
+
+                await this.refreshData();
+            });
+        });
     }
 
     /**
@@ -115,7 +126,6 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
         const currentSiteUrl = CoreSites.getRequiredCurrentSite().getURL();
         this.enrolUrl = CoreTextUtils.concatenatePaths(currentSiteUrl, 'enrol/index.php?id=' + this.courseId);
         this.courseUrl = CoreTextUtils.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.courseId);
-        this.paypalReturnUrl = CoreTextUtils.concatenatePaths(currentSiteUrl, 'enrol/paypal/return.php');
 
         try {
             await this.getCourse();
@@ -269,53 +279,30 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Enrol using PayPal.
+     * Enrol in browser.
      */
-    async paypalEnrol(): Promise<void> {
-        // We cannot control browser in browser.
-        if (!this.isMobile || !CoreSites.getCurrentSite()) {
+    async browserEnrol(): Promise<void> {
+        // Send user to browser to enrol. Warn the user first.
+        try {
+            await CoreDomUtils.showConfirm(
+                Translate.instant('core.courses.browserenrolinstructions'),
+                undefined,
+                Translate.instant('core.openinbrowser'),
+            );
+        } catch {
+            // User canceled.
             return;
         }
 
-        let hasReturnedFromPaypal = false;
+        this.waitingForBrowserEnrol = true;
 
-        const urlLoaded = (event: InAppBrowserEvent): void => {
-            if (event.url.indexOf(this.paypalReturnUrl) != -1) {
-                hasReturnedFromPaypal = true;
-            } else if (event.url.indexOf(this.courseUrl) != -1 && hasReturnedFromPaypal) {
-                // User reached the course index page after returning from PayPal, close the InAppBrowser.
-                inAppClosed();
-                window.close();
-            }
-        };
-        const inAppClosed = (): void => {
-            // InAppBrowser closed, refresh data.
-            unsubscribeAll();
-
-            if (!this.dataLoaded) {
-                return;
-            }
-            this.dataLoaded = false;
-            this.refreshData();
-        };
-        const unsubscribeAll = (): void => {
-            inAppLoadSubscription?.unsubscribe();
-            inAppExitSubscription?.unsubscribe();
-        };
-
-        // Open the enrolment page in InAppBrowser.
-        const window = await CoreSites.getRequiredCurrentSite().openInAppWithAutoLogin(this.enrolUrl);
-
-        // Observe loaded pages in the InAppBrowser to check if the enrol process has ended.
-        const inAppLoadSubscription = window.on('loadstart').subscribe((event) => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            this.zone.run(() => urlLoaded(event));
-        });
-        // Observe window closed.
-        const inAppExitSubscription = window.on('exit').subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            this.zone.run(inAppClosed);
-        });
+        await CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLogin(
+            this.enrolUrl,
+            undefined,
+            {
+                showBrowserWarning: false,
+            },
+        );
     }
 
     /**
@@ -486,6 +473,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.pageDestroyed = true;
         this.courseStatusObserver?.off();
+        this.appResumeSubscription.unsubscribe();
     }
 
 }

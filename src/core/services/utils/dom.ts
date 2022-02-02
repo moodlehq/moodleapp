@@ -1225,10 +1225,10 @@ export class CoreDomUtilsProvider {
 
                 if (options.buttons) {
                     // Execute dismiss function if any.
-                    const cancelButton = <AlertButton> options.buttons.find(
+                    const cancelButton = <AlertButton | undefined> options.buttons.find(
                         (button) => typeof button != 'string' && button.handler !== undefined && button.role == 'cancel',
                     );
-                    cancelButton.handler?.(null);
+                    cancelButton?.handler?.(null);
                 }
             }, autocloseTime);
         }
