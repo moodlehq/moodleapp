@@ -1184,7 +1184,7 @@ export class CoreSitesProvider {
      * @param forceLogout If true, site will be marked as logged out, no matter the value tool_mobile_forcelogout.
      * @return Promise resolved when the user is logged out.
      */
-    async logout(forceLogout = false): Promise<void> {
+    async logout(options: CoreSitesLogoutOptions = {}): Promise<void> {
         if (!this.currentSite) {
             return;
         }
@@ -1195,13 +1195,17 @@ export class CoreSitesProvider {
 
         this.currentSite = undefined;
 
-        if (forceLogout || (siteConfig && siteConfig.tool_mobile_forcelogout == '1')) {
+        if (options.forceLogout || (siteConfig && siteConfig.tool_mobile_forcelogout == '1')) {
             promises.push(this.setSiteLoggedOut(siteId));
         }
 
         promises.push(this.removeStoredCurrentSite());
 
         await CoreUtils.ignoreErrors(Promise.all(promises));
+
+        if (options.removeAccount) {
+            await CoreSites.deleteSite(siteId);
+        }
 
         CoreEvents.trigger(CoreEvents.LOGOUT, {}, siteId);
     }
@@ -1912,4 +1916,12 @@ export type CoreSitesLoginTokenResponse = {
     stacktrace?: string;
     debuginfo?: string;
     reproductionlink?: string;
+};
+
+/**
+ * Options for logout.
+ */
+export type CoreSitesLogoutOptions = {
+    forceLogout?: boolean; // If true, site will be marked as logged out, no matter the value tool_mobile_forcelogout.
+    removeAccount?: boolean; // If true, site will be removed too after logout.
 };
