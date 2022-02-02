@@ -1,9 +1,13 @@
 {
-    "deletecourse": "Offload all course data",
-    "deletecourses": "Offload all courses data",
-    "deletedatafrom": "Offload data from {{name}}",
-    "info": "Files stored on your device make the app work faster and enable the app to be used offline. You can safely offload files if you need to free up storage space.",
-    "managestorage": "Manage storage",
-    "managecoursestorage": "Manage course storage",
-    "storageused": "File storage used:"
+    "deletedata": "Delete offline data",
+    "deletecourse": "Delete offline data from this course",
+    "deletecourses": "Delete offline data from all courses",
+    "deletedatafrom": "Delete offline data from {{name}}",
+    "courseinfo": "Download course content to work offline. Your activity will sync automatically when your device is back online.",
+    "managedownloads": "Manage downloads",
+    "coursedownloads": "Course downloads",
+    "totaldownloads": "Total downloads",
+    "totalspaceusage": "Total space usage",
+    "coursesspaceusage": "Courses space usage",
+    "downloadedcourses": "Downloaded courses"
 }
