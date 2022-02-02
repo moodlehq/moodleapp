@@ -15,6 +15,7 @@
 import { CoreConstants } from '@/core/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreSite, CoreSiteInfo } from '@classes/site';
+import { CoreFilter } from '@features/filter/services/filter';
 import { CoreLoginSitesComponent } from '@features/login/components/sites/sites';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
@@ -40,6 +41,7 @@ import { Subscription } from 'rxjs';
 })
 export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
+    siteId?: string;
     siteInfo?: CoreSiteInfo;
     siteName?: string;
     siteLogo?: string;
@@ -50,6 +52,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     loaded = false;
     user?: CoreUserProfile;
     displaySwitchAccount = true;
+    removeAccountOnLogout = false;
 
     protected subscription!: Subscription;
 
@@ -58,10 +61,12 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         const currentSite = CoreSites.getRequiredCurrentSite();
+        this.siteId = currentSite.getId();
         this.siteInfo = currentSite.getInfo();
         this.siteName = currentSite.getSiteName();
         this.siteUrl = currentSite.getURL();
         this.displaySwitchAccount = !currentSite.isFeatureDisabled('NoDelegate_SwitchAccount');
+        this.removeAccountOnLogout = !!CoreConstants.CONFIG.removeaccountonlogout;
 
         this.loaded = true;
 
@@ -167,9 +172,26 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event
      */
     async logout(event: Event): Promise<void> {
+        if (this.removeAccountOnLogout) {
+            // Ask confirm.
+            const siteName = this.siteName ?
+                await CoreFilter.formatText(this.siteName, { clean: true, singleLine: true, filter: false }, [], this.siteId) :
+                '';
+
+            try {
+                await CoreDomUtils.showDeleteConfirm('core.login.confirmdeletesite', { sitename: siteName });
+            } catch (error) {
+                // User cancelled, stop.
+                return;
+            }
+        }
+
         await this.close(event);
 
-        CoreSites.logout(true);
+        await CoreSites.logout({
+            forceLogout: true,
+            removeAccount: this.removeAccountOnLogout,
+        });
     }
 
     /**
