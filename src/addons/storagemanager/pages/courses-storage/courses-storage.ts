@@ -18,6 +18,9 @@ import { CoreCourse, CoreCourseProvider } from '@features/course/services/course
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
+import { CoreSiteHome } from '@features/sitehome/services/sitehome';
+import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreArray } from '@singletons/array';
@@ -42,7 +45,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
     courseStatusObserver?: CoreEventObserver;
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.userCourses = await CoreCourses.getUserCourses();
@@ -57,6 +60,22 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
                 .filter((course) => downloadedCourseIds.indexOf(course.id) !== -1)
                 .map((course) => this.getDownloadedCourse(course)),
         );
+
+        const siteHomeEnabled = await CoreSiteHome.isAvailable(this.siteId);
+        if (siteHomeEnabled) {
+            const siteHomeId = CoreSites.getCurrentSiteHomeId();
+            const size = await this.calculateDownloadedCourseSize(siteHomeId);
+            if (size > 0) {
+                const status = await CoreCourse.getCourseStatus(siteHomeId);
+
+                downloadedCourses.push({
+                    id: siteHomeId,
+                    title: Translate.instant('core.sitehome.sitehome'),
+                    totalSize: size,
+                    isDownloading: status === CoreConstants.DOWNLOADING,
+                });
+            }
+        }
 
         this.setDownloadedCourses(downloadedCourses);
 
@@ -173,7 +192,8 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
         const status = await CoreCourse.getCourseStatus(course.id);
 
         return {
-            ...course,
+            id: course.id,
+            title: course.displayname || course.fullname,
             totalSize,
             isDownloading: status === CoreConstants.DOWNLOADING,
         };
@@ -198,12 +218,23 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
         return moduleSizes.reduce((totalSize, moduleSize) => totalSize + moduleSize, 0);
     }
 
+    /**
+     * Open course storage.
+     *
+     * @param courseId Course Id.
+     */
+    openCourse(courseId: number, title: string): void {
+        CoreNavigator.navigateToSitePath('/storage/' + courseId, { params: { title } });
+    }
+
 }
 
 /**
  * Downloaded course data.
  */
-interface DownloadedCourse extends CoreEnrolledCourseData {
+interface DownloadedCourse {
+    id: number;
+    title: string;
     totalSize: number;
     isDownloading: boolean;
 }

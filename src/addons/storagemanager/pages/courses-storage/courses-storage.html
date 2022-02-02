@@ -31,10 +31,9 @@
         <ion-card *ngIf="downloadedCourses.length">
             <ion-card-content class="ion-no-padding">
                 <ion-list>
-                    <ion-item *ngFor="let course of downloadedCourses" class="course" (click)="openCourse(course)" button>
+                    <ion-item *ngFor="let course of downloadedCourses" class="course" (click)="openCourse(course.id)" button>
                         <ion-label class="ion-text-wrap">
-                            <p class="item-heading" *ngIf="course.displayname">{{ course.displayname }}</p>
-                            <p class="item-heading" *ngIf="!course.displayname">{{ course.fullname }}</p>
+                            <p class="item-heading">{{ course.title }}</p>
                             <p class="item-heading item-heading-secondary" *ngIf="course.isDownloading">
                                 {{ 'core.downloading' | translate }}
                             </p>

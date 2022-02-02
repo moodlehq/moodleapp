@@ -51,6 +51,9 @@ export class AddonStorageManagerCourseMenuHandlerService implements CoreCourseOp
             icon: 'fas-archive',
             title: 'addon.storagemanager.managecoursestorage',
             page: 'storage/' + course.id,
+            pageParams: {
+                title: course.displayname ?? course.fullname,
+            },
             class: 'addon-storagemanager-coursemenu-handler',
         };
     }
