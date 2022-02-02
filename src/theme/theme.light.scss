@@ -43,25 +43,11 @@
     --ion-color-step-950:  var(--gray-900);
     --ion-color-step-1000: var(--black);
 
-    --text-color:       #{$text-color};
-    --background-color: #{$background-color};
-
-    --core-online-color: #5cb85c;
-
-    --stroke:           var(--gray-300);
-    --ion-border-color: var(--stroke);
-    --ion-item-border-color: var(--stroke);
-
     @each $color-name, $unused in $colors {
         @include generate-color($color-name, $colors);
     }
 
     --brand-color: var(--brand);
-
-    --small-radius: 4px;
-    --medium-radius: 8px;
-    --big-radius: 16px;
-    --huge-radius: 24px;
 
     // Accessibility vars.
     --a11y-min-target-size: 44px;
@@ -69,13 +55,31 @@
     --a11y-focus-width: 2px;
     --zoom-level: 100%;
 
+    --small-radius: 4px;
+    --medium-radius: 8px;
+    --big-radius: 16px;
+    --huge-radius: 24px;
+
+    --text-color:       #{$text-color};
+    --background-color: #{$background-color};
+    --stroke:            var(--gray-300);
+
+    --core-online-color: #5cb85c;
+
+    --ion-background-color: var(--background-color);
+    --ion-item-border-color: var(--stroke);
+    --ion-background-color-rgb: #{$background-color-rgb};
+    --ion-border-color: var(--stroke);
+
+    --core-input-stroke: var(--gray-400);
+    --core-input-background: var(--ion-background-color);
+    --core-input-radius: var(--small-radius);
+    --core-input-border-width: 1px;
+
     --module-icon-size: 24px;
     --module-icon-radius: var(--medium-radius);
 
     --list-item--max-width: 768px;
-
-    --ion-background-color: var(--background-color);
-    --ion-background-color-rgb: #{$background-color-rgb};
 
     --contrast-background: white;
 
@@ -155,15 +159,39 @@
         --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
     }
 
+    --ion-searchbar-background: var(--ion-background-color);
+    --ion-searchbar-border-color: var(--core-input-stroke);
+    --ion-searchbar-border-radius: var(--core-input-radius);
+    --ion-searchbar-color: var(--text-color);
+    --ion-searchbar-icon-color: var(--core-input-stroke);
     ion-searchbar {
-        --background: var(--ion-item-background);
+        --background: var(--ion-searchbar-background);
+        --border-color: var(--ion-searchbar-border-color);
+        --icon-color: var(--ion-searchbar-icon-color);
+
+        .searchbar-input-container {
+            color: var(--ion-searchbar-color) !important;
+        }
         .searchbar-input {
             height: var(--a11y-min-target-size);
-            border: 1px solid var(--stroke);
+            border: 1px solid var(--ion-searchbar-border-color);
             box-shadow: none;
-            border-radius: var(--medium-radius);
+            border-radius: var(--ion-searchbar-border-radius);
+            background: var(--ion-searchbar-background) !important;
         }
     }
+
+    --core-search-box-background: var(--ion-background-color);
+    --core-search-box-border-color: var(--core-input-stroke);
+    --core-search-box-border-radius: var(--core-input-radius);
+    --core-search-box-color: var(--text-color);
+
+    --core-combobox-background: var(--core-input-background);
+    --core-combobox-color: var(--text-color);
+    --core-combobox-border-color: var(--core-input-stroke);
+    --core-combobox-border-width: var(--core-input-border-width);
+    --core-combobox-radius: var(--core-input-radius);
+    --core-combobox-box-shadow: none;
 
     ion-action-sheet {
         --button-color: var(--ion-text-color);
@@ -251,13 +279,6 @@
         --min-height: var(--a11y-min-target-size);
         --min-width: var(--a11y-min-target-size);
     }
-
-    --core-combobox-background: var(--ion-item-background);
-    --core-combobox-color: var(--gray-900);
-    --core-combobox-border-color: var(--stroke);
-    --core-combobox-border-width: 1px;
-    --core-combobox-radius: var(--medium-radius);
-    --core-combobox-box-shadow: none;
 
     --selected-item-color: var(--primary);
     --selected-item-border-width: 5px;

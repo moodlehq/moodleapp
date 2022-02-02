@@ -265,9 +265,15 @@ button,
     min-width: var(--a11y-min-target-size);
 }
 
+ion-button {
+    margin: 4px 8px;
+}
+
 ion-button.button-outline {
-    --border-width: 1px;
-    --background: var(--contrast-background);
+    --border-width: var(--core-input-border-width);
+    --border-color: var(--core-input-stroke);
+    --background: var(--core-input-background);
+    --color: var(--text-color);
 }
 
 ion-button.button-solid {
@@ -314,12 +320,7 @@ ion-button.button.button-clear.button-has-icon-only {
 
 ion-button.button.button-solid,
 ion-button.button.button-outline {
-    --border-radius: var(--small-radius);
-}
-
-// Clear buttons will be black.
-ion-button.button-clear {
-    --primary: var(--primary);
+    --border-radius: var(--core-input-radius);
 }
 
 [role="button"],

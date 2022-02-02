@@ -55,9 +55,8 @@ ion-button {
     color: var(--color);
     text-overflow: ellipsis;
     white-space: nowrap;
-    min-height: 26px;
+    min-height: var(--a11y-min-target-size);
     overflow: hidden;
-    margin: 8px;
     box-shadow: var(--box-shadow);
 
     &:focus,
@@ -71,6 +70,7 @@ ion-select {
     border-style: var(--border-style);
     border-width: var(--border-width);
     border-radius: var(--core-combobox-radius);
+    margin: 8px;
 
     &::part(icon) {
         margin: var(--icon-margin);
@@ -103,9 +103,9 @@ ion-select {
 
 ion-button {
     border-radius: var(--core-combobox-radius);
+    margin: 4px 8px;
 
     flex: 1;
-    min-height: 45px;
 
     &::part(native) {
         text-transform: none;

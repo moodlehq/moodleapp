@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Translate } from '@singletons';
 import { ModalOptions } from '@ionic/core';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -40,7 +40,6 @@ import { IonSelect } from '@ionic/angular';
     selector: 'core-combobox',
     templateUrl: 'core-combobox.html',
     styleUrls: ['combobox.scss'],
-    encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class CoreComboboxComponent {
 

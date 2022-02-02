@@ -1,4 +1,4 @@
-<ion-button (click)="openSelect($event)" color="light" *ngIf="interface != 'modal' && icon" [disabled]="disabled">
+<ion-button (click)="openSelect($event)" *ngIf="interface != 'modal' && icon" [disabled]="disabled">
     <ion-icon [name]="icon" [attr.aria-label]="label" slot="start">
     </ion-icon>
     <ion-badge *ngIf="badge && badge > 0" slot="start">{{badge}}</ion-badge>
