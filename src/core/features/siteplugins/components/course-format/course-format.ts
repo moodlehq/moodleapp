@@ -34,7 +34,6 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
 
     @Input() course?: CoreCourseAnyCourseData; // The course to render.
     @Input() sections?: CoreCourseSection[]; // List of course sections. The status will be calculated in this component.
-    @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
@@ -71,7 +70,6 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
                 this.method = handler.handlerSchema.method;
                 this.args = {
                     courseid: this.course.id,
-                    downloadenabled: this.downloadEnabled,
                 };
                 this.initResult = handler.initResult;
             }
@@ -81,7 +79,6 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
         this.data = {
             course: this.course,
             sections: this.sections,
-            downloadEnabled: this.downloadEnabled,
             initialSectionId: this.initialSectionId,
             initialSectionNumber: this.initialSectionNumber,
             moduleId: this.moduleId,

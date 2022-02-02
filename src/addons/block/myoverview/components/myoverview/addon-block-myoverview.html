@@ -4,7 +4,7 @@
     </ion-label>
     <div slot="end" class="flex-row">
         <!-- Download all courses. -->
-        <div *ngIf="downloadCoursesEnabled && downloadEnabled && filteredCourses.length > 1" class="core-button-spinner">
+        <div *ngIf="downloadCoursesEnabled && filteredCourses.length > 1" class="core-button-spinner">
             <ion-button *ngIf="!prefetchCoursesData.loading" fill="clear" color="dark" (click)="prefetchCourses()"
                 [attr.aria-label]="prefetchCoursesData.statusTranslatable | translate">
                 <ion-icon [name]="prefetchCoursesData.icon" slot="icon-only" aria-hidden="true">
@@ -77,8 +77,8 @@
             <ion-row class="ion-no-padding">
                 <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding" size="12" size-sm="6" size-md="6" size-lg="4"
                     size-xl="3">
-                    <core-courses-course-list-item [course]="course" class="core-courseoverview"
-                        [showDownload]="downloadCourseEnabled && downloadEnabled" [layout]="layouts.selected">
+                    <core-courses-course-list-item [course]="course" class="core-courseoverview" [showDownload]="downloadCourseEnabled"
+                        [layout]="layouts.selected">
                     </core-courses-course-list-item>
                 </ion-col>
             </ion-row>

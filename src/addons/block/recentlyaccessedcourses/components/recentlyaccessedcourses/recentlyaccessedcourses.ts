@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -41,17 +41,13 @@ import { CoreSite } from '@classes/site';
 })
 export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
 
-    @Input() downloadEnabled = false;
-
     courses: AddonBlockRecentlyAccessedCourse[] = [];
 
-    downloadCourseEnabled = false;
     scrollElementId!: string;
 
     protected site!: CoreSite;
     protected isDestroyed = false;
     protected coursesObserver?: CoreEventObserver;
-    protected updateSiteObserver?: CoreEventObserver;
     protected fetchContentDefaultError = 'Error getting recent courses data.';
 
     constructor() {
@@ -68,15 +64,6 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         const scrollId = CoreUtils.getUniqueId('AddonBlockRecentlyAccessedCoursesComponent-Scroll');
 
         this.scrollElementId = `addon-block-recentlyaccessedcourses-scroll-${scrollId}`;
-
-        // Refresh the enabled flags if enabled.
-        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-
-        // Refresh the enabled flags if site is updated.
-        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-
-        }, this.site.getId());
 
         this.coursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
@@ -208,7 +195,6 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.coursesObserver?.off();
-        this.updateSiteObserver?.off();
     }
 
 }

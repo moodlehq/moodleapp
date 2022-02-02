@@ -48,8 +48,7 @@
             </div>
         </ion-item>
         <ion-list>
-            <core-block *ngIf="loadedBlock?.visible" [block]="loadedBlock" contextLevel="user" [instanceId]="userId"
-                [extraData]="{'downloadEnabled': true}"></core-block>
+            <core-block *ngIf="loadedBlock?.visible" [block]="loadedBlock" contextLevel="user" [instanceId]="userId"></core-block>
         </ion-list>
 
         <core-empty-box *ngIf="!loadedBlock" icon="fas-cubes" [message]="'core.course.nocontentavailable' | translate">
