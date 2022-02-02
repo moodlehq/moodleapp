@@ -153,9 +153,10 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             if(verify_code_nr != null)
 				verify_code_nr.addEventListener("click", (e) => {
 				
+				//console.log("show bad teacher alert 0");
 				var invteacher = document.querySelector<HTMLElement>(".invalid-teacher");
 				if(invteacher != null)
-					invteacher.style.display = "block";
+					invteacher.style.display = "none";
 					
 				
 				var code = "";
@@ -170,10 +171,10 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 					  .then(data => {
 					    // Handle data
 					    
-					    console.log(data);
+					    //console.log(data);
 					    
 					    if(!data.valid){
-							
+							//console.log("show bad teacher alert");
 							var invteacher = document.querySelector<HTMLElement>(".invalid-teacher");
 							if(invteacher != null)
 								invteacher.style.display = "block";
@@ -197,6 +198,8 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 							
 							var url2 = "https://art001exe.exentriq.com/93489/enrol?teacherId=" + teacherId + "&teacherName=" + teacherName + "&courseId=" + window["courseId"] + "&studentId=" + studentId + "&couponId=" + couponId + "&courseCode=" + courseCode;
 							
+							//console.log("url2" + url2);
+							
 							fetch(url2)
 								.then(response => response.json())
 								.then(data2 => {
@@ -208,6 +211,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 										location.href = "/main/home/course/" + data2.courseId + "/contents?course=param-2";
 												
 									}else{
+										console.log("show bad teacher alert 2");
 										var invteacher = document.querySelector<HTMLElement>(".invalid-teacher");
 										if(invteacher != null)
 											invteacher.style.display = "block";
