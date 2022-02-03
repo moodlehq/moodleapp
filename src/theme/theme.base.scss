@@ -848,11 +848,15 @@ ion-select-popover ion-item.core-select-option-title {
 
 ion-chip {
     line-height: 1.1;
-    border-radius: var(--medium-radius);
     @include padding-horizontal(16px);
 
     &.ion-color {
         background: var(--ion-color-tint);
+        &.chip-outline {
+            background-color: transparent;
+            border-color: var(--ion-color-base);
+            color: var(--ion-color-base);
+        }
     }
 }
 
