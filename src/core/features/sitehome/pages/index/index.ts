@@ -208,7 +208,10 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 						  
 									if(data2.status == "success"){
 										
-										location.href = "/main/home/course/" + data2.courseId + "/contents?course=param-2";
+										CoreCourseHelper.getCourse(data2.courseId).then(result => {
+                                            console.log("0...",result.course);
+                                            CoreCourseHelper.openCourse(result.course);
+                                        });
 												
 									}else{
 										console.log("show bad teacher alert 2");
