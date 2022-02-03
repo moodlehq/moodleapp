@@ -723,10 +723,6 @@ ion-card {
     }
 }
 
-ion-chip.ion-color {
-    background: var(--ion-color-tint);
-}
-
 .core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation div {
     display: inline !important;
 }
@@ -854,6 +850,10 @@ ion-chip {
     line-height: 1.1;
     border-radius: var(--medium-radius);
     @include padding-horizontal(16px);
+
+    &.ion-color {
+        background: var(--ion-color-tint);
+    }
 }
 
 ion-searchbar {

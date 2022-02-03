@@ -54,7 +54,7 @@
 
     --core-bottom-tabs-badge-text-color: var(--brand-contrast);
     --core-bottom-tabs-background: var(--gray-900);
-    --core-bottom-tabs-color: var(--medium);
+    --core-bottom-tabs-color: var(--gray-200);
 
     ion-action-sheet {
         .action-sheet-cancel {
@@ -73,7 +73,7 @@
     --core-tab-border-color: var(--gray-200);
     --core-tab-color-active: var(--dark);
 
-    --core-progressbar-text-color: var(--light);
+    --core-progressbar-text-color: var(--gray-100);
 
     --ion-item-background: #{$ion-item-background-dark};
     --ion-item-detail-icon-color: var(--white);
@@ -118,8 +118,8 @@
     --addon-messages-message-mine-bg: var(--gray-700);
     --addon-messages-message-mine-activated-bg: var(--gray-600);
     --addon-messages-discussion-badge: var(--primary);
-    --addon-messages-discussion-badge-text: var(--dark);
+    --addon-messages-discussion-badge-text: var(--gray-100);
 
     --addon-forum-border-color: var(--gray-500);
-    --addon-forum-highlight-color: var(--medium);
+    --addon-forum-highlight-color: var(--gray-200);
 }
