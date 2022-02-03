@@ -39,6 +39,17 @@ export class CoreDbProvider {
     }
 
     /**
+     * Print query history in console.
+     */
+    printHistory(): void {
+        const substituteParams = ({ sql, params }: CoreDbQueryLog) =>
+            Object.values(params ?? []).reduce((sql: string, param: string) => sql.replace('?', param), sql);
+
+        // eslint-disable-next-line no-console
+        console.log(this.queryLogs.map(substituteParams).join('\n'));
+    }
+
+    /**
      * Log a query.
      *
      * @param sql Query SQL.
