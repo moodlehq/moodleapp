@@ -18,6 +18,7 @@ import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreConfigProvider } from '@services/config';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreDatabaseReducer, CoreDatabaseTable, CoreDatabaseConditions, GetDBRecordPrimaryKey } from './database-table';
+import { CoreDebugDatabaseTable } from './debug-database-table';
 import { CoreEagerDatabaseTable } from './eager-database-table';
 import { CoreLazyDatabaseTable } from './lazy-database-table';
 
@@ -152,6 +153,7 @@ export class CoreDatabaseTableProxy<
     protected getConfigDefaults(): CoreDatabaseConfiguration {
         return {
             cachingStrategy: CoreDatabaseCachingStrategy.None,
+            debug: false,
         };
     }
 
@@ -193,8 +195,9 @@ export class CoreDatabaseTableProxy<
      */
     protected createTarget(): CoreDatabaseTable<DBRecord, PrimaryKeyColumn> {
         const config = this.getRuntimeConfig();
+        const table = this.createTable(config.cachingStrategy);
 
-        return this.createTable(config.cachingStrategy);
+        return config.debug ? new CoreDebugDatabaseTable(table) : table;
     }
 
     /**
@@ -221,6 +224,7 @@ export class CoreDatabaseTableProxy<
  */
 export interface CoreDatabaseConfiguration {
     cachingStrategy: CoreDatabaseCachingStrategy;
+    debug: boolean;
 }
 
 /**
