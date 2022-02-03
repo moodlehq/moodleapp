@@ -556,16 +556,15 @@ core-rich-text-editor .core-rte-editor {
         font-weight: 400;
     }
 
-    @each $color-name, $base in $colors {
-
+    @each $color-name, $unused in $colors {
         .alert-#{$color-name} {
-            --color-base: var(--ion-color-#{$color-name});
-            color: var(--color-base);
+            --color-base: var(--#{$color-name});
+            color: var(--#{$color-name}-shade);
             border-color: var(--color-base);
-            background-color: var(--ion-color-#{$color-name}-lighter);
+            background-color: var(--#{$color-name}-tint);
 
-            .alert-link {
-                color: var(--ion-color-#{$color-name}-shade);
+            .alert-link, a {
+                color: var(--#{$color-name}-shade);
             }
         }
         .alert-#{$color-name} p {
@@ -594,9 +593,9 @@ core-rich-text-editor .core-rte-editor {
     .border-bottom-0 { border-bottom: 0 !important; }
     .border-left-0   { border-left: 0 !important; }
 
-    @each $color-name, $base in $colors {
+    @each $color-name, $unused in $colors {
         .border-#{$color-name} {
-            border-color: var(--ion-color-#{$color-name}) !important;
+            border-color: var(--#{$color-name}) !important;
         }
     }
 
@@ -678,9 +677,9 @@ core-rich-text-editor .core-rte-editor {
     .font-italic         { font-style: italic !important; }
     .text-white { color: var(--white) !important; }
 
-    @each $color-name, $base in $colors {
+    @each $color-name, $unused in $colors {
         .text-#{$color-name} {
-            color: var(--ion-color-#{$color-name});
+            color: var(--#{$color-name});
         }
     }
 
@@ -710,14 +709,14 @@ core-rich-text-editor .core-rte-editor {
     }
 
     .label-important {
-        color: var(--ion-color-danger-contrast);
-        background-color: var(--ion-color-danger);
+        color: var(--danger-contrast);
+        background-color: var(--danger);
     }
 
-    @each $color-name, $base in $colors {
+    @each $color-name, $unused in $colors {
         .label-#{$color-name} {
-            color: var(--ion-color-#{$color-name}-contrast);
-            background-color: var(--ion-color-#{$color-name});
+            color: var(--#{$color-name}-contrast);
+            background-color: var(--#{$color-name});
         }
     }
 }

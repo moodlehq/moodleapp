@@ -17,7 +17,7 @@
     } @else {
         ion-tabs.tabshidden.placement-bottom ion-tab-bar {
             pointer-events: none;
-    
+
             ion-tab-button {
                 height: auto;
             }
@@ -155,9 +155,9 @@
 }
 
 :host-context(.core-online) .core-network-message {
-    background: var(--green);
+    background: var(--success);
 }
 
 :host-context(.core-offline) .core-network-message {
-    background: var(--red);
+    background: var(--danger);
 }

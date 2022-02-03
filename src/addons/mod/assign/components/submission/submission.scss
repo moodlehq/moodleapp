@@ -15,7 +15,7 @@
     }
 
     div.submissioneditable p {
-        color: var(--red);
+        color: var(--danger);
     }
 
     .core-grading-summary .advancedgrade {
@@ -25,6 +25,6 @@
 
 :host-context(body.dark) ::ng-deep {
     div.submissioneditable p {
-        color: var(--red-light);
+        color: var(--danger-tint);
     }
 }

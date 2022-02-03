@@ -47,14 +47,16 @@
 }
 
 // Mixes a color with black to create its shade.
+// Default to bootstrap level 6.
 // --------------------------------------------------------------------------------------------
-@function get-color-shade($color) {
-  @return mix(#000, $color, 12%);
+@function get-color-shade($color, $percent: 48%) {
+  @return mix(#000, $color, $percent);
 }
 
 // Mixes a color with white to create its tint.
+// Default to bootstrap level -10.
 // --------------------------------------------------------------------------------------------
-@function get-color-tint($color, $percent: 10%) {
+@function get-color-tint($color, $percent: 80%) {
   @return mix(#fff, $color, $percent);
 }
 
@@ -72,20 +74,35 @@
 
 @mixin generate-color($color-name, $colors) {
     $base: map-get($colors, $color-name);
+    $light: map-get($base, 'light');
 
+    @include generate-color-variants($color-name, $light);
+
+    body.dark {
+        $dark: map-get($base, 'dark');
+        $dark: mix($light, white, 40%) !default;
+        @include generate-color-variants($color-name, $dark);
+    }
+}
+
+@mixin generate-color-variants($color-name, $base) {
     $contrast: get_contrast_color($base);
     $shade: get-color-shade($base);
     $tint: get-color-tint($base);
-    $lighter: get-color-tint($base, 90%);
 
-    --ion-color-#{$color-name}: var(--#{$color-name}, #{$base});
+    --#{$color-name}: #{$base};
+    --#{$color-name}-shade: #{$shade};
+    --#{$color-name}-tint: #{$tint};
+    --#{$color-name}-contrast: #{$contrast};
+
+    // Internal ionic use only.
+    --ion-color-#{$color-name}: var(--#{$color-name});
     --ion-color-#{$color-name}-base: var(--ion-color-#{$color-name});
     --ion-color-#{$color-name}-rgb: #{color-to-rgb-list($base)};
     --ion-color-#{$color-name}-contrast: #{$contrast};
     --ion-color-#{$color-name}-contrast-rgb: #{color-to-rgb-list($contrast)};
     --ion-color-#{$color-name}-shade: #{$shade};
     --ion-color-#{$color-name}-tint: #{$tint};
-    --ion-color-#{$color-name}-lighter: #{$lighter};
 
     .ion-color-#{$color-name} {
         --ion-color: var(--ion-color-#{$color-name});
@@ -95,7 +112,6 @@
         --ion-color-contrast-rgb: var(--ion-color-#{$color-name}-contrast-rgb);
         --ion-color-shade: var(--ion-color-#{$color-name}-shade);
         --ion-color-tint: var(--ion-color-#{$color-name}-tint);
-        --ion-color-lighter: var(--ion-color-#{$color-name}-lighter);
     }
 }
 

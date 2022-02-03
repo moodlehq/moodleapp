@@ -31,10 +31,10 @@
             border-radius: 3px;
 
             &.incorrect {
-                background-color: var(--red);
+                background-color: var(--danger);
             }
             &.correct {
-                background-color: var(--green);
+                background-color: var(--success);
             }
         }
     }
