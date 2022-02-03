@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-
+import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { CoreApp } from '@services/app';
+import { APP_SCHEMA, ConfigDBEntry, CONFIG_TABLE_NAME } from '@services/database/config';
 import { makeSingleton } from '@singletons';
-import { CONFIG_TABLE_NAME, APP_SCHEMA, ConfigDBEntry } from '@services/database/config';
-import { CoreDatabaseTable } from '@classes/database-table';
+import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CorePromisedValue } from '@classes/promised-value';
 
 /**
@@ -27,11 +27,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 @Injectable({ providedIn: 'root' })
 export class CoreConfigProvider {
 
-    protected dbTable: CorePromisedValue<CoreConfigTable>;
-
-    constructor() {
-        this.dbTable = new CorePromisedValue();
-    }
+    protected table: CorePromisedValue<CoreDatabaseTable<ConfigDBEntry, 'name'>> = new CorePromisedValue();
 
     /**
      * Initialize database.
@@ -43,10 +39,16 @@ export class CoreConfigProvider {
             // Ignore errors.
         }
 
-        const db = CoreApp.getDB();
-        const table = await CoreConfigTable.create(db);
+        const table = new CoreDatabaseTableProxy<ConfigDBEntry, 'name'>(
+            { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
+            CoreApp.getDB(),
+            CONFIG_TABLE_NAME,
+            ['name'],
+        );
 
-        this.dbTable.resolve(table);
+        await table.initialize();
+
+        this.table.resolve(table);
     }
 
     /**
@@ -56,7 +58,7 @@ export class CoreConfigProvider {
      * @return Promise resolved when done.
      */
     async delete(name: string): Promise<void> {
-        const table = await this.dbTable;
+        const table = await this.table;
 
         await table.deleteByPrimaryKey({ name });
     }
@@ -69,18 +71,18 @@ export class CoreConfigProvider {
      * @return Resolves upon success along with the config data. Reject on failure.
      */
     async get<T>(name: string, defaultValue?: T): Promise<T> {
-        const table = await this.dbTable;
-        const record = table.findByPrimaryKey({ name });
+        try {
+            const table = await this.table;
+            const record = await table.findByPrimaryKey({ name });
 
-        if (record !== null) {
             return record.value;
-        }
+        } catch (error) {
+            if (defaultValue !== undefined) {
+                return defaultValue;
+            }
 
-        if (defaultValue !== undefined) {
-            return defaultValue;
+            throw error;
         }
-
-        throw new Error(`Couldn't get config with name '${name}'`);
     }
 
     /**
@@ -91,7 +93,7 @@ export class CoreConfigProvider {
      * @return Promise resolved when done.
      */
     async set(name: string, value: number | string): Promise<void> {
-        const table = await this.dbTable;
+        const table = await this.table;
 
         await table.insert({ name, value });
     }
@@ -99,13 +101,3 @@ export class CoreConfigProvider {
 }
 
 export const CoreConfig = makeSingleton(CoreConfigProvider);
-
-/**
- * Config database table.
- */
-class CoreConfigTable extends CoreDatabaseTable<ConfigDBEntry, 'name'> {
-
-    protected table = CONFIG_TABLE_NAME;
-    protected primaryKeys = ['name'];
-
-}
