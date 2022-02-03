@@ -1,3 +1,5 @@
+@use "sass:math" as math;
+
 /*
  * App custom mixins for SCSS
  * ----------------------------------------------------------------------------
@@ -233,8 +235,59 @@
     @return (red($color) + green($color) + blue($color)) / 3;
 }
 
+// Get the better color contrast using WCAG algorythm.
 @function get_contrast_color($color) {
-    $brightness: get_brightness($color);
+    $lumiance: luminance($color);
 
-    @return if($brightness < 127, white, black);
+    // White lumiance is 1.
+    $whiteContrast: ($lumiance + 0.05) / (1 + 0.05);
+    // White lumiance is 0.
+    $blackContrast: (0.05) / ($lumiance + 0.05);
+
+    @return if($whiteContrast < $blackContrast, white, black);
+}
+
+// Color contrast using yiq aproximation with 150 threshold.
+@function get_contrast_color_yiq($color, $dark: black, $light: white) {
+    $r: red($color);
+    $g: green($color);
+    $b: blue($color);
+
+    $yiq: (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+
+    @return if($yiq >= 128, $dark, $light);
+}
+
+// WCAG contrast algorythm
+@function check-contrast($foreground, $background) {
+    $foregroundLumiance: luminance($foreground);
+    $backgroundLuminance: luminance($background);
+
+    @if ($backgroundLuminance < $foregroundLumiance) {
+        @return ($backgroundLuminance + 0.05) / ($foregroundLumiance + 0.05);
+    } @else {
+        @return ($foregroundLumiance + 0.05) / ($backgroundLuminance + 0.05);
+    }
+}
+
+@function luminance($color) {
+    $r: red($color);
+    $g: green($color);
+    $b: blue($color);
+
+    $r: component-luminance($r);
+    $g: component-luminance($g);
+    $b: component-luminance($b);
+
+    @return $r * 0.2126 + $g * 0.7152 + $b * 0.0722;
+}
+
+@function component-luminance($value) {
+    $value: $value / 255;
+
+    @if ($value <= 0.03928) {
+        @return $value / 12.92;
+    } @else {
+        @return math.pow(($value + 0.055) / 1.055, 2.4);
+    }
 }

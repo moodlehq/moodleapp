@@ -4,10 +4,10 @@
     }
 
     .addon-mod_lesson-highlight {
-        --background: var(--blue-light);
+        --background: var(--primary-tint);
 
         ion-label, ion-label p {
-            color: var(--blue-dark);
+            color: var(--primary-shade);
         }
     }
 

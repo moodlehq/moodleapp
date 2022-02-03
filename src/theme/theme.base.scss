@@ -217,7 +217,7 @@ ion-button ion-spinner {
     --color: inherit !important;
 }
 
-@each $color-name, $value in $colors {
+@each $color-name, $unused in $colors {
     .text-#{$color-name},
     p.text-#{$color-name} {
         color: var(--ion-color-#{$color-name});
@@ -240,7 +240,7 @@ ion-header ion-toolbar {
     .button.button-solid {
         --background: transparent;
         --color: var(--core-header-toolbar-color);
-        --ion-color-primary: var(--core-header-toolbar-color);
+        --primary: var(--core-header-toolbar-color);
     }
 
     .button.button-clear.button-has-icon-only,
@@ -272,7 +272,7 @@ ion-icon {
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: var(--ion-color-danger);
+        background-color: var(--danger);
         -webkit-mask: url("/assets/fonts/font-awesome/solid/slash.svg") no-repeat 50% 50%;
         mask: url("/assets/fonts/font-awesome/solid/slash.svg") no-repeat 50% 50%;
     }
@@ -303,7 +303,7 @@ button,
 
 // Clear buttons will be black.
 ion-button.button-clear {
-    --ion-color-primary: var(--primary);
+    --primary: var(--primary);
 }
 
 [role="button"],
@@ -364,7 +364,7 @@ div.core-iframe-network-error {
         right: -15%;
         width: 50%;
         height: 50%;
-        background-color: var(--ion-color-danger);
+        background-color: var(--danger);
         -webkit-mask: url("/assets/fonts/font-awesome/solid/exclamation-triangle.svg") no-repeat 50% 50%;
         mask: url("/assets/fonts/font-awesome/solid/exclamation-triangle.svg") no-repeat 50% 50%;
     }
@@ -633,7 +633,7 @@ body.core-iframe-fullscreen ion-router-outlet {
 
 .item-dimmed {
     opacity: 0.7;
-    --background: var(--ion-color-light);
+    --background: var(--light);
 }
 
 // Extra text colors.
@@ -642,7 +642,7 @@ body.core-iframe-fullscreen ion-router-outlet {
 }
 
 // Card styles
-@each $color-name, $base in $colors {
+@each $color-name, $unused in $colors {
 
     // Message cards.
     ion-card.core-#{$color-name}-card {
@@ -721,6 +721,10 @@ ion-card {
     ion-item:only-child {
         --inner-border-width: 0px;
     }
+}
+
+ion-chip.ion-color {
+    background: var(--ion-color-tint);
 }
 
 .core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation div {

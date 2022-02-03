@@ -1,3 +1,5 @@
+@import "~theme/globals";
+
 :host {
 
     --addon-calendar-blank-day-background-color: var(--light);
@@ -9,20 +11,10 @@
             padding: 0.7rem;
         }
 
-        &.addon-calendar-eventtype-category > ion-icon {
-            background-color: var(--addon-calendar-event-category-color);
-        }
-        &.addon-calendar-eventtype-course > ion-icon {
-            background-color: var(--addon-calendar-event-course-color);
-        }
-        &.addon-calendar-eventtype-group > ion-icon {
-            background-color: var(--addon-calendar-event-group-color);
-        }
-        &.addon-calendar-eventtype-user > ion-icon {
-            background-color: var(--addon-calendar-event-user-color);
-        }
-        &.addon-calendar-eventtype-site > ion-icon {
-            background-color: var(--addon-calendar-event-site-color);
+        @each $category, $value in $calendar-event-category-colors {
+            &.addon-calendar-eventtype-#{$category} > ion-icon {
+                background-color: $value;
+            }
         }
     }
 

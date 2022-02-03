@@ -4,39 +4,25 @@
  * Place here all global variables.
  */
 
-$white:    #ffffff !default;
-$gray-100: #f8f9fa !default;
-$gray-200: #e9ecef !default;
-$gray-300: #dee2e6 !default; // Stroke
-$gray-400: #ced4da !default;
-$gray-500: #8f959e !default;
-$gray-600: #6a737b !default;
-$gray-700: #495057 !default;
-$gray-800: #343a40 !default;
-$gray-900: #1d2125 !default; // Copy text
-$black:    #000000 !default; // Avoid usage
+$white:       #ffffff !default;
+$gray-100:    #f8f9fa !default;
+$gray-200:    #e9ecef !default;
+$gray-300:    #dee2e6 !default; // Stroke
+$gray-400:    #ced4da !default;
+$gray-500:    #8f959e !default;
+$gray-600:    #6a737b !default;
+$gray-700:    #495057 !default;
+$gray-800:    #343a40 !default;
+$gray-900:    #1d2125 !default; // Copy text
+$black:       #000000 !default; // Avoid usage
 
-$blue:            #0f6cbf !default;
-$blue-light:      mix($blue, white, 20%) !default;
-$blue-dark:       darken($blue, 10%) !default;
+$blue:        #0f6cbf !default;
+$cyan:        #008196 !default;
+$green:       #357a32 !default;
+$red:         #ca3120 !default;
+$yellow:      #f0ad4e !default;
 
-$cyan:            #008196 !default;
-$cyan-light:       mix($cyan, white, 20%) !default;
-$cyan-dark:        darken($cyan, 10%) !default;
-
-$green:           #357a32 !default; // Accent.
-$green-light:     mix($green, white, 20%) !default;
-$green-dark:      darken($green, 10%) !default;
-
-$red:             #ca3120 !default;
-$red-light:       mix($red, white, 20%) !default;
-$red-dark:        darken($red, 10%) !default;
-
-$yellow:          #f0ad4e !default;
-$yellow-light:    mix($yellow, white, 20%) !default;
-$yellow-dark:     mix($yellow, black, 40%) !default;
-
-$brand-color:    #ff7518 !default;
+$brand-color: #ff7518 !default;
 
 $text-color:               $gray-900 !default;
 $text-color-rgb:           color-to-rgb-list($text-color) !default;
@@ -45,7 +31,7 @@ $text-color-dark-rgb:      color-to-rgb-list($text-color-dark) !default;
 
 $background-color:          $white !default;
 $background-color-rgb:      color-to-rgb-list($background-color) !default;
-$background-color-dark:     mix(#ffffff, #000000, 10%) !default; // #1a1a1a
+$background-color-dark:     $gray-900 !default; // #1a1a1a
 $background-color-dark-rgb: color-to-rgb-list($background-color-dark) !default;
 
 $ion-item-background:      $white !default;
@@ -63,40 +49,17 @@ $light:      $gray-100 !default;
 $medium:     $gray-600 !default;
 $dark:       $gray-800 !default;
 
-$stroke:    $gray-300 !default;
-
 $colors:  (
-    primary: $primary,
-    secondary: $secondary,
-    success: $success,
-    warning: $warning,
-    danger:  $danger,
-    info: $info,
-    light: $light,
-    medium: $medium,
-    dark: $dark
-) !default;
-
-$primary-dark:    mix($blue, white, 40%) !default;
-$secondary-dark:  mix($secondary, white, 40%) !default;
-$danger-dark:     mix($red, white, 40%) !default;
-$warning-dark:    mix($yellow, white, 40%) !default;
-$success-dark:    mix($green, white, 40%) !default;
-$info-dark:       mix($cyan, white, 40%) !default;
-$light-dark:      $dark !default;
-$medium-dark:     $gray-200 !default;
-$dark-dark:       $light !default;
-
-$colors-dark:  (
-    primary: $primary-dark,
-    secondary: $secondary-dark,
-    success: $success-dark,
-    warning: $warning-dark,
-    danger: $danger-dark,
-    info: $info-dark,
-    light: $light-dark,
-    medium: $medium-dark,
-    dark: $dark-dark,
+    primary: (light: $primary),
+    secondary: (light: $secondary),
+    success: (light: $success),
+    warning: (light: $warning),
+    danger:  (light: $danger),
+    info: (light: $info),
+    light: (light: $light, dark: $dark),
+    medium: (light: $medium, dark: $gray-200),
+    dark: (light: $dark, dark: $light),
+    brand: (light: $brand-color, dark: $brand-color),
 ) !default;
 
 /**
@@ -153,6 +116,7 @@ $core-user-hide-siteinfo: $core-more-hide-siteinfo !default;
 $core-user-hide-sitename: $core-more-hide-sitename !default;
 $core-user-hide-siteurl: $core-more-hide-siteurl !default;
 
+// Activity icon background colors.
 $activity-icon-colors: (
     administration: #5d63f6,
     assessment: #eb66a2,
@@ -160,4 +124,13 @@ $activity-icon-colors: (
     communication: #11a676,
     content: #399be2,
     interface: #a378ff
+) !default;
+
+// Calendar event category background colors.
+$calendar-event-category-colors: (
+    category: #8e24aa,
+    course: $red,
+    group: $yellow,
+    user: $blue,
+    site: $green
 ) !default;

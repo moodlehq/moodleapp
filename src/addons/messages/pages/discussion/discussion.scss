@@ -4,13 +4,13 @@
 :host {
 
     .addon-messages-unreadfrom {
-        color: var(--ion-color-primary);
+        color: var(--primary);
         background-color: transparent;
         margin-top: 6px;
         margin-left: auto;
         margin-right: auto;
         ion-icon {
-            color: var(--ion-color-primary);
+            color: var(--primary);
             background-color: transparent;
         }
     }
