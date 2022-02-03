@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
 import { CorePromisedValue } from '@classes/promised-value';
 import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
+import { CoreConfigProvider } from '@services/config';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreDatabaseReducer, CoreDatabaseTable, CoreDatabaseConditions, GetDBRecordPrimaryKey } from './database-table';
 import { CoreEagerDatabaseTable } from './eager-database-table';
 import { CoreLazyDatabaseTable } from './lazy-database-table';
@@ -31,6 +34,7 @@ export class CoreDatabaseTableProxy<
 
     protected config: CoreDatabaseConfiguration;
     protected target: CorePromisedValue<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>> = new CorePromisedValue();
+    protected environmentObserver?: CoreEventObserver;
 
     constructor(
         config: Partial<CoreDatabaseConfiguration>,
@@ -47,11 +51,16 @@ export class CoreDatabaseTableProxy<
      * @inheritdoc
      */
     async initialize(): Promise<void> {
-        const target = this.createTarget();
+        this.environmentObserver = CoreEvents.on(CoreConfigProvider.ENVIRONMENT_UPDATED, () => this.updateTarget());
 
-        await target.initialize();
+        await this.updateTarget();
+    }
 
-        this.target.resolve(target);
+    /**
+     * @inheritdoc
+     */
+    async destroy(): Promise<void> {
+        this.environmentObserver?.off();
     }
 
     /**
@@ -147,12 +156,45 @@ export class CoreDatabaseTableProxy<
     }
 
     /**
+     * Get database configuration to use at runtime.
+     *
+     * @returns Database configuration.
+     */
+    protected getRuntimeConfig(): CoreDatabaseConfiguration {
+        return {
+            ...this.config,
+            ...CoreConstants.CONFIG.databaseOptimizations,
+            ...CoreConstants.CONFIG.databaseTableOptimizations?.[this.tableName],
+        };
+    }
+
+    /**
+     * Update underlying target instance.
+     */
+    protected async updateTarget(): Promise<void> {
+        const oldTarget = this.target.value;
+        const newTarget = this.createTarget();
+
+        if (oldTarget) {
+            await oldTarget.destroy();
+
+            this.target.reset();
+        }
+
+        await newTarget.initialize();
+
+        this.target.resolve(newTarget);
+    }
+
+    /**
      * Create proxy target.
      *
      * @returns Target instance.
      */
     protected createTarget(): CoreDatabaseTable<DBRecord, PrimaryKeyColumn> {
-        return this.createTable(this.config.cachingStrategy);
+        const config = this.getRuntimeConfig();
+
+        return this.createTable(config.cachingStrategy);
     }
 
     /**

@@ -12,13 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { EnvironmentConfig } from '@/types/config';
 import { Injectable } from '@angular/core';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { CoreApp } from '@services/app';
 import { APP_SCHEMA, ConfigDBEntry, CONFIG_TABLE_NAME } from '@services/database/config';
 import { makeSingleton } from '@singletons';
+import { CoreConstants } from '../constants';
+import { CoreEvents } from '@singletons/events';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CorePromisedValue } from '@classes/promised-value';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CoreConfigProvider.ENVIRONMENT_UPDATED]: EnvironmentConfig;
+    }
+
+}
 
 /**
  * Factory to provide access to dynamic and permanent config and settings.
@@ -27,7 +43,10 @@ import { CorePromisedValue } from '@classes/promised-value';
 @Injectable({ providedIn: 'root' })
 export class CoreConfigProvider {
 
+    static readonly ENVIRONMENT_UPDATED = 'environment_updated';
+
     protected table: CorePromisedValue<CoreDatabaseTable<ConfigDBEntry, 'name'>> = new CorePromisedValue();
+    protected defaultEnvironment?: EnvironmentConfig;
 
     /**
      * Initialize database.
@@ -96,6 +115,33 @@ export class CoreConfigProvider {
         const table = await this.table;
 
         await table.insert({ name, value });
+    }
+
+    /**
+     * Update config with the given values.
+     *
+     * @param config Config updates.
+     */
+    patchEnvironment(config: Partial<EnvironmentConfig>): void {
+        this.defaultEnvironment = this.defaultEnvironment ?? CoreConstants.CONFIG;
+
+        Object.assign(CoreConstants.CONFIG, config);
+        CoreEvents.trigger(CoreConfigProvider.ENVIRONMENT_UPDATED, CoreConstants.CONFIG);
+    }
+
+    /**
+     * Reset config values to its original state.
+     */
+    resetEnvironment(): void {
+        if (!this.defaultEnvironment) {
+            // The environment config hasn't been modified; there's not need to reset.
+
+            return;
+        }
+
+        Object.keys(CoreConstants.CONFIG).forEach(key => delete CoreConstants.CONFIG[key]);
+        Object.assign(CoreConstants.CONFIG, this.defaultEnvironment);
+        CoreEvents.trigger(CoreConfigProvider.ENVIRONMENT_UPDATED, CoreConstants.CONFIG);
     }
 
 }
