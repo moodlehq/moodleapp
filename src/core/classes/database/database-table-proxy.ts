@@ -16,6 +16,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreDatabaseReducer, CoreDatabaseTable, CoreDatabaseConditions, GetDBRecordPrimaryKey } from './database-table';
 import { CoreEagerDatabaseTable } from './eager-database-table';
+import { CoreLazyDatabaseTable } from './lazy-database-table';
 
 /**
  * Database table proxy used to route database interactions through different implementations.
@@ -164,6 +165,8 @@ export class CoreDatabaseTableProxy<
         switch (cachingStrategy) {
             case CoreDatabaseCachingStrategy.Eager:
                 return new CoreEagerDatabaseTable(this.database, this.tableName, this.primaryKeyColumns);
+            case CoreDatabaseCachingStrategy.Lazy:
+                return new CoreLazyDatabaseTable(this.database, this.tableName, this.primaryKeyColumns);
             case CoreDatabaseCachingStrategy.None:
                 return new CoreDatabaseTable(this.database, this.tableName, this.primaryKeyColumns);
         }
@@ -183,5 +186,6 @@ export interface CoreDatabaseConfiguration {
  */
 export enum CoreDatabaseCachingStrategy {
     Eager = 'eager',
+    Lazy = 'lazy',
     None = 'none',
 }

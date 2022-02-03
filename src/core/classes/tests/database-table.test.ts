@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { mock } from '@/testing/utils';
+import { CoreDatabaseTable } from '@classes/database/database-table';
 import {
     CoreDatabaseCachingStrategy,
     CoreDatabaseConfiguration,
@@ -30,7 +31,7 @@ function userMatches(user: User, conditions: Partial<User>) {
     return !Object.entries(conditions).some(([column, value]) => user[column] !== value);
 }
 
-function prepareStubs(config: Partial<CoreDatabaseConfiguration> = {}): [User[], SQLiteDB, CoreDatabaseTableProxy<User>] {
+function prepareStubs(config: Partial<CoreDatabaseConfiguration> = {}): [User[], SQLiteDB, CoreDatabaseTable<User>] {
     const records: User[] = [];
     const database = mock<SQLiteDB>({
         getRecord: async <T>(_, conditions) => {
@@ -68,11 +69,84 @@ function prepareStubs(config: Partial<CoreDatabaseConfiguration> = {}): [User[],
     return [records, database, table];
 }
 
+async function testFindItems(records: User[], table: CoreDatabaseTable<User>) {
+    const john = { id: 1, name: 'John', surname: 'Doe' };
+    const amy = { id: 2, name: 'Amy', surname: 'Doe' };
+
+    records.push(john);
+    records.push(amy);
+
+    await table.initialize();
+
+    await expect(table.findByPrimaryKey({ id: 1 })).resolves.toEqual(john);
+    await expect(table.findByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
+    await expect(table.find({ surname: 'Doe', name: 'John' })).resolves.toEqual(john);
+    await expect(table.find({ surname: 'Doe', name: 'Amy' })).resolves.toEqual(amy);
+}
+
+async function testInsertItems(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
+    // Arrange.
+    const john = { id: 1, name: 'John', surname: 'Doe' };
+
+    await table.initialize();
+
+    // Act.
+    await table.insert(john);
+
+    // Assert.
+    expect(database.insertRecord).toHaveBeenCalledWith('users', john);
+
+    await expect(table.findByPrimaryKey({ id: 1 })).resolves.toEqual(john);
+}
+
+async function testDeleteItems(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
+    // Arrange.
+    const john = { id: 1, name: 'John', surname: 'Doe' };
+    const amy = { id: 2, name: 'Amy', surname: 'Doe' };
+    const jane = { id: 3, name: 'Jane', surname: 'Smith' };
+
+    records.push(john);
+    records.push(amy);
+    records.push(jane);
+
+    await table.initialize();
+
+    // Act.
+    await table.delete({ surname: 'Doe' });
+
+    // Assert.
+    expect(database.deleteRecords).toHaveBeenCalledWith('users', { surname: 'Doe' });
+
+    await expect(table.findByPrimaryKey({ id: 1 })).rejects.toThrow();
+    await expect(table.findByPrimaryKey({ id: 2 })).rejects.toThrow();
+    await expect(table.findByPrimaryKey({ id: 3 })).resolves.toEqual(jane);
+}
+
+async function testDeleteItemsByPrimaryKey(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
+    // Arrange.
+    const john = { id: 1, name: 'John', surname: 'Doe' };
+    const amy = { id: 2, name: 'Amy', surname: 'Doe' };
+
+    records.push(john);
+    records.push(amy);
+
+    await table.initialize();
+
+    // Act.
+    await table.deleteByPrimaryKey({ id: 1 });
+
+    // Assert.
+    expect(database.deleteRecords).toHaveBeenCalledWith('users', { id: 1 });
+
+    await expect(table.findByPrimaryKey({ id: 1 })).rejects.toThrow();
+    await expect(table.findByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
+}
+
 describe('CoreDatabaseTable with eager caching', () => {
 
     let records: User[];
     let database: SQLiteDB;
-    let table: CoreDatabaseTableProxy<User>;
+    let table: CoreDatabaseTable<User>;
 
     beforeEach(() => [records, database, table] = prepareStubs({ cachingStrategy: CoreDatabaseCachingStrategy.Eager }));
 
@@ -83,79 +157,41 @@ describe('CoreDatabaseTable with eager caching', () => {
     });
 
     it('finds items', async () => {
-        const john = { id: 1, name: 'John', surname: 'Doe' };
-        const amy = { id: 2, name: 'Amy', surname: 'Doe' };
-
-        records.push(john);
-        records.push(amy);
-
-        await table.initialize();
-
-        await expect(table.findByPrimaryKey({ id: 1 })).resolves.toEqual(john);
-        await expect(table.findByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
-        await expect(table.find({ surname: 'Doe', name: 'John' })).resolves.toEqual(john);
-        await expect(table.find({ surname: 'Doe', name: 'Amy' })).resolves.toEqual(amy);
+        await testFindItems(records, table);
 
         expect(database.getRecord).not.toHaveBeenCalled();
     });
 
-    it('inserts items', async () => {
-        // Arrange.
-        const john = { id: 1, name: 'John', surname: 'Doe' };
+    it('inserts items', () => testInsertItems(records, database, table));
+    it('deletes items', () => testDeleteItems(records, database, table));
+    it('deletes items by primary key', () => testDeleteItemsByPrimaryKey(records, database, table));
 
+});
+
+describe('CoreDatabaseTable with lazy caching', () => {
+
+    let records: User[];
+    let database: SQLiteDB;
+    let table: CoreDatabaseTable<User>;
+
+    beforeEach(() => [records, database, table] = prepareStubs({ cachingStrategy: CoreDatabaseCachingStrategy.Lazy }));
+
+    it('reads no records on initialization', async () => {
         await table.initialize();
 
-        // Act.
-        await table.insert(john);
-
-        // Assert.
-        expect(database.insertRecord).toHaveBeenCalledWith('users', john);
-
-        await expect(table.findByPrimaryKey({ id: 1 })).resolves.toEqual(john);
+        expect(database.getRecords).not.toHaveBeenCalled();
+        expect(database.getAllRecords).not.toHaveBeenCalled();
     });
 
-    it('deletes items', async () => {
-        // Arrange.
-        const john = { id: 1, name: 'John', surname: 'Doe' };
-        const amy = { id: 2, name: 'Amy', surname: 'Doe' };
-        const jane = { id: 3, name: 'Jane', surname: 'Smith' };
+    it('finds items', async () => {
+        await testFindItems(records, table);
 
-        records.push(john);
-        records.push(amy);
-        records.push(jane);
-
-        await table.initialize();
-
-        // Act.
-        await table.delete({ surname: 'Doe' });
-
-        // Assert.
-        expect(database.deleteRecords).toHaveBeenCalledWith('users', { surname: 'Doe' });
-
-        await expect(table.findByPrimaryKey({ id: 1 })).rejects.toThrow();
-        await expect(table.findByPrimaryKey({ id: 2 })).rejects.toThrow();
-        await expect(table.findByPrimaryKey({ id: 3 })).resolves.toEqual(jane);
+        expect(database.getRecord).toHaveBeenCalledTimes(2);
     });
 
-    it('deletes items by primary key', async () => {
-        // Arrange.
-        const john = { id: 1, name: 'John', surname: 'Doe' };
-        const amy = { id: 2, name: 'Amy', surname: 'Doe' };
-
-        records.push(john);
-        records.push(amy);
-
-        await table.initialize();
-
-        // Act.
-        await table.deleteByPrimaryKey({ id: 1 });
-
-        // Assert.
-        expect(database.deleteRecords).toHaveBeenCalledWith('users', { id: 1 });
-
-        await expect(table.findByPrimaryKey({ id: 1 })).rejects.toThrow();
-        await expect(table.findByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
-    });
+    it('inserts items', () => testInsertItems(records, database, table));
+    it('deletes items', () => testDeleteItems(records, database, table));
+    it('deletes items by primary key', () => testDeleteItemsByPrimaryKey(records, database, table));
 
 });
 
@@ -163,7 +199,7 @@ describe('CoreDatabaseTable with no caching', () => {
 
     let records: User[];
     let database: SQLiteDB;
-    let table: CoreDatabaseTableProxy<User>;
+    let table: CoreDatabaseTable<User>;
 
     beforeEach(() => [records, database, table] = prepareStubs({ cachingStrategy: CoreDatabaseCachingStrategy.None }));
 
@@ -175,78 +211,13 @@ describe('CoreDatabaseTable with no caching', () => {
     });
 
     it('finds items', async () => {
-        const john = { id: 1, name: 'John', surname: 'Doe' };
-        const amy = { id: 2, name: 'Amy', surname: 'Doe' };
-
-        records.push(john);
-        records.push(amy);
-
-        await table.initialize();
-
-        await expect(table.findByPrimaryKey({ id: 1 })).resolves.toEqual(john);
-        await expect(table.findByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
-        await expect(table.find({ surname: 'Doe', name: 'John' })).resolves.toEqual(john);
-        await expect(table.find({ surname: 'Doe', name: 'Amy' })).resolves.toEqual(amy);
+        await testFindItems(records, table);
 
         expect(database.getRecord).toHaveBeenCalledTimes(4);
     });
 
-    it('inserts items', async () => {
-        // Arrange.
-        const john = { id: 1, name: 'John', surname: 'Doe' };
-
-        await table.initialize();
-
-        // Act.
-        await table.insert(john);
-
-        // Assert.
-        expect(database.insertRecord).toHaveBeenCalledWith('users', john);
-
-        await expect(table.findByPrimaryKey({ id: 1 })).resolves.toEqual(john);
-    });
-
-    it('deletes items', async () => {
-        // Arrange.
-        const john = { id: 1, name: 'John', surname: 'Doe' };
-        const amy = { id: 2, name: 'Amy', surname: 'Doe' };
-        const jane = { id: 3, name: 'Jane', surname: 'Smith' };
-
-        records.push(john);
-        records.push(amy);
-        records.push(jane);
-
-        await table.initialize();
-
-        // Act.
-        await table.delete({ surname: 'Doe' });
-
-        // Assert.
-        expect(database.deleteRecords).toHaveBeenCalledWith('users', { surname: 'Doe' });
-
-        await expect(table.findByPrimaryKey({ id: 1 })).rejects.toThrow();
-        await expect(table.findByPrimaryKey({ id: 2 })).rejects.toThrow();
-        await expect(table.findByPrimaryKey({ id: 3 })).resolves.toEqual(jane);
-    });
-
-    it('deletes items by primary key', async () => {
-        // Arrange.
-        const john = { id: 1, name: 'John', surname: 'Doe' };
-        const amy = { id: 2, name: 'Amy', surname: 'Doe' };
-
-        records.push(john);
-        records.push(amy);
-
-        await table.initialize();
-
-        // Act.
-        await table.deleteByPrimaryKey({ id: 1 });
-
-        // Assert.
-        expect(database.deleteRecords).toHaveBeenCalledWith('users', { id: 1 });
-
-        await expect(table.findByPrimaryKey({ id: 1 })).rejects.toThrow();
-        await expect(table.findByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
-    });
+    it('inserts items', () => testInsertItems(records, database, table));
+    it('deletes items', () => testDeleteItems(records, database, table));
+    it('deletes items by primary key', () => testDeleteItemsByPrimaryKey(records, database, table));
 
 });
