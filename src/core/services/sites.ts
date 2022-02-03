@@ -31,6 +31,7 @@ import {
     CoreSiteConfig,
     CoreSitePublicConfigResponse,
     CoreSiteInfoResponse,
+    CoreSiteWSCacheRecord,
 } from '@classes/site';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
@@ -57,6 +58,9 @@ import { CoreErrorWithTitle } from '@classes/errors/errorwithtitle';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
+import { CorePromisedValue } from '@classes/promised-value';
+import { CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 
@@ -85,6 +89,7 @@ export class CoreSitesProvider {
     // Variables for DB.
     protected appDB: Promise<SQLiteDB>;
     protected resolveAppDB!: (appDB: SQLiteDB) => void;
+    protected cacheTables: Record<string, CorePromisedValue<CoreDatabaseTable<CoreSiteWSCacheRecord>>> = {};
 
     constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] = []) {
         this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
@@ -100,6 +105,23 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Initialize.
+     */
+    initialize(): void {
+        CoreEvents.on(CoreEvents.SITE_DELETED, async ({ siteId }) => {
+            if (!siteId || !(siteId in this.cacheTables)) {
+                return;
+            }
+
+            const cacheTable = await this.cacheTables[siteId];
+
+            delete this.cacheTables[siteId];
+
+            await cacheTable.destroy();
+        });
+    }
+
+    /**
      * Initialize database.
      */
     async initializeDatabase(): Promise<void> {
@@ -110,6 +132,33 @@ export class CoreSitesProvider {
         }
 
         this.resolveAppDB(CoreApp.getDB());
+    }
+
+    /**
+     * Get cache table.
+     *
+     * @param siteId Site id.
+     * @returns cache table.
+     */
+    async getCacheTable(site: CoreSite): Promise<CoreDatabaseTable<CoreSiteWSCacheRecord>> {
+        if (!site.id) {
+            throw new CoreError('Can\'t get cache table for site without id');
+        }
+
+        if (!(site.id in this.cacheTables)) {
+            const promisedTable = this.cacheTables[site.id] = new CorePromisedValue();
+            const table = new CoreDatabaseTableProxy<CoreSiteWSCacheRecord>(
+                { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                site.getDb(),
+                CoreSite.WS_CACHE_TABLE,
+            );
+
+            await table.initialize();
+
+            promisedTable.resolve(table);
+        }
+
+        return this.cacheTables[site.id];
     }
 
     /**

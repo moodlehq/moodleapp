@@ -41,6 +41,7 @@ import { CoreLogger } from '@singletons/logger';
 import { Translate } from '@singletons';
 import { CoreIonLoadingElement } from './ion-loading';
 import { CoreLang } from '@services/lang';
+import { CoreSites } from '@services/sites';
 
 /**
  * QR Code type enumeration.
@@ -920,20 +921,20 @@ export class CoreSite {
         preSets: CoreSiteWSPreSets,
         emergency?: boolean,
     ): Promise<T> {
-        const db = this.db;
-        if (!db || !preSets.getFromCache) {
+        if (!this.db || !preSets.getFromCache) {
             throw new CoreError('Get from cache is disabled.');
         }
 
         const id = this.getCacheId(method, data);
+        const cacheTable = await CoreSites.getCacheTable(this);
         let entry: CoreSiteWSCacheRecord | undefined;
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
-            const entries = await db.getRecords<CoreSiteWSCacheRecord>(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey });
+            const entries = await cacheTable.all({ key: preSets.cacheKey });
 
             if (!entries.length) {
                 // Cache key not found, get by params sent.
-                entry = await db.getRecord(CoreSite.WS_CACHE_TABLE, { id });
+                entry = await cacheTable.findByPrimaryKey({ id });
             } else {
                 if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
@@ -945,7 +946,7 @@ export class CoreSite {
                 }
             }
         } else {
-            entry = await db.getRecord(CoreSite.WS_CACHE_TABLE, { id });
+            entry = await cacheTable.findByPrimaryKey({ id });
         }
 
         if (entry === undefined) {
@@ -990,18 +991,25 @@ export class CoreSite {
      */
     async getComponentCacheSize(component: string, componentId?: number): Promise<number> {
         const params: Array<string | number> = [component];
+        const cacheTable = await CoreSites.getCacheTable(this);
         let extraClause = '';
         if (componentId !== undefined && componentId !== null) {
             params.push(componentId);
             extraClause = ' AND componentId = ?';
         }
 
-        const size = <number> await this.getDb().getFieldSql(
-            'SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE + ' WHERE component = ?' + extraClause,
-            params,
+        return cacheTable.reduce(
+            {
+                sql: 'SUM(length(data))',
+                js: (size, record) => size + record.data.length,
+                jsInitialValue: 0,
+            },
+            {
+                sql: 'WHERE component = ?' + extraClause,
+                sqlParams: params,
+                js: record => record.component === component && (params.length === 1 || record.componentId === componentId),
+            },
         );
-
-        return size;
     }
 
     /**
@@ -1015,10 +1023,6 @@ export class CoreSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected async saveToCache(method: string, data: any, response: any, preSets: CoreSiteWSPreSets): Promise<void> {
-        if (!this.db) {
-            throw new CoreError('Site DB not initialized.');
-        }
-
         if (preSets.uniqueCacheKey) {
             // Cache key must be unique, delete all entries with same cache key.
             await CoreUtils.ignoreErrors(this.deleteFromCache(method, data, preSets, true));
@@ -1027,6 +1031,7 @@ export class CoreSite {
         // Since 3.7, the expiration time contains the time the entry is modified instead of the expiration time.
         // We decided to reuse this field to prevent modifying the database table.
         const id = this.getCacheId(method, data);
+        const cacheTable = await CoreSites.getCacheTable(this);
         const entry = {
             id,
             data: JSON.stringify(response),
@@ -1044,7 +1049,7 @@ export class CoreSite {
             }
         }
 
-        await this.db.insertRecord(CoreSite.WS_CACHE_TABLE, entry);
+        await cacheTable.insert(entry);
     }
 
     /**
@@ -1058,16 +1063,13 @@ export class CoreSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected async deleteFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, allCacheKey?: boolean): Promise<void> {
-        if (!this.db) {
-            throw new CoreError('Site DB not initialized.');
-        }
-
         const id = this.getCacheId(method, data);
+        const cacheTable = await CoreSites.getCacheTable(this);
 
         if (allCacheKey) {
-            await this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, { key: preSets.cacheKey });
+            await cacheTable.delete({ key: preSets.cacheKey });
         } else {
-            await this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, { id });
+            await cacheTable.deleteByPrimaryKey({ id });
         }
     }
 
@@ -1084,18 +1086,14 @@ export class CoreSite {
             return;
         }
 
-        if (!this.db) {
-            throw new CoreError('Site DB not initialized');
-        }
+        const params = { component };
+        const cacheTable = await CoreSites.getCacheTable(this);
 
-        const params = {
-            component,
-        };
         if (componentId) {
             params['componentId'] = componentId;
         }
 
-        await this.db.deleteRecords(CoreSite.WS_CACHE_TABLE, params);
+        await cacheTable.delete(params);
     }
 
     /*
@@ -1127,14 +1125,12 @@ export class CoreSite {
      * @return Promise resolved when the cache entries are invalidated.
      */
     async invalidateWsCache(): Promise<void> {
-        if (!this.db) {
-            throw new CoreError('Site DB not initialized');
-        }
-
         this.logger.debug('Invalidate all the cache for site: ' + this.id);
 
         try {
-            await this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 });
+            const cacheTable = await CoreSites.getCacheTable(this);
+
+            await cacheTable.update({ expirationTime: 0 });
         } finally {
             CoreEvents.trigger(CoreEvents.WS_CACHE_INVALIDATED, {}, this.getId());
         }
@@ -1147,16 +1143,15 @@ export class CoreSite {
      * @return Promise resolved when the cache entries are invalidated.
      */
     async invalidateWsCacheForKey(key: string): Promise<void> {
-        if (!this.db) {
-            throw new CoreError('Site DB not initialized');
-        }
         if (!key) {
             return;
         }
 
         this.logger.debug('Invalidate cache for key: ' + key);
 
-        await this.db.updateRecords(CoreSite.WS_CACHE_TABLE, { expirationTime: 0 }, { key });
+        const cacheTable = await CoreSites.getCacheTable(this);
+
+        await cacheTable.update({ expirationTime: 0 }, { key });
     }
 
     /**
@@ -1184,18 +1179,19 @@ export class CoreSite {
      * @return Promise resolved when the cache entries are invalidated.
      */
     async invalidateWsCacheForKeyStartingWith(key: string): Promise<void> {
-        if (!this.db) {
-            throw new CoreError('Site DB not initialized');
-        }
         if (!key) {
             return;
         }
 
         this.logger.debug('Invalidate cache for key starting with: ' + key);
 
-        const sql = 'UPDATE ' + CoreSite.WS_CACHE_TABLE + ' SET expirationTime=0 WHERE key LIKE ?';
+        const cacheTable = await CoreSites.getCacheTable(this);
 
-        await this.db.execute(sql, [key + '%']);
+        await cacheTable.updateWhere({ expirationTime: 0 }, {
+            sql: 'key LIKE ?',
+            sqlParams: [key],
+            js: record => !!record.key?.startsWith(key),
+        });
     }
 
     /**
@@ -1270,9 +1266,13 @@ export class CoreSite {
      * @return Promise resolved with the total size of all data in the cache table (bytes)
      */
     async getCacheUsage(): Promise<number> {
-        const size = <number> await this.getDb().getFieldSql('SELECT SUM(length(data)) FROM ' + CoreSite.WS_CACHE_TABLE);
+        const cacheTable = await CoreSites.getCacheTable(this);
 
-        return size;
+        return cacheTable.reduce({
+            sql: 'SUM(length(data))',
+            js: (size, record) => size + record.data.length,
+            jsInitialValue: 0,
+        });
     }
 
     /**
