@@ -21,7 +21,7 @@ import { makeSingleton } from '@singletons';
 import { CoreConstants } from '../constants';
 import { CoreEvents } from '@singletons/events';
 import { CoreDatabaseTable } from '@classes/database/database-table';
-import { CorePromisedValue } from '@classes/promised-value';
+import { asyncInstance } from '../utils/async-instance';
 
 declare module '@singletons/events' {
 
@@ -45,7 +45,7 @@ export class CoreConfigProvider {
 
     static readonly ENVIRONMENT_UPDATED = 'environment_updated';
 
-    protected table: CorePromisedValue<CoreDatabaseTable<ConfigDBEntry, 'name'>> = new CorePromisedValue();
+    protected table = asyncInstance<CoreDatabaseTable<ConfigDBEntry, 'name'>>();
     protected defaultEnvironment?: EnvironmentConfig;
 
     /**
@@ -67,7 +67,7 @@ export class CoreConfigProvider {
 
         await table.initialize();
 
-        this.table.resolve(table);
+        this.table.setInstance(table);
     }
 
     /**
@@ -77,9 +77,7 @@ export class CoreConfigProvider {
      * @return Promise resolved when done.
      */
     async delete(name: string): Promise<void> {
-        const table = await this.table;
-
-        await table.deleteByPrimaryKey({ name });
+        await this.table.deleteByPrimaryKey({ name });
     }
 
     /**
@@ -91,8 +89,7 @@ export class CoreConfigProvider {
      */
     async get<T>(name: string, defaultValue?: T): Promise<T> {
         try {
-            const table = await this.table;
-            const record = await table.findByPrimaryKey({ name });
+            const record = await this.table.findByPrimaryKey({ name });
 
             return record.value;
         } catch (error) {
@@ -112,9 +109,7 @@ export class CoreConfigProvider {
      * @return Promise resolved when done.
      */
     async set(name: string, value: number | string): Promise<void> {
-        const table = await this.table;
-
-        await table.insert({ name, value });
+        await this.table.insert({ name, value });
     }
 
     /**

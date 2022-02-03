@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { CorePromisedValue } from '@classes/promised-value';
+import { asyncInstance } from '@/core/utils/async-instance';
 import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreConfigProvider } from '@services/config';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -34,7 +34,7 @@ export class CoreDatabaseTableProxy<
 > extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
 
     protected config: CoreDatabaseConfiguration;
-    protected target: CorePromisedValue<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>> = new CorePromisedValue();
+    protected target = asyncInstance<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>>();
     protected environmentObserver?: CoreEventObserver;
 
     constructor(
@@ -68,81 +68,63 @@ export class CoreDatabaseTableProxy<
      * @inheritdoc
      */
     async all(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
-        const target = await this.target;
-
-        return target.all(conditions);
+        return this.target.all(conditions);
     }
 
     /**
      * @inheritdoc
      */
     async find(conditions: Partial<DBRecord>): Promise<DBRecord> {
-        const target = await this.target;
-
-        return target.find(conditions);
+        return this.target.find(conditions);
     }
 
     /**
      * @inheritdoc
      */
     async findByPrimaryKey(primaryKey: PrimaryKey): Promise<DBRecord> {
-        const target = await this.target;
-
-        return target.findByPrimaryKey(primaryKey);
+        return this.target.findByPrimaryKey(primaryKey);
     }
 
     /**
      * @inheritdoc
      */
     async reduce<T>(reducer: CoreDatabaseReducer<DBRecord, T>, conditions?: CoreDatabaseConditions<DBRecord>): Promise<T> {
-        const target = await this.target;
-
-        return target.reduce<T>(reducer, conditions);
+        return this.target.reduce<T>(reducer, conditions);
     }
 
     /**
      * @inheritdoc
      */
     async insert(record: DBRecord): Promise<void> {
-        const target = await this.target;
-
-        return target.insert(record);
+        return this.target.insert(record);
     }
 
     /**
      * @inheritdoc
      */
     async update(updates: Partial<DBRecord>, conditions?: Partial<DBRecord>): Promise<void> {
-        const target = await this.target;
-
-        return target.update(updates, conditions);
+        return this.target.update(updates, conditions);
     }
 
     /**
      * @inheritdoc
      */
     async updateWhere(updates: Partial<DBRecord>, conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
-        const target = await this.target;
-
-        return target.updateWhere(updates, conditions);
+        return this.target.updateWhere(updates, conditions);
     }
 
     /**
      * @inheritdoc
      */
     async delete(conditions?: Partial<DBRecord>): Promise<void> {
-        const target = await this.target;
-
-        return target.delete(conditions);
+        return this.target.delete(conditions);
     }
 
     /**
      * @inheritdoc
      */
     async deleteByPrimaryKey(primaryKey: PrimaryKey): Promise<void> {
-        const target = await this.target;
-
-        return target.deleteByPrimaryKey(primaryKey);
+        return this.target.deleteByPrimaryKey(primaryKey);
     }
 
     /**
@@ -174,18 +156,18 @@ export class CoreDatabaseTableProxy<
      * Update underlying target instance.
      */
     protected async updateTarget(): Promise<void> {
-        const oldTarget = this.target.value;
+        const oldTarget = this.target.instance;
         const newTarget = this.createTarget();
 
         if (oldTarget) {
             await oldTarget.destroy();
 
-            this.target.reset();
+            this.target.resetInstance();
         }
 
         await newTarget.initialize();
 
-        this.target.resolve(newTarget);
+        this.target.setInstance(newTarget);
     }
 
     /**

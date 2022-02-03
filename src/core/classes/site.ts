@@ -42,6 +42,8 @@ import { Translate } from '@singletons';
 import { CoreIonLoadingElement } from './ion-loading';
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
+import { asyncInstance, AsyncInstance } from '../utils/async-instance';
+import { CoreDatabaseTable } from './database/database-table';
 
 /**
  * QR Code type enumeration.
@@ -104,6 +106,7 @@ export class CoreSite {
     // Rest of variables.
     protected logger: CoreLogger;
     protected db?: SQLiteDB;
+    protected cacheTable: AsyncInstance<CoreDatabaseTable<CoreSiteWSCacheRecord>>;
     protected cleanUnicode = false;
     protected lastAutoLogin = 0;
     protected offlineDisabled = false;
@@ -137,6 +140,7 @@ export class CoreSite {
     ) {
         this.logger = CoreLogger.getInstance('CoreSite');
         this.siteUrl = CoreUrlUtils.removeUrlParams(this.siteUrl); // Make sure the URL doesn't have params.
+        this.cacheTable = asyncInstance(() => CoreSites.getCacheTable(this));
         this.setInfo(infos);
         this.calculateOfflineDisabled();
 
@@ -926,15 +930,14 @@ export class CoreSite {
         }
 
         const id = this.getCacheId(method, data);
-        const cacheTable = await CoreSites.getCacheTable(this);
         let entry: CoreSiteWSCacheRecord | undefined;
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
-            const entries = await cacheTable.all({ key: preSets.cacheKey });
+            const entries = await this.cacheTable.all({ key: preSets.cacheKey });
 
             if (!entries.length) {
                 // Cache key not found, get by params sent.
-                entry = await cacheTable.findByPrimaryKey({ id });
+                entry = await this.cacheTable.findByPrimaryKey({ id });
             } else {
                 if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
@@ -946,7 +949,7 @@ export class CoreSite {
                 }
             }
         } else {
-            entry = await cacheTable.findByPrimaryKey({ id });
+            entry = await this.cacheTable.findByPrimaryKey({ id });
         }
 
         if (entry === undefined) {
@@ -991,14 +994,13 @@ export class CoreSite {
      */
     async getComponentCacheSize(component: string, componentId?: number): Promise<number> {
         const params: Array<string | number> = [component];
-        const cacheTable = await CoreSites.getCacheTable(this);
         let extraClause = '';
         if (componentId !== undefined && componentId !== null) {
             params.push(componentId);
             extraClause = ' AND componentId = ?';
         }
 
-        return cacheTable.reduce(
+        return this.cacheTable.reduce(
             {
                 sql: 'SUM(length(data))',
                 js: (size, record) => size + record.data.length,
@@ -1031,7 +1033,6 @@ export class CoreSite {
         // Since 3.7, the expiration time contains the time the entry is modified instead of the expiration time.
         // We decided to reuse this field to prevent modifying the database table.
         const id = this.getCacheId(method, data);
-        const cacheTable = await CoreSites.getCacheTable(this);
         const entry = {
             id,
             data: JSON.stringify(response),
@@ -1049,7 +1050,7 @@ export class CoreSite {
             }
         }
 
-        await cacheTable.insert(entry);
+        await this.cacheTable.insert(entry);
     }
 
     /**
@@ -1064,12 +1065,11 @@ export class CoreSite {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected async deleteFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, allCacheKey?: boolean): Promise<void> {
         const id = this.getCacheId(method, data);
-        const cacheTable = await CoreSites.getCacheTable(this);
 
         if (allCacheKey) {
-            await cacheTable.delete({ key: preSets.cacheKey });
+            await this.cacheTable.delete({ key: preSets.cacheKey });
         } else {
-            await cacheTable.deleteByPrimaryKey({ id });
+            await this.cacheTable.deleteByPrimaryKey({ id });
         }
     }
 
@@ -1087,13 +1087,12 @@ export class CoreSite {
         }
 
         const params = { component };
-        const cacheTable = await CoreSites.getCacheTable(this);
 
         if (componentId) {
             params['componentId'] = componentId;
         }
 
-        await cacheTable.delete(params);
+        await this.cacheTable.delete(params);
     }
 
     /*
@@ -1128,9 +1127,7 @@ export class CoreSite {
         this.logger.debug('Invalidate all the cache for site: ' + this.id);
 
         try {
-            const cacheTable = await CoreSites.getCacheTable(this);
-
-            await cacheTable.update({ expirationTime: 0 });
+            await this.cacheTable.update({ expirationTime: 0 });
         } finally {
             CoreEvents.trigger(CoreEvents.WS_CACHE_INVALIDATED, {}, this.getId());
         }
@@ -1149,9 +1146,7 @@ export class CoreSite {
 
         this.logger.debug('Invalidate cache for key: ' + key);
 
-        const cacheTable = await CoreSites.getCacheTable(this);
-
-        await cacheTable.update({ expirationTime: 0 }, { key });
+        await this.cacheTable.update({ expirationTime: 0 }, { key });
     }
 
     /**
@@ -1185,9 +1180,7 @@ export class CoreSite {
 
         this.logger.debug('Invalidate cache for key starting with: ' + key);
 
-        const cacheTable = await CoreSites.getCacheTable(this);
-
-        await cacheTable.updateWhere({ expirationTime: 0 }, {
+        await this.cacheTable.updateWhere({ expirationTime: 0 }, {
             sql: 'key LIKE ?',
             sqlParams: [key],
             js: record => !!record.key?.startsWith(key),
@@ -1266,9 +1259,7 @@ export class CoreSite {
      * @return Promise resolved with the total size of all data in the cache table (bytes)
      */
     async getCacheUsage(): Promise<number> {
-        const cacheTable = await CoreSites.getCacheTable(this);
-
-        return cacheTable.reduce({
+        return this.cacheTable.reduce({
             sql: 'SUM(length(data))',
             js: (size, record) => size + record.data.length,
             jsInitialValue: 0,
