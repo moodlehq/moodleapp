@@ -28,6 +28,7 @@ import { CoreBlockCourseBlocksComponent } from '@features/block/components/cours
 import { CoreCourseModuleDelegate, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreNavigator } from '@services/navigator';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Page that displays site home index.
@@ -149,6 +150,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 				return false;
 			})
 			
+			
 			var verify_code_nr = document.querySelector<HTMLElement>(".verify_code_nr");
             if(verify_code_nr != null)
 				verify_code_nr.addEventListener("click", (e) => {
@@ -198,23 +200,19 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 							
 							var url2 = "https://art001exe.exentriq.com/93489/enrol?teacherId=" + teacherId + "&teacherName=" + teacherName + "&courseId=" + window["courseId"] + "&studentId=" + studentId + "&couponId=" + couponId + "&courseCode=" + courseCode;
 							
-							//console.log("url2" + url2);
-							
 							fetch(url2)
 								.then(response => response.json())
 								.then(data2 => {
 									
-									console.log(data2);
-						  
 									if(data2.status == "success"){
 										
 										CoreCourseHelper.getCourse(data2.courseId).then(result => {
-                                            console.log("0...",result.course);
+                                            
                                             CoreCourseHelper.openCourse(result.course);
+                                            CoreUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
                                         });
 												
 									}else{
-										console.log("show bad teacher alert 2");
 										var invteacher = document.querySelector<HTMLElement>(".invalid-teacher");
 										if(invteacher != null)
 											invteacher.style.display = "block";
