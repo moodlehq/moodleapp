@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourseProvider, CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
@@ -21,6 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
+import { CoreColors } from '@singletons/colors';
 import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseListItem, CoreCourses, CoreCoursesProvider } from '../../services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
@@ -64,11 +65,17 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     protected courseStatusObserver?: CoreEventObserver;
     protected siteUpdatedObserver?: CoreEventObserver;
 
+    protected element: HTMLElement;
+
+    constructor(element: ElementRef) {
+        this.element = element.nativeElement;
+    }
+
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        CoreCoursesHelper.loadCourseColorAndImage(this.course);
+        this.setCourseColor();
 
         // Assume is enroled if mode is not listwithenrol.
         this.isEnrolled = this.layout != 'listwithenrol' || this.course.progress !== undefined;
@@ -139,6 +146,22 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
                     icon: 'fas-lock',
                 });
             }
+        }
+    }
+
+    /**
+     * Set course color.
+     */
+    protected async setCourseColor(): Promise<void> {
+        await CoreCoursesHelper.loadCourseColorAndImage(this.course);
+
+        if (this.course.color) {
+            this.element.style.setProperty('--course-color', this.course.color);
+
+            const tint = CoreColors.lighter(this.course.color, 50);
+            this.element.style.setProperty('--course-color-tint', tint);
+        } else {
+            this.element.classList.add('course-color-' + this.course.colorNumber);
         }
     }
 

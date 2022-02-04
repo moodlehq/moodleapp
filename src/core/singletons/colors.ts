@@ -25,10 +25,15 @@ interface ColorComponents {
  * Ionic color names.
  */
 export enum CoreIonicColorNames {
+    BRAND = 'brand',
+    PRIMARY = 'primary',
+    SECONDARY = 'secondary',
     SUCCESS = 'success',
-    INFO = 'info',
+    WARNING = 'warning',
     DANGER = 'danger',
+    INFO = 'info',
     DARK = 'dark',
+    MEDIUM = 'medium',
     LIGHT = 'light',
     NONE = '',
 };
@@ -49,17 +54,35 @@ export class CoreColors {
     }
 
     /**
-     * Returns the same color 10% darker to be used as status bar on Android.
+     * Returns the same color % darker.
      *
      * @param color Color to get darker.
      * @return Darker Hex RGB color.
      */
-    static darker(color: string, percent: number = 10): string {
-        percent = 1 - (percent / 100);
+    static darker(color: string, percent: number = 48): string {
+        const inversePercent = 1 - (percent / 100);
         const components = CoreColors.hexToRGB(color);
-        components.red = Math.floor(components.red * percent);
-        components.green = Math.floor(components.green * percent);
-        components.blue = Math.floor(components.blue * percent);
+        components.red = Math.floor(components.red * inversePercent);
+        components.green = Math.floor(components.green * inversePercent);
+        components.blue = Math.floor(components.blue * inversePercent);
+
+        return CoreColors.RGBToHex(components);
+    }
+
+    /**
+     * Returns the same color % lighter.
+     *
+     * @param color Color to get lighter.
+     * @return Lighter Hex RGB color.
+     */
+    static lighter(color: string, percent: number = 80): string {
+        percent = percent / 100;
+        const inversePercent = 1 - percent;
+
+        const components = CoreColors.hexToRGB(color);
+        components.red = Math.floor(255 * percent + components.red * inversePercent);
+        components.green = Math.floor(255 * percent + components.green * inversePercent);
+        components.blue = Math.floor(255 * percent + components.blue * inversePercent);
 
         return CoreColors.RGBToHex(components);
     }
