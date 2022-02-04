@@ -55,18 +55,19 @@ export class CoreCourseCourseIndexComponent implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-
-        if (!this.course || !this.sections || !this.course.enablecompletion || !('courseformatoptions' in this.course) ||
-                !this.course.courseformatoptions) {
+        if (!this.course || !this.sections) {
             this.closeModal();
 
             return;
         }
 
-        const formatOptions = CoreUtils.objectToKeyValueMap(this.course.courseformatoptions, 'name', 'value');
+        let completionEnabled = !!this.course.enablecompletion;
+        if (completionEnabled && 'courseformatoptions' in this.course && this.course.courseformatoptions) {
+            const formatOptions = CoreUtils.objectToKeyValueMap(this.course.courseformatoptions, 'name', 'value');
 
-        if (!formatOptions || formatOptions.completionusertracked === false) {
-            return;
+            if (formatOptions) {
+                completionEnabled = !!formatOptions.completionusertracked;
+            }
         }
 
         const currentSection = await CoreCourseFormatDelegate.getCurrentSection(this.course, this.sections);
@@ -85,7 +86,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
                 const modules = section.modules
                     .filter((module) => module.visibleoncoursepage !== 0 && !module.noviewlink)
                     .map((module) => {
-                        const completionStatus = module.completiondata === undefined ||
+                        const completionStatus = !completionEnabled || module.completiondata === undefined ||
                         module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE
                             ? undefined
                             : module.completiondata.state;
