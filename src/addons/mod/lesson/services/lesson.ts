@@ -760,7 +760,7 @@ export class AddonModLessonProvider {
             let ignoreCase = '';
 
             if (useRegExp) {
-                if (expectedAnswer.substring(-2) == '/i') {
+                if (expectedAnswer.slice(-2) == '/i') {
                     expectedAnswer = expectedAnswer.substring(0, expectedAnswer.length - 2);
                     ignoreCase = 'i';
                 }

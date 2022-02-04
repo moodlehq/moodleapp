@@ -123,8 +123,8 @@ export class CoreColors {
 
         return {
             red: parseInt(color.substring(0, 2), 16),
-            green: parseInt(color.substring(2, 2), 16),
-            blue: parseInt(color.substring(4, 2), 16),
+            green: parseInt(color.substring(2, 4), 16),
+            blue: parseInt(color.substring(4, 6), 16),
         };
 
     }
