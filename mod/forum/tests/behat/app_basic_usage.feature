@@ -183,7 +183,7 @@ Feature: Test basic usage of forum activity in app
 
     When I press the back button in the app
     And I press "Display options" in the app
-    And I press "Manage course storage" in the app
+    And I press "Course downloads" in the app
     And I press "Download" within "Test forum name" "ion-item" in the app
     And I press the back button in the app
     And I press "Test forum name" in the app
@@ -210,7 +210,7 @@ Feature: Test basic usage of forum activity in app
 
     When I press the back button in the app
     And I press "Display options" in the app
-    And I press "Manage course storage" in the app
+    And I press "Course downloads" in the app
     And I press "Download" within "Test forum name" "ion-item" in the app
     And I press the back button in the app
     And I press "Test forum name" in the app
@@ -289,7 +289,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     And I press the back button in the app
     And I press "Display options" in the app
-    And I press "Manage course storage" in the app
+    And I press "Course downloads" in the app
     And I press "Download" within "Test forum name" "ion-item" in the app
     And I press the back button in the app
     And I press "Test forum name" in the app
@@ -368,7 +368,7 @@ Feature: Test basic usage of forum activity in app
 
     When I press the back button in the app
     And I press "Display options" in the app
-    And I press "Manage course storage" in the app
+    And I press "Course downloads" in the app
     And I press "Download" within "Test forum name" "ion-item" in the app
     Then I should find "Downloaded" within "Test forum name" "ion-item" in the app
     And I press the back button in the app

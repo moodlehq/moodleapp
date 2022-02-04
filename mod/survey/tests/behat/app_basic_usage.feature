@@ -375,7 +375,7 @@ Feature: Test basic usage of survey activity in app
       | survey   | Test survey critical incidents | Test survey1 | 5        | C1     | survey1  | 0         |
     When I enter the course "Course 1" as "student1" in the app
     And I press "Display options" in the app
-    And I press "Manage course storage" in the app
+    And I press "Course downloads" in the app
     And I press "cloud download" near "Test survey critical incidents" in the app
     And I press the back button in the app
     And I switch offline mode to "true"

@@ -35,7 +35,7 @@ Feature: It navigates properly within settings.
     And I press "Preferences" in the app
     Then I should find "Messages" in the app
     And I should find "Notifications" in the app
-    And I should find "Space usage" in the app
+    And I should find "Manage downloads" in the app
 
     # Preferences details
     When I press "Messages" in the app
@@ -72,7 +72,7 @@ Feature: It navigates properly within settings.
     And I press "Preferences" in the app
     Then I should find "Messages" in the app
     And I should find "Notifications" in the app
-    And I should find "Space usage" in the app
+    And I should find "Manage downloads" in the app
     And "Messages" should be selected in the app
     And I should find "Accept messages from" in the app
     And I should find "Notification preferences" in the app
