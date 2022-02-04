@@ -357,7 +357,7 @@ export class CoreH5PContentValidator {
         }
 
         // Remove temporary files suffix.
-        if (file.path.substring(-4, 4) === '#tmp') {
+        if (file.path.slice(-4) === '#tmp') {
             file.path = file.path.substring(0, file.path.length - 4);
         }
 
