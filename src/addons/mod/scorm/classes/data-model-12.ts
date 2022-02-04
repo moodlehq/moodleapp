@@ -748,7 +748,7 @@ export class AddonModScormDataModel12 {
                     const childrenStr = '._children';
                     const countStr = '._count';
 
-                    if (elementModel.substring(elementModel.length - childrenStr.length, elementModel.length) == childrenStr) {
+                    if (elementModel.substring(elementModel.length - childrenStr.length) == childrenStr) {
                         const parentModel = elementModel.substring(0, elementModel.length - childrenStr.length);
 
                         if (this.dataModel[this.scoId][parentModel] !== undefined) {
@@ -756,7 +756,7 @@ export class AddonModScormDataModel12 {
                         } else {
                             this.errorCode = '201';
                         }
-                    } else if (elementModel.substring(elementModel.length - countStr.length, elementModel.length) == countStr) {
+                    } else if (elementModel.substring(elementModel.length - countStr.length) == countStr) {
                         const parentModel = elementModel.substring(0, elementModel.length - countStr.length);
 
                         if (this.dataModel[this.scoId][parentModel] !== undefined) {

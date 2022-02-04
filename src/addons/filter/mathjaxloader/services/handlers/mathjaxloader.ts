@@ -190,7 +190,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
     protected insertSpan(text: string, start: number, end: number): string {
         return CoreTextUtils.substrReplace(
             text,
-            '<span class="nolink">' + text.substring(start, end - start + 1) + '</span>',
+            '<span class="nolink">' + text.substring(start, end + 1) + '</span>',
             start,
             end - start + 1,
         );

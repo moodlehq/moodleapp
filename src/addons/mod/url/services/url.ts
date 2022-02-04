@@ -68,7 +68,7 @@ export class AddonModUrlProvider {
         const download = ['application/zip', 'application/x-tar', 'application/g-zip', 'application/pdf', 'text/html'];
         let mimetype = CoreMimetypeUtils.getMimeType(extension);
 
-        if (url.externalurl.indexOf('.php') != -1 || url.externalurl.substring(-1) === '/' ||
+        if (url.externalurl.indexOf('.php') != -1 || url.externalurl.slice(-1) === '/' ||
                 (url.externalurl.indexOf('//') != -1 && url.externalurl.match(/\//g)?.length == 2)) {
             // Seems to be a web, use HTML mimetype.
             mimetype = 'text/html';
@@ -158,7 +158,7 @@ export class AddonModUrlProvider {
         const matches = url.match(/\//g);
         const extension = CoreMimetypeUtils.getFileExtension(url);
 
-        if (!matches || matches.length < 3 || url.substring(-1) === '/' || extension == 'php') {
+        if (!matches || matches.length < 3 || url.slice(-1) === '/' || extension == 'php') {
             // Use default icon.
             return '';
         }
