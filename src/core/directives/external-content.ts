@@ -25,7 +25,7 @@ import {
 } from '@angular/core';
 import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
-import { CoreFilepool } from '@services/filepool';
+import { CoreFilepool, CoreFilepoolFileActions, CoreFilepoolFileEventData } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
@@ -395,7 +395,12 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         // Listen for download changes in the file.
         const eventName = await CoreFilepool.getFileEventNameByUrl(site.getId(), url);
 
-        this.fileEventObserver = CoreEvents.on(eventName, async () => {
+        this.fileEventObserver = CoreEvents.on(eventName, async (data: CoreFilepoolFileEventData) => {
+            if (data.action === CoreFilepoolFileActions.DOWNLOAD && !data.success) {
+                // Error downloading the file. Don't try again.
+                return;
+            }
+
             const newState = await CoreFilepool.getFileStateByUrl(site.getId(), url);
             if (newState === state) {
                 return;
