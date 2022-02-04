@@ -1251,7 +1251,7 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Get the name of the event used to notify download events (CoreEventsProvider).
+     * Get the name of the event used to notify download events.
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
@@ -1262,7 +1262,7 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Get the name of the event used to notify download events (CoreEventsProvider).
+     * Get the name of the event used to notify download events.
      *
      * @param siteId The site ID.
      * @param fileUrl The absolute URL to the file.
@@ -3008,7 +3008,7 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Trigger mmCoreEventPackageStatusChanged with the right data.
+     * Trigger package status changed event with the right data.
      *
      * @param siteId Site ID.
      * @param status New package status.
