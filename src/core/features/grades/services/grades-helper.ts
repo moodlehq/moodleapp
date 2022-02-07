@@ -108,7 +108,7 @@ export class CoreGradesHelperProvider {
 
             let content = String(column.content);
 
-            if (name == 'itemname') {
+            if (name === 'itemname') {
                 const itemNameColumn = <CoreGradesTableItemNameColumn> column;
 
                 row.id = parseInt(itemNameColumn.id.split('_')[1], 10);
@@ -123,6 +123,20 @@ export class CoreGradesHelperProvider {
                 content = content.replace(/<\/span>/gi, '\n');
                 content = CoreTextUtils.cleanTags(content);
                 name = 'gradeitem';
+            } else if (name === 'grade') {
+                // Add the pass/fail class if present.
+                row.gradeClass = column.class.includes('gradepass') ? 'text-success' :
+                    (column.class.includes('gradefail') ? 'text-danger' : '');
+
+                if (content.includes('fa-check')) {
+                    row.gradeIcon = 'fas-check';
+                    row.gradeIconAlt = Translate.instant('core.grades.pass');
+                    content = CoreTextUtils.cleanTags(content);
+                } else if (content.includes('fa-times')) {
+                    row.gradeIcon = 'fas-times';
+                    row.gradeIconAlt = Translate.instant('core.grades.fail');
+                    content = CoreTextUtils.cleanTags(content);
+                }
             } else {
                 content = CoreTextUtils.replaceNewLines(content, '<br>');
             }
@@ -721,6 +735,9 @@ export type CoreGradesFormattedTableRow = CoreGradesFormattedRowCommonData & {
     ariaLabel?: string;
     expandable?: boolean;
     expanded?: boolean;
+    gradeClass?: string;
+    gradeIcon?: string;
+    gradeIconAlt?: string;
 };
 
 export type CoreGradesFormattedTableColumn = {

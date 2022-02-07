@@ -42,7 +42,7 @@
     }
 
     th, td {
-        @include padding(10px, 10px, 10px, null);
+        @include padding(8px, 8px, 8px, null);
         vertical-align: top;
         white-space: normal;
         text-align: start;
@@ -55,7 +55,7 @@
     }
 
     thead #gradeitem {
-        @include padding(null, null, null, 23px);
+        @include padding(null, null, null, 24px);
     }
 
     tbody th {
@@ -63,11 +63,11 @@
     }
 
     tbody #gradeitem {
-        @include padding(null, null, null, 5px);
+        @include padding(null, null, null, 4px);
     }
 
     .core-grades-table-gradeitem {
-        @include padding(null, null, null, 5px);
+        @include padding(null, null, null, 4px);
         font-weight: bold;
 
         &.column-itemname {
@@ -90,7 +90,7 @@
         }
 
         span {
-            @include margin(null, null, null, 5px);
+            @include margin(null, null, null, 4px);
         }
 
         .expandable-status-icon {
@@ -101,12 +101,18 @@
     }
 
     .core-grades-table-feedback {
-        @include padding(null, null, null, 5px);
+        @include padding(null, null, null, 4px);
 
         .no-overflow {
             overflow: auto;
         }
 
+    }
+
+    .core-grades-table-grade {
+        ion-icon {
+            @include padding(null, 4px, null, null);
+        }
     }
 
     .dimmed_text,
