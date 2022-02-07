@@ -986,7 +986,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         grades.forEach((grade: CoreGradesFormattedItem) => {
             if (!grade.outcomeid && !grade.scaleid) {
 
-                const gradeFormatted = grade.gradeformatted || '';
+                // Clean HTML tags, grade can contain an icon.
+                const gradeFormatted = CoreTextUtils.cleanTags(grade.gradeformatted || '');
                 // Not using outcomes or scale, get the numeric grade.
                 if (this.grade.scale) {
                     this.grade.gradebookGrade = CoreUtils.formatFloat(
