@@ -89,7 +89,7 @@ export class CoreConfigProvider {
      */
     async get<T>(name: string, defaultValue?: T): Promise<T> {
         try {
-            const record = await this.table.findByPrimaryKey({ name });
+            const record = await this.table.getOneByPrimaryKey({ name });
 
             return record.value;
         } catch (error) {

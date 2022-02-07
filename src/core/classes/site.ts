@@ -938,11 +938,11 @@ export class CoreSite {
         let entry: CoreSiteWSCacheRecord | undefined;
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
-            const entries = await this.cacheTable.all({ key: preSets.cacheKey });
+            const entries = await this.cacheTable.getMany({ key: preSets.cacheKey });
 
             if (!entries.length) {
                 // Cache key not found, get by params sent.
-                entry = await this.cacheTable.findByPrimaryKey({ id });
+                entry = await this.cacheTable.getOneByPrimaryKey({ id });
             } else {
                 if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
@@ -954,7 +954,7 @@ export class CoreSite {
                 }
             }
         } else {
-            entry = await this.cacheTable.findByPrimaryKey({ id });
+            entry = await this.cacheTable.getOneByPrimaryKey({ id });
         }
 
         if (entry === undefined) {

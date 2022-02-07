@@ -80,7 +80,7 @@ export class CoreDatabaseTable<
      * @param conditions Matching conditions. If this argument is missing, all records in the table will be returned.
      * @returns Database records.
      */
-    all(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
+    getMany(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
         return conditions
             ? this.database.getRecords(this.tableName, conditions)
             : this.database.getAllRecords(this.tableName);
@@ -92,7 +92,7 @@ export class CoreDatabaseTable<
      * @param conditions Matching conditions.
      * @returns Database record.
      */
-    find(conditions: Partial<DBRecord>): Promise<DBRecord> {
+    getOne(conditions: Partial<DBRecord>): Promise<DBRecord> {
         return this.database.getRecord<DBRecord>(this.tableName, conditions);
     }
 
@@ -102,7 +102,7 @@ export class CoreDatabaseTable<
      * @param primaryKey Primary key.
      * @returns Database record.
      */
-    findByPrimaryKey(primaryKey: PrimaryKey): Promise<DBRecord> {
+    getOneByPrimaryKey(primaryKey: PrimaryKey): Promise<DBRecord> {
         return this.database.getRecord<DBRecord>(this.tableName, primaryKey);
     }
 

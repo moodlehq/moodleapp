@@ -67,22 +67,22 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    async all(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
-        return this.target.all(conditions);
+    async getMany(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
+        return this.target.getMany(conditions);
     }
 
     /**
      * @inheritdoc
      */
-    async find(conditions: Partial<DBRecord>): Promise<DBRecord> {
-        return this.target.find(conditions);
+    async getOne(conditions: Partial<DBRecord>): Promise<DBRecord> {
+        return this.target.getOne(conditions);
     }
 
     /**
      * @inheritdoc
      */
-    async findByPrimaryKey(primaryKey: PrimaryKey): Promise<DBRecord> {
-        return this.target.findByPrimaryKey(primaryKey);
+    async getOneByPrimaryKey(primaryKey: PrimaryKey): Promise<DBRecord> {
+        return this.target.getOneByPrimaryKey(primaryKey);
     }
 
     /**

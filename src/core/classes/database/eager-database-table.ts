@@ -34,7 +34,7 @@ export class CoreEagerDatabaseTable<
      * @inheritdoc
      */
     async initialize(): Promise<void> {
-        const records = await super.all();
+        const records = await super.getMany();
 
         this.records = records.reduce((data, record) => {
             const primaryKey = this.serializePrimaryKey(this.getPrimaryKeyFromRecord(record));
@@ -48,7 +48,7 @@ export class CoreEagerDatabaseTable<
     /**
      * @inheritdoc
      */
-    async all(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
+    async getMany(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
         const records = Object.values(this.records);
 
         return conditions
@@ -59,7 +59,7 @@ export class CoreEagerDatabaseTable<
     /**
      * @inheritdoc
      */
-    async find(conditions: Partial<DBRecord>): Promise<DBRecord> {
+    async getOne(conditions: Partial<DBRecord>): Promise<DBRecord> {
         const record = Object.values(this.records).find(record => this.recordMatches(record, conditions)) ?? null;
 
         if (record === null) {
@@ -72,7 +72,7 @@ export class CoreEagerDatabaseTable<
     /**
      * @inheritdoc
      */
-    async findByPrimaryKey(primaryKey: PrimaryKey): Promise<DBRecord> {
+    async getOneByPrimaryKey(primaryKey: PrimaryKey): Promise<DBRecord> {
         const record = this.records[this.serializePrimaryKey(primaryKey)] ?? null;
 
         if (record === null) {

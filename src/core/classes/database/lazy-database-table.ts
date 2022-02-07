@@ -33,12 +33,12 @@ export class CoreLazyDatabaseTable<
     /**
      * @inheritdoc
      */
-    async find(conditions: Partial<DBRecord>): Promise<DBRecord> {
+    async getOne(conditions: Partial<DBRecord>): Promise<DBRecord> {
         let record: DBRecord | null =
             Object.values(this.records).find(record => record && this.recordMatches(record, conditions)) ?? null;
 
         if (!record) {
-            record = await super.find(conditions);
+            record = await super.getOne(conditions);
 
             this.records[this.serializePrimaryKey(this.getPrimaryKeyFromRecord(record))] = record;
         }
@@ -49,12 +49,12 @@ export class CoreLazyDatabaseTable<
     /**
      * @inheritdoc
      */
-    async findByPrimaryKey(primaryKey: PrimaryKey): Promise<DBRecord> {
+    async getOneByPrimaryKey(primaryKey: PrimaryKey): Promise<DBRecord> {
         const serializePrimaryKey = this.serializePrimaryKey(primaryKey);
 
         if (!(serializePrimaryKey in this.records)) {
             try {
-                const record = await super.findByPrimaryKey(primaryKey);
+                const record = await super.getOneByPrimaryKey(primaryKey);
 
                 this.records[serializePrimaryKey] = record;
 

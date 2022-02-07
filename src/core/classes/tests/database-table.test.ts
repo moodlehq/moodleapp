@@ -78,10 +78,10 @@ async function testFindItems(records: User[], table: CoreDatabaseTable<User>) {
 
     await table.initialize();
 
-    await expect(table.findByPrimaryKey({ id: 1 })).resolves.toEqual(john);
-    await expect(table.findByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
-    await expect(table.find({ surname: 'Doe', name: 'John' })).resolves.toEqual(john);
-    await expect(table.find({ surname: 'Doe', name: 'Amy' })).resolves.toEqual(amy);
+    await expect(table.getOneByPrimaryKey({ id: 1 })).resolves.toEqual(john);
+    await expect(table.getOneByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
+    await expect(table.getOne({ surname: 'Doe', name: 'John' })).resolves.toEqual(john);
+    await expect(table.getOne({ surname: 'Doe', name: 'Amy' })).resolves.toEqual(amy);
 }
 
 async function testInsertItems(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
@@ -96,7 +96,7 @@ async function testInsertItems(records: User[], database: SQLiteDB, table: CoreD
     // Assert.
     expect(database.insertRecord).toHaveBeenCalledWith('users', john);
 
-    await expect(table.findByPrimaryKey({ id: 1 })).resolves.toEqual(john);
+    await expect(table.getOneByPrimaryKey({ id: 1 })).resolves.toEqual(john);
 }
 
 async function testDeleteItems(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
@@ -117,9 +117,9 @@ async function testDeleteItems(records: User[], database: SQLiteDB, table: CoreD
     // Assert.
     expect(database.deleteRecords).toHaveBeenCalledWith('users', { surname: 'Doe' });
 
-    await expect(table.findByPrimaryKey({ id: 1 })).rejects.toThrow();
-    await expect(table.findByPrimaryKey({ id: 2 })).rejects.toThrow();
-    await expect(table.findByPrimaryKey({ id: 3 })).resolves.toEqual(jane);
+    await expect(table.getOneByPrimaryKey({ id: 1 })).rejects.toThrow();
+    await expect(table.getOneByPrimaryKey({ id: 2 })).rejects.toThrow();
+    await expect(table.getOneByPrimaryKey({ id: 3 })).resolves.toEqual(jane);
 }
 
 async function testDeleteItemsByPrimaryKey(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
@@ -138,8 +138,8 @@ async function testDeleteItemsByPrimaryKey(records: User[], database: SQLiteDB, 
     // Assert.
     expect(database.deleteRecords).toHaveBeenCalledWith('users', { id: 1 });
 
-    await expect(table.findByPrimaryKey({ id: 1 })).rejects.toThrow();
-    await expect(table.findByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
+    await expect(table.getOneByPrimaryKey({ id: 1 })).rejects.toThrow();
+    await expect(table.getOneByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
 }
 
 describe('CoreDatabaseTable with eager caching', () => {

@@ -58,28 +58,28 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
-    all(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
-        this.logger.log('all', conditions);
+    getMany(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
+        this.logger.log('getMany', conditions);
 
-        return this.target.all(conditions);
+        return this.target.getMany(conditions);
     }
 
     /**
      * @inheritdoc
      */
-    find(conditions: Partial<DBRecord>): Promise<DBRecord> {
-        this.logger.log('find', conditions);
+    getOne(conditions: Partial<DBRecord>): Promise<DBRecord> {
+        this.logger.log('getOne', conditions);
 
-        return this.target.find(conditions);
+        return this.target.getOne(conditions);
     }
 
     /**
      * @inheritdoc
      */
-    findByPrimaryKey(primaryKey: PrimaryKey): Promise<DBRecord> {
+    getOneByPrimaryKey(primaryKey: PrimaryKey): Promise<DBRecord> {
         this.logger.log('findByPrimaryKey', primaryKey);
 
-        return this.target.findByPrimaryKey(primaryKey);
+        return this.target.getOneByPrimaryKey(primaryKey);
     }
 
     /**

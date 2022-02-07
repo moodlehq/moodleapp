@@ -586,7 +586,7 @@ export class CoreFilepoolProvider {
         const db = await CoreSites.getSiteDb(siteId);
 
         // Read the data first to be able to notify the deletions.
-        const filesEntries = await this.filesTables[siteId].all();
+        const filesEntries = await this.filesTables[siteId].getMany();
         const filesLinks = await db.getAllRecords<CoreFilepoolLinksRecord>(LINKS_TABLE_NAME);
 
         await Promise.all([
@@ -1427,7 +1427,7 @@ export class CoreFilepoolProvider {
 
         await Promise.all(items.map(async (item) => {
             try {
-                const fileEntry = await this.filesTables[siteId].findByPrimaryKey({ fileId: item.fileId });
+                const fileEntry = await this.filesTables[siteId].getOneByPrimaryKey({ fileId: item.fileId });
 
                 if (!fileEntry) {
                     return;
@@ -2160,7 +2160,7 @@ export class CoreFilepoolProvider {
      * @return Resolved with file object from DB on success, rejected otherwise.
      */
     protected async hasFileInPool(siteId: string, fileId: string): Promise<CoreFilepoolFileEntry> {
-        return this.filesTables[siteId].findByPrimaryKey({ fileId });
+        return this.filesTables[siteId].getOneByPrimaryKey({ fileId });
     }
 
     /**
