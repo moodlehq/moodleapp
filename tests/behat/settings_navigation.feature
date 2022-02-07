@@ -43,8 +43,8 @@ Feature: It navigates properly within settings.
     And I should find "Notification preferences" in the app
 
     When I press the back button in the app
-    And I press "Manage storage" in the app
-    Then I should find "File storage used" in the app
+    And I press "Manage downloads" in the app
+    Then I should find "Total space usage" in the app
 
   Scenario: Tablet navigation
     Given I enter the app
@@ -77,6 +77,6 @@ Feature: It navigates properly within settings.
     And I should find "Accept messages from" in the app
     And I should find "Notification preferences" in the app
 
-    When I press "Manage storage" in the app
-    Then "Manage storage" should be selected in the app
-    And I should find "File storage used" in the app
+    When I press "Manage downloads" in the app
+    Then "Manage downloads" should be selected in the app
+    And I should find "Total space usage" in the app
