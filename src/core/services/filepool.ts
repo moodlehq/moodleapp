@@ -48,9 +48,10 @@ import {
 } from '@services/database/filepool';
 import { CoreFileHelper } from './file-helper';
 import { CoreUrl } from '@singletons/url';
-import { CorePromisedValue } from '@classes/promised-value';
 import { CoreDatabaseTable } from '@classes/database/database-table';
-import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
+import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
+import { lazyMap, LazyMap } from '../utils/lazy-map';
+import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -101,11 +102,20 @@ export class CoreFilepoolProvider {
     // Variables for DB.
     protected appDB: Promise<SQLiteDB>;
     protected resolveAppDB!: (appDB: SQLiteDB) => void;
-    protected filesTables: Record<string, CorePromisedValue<CoreDatabaseTable<CoreFilepoolFileEntry, 'fileId'>>> = {};
+    protected filesTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreFilepoolFileEntry, 'fileId'>>>;
 
     constructor() {
         this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
         this.logger = CoreLogger.getInstance('CoreFilepoolProvider');
+        this.filesTables = lazyMap(
+            siteId => asyncInstance(
+                () => CoreSites.getSiteTable<CoreFilepoolFileEntry, 'fileId'>(FILES_TABLE_NAME, {
+                    siteId,
+                    config: { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
+                    primaryKeyColumns: ['fileId'],
+                }),
+            ),
+        );
     }
 
     /**
@@ -128,11 +138,9 @@ export class CoreFilepoolProvider {
                 return;
             }
 
-            const filesTable = await this.filesTables[siteId];
+            await this.filesTables[siteId].destroy();
 
             delete this.filesTables[siteId];
-
-            await filesTable.destroy();
         });
     }
 
@@ -147,33 +155,6 @@ export class CoreFilepoolProvider {
         }
 
         this.resolveAppDB(CoreApp.getDB());
-    }
-
-    /**
-     * Get files table.
-     *
-     * @param siteId Site id.
-     * @returns Files table.
-     */
-    async getFilesTable(siteId?: string): Promise<CoreDatabaseTable<CoreFilepoolFileEntry, 'fileId'>> {
-        siteId = siteId ?? CoreSites.getCurrentSiteId();
-
-        if (!(siteId in this.filesTables)) {
-            const filesTable = this.filesTables[siteId] = new CorePromisedValue();
-            const database = await CoreSites.getSiteDb(siteId);
-            const table = new CoreDatabaseTableProxy<CoreFilepoolFileEntry, 'fileId'>(
-                { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
-                database,
-                FILES_TABLE_NAME,
-                ['fileId'],
-            );
-
-            await table.initialize();
-
-            filesTable.resolve(table);
-        }
-
-        return this.filesTables[siteId];
     }
 
     /**
@@ -262,9 +243,7 @@ export class CoreFilepoolProvider {
             ...data,
         };
 
-        const filesTable = await this.getFilesTable(siteId);
-
-        await filesTable.insert(record);
+        await this.filesTables[siteId].insert(record);
     }
 
     /**
@@ -605,14 +584,13 @@ export class CoreFilepoolProvider {
      */
     async clearFilepool(siteId: string): Promise<void> {
         const db = await CoreSites.getSiteDb(siteId);
-        const filesTable = await this.getFilesTable(siteId);
 
         // Read the data first to be able to notify the deletions.
-        const filesEntries = await filesTable.all();
+        const filesEntries = await this.filesTables[siteId].all();
         const filesLinks = await db.getAllRecords<CoreFilepoolLinksRecord>(LINKS_TABLE_NAME);
 
         await Promise.all([
-            filesTable.delete(),
+            this.filesTables[siteId].delete(),
             db.deleteRecords(LINKS_TABLE_NAME),
         ]);
 
@@ -1167,14 +1145,13 @@ export class CoreFilepoolProvider {
         }
 
         const db = await CoreSites.getSiteDb(siteId);
-        const filesTable = await this.getFilesTable(siteId);
         const extension = CoreMimetypeUtils.getFileExtension(entry.path);
         if (!extension) {
             // Files does not have extension. Invalidate file (stale = true).
             // Minor problem: file will remain in the filesystem once downloaded again.
             this.logger.debug('Staled file with no extension ' + entry.fileId);
 
-            await filesTable.update({ stale: 1 }, { fileId: entry.fileId });
+            await this.filesTables[siteId].update({ stale: 1 }, { fileId: entry.fileId });
 
             return;
         }
@@ -1184,7 +1161,7 @@ export class CoreFilepoolProvider {
         entry.fileId = CoreMimetypeUtils.removeExtension(fileId);
         entry.extension = extension;
 
-        await filesTable.update(entry, { fileId });
+        await this.filesTables[siteId].update(entry, { fileId });
         if (entry.fileId == fileId) {
             // File ID hasn't changed, we're done.
             this.logger.debug('Removed extesion ' + extension + ' from file ' + entry.fileId);
@@ -1445,13 +1422,12 @@ export class CoreFilepoolProvider {
      */
     async getFilesByComponent(siteId: string, component: string, componentId?: string | number): Promise<CoreFilepoolFileEntry[]> {
         const db = await CoreSites.getSiteDb(siteId);
-        const filesTable = await this.getFilesTable(siteId);
         const items = await this.getComponentFiles(db, component, componentId);
         const files: CoreFilepoolFileEntry[] = [];
 
         await Promise.all(items.map(async (item) => {
             try {
-                const fileEntry = await filesTable.findByPrimaryKey({ fileId: item.fileId });
+                const fileEntry = await this.filesTables[siteId].findByPrimaryKey({ fileId: item.fileId });
 
                 if (!fileEntry) {
                     return;
@@ -2184,9 +2160,7 @@ export class CoreFilepoolProvider {
      * @return Resolved with file object from DB on success, rejected otherwise.
      */
     protected async hasFileInPool(siteId: string, fileId: string): Promise<CoreFilepoolFileEntry> {
-        const filesTable = await this.getFilesTable(siteId);
-
-        return filesTable.findByPrimaryKey({ fileId });
+        return this.filesTables[siteId].findByPrimaryKey({ fileId });
     }
 
     /**
@@ -2218,17 +2192,15 @@ export class CoreFilepoolProvider {
      * @return Resolved on success.
      */
     async invalidateAllFiles(siteId: string, onlyUnknown: boolean = true): Promise<void> {
-        const filesTable = await this.getFilesTable(siteId);
-
         onlyUnknown
-            ? await filesTable.updateWhere(
+            ? await this.filesTables[siteId].updateWhere(
                 { stale: 1 },
                 {
                     sql: CoreFilepoolProvider.FILE_IS_UNKNOWN_SQL,
                     js: CoreFilepoolProvider.FILE_IS_UNKNOWN_JS,
                 },
             )
-            : await filesTable.update({ stale: 1 });
+            : await this.filesTables[siteId].update({ stale: 1 });
     }
 
     /**
@@ -2247,9 +2219,7 @@ export class CoreFilepoolProvider {
         const file = await this.fixPluginfileURL(siteId, fileUrl);
         const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
 
-        const filesTable = await this.getFilesTable(siteId);
-
-        await filesTable.update({ stale: 1 }, { fileId });
+        await this.filesTables[siteId].update({ stale: 1 }, { fileId });
     }
 
     /**
@@ -2269,13 +2239,14 @@ export class CoreFilepoolProvider {
         onlyUnknown: boolean = true,
     ): Promise<void> {
         const db = await CoreSites.getSiteDb(siteId);
-        const filesTable = await this.getFilesTable(siteId);
         const items = await this.getComponentFiles(db, component, componentId);
 
         if (!items.length) {
             // Nothing to invalidate.
             return;
         }
+
+        siteId = siteId ?? CoreSites.getCurrentSiteId();
 
         const fileIds = items.map((item) => item.fileId);
 
@@ -2287,7 +2258,7 @@ export class CoreFilepoolProvider {
             whereAndParams.sql += ' AND (' + CoreFilepoolProvider.FILE_IS_UNKNOWN_SQL + ')';
         }
 
-        await filesTable.updateWhere(
+        await this.filesTables[siteId].updateWhere(
             { stale: 1 },
             {
                 sql: whereAndParams.sql,
@@ -2714,7 +2685,6 @@ export class CoreFilepoolProvider {
      */
     protected async removeFileById(siteId: string, fileId: string): Promise<void> {
         const db = await CoreSites.getSiteDb(siteId);
-        const filesTable = await this.getFilesTable(siteId);
 
         // Get the path to the file first since it relies on the file object stored in the pool.
         // Don't use getFilePath to prevent performing 2 DB requests.
@@ -2741,7 +2711,7 @@ export class CoreFilepoolProvider {
         const promises: Promise<unknown>[] = [];
 
         // Remove entry from filepool store.
-        promises.push(filesTable.delete(conditions));
+        promises.push(this.filesTables[siteId].delete(conditions));
 
         // Remove links.
         promises.push(db.deleteRecords(LINKS_TABLE_NAME, conditions));

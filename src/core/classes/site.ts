@@ -44,6 +44,7 @@ import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreDatabaseTable } from './database/database-table';
+import { CoreDatabaseCachingStrategy } from './database/database-table-proxy';
 
 /**
  * QR Code type enumeration.
@@ -140,7 +141,11 @@ export class CoreSite {
     ) {
         this.logger = CoreLogger.getInstance('CoreSite');
         this.siteUrl = CoreUrlUtils.removeUrlParams(this.siteUrl); // Make sure the URL doesn't have params.
-        this.cacheTable = asyncInstance(() => CoreSites.getCacheTable(this));
+        this.cacheTable = asyncInstance(() => CoreSites.getSiteTable(CoreSite.WS_CACHE_TABLE, {
+            siteId: this.getId(),
+            database: this.getDb(),
+            config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+        }));
         this.setInfo(infos);
         this.calculateOfflineDisabled();
 
