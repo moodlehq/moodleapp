@@ -86,6 +86,7 @@
     "passwordforgotteninstructions2": "To reset your password, submit your username or your email address below. If we can find you in the database, an email will be sent to your email address, with instructions how to get access again.",
     "passwordrequired": "Password required",
     "policyaccept": "I understand and agree",
+    "policyacceptmandatory": "I understand and agree to the mandatory site policies",
     "policyagree": "You must agree to this policy to continue using this site.  Do you agree?",
     "policyagreement": "Site policy agreement",
     "policyagreementclick": "Link to site policy agreement",

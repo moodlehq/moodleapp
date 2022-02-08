@@ -1956,6 +1956,7 @@
   "core.login.passwordforgotteninstructions2": "moodle",
   "core.login.passwordrequired": "local_moodlemobileapp",
   "core.login.policyaccept": "moodle",
+  "core.login.policyacceptmandatory": "local_moodlemobileapp",
   "core.login.policyagree": "moodle",
   "core.login.policyagreement": "moodle",
   "core.login.policyagreementclick": "moodle",
