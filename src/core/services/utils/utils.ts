@@ -1541,7 +1541,6 @@ export class CoreUtilsProvider {
     /**
      * Debounce a function so consecutive calls are ignored until a certain time has passed since the last call.
      *
-     * @param context The context to apply to the function.
      * @param fn Function to debounce.
      * @param delay Time that must pass until the function is called.
      * @return Debounced function.
@@ -1556,6 +1555,31 @@ export class CoreUtilsProvider {
         };
 
         return debounced;
+    }
+
+    /**
+     * Throttle a function so consecutive calls are ignored until a certain time has passed since the last executed call.
+     *
+     * @param fn Function to throttle.
+     * @param duration Time that must pass until the function is called.
+     * @return Throttled function.
+     */
+    throttle<T extends unknown[]>(fn: (...args: T) => unknown, duration: number): (...args: T) => void {
+        let shouldWait = false;
+
+        const throttled = (...args: T): void => {
+            if (!shouldWait) {
+                fn.apply(null, args);
+
+                shouldWait = true;
+
+                setTimeout(() => {
+                    shouldWait = false;
+                }, duration);
+            }
+        };
+
+        return throttled;
     }
 
     /**
