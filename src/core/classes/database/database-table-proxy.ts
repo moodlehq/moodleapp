@@ -17,7 +17,13 @@ import { asyncInstance } from '@/core/utils/async-instance';
 import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreConfig, CoreConfigProvider } from '@services/config';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreDatabaseReducer, CoreDatabaseTable, CoreDatabaseConditions, GetDBRecordPrimaryKey } from './database-table';
+import {
+    CoreDatabaseReducer,
+    CoreDatabaseTable,
+    CoreDatabaseConditions,
+    GetDBRecordPrimaryKey,
+    CoreDatabaseQueryOptions,
+} from './database-table';
 import { CoreDebugDatabaseTable } from './debug-database-table';
 import { CoreEagerDatabaseTable } from './eager-database-table';
 import { CoreLazyDatabaseTable } from './lazy-database-table';
@@ -67,15 +73,25 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    async getMany(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
-        return this.target.getMany(conditions);
+    async getMany(conditions?: Partial<DBRecord>, options?: Partial<CoreDatabaseQueryOptions<DBRecord>>): Promise<DBRecord[]> {
+        return this.target.getMany(conditions, options);
     }
 
     /**
      * @inheritdoc
      */
-    async getOne(conditions: Partial<DBRecord>): Promise<DBRecord> {
-        return this.target.getOne(conditions);
+    getManyWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<DBRecord[]>  {
+        return this.target.getManyWhere(conditions);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getOne(
+        conditions?: Partial<DBRecord>,
+        options?: Partial<Omit<CoreDatabaseQueryOptions<DBRecord>, 'offset' | 'limit'>>,
+    ): Promise<DBRecord> {
+        return this.target.getOne(conditions, options);
     }
 
     /**
@@ -90,6 +106,20 @@ export class CoreDatabaseTableProxy<
      */
     async reduce<T>(reducer: CoreDatabaseReducer<DBRecord, T>, conditions?: CoreDatabaseConditions<DBRecord>): Promise<T> {
         return this.target.reduce<T>(reducer, conditions);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    hasAny(conditions?: Partial<DBRecord>): Promise<boolean> {
+        return this.target.hasAny(conditions);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    count(conditions?: Partial<DBRecord>): Promise<number> {
+        return this.target.count(conditions);
     }
 
     /**

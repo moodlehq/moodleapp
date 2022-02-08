@@ -14,7 +14,13 @@
 
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreLogger } from '@singletons/logger';
-import { CoreDatabaseTable, CoreDatabaseConditions, GetDBRecordPrimaryKey, CoreDatabaseReducer } from './database-table';
+import {
+    CoreDatabaseTable,
+    CoreDatabaseConditions,
+    GetDBRecordPrimaryKey,
+    CoreDatabaseReducer,
+    CoreDatabaseQueryOptions,
+} from './database-table';
 
 /**
  * Database table proxy used to debug runtime operations.
@@ -58,19 +64,31 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
-    getMany(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
-        this.logger.log('getMany', conditions);
+    getMany(conditions?: Partial<DBRecord>, options?: Partial<CoreDatabaseQueryOptions<DBRecord>>): Promise<DBRecord[]> {
+        this.logger.log('getMany', conditions, options);
 
-        return this.target.getMany(conditions);
+        return this.target.getMany(conditions, options);
     }
 
     /**
      * @inheritdoc
      */
-    getOne(conditions: Partial<DBRecord>): Promise<DBRecord> {
-        this.logger.log('getOne', conditions);
+    getManyWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<DBRecord[]> {
+        this.logger.log('getManyWhere', conditions);
 
-        return this.target.getOne(conditions);
+        return this.target.getManyWhere(conditions);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getOne(
+        conditions?: Partial<DBRecord>,
+        options?: Partial<Omit<CoreDatabaseQueryOptions<DBRecord>, 'offset' | 'limit'>>,
+    ): Promise<DBRecord> {
+        this.logger.log('getOne', conditions, options);
+
+        return this.target.getOne(conditions, options);
     }
 
     /**
@@ -89,6 +107,24 @@ export class CoreDebugDatabaseTable<
         this.logger.log('reduce', reducer, conditions);
 
         return this.target.reduce<T>(reducer, conditions);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    hasAny(conditions?: Partial<DBRecord>): Promise<boolean> {
+        this.logger.log('hasAny', conditions);
+
+        return this.target.hasAny(conditions);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    count(conditions?: Partial<DBRecord>): Promise<number> {
+        this.logger.log('count', conditions);
+
+        return this.target.count(conditions);
     }
 
     /**

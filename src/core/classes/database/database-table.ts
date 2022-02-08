@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreError } from '@classes/errors/error';
 import { SQLiteDB, SQLiteDBRecordValue, SQLiteDBRecordValues } from '@classes/sqlitedb';
 
 /**
@@ -78,22 +79,57 @@ export class CoreDatabaseTable<
      * Get records matching the given conditions.
      *
      * @param conditions Matching conditions. If this argument is missing, all records in the table will be returned.
+     * @param options Query options.
      * @returns Database records.
      */
-    getMany(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
-        return conditions
-            ? this.database.getRecords(this.tableName, conditions)
-            : this.database.getAllRecords(this.tableName);
+    getMany(conditions?: Partial<DBRecord>, options?: Partial<CoreDatabaseQueryOptions<DBRecord>>): Promise<DBRecord[]> {
+        if (!conditions && !options) {
+            return this.database.getAllRecords(this.tableName);
+        }
+
+        const sorting = options?.sorting
+            && this.normalizedSorting(options.sorting).map(([column, direction]) => `${column} ${direction}`).join(', ');
+
+        return this.database.getRecords(this.tableName, conditions, sorting, '*', options?.offset, options?.limit);
+    }
+
+    /**
+     * Get records matching the given conditions.
+     *
+     * This method should be used when it's necessary to apply complex conditions; the simple `getMany`
+     * method should be favored otherwise for better performance.
+     *
+     * @param conditions Matching conditions in SQL and JavaScript.
+     */
+    getManyWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<DBRecord[]>  {
+        return this.database.getRecordsSelect(this.tableName, conditions.sql, conditions.sqlParams);
     }
 
     /**
      * Find one record matching the given conditions.
      *
      * @param conditions Matching conditions.
+     * @param options Result options.
      * @returns Database record.
      */
-    getOne(conditions: Partial<DBRecord>): Promise<DBRecord> {
-        return this.database.getRecord<DBRecord>(this.tableName, conditions);
+    async getOne(
+        conditions?: Partial<DBRecord>,
+        options?: Partial<Omit<CoreDatabaseQueryOptions<DBRecord>, 'offset' | 'limit'>>,
+    ): Promise<DBRecord> {
+        if (!options) {
+            return this.database.getRecord<DBRecord>(this.tableName, conditions);
+        }
+
+        const records = await this.getMany(conditions, {
+            ...options,
+            limit: 1,
+        });
+
+        if (records.length === 0) {
+            throw new CoreError('No records found.');
+        }
+
+        return records[0];
     }
 
     /**
@@ -119,6 +155,43 @@ export class CoreDatabaseTable<
             `SELECT ${reducer.sql} FROM ${this.tableName} ${conditions?.sql ?? ''}`,
             conditions?.sqlParams,
         ) as unknown as Promise<T>;
+    }
+
+    /**
+     * Check whether the table is empty or not.
+     *
+     * @returns Whether the table is empty or not.
+     */
+    isEmpty(): Promise<boolean> {
+        return this.hasAny();
+    }
+
+    /**
+     * Check whether the table has any record matching the given conditions.
+     *
+     * @param conditions Matching conditions. If this argument is missing, this method will return whether the table
+     *                   is empty or not.
+     * @returns Whether the table contains any records matching the given conditions.
+     */
+    async hasAny(conditions?: Partial<DBRecord>): Promise<boolean> {
+        try {
+            await this.getOne(conditions);
+
+            return true;
+        } catch (error) {
+            // Couldn't get a single record.
+            return false;
+        }
+    }
+
+    /**
+     * Count records in table.
+     *
+     * @param conditions Matching conditions.
+     * @returns Number of records matching the given conditions.
+     */
+    count(conditions?: Partial<DBRecord>): Promise<number> {
+        return this.database.countRecords(this.tableName, conditions);
     }
 
     /**
@@ -208,6 +281,59 @@ export class CoreDatabaseTable<
         return !Object.entries(conditions).some(([column, value]) => record[column] !== value);
     }
 
+    /**
+     * Sort a list of records with the given order. This method mutates the input array.
+     *
+     * @param records Array of records to sort.
+     * @param sorting Sorting conditions.
+     * @returns Sorted array. This will be the same reference that was given as an argument.
+     */
+    protected sortRecords(records: DBRecord[], sorting: CoreDatabaseSorting<DBRecord>): DBRecord[] {
+        const columnsSorting = this.normalizedSorting(sorting);
+
+        records.sort((a, b) => {
+            for (const [column, direction] of columnsSorting) {
+                const aValue = a[column];
+                const bValue = b[column];
+
+                if (aValue > bValue) {
+                    return direction === 'desc' ? -1 : 1;
+                }
+
+                if (aValue < bValue) {
+                    return direction === 'desc' ? 1 : -1;
+                }
+            }
+
+            return 0;
+        });
+
+        return records;
+    }
+
+    /**
+     * Get a normalized array of sorting conditions.
+     *
+     * @param sorting Sorting conditions.
+     * @returns Normalized sorting conditions.
+     */
+    protected normalizedSorting(sorting: CoreDatabaseSorting<DBRecord>): [keyof DBRecord, 'asc' | 'desc'][] {
+        const sortingArray = Array.isArray(sorting) ? sorting : [sorting];
+
+        return sortingArray.reduce((normalizedSorting, columnSorting) => {
+            normalizedSorting.push(
+                typeof columnSorting === 'object'
+                    ? [
+                        Object.keys(columnSorting)[0] as keyof DBRecord,
+                        Object.values(columnSorting)[0] as 'asc' | 'desc',
+                    ]
+                    : [columnSorting, 'asc'],
+            );
+
+            return normalizedSorting;
+        }, [] as [keyof DBRecord, 'asc' | 'desc'][]);
+    }
+
 }
 
 /**
@@ -237,4 +363,38 @@ export type CoreDatabaseConditions<DBRecord> = {
     sql: string;
     sqlParams?: SQLiteDBRecordValue[];
     js: (record: DBRecord) => boolean;
+};
+
+/**
+ * Sorting conditions for a single column.
+ *
+ * This type will accept an object that defines sorting conditions for a single column, but not more.
+ * For example, `{id: 'desc'}` and `{name: 'asc'}` would be acceptend values, but `{id: 'desc', name: 'asc'}` wouldn't.
+ *
+ * @see https://stackoverflow.com/questions/57571664/typescript-type-for-an-object-with-only-one-key-no-union-type-allowed-as-a-key
+ */
+export type CoreDatabaseColumnSorting<DBRecordColumn extends string | symbol | number> = {
+    [Column in DBRecordColumn]:
+    (Record<Column, 'asc' | 'desc'> & Partial<Record<Exclude<DBRecordColumn, Column>, never>>) extends infer ColumnSorting
+        ? { [Column in keyof ColumnSorting]: ColumnSorting[Column] }
+        : never;
+}[DBRecordColumn];
+
+/**
+ * Sorting conditions to apply to query results.
+ *
+ * Columns will be sorted in ascending order by default.
+ */
+export type CoreDatabaseSorting<DBRecord> =
+    keyof DBRecord |
+    CoreDatabaseColumnSorting<keyof DBRecord> |
+    Array<keyof DBRecord | CoreDatabaseColumnSorting<keyof DBRecord>>;
+
+/**
+ * Options to configure query results.
+ */
+export type CoreDatabaseQueryOptions<DBRecord> = {
+    offset: number;
+    limit: number;
+    sorting: CoreDatabaseSorting<DBRecord>;
 };

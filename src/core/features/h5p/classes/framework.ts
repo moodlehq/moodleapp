@@ -43,6 +43,7 @@ import { CoreH5PContentBeingSaved, CoreH5PLibraryBeingSaved } from './storage';
 import { CoreH5PLibraryAddTo, CoreH5PLibraryMetadataSettings } from './validator';
 import { CoreH5PMetadata } from './metadata';
 import { Translate } from '@singletons';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Equivalent to Moodle's implementation of H5PFrameworkInterface.
@@ -64,7 +65,7 @@ export class CoreH5PFramework {
 
         const db = await CoreSites.getSiteDb(siteId);
 
-        const whereAndParams = db.getInOrEqual(libraryIds);
+        const whereAndParams = SQLiteDB.getInOrEqual(libraryIds);
         whereAndParams.sql = 'mainlibraryid ' + whereAndParams.sql;
 
         await db.updateRecordsWhere(CONTENT_TABLE_NAME, { filtered: null }, whereAndParams.sql, whereAndParams.params);

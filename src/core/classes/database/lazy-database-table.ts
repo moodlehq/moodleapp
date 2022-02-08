@@ -14,7 +14,7 @@
 
 import { CoreError } from '@classes/errors/error';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
-import { CoreDatabaseTable, CoreDatabaseConditions, GetDBRecordPrimaryKey } from './database-table';
+import { CoreDatabaseTable, CoreDatabaseConditions, GetDBRecordPrimaryKey, CoreDatabaseQueryOptions } from './database-table';
 
 /**
  * Wrapper used to improve performance by caching records that are used often for faster read operations.
@@ -33,15 +33,13 @@ export class CoreLazyDatabaseTable<
     /**
      * @inheritdoc
      */
-    async getOne(conditions: Partial<DBRecord>): Promise<DBRecord> {
-        let record: DBRecord | null =
-            Object.values(this.records).find(record => record && this.recordMatches(record, conditions)) ?? null;
+    async getOne(
+        conditions?: Partial<DBRecord>,
+        options?: Partial<Omit<CoreDatabaseQueryOptions<DBRecord>, 'offset' | 'limit'>>,
+    ): Promise<DBRecord> {
+        const record = await super.getOne(conditions, options);
 
-        if (!record) {
-            record = await super.getOne(conditions);
-
-            this.records[this.serializePrimaryKey(this.getPrimaryKeyFromRecord(record))] = record;
-        }
+        this.records[this.serializePrimaryKey(this.getPrimaryKeyFromRecord(record))] = record;
 
         return record;
     }
@@ -73,6 +71,21 @@ export class CoreLazyDatabaseTable<
         }
 
         return record;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async hasAny(conditions?: Partial<DBRecord>): Promise<boolean> {
+        const hasAnyMatching = Object
+            .values(this.records)
+            .some(record => record !== null && (!conditions || this.recordMatches(record, conditions)));
+
+        if (hasAnyMatching) {
+            return true;
+        }
+
+        return super.hasAny(conditions);
     }
 
     /**
