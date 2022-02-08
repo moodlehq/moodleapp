@@ -17,6 +17,7 @@ import { CoreMainMenuLocalizedCustomItem } from '@features/mainmenu/services/mai
 import { CoreSitesDemoSiteData } from '@services/sites';
 import { OpenFileAction } from '@services/utils/utils';
 import { CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
+import { CoreDatabaseConfiguration } from '@classes/database/database-table-proxy';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
@@ -31,6 +32,8 @@ export interface EnvironmentConfig {
     cache_update_frequency_rarely: number;
     default_lang: string;
     languages: Record<string, string>;
+    databaseOptimizations?: Partial<CoreDatabaseConfiguration>;
+    databaseTableOptimizations?: Record<string, Partial<CoreDatabaseConfiguration>>;
     wsservice: string;
     demo_sites: Record<string, CoreSitesDemoSiteData>;
     zoomlevels: Record<CoreZoomLevel, number>;

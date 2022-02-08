@@ -32,7 +32,7 @@ import {
     CoreSitePublicConfigResponse,
     CoreSiteInfoResponse,
 } from '@classes/site';
-import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBRecordValues, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { makeSingleton, Translate, Http } from '@singletons';
@@ -57,6 +57,9 @@ import { CoreErrorWithTitle } from '@classes/errors/errorwithtitle';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
+import { CorePromisedValue } from '@classes/promised-value';
+import { CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreDatabaseConfiguration, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 
@@ -85,6 +88,7 @@ export class CoreSitesProvider {
     // Variables for DB.
     protected appDB: Promise<SQLiteDB>;
     protected resolveAppDB!: (appDB: SQLiteDB) => void;
+    protected siteTables: Record<string, Record<string, CorePromisedValue<CoreDatabaseTable>>> = {};
 
     constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] = []) {
         this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
@@ -100,6 +104,25 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Initialize.
+     */
+    initialize(): void {
+        CoreEvents.on(CoreEvents.SITE_DELETED, async ({ siteId }) => {
+            if (!siteId || !(siteId in this.siteTables)) {
+                return;
+            }
+
+            await Promise.all(
+                Object
+                    .values(this.siteTables[siteId])
+                    .map(promisedTable => promisedTable.then(table => table.destroy())),
+            );
+
+            delete this.siteTables[siteId];
+        });
+    }
+
+    /**
      * Initialize database.
      */
     async initializeDatabase(): Promise<void> {
@@ -110,6 +133,49 @@ export class CoreSitesProvider {
         }
 
         this.resolveAppDB(CoreApp.getDB());
+    }
+
+    /**
+     * Get site table.
+     *
+     * @param tableName Site table name.
+     * @param options Options to configure table initialization.
+     * @returns Site table.
+     */
+    async getSiteTable<
+        DBRecord extends SQLiteDBRecordValues,
+        PrimaryKeyColumn extends keyof DBRecord
+    >(
+        tableName: string,
+        options: Partial<{
+            siteId: string;
+            config: Partial<CoreDatabaseConfiguration>;
+            database: SQLiteDB;
+            primaryKeyColumns: PrimaryKeyColumn[];
+        }> = {},
+    ): Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>> {
+        const siteId = options.siteId ?? this.getCurrentSiteId();
+
+        if (!(siteId in this.siteTables)) {
+            this.siteTables[siteId] = {};
+        }
+
+        if (!(tableName in this.siteTables[siteId])) {
+            const promisedTable = this.siteTables[siteId][tableName] = new CorePromisedValue();
+            const database = options.database ?? await this.getSiteDb(siteId);
+            const table = new CoreDatabaseTableProxy<DBRecord, PrimaryKeyColumn>(
+                options.config ?? {},
+                database,
+                tableName,
+                options.primaryKeyColumns,
+            );
+
+            await table.initialize();
+
+            promisedTable.resolve(table as unknown as CoreDatabaseTable);
+        }
+
+        return this.siteTables[siteId][tableName] as unknown as Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>>;
     }
 
     /**
