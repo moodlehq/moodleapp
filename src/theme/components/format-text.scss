@@ -31,8 +31,8 @@ core-format-text {
         opacity: 1;
         background-color: rgba(0,0,0,.1);
         overflow: hidden;
-        border-radius: 5px;
         display: block;
+        border-radius: var(--small-radius);
 
         .core-format-text-loader {
             position: absolute;
@@ -179,7 +179,7 @@ core-format-text {
         position: absolute;
         @include position(null, 10px, 10px, null);
         color: var(--ion-text-color);
-        border-radius: 5px;
+        border-radius: var(--small-radius);
         background-color: var(--core-format-text-viewer-icon-background);
         display: flex;
 

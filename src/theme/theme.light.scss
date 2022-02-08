@@ -271,6 +271,7 @@
     --core-send-message-input-color: var(--gray-900);
 
     --core-courseimage-on-course-size: 72px;
+    --core-courseimage-radius: var(--medium-radius);
 
     --core-course-module-navigation-max-height: 56px;
     --core-course-module-navigation-background: var(--contrast-background);
@@ -322,6 +323,7 @@
 
     @for $i from 0 to length($core-course-image-background) {
         --core-course-color-#{$i}: #{nth($core-course-image-background, $i + 1)};
+        --core-course-color-#{$i}-tint: #{get-color-tint(nth($core-course-image-background, $i + 1))};
     }
 
     @for $i from 0 to length($core-dd-question-colors) {

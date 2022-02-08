@@ -647,7 +647,7 @@ export class CoreAppProvider {
         if (this.isAndroid()) {
             const rgb = CoreColors.hexToRGB(color);
             if (rgb.red != 255 || rgb.green != 255 || rgb.blue != 255) {
-                color = CoreColors.darker(color);
+                color = CoreColors.darker(color, 10);
             }
         }
 

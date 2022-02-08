@@ -174,13 +174,13 @@ ion-app.ios ion-header ion-title {
     text-overflow: ellipsis;
 }
 
-.item.ion-text-wrap ion-label core-format-text .core-format-text-content > *,
+.item.ion-text-wrap > ion-label core-format-text .core-format-text-content > *,
 .fake-ion-item.ion-text-wrap core-format-text .core-format-text-content > * {
     white-space: normal;
     overflow: inherit;
 }
 
-.item.ion-text-wrap ion-label {
+.item.ion-text-wrap > ion-label {
     white-space: normal !important;
 }
 
@@ -299,6 +299,10 @@ button,
 [role="button"] {
     min-height: var(--a11y-min-target-size);
     min-width: var(--a11y-min-target-size);
+}
+
+ion-button.button.button-clear.button-has-icon-only {
+    --border-radius: 50%;
 }
 
 // Clear buttons will be black.
@@ -848,7 +852,14 @@ ion-select-popover ion-item.core-select-option-title {
 
 ion-chip {
     line-height: 1.1;
-    @include padding-horizontal(16px);
+    font-size: 12px;
+    padding: 4px 8px;
+    height: 24px;
+
+    ion-icon {
+        font-size: 16px;
+        @include margin(0, 8px, 0, 0);
+    }
 
     &.ion-color {
         background: var(--ion-color-tint);

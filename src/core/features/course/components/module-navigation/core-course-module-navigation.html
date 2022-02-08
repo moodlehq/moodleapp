@@ -1,5 +1,5 @@
 <core-loading [hideUntil]="loaded" [fullscreen]="false">
-    <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding" *ngIf="previousModule || nextModule">
+    <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap" *ngIf="previousModule || nextModule">
         <ion-col size="auto">
             <ion-button fill="clear" class="core-course-previous-module" *ngIf="previousModule" (click)="goToActivity(false)"
                 [attr.aria-label]="'core.course.gotopreviousactivity' | translate">

@@ -6,6 +6,7 @@
         min-height: var(--core-courseimage-on-course-size);
         width: var(--core-courseimage-on-course-size);
         min-width: var(--core-courseimage-on-course-size);
+        --border-radius: var(--core-courseimage-radius);
     }
 
     @if ($core-show-courseimage-on-course) {

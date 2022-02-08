@@ -20,7 +20,8 @@ import { CoreAnimations } from '@components/animations';
  * Component to show a download button with refresh option, the spinner and the status of it.
  *
  * Usage:
- * <core-download-refresh [status]="status" enabled="true" canTrustDownload="true" action="download()"></core-download-refresh>
+ * <core-download-refresh [status]="status" [enabled]="true" [canTrustDownload]="true" (action)="download()">
+ * </core-download-refresh>
  */
 @Component({
     selector: 'core-download-refresh',
