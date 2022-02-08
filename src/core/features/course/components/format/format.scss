@@ -1,17 +1,12 @@
 .core-course-section-nav-buttons {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
 
-    core-format-text {
+    ion-button {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
         text-transform: none;
-    }
-}
-
-.course-section {
-    ion-badge {
-        text-align: start;
+        flex: 1;
     }
 }
