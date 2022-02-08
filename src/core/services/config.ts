@@ -121,6 +121,22 @@ export class CoreConfigProvider {
     }
 
     /**
+     * Check whether the given app setting exists.
+     *
+     * @param name The config name.
+     * @returns Whether the app setting exists.
+     */
+    async has(name: string): Promise<boolean> {
+        try {
+            await this.table.getOneByPrimaryKey({ name });
+
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
      * Set an app setting.
      *
      * @param name The config name.

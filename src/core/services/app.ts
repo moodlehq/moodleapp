@@ -145,6 +145,15 @@ export class CoreAppProvider {
     }
 
     /**
+     * Delete table schema.
+     *
+     * @param name Schema name.
+     */
+    async deleteTableSchema(name: string): Promise<void> {
+        await this.schemaVersionsTable.deleteByPrimaryKey({ name });
+    }
+
+    /**
      * Get the application global database.
      *
      * @return App's DB.
