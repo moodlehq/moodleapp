@@ -67,7 +67,7 @@
             <div class="ion-text-center ion-padding">{{ 'core.login.or' | translate }}</div>
             <ion-button expand="block" color="light" class="ion-margin" lines="none" (click)="showInstructionsAndScanQR()">
                 <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
-                <ion-label>{{ 'core.scanqr' | translate }}</ion-label>
+                {{ 'core.scanqr' | translate }}
             </ion-button>
         </ng-container>
     </form>
@@ -75,7 +75,7 @@
     <!-- Forgotten password option. -->
     <ion-button *ngIf="showForgottenPassword && !isOAuth" expand="block" fill="clear" color="dark"
         class="core-login-forgotten-password core-button-as-link ion-text-wrap" (click)="forgottenPassword()">
-        <ion-label>{{ 'core.login.forgotten' | translate }}</ion-label>
+        {{ 'core.login.forgotten' | translate }}
     </ion-button>
 
     <!-- Identity providers. -->

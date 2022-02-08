@@ -55,7 +55,7 @@
                             <div *ngIf="downloadEnabled" slot="end" class="core-button-spinner">
                                 <core-download-refresh *ngIf="!section.isDownloading" [status]="section.downloadStatus" [enabled]="true"
                                     (action)="prefecthSection(section)" [loading]="section.isDownloading || section.isCalculating"
-                                    [canTrustDownload]="true" size="small">
+                                    [canTrustDownload]="true">
                                 </core-download-refresh>
 
                                 <ion-badge class="core-course-download-section-progress"
@@ -93,7 +93,7 @@
                                     </ion-icon>
                                 </ion-button>
                                 <core-download-refresh *ngIf="downloadEnabled && module.handlerData?.showDownloadButton"
-                                    [status]="module.downloadStatus" [enabled]="true" [canTrustDownload]="true" size="small"
+                                    [status]="module.downloadStatus" [enabled]="true" [canTrustDownload]="true"
                                     [loading]="module.spinner || module.handlerData.spinner" (action)="prefetchModule(module, section)">
                                 </core-download-refresh>
                             </div>

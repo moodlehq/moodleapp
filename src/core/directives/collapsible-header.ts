@@ -32,7 +32,6 @@ import { CoreMath } from '@singletons/math';
 })
 export class CoreCollapsibleHeaderDirective implements OnDestroy {
 
-    protected scrollElement?: HTMLElement;
     protected loadingObserver: CoreEventObserver;
     protected content?: HTMLIonContentElement | null;
     protected header: HTMLIonHeaderElement;

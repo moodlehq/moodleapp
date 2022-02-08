@@ -2,7 +2,7 @@
 
 ion-item ion-icon {
     display: inline-block;
-    border-radius: var(--small-radius);
+    border-radius: var(--module-icon-radius);
     padding: 0.7rem;
     background-color: $gray-100;
     line-height: var(--size);
@@ -10,7 +10,7 @@ ion-item ion-icon {
     @include margin-horizontal(null, var(--margin-end));
 }
 
-core-course-module.core-sitehome-news ::ng-deep  ion-card {
+core-course-module.core-sitehome-news ::ng-deep ion-card {
     --border-width: 0;
     margin: 0;
     padding: 0;

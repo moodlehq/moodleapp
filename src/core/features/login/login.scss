@@ -106,7 +106,7 @@
 
 :host-context(body.dark) {
     @if ($core-login-button-outline-dark) {
-        form ion-button-dark {
+        form ion-button {
             --background: white;
             --color: var(--core-login-background-dark);
         }

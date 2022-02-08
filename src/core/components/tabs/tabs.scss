@@ -7,6 +7,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    --ion-safe-area-top: 0px;
 
     ion-tabs {
         background: transparent;
