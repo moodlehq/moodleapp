@@ -25,14 +25,9 @@ import { CoreColors } from '@singletons/colors';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
 import { CoreObject } from '@singletons/object';
 import { CoreRedirectPayload } from './navigator';
-
-/**
- * Object responsible of managing schema versions.
- */
-type SchemaVersionsManager = {
-    get(schemaName: string): Promise<number>;
-    set(schemaName: string, version: number): Promise<void>;
-};
+import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
+import { asyncInstance } from '../utils/async-instance';
+import { CoreDatabaseTable } from '@classes/database/database-table';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -58,13 +53,9 @@ export class CoreAppProvider {
     protected keyboardClosing = false;
     protected forceOffline = false;
     protected redirect?: CoreRedirectData;
-
-    // Variables for DB.
-    protected schemaVersionsManager: Promise<SchemaVersionsManager>;
-    protected resolveSchemaVersionsManager!: (schemaVersionsManager: SchemaVersionsManager) => void;
+    protected schemaVersionsTable = asyncInstance<CoreDatabaseTable<SchemaVersionsDBEntry, 'name'>>();
 
     constructor() {
-        this.schemaVersionsManager = new Promise(resolve => this.resolveSchemaVersionsManager = resolve);
         this.logger = CoreLogger.getInstance('CoreAppProvider');
     }
 
@@ -81,24 +72,20 @@ export class CoreAppProvider {
      * Initialize database.
      */
     async initializeDatabase(): Promise<void> {
-        await this.getDB().createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
+        const database = this.getDB();
 
-        this.resolveSchemaVersionsManager({
-            get: async name => {
-                try {
-                    // Fetch installed version of the schema.
-                    const entry = await this.getDB().getRecord<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE_NAME, { name });
+        await database.createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
 
-                    return entry.version;
-                } catch (error) {
-                    // No installed version yet.
-                    return 0;
-                }
-            },
-            set: async (name, version) => {
-                await this.getDB().insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name, version });
-            },
-        });
+        const schemaVersionsTable = new CoreDatabaseTableProxy<SchemaVersionsDBEntry, 'name'>(
+            { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
+            database,
+            SCHEMA_VERSIONS_TABLE_NAME,
+            ['name'],
+        );
+
+        await schemaVersionsTable.initialize();
+
+        this.schemaVersionsTable.setInstance(schemaVersionsTable);
     }
 
     /**
@@ -137,8 +124,7 @@ export class CoreAppProvider {
     async createTablesFromSchema(schema: CoreAppSchema): Promise<void> {
         this.logger.debug(`Apply schema to app DB: ${schema.name}`);
 
-        const schemaVersionsManager = await this.schemaVersionsManager;
-        const oldVersion = await schemaVersionsManager.get(schema.name);
+        const oldVersion = await this.getInstalledSchemaVersion(schema);
 
         if (oldVersion >= schema.version) {
             // Version already installed, nothing else to do.
@@ -155,7 +141,7 @@ export class CoreAppProvider {
         }
 
         // Set installed version.
-        schemaVersionsManager.set(schema.name, schema.version);
+        await this.schemaVersionsTable.insert({ name: schema.name, version: schema.version });
     }
 
     /**
@@ -681,6 +667,24 @@ export class CoreAppProvider {
      */
     setForceOffline(value: boolean): void {
         this.forceOffline = !!value;
+    }
+
+    /**
+     * Get the installed version for the given schema.
+     *
+     * @param schema App schema.
+     * @returns Installed version number, or 0 if the schema is not installed.
+     */
+    protected async getInstalledSchemaVersion(schema: CoreAppSchema): Promise<number> {
+        try {
+            // Fetch installed version of the schema.
+            const entry = await this.schemaVersionsTable.getOneByPrimaryKey({ name: schema.name });
+
+            return entry.version;
+        } catch (error) {
+            // No installed version yet.
+            return 0;
+        }
     }
 
 }
