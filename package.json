@@ -85,15 +85,15 @@
     "@types/cordova": "0.0.34",
     "@types/dom-mediacapture-record": "^1.0.7",
     "chart.js": "^2.9.4",
-    "com-darryncampbell-cordova-plugin-intent": "^1.3.0",
+    "com-darryncampbell-cordova-plugin-intent": "^2.2.0",
     "cordova": "^10.0.0",
     "cordova-android": "^10.1.1",
     "cordova-clipboard": "^1.3.0",
     "cordova-ios": "^6.2.0",
     "cordova-plugin-add-swift-support": "^2.0.2",
-    "cordova-plugin-advanced-http": "^3.1.0",
+    "cordova-plugin-advanced-http": "^3.2.2",
     "cordova-plugin-badge": "^0.8.8",
-    "cordova-plugin-camera": "^5.0.1",
+    "cordova-plugin-camera": "^6.0.0",
     "cordova-plugin-chooser": "^1.3.2",
     "cordova-plugin-customurlscheme": "^5.0.2",
     "cordova-plugin-device": "^2.0.3",
@@ -102,17 +102,16 @@
     "cordova-plugin-geolocation": "^4.1.0",
     "cordova-plugin-globalization": "^1.11.0",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
-    "cordova-plugin-media": "^5.0.3",
+    "cordova-plugin-media": "^5.0.4",
     "cordova-plugin-media-capture": "^3.0.3",
-    "cordova-plugin-network-information": "^2.0.2",
-    "cordova-plugin-prevent-override": "^1.0.0",
+    "cordova-plugin-network-information": "^3.0.0",
+    "cordova-plugin-prevent-override": "^1.0.1",
     "cordova-plugin-splashscreen": "^6.0.0",
-    "cordova-plugin-statusbar": "^2.4.3",
-    "cordova-plugin-wkuserscript": "^1.0.0",
-    "cordova-plugin-wkwebview-cookies": "^1.0.0",
+    "cordova-plugin-statusbar": "^3.0.0",
+    "cordova-plugin-wkuserscript": "^1.0.1",
+    "cordova-plugin-wkwebview-cookies": "^1.0.1",
     "cordova-sqlite-storage": "^6.0.0",
-    "cordova-support-google-services": "^1.2.1",
-    "cordova.plugins.diagnostic": "^5.0.2",
+    "cordova.plugins.diagnostic": "^6.1.1",
     "core-js": "^3.9.1",
     "es6-promise-plugin": "^4.2.2",
     "hammerjs": "^2.0.8",
@@ -183,11 +182,14 @@
       "ios"
     ],
     "plugins": {
-      "cordova-plugin-advanced-http": {},
+      "cordova-plugin-advanced-http": {
+        "ANDROIDBLACKLISTSECURESOCKETPROTOCOLS": "SSLv3,TLSv1"
+      },
       "cordova-clipboard": {},
       "cordova-plugin-badge": {},
       "cordova-plugin-camera": {
-        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+        "ANDROID_SUPPORT_V4_VERSION": "27.+",
+        "ANDROIDX_CORE_VERSION": "1.6.+"
       },
       "cordova-plugin-chooser": {},
       "cordova-plugin-customurlscheme": {
@@ -229,7 +231,9 @@
       "com-darryncampbell-cordova-plugin-intent": {},
       "nl.kingsquare.cordova.background-audio": {},
       "cordova.plugins.diagnostic": {
-        "ANDROID_SUPPORT_VERSION": "28.+"
+        "ANDROID_SUPPORT_VERSION": "28.+",
+        "ANDROIDX_VERSION": "1.0.0",
+        "ANDROIDX_APPCOMPAT_VERSION": "1.3.1"
       },
       "cordova-plugin-globalization": {},
       "@moodlehq/cordova-plugin-file-transfer": {},
