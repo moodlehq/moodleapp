@@ -299,18 +299,20 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
             return;
         }
 
+        const options: CoreNavigationOptions = {
+            replace: true,
+            animationDirection: next ? 'forward' : 'back',
+        };
+
         if (module.uservisible === false) {
             const section = next ? this.nextModuleSection : this.previousModuleSection;
-            const options: CoreNavigationOptions = {
-                replace: true,
-                params: {
-                    module,
-                    section,
-                },
+            options.params = {
+                module,
+                section,
             };
             CoreNavigator.navigateToSitePath('course/' + this.courseId + '/' + module.id +'/module-preview', options);
         } else {
-            CoreCourseModuleDelegate.openActivityPage(module.modname, module, this.courseId, { replace: true });
+            CoreCourseModuleDelegate.openActivityPage(module.modname, module, this.courseId, options);
         }
     }
 
