@@ -1,12 +1,16 @@
 @import "~theme/globals";
 
 :host {
+    --horizontal-margin: 12px;
 
-    .item.core-module-main-item {
-        --min-height: 52px;
+    ion-card {
+        margin-left: var(--horizontal-margin);
+        margin-right: var(--horizontal-margin);
     }
 
-    .core-module-main-item {
+    ion-item.core-module-main-item {
+        --min-height: 52px;
+
         .core-module-buttons,
         .buttons.core-module-buttons {
             margin: 0;

@@ -15,3 +15,7 @@ core-course-module.core-sitehome-news ::ng-deep ion-card {
     margin: 0;
     padding: 0;
 }
+
+core-spacer ::ng-deep .item {
+    border-radius: var(--medium-radius);
+}

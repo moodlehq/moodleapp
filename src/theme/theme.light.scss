@@ -71,6 +71,7 @@
 
     --module-icon-size: 24px;
     --module-icon-radius: var(--medium-radius);
+    --module-list-width: 768px;
 
     --ion-background-color: var(--background-color);
     --ion-background-color-rgb: #{$background-color-rgb};
@@ -221,20 +222,21 @@
     }
 
     --item-divider-min-height: calc(var(--a11y-min-target-size) + 8px);
-    --item-divider-background: var(--light);
+    --item-divider-background: transparent;
     --item-divider-color: var(--text-color);
+    --item-divider-border-width: 0px;
+    --item-divider-font-size: 20px;
     ion-item-divider, ion-item.divider {
         --background: var(--item-divider-background);
         --color: var(--item-divider-color);
         --min-height: var(--item-divider-min-height);
-        min-height: var(--min-height);
 
         .expandable-status-icon {
             font-size: 18px;
         }
     }
 
-    --spacer-background: var(--item-divider-background);
+    --spacer-background: var(--light);
     core-spacer {
         --item-divider-background: var(--spacer-background);
     }

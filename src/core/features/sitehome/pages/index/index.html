@@ -8,7 +8,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="dataLoaded">
-        <ion-list>
+        <ion-list class="core-course-module-list-wrapper">
             <!-- Site home main contents. -->
             <ng-container *ngIf="section && section.hasContent">
                 <ion-item class="ion-text-wrap" *ngIf="section.summary">

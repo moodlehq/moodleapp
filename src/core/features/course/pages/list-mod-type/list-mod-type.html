@@ -16,7 +16,7 @@
         <core-empty-box *ngIf="!sections || !sections.length" icon="fas-box-open" [message]="'core.course.nocontentavailable' | translate">
         </core-empty-box>
 
-        <ion-list>
+        <ion-list class="core-course-module-list-wrapper">
             <ng-container *ngFor="let section of sections">
                 <ng-container *ngFor="let module of section.modules">
                     <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section">

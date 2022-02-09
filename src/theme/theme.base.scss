@@ -736,6 +736,22 @@ ion-card {
     display: inline !important;
 }
 
+ion-list.core-course-module-list-wrapper,
+.core-course-module-list-wrapper {
+    max-width: var(--module-list-width);
+    margin-left: auto;
+    margin-right: auto;
+
+    --padding-start: 12px;
+    --padding-end: 12px;
+    padding-left: var(--padding-start);
+    padding-right: var(--padding-end);
+
+    core-course-module {
+        --horizontal-margin: 0px;
+    }
+}
+
 ion-toolbar h1 img.core-bar-button-image,
 ion-toolbar h1 .core-bar-button-image img {
     padding: 4px;
@@ -1209,8 +1225,15 @@ ion-item.item-input ion-input.has-focus {
     }
 }
 
-ion-item-divider {
+ion-item-divider.item, ion-item.item.divider {
     --inner-padding-end: 8px;
+    background: var(--background);
+    min-height: var(--min-height);
+    border-width: var(--item-divider-border-width);
+    font-size: var(--item-divider-font-size);
+    h2, ion-label h2 {
+        font-size: var(--item-divider-font-size);
+    }
 }
 
 // Change default outline.
