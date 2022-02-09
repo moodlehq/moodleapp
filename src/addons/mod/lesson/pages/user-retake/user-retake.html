@@ -83,7 +83,7 @@
                     <ion-card-header class="ion-text-wrap">
                         <ion-card-title>{{page.qtype}}: {{page.title}}</ion-card-title>
                     </ion-card-header>
-                    <ion-item class="ion-text-wrap" lines="none">
+                    <ion-item class="ion-text-wrap">
                         <ion-label>
                             <h3 class="item-heading">{{ 'addon.mod_lesson.question' | translate }}</h3>
                             <p>
@@ -94,13 +94,12 @@
                             </p>
                         </ion-label>
                     </ion-item>
-                    <ion-item class="ion-text-wrap" lines="none">
+                    <ion-item class="ion-text-wrap">
                         <ion-label>
                             <h3 class="item-heading">{{ 'addon.mod_lesson.answer' | translate }}</h3>
                         </ion-label>
                     </ion-item>
-                    <ion-item class="ion-text-wrap" lines="none"
-                        *ngIf="!page.answerdata || !page.answerdata.answers || !page.answerdata.answers.length">
+                    <ion-item class="ion-text-wrap" *ngIf="!page.answerdata || !page.answerdata.answers || !page.answerdata.answers.length">
                         <ion-label>
                             <p>{{ 'addon.mod_lesson.didnotanswerquestion' | translate }}</p>
                         </ion-label>
@@ -108,7 +107,7 @@
                     <div *ngIf="page.answerdata && page.answerdata.answers && page.answerdata.answers.length"
                         class="addon-mod_lesson-answer">
                         <ng-container *ngFor="let answer of page.answerdata.answers">
-                            <ion-item lines="none" *ngIf="page.isContent">
+                            <ion-item *ngIf="page.isContent">
                                 <ion-label class="ion-text-wrap">
                                     <ion-grid class="ion-no-padding">
                                         <!-- Content page, display a button and the content. -->
@@ -151,7 +150,7 @@
                                 </ion-item>
 
                                 <!-- Short answer or numeric. -->
-                                <ion-item class="ion-text-wrap" *ngIf="answer[0].isText" lines="none">
+                                <ion-item class="ion-text-wrap" *ngIf="answer[0].isText">
                                     <ion-label>
                                         <p>{{ answer[0].value }}</p>
                                         <ion-badge *ngIf="answer[1]" color="dark">
@@ -164,7 +163,7 @@
                                 </ion-item>
 
                                 <!-- Matching. -->
-                                <ion-item lines="none" *ngIf="answer[0].isSelect">
+                                <ion-item *ngIf="answer[0].isSelect">
                                     <ion-label class="ion-text-wrap">
                                         <ion-grid class="ion-no-padding">
                                             <ion-row>
@@ -191,8 +190,7 @@
                                 </ion-item>
 
                                 <!-- Essay or couldn't determine. -->
-                                <ion-item class="ion-text-wrap" lines="none"
-                                    *ngIf="!answer[0].isCheckbox && !answer[0].isText && !answer[0].isSelect">
+                                <ion-item class="ion-text-wrap" *ngIf="!answer[0].isCheckbox && !answer[0].isText && !answer[0].isSelect">
                                     <ion-label>
                                         <p>
                                             <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
@@ -210,7 +208,7 @@
                                 </ion-item>
                             </ng-container>
 
-                            <ion-item class="ion-text-wrap" *ngIf="!page.isContent && !page.isQuestion" lines="none">
+                            <ion-item class="ion-text-wrap" *ngIf="!page.isContent && !page.isQuestion">
                                 <!-- Another page (end of branch, ...). -->
                                 <ion-label>
                                     <p>
@@ -227,7 +225,7 @@
                             </ion-item>
                         </ng-container>
 
-                        <ion-item class="ion-text-wrap" *ngIf="page.answerdata.response" lines="none">
+                        <ion-item class="ion-text-wrap" *ngIf="page.answerdata.response">
                             <ion-label>
                                 <h3 class="item-heading">{{ 'addon.mod_lesson.response' | translate }}</h3>
                                 <p>

@@ -1,6 +1,6 @@
 <ion-card *ngIf="module.handlerData && module.visibleoncoursepage !== 0">
     <ng-container *ngIf="!module.handlerData.loading">
-        <ion-item id="core-course-module-{{module.id}}" detail="false" lines="none"
+        <ion-item id="core-course-module-{{module.id}}" detail="false"
             class="ion-text-wrap core-course-module-handler core-module-main-item {{module.handlerData.class}}"
             (click)="moduleClicked($event)" [attr.aria-label]="module.handlerData.a11yTitle" [ngClass]="{
                 'has-module-info': hasInfo,
@@ -57,7 +57,7 @@
                 </div>
             </div>
         </ion-item>
-        <ion-item *ngIf="hasInfo" id="core-course-module-{{module.id}}-info" detail="false" lines="none"
+        <ion-item *ngIf="hasInfo" id="core-course-module-{{module.id}}-info" detail="false"
             class="ion-text-wrap core-course-module-handler core-course-module-info {{module.handlerData.class}}" [ngClass]="{
                 'item-media': module.handlerData.icon,
                 'item-dimmed': module.visible === 0 || module.uservisible === false
@@ -99,7 +99,7 @@
     <!-- Loading. -->
     <ion-item *ngIf="module.handlerData.loading" role="status" class="ion-text-wrap" id="core-course-module-{{module.id}}"
         [attr.aria-label]="module.handlerData.a11yTitle"
-        [ngClass]="['core-course-module-handler', 'core-module-loading', module.handlerData.class]" detail="false" lines="none">
+        [ngClass]="['core-course-module-handler', 'core-module-loading', module.handlerData.class]" detail="false">
         <ion-label>
             <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
         </ion-label>

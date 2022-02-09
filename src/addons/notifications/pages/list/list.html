@@ -26,7 +26,7 @@
         </div>
 
         <ion-card *ngFor="let notification of notifications">
-            <ion-item class="ion-text-wrap" lines="none" [attr.aria-label]="
+            <ion-item class="ion-text-wrap" [attr.aria-label]="
                     notification.timeread
                     ? notification.subject
                     : 'addon.notifications.unreadnotification' | translate: {$a: notification.subject}">

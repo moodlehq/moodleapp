@@ -2,7 +2,7 @@
 <ion-item class="ion-text-wrap" *ngIf="files && files.length && !edit">
     <ion-label>
         <h2>{{ plugin.name }}</h2>
-        <div lines="none">
+        <div>
             <core-files [files]="files" [component]="component" [componentId]="assign.cmid" [alwaysDownload]="true"></core-files>
         </div>
     </ion-label>

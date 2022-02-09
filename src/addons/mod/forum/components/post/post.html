@@ -1,7 +1,7 @@
 <div class="addon-mod_forum-post">
     <ng-container *ngIf="!formData.isEditing || !showForm">
         <ion-card-header class="ion-text-wrap ion-no-padding" id="addon-mod_forum-post-{{post.id}}">
-            <ion-item class="ion-text-wrap" [class.highlight]="highlight" lines="none">
+            <ion-item class="ion-text-wrap" [class.highlight]="highlight">
                 <ion-label>
                     <div class="addon-mod-forum-post-title" *ngIf="displaySubject">
                         <h2 class="ion-text-wrap">
@@ -63,13 +63,13 @@
             <core-format-text [component]="component" [componentId]="componentId" [text]="post.message" contextLevel="module"
                 [contextInstanceId]="forum && forum.cmid" [courseId]="courseId">
             </core-format-text>
-            <div lines="none" *ngIf="post.attachments && post.attachments.length > 0">
+            <div *ngIf="post.attachments && post.attachments.length > 0">
                 <core-files [files]="post.attachments" [component]="component" [componentId]="componentId" showInline="true">
                 </core-files>
             </div>
         </ion-card-content>
         <div class="addon-mod-forum-post-more-info">
-            <ion-item class="ion-text-wrap" *ngIf="tagsEnabled && post.tags && post.tags.length > 0" lines="none">
+            <ion-item class="ion-text-wrap" *ngIf="tagsEnabled && post.tags && post.tags.length > 0">
                 <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
                 <ion-label>
                     <core-tag-list [tags]="post.tags"></core-tag-list>

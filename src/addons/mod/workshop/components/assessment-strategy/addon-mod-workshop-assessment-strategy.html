@@ -57,7 +57,7 @@
                     </core-format-text>
                 </ion-label>
             </ion-item>
-            <ion-item *ngIf="!edit && workshop.overallfeedbackfiles && data.assessment?.feedbackattachmentfiles?.length" lines="none">
+            <ion-item *ngIf="!edit && workshop.overallfeedbackfiles && data.assessment?.feedbackattachmentfiles?.length">
                 <ion-label>
                     <core-files [files]="data.assessment?.feedbackattachmentfiles" [component]="component" [componentId]="componentId">
                     </core-files>

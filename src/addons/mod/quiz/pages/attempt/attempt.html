@@ -17,7 +17,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <ion-list *ngIf="attempt" lines="none">
+        <ion-list *ngIf="attempt">
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <h2>{{ 'addon.mod_quiz.attemptnumber' | translate }}</h2>

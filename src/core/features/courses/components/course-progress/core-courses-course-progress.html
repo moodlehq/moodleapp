@@ -3,8 +3,8 @@
         [style.background-color]="course.color">
         <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt="" />
     </div>
-    <ion-item button lines="none" (click)="openCourse()" [attr.aria-label]="course.displayname || course.fullname"
-        class="core-course-header" [class.item-disabled]="course.visible == 0"
+    <ion-item button (click)="openCourse()" [attr.aria-label]="course.displayname || course.fullname" class="core-course-header"
+        [class.item-disabled]="course.visible == 0"
         [class.core-course-only-title]="!showAll || progress < 0 && completionUserTracked === false" detail="false">
         <ion-label class="ion-text-wrap core-course-title"
             [class.core-course-with-buttons]="courseOptionMenuEnabled || (downloadCourseEnabled && showDownload)"
@@ -53,7 +53,7 @@
             </ion-button>
         </div>
     </ion-item>
-    <ion-item *ngIf="showAll && progress >= 0 && completionUserTracked !== false" lines="none" class="core-course-progress">
+    <ion-item *ngIf="showAll && progress >= 0 && completionUserTracked !== false" class="core-course-progress">
         <ion-label>
             <core-progress-bar [progress]="progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
         </ion-label>

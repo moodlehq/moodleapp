@@ -1,4 +1,4 @@
-<ion-item lines="none" *ngIf="course">
+<ion-item *ngIf="course">
     <ion-label class="ion-text-wrap">
         <h3>
             <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
@@ -7,7 +7,7 @@
     </ion-label>
 </ion-item>
 <ion-item-group *ngFor="let dayEvents of filteredEvents">
-    <ion-item lines="none">
+    <ion-item>
         <ion-label>
             <h4 [class.core-bold]="!course">{{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedaydate" }}</h4>
         </ion-label>
@@ -73,7 +73,7 @@
     <ion-spinner *ngIf="loadingMore" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
 </div>
 
-<ion-item lines="none" *ngIf="empty && course">
+<ion-item *ngIf="empty && course">
     <ion-label class="ion-text-wrap">
         <p>{{'addon.block_timeline.noevents' | translate}}</p>
     </ion-label>

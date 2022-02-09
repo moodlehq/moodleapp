@@ -1049,6 +1049,20 @@ audio.core-media-adapt-width {
     width: 100%;
 }
 
+ion-item {
+    --inner-border-width: 0px;
+}
+
+ion-item.item-lines-full {
+    --inner-border-width: 0px;
+    --border-width: 0 0 1px 0;
+}
+
+ion-item.item-lines-inset {
+    --inner-border-width: 1px;
+    --border-width: 0px;
+}
+
 // Fake item.
 div.fake-ion-item {
     position: relative;
@@ -1061,7 +1075,6 @@ div.fake-ion-item {
     text-decoration: none;
     overflow: hidden;
     box-sizing: border-box;
-
 }
 
 html.md div.fake-ion-item {
