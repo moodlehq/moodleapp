@@ -20,7 +20,7 @@ import {
     CoreCourseModuleCompletionData,
     CoreCourseSection,
 } from '@features/course/services/course-helper';
-import { CoreCourse, CoreCourseModuleCompletionStatus, CoreCourseModuleCompletionTracking } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate, CoreCourseModuleHandlerButton } from '@features/course/services/module-delegate';
 
 /**
@@ -47,7 +47,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     hasInfo = false;
     showLegacyCompletion = false; // Whether to show module completion in the old format.
     showManualCompletion = false; // Whether to show manual completion when completion conditions are disabled.
-    completionStatus?: CoreCourseModuleCompletionStatus;
 
     /**
      * Component being initialized.
@@ -62,19 +61,11 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         }
 
         this.module.handlerData.a11yTitle = this.module.handlerData.a11yTitle ?? this.module.handlerData.title;
-        this.completionStatus = this.module.completiondata === undefined  ||
-                !this.module.completiondata?.istrackeduser ||
-                this.module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE
-            ? undefined
-            : this.module.completiondata.state;
 
         this.hasInfo = !!(
             this.module.description ||
             (this.showActivityDates && this.module.dates && this.module.dates.length) ||
-            (this.module.completiondata &&
-                ((this.showManualCompletion && !this.module.completiondata.isautomatic) ||
-                    (this.showCompletionConditions && this.module.completiondata.isautomatic))
-            ) ||
+            (this.module.completiondata && this.showCompletionConditions && this.module.completiondata.isautomatic) ||
             this.module.completiondata?.offline ||
             (this.module.visible === 0 && (!this.section || this.section.visible)) ||
             (this.module.visible !== 0 && this.module.isStealth) ||

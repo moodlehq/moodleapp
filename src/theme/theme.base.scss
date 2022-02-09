@@ -184,44 +184,6 @@ ion-app.ios ion-header ion-title {
     white-space: normal !important;
 }
 
-ion-button core-format-text .core-format-text-content {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-    line-height: 1.2;
-}
-
-ion-button > * {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-ion-button.ion-text-wrap {
-    white-space: normal;
-    core-format-text .core-format-text-content {
-        white-space: normal;
-        display: contents;
-    }
-
-    & > * {
-        white-space: normal;
-    }
-}
-
-ion-button.button-outline {
-    --background: var(--contrast-background);
-}
-
-ion-button ion-spinner {
-    --color: inherit !important;
-}
-
-ion-button:not(.button-has-icon-only) > ion-icon {
-    min-width: 20px;
-}
-
 @each $color-name, $unused in $colors {
     .text-#{$color-name},
     p.text-#{$color-name} {
@@ -293,10 +255,6 @@ ion-icon {
     }
 }
 
-ion-button.button-small ion-icon.faicon[slot] {
-    font-size: 1.5em !important;
-}
-
 // Buttons.
 ion-button,
 ion-fab-button,
@@ -306,8 +264,56 @@ button,
     min-width: var(--a11y-min-target-size);
 }
 
+ion-button.button-outline {
+    --border-width: 1px;
+    --background: var(--contrast-background);
+}
+
+ion-button.button-solid {
+    --box-shadow: none;
+}
+
+ion-button core-format-text .core-format-text-content {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    line-height: 1.2;
+}
+
+ion-button > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+ion-button.ion-text-wrap {
+    white-space: normal;
+    core-format-text .core-format-text-content {
+        white-space: normal;
+        display: contents;
+    }
+
+    & > * {
+        white-space: normal;
+    }
+}
+
+ion-button ion-spinner {
+    --color: inherit !important;
+}
+
+ion-button:not(.button-has-icon-only):not(.button-small) > ion-icon {
+    min-width: 20px;
+}
+
 ion-button.button.button-clear.button-has-icon-only {
     --border-radius: var(--huge-radius);
+}
+
+ion-button.button.button-solid,
+ion-button.button.button-outline {
+    --border-radius: var(--small-radius);
 }
 
 // Clear buttons will be black.
@@ -877,18 +883,32 @@ ion-badge {
     border-radius: var(--big-radius);
 }
 
-ion-chip {
+ion-chip,
+ion-button.chip {
     line-height: 1.1;
     font-size: 12px;
-    padding: 4px 8px;
     min-height: 24px;
-    height: auto;
+    text-transform: none;
+    margin: 4px;
+    font-weight: normal;
 
     ion-icon {
         font-size: 16px;
         min-width: 16px;
         @include margin(0, 8px, 0, 0);
     }
+
+    ion-label {
+        white-space: normal !important;
+    }
+}
+
+ion-chip {
+    line-height: 1.1;
+    font-size: 12px;
+    padding: 4px 8px;
+    min-height: 24px;
+    height: auto;
 
     &.ion-color {
         background: var(--ion-color-tint);
@@ -899,9 +919,7 @@ ion-chip {
         }
     }
 
-    ion-label {
-        white-space: normal !important;
-    }
+
 }
 
 ion-searchbar {

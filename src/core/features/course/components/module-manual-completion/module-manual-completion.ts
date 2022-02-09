@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChange } from '@angular/core';
-import { CoreCourseCompletionType } from '@features/course/services/course';
-
+import { CoreCourseCompletionMode, CoreCourseCompletionType } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
 import { Translate } from '@singletons';
@@ -31,6 +30,7 @@ export class CoreCourseModuleManualCompletionComponent implements OnInit, OnChan
 
     @Input() completion?: CoreCourseModuleCompletionData; // The completion status.
     @Input() moduleName?: string; // The name of the module this completion affects.
+    @Input() mode: CoreCourseCompletionMode = CoreCourseCompletionMode.FULL; // Show full completion status or a basic mode.
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when completion changes.
 
     accessibleDescription: string | null = null;
@@ -96,6 +96,9 @@ export class CoreCourseModuleManualCompletionComponent implements OnInit, OnChan
         if (!this.completion) {
             return;
         }
+
+        event.stopPropagation();
+        event.preventDefault();
 
         await CoreCourseHelper.changeManualCompletion(this.completion, event);
 

@@ -76,6 +76,11 @@ export enum CoreCourseCompletionType {
     AUTO = 1,
 }
 
+export enum CoreCourseCompletionMode {
+    FULL = 'full',
+    BASIC = 'basic',
+}
+
 /**
  * Completion tracking valid values.
  */

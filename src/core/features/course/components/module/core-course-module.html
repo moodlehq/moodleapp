@@ -18,21 +18,12 @@
                         [courseId]="module.course" [attr.aria-label]="module.handlerData.a11yTitle + ', ' + modNameTranslated">
                     </core-format-text>
                 </p>
-                <ion-chip class="completioninfo completion_incomplete" *ngIf="completionStatus === 0">
-                    <ion-icon name="fas-edit" aria-hidden="true"></ion-icon>
-                    <ion-label>
-                        {{ 'core.course.todo' | translate }}
-                    </ion-label>
-                </ion-chip>
-                <ion-chip class="completioninfo completion_complete" *ngIf="completionStatus === 1 || completionStatus === 2"
-                    color="success">
-                    <ion-icon name="fas-check" aria-hidden="true"></ion-icon>
-                    <ion-label>{{'core.course.done' | translate }}</ion-label>
-                </ion-chip>
-                <ion-chip class="completioninfo completion_fail" *ngIf="completionStatus === 3" color="danger">
-                    <ion-icon name="fas-times" aria-hidden="true"></ion-icon>
-                    <ion-label>{{'core.course.failed' | translate }}</ion-label>
-                </ion-chip>
+
+                <!-- Basic module completion. -->
+                <core-course-module-completion *ngIf="module.completiondata && module.uservisible" [completion]="module.completiondata"
+                    [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions"
+                    [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)" mode="basic">
+                </core-course-module-completion>
 
                 <ion-chip *ngIf="module.handlerData.extraBadge" [color]="module.handlerData.extraBadgeColor"
                     class="ion-text-wrap ion-text-start" [outline]="true">
@@ -76,10 +67,9 @@
                     </p>
                 </div>
 
-                <!-- Module completion. -->
+                <!-- Module completion. Only auto conditions-->
                 <core-course-module-completion *ngIf="module.completiondata && module.uservisible" [completion]="module.completiondata"
-                    [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions"
-                    [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)">
+                    [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions">
                 </core-course-module-completion>
 
                 <div *ngIf="module.completiondata?.offline">
