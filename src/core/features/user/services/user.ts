@@ -63,6 +63,7 @@ export class CoreUserProvider {
 
         CoreEvents.on(CoreEvents.USER_DELETED, data => this.handleUserKickedOutEvent(data));
         CoreEvents.on(CoreEvents.USER_SUSPENDED, data => this.handleUserKickedOutEvent(data));
+        CoreEvents.on(CoreEvents.USER_NO_LOGIN, data => this.handleUserKickedOutEvent(data));
     }
 
     /**
