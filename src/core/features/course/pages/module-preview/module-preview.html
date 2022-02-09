@@ -28,33 +28,35 @@
             [componentId]="module.id" [expandDescription]="true">
 
             <div class="ion-padding" *ngIf="module.handlerData?.extraBadge">
-                <ion-chip class="ion-text-wrap ion-text-start" [color]="module.handlerData?.extraBadgeColor">
+                <ion-chip *ngIf="module.handlerData?.extraBadge" [color]="module.handlerData?.extraBadgeColor"
+                    class="ion-text-wrap ion-text-start" [outline]="true">
                     <ion-label><span [innerHTML]="module.handlerData?.extraBadge"></span></ion-label>
                 </ion-chip>
             </div>
-            <div class="ion-padding" *ngIf="module.visible === 0 && (!section || section.visible)">
-                <ion-chip class="ion-text-wrap">
+
+            <!-- Hidden badges -->
+            <div *ngIf="module.visible === 0 && (!section || section.visible)">
+                <ion-chip color="warning">
                     <ion-icon name="fas-eye-slash" aria-hidden="true"></ion-icon>
                     <ion-label>{{ 'core.course.hiddenfromstudents' | translate }}</ion-label>
                 </ion-chip>
             </div>
-            <div class="ion-padding" *ngIf="module.visible !== 0 && module.isStealth">
-                <ion-chip class="ion-text-wrap">
+            <div *ngIf="module.visible !== 0 && module.isStealth">
+                <ion-chip color="warning">
                     <ion-icon name="fas-eye-slash" aria-hidden="true"></ion-icon>
                     <ion-label>{{ 'core.course.hiddenoncoursepage' | translate }}</ion-label>
                 </ion-chip>
             </div>
-            <div class="ion-padding core-module-availabilityinfo" *ngIf="module.availabilityinfo">
-                <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
-                <ion-label>
-                    <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
-                        [courseId]="courseId" class="ion-text-wrap">
-                    </core-format-text>
-                </ion-label>
-            </div>
-            <div class="ion-padding" *ngIf="module.completiondata?.offline">
-                <ion-chip color="warning" class="ion-text-wrap">
-                    <ion-label>{{ 'core.course.manualcompletionnotsynced' | translate }}</ion-label>
+
+            <!-- Availability info -->
+            <div *ngIf="module.availabilityinfo">
+                <ion-chip class="core-module-availabilityinfo">
+                    <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
+                    <ion-label>
+                        <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
+                            [courseId]="module.course">
+                        </core-format-text>
+                    </ion-label>
                 </ion-chip>
             </div>
 

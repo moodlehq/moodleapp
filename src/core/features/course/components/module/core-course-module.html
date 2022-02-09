@@ -29,6 +29,14 @@
                     class="ion-text-wrap ion-text-start" [outline]="true">
                     <ion-label><span [innerHTML]="module.handlerData.extraBadge"></span></ion-label>
                 </ion-chip>
+
+                <!-- Hidden badges -->
+                <ion-badge color="warning" *ngIf="module.visible === 0 && (!section || section.visible)">
+                    {{ 'core.course.hiddenfromstudents' | translate }}
+                </ion-badge>
+                <ion-badge color="warning" *ngIf="module.visible !== 0 && module.isStealth">
+                    {{ 'core.course.hiddenoncoursepage' | translate }}
+                </ion-badge>
             </ion-label>
             <!-- Buttons. -->
             <div slot="end" *ngIf="module.uservisible !== false" class="buttons core-module-buttons"
@@ -59,6 +67,11 @@
                     contextLevel="module" [contextInstanceId]="module.id" [courseId]="module.course">
                 </core-format-text>
 
+                <!-- Module completion. Only auto conditions-->
+                <core-course-module-completion *ngIf="module.completiondata && module.uservisible" [completion]="module.completiondata"
+                    [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions">
+                </core-course-module-completion>
+
                 <!-- Activity dates. -->
                 <div *ngIf="showActivityDates && module.dates && module.dates.length" class="core-module-dates">
                     <p *ngFor="let date of module.dates">
@@ -67,33 +80,7 @@
                     </p>
                 </div>
 
-                <!-- Module completion. Only auto conditions-->
-                <core-course-module-completion *ngIf="module.completiondata && module.uservisible" [completion]="module.completiondata"
-                    [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions">
-                </core-course-module-completion>
-
-                <div *ngIf="module.completiondata?.offline">
-                    <ion-chip color="warning">
-                        <ion-icon name="fas-sync" aria-hidden="true"></ion-icon>
-                        <ion-label>{{ 'core.course.manualcompletionnotsynced' | translate }}</ion-label>
-                    </ion-chip>
-                </div>
-
-                <!-- Availability -->
-                <div *ngIf="module.visible === 0 && (!section || section.visible)">
-                    <ion-chip>
-                        <ion-icon name="fas-eye-slash" aria-hidden="true"></ion-icon>
-                        <ion-label>{{ 'core.course.hiddenfromstudents' | translate }}</ion-label>
-                    </ion-chip>
-                </div>
-
-                <div *ngIf="module.visible !== 0 && module.isStealth">
-                    <ion-chip>
-                        <ion-icon name="fas-eye-slash" aria-hidden="true"></ion-icon>
-                        <ion-label>{{ 'core.course.hiddenoncoursepage' | translate }}</ion-label>
-                    </ion-chip>
-                </div>
-
+                <!-- Availability info -->
                 <div *ngIf="module.availabilityinfo">
                     <ion-chip class="core-module-availabilityinfo">
                         <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>

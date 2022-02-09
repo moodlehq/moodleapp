@@ -74,16 +74,14 @@
                     </core-format-text>
                 </h2>
                 <div *ngIf="section.visible === 0 && section.uservisible !== false">
-                    <ion-chip>
-                        <ion-icon name="fas-eye-slash" aria-hidden="true"></ion-icon>
-                        <ion-label>{{ 'core.course.hiddenfromstudents' | translate }}</ion-label>
-                    </ion-chip>
+                    <ion-badge color="warning">
+                        {{ 'core.course.hiddenfromstudents' | translate }}
+                    </ion-badge>
                 </div>
                 <div *ngIf="section.visible === 0 && section.uservisible === false">
-                    <ion-chip>
-                        <ion-icon name="fas-eye-slash" aria-hidden="true"></ion-icon>
-                        <ion-label>{{ 'core.notavailable' | translate }}</ion-label>
-                    </ion-chip>
+                    <ion-badge color="warning">
+                        {{ 'core.notavailable' | translate }}
+                    </ion-badge>
                 </div>
                 <div *ngIf="section.availabilityinfo">
                     <ion-chip>

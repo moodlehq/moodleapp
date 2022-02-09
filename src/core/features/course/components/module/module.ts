@@ -66,7 +66,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
             this.module.description ||
             (this.showActivityDates && this.module.dates && this.module.dates.length) ||
             (this.module.completiondata && this.showCompletionConditions && this.module.completiondata.isautomatic) ||
-            this.module.completiondata?.offline ||
             (this.module.visible === 0 && (!this.section || this.section.visible)) ||
             (this.module.visible !== 0 && this.module.isStealth) ||
             (this.module.availabilityinfo)
