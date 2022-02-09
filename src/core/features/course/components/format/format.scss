@@ -1,3 +1,7 @@
+:host {
+    --item-divider-font-size: var(--item-divider-font-size-big);
+}
+
 .core-course-section-nav-buttons {
     display: flex;
     justify-content: space-between;
