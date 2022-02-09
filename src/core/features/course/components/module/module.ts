@@ -62,8 +62,9 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         }
 
         this.module.handlerData.a11yTitle = this.module.handlerData.a11yTitle ?? this.module.handlerData.title;
-        this.completionStatus = this.module.completiondata === undefined ||
-                    this.module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE
+        this.completionStatus = this.module.completiondata === undefined  ||
+                !this.module.completiondata?.istrackeduser ||
+                this.module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE
             ? undefined
             : this.module.completiondata.state;
 

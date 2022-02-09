@@ -9,7 +9,7 @@
     </ion-label>
     <div slot="end" class="flex-row">
         <core-download-refresh [status]="state" [enabled]="canDownload" [loading]="isDownloading" [canTrustDownload]="!alwaysDownload"
-            (action)="download()" size="small">
+            (action)="download()">
         </core-download-refresh>
 
         <ion-button fill="clear" *ngIf="isDownloaded && isIOS" (click)="openFile($event, true)" color="dark"
@@ -18,7 +18,7 @@
         </ion-button>
 
         <ion-button fill="clear" *ngIf="!isDownloading && canDelete" (click)="delete($event)" [attr.aria-label]="'core.delete' | translate"
-            color="danger" size="small">
+            color="danger">
             <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true"></ion-icon>
         </ion-button>
     </div>

@@ -189,6 +189,7 @@ ion-button core-format-text .core-format-text-content {
     overflow: hidden;
     text-overflow: ellipsis;
     display: block;
+    line-height: 1.2;
 }
 
 ion-button > * {
@@ -215,6 +216,10 @@ ion-button.button-outline {
 
 ion-button ion-spinner {
     --color: inherit !important;
+}
+
+ion-button:not(.button-has-icon-only) > ion-icon {
+    min-width: 20px;
 }
 
 @each $color-name, $unused in $colors {
@@ -850,14 +855,22 @@ ion-select-popover ion-item.core-select-option-title {
     }
 }
 
+ion-badge {
+    line-height: 1.1;
+    padding: 4px 8px;
+    border-radius: var(--big-radius);
+}
+
 ion-chip {
     line-height: 1.1;
     font-size: 12px;
     padding: 4px 8px;
-    height: 24px;
+    min-height: 24px;
+    height: auto;
 
     ion-icon {
         font-size: 16px;
+        min-width: 16px;
         @include margin(0, 8px, 0, 0);
     }
 
@@ -868,6 +881,10 @@ ion-chip {
             border-color: var(--ion-color-base);
             color: var(--ion-color-base);
         }
+    }
+
+    ion-label {
+        white-space: normal !important;
     }
 }
 

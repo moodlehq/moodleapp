@@ -24,8 +24,11 @@
     </ng-container>
 
     <ng-container *ngIf="!completion.istrackeduser">
-        <ion-chip *ngFor="let rule of details" color="light" role="listitem">
-            <ion-label>{{ rule.rulevalue.description }}</ion-label>
+        <ion-chip *ngFor="let rule of details" role="listitem">
+            <ion-icon name="fas-edit" aria-hidden="true"></ion-icon>
+            <ion-label>
+                <strong>{{ 'core.course.completion_automatic:todo' | translate }}</strong> {{ rule.rulevalue.description }}
+            </ion-label>
         </ion-chip>
     </ng-container>
 </div>

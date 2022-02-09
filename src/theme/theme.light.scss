@@ -58,6 +58,11 @@
 
     --brand-color: var(--brand);
 
+    --small-radius: 4px;
+    --medium-radius: 8px;
+    --big-radius: 16px;
+    --huge-radius: 24px;
+
     // Accessibility vars.
     --a11y-min-target-size: 44px;
     --a11y-focus-color: var(--primary);
@@ -65,6 +70,7 @@
     --zoom-level: 100%;
 
     --module-icon-size: 24px;
+    --module-icon-radius: var(--medium-radius);
 
     --ion-background-color: var(--background-color);
     --ion-background-color-rgb: #{$background-color-rgb};
@@ -74,11 +80,6 @@
     --ion-text-color: var(--text-color);
     --ion-text-color-rgb: #{$text-color-rgb};
     --subdued-text-color: var(--gray-700);
-
-    --small-radius: 4px;
-    --medium-radius: 8px;
-    --big-radius: 16px;
-    --huge-radius: 24px;
 
     --ion-card-color: var(--text-color);
     ion-card {

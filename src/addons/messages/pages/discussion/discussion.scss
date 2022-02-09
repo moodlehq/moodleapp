@@ -27,13 +27,9 @@
 
         .core-discussion-messages-badge {
             position: absolute;
-            border-radius: 50%;
             color: var(--addon-messages-discussion-badge-text);
             background-color: var(--addon-messages-discussion-badge);
             display: block;
-            line-height: 20px;
-            height: 20px;
-            width: 20px;
             @include position(-6px, -6px, null, null);
         }
     }
