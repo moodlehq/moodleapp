@@ -250,7 +250,7 @@ ion-header ion-toolbar {
 
     .button.button-clear.button-has-icon-only,
     .button.button-solid.button-has-icon-only {
-        --border-radius: 50%;
+        --border-radius: var(--huge-radius);
         width: 48px;
         height: 48px;
     }
@@ -307,7 +307,7 @@ button,
 }
 
 ion-button.button.button-clear.button-has-icon-only {
-    --border-radius: 50%;
+    --border-radius: var(--huge-radius);
 }
 
 // Clear buttons will be black.

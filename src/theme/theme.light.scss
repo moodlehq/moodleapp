@@ -118,7 +118,7 @@
         color: var(--core-link-color);
     }
 
-    --core-header-toolbar-button-image-size: 44px;
+    --core-header-toolbar-button-image-size: var(--a11y-min-target-size);
     --core-header-toolbar-background: var(--white);
     --core-header-toolbar-border-width: 3px;
     --core-header-toolbar-border-color: var(--brand);
@@ -266,7 +266,7 @@
     --core-star-color: var(--brand);
 
     --core-large-avatar-size: 90px;
-    --core-avatar-size: 44px;
+    --core-avatar-size: var(--a11y-min-target-size);
 
     --core-send-message-input-background: var(--gray-200);
     --core-send-message-input-color: var(--gray-900);
@@ -274,7 +274,7 @@
     --core-courseimage-on-course-size: 72px;
     --core-courseimage-radius: var(--medium-radius);
 
-    --core-course-module-navigation-max-height: 56px;
+    --core-course-module-navigation-max-height: 48px;
     --core-course-module-navigation-background: var(--contrast-background);
 
     --core-user-menu-site-logo-max-height: 32px;

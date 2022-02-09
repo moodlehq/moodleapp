@@ -3,6 +3,7 @@
 :host {
     --height: var(--core-course-module-navigation-height, var(--core-course-module-navigation-max-height));
     --background: var(--core-course-module-navigation-background);
+    --button-vertical-margin: 2px;
 
     height: var(--height);
     width: 100%;
@@ -14,21 +15,15 @@
 
     @include core-transition(all, 200ms);
 
-    ion-col {
-        padding: 2px;
-    }
-
     core-loading {
         text-align: center;
-    }
-    
-    ion-buttom {
-        margin-top: 5px;
-        margin-bottom: 5px;
+        --loading-inline-min-height: var(--height);
     }
 
-    core-loading {
-        --loading-inline-min-height: var(--height);
+    ion-button,
+    ::ng-deep ion-button {
+        margin-top: var(--button-vertical-margin);
+        margin-bottom: var(--button-vertical-margin);
     }
 }
 
