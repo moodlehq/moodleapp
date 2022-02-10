@@ -58,7 +58,7 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
 
         CoreDomUtils.openSideModal<void>({
             component: CoreMainMenuUserMenuComponent,
-            cssClass: 'core-modal-lateral-sm',
+            cssClass: 'core-modal-lateral',
         });
     }
 

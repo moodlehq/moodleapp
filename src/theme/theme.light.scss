@@ -121,8 +121,8 @@
 
     --core-header-toolbar-button-image-size: var(--a11y-min-target-size);
     --core-header-toolbar-background: var(--white);
-    --core-header-toolbar-border-width: 3px;
-    --core-header-toolbar-border-color: var(--brand);
+    --core-header-toolbar-border-width: 1px;
+    --core-header-toolbar-border-color: var(--stroke);
     --core-header-toolbar-color: var(--gray-900);
     --core-header-toolbar-height: 56px;
     html.ios {
@@ -144,6 +144,10 @@
             --ion-color-base: var(--core-header-toolbar-color);
             --color: var(--core-header-toolbar-color);
         }
+    }
+
+    ion-header::after {
+        display: none;
     }
 
     ion-header.header-ios ion-toolbar:last-of-type {
@@ -300,9 +304,6 @@
     --addon-forum-highlight-color: var(--light);
 
     --drop-shadow: 0, 0, 0, 0.18;
-
-    --core-menu-box-shadow-end: -4px 0px 16px rgba(var(--drop-shadow));
-    --core-menu-box-shadow-start: 4px 0px 16px rgba(var(--drop-shadow));
 
     --core-question-correct-color: var(--success-shade);
     --core-question-correct-color-bg: var(--success-tint);

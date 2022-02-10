@@ -20,9 +20,7 @@
         @include safe-area-padding-end(null, 0px);
         height: var(--height);
         color: var(--tabs-color);
-        -webkit-filter: drop-shadow(0px 3px 3px rgba(var(--drop-shadow)));
-        filter: drop-shadow(0px 3px 3px rgba(var(--drop-shadow)));
-        border: 0;
+        border-bottom: 1px solid var(--stroke);
         display: flex;
         align-items: flex-end;
 

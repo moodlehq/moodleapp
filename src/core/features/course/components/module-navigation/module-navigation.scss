@@ -11,7 +11,7 @@
     display: block;
     bottom: 0;
     z-index: 3;
-    box-shadow: 0px -3px 3px rgba(var(--drop-shadow));
+    border-top: 1px solid var(--stroke);
 
     @include core-transition(all, 200ms);
 
