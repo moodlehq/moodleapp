@@ -31,7 +31,6 @@ import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 @Component({
     selector: 'page-core-courses-dashboard',
     templateUrl: 'dashboard.html',
-    styleUrls: ['dashboard.scss'],
 })
 export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 

@@ -743,19 +743,11 @@ ion-card {
 }
 
 ion-list.core-course-module-list-wrapper,
+.list-item-limited-width,
 .core-course-module-list-wrapper {
-    max-width: var(--module-list-width);
+    max-width: var(--list-item--max-width);
     margin-left: auto;
     margin-right: auto;
-
-    --padding-start: 12px;
-    --padding-end: 12px;
-    padding-left: var(--padding-start);
-    padding-right: var(--padding-end);
-
-    core-course-module {
-        --horizontal-margin: 0px;
-    }
 }
 
 ion-toolbar h1 img.core-bar-button-image,
@@ -1262,12 +1254,15 @@ ion-item.item.divider {
     border-bottom-width: var(--item-divider-border-width);
     --border-width: var(--item-divider-border-width);
     --inner-border-width: 0 0 var(--item-divider-border-width) 0;
-    font-size: var(--item-divider-font-size);
-    font-weight: medium;
 
-    h2, ion-label h2,
-    p.item-heading, ion-label p.item-heading {
+    ion-label h2,
+    ion-label p.item-heading {
         font-size: var(--item-divider-font-size);
+        font-weight: 500;
+        line-height: 1.5;
+    }
+    ion-label h2.big {
+        font-size: var(--item-divider-font-size-big);
     }
 }
 

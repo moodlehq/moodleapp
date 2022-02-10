@@ -71,7 +71,8 @@
 
     --module-icon-size: 24px;
     --module-icon-radius: var(--medium-radius);
-    --module-list-width: 768px;
+
+    --list-item--max-width: 768px;
 
     --ion-background-color: var(--background-color);
     --ion-background-color-rgb: #{$background-color-rgb};

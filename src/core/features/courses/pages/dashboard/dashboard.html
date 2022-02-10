@@ -9,7 +9,7 @@
     </ion-refresher>
 
     <core-loading [hideUntil]="loaded">
-        <ion-list>
+        <ion-list class="list-item-limited-width">
             <ng-container *ngFor="let block of blocks">
                 <core-block *ngIf="block.visible" [block]="block" contextLevel="user" [instanceId]="userId"></core-block>
             </ng-container>

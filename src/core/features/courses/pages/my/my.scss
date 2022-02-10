@@ -1,9 +1,5 @@
 @import "~theme/globals";
 
-:host {
-    --item-divider-font-size: var(--item-divider-font-size-big);
-}
-
 :host ::ng-deep ion-item-divider {
     display: none !important;
 }
