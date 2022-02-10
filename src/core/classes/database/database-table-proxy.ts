@@ -15,7 +15,7 @@
 import { CoreConstants } from '@/core/constants';
 import { asyncInstance } from '@/core/utils/async-instance';
 import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
-import { CoreConfigProvider } from '@services/config';
+import { CoreConfig, CoreConfigProvider } from '@services/config';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreDatabaseReducer, CoreDatabaseTable, CoreDatabaseConditions, GetDBRecordPrimaryKey } from './database-table';
 import { CoreDebugDatabaseTable } from './debug-database-table';
@@ -144,7 +144,9 @@ export class CoreDatabaseTableProxy<
      *
      * @returns Database configuration.
      */
-    protected getRuntimeConfig(): CoreDatabaseConfiguration {
+    protected async getRuntimeConfig(): Promise<CoreDatabaseConfiguration> {
+        await CoreConfig.ready();
+
         return {
             ...this.config,
             ...CoreConstants.CONFIG.databaseOptimizations,
@@ -157,7 +159,7 @@ export class CoreDatabaseTableProxy<
      */
     protected async updateTarget(): Promise<void> {
         const oldTarget = this.target.instance;
-        const newTarget = this.createTarget();
+        const newTarget = await this.createTarget();
 
         if (oldTarget) {
             await oldTarget.destroy();
@@ -175,8 +177,8 @@ export class CoreDatabaseTableProxy<
      *
      * @returns Target instance.
      */
-    protected createTarget(): CoreDatabaseTable<DBRecord, PrimaryKeyColumn> {
-        const config = this.getRuntimeConfig();
+    protected async createTarget(): Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>> {
+        const config = await this.getRuntimeConfig();
         const table = this.createTable(config.cachingStrategy);
 
         return config.debug ? new CoreDebugDatabaseTable(table) : table;

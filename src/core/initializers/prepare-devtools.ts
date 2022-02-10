@@ -12,22 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { EnvironmentConfig } from '@/types/config';
+import { CoreConfig, CoreConfigProvider } from '@services/config';
 import { CoreConstants } from '../constants';
 
 type DevelopmentWindow = Window & {
-    coreConstantsConfig?: EnvironmentConfig;
+    configProvider?: CoreConfigProvider;
 };
 
-function exportData(window: DevelopmentWindow) {
-    window.coreConstantsConfig = CoreConstants.CONFIG;
+function initializeDevelopmentWindow(window: DevelopmentWindow) {
+    window.configProvider = CoreConfig.instance;
 }
 
 export default function(): void {
-    if (!CoreConstants.CONFIG.versionname.includes('-dev')) {
-        // Only export data in development.
+    if (!CoreConstants.enableDevTools()) {
         return;
     }
 
-    exportData(window);
+    initializeDevelopmentWindow(window);
 }

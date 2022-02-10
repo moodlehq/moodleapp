@@ -22,6 +22,8 @@ import { CoreConstants } from '../constants';
 import { CoreEvents } from '@singletons/events';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { asyncInstance } from '../utils/async-instance';
+import { CorePromisedValue } from '@classes/promised-value';
+import { CoreUtils } from './utils/utils';
 
 declare module '@singletons/events' {
 
@@ -47,6 +49,23 @@ export class CoreConfigProvider {
 
     protected table = asyncInstance<CoreDatabaseTable<ConfigDBEntry, 'name'>>();
     protected defaultEnvironment?: EnvironmentConfig;
+    protected isReady = new CorePromisedValue<void>();
+
+    /**
+     * Wait until configuration is ready for use.
+     */
+    ready(): Promise<void> {
+        return this.isReady;
+    }
+
+    /**
+     * Initialize.
+     */
+    async initialize(): Promise<void> {
+        this.loadDevelopmentConfig();
+
+        this.isReady.resolve();
+    }
 
     /**
      * Initialize database.
@@ -137,6 +156,17 @@ export class CoreConfigProvider {
         Object.keys(CoreConstants.CONFIG).forEach(key => delete CoreConstants.CONFIG[key]);
         Object.assign(CoreConstants.CONFIG, this.defaultEnvironment);
         CoreEvents.trigger(CoreConfigProvider.ENVIRONMENT_UPDATED, CoreConstants.CONFIG);
+    }
+
+    /**
+     * Load development config overrides.
+     */
+    protected loadDevelopmentConfig(): void {
+        if (!CoreConstants.enableDevTools() || !CoreUtils.hasCookie('MoodleAppConfig')) {
+            return;
+        }
+
+        this.patchEnvironment(JSON.parse(CoreUtils.getCookie('MoodleAppConfig') ?? '{}'));
     }
 
 }
