@@ -103,8 +103,13 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
 
     /**
      * Delete all courses that have been downloaded.
+     *
+     * @param event: Event Object.
      */
-    async deleteCompletelyDownloadedCourses(): Promise<void> {
+    async deleteCompletelyDownloadedCourses(event: Event): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
         try {
             await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
@@ -132,9 +137,13 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
     /**
      * Delete course.
      *
+     * @param event: Event Object.
      * @param course Course to delete.
      */
-    async deleteCourse(course: DownloadedCourse): Promise<void> {
+    async deleteCourse(event: Event, course: DownloadedCourse): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
         try {
             await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
         } catch (error) {
@@ -242,9 +251,12 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
     /**
      * Deletes files of a site and the tables that can be cleared.
      *
-     * @param siteData Site object with space usage.
+     * @param event: Event Object.
      */
-    async deleteSiteStorage(): Promise<void> {
+    async deleteSiteStorage(event: Event): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
         try {
             const siteName = CoreSites.getRequiredCurrentSite().getSiteName();
 

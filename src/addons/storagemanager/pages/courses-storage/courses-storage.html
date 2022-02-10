@@ -20,7 +20,7 @@
                         {{ 'core.settings.spaceusagehelp' | translate }}
                     </p>
                 </ion-label>
-                <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage()"
+                <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage($event)"
                     [hidden]="spaceUsage.spaceUsage! + spaceUsage.cacheEntries! <= 0"
                     [attr.aria-label]="'core.settings.deletesitefilestitle' | translate" fill="outline">
                     <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
@@ -31,8 +31,8 @@
                     <h2 class="ion-text-wrap">{{ 'addon.storagemanager.coursesspaceusage' | translate }}</h2>
                     <ion-badge color="light">{{ totalSize | coreBytesToSize }}</ion-badge>
                 </ion-label>
-                <ion-button slot="end" (click)="deleteCompletelyDownloadedCourses()" [disabled]="completelyDownloadedCourses.length === 0"
-                    color="danger" fill="outline">
+                <ion-button slot="end" (click)="deleteCompletelyDownloadedCourses($event)"
+                    [disabled]="completelyDownloadedCourses.length === 0" color="danger" fill="outline">
                     <ion-icon name="fas-trash" slot="icon-only" ariaLabel="{{ 'addon.storagemanager.deletecourses' | translate }}">
                     </ion-icon>
                 </ion-button>
@@ -55,7 +55,8 @@
                                 {{ course.totalSize | coreBytesToSize }}
                             </ion-badge>
                         </ion-label>
-                        <ion-button slot="end" (click)="deleteCourse(course)" [disabled]="course.isDownloading" color="danger" fill="clear">
+                        <ion-button slot="end" (click)="deleteCourse($event, course)" [disabled]="course.isDownloading" color="danger"
+                            fill="clear">
                             <ion-icon name="fas-trash" slot="icon-only"
                                 [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: course.displayname }">
                             </ion-icon>

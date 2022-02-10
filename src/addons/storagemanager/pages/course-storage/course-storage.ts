@@ -549,7 +549,14 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      * Prefetch the whole course.
      */
     async prefetchCourse(): Promise<void> {
-        const course = await CoreCourses.getCourse(this.courseId);
+        const courses = await CoreCourses.getUserCourses(true);
+        let course = courses.find((course) => course.id == this.courseId);
+        if (!course) {
+            course = await CoreCourses.getCourse(this.courseId);
+        }
+        if (!course) {
+            return;
+        }
 
         try {
             await CoreCourseHelper.confirmAndPrefetchCourse(
