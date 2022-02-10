@@ -12,18 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { EnvironmentConfig } from '@/types/config';
 import { Injectable } from '@angular/core';
-import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
+
 import { CoreApp } from '@services/app';
-import { APP_SCHEMA, ConfigDBEntry, CONFIG_TABLE_NAME } from '@services/database/config';
 import { makeSingleton } from '@singletons';
 import { CoreConstants } from '../constants';
-import { CoreEvents } from '@singletons/events';
-import { CoreDatabaseTable } from '@classes/database/database-table';
-import { asyncInstance } from '../utils/async-instance';
+import { CoreDatabaseTable } from '@classes/database-table';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUtils } from './utils/utils';
+import { CONFIG_TABLE_NAME, APP_SCHEMA, ConfigDBEntry } from '@services/database/config';
+import { EnvironmentConfig } from '@/types/config';
 
 declare module '@singletons/events' {
 
@@ -47,7 +45,8 @@ export class CoreConfigProvider {
 
     static readonly ENVIRONMENT_UPDATED = 'environment_updated';
 
-    protected table = asyncInstance<CoreDatabaseTable<ConfigDBEntry, 'name'>>();
+    protected dbTable: CorePromisedValue<CoreConfigTable>;
+
     protected defaultEnvironment?: EnvironmentConfig;
     protected isReady = new CorePromisedValue<void>();
 
@@ -67,6 +66,10 @@ export class CoreConfigProvider {
         this.isReady.resolve();
     }
 
+    constructor() {
+        this.dbTable = new CorePromisedValue();
+    }
+
     /**
      * Initialize database.
      */
@@ -77,16 +80,10 @@ export class CoreConfigProvider {
             // Ignore errors.
         }
 
-        const table = new CoreDatabaseTableProxy<ConfigDBEntry, 'name'>(
-            { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
-            CoreApp.getDB(),
-            CONFIG_TABLE_NAME,
-            ['name'],
-        );
+        const db = CoreApp.getDB();
+        const table = await CoreConfigTable.create(db);
 
-        await table.initialize();
-
-        this.table.setInstance(table);
+        this.dbTable.resolve(table);
     }
 
     /**
@@ -96,7 +93,9 @@ export class CoreConfigProvider {
      * @return Promise resolved when done.
      */
     async delete(name: string): Promise<void> {
-        await this.table.deleteByPrimaryKey({ name });
+        const table = await this.dbTable;
+
+        await table.deleteByPrimaryKey({ name });
     }
 
     /**
@@ -107,17 +106,18 @@ export class CoreConfigProvider {
      * @return Resolves upon success along with the config data. Reject on failure.
      */
     async get<T>(name: string, defaultValue?: T): Promise<T> {
-        try {
-            const record = await this.table.getOneByPrimaryKey({ name });
+        const table = await this.dbTable;
+        const record = table.findByPrimaryKey({ name });
 
+        if (record !== null) {
             return record.value;
-        } catch (error) {
-            if (defaultValue !== undefined) {
-                return defaultValue;
-            }
-
-            throw error;
         }
+
+        if (defaultValue !== undefined) {
+            return defaultValue;
+        }
+
+        throw new Error(`Couldn't get config with name '${name}'`);
     }
 
     /**
@@ -128,34 +128,9 @@ export class CoreConfigProvider {
      * @return Promise resolved when done.
      */
     async set(name: string, value: number | string): Promise<void> {
-        await this.table.insert({ name, value });
-    }
+        const table = await this.dbTable;
 
-    /**
-     * Update config with the given values.
-     *
-     * @param config Config updates.
-     */
-    patchEnvironment(config: Partial<EnvironmentConfig>): void {
-        this.defaultEnvironment = this.defaultEnvironment ?? CoreConstants.CONFIG;
-
-        Object.assign(CoreConstants.CONFIG, config);
-        CoreEvents.trigger(CoreConfigProvider.ENVIRONMENT_UPDATED, CoreConstants.CONFIG);
-    }
-
-    /**
-     * Reset config values to its original state.
-     */
-    resetEnvironment(): void {
-        if (!this.defaultEnvironment) {
-            // The environment config hasn't been modified; there's not need to reset.
-
-            return;
-        }
-
-        Object.keys(CoreConstants.CONFIG).forEach(key => delete CoreConstants.CONFIG[key]);
-        Object.assign(CoreConstants.CONFIG, this.defaultEnvironment);
-        CoreEvents.trigger(CoreConfigProvider.ENVIRONMENT_UPDATED, CoreConstants.CONFIG);
+        await table.insert({ name, value });
     }
 
     /**
@@ -169,6 +144,35 @@ export class CoreConfigProvider {
         this.patchEnvironment(JSON.parse(CoreUtils.getCookie('MoodleAppConfig') ?? '{}'));
     }
 
+    /**
+     * Update config with the given values.
+     *
+     * @param config Config updates.
+     */
+    patchEnvironment(config: Partial<EnvironmentConfig>): void {
+        this.defaultEnvironment = this.defaultEnvironment ?? CoreConstants.CONFIG;
+
+        Object.assign(CoreConstants.CONFIG, config);
+    }
+
+    /**
+     * Reset config values to its original state.
+     */
+    resetEnvironment(): void {
+        Object.keys(CoreConstants.CONFIG).forEach(key => delete CoreConstants.CONFIG[key]);
+        Object.assign(CoreConstants.CONFIG, this.defaultEnvironment);
+    }
+
 }
 
 export const CoreConfig = makeSingleton(CoreConfigProvider);
+
+/**
+ * Config database table.
+ */
+class CoreConfigTable extends CoreDatabaseTable<ConfigDBEntry, 'name'> {
+
+    protected table = CONFIG_TABLE_NAME;
+    protected primaryKeys = ['name'];
+
+}

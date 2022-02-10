@@ -1206,4 +1206,4 @@ export type SQLiteDBQueryParams = {
     params: SQLiteDBRecordValue[];
 };
 
-export type SQLiteDBRecordValue = number | string;
+type SQLiteDBRecordValue = number | string;

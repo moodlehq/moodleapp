@@ -75,13 +75,5 @@ for (const [name, { duration, scripting, styling, blocking, longTasks, database,
     };
 }
 
-// Sort tests
-const tests = Object.keys(performanceMeasures).sort();
-const sortedPerformanceMeasures = {};
-
-for (const test of tests) {
-    sortedPerformanceMeasures[test] = performanceMeasures[test];
-}
-
 // Display data
-console.table(sortedPerformanceMeasures);
+console.table(performanceMeasures);

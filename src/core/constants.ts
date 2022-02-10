@@ -156,6 +156,23 @@ export class CoreConstants {
             || this.CONFIG.versionname.includes('-dev');
     }
 
+    /**
+     * Update config with the given values.
+     *
+     * @param config Config updates.
+     */
+    static patchConfig(config: Partial<EnvironmentConfig>): void {
+        Object.assign(this.CONFIG, config);
+    }
+
+    /**
+     * Reset config values to its original state.
+     */
+    static resetConfig(): void {
+        Object.keys(this.CONFIG).forEach(key => delete this.CONFIG[key]);
+        Object.assign(this.CONFIG, envJson.config);
+    }
+
 }
 
 interface EnvironmentBuild {

@@ -135,16 +135,6 @@ export class CorePromisedValue<T = unknown> implements Promise<T> {
     }
 
     /**
-     * Reset status and value.
-     */
-    reset(): void {
-        delete this._resolvedValue;
-        delete this._rejectedReason;
-
-        this.initPromise();
-    }
-
-    /**
      * Initialize the promise and the callbacks.
      */
     private initPromise(): void {

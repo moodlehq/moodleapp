@@ -271,7 +271,6 @@ testsConfig['rules']['padded-blocks'] = [
         switches: 'never',
     },
 ];
-testsConfig['rules']['jest/expect-expect'] = 'off';
 testsConfig['plugins'].push('jest');
 testsConfig['extends'].push('plugin:jest/recommended');
 
