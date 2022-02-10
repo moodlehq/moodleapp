@@ -23,7 +23,6 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { IonContent } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
 import { ModalController } from '@singletons';
 
 /**
@@ -62,12 +61,11 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         }
 
         let completionEnabled = !!this.course.enablecompletion;
-        if (completionEnabled && 'courseformatoptions' in this.course && this.course.courseformatoptions) {
-            const formatOptions = CoreUtils.objectToKeyValueMap(this.course.courseformatoptions, 'name', 'value');
-
-            if (formatOptions) {
-                completionEnabled = !!formatOptions.completionusertracked;
-            }
+        if (completionEnabled && 'completionusertracked' in this.course && this.course.completionusertracked !== undefined) {
+            completionEnabled = this.course.completionusertracked;
+        }
+        if (completionEnabled && 'showcompletionconditions' in this.course && this.course.showcompletionconditions !== undefined) {
+            completionEnabled = this.course.showcompletionconditions;
         }
 
         const currentSection = await CoreCourseFormatDelegate.getCurrentSection(this.course, this.sections);

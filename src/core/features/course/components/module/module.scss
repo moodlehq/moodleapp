@@ -35,13 +35,29 @@
         .core-module-buttons core-course-module-completion {
             text-align: center;
         }
+
+        .core-module-additional-info {
+            display: flex;
+            align-items: center;
+        }
     }
 
     .core-course-module-info {
+        .core-module-dates-availabilityinfo {
+            background: var(--light);
+            border-radius: var(--small-radius);
+            padding: 8px;
+        }
+
+        .core-module-dates + .core-module-availabilityinfo {
+            border-top: 1px solid var(--stroke);
+            padding-top: 8px;
+        }
+
         .core-module-availabilityinfo {
             font-size: 90%;
-            ul {
-                margin-block-start: 0.5em;
+            ::ng-deep  ul {
+                margin-top: 0.5em;
             }
         }
     }
@@ -55,10 +71,6 @@
 
     .core-module-main-item + .core-course-module-info ion-label {
         margin-top: 0px;
-    }
-
-    .core-module-main-item.has-module-info {
-        --inner-border-width: 0px;
     }
 
     .core-module-availabilityinfo  ion-icon,

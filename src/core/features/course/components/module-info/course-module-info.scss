@@ -16,8 +16,14 @@
         align-self: flex-start;
     }
 
-    .core-module-dates ion-icon {
-        @include margin-horizontal(null, 8px);
+    .core-module-dates {
+        background: var(--light);
+        border-radius: var(--small-radius);
+        padding: 8px;
+
+        ion-icon {
+            @include margin-horizontal(null, 8px);
+        }
     }
 
 }

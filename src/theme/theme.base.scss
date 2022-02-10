@@ -415,8 +415,9 @@ ion-alert {
 }
 
 // Ionic list.
-ion-list.list-md {
+ion-list {
     padding: 0;
+    --ion-item-background: transparent;
 }
 
 // Safe areas
@@ -1249,7 +1250,6 @@ ion-item.item-input ion-input.has-focus {
 ion-item-divider.item,
 ion-item.item.divider {
     --inner-padding-end: 8px;
-    background: var(--background);
     min-height: var(--min-height);
     border-bottom-width: var(--item-divider-border-width);
     --border-width: var(--item-divider-border-width);

@@ -13,7 +13,7 @@
 <ion-content>
     <ion-list id="core-course-section-selector" role="listbox" aria-labelledby="core-course-section-selector-label">
         <ng-container *ngFor="let section of sectionsToRender">
-            <ion-item *ngIf="allSectionId == section.id" class="ion-text-wrap divider core-course-index-all"
+            <ion-item *ngIf="allSectionId == section.id" class="divider core-course-index-all"
                 (click)="selectSectionOrModule($event, section.id)" button [class.item-current]="selectedId === section.id" detail="false">
                 <ion-label>
                     <h2>
@@ -23,7 +23,7 @@
                 </ion-label>
             </ion-item>
             <ng-container *ngIf="allSectionId != section.id">
-                <ion-item class="ion-text-wrap divider section" (click)="selectSectionOrModule($event, section.id)" button
+                <ion-item class="divider section" (click)="selectSectionOrModule($event, section.id)" button
                     [class.item-current]="selectedId === section.id" [class.item-dimmed]="section.visible === 0" detail="false"
                     sticky="true">
                     <ion-icon *ngIf="section.hasVisibleModules" [name]="section.expanded ? 'fas-chevron-down' : 'fas-chevron-right'"

@@ -20,7 +20,7 @@
 </ion-item>
 <ng-content select="[description]"></ng-content>
 
-<ion-item class="ion-text-wrap core-module-dates" *ngIf="showCompletion && (module.dates?.length ||
+<ion-item class="ion-text-wrap" *ngIf="showCompletion && (module.dates?.length ||
 (module.completiondata && module.completiondata.isautomatic && module.uservisible))">
     <ion-label>
         <!-- Activity dates. -->

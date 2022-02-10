@@ -22,15 +22,25 @@ ion-item::part(native) {
 
 ion-icon {
     margin: 0;
-    @include padding(12px, 32px, 12px, 16px);
+    @include padding(12px, 16px, 12px, 16px);
 }
 
 ion-item.core-course-index-all::part(native) {
     --padding-start: 16px;
 }
 
-ion-item.item-current ion-icon.expandable-status-icon {
-    @include padding(null, null, null, 11px);
+ion-item.item.item-current {
+    --background: var(--primary);
+    --color: var(--primary-contrast);
+    border: 0;
+
+    ion-badge {
+        border: 1px solid var(--primary-contrast);
+    }
+
+    ::ng-deep ion-icon {
+        color: var(--primary-contrast);
+    }
 }
 
 ion-icon.restricted {

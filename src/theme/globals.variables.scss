@@ -36,7 +36,7 @@ $background-color-dark-rgb: color-to-rgb-list($background-color-dark) !default;
 
 $ion-item-background:      $white !default;
 $ion-item-background-rgb:  color-to-rgb-list($ion-item-background) !default;
-$ion-item-background-dark: mix(#ffffff, #000000, 20%) !default; // #333333
+$ion-item-background-dark: $gray-900 !default;
 $ion-item-background-dark-rgb: color-to-rgb-list($ion-item-background-dark) !default;
 
 $primary:    $blue !default;

@@ -160,7 +160,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
             const tint = CoreColors.lighter(this.course.color, 50);
             this.element.style.setProperty('--course-color-tint', tint);
-        } else {
+        } else if(this.course.colorNumber !== undefined) {
             this.element.classList.add('course-color-' + this.course.colorNumber);
         }
     }

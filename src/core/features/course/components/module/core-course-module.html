@@ -3,7 +3,6 @@
         <ion-item id="core-course-module-{{module.id}}" detail="false"
             class="ion-text-wrap core-course-module-handler core-module-main-item {{module.handlerData.class}}"
             (click)="moduleClicked($event)" [attr.aria-label]="module.handlerData.a11yTitle" [ngClass]="{
-                'has-module-info': hasInfo,
                 'item-media': module.handlerData.icon,
                 'item-dimmed': module.visible === 0 || module.uservisible === false
             }" [button]="module.handlerData.action && module.uservisible">
@@ -19,24 +18,26 @@
                     </core-format-text>
                 </p>
 
-                <!-- Basic module completion. -->
-                <core-course-module-completion *ngIf="module.completiondata && module.uservisible" [completion]="module.completiondata"
-                    [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions"
-                    [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)" mode="basic">
-                </core-course-module-completion>
+                <div class="core-module-additional-info">
+                    <!-- Basic module completion. -->
+                    <core-course-module-completion *ngIf="module.completiondata && module.uservisible" [completion]="module.completiondata"
+                        [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions"
+                        [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)" mode="basic">
+                    </core-course-module-completion>
 
-                <ion-chip *ngIf="module.handlerData.extraBadge" [color]="module.handlerData.extraBadgeColor"
-                    class="ion-text-wrap ion-text-start" [outline]="true">
-                    <ion-label><span [innerHTML]="module.handlerData.extraBadge"></span></ion-label>
-                </ion-chip>
+                    <ion-chip *ngIf="module.handlerData.extraBadge" [color]="module.handlerData.extraBadgeColor"
+                        class="ion-text-wrap ion-text-start" [outline]="true">
+                        <ion-label><span [innerHTML]="module.handlerData.extraBadge"></span></ion-label>
+                    </ion-chip>
 
-                <!-- Hidden badges -->
-                <ion-badge color="warning" *ngIf="module.visible === 0 && (!section || section.visible)">
-                    {{ 'core.course.hiddenfromstudents' | translate }}
-                </ion-badge>
-                <ion-badge color="warning" *ngIf="module.visible !== 0 && module.isStealth">
-                    {{ 'core.course.hiddenoncoursepage' | translate }}
-                </ion-badge>
+                    <!-- Hidden badges -->
+                    <ion-badge color="warning" *ngIf="module.visible === 0 && (!section || section.visible)">
+                        {{ 'core.course.hiddenfromstudents' | translate }}
+                    </ion-badge>
+                    <ion-badge color="warning" *ngIf="module.visible !== 0 && module.isStealth">
+                        {{ 'core.course.hiddenoncoursepage' | translate }}
+                    </ion-badge>
+                </div>
             </ion-label>
             <!-- Buttons. -->
             <div slot="end" *ngIf="module.uservisible !== false" class="buttons core-module-buttons"
@@ -72,24 +73,24 @@
                     [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions">
                 </core-course-module-completion>
 
-                <!-- Activity dates. -->
-                <div *ngIf="showActivityDates && module.dates && module.dates.length" class="core-module-dates">
-                    <p *ngFor="let date of module.dates">
-                        <ion-icon name="fas-calendar" aria-hidden="true"></ion-icon><strong>{{ date.label }}</strong> {{ date.timestamp *
-                        1000 | coreFormatDate:'strftimedatetime' }}
-                    </p>
-                </div>
+                <div class="core-module-dates-availabilityinfo"
+                    *ngIf="(showActivityDates && module.dates && module.dates.length) || module.availabilityinfo">
+                    <!-- Activity dates. -->
+                    <div *ngIf="showActivityDates && module.dates && module.dates.length" class="core-module-dates">
+                        <p *ngFor="let date of module.dates">
+                            <ion-icon name="fas-calendar" aria-hidden="true"></ion-icon><strong>{{ date.label }}</strong> {{ date.timestamp
+                            *
+                            1000 | coreFormatDate:'strftimedatetime' }}
+                        </p>
+                    </div>
 
-                <!-- Availability info -->
-                <div *ngIf="module.availabilityinfo">
-                    <ion-chip class="core-module-availabilityinfo">
+                    <!-- Availability info -->
+                    <div *ngIf="module.availabilityinfo" class="core-module-availabilityinfo">
                         <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
-                        <ion-label>
-                            <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
-                                [courseId]="module.course">
-                            </core-format-text>
-                        </ion-label>
-                    </ion-chip>
+                        <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
+                            [courseId]="module.course">
+                        </core-format-text>
+                    </div>
                 </div>
 
             </ion-label>

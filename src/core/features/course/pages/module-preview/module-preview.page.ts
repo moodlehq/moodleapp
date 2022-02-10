@@ -27,6 +27,7 @@ import { CoreUtils } from '@services/utils/utils';
 @Component({
     selector: 'page-core-course-module-preview',
     templateUrl: 'module-preview.html',
+    styleUrls: ['module-preview.scss'],
 })
 export class CoreCourseModulePreviewPage implements OnInit {
 
