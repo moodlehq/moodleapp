@@ -22,9 +22,12 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreIframeUtils } from '@services/utils/iframe';
 import { CoreUtils } from '@services/utils/utils';
-import { DomSanitizer, StatusBar } from '@singletons';
+import { DomSanitizer, Router, StatusBar } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreScreen, CoreScreenOrientation } from '@services/screen';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { NavigationStart } from '@angular/router';
 
 @Component({
     selector: 'core-iframe',
@@ -53,6 +56,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
     protected style?: HTMLStyleElement;
     protected orientationObs?: CoreEventObserver;
+    protected navSubscription?: Subscription;
 
     constructor() {
         this.loaded = new EventEmitter<HTMLIFrameElement>();
@@ -80,6 +84,15 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         this.autoFullscreenOnRotate = CoreUtils.isTrueOrOne(this.autoFullscreenOnRotate);
 
         if (this.showFullscreenOnToolbar || this.autoFullscreenOnRotate) {
+            // Leave fullscreen when navigating.
+            this.navSubscription = Router.events
+                .pipe(filter(event => event instanceof NavigationStart))
+                .subscribe(async () => {
+                    if (this.fullscreen) {
+                        this.toggleFullscreen(false);
+                    }
+                });
+
             const shadow =
                 iframe.closest('.ion-page')?.querySelector('ion-header ion-toolbar')?.shadowRoot;
             if (shadow) {
@@ -148,8 +161,8 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.toggleFullscreen(false);
         this.orientationObs?.off();
+        this.navSubscription?.unsubscribe();
     }
 
     /**
