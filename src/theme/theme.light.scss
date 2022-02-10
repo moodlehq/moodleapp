@@ -236,10 +236,6 @@
         --background: var(--item-divider-background);
         --color: var(--item-divider-color);
         --min-height: var(--item-divider-min-height);
-
-        .expandable-status-icon {
-            font-size: 18px;
-        }
     }
 
     --spacer-background: var(--light);
@@ -326,6 +322,11 @@
     --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-500);
     --core-dd-question-radius: 10px;
     --core-dd-question-border: var(--medium);
+
+    --rotate-expandable: rotate(90deg);
+    &[dir=rtl] {
+        --rotate-expandable: rotate(-90deg);
+    }
 
     @for $i from 0 to length($core-course-image-background) {
         --core-course-color-#{$i}: #{nth($core-course-image-background, $i + 1)};

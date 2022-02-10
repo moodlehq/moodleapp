@@ -416,7 +416,7 @@ ion-alert {
 
 // Ionic list.
 ion-list {
-    padding: 0;
+    padding: 0 !important;
     --ion-item-background: transparent;
 }
 
@@ -1263,6 +1263,16 @@ ion-item.item.divider {
     }
     ion-label h2.big {
         font-size: var(--item-divider-font-size-big);
+    }
+
+    .expandable-status-icon {
+        font-size: 18px;
+        @include core-transition(transform, 200ms);
+        @include margin-horizontal(null, 16px);
+
+        &.expandable-status-icon-expanded {
+            transform: var(--rotate-expandable);
+        }
     }
 }
 

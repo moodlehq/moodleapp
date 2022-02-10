@@ -26,10 +26,11 @@
                 <ion-item class="divider section" (click)="selectSectionOrModule($event, section.id)" button
                     [class.item-current]="selectedId === section.id" [class.item-dimmed]="section.visible === 0" detail="false"
                     sticky="true">
-                    <ion-icon *ngIf="section.hasVisibleModules" [name]="section.expanded ? 'fas-chevron-down' : 'fas-chevron-right'"
-                        flip-rtl slot="start" class="expandable-status-icon" (click)="toggleExpand($event, section)"
+                    <ion-icon *ngIf="section.hasVisibleModules" name="fas-chevron-right" flip-rtl slot="start"
+                        class="expandable-status-icon" (click)="toggleExpand($event, section)"
                         [attr.aria-label]="(section.expanded ? 'core.collapse' : 'core.expand') | translate"
-                        [attr.aria-expanded]="section.expanded" [attr.aria-controls]="'core-course-index-section-' + section.id">
+                        [attr.aria-expanded]="section.expanded" [attr.aria-controls]="'core-course-index-section-' + section.id"
+                        [class.expandable-status-icon-expanded]="section.expanded">
                     </ion-icon>
                     <ion-icon *ngIf="!section.hasVisibleModules" name="" slot="start" aria-hidden="true" class="expandable-status-icon">
                     </ion-icon>
@@ -45,8 +46,8 @@
                 </ion-item>
                 <ng-container *ngIf="section.expanded">
                     <ng-container *ngFor="let module of section.modules">
-                        <ion-item [class.item-dimmed]="!module.visible" (click)="selectSectionOrModule($event, section.id, module.id)"
-                            button>
+                        <ion-item class="module" [class.item-dimmed]="!module.visible"
+                            (click)="selectSectionOrModule($event, section.id, module.id)" button>
                             <ion-icon class="completioninfo completion_none" name="" *ngIf="module.completionStatus === undefined"
                                 slot="start" aria-hidden="true"></ion-icon>
                             <ion-icon class="completioninfo completion_incomplete" name="far-circle" *ngIf="module.completionStatus === 0"
