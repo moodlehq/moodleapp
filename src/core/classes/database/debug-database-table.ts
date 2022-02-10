@@ -47,7 +47,7 @@ export class CoreDebugDatabaseTable<
      * @inheritdoc
      */
     initialize(): Promise<void> {
-        this.logger.log('initialize');
+        this.logger.log('initialize', this.target);
 
         return this.target.initialize();
     }
