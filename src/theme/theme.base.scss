@@ -201,6 +201,7 @@ ion-header ion-toolbar {
     .in-toolbar.button-clear {
         --color: var(--core-header-toolbar-color);
         --ion-toolbar-color: var(--core-header-toolbar-color);
+        --border-radius: var(--huge-radius);
     }
 
     .button.button-clear,

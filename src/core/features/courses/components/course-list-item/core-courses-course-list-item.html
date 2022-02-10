@@ -6,11 +6,26 @@
         <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt="" />
         <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" class="course-icon">
         </ion-icon>
-        <ng-container
-            *ngIf="isEnrolled && ((downloadCourseEnabled && !courseOptionMenuEnabled && showDownload) || courseOptionMenuEnabled)">
-            <ng-container *ngTemplateOutlet="download"></ng-container>
-        </ng-container>
     </div>
+
+    <ng-container *ngIf="isEnrolled && layout != 'summarycard'">
+        <div class="core-button-spinner" *ngIf="!courseOptionMenuEnabled && showDownload">
+            <core-download-refresh [status]="prefetchCourseData.status" [enabled]="showDownload"
+                [statusTranslatable]="prefetchCourseData.statusTranslatable" [canTrustDownload]="false"
+                [loading]="prefetchCourseData.loading" (action)="prefetchCourse()"></core-download-refresh>
+        </div>
+
+        <div class="core-button-spinner" *ngIf="courseOptionMenuEnabled">
+            <!-- Options menu. -->
+            <ion-button fill="clear" color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner"
+                [attr.aria-label]="('core.displayoptions' | translate)">
+                <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+
+            <!-- Loading options course spinner. -->
+            <ion-spinner *ngIf="showSpinner" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+        </div>
+    </ng-container>
 
     <ion-item class="ion-text-wrap" button detail="false" (click)="openCourse()" [attr.aria-label]="course.displayname || course.fullname"
         [class.item-disabled]="course.visible == 0">
@@ -46,8 +61,8 @@
                         </ion-icon>
                     </span>
 
-                    <ion-icon *ngIf="downloadCourseEnabled && prefetchCourseData.downloadSucceeded" class="core-icon-downloaded"
-                        name="cloud-done" color="success" role="status" [attr.aria-label]="'core.downloaded' | translate"></ion-icon>
+                    <ion-icon *ngIf="prefetchCourseData.downloadSucceeded" class="core-icon-downloaded" name="cloud-done" color="success"
+                        role="status" [attr.aria-label]="'core.downloaded' | translate"></ion-icon>
                 </p>
 
                 <ion-chip color="brand" *ngIf="course.categoryname"
@@ -63,30 +78,7 @@
                 class="core-course-progress">
                 <core-progress-bar [progress]="progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
             </div>
-
-            <ng-container *ngIf="layout == 'list' || layout == 'listwithenrol' && isEnrolled">
-                <ng-container *ngTemplateOutlet="download"></ng-container>
-            </ng-container>
         </ion-label>
     </ion-item>
 
 </ion-card>
-
-<ng-template #download>
-    <div class="core-button-spinner" *ngIf="downloadCourseEnabled && !courseOptionMenuEnabled && showDownload">
-        <core-download-refresh [status]="prefetchCourseData.status" [enabled]="downloadCourseEnabled"
-            [statusTranslatable]="prefetchCourseData.statusTranslatable" [canTrustDownload]="false" [loading]="prefetchCourseData.loading"
-            (action)="prefetchCourse()"></core-download-refresh>
-    </div>
-
-    <div class="core-button-spinner" *ngIf="courseOptionMenuEnabled">
-        <!-- Options menu. -->
-        <ion-button fill="clear" color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner"
-            [attr.aria-label]="('core.displayoptions' | translate)">
-            <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true"></ion-icon>
-        </ion-button>
-
-        <!-- Loading options course spinner. -->
-        <ion-spinner *ngIf="showSpinner" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
-    </div>
-</ng-template>
