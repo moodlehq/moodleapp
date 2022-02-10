@@ -21,9 +21,9 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <ion-list>
-            <ng-container *ngFor="let sites of accountsList.otherSites">
-                <ion-item-divider sticky="true" *ngIf="sites[0]">
+        <ion-list class="core-sitelist">
+            <ion-card *ngFor="let sites of accountsList.otherSites">
+                <ion-item-divider sticky="true" *ngIf="sites[0]" class="core-sitelist-sitename">
                     <ion-label>
                         <h2>
                             <core-format-text [text]="sites[0].siteName" clean="true" [siteId]="sites[0].id"></core-format-text>
@@ -50,7 +50,7 @@
                         <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </ion-item>
-            </ng-container>
+            </ion-card>
         </ion-list>
     </core-loading>
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">

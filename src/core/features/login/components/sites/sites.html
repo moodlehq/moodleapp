@@ -20,9 +20,9 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <ion-list>
-            <ng-container *ngIf="accountsList.currentSite">
-                <ion-item-divider sticky="true">
+        <ion-list class="core-sitelist">
+            <ion-card *ngIf="accountsList.currentSite">
+                <ion-item-divider sticky="true" class="core-sitelist-sitename">
                     <ion-label>
                         <h2>
                             <core-format-text [text]="accountsList.currentSite.siteName" clean="true"
@@ -34,7 +34,7 @@
                     </ion-label>
                 </ion-item-divider>
 
-                <ion-item detail="false" class="item-current">
+                <ion-item detail="false">
                     <ion-avatar slot="start">
                         <img [src]="accountsList.currentSite.avatar" core-external-content [siteId]="accountsList.currentSite.id"
                             alt="{{ 'core.pictureof' | translate:{$a: accountsList.currentSite.fullName} }}"
@@ -47,10 +47,10 @@
                 </ion-item>
 
                 <ng-container *ngTemplateOutlet="siteList; context: {sites: accountsList.sameSite}"></ng-container>
-            </ng-container>
+            </ion-card>
 
-            <ng-container *ngFor="let sites of accountsList.otherSites">
-                <ion-item-divider sticky="true" *ngIf="sites[0]">
+            <ion-card *ngFor="let sites of accountsList.otherSites">
+                <ion-item-divider sticky="true" *ngIf="sites[0]" class="core-sitelist-sitename">
                     <ion-label>
                         <h2>
                             <core-format-text [text]="sites[0].siteName" clean="true" [siteId]="sites[0].id"></core-format-text>
@@ -60,7 +60,7 @@
                 </ion-item-divider>
 
                 <ng-container *ngTemplateOutlet="siteList; context: {sites: sites}"></ng-container>
-            </ng-container>
+            </ion-card>
 
         </ion-list>
     </core-loading>
