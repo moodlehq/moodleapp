@@ -179,7 +179,7 @@ core-format-text {
         position: absolute;
         @include position(null, 10px, 10px, null);
         color: var(--ion-text-color);
-        border-radius: var(--small-radius);
+        border-radius: var(--huge-radius);
         background-color: var(--core-format-text-viewer-icon-background);
         display: flex;
 

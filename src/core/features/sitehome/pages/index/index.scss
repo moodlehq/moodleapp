@@ -4,18 +4,16 @@ ion-item ion-icon {
     display: inline-block;
     border-radius: var(--module-icon-radius);
     padding: 0.7rem;
-    background-color: $gray-100;
+    background-color: var(--gray-100);
     line-height: var(--size);
     --margin-end: 1rem;
     @include margin-horizontal(null, var(--margin-end));
 }
 
-core-course-module.core-sitehome-news ::ng-deep ion-card {
-    --border-width: 0;
-    margin: 0;
-    padding: 0;
-}
-
 core-spacer ::ng-deep .item {
     border-radius: var(--medium-radius);
+    --horizontal-margin: 10px;
+    margin-left: var(--horizontal-margin);
+    margin-right: var(--horizontal-margin);
+    width: auto;
 }
