@@ -145,6 +145,17 @@ export class CoreConstants {
     static readonly CONFIG = { ...envJson.config } as unknown as EnvironmentConfig; // Data parsed from config.json files.
     static readonly BUILD = envJson.build as unknown as EnvironmentBuild; // Build info.
 
+    /**
+     * Check whether devtools should be enabled.
+     *
+     * @returns Whether devtools should be enabled.
+     */
+    static enableDevTools(): boolean {
+        // @todo [4.0] This is not the proper way to check for development tools, we should rely only on the BUILD variable.
+        return this.BUILD.isDevelopment
+            || this.CONFIG.versionname.includes('-dev');
+    }
+
 }
 
 interface EnvironmentBuild {

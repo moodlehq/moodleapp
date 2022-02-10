@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { mock } from '@/testing/utils';
+import { mock, mockSingleton } from '@/testing/utils';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import {
     CoreDatabaseCachingStrategy,
@@ -20,6 +20,7 @@ import {
     CoreDatabaseTableProxy,
 } from '@classes/database/database-table-proxy';
 import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
+import { CoreConfig } from '@services/config';
 
 interface User extends SQLiteDBRecordValues {
     id: number;
@@ -65,6 +66,8 @@ function prepareStubs(config: Partial<CoreDatabaseConfiguration> = {}): [User[],
         insertRecord: async (_, user: User) => records.push(user) && 1,
     });
     const table = new CoreDatabaseTableProxy<User>(config, database, 'users');
+
+    mockSingleton(CoreConfig, { isReady: () => Promise.resolve() });
 
     return [records, database, table];
 }
