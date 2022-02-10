@@ -2,7 +2,7 @@
 <core-navbar-buttons slot="end" *ngIf="loaded">
     <core-context-menu>
         <core-context-menu-item [hidden]="!displayCourseIndex || !sections || !sections.length" [priority]="500"
-            [content]="'core.course.courseindex' | translate" (action)="openCourseIndex()" iconAction="menu">
+            [content]="'core.course.courseindex' | translate" (action)="openCourseIndex()" iconAction="fas-list-ul">
         </core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
