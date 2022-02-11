@@ -4,7 +4,7 @@
     </ion-label>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" [fullscreen]="false">
-    <ng-container *ngIf="mainMenuBlock">
+    <ion-list *ngIf="mainMenuBlock" class="core-course-module-list-wrapper">
         <ion-item class="ion-text-wrap" *ngIf="mainMenuBlock.summary">
             <ion-label>
                 <core-format-text [text]="mainMenuBlock.summary" [component]="component" [componentId]="siteHomeId" contextLevel="course"
@@ -13,5 +13,5 @@
         </ion-item>
 
         <core-course-module *ngFor="let module of mainMenuBlock.modules" [module]="module" [section]="mainMenuBlock"></core-course-module>
-    </ng-container>
+    </ion-list>
 </core-loading>

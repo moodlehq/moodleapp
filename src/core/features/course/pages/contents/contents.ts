@@ -380,16 +380,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Open the course summary
-     */
-    openCourseSummary(): void {
-        CoreNavigator.navigateToSitePath(
-            `/course/${this.course.id}/preview`,
-            { params: { course: this.course, avoidOpenCourse: true } },
-        );
-    }
-
-    /**
      * Opens a menu item registered to the delegate.
      *
      * @param item Item to open

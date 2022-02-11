@@ -69,7 +69,7 @@
                     <ion-list *ngIf="(lesson && !preventReasons.length) || retakeToReview">
                         <ng-container *ngIf="retakeToReview">
                             <!-- A retake was finished in a synchronization, allow reviewing it. -->
-                            <ion-item class="ion-text-wrap" lines="none">
+                            <ion-item class="ion-text-wrap">
                                 <ion-label class="ion-padding-bottom">
                                     {{ 'addon.mod_lesson.retakefinishedinsync' | translate }}
                                 </ion-label>

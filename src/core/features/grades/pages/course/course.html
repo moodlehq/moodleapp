@@ -36,8 +36,8 @@
                                 <td *ngIf="row.itemtype == 'category'" class="core-grades-table-category" [attr.rowspan]="row.rowspan">
                                 </td>
                                 <th class="core-grades-table-gradeitem ion-text-start" [attr.colspan]="row.colspan">
-                                    <ion-icon *ngIf="row.expandable && showSummary" aria-hidden="true" slot="start"
-                                        [name]="row.expanded ? 'fas-chevron-down' : 'fas-chevron-right'" class="expandable-status-icon">
+                                    <ion-icon *ngIf="row.expandable && showSummary" aria-hidden="true" slot="start" name="fas-chevron-right"
+                                        class="expandable-status-icon" [class.expandable-status-icon-expanded]="row.expanded">
                                     </ion-icon>
                                     <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start" [attr.aria-label]="row.iconAlt">
                                     </ion-icon>

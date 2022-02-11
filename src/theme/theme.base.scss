@@ -184,44 +184,6 @@ ion-app.ios ion-header ion-title {
     white-space: normal !important;
 }
 
-ion-button core-format-text .core-format-text-content {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-    line-height: 1.2;
-}
-
-ion-button > * {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-ion-button.ion-text-wrap {
-    white-space: normal;
-    core-format-text .core-format-text-content {
-        white-space: normal;
-        display: contents;
-    }
-
-    & > * {
-        white-space: normal;
-    }
-}
-
-ion-button.button-outline {
-    --background: var(--contrast-background);
-}
-
-ion-button ion-spinner {
-    --color: inherit !important;
-}
-
-ion-button:not(.button-has-icon-only) > ion-icon {
-    min-width: 20px;
-}
-
 @each $color-name, $unused in $colors {
     .text-#{$color-name},
     p.text-#{$color-name} {
@@ -293,10 +255,6 @@ ion-icon {
     }
 }
 
-ion-button.button-small ion-icon.faicon[slot] {
-    font-size: 1.5em !important;
-}
-
 // Buttons.
 ion-button,
 ion-fab-button,
@@ -306,8 +264,56 @@ button,
     min-width: var(--a11y-min-target-size);
 }
 
+ion-button.button-outline {
+    --border-width: 1px;
+    --background: var(--contrast-background);
+}
+
+ion-button.button-solid {
+    --box-shadow: none;
+}
+
+ion-button core-format-text .core-format-text-content {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    line-height: 1.2;
+}
+
+ion-button > * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+ion-button.ion-text-wrap {
+    white-space: normal;
+    core-format-text .core-format-text-content {
+        white-space: normal;
+        display: contents;
+    }
+
+    & > * {
+        white-space: normal;
+    }
+}
+
+ion-button ion-spinner {
+    --color: inherit !important;
+}
+
+ion-button:not(.button-has-icon-only):not(.button-small) > ion-icon {
+    min-width: 20px;
+}
+
 ion-button.button.button-clear.button-has-icon-only {
     --border-radius: var(--huge-radius);
+}
+
+ion-button.button.button-solid,
+ion-button.button.button-outline {
+    --border-radius: var(--small-radius);
 }
 
 // Clear buttons will be black.
@@ -409,8 +415,9 @@ ion-alert {
 }
 
 // Ionic list.
-ion-list.list-md {
-    padding: 0;
+ion-list {
+    padding: 0 !important;
+    --ion-item-background: transparent;
 }
 
 // Safe areas
@@ -736,6 +743,14 @@ ion-card {
     display: inline !important;
 }
 
+ion-list.core-course-module-list-wrapper,
+.list-item-limited-width,
+.core-course-module-list-wrapper {
+    max-width: var(--list-item--max-width);
+    margin-left: auto;
+    margin-right: auto;
+}
+
 ion-toolbar h1 img.core-bar-button-image,
 ion-toolbar h1 .core-bar-button-image img {
     padding: 4px;
@@ -861,18 +876,32 @@ ion-badge {
     border-radius: var(--big-radius);
 }
 
-ion-chip {
+ion-chip,
+ion-button.chip {
     line-height: 1.1;
     font-size: 12px;
-    padding: 4px 8px;
     min-height: 24px;
-    height: auto;
+    text-transform: none;
+    margin: 4px;
+    font-weight: normal;
 
     ion-icon {
         font-size: 16px;
         min-width: 16px;
         @include margin(0, 8px, 0, 0);
     }
+
+    ion-label {
+        white-space: normal !important;
+    }
+}
+
+ion-chip {
+    line-height: 1.1;
+    font-size: 12px;
+    padding: 4px 8px;
+    min-height: 24px;
+    height: auto;
 
     &.ion-color {
         background: var(--ion-color-tint);
@@ -881,10 +910,6 @@ ion-chip {
             border-color: var(--ion-color-base);
             color: var(--ion-color-base);
         }
-    }
-
-    ion-label {
-        white-space: normal !important;
     }
 }
 
@@ -1017,6 +1042,20 @@ audio.core-media-adapt-width {
     width: 100%;
 }
 
+ion-item {
+    --inner-border-width: 0px;
+}
+
+ion-item.item-lines-full {
+    --inner-border-width: 0px;
+    --border-width: 0 0 1px 0;
+}
+
+ion-item.item-lines-inset {
+    --inner-border-width: 1px;
+    --border-width: 0px;
+}
+
 // Fake item.
 div.fake-ion-item {
     position: relative;
@@ -1029,7 +1068,6 @@ div.fake-ion-item {
     text-decoration: none;
     overflow: hidden;
     box-sizing: border-box;
-
 }
 
 html.md div.fake-ion-item {
@@ -1209,8 +1247,33 @@ ion-item.item-input ion-input.has-focus {
     }
 }
 
-ion-item-divider {
+ion-item-divider.item,
+ion-item.item.divider {
     --inner-padding-end: 8px;
+    min-height: var(--min-height);
+    border-bottom-width: var(--item-divider-border-width);
+    --border-width: var(--item-divider-border-width);
+    --inner-border-width: 0 0 var(--item-divider-border-width) 0;
+
+    ion-label h2,
+    ion-label p.item-heading {
+        font-size: var(--item-divider-font-size);
+        font-weight: 500;
+        line-height: 1.5;
+    }
+    ion-label h2.big {
+        font-size: var(--item-divider-font-size-big);
+    }
+
+    .expandable-status-icon {
+        font-size: 18px;
+        @include core-transition(transform, 200ms);
+        @include margin-horizontal(null, 16px);
+
+        &.expandable-status-icon-expanded {
+            transform: var(--rotate-expandable);
+        }
+    }
 }
 
 // Change default outline.
@@ -1271,6 +1334,80 @@ ion-grid.core-no-grid > ion-row {
     top: 0;
     left: 0;
     right: 0;
+}
+
+[collapsible-item] {
+    --collapsible-display-toggle: none;
+    --collapsible-toggle-background: var(--ion-item-background);
+    --collapsible-min-button-height: 44px;
+
+    .collapsible-toggle {
+        display: var(--collapsible-display-toggle);
+    }
+
+    &.collapsible-enabled {
+        --collapsible-display-toggle: block;
+
+        .collapsible-toggle {
+            display: var(--collapsible-display-toggle);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 7;
+            text-transform: none;
+            text-align: end;
+            font-size: 14px;
+            background-color: var(--collapsible-toggle-background);
+            color: var(--text-color);
+            margin: 0;
+
+            .collapsible-toggle-arrow {
+                width: var(--a11y-min-target-size);
+                height: var(--a11y-min-target-size);
+
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: 14px 14px;
+                @include core-transition(transform, 500ms);
+
+                @include push-arrow-color(626262, true);
+
+                @include darkmode() {
+                    @include push-arrow-color(ffffff, true);
+                }
+            }
+        }
+
+        &.collapsible-collapsed {
+            overflow: hidden;
+            min-height: calc(var(--collapsible-min-button-height) + 12);
+
+            .collapsible-toggle-arrow {
+                transform: rotate(90deg);
+            }
+
+            &:before {
+                content: '';
+                height: 100%;
+                position: absolute;
+                @include position(null, 0, 0, 0);
+                background: -webkit-linear-gradient(top, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 60px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 40px));
+                background: linear-gradient(to bottom, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 60px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 40px));
+                z-index: 6;
+            }
+        }
+
+        &.collapsible-expanded {
+            max-height: none !important;
+            padding-bottom: var(--collapsible-min-button-height); // So the Show less button can fit.
+
+            .collapsible-toggle-arrow {
+                transform: rotate(-90deg);
+            }
+        }
+    }
 }
 
 ion-header[collapsible] {

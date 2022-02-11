@@ -76,13 +76,13 @@
     --core-progressbar-text-color: var(--gray-100);
 
     --ion-item-background: #{$ion-item-background-dark};
-    --ion-item-detail-icon-color: var(--white);
-    --item-divider-background: var(--gray-800);
+    --item-divider-background: var(--ion-item-background);
     --item-divider-color: var(--text-color);
-    --spacer-background: var(--gray-100);
+    --spacer-background: var(--gray-700);
 
     --core-combobox-background: var(--ion-item-background);
-    --core-combobox-color: var(--white);
+    --core-combobox-color: var(--gray-100);
+    --core-combobox-border-color: var(--stroke);
 
     --core-login-background: var(--gray-900);
     --core-login-text-color: var(--white);

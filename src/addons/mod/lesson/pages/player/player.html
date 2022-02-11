@@ -198,34 +198,34 @@
                 <ion-card-header class="ion-text-wrap" *ngIf="eolData.gradelesson">
                     <ion-card-title>{{ 'addon.mod_lesson.congratulations' | translate }}</ion-card-title>
                 </ion-card-header>
-                <ion-item class="ion-text-wrap" *ngIf="eolData.notenoughtimespent" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="eolData.notenoughtimespent">
                     <ion-label>{{ eolData.notenoughtimespent.message }}</ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="eolData.numberofpagesviewed" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="eolData.numberofpagesviewed">
                     <ion-label>{{ eolData.numberofpagesviewed.message }}</ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="eolData.youshouldview" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="eolData.youshouldview">
                     <ion-label>{{ eolData.youshouldview.message }}</ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="eolData.numberofcorrectanswers" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="eolData.numberofcorrectanswers">
                     <ion-label>{{ eolData.numberofcorrectanswers.message }}</ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="eolData.displayscorewithessays" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="eolData.displayscorewithessays">
                     <ion-label [innerHTML]="eolData.displayscorewithessays.message"></ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="!eolData.displayscorewithessays && eolData.displayscorewithoutessays" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="!eolData.displayscorewithessays && eolData.displayscorewithoutessays">
                     <ion-label>{{ eolData.displayscorewithoutessays.message }}</ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="eolData.yourcurrentgradeisoutof" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="eolData.yourcurrentgradeisoutof">
                     <ion-label>{{ eolData.yourcurrentgradeisoutof.message }}</ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="eolData.eolstudentoutoftimenoanswers" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="eolData.eolstudentoutoftimenoanswers">
                     <ion-label>{{ eolData.eolstudentoutoftimenoanswers.message }}</ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="eolData.welldone" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="eolData.welldone">
                     <ion-label>{{ eolData.welldone.message }}</ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="lesson.progressbar && eolData.progresscompleted" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="lesson.progressbar && eolData.progresscompleted">
                     <ion-label>
                         <span id="addon-mod_lesson-{{cmId}}-progress-end">
                             {{ 'addon.mod_lesson.progresscompleted' | translate:{$a: eolData.progresscompleted.value} }}
@@ -235,14 +235,14 @@
                         </core-progress-bar>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="eolData.displayofgrade" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="eolData.displayofgrade">
                     <ion-label>{{ eolData.displayofgrade.message }}</ion-label>
                 </ion-item>
                 <ion-button *ngIf="eolData.reviewlesson" expand="block" class="ion-text-wrap ion-margin button-no-uppercase"
                     (click)="reviewLesson(reviewPageId!)">
                     {{ 'addon.mod_lesson.reviewlesson' | translate }}
                 </ion-button>
-                <ion-item class="ion-text-wrap" *ngIf="eolData.modattemptsnoteacher" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="eolData.modattemptsnoteacher">
                     <ion-label>{{ eolData.modattemptsnoteacher.message }}</ion-label>
                 </ion-item>
                 <!-- If activity link was successfully formatted, render the button. -->
@@ -252,7 +252,7 @@
                         [courseId]="courseId">
                     </core-format-text>
                 </ion-button>
-                <ion-item class="ion-text-wrap" *ngIf="activityLink && !activityLink.formatted" lines="none">
+                <ion-item class="ion-text-wrap" *ngIf="activityLink && !activityLink.formatted">
                     <!-- Activity link wasn't formatted, render the original link. -->
                     <ion-label>
                         <core-format-text [text]="activityLink.label" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"

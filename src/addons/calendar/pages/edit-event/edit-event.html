@@ -147,7 +147,7 @@
                         </ion-label>
                         <ion-radio slot="end" [value]="0"></ion-radio>
                     </ion-item>
-                    <ion-item lines="none">
+                    <ion-item>
                         <ion-label>
                             <p>{{ 'addon.calendar.durationuntil' | translate }}</p>
                         </ion-label>
@@ -159,7 +159,7 @@
                             [placeholder]="'addon.calendar.durationuntil' | translate" [displayFormat]="dateFormat" display-timezone="utc">
                         </ion-datetime>
                     </ion-item>
-                    <ion-item lines="none">
+                    <ion-item>
                         <ion-label>
                             <p>{{ 'addon.calendar.durationminutes' | translate }}</p>
                         </ion-label>
@@ -175,7 +175,7 @@
 
             <!-- Repeat (for new events). -->
             <ng-container *ngIf="!eventId || eventId < 0">
-                <ion-item class="ion-text-wrap divider" lines="none">
+                <ion-item class="ion-text-wrap divider">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.calendar.repeatevent' | translate }}</p>
                     </ion-label>

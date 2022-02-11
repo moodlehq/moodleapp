@@ -8,7 +8,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="dataLoaded">
-        <ion-list>
+        <ion-list class="core-course-module-list-wrapper">
             <!-- Site home main contents. -->
             <ng-container *ngIf="section && section.hasContent">
                 <ion-item class="ion-text-wrap" *ngIf="section.summary">
@@ -55,12 +55,14 @@
 </ion-content>
 
 <ng-template #allCourseList>
-    <ion-item button class="ion-text-wrap" (click)="openAvailableCourses()" lines="none">
-        <ion-icon name="fas-graduation-cap" fixed-width slot="start" aria-hidden="true"></ion-icon>
-        <ion-label>
-            <h2>{{ 'core.courses.availablecourses' | translate}}</h2>
-        </ion-label>
-    </ion-item>
+    <ion-card>
+        <ion-item button class="ion-text-wrap" (click)="openAvailableCourses()">
+            <ion-icon name="fas-graduation-cap" fixed-width slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                <h2>{{ 'core.courses.availablecourses' | translate}}</h2>
+            </ion-label>
+        </ion-item>
+    </ion-card>
 </ng-template>
 
 <ng-template #news>
@@ -69,29 +71,35 @@
 </ng-template>
 
 <ng-template #categories>
-    <ion-item button class="ion-text-wrap" (click)="openCourseCategories()" lines="none">
-        <ion-icon name="fas-folder" slot="start" aria-hidden="true"></ion-icon>
-        <ion-label>
-            <h2>{{ 'core.courses.categories' | translate}}</h2>
-        </ion-label>
-    </ion-item>
+    <ion-card>
+        <ion-item button class="ion-text-wrap" (click)="openCourseCategories()">
+            <ion-icon name="fas-folder" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                <h2>{{ 'core.courses.categories' | translate}}</h2>
+            </ion-label>
+        </ion-item>
+    </ion-card>
 </ng-template>
 
 <ng-template #enrolledCourseList>
-    <ion-item button class="ion-text-wrap" (click)="openMyCourses()" lines="none">
-        <ion-icon name="fas-graduation-cap" fixed-width slot="start" aria-hidden="true">
-        </ion-icon>
-        <ion-label>
-            <h2>{{ 'core.courses.mycourses' | translate}}</h2>
-        </ion-label>
-    </ion-item>
+    <ion-card>
+        <ion-item button class="ion-text-wrap" (click)="openMyCourses()">
+            <ion-icon name="fas-graduation-cap" fixed-width slot="start" aria-hidden="true">
+            </ion-icon>
+            <ion-label>
+                <h2>{{ 'core.courses.mycourses' | translate}}</h2>
+            </ion-label>
+        </ion-item>
+    </ion-card>
 </ng-template>
 
 <ng-template #courseSearch>
-    <ion-item button class="ion-text-wrap" (click)="openSearch()" lines="none">
-        <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
-        <ion-label>
-            <h2>{{ 'core.courses.searchcourses' | translate}}</h2>
-        </ion-label>
-    </ion-item>
+    <ion-card>
+        <ion-item button class="ion-text-wrap" (click)="openSearch()">
+            <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                <h2>{{ 'core.courses.searchcourses' | translate}}</h2>
+            </ion-label>
+        </ion-item>
+    </ion-card>
 </ng-template>

@@ -27,36 +27,39 @@
         <core-course-module-info [module]="module" [courseId]="courseId" [description]="module.description" [component]="module.modname"
             [componentId]="module.id" [expandDescription]="true">
 
-            <div class="ion-padding" *ngIf="module.handlerData?.extraBadge">
-                <ion-chip class="ion-text-wrap ion-text-start" [color]="module.handlerData?.extraBadgeColor">
-                    <ion-label><span [innerHTML]="module.handlerData?.extraBadge"></span></ion-label>
-                </ion-chip>
-            </div>
-            <div class="ion-padding" *ngIf="module.visible === 0 && (!section || section.visible)">
-                <ion-chip class="ion-text-wrap">
-                    <ion-icon name="fas-eye-slash" aria-hidden="true"></ion-icon>
-                    <ion-label>{{ 'core.course.hiddenfromstudents' | translate }}</ion-label>
-                </ion-chip>
-            </div>
-            <div class="ion-padding" *ngIf="module.visible !== 0 && module.isStealth">
-                <ion-chip class="ion-text-wrap">
-                    <ion-icon name="fas-eye-slash" aria-hidden="true"></ion-icon>
-                    <ion-label>{{ 'core.course.hiddenoncoursepage' | translate }}</ion-label>
-                </ion-chip>
-            </div>
-            <div class="ion-padding core-module-availabilityinfo" *ngIf="module.availabilityinfo">
-                <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
+            <ion-item class="ion-text-wrap" *ngIf="module.handlerData?.extraBadge ||
+                (module.visible === 0 && (!section || section.visible)) ||
+                    (module.visible !== 0 && module.isStealth) ||
+                    module.availabilityinfo">
                 <ion-label>
-                    <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
-                        [courseId]="courseId" class="ion-text-wrap">
-                    </core-format-text>
+                    <div class="ion-padding" *ngIf="module.handlerData?.extraBadge">
+                        <ion-chip *ngIf="module.handlerData?.extraBadge" [color]="module.handlerData?.extraBadgeColor"
+                            class="ion-text-wrap ion-text-start" [outline]="true">
+                            <ion-label><span [innerHTML]="module.handlerData?.extraBadge"></span></ion-label>
+                        </ion-chip>
+                    </div>
+
+                    <!-- Hidden badges -->
+                    <div *ngIf="module.visible === 0 && (!section || section.visible)">
+                        <ion-badge color="warning">
+                            {{ 'core.course.hiddenfromstudents' | translate }}
+                        </ion-badge>
+                    </div>
+                    <div *ngIf="module.visible !== 0 && module.isStealth">
+                        <ion-badge color="warning">
+                            {{ 'core.course.hiddenoncoursepage' | translate }}
+                        </ion-badge>
+                    </div>
+
+                    <!-- Availability info -->
+                    <div *ngIf="module.availabilityinfo" class="core-module-availabilityinfo">
+                        <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
+                        <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
+                            [courseId]="module.course">
+                        </core-format-text>
+                    </div>
                 </ion-label>
-            </div>
-            <div class="ion-padding" *ngIf="module.completiondata?.offline">
-                <ion-chip color="warning" class="ion-text-wrap">
-                    <ion-label>{{ 'core.course.manualcompletionnotsynced' | translate }}</ion-label>
-                </ion-chip>
-            </div>
+            </ion-item>
 
             <core-course-unsupported-module *ngIf="unsupported" [module]="module" [courseId]="courseId"></core-course-unsupported-module>
         </core-course-module-info>

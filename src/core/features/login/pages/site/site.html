@@ -42,7 +42,7 @@
             </ion-item>
 
             <ion-list [class.hidden]="!hasSites && !enteredSiteUrl" class="core-login-site-list">
-                <ion-item lines="none" class="core-login-site-list-title">
+                <ion-item class="core-login-site-list-title">
                     <ion-label>
                         <h2 class="item-heading">{{ 'core.login.selectsite' | translate }}</h2>
                     </ion-label>
@@ -73,7 +73,7 @@
             </div>
         </ng-container>
 
-        <ion-item *ngIf="siteSelector == 'url'" lines="none">
+        <ion-item *ngIf="siteSelector == 'url'">
             <ion-label>
                 <ion-button expand="block" [disabled]="!siteForm.valid" class="ion-text-wrap" type="submit">
                     {{ 'core.login.connect' | translate }}
@@ -85,7 +85,7 @@
     <ng-container *ngIf="fixedSites">
         <!-- Pick the site from a list of fixed sites. -->
         <ion-list *ngIf="siteSelector == 'list'">
-            <ion-item lines="none">
+            <ion-item>
                 <ion-label>
                     <h2 class="item-heading">{{ 'core.login.selectsite' | translate }}</h2>
                 </ion-label>
@@ -101,8 +101,7 @@
 
     <ng-container *ngIf="showScanQR && !hasSites && !enteredSiteUrl">
         <div class="ion-text-center ion-padding ion-margin-top">{{ 'core.login.or' | translate }}</div>
-        <ion-button expand="block" color="light" class="ion-margin" lines="none" (click)="showInstructionsAndScanQR()"
-            aria-haspopup="dialog">
+        <ion-button expand="block" color="light" class="ion-margin" (click)="showInstructionsAndScanQR()" aria-haspopup="dialog">
             <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
             {{ 'core.scanqr' | translate }}
         </ion-button>

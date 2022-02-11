@@ -1,12 +1,16 @@
 @import "~theme/globals";
 
 :host {
+    --horizontal-margin: 10px;
 
-    .item.core-module-main-item {
-        --min-height: 52px;
+    ion-card {
+        margin-left: var(--horizontal-margin);
+        margin-right: var(--horizontal-margin);
     }
 
-    .core-module-main-item {
+    ion-item.core-module-main-item {
+        --min-height: 52px;
+
         .core-module-buttons,
         .buttons.core-module-buttons {
             margin: 0;
@@ -31,17 +35,29 @@
         .core-module-buttons core-course-module-completion {
             text-align: center;
         }
+
+        .core-module-additional-info {
+            display: flex;
+            align-items: center;
+        }
     }
 
     .core-course-module-info {
-        ion-badge {
-            text-align: start;
+        .core-module-dates-availabilityinfo {
+            background: var(--light);
+            border-radius: var(--small-radius);
+            padding: 8px;
+        }
+
+        .core-module-dates + .core-module-availabilityinfo {
+            border-top: 1px solid var(--stroke);
+            padding-top: 8px;
         }
 
         .core-module-availabilityinfo {
             font-size: 90%;
-            ul {
-                margin-block-start: 0.5em;
+            ::ng-deep  ul {
+                margin-top: 0.5em;
             }
         }
     }
@@ -55,10 +71,6 @@
 
     .core-module-main-item + .core-course-module-info ion-label {
         margin-top: 0px;
-    }
-
-    .core-module-main-item.has-module-info {
-        --inner-border-width: 0px;
     }
 
     .core-module-availabilityinfo  ion-icon,

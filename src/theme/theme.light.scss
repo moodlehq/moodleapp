@@ -72,6 +72,8 @@
     --module-icon-size: 24px;
     --module-icon-radius: var(--medium-radius);
 
+    --list-item--max-width: 768px;
+
     --ion-background-color: var(--background-color);
     --ion-background-color-rgb: #{$background-color-rgb};
 
@@ -120,8 +122,8 @@
 
     --core-header-toolbar-button-image-size: var(--a11y-min-target-size);
     --core-header-toolbar-background: var(--white);
-    --core-header-toolbar-border-width: 3px;
-    --core-header-toolbar-border-color: var(--brand);
+    --core-header-toolbar-border-width: 1px;
+    --core-header-toolbar-border-color: var(--stroke);
     --core-header-toolbar-color: var(--gray-900);
     --core-header-toolbar-height: 56px;
     html.ios {
@@ -143,6 +145,10 @@
             --ion-color-base: var(--core-header-toolbar-color);
             --color: var(--core-header-toolbar-color);
         }
+    }
+
+    ion-header::after {
+        display: none;
     }
 
     ion-header.header-ios ion-toolbar:last-of-type {
@@ -221,20 +227,18 @@
     }
 
     --item-divider-min-height: calc(var(--a11y-min-target-size) + 8px);
-    --item-divider-background: var(--light);
+    --item-divider-background: var(--ion-item-background);
     --item-divider-color: var(--text-color);
+    --item-divider-border-width: 0px;
+    --item-divider-font-size: 16px;
+    --item-divider-font-size-big: 20px;
     ion-item-divider, ion-item.divider {
         --background: var(--item-divider-background);
         --color: var(--item-divider-color);
         --min-height: var(--item-divider-min-height);
-        min-height: var(--min-height);
-
-        .expandable-status-icon {
-            font-size: 18px;
-        }
     }
 
-    --spacer-background: var(--item-divider-background);
+    --spacer-background: var(--light);
     core-spacer {
         --item-divider-background: var(--spacer-background);
     }
@@ -298,9 +302,6 @@
 
     --drop-shadow: 0, 0, 0, 0.18;
 
-    --core-menu-box-shadow-end: -4px 0px 16px rgba(var(--drop-shadow));
-    --core-menu-box-shadow-start: 4px 0px 16px rgba(var(--drop-shadow));
-
     --core-question-correct-color: var(--success-shade);
     --core-question-correct-color-bg: var(--success-tint);
     --core-question-incorrect-color: var(--danger);
@@ -321,6 +322,11 @@
     --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-500);
     --core-dd-question-radius: 10px;
     --core-dd-question-border: var(--medium);
+
+    --rotate-expandable: rotate(90deg);
+    &[dir=rtl] {
+        --rotate-expandable: rotate(-90deg);
+    }
 
     @for $i from 0 to length($core-course-image-background) {
         --core-course-color-#{$i}: #{nth($core-course-image-background, $i + 1)};

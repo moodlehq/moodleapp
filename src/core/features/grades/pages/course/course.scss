@@ -96,6 +96,11 @@
         .expandable-status-icon {
             font-size: 14px;
             @include margin-horizontal(0, 2px);
+            @include core-transition(transform, 200ms);
+
+            &.expandable-status-icon-expanded {
+                transform: var(--rotate-expandable);
+            }
         }
 
     }

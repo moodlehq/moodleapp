@@ -107,11 +107,11 @@
             </ion-item>
 
             <!-- Phone view -->
-            <ion-item class="ion-text-wrap ion-no-margin ion-hide-md-up" lines="none">
+            <ion-item class="ion-text-wrap ion-no-margin ion-hide-md-up">
                 <p class="item-heading">{{ notification.displayname }}</p>
             </ion-item>
             <!-- If notifications enabled, show toggles. If disabled, show "Disabled" instead of toggle. -->
-            <ion-item *ngFor="let state of ['loggedin', 'loggedoff']" class="ion-text-wrap ion-hide-md-up" lines="none">
+            <ion-item *ngFor="let state of ['loggedin', 'loggedoff']" class="ion-text-wrap ion-hide-md-up">
                 <ion-label class="ion-margin-horizontal">
                     <p>{{ 'core.settings.' + state | translate }}</p>
                 </ion-label>
@@ -148,7 +148,7 @@
         </ion-item-divider>
         <ng-container *ngFor="let notification of component.notifications">
             <!-- If notifications enabled, show toggles. If disabled, show "Disabled" instead of toggle. -->
-            <ion-item class="ion-text-wrap" lines="none">
+            <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p>{{ notification.displayname }}</p>
                 </ion-label>

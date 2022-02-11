@@ -13,13 +13,20 @@ h4.core-bold {
     font-weight: bold;
 }
 
-.addon-block-timeline-activity ion-badge {
-    @include margin-horizontal(0.25rem, 0.5rem);
-}
+.addon-block-timeline-activity {
+    ion-badge {
+        @include margin-horizontal(0.25rem, 0.5rem);
+    }
 
-.addon-block-timeline-activity core-mod-icon {
-    --margin-end: 0.5rem;
-    --margin-vertical: 0;
+    small {
+        @include margin-horizontal(null, 0.5rem);
+    }
+
+    core-mod-icon {
+        padding: 8px;
+        --margin-end: 0.5rem;
+        --margin-vertical: 0;
+    }
 }
 
 .addon-block-timeline-activity-time {

@@ -65,7 +65,7 @@
 
         <ng-container *ngIf="showScanQR">
             <div class="ion-text-center ion-padding">{{ 'core.login.or' | translate }}</div>
-            <ion-button expand="block" color="light" class="ion-margin" lines="none" (click)="showInstructionsAndScanQR()">
+            <ion-button expand="block" color="light" class="ion-margin" (click)="showInstructionsAndScanQR()">
                 <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
                 {{ 'core.scanqr' | translate }}
             </ion-button>
@@ -80,7 +80,7 @@
 
     <!-- Identity providers. -->
     <ion-list *ngIf="identityProviders && identityProviders.length" class="ion-padding-top core-login-identity-providers">
-        <ion-item class="ion-text-wrap" lines="none">
+        <ion-item class="ion-text-wrap">
             <ion-label>
                 <h3 class="item-heading">{{ 'core.login.potentialidps' | translate }}</h3>
             </ion-label>

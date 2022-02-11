@@ -27,6 +27,7 @@ import { CoreAnimations } from '@components/animations';
 @Component({
     selector: 'page-core-login-sites',
     templateUrl: 'sites.html',
+    styleUrls: ['../../sitelist.scss'],
     animations: [CoreAnimations.SLIDE_IN_OUT, CoreAnimations.SHOW_HIDE],
 })
 export class CoreLoginSitesPage implements OnInit {

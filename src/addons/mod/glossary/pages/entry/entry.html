@@ -46,7 +46,7 @@
                     </core-format-text>
                 </ion-label>
             </ion-item>
-            <div *ngIf="entry.attachment" lines="none">
+            <div *ngIf="entry.attachment">
                 <core-file *ngFor="let file of entry.attachments" [file]="file" [component]="component" [componentId]="componentId">
                 </core-file>
             </div>

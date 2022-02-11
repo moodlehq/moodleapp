@@ -36,7 +36,7 @@
             </ion-segment>
         </ion-item>
         <ion-item class="ion-text-wrap core-settings-general-color-scheme" *ngIf="colorSchemes.length > 0"
-            [lines]="selectedScheme=='system' && isAndroid ? 'none' : 'inset'">
+            [lines]="selectedScheme=='system' && isAndroid ? 'none' : ''">
             <ion-label>
                 <h2>{{ 'core.settings.colorscheme' | translate }}</h2>
                 <p *ngIf="colorSchemeDisabled" class="text-danger">{{ 'core.settings.forcedsetting' | translate }}</p>

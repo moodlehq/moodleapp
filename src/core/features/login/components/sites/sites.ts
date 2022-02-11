@@ -28,6 +28,7 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'core-login-sites',
     templateUrl: 'sites.html',
+    styleUrls: ['../../sitelist.scss'],
     animations: [CoreAnimations.SLIDE_IN_OUT, CoreAnimations.SHOW_HIDE],
 })
 export class CoreLoginSitesComponent implements OnInit {

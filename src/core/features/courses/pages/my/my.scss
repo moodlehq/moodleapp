@@ -11,6 +11,11 @@
     --internal-loading-inline-min-height: calc(100vh - var(--core-header-toolbar-height) - var(--bottom-tabs-size) - 2px);
 }
 
+core-block ::ng-deep ion-card.addon-block-myoverview {
+    --border-width: 0;
+    --background: transparent;
+}
+
 @if ($core-dashboard-logo) {
     .in-toolbar h1 .core-header-logo {
         max-height: calc(var(--core-header-toolbar-height) - 24px);
