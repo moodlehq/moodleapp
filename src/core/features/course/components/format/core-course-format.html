@@ -1,11 +1,3 @@
-<!-- Buttons to add to the header. *ngIf is needed, otherwise the component is executed too soon and doesn't find the header. -->
-<core-navbar-buttons slot="end" *ngIf="loaded">
-    <core-context-menu>
-        <core-context-menu-item [hidden]="!displayCourseIndex || !sections || !sections.length" [priority]="500"
-            [content]="'core.course.courseindex' | translate" (action)="openCourseIndex()" iconAction="fas-list-ul">
-        </core-context-menu-item>
-    </core-context-menu>
-</core-navbar-buttons>
 <core-dynamic-component [component]="courseFormatComponent" [data]="data">
     <!-- Default course format. -->
     <core-loading [hideUntil]="loaded">
@@ -33,7 +25,7 @@
             <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)"></core-infinite-loading>
         </div>
 
-        <ion-buttons class="ion-padding core-course-section-nav-buttons safe-area-padding-horizontal"
+        <ion-buttons class="ion-padding core-course-section-nav-buttons safe-area-padding-horizontal list-item-limited-width"
             *ngIf="displayCourseIndex && (previousSection || nextSection)">
             <ion-button *ngIf="previousSection" (click)="sectionChanged(previousSection)" color="primary" fill="solid" expand="block"
                 [attr.aria-label]="('core.previous' | translate) + ': ' + previousSection.name">
