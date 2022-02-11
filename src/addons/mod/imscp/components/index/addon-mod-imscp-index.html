@@ -42,7 +42,7 @@
     <div class="addon-mod-imscp-container">
         <core-navigation-bar [items]="navigationItems" (action)="loadItem($event)">
         </core-navigation-bar>
-        <core-iframe [src]="src"></core-iframe>
+        <core-iframe *ngIf="loaded" [src]="src" [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true"></core-iframe>
     </div>
 </core-loading>
 

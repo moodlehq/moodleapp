@@ -1427,17 +1427,18 @@ ion-header[collapsible] {
     ion-title {
         @include core-transition(opacity, 0ms);
     }
+}
 
-    &:not(.core-header-collapsed) {
-        ion-toolbar {
-            --core-header-toolbar-background: rgba(255, 255, 255, 0);
-            --core-header-toolbar-border-width: 0;
-        }
+// Only hide header when not in fullscreen.
+body:not(.core-iframe-fullscreen) ion-header[collapsible]:not(.core-header-collapsed) {
+    ion-toolbar {
+        --core-header-toolbar-background: rgba(255, 255, 255, 0);
+        --core-header-toolbar-border-width: 0;
+    }
 
-        ion-title, &::after {
-            opacity: 0;
-            z-index: 0;
-        }
+    ion-title, &::after {
+        opacity: 0;
+        z-index: 0;
     }
 }
 
@@ -1497,4 +1498,9 @@ ion-app.md .collapsible-title h1 {
         overflow: hidden;
         text-overflow: ellipsis;
     }
+}
+
+// In fullscreen, disable the offset-top added by collapsible header.
+body.core-iframe-fullscreen ion-content {
+    --offset-top: 0px !important;
 }
