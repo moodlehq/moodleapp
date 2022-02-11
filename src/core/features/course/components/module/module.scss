@@ -11,6 +11,10 @@
     ion-item.core-module-main-item {
         --min-height: 52px;
 
+        .core-module-title .item-heading ion-icon {
+            @include margin-horizontal(8px, null);
+        }
+
         .core-module-buttons,
         .buttons.core-module-buttons {
             margin: 0;
@@ -39,6 +43,7 @@
         .core-module-additional-info {
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
         }
     }
 

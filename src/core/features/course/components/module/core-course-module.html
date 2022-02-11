@@ -3,7 +3,6 @@
         <ion-item id="core-course-module-{{module.id}}" detail="false"
             class="ion-text-wrap core-course-module-handler core-module-main-item {{module.handlerData.class}}"
             (click)="moduleClicked($event)" [attr.aria-label]="module.handlerData.a11yTitle" [ngClass]="{
-                'item-media': module.handlerData.icon,
                 'item-dimmed': module.visible === 0 || module.uservisible === false
             }" [button]="module.handlerData.action && module.uservisible">
 
@@ -16,6 +15,8 @@
                     <core-format-text [text]="module.handlerData.title" contextLevel="module" [contextInstanceId]="module.id"
                         [courseId]="module.course" [attr.aria-label]="module.handlerData.a11yTitle + ', ' + modNameTranslated">
                     </core-format-text>
+                    <ion-icon name="fas-lock" *ngIf="module.visible === 0 || module.uservisible === false"
+                        [attr.aria-label]="'core.restricted' | translate"></ion-icon>
                 </p>
 
                 <div class="core-module-additional-info">
@@ -31,7 +32,7 @@
                     </ion-chip>
 
                     <!-- Hidden badges -->
-                    <ion-badge color="warning" *ngIf="module.visible === 0 && (!section || section.visible)">
+                    <ion-badge color="warning" *ngIf="module.visible === 0">
                         {{ 'core.course.hiddenfromstudents' | translate }}
                     </ion-badge>
                     <ion-badge color="warning" *ngIf="module.visible !== 0 && module.isStealth">
@@ -60,7 +61,6 @@
         </ion-item>
         <ion-item *ngIf="hasInfo" id="core-course-module-{{module.id}}-info" detail="false"
             class="ion-text-wrap core-course-module-handler core-course-module-info {{module.handlerData.class}}" [ngClass]="{
-                'item-media': module.handlerData.icon,
                 'item-dimmed': module.visible === 0 || module.uservisible === false
             }">
             <ion-label collapsible-item>

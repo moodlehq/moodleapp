@@ -211,6 +211,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
             parseInt(getComputedStyle(this.contentH1.parentElement).marginTop || '0', 10)) + 'px',
         );
         this.contentH1.style.setProperty('position', 'absolute');
+        this.contentH1.parentElement.style.setProperty('position', 'relative');
 
         this.setupContent();
     }

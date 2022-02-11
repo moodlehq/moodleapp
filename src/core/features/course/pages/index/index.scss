@@ -1,6 +1,10 @@
 @import '~theme/globals.scss';
 
 :host {
+    .core-format-progress-list {
+        width: 100%;
+    }
+
     .core-course-thumb {
         height: var(--core-courseimage-on-course-size);
         min-height: var(--core-courseimage-on-course-size);
@@ -9,9 +13,9 @@
         --border-radius: var(--core-courseimage-radius);
     }
 
-    @if ($core-show-courseimage-on-course) {
+    @if ($core-hide-courseimage-on-course) {
         .core-course-thumb {
-            display: block;
+            display: none;
         }
     }
 
