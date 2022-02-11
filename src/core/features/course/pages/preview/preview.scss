@@ -1,43 +1,12 @@
 :host {
-    ion-content:not(.animating) {
-        &::part(scroll) {
-            perspective: 1px;
-            perspective-origin: center top;
-            transform-style: preserve-3d;
-        }
-
-        .core-course-thumb {
-            transform-origin: center top;
-
-            --scroll-factor: 0.5;
-            --translate-z: calc(-2 * var(--scroll-factor))px;
-            --scale: calc(1 + var(--scroll-factor) * 2);
-
-            /**
-            * Calculated with scroll-factor: 0.5;
-            * translate-z: -2 * $scroll-factor px;
-            * scale: 1 + $scroll-factor * 2;
-            */
-            transform: translateZ(-1px) scale(2);
-        }
-    }
-
-    .core-course-thumb-parallax-content {
-        transform: translateZ(0);
-        -webkit-filter: drop-shadow(0px -3px 3px rgba(var(--drop-shadow)));
-        filter: drop-shadow(0px -3px 3px rgba(var(--drop-shadow)));
-    }
-
-    .core-course-thumb-parallax {
+    .core-course-thumb {
+        overflow: hidden;
+        text-align: center;
         height: 40vw;
         max-height: 35vh;
         z-index: -1;
         overflow: hidden;
-    }
-
-    .core-course-thumb {
-        overflow: hidden;
-        text-align: center;
+        border-bottom: 1px solid var(--stroke);
     }
 
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -29,7 +29,7 @@ import {
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
-import { NgZone, Platform, Translate } from '@singletons';
+import { ModalController, NgZone, Platform, Translate } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreCoursesSelfEnrolPasswordComponent } from '../../../courses/components/self-enrol-password/self-enrol-password';
 import { CoreNavigator } from '@services/navigator';
@@ -47,7 +47,9 @@ import { Subscription } from 'rxjs';
 })
 export class CoreCoursePreviewPage implements OnInit, OnDestroy {
 
-    course?: CoreCourseSummaryData;
+    @Input() course?: CoreCourseSummaryData;
+    @Input() courseId = 0;
+
     isEnrolled = false;
     canAccessCourse = true;
     selfEnrolInstances: CoreCourseEnrolmentMethod[] = [];
@@ -76,7 +78,6 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     protected enrolUrl = '';
     protected pageDestroyed = false;
     protected courseStatusObserver?: CoreEventObserver;
-    protected courseId!: number;
     protected appResumeSubscription: Subscription;
     protected waitingForBrowserEnrol = false;
 
@@ -111,17 +112,23 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        try {
-            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
-        } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-            CoreNavigator.back();
+        if (!this.courseId) {
+            // Opened as a page.
+            try {
+                this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            } catch (error) {
+                CoreDomUtils.showErrorModal(error);
+                CoreNavigator.back();
+                this.closeModal(); // Just in case.
 
-            return;
+                return;
+            }
+
+            this.course = CoreNavigator.getRouteParam('course');
+        } else {
+            // Opened as a modal.
+            this.avoidOpenCourse = true;
         }
-
-        this.avoidOpenCourse = !!CoreNavigator.getRouteBooleanParam('avoidOpenCourse');
-        this.course = CoreNavigator.getRouteParam('course');
 
         const currentSiteUrl = CoreSites.getRequiredCurrentSite().getURL();
         this.enrolUrl = CoreTextUtils.concatenatePaths(currentSiteUrl, 'enrol/index.php?id=' + this.courseId);
@@ -450,6 +457,13 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
                 }, 5000);
             });
         }
+    }
+
+    /**
+     * Close the modal.
+     */
+    closeModal(): void {
+        ModalController.dismiss();
     }
 
     /**

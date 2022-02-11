@@ -24,14 +24,21 @@ const routes: Routes = [
         component: CoreCoursePreviewPage,
     },
 ];
+@NgModule({
+    imports: [
+        CoreSharedModule,
+    ],
+    declarations: [
+        CoreCoursePreviewPage,
+    ],
+})
+export class CoreCoursePreviewPageComponentModule { }
 
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-    ],
-    declarations: [
-        CoreCoursePreviewPage,
+        CoreCoursePreviewPageComponentModule,
     ],
     exports: [RouterModule],
 })
