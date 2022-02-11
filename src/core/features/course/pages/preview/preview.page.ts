@@ -56,7 +56,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     selfEnrolInstances: CoreCourseEnrolmentMethod[] = [];
     paypalEnabled = false;
     dataLoaded = false;
-    avoidOpenCourse = false;
+    isModal = false;
 
     courseUrl = '';
     courseImageUrl?: string;
@@ -110,7 +110,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
             this.course = CoreNavigator.getRouteParam('course');
         } else {
             // Opened as a modal.
-            this.avoidOpenCourse = true;
+            this.isModal = true;
         }
 
         const currentSiteUrl = CoreSites.getRequiredCurrentSite().getURL();
@@ -256,7 +256,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
      * @param replaceCurrentPage If current place should be replaced in the navigation stack.
      */
     openCourse(replaceCurrentPage = false): void {
-        if (!this.canAccessCourse || !this.course || this.avoidOpenCourse) {
+        if (!this.canAccessCourse || !this.course || this.isModal) {
             return;
         }
 
