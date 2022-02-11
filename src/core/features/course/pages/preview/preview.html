@@ -23,7 +23,7 @@
         <div *ngIf="courseImageUrl" class="core-course-thumb">
             <img [src]="courseImageUrl" core-external-content alt="" />
         </div>
-        <div *ngIf="course">
+        <ng-container *ngIf="course">
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p *ngIf="course.categoryname">
@@ -94,13 +94,13 @@
                     </ng-container>
                 </ion-label>
             </ion-item>
-        </div>
+        </ng-container>
     </core-loading>
 </ion-content>
 
-<ion-footer>
+<ion-footer *ngIf="course && dataLoaded">
     <!-- Enrol -->
-    <ng-container *ngIf="!isEnrolled">
+    <ion-card *ngIf="!isEnrolled">
         <ion-item class="ion-text-wrap" *ngFor="let instance of selfEnrolInstances">
             <ion-label>
                 <p class="item-heading">{{ instance.name }}</p>
@@ -122,6 +122,14 @@
                 <p class="item-heading">{{ 'core.courses.notenrollable' | translate }}</p>
             </ion-label>
         </ion-item>
+    </ion-card>
+
+    <ng-container *ngIf="canAccessCourse">
+        <ion-button class="ion-margin" *ngFor="let item of courseMenuHandlers" (click)="openMenuItem(item)" [class]="item.data.class"
+            expand="block">
+            <ion-icon *ngIf="item.data.icon" [name]="item.data.icon" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>{{item.data.title | translate }}</ion-label>
+        </ion-button>
     </ng-container>
 
     <ion-button class="ion-margin" (click)="openCourse()" *ngIf="!avoidOpenCourse && canAccessCourse" expand="block">

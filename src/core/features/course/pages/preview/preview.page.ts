@@ -26,7 +26,10 @@ import {
     CoreCoursesProvider,
     CoreEnrolledCourseData,
 } from '@features/courses/services/courses';
-import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
+import {
+    CoreCourseOptionsDelegate,
+    CoreCourseOptionsMenuHandlerToDisplay,
+} from '@features/course/services/course-options-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { ModalController, NgZone, Platform, Translate } from '@singletons';
 import { CoreCoursesSelfEnrolPasswordComponent } from '../../../courses/components/self-enrol-password/self-enrol-password';
@@ -58,6 +61,8 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     courseUrl = '';
     courseImageUrl?: string;
     progress?: number;
+
+    courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
 
     protected isGuestEnabled = false;
     protected useGuestAccess = false;
@@ -145,8 +150,10 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
 
     /**
      * Convenience function to get course. We use this to determine if a user can see the course or not.
+     *
+     * @param refresh If it's refreshing content.
      */
-    protected async getCourse(): Promise<void> {
+    protected async getCourse(refresh = false): Promise<void> {
         // Get course enrolment methods.
         this.selfEnrolInstances = [];
 
@@ -223,7 +230,24 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
             this.progress = this.course.progress;
         }
 
+        await this.loadMenuHandlers(refresh);
+
         this.dataLoaded = true;
+    }
+
+    /**
+     * Load the course menu handlers.
+     *
+     * @param refresh If it's refreshing content.
+     * @return Promise resolved when done.
+     */
+    protected async loadMenuHandlers(refresh?: boolean): Promise<void> {
+        if (!this.course) {
+            return;
+        }
+
+        this.courseMenuHandlers =
+            await CoreCourseOptionsDelegate.getMenuHandlersToDisplay(this.course, refresh, this.useGuestAccess);
     }
 
     /**
@@ -397,6 +421,16 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
                 }, 5000);
             });
         }
+    }
+
+    /**
+     * Opens a menu item registered to the delegate.
+     *
+     * @param item Item to open
+     */
+    openMenuItem(item: CoreCourseOptionsMenuHandlerToDisplay): void {
+        const params = Object.assign({ course: this.course }, item.data.pageParams);
+        CoreNavigator.navigateToSitePath(item.data.page, { params });
     }
 
     /**
