@@ -1269,15 +1269,34 @@ export class CoreDomUtilsProvider {
     showDeleteConfirm(
         translateMessage: string = 'core.areyousure',
         translateArgs: Record<string, unknown> = {},
-        options?: AlertOptions,
+        options: AlertOptions = {},
     ): Promise<void> {
-        return this.showConfirm(
-            Translate.instant(translateMessage, translateArgs),
-            undefined,
-            Translate.instant('core.delete'),
-            undefined,
-            options,
-        );
+        return new Promise((resolve, reject): void => {
+            options.message = Translate.instant(translateMessage, translateArgs);
+
+            options.buttons = [
+                {
+                    text: Translate.instant('core.cancel'),
+                    role: 'cancel',
+                    handler: () => {
+                        reject(new CoreCanceledError(''));
+                    },
+                },
+                {
+                    text: Translate.instant('core.delete'),
+                    role: 'destructive',
+                    handler: () => {
+                        resolve();
+                    },
+                },
+            ];
+
+            if (!options.header) {
+                options.cssClass = (options.cssClass || '') + ' core-nohead';
+            }
+
+            this.showAlertWithOptions(options, 0);
+        });
     }
 
     /**

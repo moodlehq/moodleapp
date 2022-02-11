@@ -259,7 +259,10 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
      */
     async deleteCourseStoredData(): Promise<void> {
         try {
-            await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
+            await CoreDomUtils.showDeleteConfirm(
+                'addon.storagemanager.confirmdeletedatafrom',
+                { name: this.course.displayname || this.course.fullname },
+            );
         } catch (error) {
             if (!CoreDomUtils.isCanceledError(error)) {
                 throw error;

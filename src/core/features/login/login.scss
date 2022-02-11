@@ -77,11 +77,6 @@
         }
     }
 
-    .core-login-reconnect-warning ion-item {
-        font-size: 0.9em;
-        --background: var(--core-login-input-background);
-    }
-
     @if ($core-fixed-url) {
         .core-sitename, .core-siteurl {
             display: none;

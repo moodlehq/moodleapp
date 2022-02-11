@@ -414,9 +414,10 @@ ion-alert {
         overflow: auto;
         border-radius: var(--border-radius) !important;
 
-        button.alert-button {
-            color: var(--primary);
+        button.alert-button.alert-button-role-destructive {
+            color: var(--danger);
         }
+
     }
 
     .alert-message {
@@ -673,23 +674,37 @@ body.core-iframe-fullscreen ion-router-outlet {
 
     // Message cards.
     ion-card.core-#{$color-name}-card {
-        --color-base: var(--ion-color-#{$color-name});
+        --color-tint: var(--ion-color-#{$color-name}-tint);
+        --color-shade: var(--ion-color-#{$color-name}-shade);
+        --border-width: 0;
 
-        border-bottom: 3px solid var(--color-base);
+        --border-color: var(--color-tint);
+        --background: var(--color-tint);
+        --color: var(--color-shade);
 
         ion-item {
+            --background: var(--color-tint);
+            --color: var(--color-shade);
             --inner-border-width: 0px;
+            --border-width: 0px;
+
+            ion-label, ion-label > p {
+                --color: var(--color-shade);
+            }
         }
+
         ion-label {
             white-space: normal !important;
         }
         ion-icon {
-            color: var(--color-base);
+            color: var(--color-shade);
+            @include margin-horizontal(null, 16px);
         }
     }
 
     .item.core-#{$color-name}-item {
         --color-base: var(--ion-color-#{$color-name});
+        --color-shade: var(--ion-color-#{$color-name}-shade);
 
         --border-width: 0 0 3px 0;
         --border-color: var(--color-base);
@@ -1260,7 +1275,6 @@ ion-item.item-input ion-input.has-focus {
 
 ion-item-divider.item,
 ion-item.item.divider {
-    --inner-padding-end: 8px;
     min-height: var(--min-height);
     border-bottom-width: var(--item-divider-border-width);
     --border-width: var(--item-divider-border-width);

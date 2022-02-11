@@ -282,7 +282,10 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      */
     async deleteForCourse(): Promise<void> {
         try {
-            await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
+            await CoreDomUtils.showDeleteConfirm(
+                'addon.storagemanager.confirmdeletedatafrom',
+                { name: this.title },
+            );
         } catch (error) {
             if (!CoreDomUtils.isCanceledError(error)) {
                 throw error;
@@ -312,7 +315,10 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      */
     async deleteForSection(section: AddonStorageManagerCourseSection): Promise<void> {
         try {
-            await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
+            await CoreDomUtils.showDeleteConfirm(
+                'addon.storagemanager.confirmdeletedatafrom',
+                { name: section.name },
+            );
         } catch (error) {
             if (!CoreDomUtils.isCanceledError(error)) {
                 throw error;
@@ -343,7 +349,10 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         }
 
         try {
-            await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
+            await CoreDomUtils.showDeleteConfirm(
+                'addon.storagemanager.confirmdeletedatafrom',
+                { name: module.name },
+            );
         } catch (error) {
             if (!CoreDomUtils.isCanceledError(error)) {
                 throw error;
@@ -363,7 +372,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      * @return Promise<void> Once deleting has finished
      */
     protected async deleteModules(modules: AddonStorageManagerModule[], section?: AddonStorageManagerCourseSection): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
 
         const promises: Promise<void>[] = [];
         modules.forEach((module) => {

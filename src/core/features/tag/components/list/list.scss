@@ -5,6 +5,7 @@
 
     ion-badge {
         cursor: pointer;
-        @include margin-horizontal(4px, 4px);
+        margin-left: 4px;
+        margin-right: 4px;
     }
 }

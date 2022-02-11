@@ -29,7 +29,9 @@
         <ion-card *ngIf="!isLoggedOut" class="core-danger-card core-login-reconnect-warning">
             <ion-item>
                 <ion-icon name="fas-exclamation-circle" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label color="danger">{{ 'core.login.reconnectdescription' | translate }}</ion-label>
+                <ion-label>
+                    <p>{{ 'core.login.reconnectdescription' | translate }}</p>
+                </ion-label>
             </ion-item>
         </ion-card>
     </div>

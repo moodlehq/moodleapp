@@ -111,7 +111,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
         event.stopPropagation();
 
         try {
-            await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
+            await CoreDomUtils.showDeleteConfirm('addon.storagemanager.confirmdeletecourses');
         } catch (error) {
             if (!CoreDomUtils.isCanceledError(error)) {
                 throw error;
@@ -120,7 +120,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
         const deletedCourseIds = this.completelyDownloadedCourses.map((course) => course.id);
 
         try {
@@ -145,7 +145,10 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
         event.stopPropagation();
 
         try {
-            await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
+            await CoreDomUtils.showDeleteConfirm(
+                'addon.storagemanager.confirmdeletedatafrom',
+                { name: course.title },
+            );
         } catch (error) {
             if (!CoreDomUtils.isCanceledError(error)) {
                 throw error;
@@ -154,7 +157,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
 
         try {
             await CoreCourseHelper.deleteCourseFiles(course.id);

@@ -1,5 +1,3 @@
-@import "~theme/globals";
-
 :host {
 
     .core-user-profile-maininfo::part(native) {
@@ -41,7 +39,8 @@
     .core-user-profile-interests {
         ion-badge {
             cursor: pointer;
-            @include margin-horizontal(3px, 3px);
+            margin-left: 4px;
+            margin-right: 4px;
         }
     }
 
