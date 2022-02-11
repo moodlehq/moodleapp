@@ -100,7 +100,7 @@
     }
 }
 
-@media (min-width: 768px) {
+@include media-breakpoint-up(md) {
     ion-content > * {
         max-width: 600px;
         margin: 0 auto;
