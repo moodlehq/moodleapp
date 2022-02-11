@@ -1,3 +1,5 @@
+@import "~theme/globals";
+
 :host {
     --addon-calendar-blank-day-background-color: var(--light);
 
@@ -48,7 +50,7 @@
             }
         }
 
-        @media (min-width: 768px) {
+        @include media-breakpoint-up(md) {
             .addon-calendar-day-number {
                 text-align: start;
             }

@@ -401,6 +401,15 @@ ion-alert.core-nohead {
 
 ion-alert {
     --border-radius: var(--huge-radius);
+
+    &.md, &.ios {
+        --max-width: 80%;
+
+        @include media-breakpoint-up(md) {
+            --max-width: 384px;
+        }
+    }
+
     .alert-wrapper {
         overflow: auto;
         border-radius: var(--border-radius) !important;

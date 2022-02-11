@@ -100,7 +100,16 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
      * @return Promise resolved when done.
      */
     async prefetch(course: CoreEnrolledCourseDataWithExtraInfoAndOptions): Promise<void> {
-        await CoreGrades.getCourseGradesTable(course.id, undefined, undefined, true);
+        try {
+            await CoreGrades.getCourseGradesTable(course.id, undefined, undefined, true);
+        } catch (error) {
+            if (error.errorcode === 'notingroup') {
+                // Don't fail the download because of this error.
+                return;
+            }
+
+            throw error;
+        }
     }
 
 }
