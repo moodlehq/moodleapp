@@ -20,7 +20,8 @@
                         <ion-badge color="light">{{ totalSize | coreBytesToSize }}</ion-badge>
                     </ion-label>
                     <ion-button slot="end" (click)="deleteForCourse()" [disabled]="totalSize == 0" color="danger" fill="outline">
-                        <ion-icon name="fas-trash" slot="icon-only" [attr.aria-label]="'addon.storagemanager.deletecourse' | translate">
+                        <ion-icon name="fas-trash" slot="icon-only" [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate:
+                        { name: title }">
                         </ion-icon>
                     </ion-button>
                 </ion-item>

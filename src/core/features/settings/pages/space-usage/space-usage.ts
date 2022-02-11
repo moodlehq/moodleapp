@@ -16,8 +16,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../services/settings-helper';
@@ -127,16 +125,6 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
         } catch {
             // Ignore cancelled confirmation modal.
         }
-    }
-
-    /**
-     * Show information about space usage actions.
-     */
-    showInfo(): void {
-        CoreDomUtils.showAlert(
-            Translate.instant('core.help'),
-            Translate.instant('core.settings.spaceusagehelp'),
-        );
     }
 
     /**

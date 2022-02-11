@@ -1,13 +1,18 @@
 {
-    "deletedata": "Delete offline data",
-    "deletecourse": "Delete offline data from this course",
-    "deletecourses": "Delete offline data from all courses",
-    "deletedatafrom": "Delete offline data from {{name}}",
-    "courseinfo": "Download course content to work offline. Your activity will sync automatically when your device is back online.",
-    "managedownloads": "Manage downloads",
+    "alldata": "All data",
+    "confirmdeleteallsitedata": "Delete all site downloaded data?",
+    "confirmdeletecourses": "Delete downloaded data from all courses?",
+    "confirmdeletedatafrom": "Delete all downloaded data from '{{name}}'?",
     "coursedownloads": "Course downloads",
+    "courseinfo": "Download course content to work offline. Your activity will sync automatically when your device is back online.",
+    "deleteallsitedata": "Delete all site downloaded data",
+    "deleteallsitedatainfo": "This will delete all downloaded data from '{{name}}', including all downloaded courses and data that allows you to work offline.",
+    "deletecourses": "Delete downloaded data from all courses",
+    "deletedata": "Delete downloaded data",
+    "deletedatafrom": "Delete all downloaded data from '{{name}}'",
+    "downloadedcourses": "Downloaded courses",
+    "errordeletedownloadeddata": "Error deleting downloaded data.",
+    "managedownloads": "Manage downloads",
     "totaldownloads": "Total downloads",
-    "totalspaceusage": "Total space usage",
-    "coursesspaceusage": "Courses space usage",
-    "downloadedcourses": "Downloaded courses"
+    "totalspaceusage": "Total space used"
 }

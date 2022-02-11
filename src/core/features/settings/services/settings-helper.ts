@@ -116,10 +116,13 @@ export class CoreSettingsHelperProvider {
 
         siteName = await CoreFilter.formatText(siteName, { clean: true, singleLine: true, filter: false }, [], siteId);
 
-        const title = Translate.instant('core.settings.deletesitefilestitle');
-        const message = Translate.instant('core.settings.deletesitefiles', { sitename: siteName });
+        const title = Translate.instant('addon.storagemanager.confirmdeleteallsitedata');
 
-        await CoreDomUtils.showConfirm(message, title, Translate.instant('core.delete'));
+        await CoreDomUtils.showDeleteConfirm(
+            'addon.storagemanager.deleteallsitedatainfo',
+            { name: siteName },
+            { header:  title },
+        );
 
         const site = await CoreSites.getSite(siteId);
 
@@ -143,7 +146,7 @@ export class CoreSettingsHelperProvider {
                 siteInfo.spaceUsage = 0;
             } else {
                 // Error, recalculate the site usage.
-                CoreDomUtils.showErrorModal('core.settings.errordeletesitefiles', true);
+                CoreDomUtils.showErrorModal('addon.storagemanager.errordeletedownloadeddata', true);
 
                 siteInfo.spaceUsage = await site.getSpaceUsage();
             }

@@ -499,7 +499,7 @@ export class CoreCourseHelperProvider {
 
         try {
 
-            await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
+            await CoreDomUtils.showDeleteConfirm('addon.storagemanager.confirmdeletedatafrom', { name: module.name });
 
             modal = await CoreDomUtils.showModalLoading();
 

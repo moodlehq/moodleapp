@@ -8,9 +8,6 @@
         </ion-title>
         <ion-buttons slot="end">
             <core-navbar-buttons>
-                <ion-button (click)="showInfo()" [attr.aria-label]="'core.info' | translate">
-                    <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
-                </ion-button>
             </core-navbar-buttons>
         </ion-buttons>
     </ion-toolbar>
@@ -28,14 +25,13 @@
                     </p>
                     <p class="ion-text-wrap">{{ site.fullName }}</p>
                     <p>{{ site.siteUrlWithoutProtocol }}</p>
+                    <ion-badge color="light" *ngIf="site.spaceUsage !== undefined">{{ site.spaceUsage | coreBytesToSize }}</ion-badge>
                 </ion-label>
-                <p *ngIf="site.spaceUsage !== undefined" slot="end">
-                    {{ site.spaceUsage | coreBytesToSize }}
-                </p>
                 <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage(site)"
-                    [hidden]="site.spaceUsage! + site.cacheEntries! <= 0"
-                    [attr.aria-label]="'core.settings.deletesitefilestitle' | translate">
-                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+                    [hidden]="site.spaceUsage! + site.cacheEntries! <= 0">
+                    <ion-icon name="fas-trash" slot="icon-only"
+                        [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: site.siteName }">
+                    </ion-icon>
                 </ion-button>
             </ion-item>
             <ion-item-divider>
