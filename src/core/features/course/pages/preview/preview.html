@@ -124,19 +124,6 @@
         </ion-item>
     </ng-container>
 
-    <ion-button class="ion-margin" *ngIf="canAccessCourse && downloadCourseEnabled" (click)="prefetchCourse()" expand="block"
-        [attr.aria-label]="prefetchCourseData.statusTranslatable | translate">
-        <ion-icon *ngIf="(prefetchCourseData.status != statusDownloaded) && !prefetchCourseData.loading" [name]="prefetchCourseData.icon"
-            slot="start" aria-hidden="true">
-        </ion-icon>
-        <ion-icon *ngIf="(prefetchCourseData.status == statusDownloaded) && !prefetchCourseData.loading" slot="start"
-            [name]="prefetchCourseData.icon" color="success" aria-hidden="true" role="status">
-        </ion-icon>
-        <ion-spinner *ngIf="prefetchCourseData.loading" slot="start" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
-        <ion-label *ngIf="prefetchCourseData.status != statusDownloaded">{{ 'core.course.downloadcourse' | translate }}</ion-label>
-        <ion-label *ngIf="prefetchCourseData.status == statusDownloaded">{{ 'core.course.refreshcourse' | translate }}</ion-label>
-    </ion-button>
-
     <ion-button class="ion-margin" (click)="openCourse()" *ngIf="!avoidOpenCourse && canAccessCourse" expand="block">
         <ion-icon name="fas-briefcase" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>

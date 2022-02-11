@@ -27,10 +27,8 @@ import {
     CoreEnrolledCourseData,
 } from '@features/courses/services/courses';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
-import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
-import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { ModalController, NgZone, Platform, Translate } from '@singletons';
-import { CoreConstants } from '@/core/constants';
 import { CoreCoursesSelfEnrolPasswordComponent } from '../../../courses/components/self-enrol-password/self-enrol-password';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
@@ -56,16 +54,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     paypalEnabled = false;
     dataLoaded = false;
     avoidOpenCourse = false;
-    prefetchCourseData: CorePrefetchStatusInfo = {
-        icon: '',
-        statusTranslatable: 'core.loading',
-        status: '',
-        loading: true,
-    };
 
-    statusDownloaded = CoreConstants.DOWNLOADED;
-
-    downloadCourseEnabled: boolean;
     courseUrl = '';
     courseImageUrl?: string;
     progress?: number;
@@ -82,17 +71,6 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     protected waitingForBrowserEnrol = false;
 
     constructor() {
-        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-
-        if (this.downloadCourseEnabled) {
-            // Listen for status change in course.
-            this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data) => {
-                if (data.courseId == this.courseId || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
-                    this.updateCourseStatus(data.status);
-                }
-            }, CoreSites.getCurrentSiteId());
-        }
-
         // Refresh the view when the app is resumed.
         this.appResumeSubscription = Platform.resume.subscribe(() => {
             if (!this.waitingForBrowserEnrol || !this.dataLoaded) {
@@ -134,31 +112,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
         this.enrolUrl = CoreTextUtils.concatenatePaths(currentSiteUrl, 'enrol/index.php?id=' + this.courseId);
         this.courseUrl = CoreTextUtils.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.courseId);
 
-        try {
-            await this.getCourse();
-        } finally {
-            if (this.downloadCourseEnabled) {
-
-                // Determine course prefetch icon.
-                this.prefetchCourseData = await CoreCourseHelper.getCourseStatusIconAndTitle(this.courseId);
-
-                if (this.prefetchCourseData.loading) {
-                    // Course is being downloaded. Get the download promise.
-                    const promise = CoreCourseHelper.getCourseDownloadPromise(this.courseId);
-                    if (promise) {
-                        // There is a download promise. If it fails, show an error.
-                        promise.catch((error) => {
-                            if (!this.pageDestroyed) {
-                                CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-                            }
-                        });
-                    } else {
-                        // No download, this probably means that the app was closed while downloading. Set previous status.
-                        CoreCourse.setCoursePreviousStatus(this.courseId);
-                    }
-                }
-            }
-        }
+        await this.getCourse();
     }
 
     /**
@@ -411,20 +365,6 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Update the course status icon and title.
-     *
-     * @param status Status to show.
-     */
-    protected updateCourseStatus(status: string): void {
-        const statusData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
-
-        this.prefetchCourseData.status = statusData.status;
-        this.prefetchCourseData.icon = statusData.icon;
-        this.prefetchCourseData.statusTranslatable = statusData.statusTranslatable;
-        this.prefetchCourseData.loading = statusData.loading;
-    }
-
-    /**
      * Wait for the user to be enrolled in the course.
      *
      * @param first If it's the first call (true) or it's a recursive call (false).
@@ -464,21 +404,6 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
      */
     closeModal(): void {
         ModalController.dismiss();
-    }
-
-    /**
-     * Prefetch the course.
-     */
-    async prefetchCourse(): Promise<void> {
-        try {
-            await CoreCourseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course as CoreEnrolledCourseData, {
-                isGuest: this.useGuestAccess,
-            });
-        } catch (error) {
-            if (!this.pageDestroyed) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-            }
-        }
     }
 
     /**
