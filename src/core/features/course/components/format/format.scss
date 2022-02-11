@@ -1,6 +1,8 @@
 .core-course-section-nav-buttons {
     display: flex;
     justify-content: space-between;
+    padding-left: 8px;
+    padding-right: 8px;
 
     ion-button {
         white-space: nowrap;
