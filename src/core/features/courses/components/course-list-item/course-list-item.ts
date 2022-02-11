@@ -55,7 +55,6 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     };
 
     showSpinner = false;
-    downloadCourseEnabled = false;
     courseOptionMenuEnabled = false;
     progress = -1;
     completionUserTracked: boolean | undefined = false;
@@ -63,7 +62,6 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     protected courseStatus = CoreConstants.NOT_DOWNLOADED;
     protected isDestroyed = false;
     protected courseStatusObserver?: CoreEventObserver;
-    protected siteUpdatedObserver?: CoreEventObserver;
 
     protected element: HTMLElement;
 
@@ -93,31 +91,12 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         }
 
         if (this.isEnrolled) {
-            if (this.showDownload) {
-                this.initPrefetchCourse();
-            }
-
-            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-
-            if (this.downloadCourseEnabled) {
-                this.initPrefetchCourse();
-            }
-
             // This field is only available from 3.6 onwards.
             this.courseOptionMenuEnabled = (this.layout != 'listwithenrol' && this.layout != 'summarycard') &&
                 this.course.isfavourite !== undefined;
 
-            // Refresh the enabled flag if site is updated.
-            this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-                const wasEnabled = this.downloadCourseEnabled;
+            this.initPrefetchCourse();
 
-                this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-
-                if (!wasEnabled && this.downloadCourseEnabled) {
-                    // Download course is enabled now, initialize it.
-                    this.initPrefetchCourse();
-                }
-            }, CoreSites.getCurrentSiteId());
         } else if ('enrollmentmethods' in this.course) {
             this.enrolmentIcons = [];
 
@@ -169,9 +148,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
      * @inheritdoc
      */
     ngOnChanges(): void {
-        if (this.showDownload && this.isEnrolled) {
-            this.initPrefetchCourse();
-        }
+        this.initPrefetchCourse();
 
         this.updateCourseFields();
     }
@@ -203,7 +180,12 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     /**
      * Initialize prefetch course.
      */
-    async initPrefetchCourse(): Promise<void> {
+    async initPrefetchCourse(forceInit = false): Promise<void> {
+        if (!this.isEnrolled || !this.showDownload ||
+            (this.courseOptionMenuEnabled && !forceInit)) {
+            return;
+        }
+
         if (this.courseStatusObserver !== undefined) {
             // Already initialized.
             return;
@@ -305,6 +287,8 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     async showCourseOptionsMenu(event: Event): Promise<void> {
         event.preventDefault();
         event.stopPropagation();
+
+        this.initPrefetchCourse(true);
 
         const popoverData = await CoreDomUtils.openPopover<string>({
             component: CoreCoursesCourseOptionsMenuComponent,
@@ -414,7 +398,6 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.courseStatusObserver?.off();
-        this.siteUpdatedObserver?.off();
     }
 
 }

@@ -119,7 +119,7 @@ export class CoreSettingsHelperProvider {
         const title = Translate.instant('core.settings.deletesitefilestitle');
         const message = Translate.instant('core.settings.deletesitefiles', { sitename: siteName });
 
-        await CoreDomUtils.showConfirm(message, title);
+        await CoreDomUtils.showConfirm(message, title, Translate.instant('core.delete'));
 
         const site = await CoreSites.getSite(siteId);
 

@@ -54,6 +54,7 @@ ion-card {
     display: flex;
     flex-direction: column;
     align-items: center;
+    z-index: 2;
 
     ion-spinner {
         margin-top: 4px;
@@ -156,7 +157,7 @@ ion-card.core-course-list-card {
 
         ion-icon.course-icon {
             color: white;
-            opacity: 50%;
+            opacity: 0.5;
             position: absolute;
             left: 0;
             right: 0;

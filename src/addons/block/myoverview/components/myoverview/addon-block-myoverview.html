@@ -22,7 +22,7 @@
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" [fullscreen]="false">
 
-    <ion-row class="ion-no-padding ion-justify-content-between" *ngIf="hasCourses">
+    <ion-row class="ion-no-padding ion-justify-content-between ion-align-items-center" *ngIf="hasCourses">
         <ion-col size="auto" class="ion-no-padding" *ngIf="filters.enabled">
             <core-combobox interface="modal" [label]="'core.courses.filtermycourses' | translate" (onChange)="filterOptionsChanged($event)"
                 icon="fas-filter" [badge]="filters.count" [modalOptions]="filterModalOptions">
@@ -48,14 +48,15 @@
                 </ion-select-option>
             </core-combobox>
         </ion-col>
-        <ion-col size="auto" class="ion-no-padding" *ngIf="layouts.options.length > 1">
-            <!-- "Layouts" selector. -->
-            <core-combobox [label]="'core.show' | translate" [selection]="layouts.selected" (onChange)="saveLayout($event)" icon="fas-th">
-                <ng-container *ngFor="let layout of layouts.options">
-                    <ion-select-option class="ion-text-wrap" [value]="layout">{{ 'addon.block_myoverview.'+layout | translate }}
-                    </ion-select-option>
-                </ng-container>
-            </core-combobox>
+        <ion-col size="auto" class="ion-no-padding" *ngIf="isLayoutSwitcherAvailable">
+            <ion-button *ngIf="layout == 'card'" fill="outline" (click)="toggleLayout('list')"
+                [attr.aria-label]="'addon.block_myoverview.list' | translate">
+                <ion-icon slot="icon-only" name="fas-list"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="layout == 'list'" fill="outline" (click)="toggleLayout('card')"
+                [attr.aria-label]="'addon.block_myoverview.card' | translate">
+                <ion-icon slot="icon-only" name="fas-th"></ion-icon>
+            </ion-button>
         </ion-col>
     </ion-row>
     <ion-row class="ion-no-padding ion-hide-md-up" *ngIf="hasCourses">
@@ -73,13 +74,12 @@
 
     <!-- List of courses. -->
     <div class="safe-area-padding" *ngIf="hasCourses">
-        <ion-grid class="ion-no-padding" [class.core-no-grid]="layouts.selected != 'card'"
-            [class.list-item-limited-width]="layouts.selected != 'card'">
+        <ion-grid class="ion-no-padding" [class.core-no-grid]="layout != 'card'" [class.list-item-limited-width]="layout != 'card'">
             <ion-row class="ion-no-padding">
                 <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding" size="12" size-sm="6" size-md="6" size-lg="4"
                     size-xl="3">
                     <core-courses-course-list-item [course]="course" class="core-courseoverview" [showDownload]="downloadCourseEnabled"
-                        [layout]="layouts.selected">
+                        [layout]="layout">
                     </core-courses-course-list-item>
                 </ion-col>
             </ion-row>

@@ -1,5 +1,5 @@
 :host {
-    min-height: 61px;
+    min-height: var(--a11y-min-target-size);
     display: block;
     position: relative;
 
@@ -10,6 +10,10 @@
         z-index: 4;
         margin-top: 8px;
         margin-bottom: 8px;
+        --border-color: var(--core-search-box-border-color);
+        --border-radius: var(--core-search-box-border-radius);
+        --background: var(--core-search-box-background);
+        --color: var(--core-search-box-border-color);
     }
 
     ion-button.button {
@@ -19,6 +23,8 @@
     .core-search-history {
         max-height: calc(-120px + 80vh);
         overflow-y: auto;
+        background: var(--core-search-box-background);
+        --ion-item-background: var(--core-search-box-background);
 
         .item:hover {
             --background: var(--light);
@@ -40,5 +46,7 @@
 
     ion-item {
         --min-height: var(--a11y-min-target-size);
+        --border-width: 0px;
+        --background: var(--core-search-box-background);
     }
 }
