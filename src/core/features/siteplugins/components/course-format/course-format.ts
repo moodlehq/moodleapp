@@ -15,7 +15,7 @@
 import { Component, OnChanges, Input, ViewChild, Output, EventEmitter } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
-import { CoreCourseFormatComponent } from '@features/course/components/format/format';
+import { CoreCourseFormatComponent } from '@features/course/components/course-format/course-format';
 import { CoreCourseModuleCompletionData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';

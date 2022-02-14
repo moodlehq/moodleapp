@@ -31,7 +31,7 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourseOptionsMenuHandlerToDisplay } from '@features/course/services/course-options-delegate';
 import { CoreCourseSync, CoreCourseSyncProvider } from '@features/course/services/sync';
-import { CoreCourseFormatComponent } from '../../components/format/format';
+import { CoreCourseFormatComponent } from '../../components/course-format/course-format';
 import {
     CoreEvents,
     CoreEventObserver,

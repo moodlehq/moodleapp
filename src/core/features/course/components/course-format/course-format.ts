@@ -55,8 +55,8 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
  */
 @Component({
     selector: 'core-course-format',
-    templateUrl: 'core-course-format.html',
-    styleUrls: ['format.scss'],
+    templateUrl: 'course-format.html',
+    styleUrls: ['course-format.scss'],
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 

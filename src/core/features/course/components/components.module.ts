@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
-import { CoreCourseFormatComponent } from './format/format';
+import { CoreCourseFormatComponent } from './course-format/course-format';
 import { CoreCourseModuleComponent } from './module/module';
 import { CoreCourseModuleCompletionComponent } from './module-completion/module-completion';
 import { CoreCourseModuleDescriptionComponent } from './module-description/module-description';
