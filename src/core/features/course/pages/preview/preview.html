@@ -100,10 +100,9 @@
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="paypalEnabled">
                     <ion-label>
-                        <p class="item-heading">{{ 'core.courses.paypalaccepted' | translate }}</p>
-                        <p *ngIf="isMobile">{{ 'core.paymentinstant' | translate }}</p>
-                        <ion-button *ngIf="isMobile" expand="block" class="ion-margin-top" (click)="paypalEnrol()">
-                            {{ 'core.courses.sendpaymentbutton' | translate }}
+                        <p class="item-heading">{{ 'core.courses.otherenrolments' | translate }}</p>
+                        <ion-button expand="block" class="ion-margin-top" (click)="browserEnrol()">
+                            {{ 'core.courses.completeenrolmentbrowser' | translate }}
                         </ion-button>
                     </ion-label>
                 </ion-item>
