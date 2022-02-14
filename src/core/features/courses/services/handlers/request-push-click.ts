@@ -79,7 +79,7 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
 
             if (!result.enrolled) {
                 // User not enrolled (shouldn't happen), open the preview page.
-                page += '/preview';
+                page += '/summary';
             }
 
             await CoreNavigator.navigateToSitePath(page, { params, siteId: notification.site });

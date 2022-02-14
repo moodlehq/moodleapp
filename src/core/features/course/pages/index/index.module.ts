@@ -19,7 +19,7 @@ import { resolveModuleRoutes } from '@/app/app-routing.module';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseIndexPage } from '.';
 import { COURSE_INDEX_ROUTES } from './index-routing.module';
-import { CoreCoursePreviewPageComponentModule } from '../preview/preview.module';
+import { CoreCoursePreviewPageComponentModule } from '../course-summary/course-summary.module';
 
 function buildRoutes(injector: Injector): Routes {
     const routes = resolveModuleRoutes(injector, COURSE_INDEX_ROUTES);

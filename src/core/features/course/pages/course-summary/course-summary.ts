@@ -39,14 +39,14 @@ import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-
 import { Subscription } from 'rxjs';
 
 /**
- * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.
+ * Page that shows the summary of a course including buttons to enrol and other available options.
  */
 @Component({
-    selector: 'page-core-course-preview',
-    templateUrl: 'preview.html',
-    styleUrls: ['preview.scss'],
+    selector: 'page-core-course-summary',
+    templateUrl: 'course-summary.html',
+    styleUrls: ['course-summary.scss'],
 })
-export class CoreCoursePreviewPage implements OnInit, OnDestroy {
+export class CoreCourseSummaryPage implements OnInit, OnDestroy {
 
     @Input() course?: CoreCourseSummaryData;
     @Input() courseId = 0;

@@ -16,12 +16,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCoursePreviewPage } from './preview.page';
+import { CoreCourseSummaryPage } from './course-summary';
 
 const routes: Routes = [
     {
         path: '',
-        component: CoreCoursePreviewPage,
+        component: CoreCourseSummaryPage,
     },
 ];
 @NgModule({
@@ -29,7 +29,7 @@ const routes: Routes = [
         CoreSharedModule,
     ],
     declarations: [
-        CoreCoursePreviewPage,
+        CoreCourseSummaryPage,
     ],
 })
 export class CoreCoursePreviewPageComponentModule { }
@@ -42,4 +42,4 @@ export class CoreCoursePreviewPageComponentModule { }
     ],
     exports: [RouterModule],
 })
-export class CoreCoursePreviewPageModule { }
+export class CoreCourseSummaryPageModule { }
