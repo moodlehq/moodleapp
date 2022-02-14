@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -26,11 +26,12 @@ import {
     CoreCoursesProvider,
     CoreEnrolledCourseData,
 } from '@features/courses/services/courses';
-import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
-import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
-import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
-import { NgZone, Platform, Translate } from '@singletons';
-import { CoreConstants } from '@/core/constants';
+import {
+    CoreCourseOptionsDelegate,
+    CoreCourseOptionsMenuHandlerToDisplay,
+} from '@features/course/services/course-options-delegate';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { ModalController, NgZone, Platform, Translate } from '@singletons';
 import { CoreCoursesSelfEnrolPasswordComponent } from '../../../courses/components/self-enrol-password/self-enrol-password';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
@@ -38,35 +39,30 @@ import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-
 import { Subscription } from 'rxjs';
 
 /**
- * Page that allows "previewing" a course and enrolling in it if enabled and not enrolled.
+ * Page that shows the summary of a course including buttons to enrol and other available options.
  */
 @Component({
-    selector: 'page-core-course-preview',
-    templateUrl: 'preview.html',
-    styleUrls: ['preview.scss'],
+    selector: 'page-core-course-summary',
+    templateUrl: 'course-summary.html',
+    styleUrls: ['course-summary.scss'],
 })
-export class CoreCoursePreviewPage implements OnInit, OnDestroy {
+export class CoreCourseSummaryPage implements OnInit, OnDestroy {
 
-    course?: CoreCourseSummaryData;
+    @Input() course?: CoreCourseSummaryData;
+    @Input() courseId = 0;
+
     isEnrolled = false;
     canAccessCourse = true;
     selfEnrolInstances: CoreCourseEnrolmentMethod[] = [];
     paypalEnabled = false;
     dataLoaded = false;
-    avoidOpenCourse = false;
-    prefetchCourseData: CorePrefetchStatusInfo = {
-        icon: '',
-        statusTranslatable: 'core.loading',
-        status: '',
-        loading: true,
-    };
+    isModal = false;
 
-    statusDownloaded = CoreConstants.DOWNLOADED;
-
-    downloadCourseEnabled: boolean;
     courseUrl = '';
     courseImageUrl?: string;
     progress?: number;
+
+    courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
 
     protected isGuestEnabled = false;
     protected useGuestAccess = false;
@@ -76,22 +72,10 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     protected enrolUrl = '';
     protected pageDestroyed = false;
     protected courseStatusObserver?: CoreEventObserver;
-    protected courseId!: number;
     protected appResumeSubscription: Subscription;
     protected waitingForBrowserEnrol = false;
 
     constructor() {
-        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-
-        if (this.downloadCourseEnabled) {
-            // Listen for status change in course.
-            this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data) => {
-                if (data.courseId == this.courseId || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
-                    this.updateCourseStatus(data.status);
-                }
-            }, CoreSites.getCurrentSiteId());
-        }
-
         // Refresh the view when the app is resumed.
         this.appResumeSubscription = Platform.resume.subscribe(() => {
             if (!this.waitingForBrowserEnrol || !this.dataLoaded) {
@@ -111,47 +95,29 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        try {
-            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
-        } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-            CoreNavigator.back();
+        if (!this.courseId) {
+            // Opened as a page.
+            try {
+                this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            } catch (error) {
+                CoreDomUtils.showErrorModal(error);
+                CoreNavigator.back();
+                this.closeModal(); // Just in case.
 
-            return;
+                return;
+            }
+
+            this.course = CoreNavigator.getRouteParam('course');
+        } else {
+            // Opened as a modal.
+            this.isModal = true;
         }
-
-        this.avoidOpenCourse = !!CoreNavigator.getRouteBooleanParam('avoidOpenCourse');
-        this.course = CoreNavigator.getRouteParam('course');
 
         const currentSiteUrl = CoreSites.getRequiredCurrentSite().getURL();
         this.enrolUrl = CoreTextUtils.concatenatePaths(currentSiteUrl, 'enrol/index.php?id=' + this.courseId);
         this.courseUrl = CoreTextUtils.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.courseId);
 
-        try {
-            await this.getCourse();
-        } finally {
-            if (this.downloadCourseEnabled) {
-
-                // Determine course prefetch icon.
-                this.prefetchCourseData = await CoreCourseHelper.getCourseStatusIconAndTitle(this.courseId);
-
-                if (this.prefetchCourseData.loading) {
-                    // Course is being downloaded. Get the download promise.
-                    const promise = CoreCourseHelper.getCourseDownloadPromise(this.courseId);
-                    if (promise) {
-                        // There is a download promise. If it fails, show an error.
-                        promise.catch((error) => {
-                            if (!this.pageDestroyed) {
-                                CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-                            }
-                        });
-                    } else {
-                        // No download, this probably means that the app was closed while downloading. Set previous status.
-                        CoreCourse.setCoursePreviousStatus(this.courseId);
-                    }
-                }
-            }
-        }
+        await this.getCourse();
     }
 
     /**
@@ -184,8 +150,10 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
 
     /**
      * Convenience function to get course. We use this to determine if a user can see the course or not.
+     *
+     * @param refresh If it's refreshing content.
      */
-    protected async getCourse(): Promise<void> {
+    protected async getCourse(refresh = false): Promise<void> {
         // Get course enrolment methods.
         this.selfEnrolInstances = [];
 
@@ -262,7 +230,24 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
             this.progress = this.course.progress;
         }
 
+        await this.loadMenuHandlers(refresh);
+
         this.dataLoaded = true;
+    }
+
+    /**
+     * Load the course menu handlers.
+     *
+     * @param refresh If it's refreshing content.
+     * @return Promise resolved when done.
+     */
+    protected async loadMenuHandlers(refresh?: boolean): Promise<void> {
+        if (!this.course) {
+            return;
+        }
+
+        this.courseMenuHandlers =
+            await CoreCourseOptionsDelegate.getMenuHandlersToDisplay(this.course, refresh, this.useGuestAccess);
     }
 
     /**
@@ -271,7 +256,7 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
      * @param replaceCurrentPage If current place should be replaced in the navigation stack.
      */
     openCourse(replaceCurrentPage = false): void {
-        if (!this.canAccessCourse || !this.course || this.avoidOpenCourse) {
+        if (!this.canAccessCourse || !this.course || this.isModal) {
             return;
         }
 
@@ -404,20 +389,6 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Update the course status icon and title.
-     *
-     * @param status Status to show.
-     */
-    protected updateCourseStatus(status: string): void {
-        const statusData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
-
-        this.prefetchCourseData.status = statusData.status;
-        this.prefetchCourseData.icon = statusData.icon;
-        this.prefetchCourseData.statusTranslatable = statusData.statusTranslatable;
-        this.prefetchCourseData.loading = statusData.loading;
-    }
-
-    /**
      * Wait for the user to be enrolled in the course.
      *
      * @param first If it's the first call (true) or it's a recursive call (false).
@@ -453,18 +424,20 @@ export class CoreCoursePreviewPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Prefetch the course.
+     * Opens a menu item registered to the delegate.
+     *
+     * @param item Item to open
      */
-    async prefetchCourse(): Promise<void> {
-        try {
-            await CoreCourseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course as CoreEnrolledCourseData, {
-                isGuest: this.useGuestAccess,
-            });
-        } catch (error) {
-            if (!this.pageDestroyed) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-            }
-        }
+    openMenuItem(item: CoreCourseOptionsMenuHandlerToDisplay): void {
+        const params = Object.assign({ course: this.course }, item.data.pageParams);
+        CoreNavigator.navigateToSitePath(item.data.page, { params });
+    }
+
+    /**
+     * Close the modal.
+     */
+    closeModal(): void {
+        ModalController.dismiss();
     }
 
     /**

@@ -18,6 +18,7 @@ information provided here is intended especially for developers.
 - CoreCourseHelperProvider.openCourse parameters changed, now it admits CoreNavigationOptions + siteId on the same object that includes Params passed to page.
 - displaySectionSelector has been deprecated on CoreCourseFormatHandler, use displayCourseIndex instead.
 - Most of the functions or callbacks that handle redirects/deeplinks have been modified to accept an object instead of just path + options. E.g.: CoreLoginHelper.isSiteLoggedOut, CoreLoginHelper.openBrowserForSSOLogin, CoreLoginHelper.openBrowserForOAuthLogin, CoreLoginHelper.prepareForSSOLogin, CoreApp.storeRedirect, CoreSites.loadSite.
+- Course preview page route has changed from course/:courseId/preview to course/:courseId/summary to match with the page name and characteristics.
 
 === 3.9.5 ===
 

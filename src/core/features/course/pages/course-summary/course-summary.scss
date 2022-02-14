@@ -1,0 +1,28 @@
+@import '~theme/globals.scss';
+
+:host {
+    .core-course-thumb {
+        overflow: hidden;
+        text-align: center;
+        max-height: 35vh;
+        z-index: -1;
+        overflow: hidden;
+        border-bottom: 1px solid var(--stroke);
+    }
+
+
+    .core-customfieldvalue core-format-text {
+        display: inline;
+    }
+
+    .core-course-dates {
+        background: var(--light);
+        border-radius: var(--small-radius);
+        padding: 8px;
+
+        ion-icon {
+            @include margin-horizontal(null, 8px);
+        }
+    }
+
+}

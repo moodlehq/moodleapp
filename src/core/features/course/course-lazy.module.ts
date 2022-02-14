@@ -32,9 +32,9 @@ const routes: Routes = [
         loadChildren: () => import('./pages/list-mod-type/list-mod-type.module').then(m => m.CoreCourseListModTypePageModule),
     },
     {
-        path: ':courseId/preview',
+        path: ':courseId/summary',
         loadChildren: () =>
-            import('./pages/preview/preview.module').then(m => m.CoreCoursePreviewPageModule),
+            import('./pages/course-summary/course-summary.module').then(m => m.CoreCourseSummaryPageModule),
     },
 ];
 

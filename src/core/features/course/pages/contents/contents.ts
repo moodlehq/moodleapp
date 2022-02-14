@@ -29,10 +29,7 @@ import {
 } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
-import {
-    CoreCourseOptionsDelegate,
-    CoreCourseOptionsMenuHandlerToDisplay,
-} from '@features/course/services/course-options-delegate';
+import { CoreCourseOptionsMenuHandlerToDisplay } from '@features/course/services/course-options-delegate';
 import { CoreCourseSync, CoreCourseSyncProvider } from '@features/course/services/sync';
 import { CoreCourseFormatComponent } from '../../components/format/format';
 import {
@@ -69,7 +66,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected modulesHaveCompletion = false;
-    protected isGuest = false;
     protected debouncedUpdateCachedCompletion?: () => void; // Update the cached completion after a certain time.
 
     /**
@@ -89,7 +85,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         this.sectionId = CoreNavigator.getRouteNumberParam('sectionId');
         this.sectionNumber = CoreNavigator.getRouteNumberParam('sectionNumber');
         this.moduleId = CoreNavigator.getRouteNumberParam('moduleId');
-        this.isGuest = !!CoreNavigator.getRouteBooleanParam('isGuest');
 
         this.debouncedUpdateCachedCompletion = CoreUtils.debounce(() => {
             if (this.modulesHaveCompletion) {
@@ -184,7 +179,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         try {
             await Promise.all([
                 this.loadSections(refresh),
-                this.loadMenuHandlers(refresh),
                 this.loadCourseFormatOptions(),
             ]);
         } catch (error) {
@@ -246,16 +240,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
 
         // Get whether to show the refresher now that we have sections.
         this.displayRefresher = CoreCourseFormatDelegate.displayRefresher(this.course, this.sections);
-    }
-
-    /**
-     * Load the course menu handlers.
-     *
-     * @param refresh If it's refreshing content.
-     * @return Promise resolved when done.
-     */
-    protected async loadMenuHandlers(refresh?: boolean): Promise<void> {
-        this.courseMenuHandlers = await CoreCourseOptionsDelegate.getMenuHandlersToDisplay(this.course, refresh, this.isGuest);
     }
 
     /**
@@ -377,16 +361,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
                 this.content?.scrollToPoint(scrollLeft, scrollTop, 0);
             });
         }
-    }
-
-    /**
-     * Opens a menu item registered to the delegate.
-     *
-     * @param item Item to open
-     */
-    openMenuItem(item: CoreCourseOptionsMenuHandlerToDisplay): void {
-        const params = Object.assign({ course: this.course }, item.data.pageParams);
-        CoreNavigator.navigateToSitePath(item.data.page, { params });
     }
 
     /**

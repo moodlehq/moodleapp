@@ -28,6 +28,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CONTENTS_PAGE_NAME } from '@features/course/course.module';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCollapsibleHeaderDirective } from '@directives/collapsible-header';
+import { CoreCourseSummaryPage } from '../course-summary/course-summary';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -279,10 +280,13 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
             return;
         }
 
-        CoreNavigator.navigateToSitePath(
-            `/course/${this.course.id}/preview`,
-            { params: { course: this.course, avoidOpenCourse: true } },
-        );
+        CoreDomUtils.openSideModal<void>({
+            component: CoreCourseSummaryPage,
+            componentProps: {
+                courseId: this.course.id,
+                course: this.course,
+            },
+        });
     }
 
     /**
