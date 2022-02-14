@@ -172,7 +172,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     /**
      * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
         try {
             this.feedback = await AddonModFeedback.getFeedback(this.courseId, this.module.id);
 
@@ -201,9 +201,6 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
             await this.fetchFeedbackOverviewData();
         } finally {
-            // Now fill the context menu.
-            this.fillContextMenu(refresh);
-
             if (this.feedback) {
                 // Check if there are responses stored in offline.
                 this.hasOffline = await AddonModFeedbackOffline.hasFeedbackOfflineData(this.feedback.id);

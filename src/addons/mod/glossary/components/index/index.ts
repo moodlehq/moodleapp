@@ -177,39 +177,35 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     /**
      * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    protected async fetchContent(refresh = false, sync = false, showErrors = false): Promise<void> {
         const entries = await this.promisedEntries;
 
-        try {
-            await entries.getSource().loadGlossary();
+        await entries.getSource().loadGlossary();
 
-            if (!this.glossary) {
-                return;
-            }
-
-            this.description = this.glossary.intro || this.description;
-            this.canAdd = !!this.glossary.canaddentry || false;
-
-            this.dataRetrieved.emit(this.glossary);
-
-            if (!entries.getSource().fetchMode) {
-                this.switchMode('letter_all');
-            }
-
-            if (sync) {
-                // Try to synchronize the glossary.
-                await this.syncActivity(showErrors);
-            }
-
-            const [hasOfflineRatings] = await Promise.all([
-                CoreRatingOffline.hasRatings('mod_glossary', 'entry', ContextLevel.MODULE, this.glossary.coursemodule),
-                refresh ? entries.reload() : entries.load(),
-            ]);
-
-            this.hasOfflineRatings = hasOfflineRatings;
-        } finally {
-            this.fillContextMenu(refresh);
+        if (!this.glossary) {
+            return;
         }
+
+        this.description = this.glossary.intro || this.description;
+        this.canAdd = !!this.glossary.canaddentry || false;
+
+        this.dataRetrieved.emit(this.glossary);
+
+        if (!entries.getSource().fetchMode) {
+            this.switchMode('letter_all');
+        }
+
+        if (sync) {
+            // Try to synchronize the glossary.
+            await this.syncActivity(showErrors);
+        }
+
+        const [hasOfflineRatings] = await Promise.all([
+            CoreRatingOffline.hasRatings('mod_glossary', 'entry', ContextLevel.MODULE, this.glossary.coursemodule),
+            refresh ? entries.reload() : entries.load(),
+        ]);
+
+        this.hasOfflineRatings = hasOfflineRatings;
     }
 
     /**

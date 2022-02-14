@@ -296,13 +296,9 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     }
 
     /**
-     * Download the component contents.
-     *
-     * @param refresh Whether we're refreshing data.
-     * @param sync If the refresh needs syncing.
-     * @param showErrors Wether to show errors to the user or hide them.
+     * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    protected async fetchContent(refresh = false, sync = false, showErrors = false): Promise<void> {
         this.fetchFailed = false;
 
         try {
@@ -329,8 +325,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             this.fetchFailed = true; // Set to prevent infinite calls with infinite-loading.
 
             throw error; // Pass the error to the parent catch.
-        } finally {
-            this.fillContextMenu(refresh);
         }
     }
 

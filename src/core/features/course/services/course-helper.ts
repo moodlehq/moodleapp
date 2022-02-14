@@ -493,6 +493,7 @@ export class CoreCourseHelperProvider {
      * @param courseId Course ID the module belongs to.
      * @param done Function to call when done. It will close the context menu.
      * @return Promise resolved when done.
+     * @deprecated since 4.0
      */
     async confirmAndRemoveFiles(module: CoreCourseModuleData, courseId: number, done?: () => void): Promise<void> {
         let modal: CoreIonLoadingElement | undefined;
@@ -580,6 +581,7 @@ export class CoreCourseHelperProvider {
      * @param courseId Course ID the module belongs to.
      * @param done Function to call when done. It will close the context menu.
      * @return Promise resolved when done.
+     * @deprecated since 4.0
      */
     async contextMenuPrefetch(
         instance: ComponentWithContextMenu,

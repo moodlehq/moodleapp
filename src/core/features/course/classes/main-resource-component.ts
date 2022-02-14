@@ -13,14 +13,10 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { AddonBlog } from '@addons/blog/services/blog';
-import { AddonBlogMainMenuHandlerService } from '@addons/blog/services/handlers/mainmenu';
 import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, Optional, Inject } from '@angular/core';
-import { Params } from '@angular/router';
 import { CoreAnyError } from '@classes/errors/error';
 import { IonRefresher } from '@ionic/angular';
 import { CoreApp } from '@services/app';
-import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 
@@ -60,20 +56,11 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     component?: string; // Component name.
     componentId?: number; // Component ID.
     hasOffline = false; // Resources don't have any data to sync.
-    blog?: boolean; // If blog is available.
 
-    // Data for context menu.
-    externalUrl?: string; // External URL to open in browser.
     description?: string; // Module description.
-    refreshIcon = CoreConstants.ICON_LOADING; // Refresh icon, normally spinner or refresh.
-    prefetchStatusIcon?: string; // Used when calling fillContextMenu.
-    prefetchStatus?: string; // Used when calling fillContextMenu.
-    prefetchText?: string; // Used when calling fillContextMenu.
-    size?: string; // Used when calling fillContextMenu.
-    downloadTimeReadable?: string; // Last download time in a readable format. Used when calling fillContextMenu.
-    isDestroyed = false; // Whether the component is destroyed, used when calling fillContextMenu.
-    contextMenuStatusObserver?: CoreEventObserver; // Observer of package status, used when calling fillContextMenu.
-    contextFileStatusObserver?: CoreEventObserver; // Observer of file status, used when calling fillContextMenu.
+    prefetchStatus?: string;
+    downloadTimeReadable?: string; // Last download time in a readable format.
+    isDestroyed = false; // Whether the component is destroyed.
 
     protected fetchContentDefaultError = 'core.course.errorgetmodule'; // Default error to show when loading contents.
     protected isCurrentView = false; // Whether the component is in the current view.
@@ -84,6 +71,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected logger: CoreLogger;
     protected debouncedUpdateModule?: () => void; // Update the module after a certain time.
     protected showCompletion = false; // Whether to show completion inside the activity.
+    protected displayDescription = true; // Wether to show Module description on module page, and not on summary or the contrary.
+    protected packageStatusObserver?: CoreEventObserver; // Observer of package status.
 
     constructor(
         @Optional() @Inject('') loggerName: string = 'CoreCourseModuleMainResourceComponent',
@@ -93,13 +82,12 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.siteId = CoreSites.getCurrentSiteId();
         this.description = this.module.description;
         this.componentId = this.module.id;
-        this.externalUrl = this.module.url;
         this.courseId = this.courseId || this.module.course;
         this.showCompletion = !!CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
 
@@ -119,14 +107,22 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             }, 10000);
         }
 
-        this.blog = await AddonBlog.isPluginEnabled();
+        this.packageStatusObserver = CoreEvents.on(
+            CoreEvents.PACKAGE_STATUS_CHANGED,
+            (data) => {
+                if (data.componentId == module.id && data.component == this.component) {
+                    this.getPackageStatus();
+                }
+            },
+            this.siteId,
+        );
     }
 
     /**
      * Refresh the data.
      *
      * @param refresher Refresher.
-     * @param done Function to call when done.
+     * @param done Function to call when done. Never used.
      * @param showErrors If show errors to the user of hide them.
      * @return Promise resolved when done.
      */
@@ -145,7 +141,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         await CoreUtils.ignoreErrors(this.refreshContent(true, showErrors));
 
         refresher?.complete();
-        done && done();
     }
 
     /**
@@ -162,22 +157,16 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             return;
         }
 
-        this.refreshIcon = CoreConstants.ICON_LOADING;
+        await CoreUtils.ignoreErrors(Promise.all([
+            this.invalidateContent(),
+            this.showCompletion ? CoreCourse.invalidateModule(this.module.id) : undefined,
+        ]));
 
-        try {
-            await CoreUtils.ignoreErrors(Promise.all([
-                this.invalidateContent(),
-                this.showCompletion ? CoreCourse.invalidateModule(this.module.id) : undefined,
-            ]));
-
-            if (this.showCompletion) {
-                this.fetchModule();
-            }
-
-            await this.loadContent(true);
-        } finally {
-            this.refreshIcon = CoreConstants.ICON_REFRESH;
+        if (this.showCompletion) {
+            this.fetchModule();
         }
+
+        await this.loadContent(true);
     }
 
     /**
@@ -214,6 +203,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
         try {
             await this.fetchContent(refresh);
+            await this.getPackageStatus(refresh);
         } catch (error) {
             if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled() && this.isNotFoundError(error)) {
                 // Module not found, retry without using cache.
@@ -223,7 +213,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         } finally {
             this.loaded = true;
-            this.refreshIcon = CoreConstants.ICON_REFRESH;
         }
     }
 
@@ -238,11 +227,20 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     }
 
     /**
-     * Fill the context menu options
+     * Updage package status.
+     *
+     * @param refresh If prefetch info has to be refreshed.
      */
-    protected fillContextMenu(refresh: boolean = false): void {
-        // All data obtained, now fill the context menu.
-        CoreCourseHelper.fillContextMenu(this, this.module, this.courseId, refresh, this.component);
+    async getPackageStatus(refresh = false): Promise<void> {
+        if (!this.module) {
+            return;
+        }
+
+        const moduleInfo =
+                await CoreCourseHelper.getModulePrefetchInfo(this.module, this.courseId, refresh, this.component);
+
+        this.downloadTimeReadable = CoreTextUtils.ucFirst(moduleInfo.downloadTimeReadable);
+        this.prefetchStatus = moduleInfo.status;
     }
 
     /**
@@ -251,48 +249,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      */
     protected isPrefetched(): boolean {
         return this.prefetchStatus != CoreConstants.NOT_DOWNLOADABLE && this.prefetchStatus != CoreConstants.NOT_DOWNLOADED;
-    }
-
-    /**
-     * Expand the description.
-     *
-     * @deprecated Use openModuleSummary instead.
-     */
-    expandDescription(): void {
-        this.openModuleSummary();
-    }
-
-    /**
-     * Go to blog posts.
-     */
-    async gotoBlog(): Promise<void> {
-        const params: Params = { cmId: this.module.id };
-
-        await CoreNavigator.navigateToSitePath(AddonBlogMainMenuHandlerService.PAGE_NAME, { params });
-    }
-
-    /**
-     * Prefetch the module.
-     *
-     * @param done Function to call when done.
-     */
-    prefetch(done?: () => void): void {
-        CoreCourseHelper.contextMenuPrefetch(this, this.module, this.courseId, done);
-    }
-
-    /**
-     * Confirm and remove downloaded files.
-     *
-     * @param done Function to call when done.
-     */
-    removeFiles(done?: () => void): void {
-        if (this.prefetchStatus == CoreConstants.DOWNLOADING) {
-            CoreDomUtils.showAlertTranslated(undefined, 'core.course.cannotdeletewhiledownloading');
-
-            return;
-        }
-
-        CoreCourseHelper.confirmAndRemoveFiles(this.module, this.courseId, done);
     }
 
     /**
@@ -459,7 +415,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             componentProps: {
                 moduleId: this.module.id,
                 module: this.module,
-                description: this.description,
+                description: !this.displayDescription ? this.description : '',
                 component: this.component,
                 courseId: this.courseId,
                 hasOffline: this.hasOffline,
@@ -493,10 +449,9 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
-        this.contextMenuStatusObserver?.off();
-        this.contextFileStatusObserver?.off();
         this.statusObserver?.off();
         this.completionObserver?.off();
+        this.packageStatusObserver?.off();
     }
 
     /**

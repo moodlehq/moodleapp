@@ -112,51 +112,47 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     /**
      * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        try {
-            this.h5pActivity = await AddonModH5PActivity.getH5PActivity(this.courseId, this.module.id, {
-                siteId: this.siteId,
-            });
+    protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
+        this.h5pActivity = await AddonModH5PActivity.getH5PActivity(this.courseId, this.module.id, {
+            siteId: this.siteId,
+        });
 
-            this.dataRetrieved.emit(this.h5pActivity);
-            this.description = this.h5pActivity.intro;
-            this.displayOptions = CoreH5PHelper.decodeDisplayOptions(this.h5pActivity.displayoptions);
+        this.dataRetrieved.emit(this.h5pActivity);
+        this.description = this.h5pActivity.intro;
+        this.displayOptions = CoreH5PHelper.decodeDisplayOptions(this.h5pActivity.displayoptions);
 
-            if (sync) {
-                await this.syncActivity(showErrors);
-            }
+        if (sync) {
+            await this.syncActivity(showErrors);
+        }
 
-            await Promise.all([
-                this.checkHasOffline(),
-                this.fetchAccessInfo(),
-                this.fetchDeployedFileData(),
-            ]);
+        await Promise.all([
+            this.checkHasOffline(),
+            this.fetchAccessInfo(),
+            this.fetchDeployedFileData(),
+        ]);
 
-            this.trackComponent = this.accessInfo?.cansubmit ? AddonModH5PActivityProvider.TRACK_COMPONENT : '';
-            this.canViewAllAttempts = !!this.h5pActivity.enabletracking && !!this.accessInfo?.canreviewattempts &&
+        this.trackComponent = this.accessInfo?.cansubmit ? AddonModH5PActivityProvider.TRACK_COMPONENT : '';
+        this.canViewAllAttempts = !!this.h5pActivity.enabletracking && !!this.accessInfo?.canreviewattempts &&
                 AddonModH5PActivity.canGetUsersAttemptsInSite();
 
-            if (this.h5pActivity.package && this.h5pActivity.package[0]) {
-                // The online player should use the original file, not the trusted one.
-                this.onlinePlayerUrl = CoreH5P.h5pPlayer.calculateOnlinePlayerUrl(
-                    this.site.getURL(),
-                    this.h5pActivity.package[0].fileurl,
-                    this.displayOptions,
-                    this.trackComponent,
-                );
-            }
+        if (this.h5pActivity.package && this.h5pActivity.package[0]) {
+            // The online player should use the original file, not the trusted one.
+            this.onlinePlayerUrl = CoreH5P.h5pPlayer.calculateOnlinePlayerUrl(
+                this.site.getURL(),
+                this.h5pActivity.package[0].fileurl,
+                this.displayOptions,
+                this.trackComponent,
+            );
+        }
 
-            if (!this.siteCanDownload || this.state == CoreConstants.DOWNLOADED) {
-                // Cannot download the file or already downloaded, play the package directly.
-                this.play();
+        if (!this.siteCanDownload || this.state == CoreConstants.DOWNLOADED) {
+            // Cannot download the file or already downloaded, play the package directly.
+            this.play();
 
-            } else if ((this.state == CoreConstants.NOT_DOWNLOADED || this.state == CoreConstants.OUTDATED) && CoreApp.isOnline() &&
+        } else if ((this.state == CoreConstants.NOT_DOWNLOADED || this.state == CoreConstants.OUTDATED) && CoreApp.isOnline() &&
                     this.deployedFile?.filesize && CoreFilepool.shouldDownload(this.deployedFile.filesize)) {
-                // Package is small, download it automatically. Don't block this function for this.
-                this.downloadAutomatically();
-            }
-        } finally {
-            this.fillContextMenu(refresh);
+            // Package is small, download it automatically. Don't block this function for this.
+            this.downloadAutomatically();
         }
     }
 
@@ -527,19 +523,6 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      */
     protected autoSyncEventReceived(): void {
         this.checkHasOffline();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async gotoBlog(): Promise<void> {
-        this.isOpeningPage = true;
-
-        try {
-            await super.gotoBlog();
-        } finally {
-            this.isOpeningPage = false;
-        }
     }
 
     /**

@@ -23,7 +23,6 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
@@ -161,104 +160,75 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Expand the description.
+     * @inheritdoc
      */
-    expandDescription(ev?: Event): void {
-        ev?.preventDefault();
-        ev?.stopPropagation();
-
-        if (this.assign && (this.description || this.assign.introattachments)) {
-            CoreTextUtils.viewText(Translate.instant('core.description'), this.description || '', {
-                component: this.component,
-                componentId: this.module.id,
-                files: this.assign.introattachments,
-                filter: true,
-                contextLevel: 'module',
-                instanceId: this.module.id,
-                courseId: this.courseId,
-            });
-        }
-    }
-
-    /**
-     * Get assignment data.
-     *
-     * @param refresh If it's refreshing content.
-     * @param sync If it should try to sync.
-     * @param showErrors If show errors to the user of hide them.
-     * @return Promise resolved when done.
-     */
-    protected async fetchContent(refresh = false, sync = false, showErrors = false): Promise<void> {
+    protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
 
         // Get assignment data.
-        try {
-            this.assign = await AddonModAssign.getAssignment(this.courseId, this.module.id);
+        this.assign = await AddonModAssign.getAssignment(this.courseId, this.module.id);
 
-            this.dataRetrieved.emit(this.assign);
-            this.description = this.assign.intro;
+        this.dataRetrieved.emit(this.assign);
+        this.description = this.assign.intro;
 
-            if (sync) {
-                // Try to synchronize the assign.
-                await CoreUtils.ignoreErrors(this.syncActivity(showErrors));
-            }
+        if (sync) {
+            // Try to synchronize the assign.
+            await CoreUtils.ignoreErrors(this.syncActivity(showErrors));
+        }
 
-            // Check if there's any offline data for this assign.
-            this.hasOffline = await AddonModAssignOffline.hasAssignOfflineData(this.assign.id);
+        // Check if there's any offline data for this assign.
+        this.hasOffline = await AddonModAssignOffline.hasAssignOfflineData(this.assign.id);
 
-            // Get assignment submissions.
-            const submissions = await AddonModAssign.getSubmissions(this.assign.id, { cmId: this.module.id });
-            const time = CoreTimeUtils.timestamp();
+        // Get assignment submissions.
+        const submissions = await AddonModAssign.getSubmissions(this.assign.id, { cmId: this.module.id });
+        const time = CoreTimeUtils.timestamp();
 
-            this.canViewAllSubmissions = submissions.canviewsubmissions;
+        this.canViewAllSubmissions = submissions.canviewsubmissions;
 
-            if (submissions.canviewsubmissions) {
+        if (submissions.canviewsubmissions) {
 
-                // Calculate the messages to display about time remaining and late submissions.
-                if (this.assign.duedate > 0) {
-                    if (this.assign.duedate - time <= 0) {
-                        this.timeRemaining = Translate.instant('addon.mod_assign.assignmentisdue');
-                    } else {
-                        this.timeRemaining = CoreTimeUtils.formatDuration(this.assign.duedate - time, 3);
-
-                        if (this.assign.cutoffdate) {
-                            if (this.assign.cutoffdate > time) {
-                                this.lateSubmissions = Translate.instant(
-                                    'addon.mod_assign.latesubmissionsaccepted',
-                                    { $a: CoreTimeUtils.userDate(this.assign.cutoffdate * 1000) },
-                                );
-                            } else {
-                                this.lateSubmissions = Translate.instant('addon.mod_assign.nomoresubmissionsaccepted');
-                            }
-                        } else {
-                            this.lateSubmissions = '';
-                        }
-                    }
+            // Calculate the messages to display about time remaining and late submissions.
+            if (this.assign.duedate > 0) {
+                if (this.assign.duedate - time <= 0) {
+                    this.timeRemaining = Translate.instant('addon.mod_assign.assignmentisdue');
                 } else {
-                    this.timeRemaining = '';
-                    this.lateSubmissions = '';
+                    this.timeRemaining = CoreTimeUtils.formatDuration(this.assign.duedate - time, 3);
+
+                    if (this.assign.cutoffdate) {
+                        if (this.assign.cutoffdate > time) {
+                            this.lateSubmissions = Translate.instant(
+                                'addon.mod_assign.latesubmissionsaccepted',
+                                { $a: CoreTimeUtils.userDate(this.assign.cutoffdate * 1000) },
+                            );
+                        } else {
+                            this.lateSubmissions = Translate.instant('addon.mod_assign.nomoresubmissionsaccepted');
+                        }
+                    } else {
+                        this.lateSubmissions = '';
+                    }
                 }
-
-                // Check if groupmode is enabled to avoid showing wrong numbers.
-                this.groupInfo = await CoreGroups.getActivityGroupInfo(this.assign.cmid, false);
-
-                await this.setGroup(CoreGroups.validateGroupId(this.group, this.groupInfo));
-
-                return;
+            } else {
+                this.timeRemaining = '';
+                this.lateSubmissions = '';
             }
 
-            try {
-                // Check if the user can view their own submission.
-                await AddonModAssign.getSubmissionStatus(this.assign.id, { cmId: this.module.id });
-                this.canViewOwnSubmission = true;
-            } catch (error) {
-                this.canViewOwnSubmission = false;
+            // Check if groupmode is enabled to avoid showing wrong numbers.
+            this.groupInfo = await CoreGroups.getActivityGroupInfo(this.assign.cmid, false);
 
-                if (error.errorcode !== 'nopermission') {
-                    throw error;
-                }
+            await this.setGroup(CoreGroups.validateGroupId(this.group, this.groupInfo));
+
+            return;
+        }
+
+        try {
+            // Check if the user can view their own submission.
+            await AddonModAssign.getSubmissionStatus(this.assign.id, { cmId: this.module.id });
+            this.canViewOwnSubmission = true;
+        } catch (error) {
+            this.canViewOwnSubmission = false;
+
+            if (error.errorcode !== 'nopermission') {
+                throw error;
             }
-        } finally {
-            this.fillContextMenu(refresh);
         }
     }
 

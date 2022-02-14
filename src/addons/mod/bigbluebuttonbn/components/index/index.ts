@@ -71,21 +71,18 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
     /**
      * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false): Promise<void> {
-        try {
-            this.bbb = await AddonModBBB.getBBB(this.courseId, this.module.id);
+    protected async fetchContent(): Promise<void> {
+        this.bbb = await AddonModBBB.getBBB(this.courseId, this.module.id);
 
-            this.description = this.bbb.intro;
-            this.dataRetrieved.emit(this.bbb);
+        this.description = this.bbb.intro;
+        this.dataRetrieved.emit(this.bbb);
 
-            this.groupInfo = await CoreGroups.getActivityGroupInfo(this.module.id, false);
+        this.groupInfo = await CoreGroups.getActivityGroupInfo(this.module.id, false);
 
-            this.groupId = CoreGroups.validateGroupId(this.groupId, this.groupInfo);
+        this.groupId = CoreGroups.validateGroupId(this.groupId, this.groupInfo);
 
-            await this.fetchMeetingInfo();
-        } finally {
-            this.fillContextMenu(refresh);
-        }
+        await this.fetchMeetingInfo();
+
     }
 
     /**
