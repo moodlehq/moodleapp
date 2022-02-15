@@ -558,13 +558,9 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Displays some data based on the current status.
-     *
-     * @param status The current status.
-     * @param previousStatus The previous status. If not defined, there is no previous status.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected showStatus(status: string, previousStatus?: string): void {
+    protected showStatus(status: string): void {
         this.showSpinner = status == CoreConstants.DOWNLOADING;
     }
 

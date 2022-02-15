@@ -58,21 +58,20 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     hasOffline = false; // Resources don't have any data to sync.
 
     description?: string; // Module description.
-    prefetchStatus?: string;
-    downloadTimeReadable?: string; // Last download time in a readable format.
     isDestroyed = false; // Whether the component is destroyed.
 
     protected fetchContentDefaultError = 'core.course.errorgetmodule'; // Default error to show when loading contents.
     protected isCurrentView = false; // Whether the component is in the current view.
     protected siteId?: string; // Current Site ID.
     protected statusObserver?: CoreEventObserver; // Observer of package status. Only if setStatusListener is called.
-    protected currentStatus?: string; // The current status of the module. Only if setStatusListener is called.
+    currentStatus?: string; // The current status of the module. Only if setStatusListener is called.
+    downloadTimeReadable?: string; // Last download time in a readable format. Only if setStatusListener is called.
+
     protected completionObserver?: CoreEventObserver;
     protected logger: CoreLogger;
     protected debouncedUpdateModule?: () => void; // Update the module after a certain time.
     protected showCompletion = false; // Whether to show completion inside the activity.
     protected displayDescription = true; // Wether to show Module description on module page, and not on summary or the contrary.
-    protected packageStatusObserver?: CoreEventObserver; // Observer of package status.
 
     constructor(
         @Optional() @Inject('') loggerName: string = 'CoreCourseModuleMainResourceComponent',
@@ -106,16 +105,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
                 this.fetchModule();
             }, 10000);
         }
-
-        this.packageStatusObserver = CoreEvents.on(
-            CoreEvents.PACKAGE_STATUS_CHANGED,
-            (data) => {
-                if (data.componentId == module.id && data.component == this.component) {
-                    this.getPackageStatus();
-                }
-            },
-            this.siteId,
-        );
     }
 
     /**
@@ -203,7 +192,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
         try {
             await this.fetchContent(refresh);
-            await this.getPackageStatus(refresh);
         } catch (error) {
             if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled() && this.isNotFoundError(error)) {
                 // Module not found, retry without using cache.
@@ -227,28 +215,25 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     }
 
     /**
-     * Updage package status.
-     *
-     * @param refresh If prefetch info has to be refreshed.
+     * Updage package last downloaded.
      */
-    async getPackageStatus(refresh = false): Promise<void> {
+    protected async getPackageLastDownloaded(): Promise<void> {
         if (!this.module) {
             return;
         }
 
-        const moduleInfo =
-                await CoreCourseHelper.getModulePrefetchInfo(this.module, this.courseId, refresh, this.component);
+        const lastDownloaded =
+                await CoreCourseHelper.getModulePackageLastDownloaded(this.module, this.component);
 
-        this.downloadTimeReadable = CoreTextUtils.ucFirst(moduleInfo.downloadTimeReadable);
-        this.prefetchStatus = moduleInfo.status;
+        this.downloadTimeReadable = lastDownloaded.downloadTimeReadable;
     }
 
     /**
-     * Check if the module is prefetched or being prefetched. To make it faster, just use the data calculated by fillContextMenu.
-     * This means that you need to call fillContextMenu to make this work.
+     * Check if the module is prefetched or being prefetched.
+     * To make it faster, just use the data calculated by setStatusListener.
      */
     protected isPrefetched(): boolean {
-        return this.prefetchStatus != CoreConstants.NOT_DOWNLOADABLE && this.prefetchStatus != CoreConstants.NOT_DOWNLOADED;
+        return this.currentStatus != CoreConstants.NOT_DOWNLOADABLE && this.currentStatus != CoreConstants.NOT_DOWNLOADED;
     }
 
     /**
@@ -308,6 +293,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
                 const previousStatus = this.currentStatus;
                 this.currentStatus = data.status;
 
+                this.getPackageLastDownloaded();
+
                 this.showStatus(this.currentStatus, previousStatus);
             }, this.siteId);
         } else if (!refresh) {
@@ -322,6 +309,9 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(this.module, this.courseId, undefined, refresh);
 
         this.currentStatus = status;
+
+        this.getPackageLastDownloaded();
+
         this.showStatus(status);
     }
 
@@ -451,7 +441,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         this.isDestroyed = true;
         this.statusObserver?.off();
         this.completionObserver?.off();
-        this.packageStatusObserver?.off();
     }
 
     /**

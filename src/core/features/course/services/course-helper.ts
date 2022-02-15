@@ -75,36 +75,19 @@ import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 /**
  * Prefetch info of a module.
  */
-export type CoreCourseModulePrefetchInfo = {
-    /**
-     * Downloaded size.
-     */
-    size: number;
+export type CoreCourseModulePrefetchInfo = CoreCourseModulePackageLastDownloaded & {
+    size: number; // Downloaded size.
+    sizeReadable: string; // Downloadable size in a readable format.
+    status: string; // Module status.
+    statusIcon?: string; // Icon's name of the module status.
+};
 
-    /**
-     * Downloadable size in a readable format.
-     */
-    sizeReadable: string;
-
-    /**
-     * Module status.
-     */
-    status: string;
-
-    /**
-     * Icon's name of the module status.
-     */
-    statusIcon?: string;
-
-    /**
-     * Time when the module was last downloaded.
-     */
-    downloadTime: number;
-
-    /**
-     * Download time in a readable format.
-     */
-    downloadTimeReadable: string;
+/**
+ * Prefetch info of a module.
+ */
+export type CoreCourseModulePackageLastDownloaded = {
+    downloadTime: number; // Time when the module was last downloaded.
+    downloadTimeReadable: string; // Download time in a readable format.
 };
 
 /**
@@ -1484,12 +1467,9 @@ export class CoreCourseHelperProvider {
     async getModulePrefetchInfo(
         module: CoreCourseModuleData,
         courseId: number,
-        invalidateCache?: boolean,
-        component?: string,
+        invalidateCache = false,
+        component = '',
     ): Promise<CoreCourseModulePrefetchInfo> {
-
-        const siteId = CoreSites.getCurrentSiteId();
-
         if (invalidateCache) {
             // Currently, some modules pass invalidateCache=false because they already invalidate data in downloadResourceIfNeeded.
             // If this function is changed to do more actions if invalidateCache=true, please review those modules.
@@ -1501,7 +1481,7 @@ export class CoreCourseHelperProvider {
         const results = await Promise.all([
             CoreCourseModulePrefetchDelegate.getModuleStoredSize(module, courseId),
             CoreCourseModulePrefetchDelegate.getModuleStatus(module, courseId),
-            CoreUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component || '', module.id)),
+            this.getModulePackageLastDownloaded(module, component),
         ]);
 
         // Treat stored size.
@@ -1528,33 +1508,53 @@ export class CoreCourseHelperProvider {
                 break;
         }
 
-        // Treat download time.
-        if (!results[2] || !results[2].downloadTime || !CoreFileHelper.isStateDownloaded(results[2].status || '')) {
-            // Not downloaded.
-            return {
-                size,
-                sizeReadable,
-                status,
-                statusIcon,
-                downloadTime: 0,
-                downloadTimeReadable: '',
-            };
-        }
-
-        const now = CoreTimeUtils.timestamp();
-        const downloadTime = results[2].downloadTime;
-        let downloadTimeReadable = '';
-        if (now - results[2].downloadTime < 7 * 86400) {
-            downloadTimeReadable = moment(results[2].downloadTime * 1000).fromNow();
-        } else {
-            downloadTimeReadable = moment(results[2].downloadTime * 1000).calendar();
-        }
+        const packageData = results[2];
 
         return {
             size,
             sizeReadable,
             status,
             statusIcon,
+            downloadTime: packageData.downloadTime,
+            downloadTimeReadable: packageData.downloadTimeReadable,
+        };
+    }
+
+    /**
+     * Get prefetch info for a module.
+     *
+     * @param module Module to get the info from.
+     * @param component Component of the module.
+     * @return Promise resolved with the info.
+     */
+    async getModulePackageLastDownloaded(
+        module: CoreCourseModuleData,
+        component = '',
+    ): Promise<CoreCourseModulePackageLastDownloaded> {
+        const siteId = CoreSites.getCurrentSiteId();
+        const packageData = await CoreUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component, module.id));
+
+        // Treat download time.
+        if (!packageData || !packageData.downloadTime || !CoreFileHelper.isStateDownloaded(packageData.status || '')) {
+            // Not downloaded.
+            return {
+                downloadTime: 0,
+                downloadTimeReadable: '',
+            };
+        }
+
+        const now = CoreTimeUtils.timestamp();
+        const downloadTime = packageData.downloadTime;
+        let downloadTimeReadable = '';
+        if (now - downloadTime < 7 * 86400) {
+            downloadTimeReadable = moment(downloadTime * 1000).fromNow();
+        } else {
+            downloadTimeReadable = moment(downloadTime * 1000).calendar();
+        }
+
+        downloadTimeReadable = CoreTextUtils.ucFirst(downloadTimeReadable);
+
+        return {
             downloadTime,
             downloadTimeReadable,
         };

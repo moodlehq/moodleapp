@@ -125,6 +125,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         this.displayDescription = options.printintro === undefined || !!options.printintro;
         this.dataRetrieved.emit(resource);
 
+        this.setStatusListener();
+
         if (AddonModResourceHelper.isDisplayedInIframe(this.module)) {
 
             const downloadResult = await this.downloadResourceIfNeeded(refresh, true);
@@ -202,7 +204,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             downloadable = await AddonModResourceHelper.isMainFileDownloadable(this.module);
 
             if (downloadable) {
-                if (this.prefetchStatus === CoreConstants.OUTDATED && !this.isOnline) {
+                if (this.currentStatus === CoreConstants.OUTDATED && !this.isOnline) {
                     // Warn the user that the file isn't updated.
                     const alert = await CoreDomUtils.showAlert(
                         undefined,

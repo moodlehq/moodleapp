@@ -110,7 +110,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
             return;
         }
         // Set a minimum height value.
-        this.initialHeight = this.initialHeight || 56;
+        this.initialHeight = this.initialHeight || 48;
         this.previousHeight = this.initialHeight;
 
         this.content = this.element.closest('ion-content');

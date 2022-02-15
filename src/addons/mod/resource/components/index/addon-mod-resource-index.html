@@ -63,7 +63,7 @@
                     <ion-label>
                         <h3>{{ 'core.lastdownloaded' | translate }}</h3>
                         <p>{{ downloadTimeReadable }}</p>
-                        <ion-grid *ngIf="prefetchStatus === outdatedStatus" class="addon-mod_resource-outdated">
+                        <ion-grid *ngIf="currentStatus === outdatedStatus" class="addon-mod_resource-outdated">
                             <ion-row class="ion-align-items-center">
                                 <ion-col size="auto">
                                     <ion-icon color="warning" name="fas-exclamation-triangle" aria-hidden="true"></ion-icon>
