@@ -34,6 +34,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
 
     protected loadingObserver: CoreEventObserver;
     protected content?: HTMLIonContentElement | null;
+    protected contentScroll?: HTMLElement;
     protected header: HTMLIonHeaderElement;
     protected titleTopDifference = 1;
     protected h1StartDifference = 0;
@@ -46,9 +47,11 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
     protected title?: HTMLElement | null;
     protected titleHeight = 0;
     protected contentH1?: HTMLElement | null;
+    protected debouncedUpdateCollapseProgress: () => void;
 
     constructor(el: ElementRef<HTMLIonHeaderElement>) {
         this.header = el.nativeElement;
+        this.debouncedUpdateCollapseProgress = CoreUtils.debounce(() => this.updateCollapseProgress(), 50);
 
         this.loadingObserver = CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, async (data) => {
             if (!data.loaded) {
@@ -68,13 +71,28 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
     }
 
     /**
+     * Set content element.
+     *
+     * @param content Content element.
+     */
+    protected async setContent(content?: HTMLIonContentElement | null): Promise<void> {
+        this.content = content;
+
+        if (content) {
+            this.contentScroll = await content.getScrollElement();
+        } else {
+            delete this.contentScroll;
+        }
+    }
+
+    /**
      * Gets the loading content id to wait for the loading to finish.
      *
      * @return Promise resolved with Loading Id, if any.
      */
     protected async getLoadingId(): Promise<string | undefined> {
         if (!this.content) {
-            this.content = this.header.parentElement?.querySelector('ion-content:not(.disable-scroll-y)');
+            this.setContent(this.header.parentElement?.querySelector('ion-content:not(.disable-scroll-y)'));
 
             if (!this.content) {
                 this.cannotCollapse();
@@ -101,7 +119,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
      * Call this function when header is not collapsible.
      */
     protected cannotCollapse(): void {
-        this.content = undefined;
+        this.setContent();
         this.loadingObserver.off();
         this.header.classList.add('core-header-collapsed');
     }
@@ -112,7 +130,6 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
      * @return Promise resolved when done.
      */
     protected async setupRealTitle(): Promise<void> {
-
         if (!this.content) {
             this.cannotCollapse();
 
@@ -141,7 +158,6 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
 
         this.title = title;
         this.titleHeight = title.getBoundingClientRect().height;
-
         this.titleTopDifference = this.contentH1.getBoundingClientRect().top - headerH1.getBoundingClientRect().top;
 
         if (this.titleTopDifference <= 0) {
@@ -224,7 +240,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
      */
     async setupContent(parentId?: string, retries = 5): Promise<void> {
         if (parentId) {
-            this.content = this.header.parentElement?.querySelector(`#${parentId} ion-content:not(.disable-scroll-y)`);
+            this.setContent(this.header.parentElement?.querySelector(`#${parentId} ion-content:not(.disable-scroll-y)`));
             this.inContent = false;
             if (!this.content && retries > 0) {
                 await CoreUtils.nextTick();
@@ -233,7 +249,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
                 return;
             }
 
-            this.onScroll(this.content?.scrollTop || 0);
+            this.updateCollapseProgress();
         }
 
         if (!this.title || !this.content) {
@@ -260,55 +276,62 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
         }
 
         this.content.scrollEvents = true;
-        this.content.addEventListener('ionScroll', (e: CustomEvent<ScrollDetail>): void => {
-            if (e.target == this.content) {
-                this.onScroll(e.detail.scrollTop);
+        this.content.addEventListener('ionScroll', ({ target }: CustomEvent<ScrollDetail>): void => {
+            if (target !== this.content) {
+                return;
             }
+
+            this.updateCollapseProgress();
+            this.debouncedUpdateCollapseProgress();
         });
     }
 
     /**
-     * On scroll function.
-     *
-     * @param scrollTop Scroll top measure.
+     * Update collapse progress according to the current scroll position.
      */
-    protected onScroll(
-        scrollTop: number,
-    ): void {
-        if (!this.title || !this.contentH1) {
+    protected updateCollapseProgress(): void {
+        if (!this.contentScroll || !this.title || !this.contentH1) {
             return;
         }
 
-        const progress = CoreMath.clamp(scrollTop / this.titleTopDifference, 0, 1);
-        const collapsed = progress >= 1;
+        const collapsibleHeaderHeight = this.title.shadowRoot?.children[0].clientHeight ?? this.title.clientHeight;
+        const scrollableHeight = this.contentScroll.scrollHeight - this.contentScroll.clientHeight;
+        const collapsedHeight = collapsibleHeaderHeight - this.title.clientHeight;
+        const progress = CoreMath.clamp(
+            scrollableHeight + collapsedHeight <= 2 * collapsibleHeaderHeight
+                ? this.contentScroll.scrollTop / (this.contentScroll.scrollHeight - this.contentScroll.clientHeight)
+                : this.contentScroll.scrollTop / collapsibleHeaderHeight,
+            0,
+            1,
+        );
+        const collapsed = progress === 1;
 
         if (!this.inContent) {
-            this.title.style.transform = 'translateY(-' + scrollTop + 'px)';
-            const height = this.titleHeight - scrollTop;
-            this.title.style.height = (height > 0 ? height : 0) + 'px';
+            this.title.style.transform = `translateY(-${this.titleTopDifference * progress}px)`;
+            this.title.style.height = `${collapsibleHeaderHeight * (1 - progress)}px`;
         }
 
         // Check total collapse.
         this.header.classList.toggle('core-header-collapsed', collapsed);
         this.title.classList.toggle('collapsible-title-collapsed', collapsed);
-        this.title.classList.toggle('collapsible-title-collapse-started', scrollTop > 0);
+        this.title.classList.toggle('collapsible-title-collapse-started', progress > 0);
         this.title.classList.toggle('collapsible-title-collapse-nowrap', progress > 0.5);
-        this.title.style.setProperty('--collapse-opacity', (1 - progress) +'');
+        this.title.style.setProperty('--collapse-opacity', `${1 - progress}`);
 
         if (collapsed) {
-            this.contentH1.style.transform = 'translateX(-' + this.h1StartDifference + 'px)';
-            this.contentH1.style.setProperty('font-size', this.headerH1FontSize + 'px');
+            this.contentH1.style.transform = `translateX(-${this.h1StartDifference}px)`;
+            this.contentH1.style.setProperty('font-size', `${this.headerH1FontSize}px`);
 
             return;
         }
 
         // Zoom font-size out.
         const newFontSize = this.contentH1FontSize - ((this.contentH1FontSize - this.headerH1FontSize) * progress);
-        this.contentH1.style.setProperty('font-size', newFontSize + 'px');
+        this.contentH1.style.setProperty('font-size', `${newFontSize}px`);
 
         // Move.
-        const newStart = - this.h1StartDifference * progress;
-        this.contentH1.style.transform = 'translateX(' + newStart + 'px)';
+        const newStart = -this.h1StartDifference * progress;
+        this.contentH1.style.transform = `translateX(${newStart}px)`;
     }
 
     /**
