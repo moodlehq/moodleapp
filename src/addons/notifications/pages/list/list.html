@@ -44,7 +44,11 @@
                     class="core-notification-icon" slot="start">
 
                 <ion-label>
-                    <p class="item-heading">{{ notification.subject }}</p>
+                    <p class="item-heading">
+                        <core-format-text [text]="notification.subject" contextLevel="system" [contextInstanceId]="0"
+                            [wsNotFiltered]="true">
+                        </core-format-text>
+                    </p>
                     <p *ngIf="notification.useridfrom > 0">{{ notification.userfromfullname }}</p>
                 </ion-label>
                 <ion-note slot="end" class="ion-float-end ion-text-end">
