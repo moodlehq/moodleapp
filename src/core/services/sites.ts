@@ -41,10 +41,8 @@ import {
     APP_SCHEMA,
     SCHEMA_VERSIONS_TABLE_SCHEMA,
     SITES_TABLE_NAME,
-    CURRENT_SITE_TABLE_NAME,
     SCHEMA_VERSIONS_TABLE_NAME,
     SiteDBEntry,
-    CurrentSiteDBEntry,
     SchemaVersionsDBEntry,
 } from '@services/database/sites';
 import { CoreArray } from '../singletons/array';
@@ -59,7 +57,13 @@ import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreDatabaseTable } from '@classes/database/database-table';
-import { CoreDatabaseConfiguration, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
+import {
+    CoreDatabaseCachingStrategy,
+    CoreDatabaseConfiguration,
+    CoreDatabaseTableProxy,
+} from '@classes/database/database-table-proxy';
+import { asyncInstance, AsyncInstance } from '../utils/async-instance';
+import { CoreConfig } from './config';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 
@@ -84,14 +88,11 @@ export class CoreSitesProvider {
     protected siteSchemasMigration: { [siteId: string]: Promise<void> } = {};
     protected siteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
     protected pluginsSiteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
-
-    // Variables for DB.
-    protected appDB: Promise<SQLiteDB>;
-    protected resolveAppDB!: (appDB: SQLiteDB) => void;
     protected siteTables: Record<string, Record<string, CorePromisedValue<CoreDatabaseTable>>> = {};
+    protected schemasTables: Record<string, AsyncInstance<CoreDatabaseTable<SchemaVersionsDBEntry, 'name'>>> = {};
+    protected sitesTable = asyncInstance<CoreDatabaseTable<SiteDBEntry>>();
 
     constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] = []) {
-        this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
         this.logger = CoreLogger.getInstance('CoreSitesProvider');
         this.siteSchemas = CoreArray.flatten(siteSchemas).reduce(
             (siteSchemas, schema) => {
@@ -132,7 +133,15 @@ export class CoreSitesProvider {
             // Ignore errors.
         }
 
-        this.resolveAppDB(CoreApp.getDB());
+        const sitesTable = new CoreDatabaseTableProxy<SiteDBEntry>(
+            { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
+            CoreApp.getDB(),
+            SITES_TABLE_NAME,
+        );
+
+        await sitesTable.initialize();
+
+        this.sitesTable.setInstance(sitesTable);
     }
 
     /**
@@ -743,8 +752,7 @@ export class CoreSitesProvider {
         config?: CoreSiteConfig,
         oauthId?: number,
     ): Promise<void> {
-        const db = await this.appDB;
-        const entry: SiteDBEntry = {
+        await this.sitesTable.insert({
             id,
             siteUrl,
             token,
@@ -753,9 +761,7 @@ export class CoreSitesProvider {
             config: config ? JSON.stringify(config) : undefined,
             loggedOut: 0,
             oauthId,
-        };
-
-        await db.insertRecord(SITES_TABLE_NAME, entry);
+        });
     }
 
     /**
@@ -982,9 +988,7 @@ export class CoreSitesProvider {
         delete this.sites[siteId];
 
         try {
-            const db = await this.appDB;
-
-            await db.deleteRecords(SITES_TABLE_NAME, { id: siteId });
+            await this.sitesTable.deleteByPrimaryKey({ id: siteId });
         } catch (err) {
             // DB remove shouldn't fail, but we'll go ahead even if it does.
         }
@@ -1001,10 +1005,9 @@ export class CoreSitesProvider {
      * @return Promise resolved with true if there are sites and false if there aren't.
      */
     async hasSites(): Promise<boolean> {
-        const db = await this.appDB;
-        const count = await db.countRecords(SITES_TABLE_NAME);
+        const isEmpty = await this.sitesTable.isEmpty();
 
-        return count > 0;
+        return !isEmpty;
     }
 
     /**
@@ -1026,9 +1029,8 @@ export class CoreSitesProvider {
             return this.sites[siteId];
         } else {
             // Retrieve and create the site.
-            const db = await this.appDB;
             try {
-                const data = await db.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { id: siteId });
+                const data = await this.sitesTable.getOneByPrimaryKey({ id: siteId });
 
                 return this.makeSiteFromSiteListEntry(data);
             } catch {
@@ -1044,8 +1046,7 @@ export class CoreSitesProvider {
      * @return Promise resolved with the site.
      */
     async getSiteByUrl(siteUrl: string): Promise<CoreSite> {
-        const db = await this.appDB;
-        const data = await db.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { siteUrl });
+        const data = await this.sitesTable.getOne({ siteUrl });
 
         if (this.sites[data.id] !== undefined) {
             return this.sites[data.id];
@@ -1131,8 +1132,7 @@ export class CoreSitesProvider {
      * @return Promise resolved when the sites are retrieved.
      */
     async getSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
-        const db = await this.appDB;
-        const sites = await db.getAllRecords<SiteDBEntry>(SITES_TABLE_NAME);
+        const sites = await this.sitesTable.getMany();
 
         const formattedSites: CoreSiteBasicInfo[] = [];
         sites.forEach((site) => {
@@ -1197,8 +1197,7 @@ export class CoreSitesProvider {
      * @return Promise resolved when the sites IDs are retrieved.
      */
     async getLoggedInSitesIds(): Promise<string[]> {
-        const db = await this.appDB;
-        const sites = await db.getRecords<SiteDBEntry>(SITES_TABLE_NAME, { loggedOut : 0 });
+        const sites = await this.sitesTable.getMany({ loggedOut : 0 });
 
         return sites.map((site) => site.id);
     }
@@ -1209,8 +1208,7 @@ export class CoreSitesProvider {
      * @return Promise resolved when the sites IDs are retrieved.
      */
     async getSitesIds(): Promise<string[]> {
-        const db = await this.appDB;
-        const sites = await db.getAllRecords<SiteDBEntry>(SITES_TABLE_NAME);
+        const sites = await this.sitesTable.getMany();
 
         return sites.map((site) => site.id);
     }
@@ -1233,13 +1231,7 @@ export class CoreSitesProvider {
      * @return Promise resolved when current site is stored.
      */
     async login(siteId: string): Promise<void> {
-        const db = await this.appDB;
-        const entry = {
-            id: 1,
-            siteId,
-        };
-
-        await db.insertRecord(CURRENT_SITE_TABLE_NAME, entry);
+        await CoreConfig.set('current_site_id', siteId);
 
         CoreEvents.trigger(CoreEvents.LOGIN, {}, siteId);
     }
@@ -1308,13 +1300,10 @@ export class CoreSitesProvider {
             return Promise.reject(new CoreError('Session already restored.'));
         }
 
-        const db = await this.appDB;
-
         this.sessionRestored = true;
 
         try {
-            const currentSite = await db.getRecord<CurrentSiteDBEntry>(CURRENT_SITE_TABLE_NAME, { id: 1 });
-            const siteId = currentSite.siteId;
+            const siteId = await this.getStoredCurrentSiteId();
             this.logger.debug(`Restore session in site ${siteId}`);
 
             await this.loadSite(siteId);
@@ -1330,12 +1319,11 @@ export class CoreSitesProvider {
      * @return Promise resolved when done.
      */
     protected async setSiteLoggedOut(siteId: string): Promise<void> {
-        const db = await this.appDB;
         const site = await this.getSite(siteId);
 
         site.setLoggedOut(true);
 
-        await db.updateRecords(SITES_TABLE_NAME, { loggedOut: 1 }, { id: siteId });
+        await this.sitesTable.update({ loggedOut: 1 }, { id: siteId });
     }
 
     /**
@@ -1371,19 +1359,20 @@ export class CoreSitesProvider {
      * @return A promise resolved when the site is updated.
      */
     async updateSiteTokenBySiteId(siteId: string, token: string, privateToken: string = ''): Promise<void> {
-        const db = await this.appDB;
         const site = await this.getSite(siteId);
-        const newValues: Partial<SiteDBEntry> = {
-            token,
-            privateToken,
-            loggedOut: 0,
-        };
 
         site.token = token;
         site.privateToken = privateToken;
         site.setLoggedOut(false); // Token updated means the user authenticated again, not logged out anymore.
 
-        await db.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
+        await this.sitesTable.update(
+            {
+                token,
+                privateToken,
+                loggedOut: 0,
+            },
+            { id: siteId },
+        );
     }
 
     /**
@@ -1425,9 +1414,7 @@ export class CoreSitesProvider {
             }
 
             try {
-                const db = await this.appDB;
-
-                await db.updateRecords(SITES_TABLE_NAME, newValues, { id: siteId });
+                await this.sitesTable.update(newValues, { id: siteId });
             } finally {
                 CoreEvents.trigger(CoreEvents.SITE_UPDATED, info, siteId);
             }
@@ -1484,8 +1471,7 @@ export class CoreSitesProvider {
         }
 
         try {
-            const db = await this.appDB;
-            const siteEntries = await db.getAllRecords<SiteDBEntry>(SITES_TABLE_NAME);
+            const siteEntries = await this.sitesTable.getMany();
             const ids: string[] = [];
             const promises: Promise<unknown>[] = [];
 
@@ -1516,10 +1502,9 @@ export class CoreSitesProvider {
      * @return Promise resolved with the site ID.
      */
     async getStoredCurrentSiteId(): Promise<string> {
-        const db = await this.appDB;
-        const currentSite = await db.getRecord<CurrentSiteDBEntry>(CURRENT_SITE_TABLE_NAME, { id: 1 });
+        await this.migrateCurrentSiteLegacyTable();
 
-        return currentSite.siteId;
+        return CoreConfig.get('current_site_id');
     }
 
     /**
@@ -1528,9 +1513,7 @@ export class CoreSitesProvider {
      * @return Promise resolved when done.
      */
     async removeStoredCurrentSite(): Promise<void> {
-        const db = await this.appDB;
-
-        await db.deleteRecords(CURRENT_SITE_TABLE_NAME, { id: 1 });
+        await CoreConfig.delete('current_site_id');
     }
 
     /**
@@ -1645,10 +1628,8 @@ export class CoreSitesProvider {
      * @return Promise resolved when done.
      */
     protected async applySiteSchemas(site: CoreSite, schemas: {[name: string]: CoreRegisteredSiteSchema}): Promise<void> {
-        const db = site.getDb();
-
         // Fetch installed versions of the schema.
-        const records = await db.getAllRecords<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE_NAME);
+        const records = await this.getSiteSchemasTable(site).getMany();
 
         const versions: {[name: string]: number} = {};
         records.forEach((record) => {
@@ -1695,7 +1676,7 @@ export class CoreSitesProvider {
         }
 
         // Set installed version.
-        await db.insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name: schema.name, version: schema.version });
+        await this.getSiteSchemasTable(site).insert({ name: schema.name, version: schema.version });
     }
 
     /**
@@ -1792,6 +1773,47 @@ export class CoreSitesProvider {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async findSites(search: string): Promise<CoreLoginSiteInfo[]> {
         return [];
+    }
+
+    /**
+     * Migrate the legacy current_site table.
+     */
+    protected async migrateCurrentSiteLegacyTable(): Promise<void> {
+        if (await CoreConfig.has('current_site_migrated')) {
+            // Already migrated.
+            return;
+        }
+
+        try {
+            const db = CoreApp.getDB();
+
+            const { siteId } = await db.getRecord<{ siteId: string }>('current_site');
+
+            await CoreConfig.set('current_site_id', siteId);
+            await CoreApp.deleteTableSchema('current_site');
+            await db.dropTable('current_site');
+        } finally {
+            await CoreConfig.set('current_site_migrated', 1);
+        }
+    }
+
+    /**
+     * Get schemas table for the given site.
+     *
+     * @param site Site.
+     * @returns Scehmas Table.
+     */
+    protected getSiteSchemasTable(site: CoreSite): AsyncInstance<CoreDatabaseTable<SchemaVersionsDBEntry, 'name'>> {
+        this.schemasTables[site.getId()] = this.schemasTables[site.getId()] ?? asyncInstance(
+            () => this.getSiteTable(SCHEMA_VERSIONS_TABLE_NAME, {
+                siteId: site.getId(),
+                database: site.getDb(),
+                config: { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
+                primaryKeyColumns: ['name'],
+            }),
+        );
+
+        return this.schemasTables[site.getId()];
     }
 
 }

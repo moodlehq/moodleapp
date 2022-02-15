@@ -14,7 +14,13 @@
 
 import { CoreError } from '@classes/errors/error';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
-import { CoreDatabaseTable, CoreDatabaseConditions, GetDBRecordPrimaryKey, CoreDatabaseReducer } from './database-table';
+import {
+    CoreDatabaseTable,
+    CoreDatabaseConditions,
+    GetDBRecordPrimaryKey,
+    CoreDatabaseReducer,
+    CoreDatabaseQueryOptions,
+} from './database-table';
 
 /**
  * Wrapper used to improve performance by caching all the records for faster read operations.
@@ -48,21 +54,44 @@ export class CoreEagerDatabaseTable<
     /**
      * @inheritdoc
      */
-    async getMany(conditions?: Partial<DBRecord>): Promise<DBRecord[]> {
+    async getMany(conditions?: Partial<DBRecord>, options?: Partial<CoreDatabaseQueryOptions<DBRecord>>): Promise<DBRecord[]> {
         const records = Object.values(this.records);
-
-        return conditions
+        const filteredRecords = conditions
             ? records.filter(record => this.recordMatches(record, conditions))
             : records;
+
+        if (options?.sorting) {
+            this.sortRecords(filteredRecords, options.sorting);
+        }
+
+        return filteredRecords.slice(options?.offset ?? 0, options?.limit);
     }
 
     /**
      * @inheritdoc
      */
-    async getOne(conditions: Partial<DBRecord>): Promise<DBRecord> {
-        const record = Object.values(this.records).find(record => this.recordMatches(record, conditions)) ?? null;
+    async getManyWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<DBRecord[]> {
+        return Object.values(this.records).filter(record => conditions.js(record));
+    }
 
-        if (record === null) {
+    /**
+     * @inheritdoc
+     */
+    async getOne(
+        conditions?: Partial<DBRecord>,
+        options?: Partial<Omit<CoreDatabaseQueryOptions<DBRecord>, 'offset' | 'limit'>>,
+    ): Promise<DBRecord> {
+        let record: DBRecord | undefined;
+
+        if (options?.sorting) {
+            record = this.getMany(conditions, { ...options, limit: 1 })[0];
+        } else if (conditions) {
+            record = Object.values(this.records).find(record => this.recordMatches(record, conditions));
+        } else {
+            record = Object.values(this.records)[0];
+        }
+
+        if (!record) {
             throw new CoreError('No records found.');
         }
 
@@ -92,6 +121,24 @@ export class CoreEagerDatabaseTable<
                 (result, record) => (!conditions || conditions.js(record)) ? reducer.js(result, record) : result,
                 reducer.jsInitialValue,
             );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async hasAny(conditions?: Partial<DBRecord>): Promise<boolean> {
+        return conditions
+            ? Object.values(this.records).some(record => this.recordMatches(record, conditions))
+            : Object.values(this.records).length > 0;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async count(conditions?: Partial<DBRecord>): Promise<number> {
+        return conditions
+            ? Object.values(this.records).filter(record => this.recordMatches(record, conditions)).length
+            : Object.values(this.records).length;
     }
 
     /**

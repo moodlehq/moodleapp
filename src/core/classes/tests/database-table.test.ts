@@ -13,20 +13,20 @@
 // limitations under the License.
 
 import { mock, mockSingleton } from '@/testing/utils';
-import { CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreDatabaseSorting, CoreDatabaseTable } from '@classes/database/database-table';
 import {
     CoreDatabaseCachingStrategy,
     CoreDatabaseConfiguration,
     CoreDatabaseTableProxy,
 } from '@classes/database/database-table-proxy';
-import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreConfig } from '@services/config';
 
-interface User extends SQLiteDBRecordValues {
+type User = {
     id: number;
     name: string;
     surname: string;
-}
+};
 
 function userMatches(user: User, conditions: Partial<User>) {
     return !Object.entries(conditions).some(([column, value]) => user[column] !== value);
@@ -45,7 +45,7 @@ function prepareStubs(config: Partial<CoreDatabaseConfiguration> = {}): [User[],
             return record as unknown as T;
         },
         getRecords: async <T>(_, conditions) => records.filter(record => userMatches(record, conditions)) as unknown as T[],
-        getAllRecords: async <T>() => records as unknown as T[],
+        getAllRecords: async <T>() => records.slice(0) as unknown as T[],
         deleteRecords: async (_, conditions) => {
             const usersToDelete: User[] = [];
 
@@ -81,10 +81,10 @@ async function testFindItems(records: User[], table: CoreDatabaseTable<User>) {
 
     await table.initialize();
 
-    await expect(table.getOneByPrimaryKey({ id: 1 })).resolves.toEqual(john);
-    await expect(table.getOneByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
     await expect(table.getOne({ surname: 'Doe', name: 'John' })).resolves.toEqual(john);
     await expect(table.getOne({ surname: 'Doe', name: 'Amy' })).resolves.toEqual(amy);
+    await expect(table.getOneByPrimaryKey({ id: 1 })).resolves.toEqual(john);
+    await expect(table.getOneByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
 }
 
 async function testInsertItems(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
@@ -163,6 +163,32 @@ describe('CoreDatabaseTable with eager caching', () => {
         await testFindItems(records, table);
 
         expect(database.getRecord).not.toHaveBeenCalled();
+    });
+
+    it('sorts items', async () => {
+        // Arrange.
+        const john = { id: 1, name: 'John', surname: 'Doe' };
+        const amy = { id: 2, name: 'Amy', surname: 'Doe' };
+        const jane = { id: 3, name: 'Jane', surname: 'Smith' };
+        const expectSorting = async (sorting: CoreDatabaseSorting<User>, expectedResults: User[]) => {
+            const results = await table.getMany({}, { sorting });
+
+            expect(results).toEqual(expectedResults);
+        };
+
+        records.push(john);
+        records.push(amy);
+        records.push(jane);
+
+        await table.initialize();
+
+        // Act & Assert.
+        await expectSorting('name', [amy, jane, john]);
+        await expectSorting('surname', [john, amy, jane]);
+        await expectSorting({ name: 'desc' }, [john, jane, amy]);
+        await expectSorting({ surname: 'desc' }, [jane, john, amy]);
+        await expectSorting(['name', { surname: 'desc' }], [amy, jane, john]);
+        await expectSorting([{ surname: 'desc' }, 'name'], [jane, amy, john]);
     });
 
     it('inserts items', () => testInsertItems(records, database, table));

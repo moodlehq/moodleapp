@@ -24,7 +24,6 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreConfig } from '@services/config';
 import { CoreConstants } from '@/core/constants';
-import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreSite, CoreSiteInfo } from '@classes/site';
 import { makeSingleton, Badge, Push, Device, Translate, Platform, ApplicationInit, NgZone } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -42,6 +41,11 @@ import { CoreError } from '@classes/errors/error';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
+import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
+import { CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
+import { CoreObject } from '@singletons/object';
+import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
 
 /**
  * Service to handle push notifications.
@@ -53,14 +57,27 @@ export class CorePushNotificationsProvider {
 
     protected logger: CoreLogger;
     protected pushID?: string;
+    protected badgesTable = asyncInstance<CoreDatabaseTable<CorePushNotificationsBadgeDBRecord, 'siteid' | 'addon'>>();
+    protected pendingUnregistersTable =
+        asyncInstance<CoreDatabaseTable<CorePushNotificationsPendingUnregisterDBRecord, 'siteid'>>();
 
-    // Variables for DB.
-    protected appDB: Promise<SQLiteDB>;
-    protected resolveAppDB!: (appDB: SQLiteDB) => void;
+    protected registeredDevicesTables:
+        LazyMap<AsyncInstance<CoreDatabaseTable<CorePushNotificationsRegisteredDeviceDBRecord, 'appid' | 'uuid'>>>;
 
     constructor() {
-        this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
         this.logger = CoreLogger.getInstance('CorePushNotificationsProvider');
+        this.registeredDevicesTables = lazyMap(
+            siteId => asyncInstance(
+                () => CoreSites.getSiteTable<CorePushNotificationsRegisteredDeviceDBRecord, 'appid' | 'uuid'>(
+                    REGISTERED_DEVICES_TABLE_NAME,
+                    {
+                        siteId,
+                        config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                        primaryKeyColumns: ['appid', 'uuid'],
+                    },
+                ),
+            ),
+        );
     }
 
     /**
@@ -157,7 +174,27 @@ export class CorePushNotificationsProvider {
             // Ignore errors.
         }
 
-        this.resolveAppDB(CoreApp.getDB());
+        const database = CoreApp.getDB();
+        const badgesTable = new CoreDatabaseTableProxy<CorePushNotificationsBadgeDBRecord, 'siteid' | 'addon'>(
+            { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
+            database,
+            BADGE_TABLE_NAME,
+            ['siteid', 'addon'],
+        );
+        const pendingUnregistersTable = new CoreDatabaseTableProxy<CorePushNotificationsPendingUnregisterDBRecord, 'siteid'>(
+            { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
+            database,
+            PENDING_UNREGISTER_TABLE_NAME,
+            ['siteid'],
+        );
+
+        await Promise.all([
+            badgesTable.initialize(),
+            pendingUnregistersTable.initialize(),
+        ]);
+
+        this.badgesTable.setInstance(badgesTable);
+        this.pendingUnregistersTable.setInstance(pendingUnregistersTable);
     }
 
     /**
@@ -177,8 +214,7 @@ export class CorePushNotificationsProvider {
      */
     async cleanSiteCounters(siteId: string): Promise<void> {
         try {
-            const db = await this.appDB;
-            await db.deleteRecords(BADGE_TABLE_NAME, { siteid: siteId } );
+            await this.badgesTable.delete({ siteid: siteId });
         } finally {
             this.updateAppCounter();
         }
@@ -514,7 +550,6 @@ export class CorePushNotificationsProvider {
 
         this.logger.debug(`Unregister device on Moodle: '${site.getId()}'`);
 
-        const db = await this.appDB;
         const data: CoreUserRemoveUserDeviceWSParams = {
             appid: CoreConstants.CONFIG.app_id,
             uuid:  Device.uuid,
@@ -526,7 +561,7 @@ export class CorePushNotificationsProvider {
         } catch (error) {
             if (CoreUtils.isWebServiceError(error) || CoreUtils.isExpiredTokenError(error)) {
                 // Cannot unregister. Don't try again.
-                await CoreUtils.ignoreErrors(db.deleteRecords(PENDING_UNREGISTER_TABLE_NAME, {
+                await CoreUtils.ignoreErrors(this.pendingUnregistersTable.delete({
                     token: site.getToken(),
                     siteid: site.getId(),
                 }));
@@ -535,13 +570,12 @@ export class CorePushNotificationsProvider {
             }
 
             // Store the pending unregister so it's retried again later.
-            const entry: CorePushNotificationsPendingUnregisterDBRecord = {
+            await this.pendingUnregistersTable.insert({
                 siteid: site.getId(),
                 siteurl: site.getURL(),
                 token: site.getToken(),
                 info: JSON.stringify(site.getInfo()),
-            };
-            await db.insertRecord(PENDING_UNREGISTER_TABLE_NAME, entry);
+            });
 
             return;
         }
@@ -552,9 +586,9 @@ export class CorePushNotificationsProvider {
 
         await CoreUtils.ignoreErrors(Promise.all([
             // Remove the device from the local DB.
-            site.getDb().deleteRecords(REGISTERED_DEVICES_TABLE_NAME, this.getRegisterData()),
+            this.registeredDevicesTables[site.getId()].delete(this.getRegisterData()),
             // Remove pending unregisters for this site.
-            db.deleteRecords(PENDING_UNREGISTER_TABLE_NAME, { siteid: site.getId() }),
+            this.pendingUnregistersTable.deleteByPrimaryKey({ siteid: site.getId() }),
         ]));
     }
 
@@ -714,15 +748,14 @@ export class CorePushNotificationsProvider {
 
                 // Insert the device in the local DB.
                 try {
-                    await site.getDb().insertRecord(REGISTERED_DEVICES_TABLE_NAME, data);
+                    await this.registeredDevicesTables[site.getId()].insert(data);
                 } catch (err) {
                     // Ignore errors.
                 }
             }
         } finally {
             // Remove pending unregisters for this site.
-            const db = await this.appDB;
-            await CoreUtils.ignoreErrors(db.deleteRecords(PENDING_UNREGISTER_TABLE_NAME, { siteid: site.getId() }));
+            await CoreUtils.ignoreErrors(this.pendingUnregistersTable.deleteByPrimaryKey({ siteid: site.getId() }));
         }
     }
 
@@ -735,8 +768,7 @@ export class CorePushNotificationsProvider {
      */
     protected async getAddonBadge(siteId?: string, addon: string = 'site'): Promise<number> {
         try {
-            const db = await this.appDB;
-            const entry = await db.getRecord<CorePushNotificationsBadgeDBRecord>(BADGE_TABLE_NAME, { siteid: siteId, addon });
+            const entry = await this.badgesTable.getOne({ siteid: siteId, addon });
 
             return entry?.number || 0;
         } catch (err) {
@@ -751,19 +783,7 @@ export class CorePushNotificationsProvider {
      * @return Promise resolved when done.
      */
     async retryUnregisters(siteId?: string): Promise<void> {
-
-        const db = await this.appDB;
-        let results: CorePushNotificationsPendingUnregisterDBRecord[];
-
-        if (siteId) {
-            // Check if the site has a pending unregister.
-            results = await db.getRecords<CorePushNotificationsPendingUnregisterDBRecord>(PENDING_UNREGISTER_TABLE_NAME, {
-                siteid: siteId,
-            });
-        } else {
-            // Get all pending unregisters.
-            results = await db.getAllRecords<CorePushNotificationsPendingUnregisterDBRecord>(PENDING_UNREGISTER_TABLE_NAME);
-        }
+        const results = await this.pendingUnregistersTable.getMany(CoreObject.withoutEmpty({ siteid: siteId }));
 
         await Promise.all(results.map(async (result) => {
             // Create a temporary site to unregister.
@@ -789,14 +809,11 @@ export class CorePushNotificationsProvider {
     protected async saveAddonBadge(value: number, siteId?: string, addon: string = 'site'): Promise<number> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const entry: CorePushNotificationsBadgeDBRecord = {
+        await this.badgesTable.insert({
             siteid: siteId,
             addon,
             number: value, // eslint-disable-line id-blacklist
-        };
-
-        const db = await this.appDB;
-        await db.insertRecord(BADGE_TABLE_NAME, entry);
+        });
 
         return value;
     }
@@ -815,7 +832,7 @@ export class CorePushNotificationsProvider {
 
         // Check if the device is already registered.
         const records = await CoreUtils.ignoreErrors(
-            site.getDb().getRecords<CorePushNotificationsRegisteredDeviceDBRecord>(REGISTERED_DEVICES_TABLE_NAME, {
+            this.registeredDevicesTables[site.getId()].getMany({
                 appid: data.appid,
                 uuid: data.uuid,
                 name: data.name,

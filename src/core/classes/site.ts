@@ -108,6 +108,7 @@ export class CoreSite {
     protected logger: CoreLogger;
     protected db?: SQLiteDB;
     protected cacheTable: AsyncInstance<CoreDatabaseTable<CoreSiteWSCacheRecord>>;
+    protected configTable: AsyncInstance<CoreDatabaseTable<CoreSiteConfigDBRecord, 'name'>>;
     protected cleanUnicode = false;
     protected lastAutoLogin = 0;
     protected offlineDisabled = false;
@@ -145,6 +146,12 @@ export class CoreSite {
             siteId: this.getId(),
             database: this.getDb(),
             config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+        }));
+        this.configTable = asyncInstance(() => CoreSites.getSiteTable(CoreSite.CONFIG_TABLE, {
+            siteId: this.getId(),
+            database: this.getDb(),
+            config: { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
+            primaryKeyColumns: ['name'],
         }));
         this.setInfo(infos);
         this.calculateOfflineDisabled();
@@ -1825,7 +1832,7 @@ export class CoreSite {
      * @return Promise resolved when done.
      */
     async deleteSiteConfig(name: string): Promise<void> {
-        await this.getDb().deleteRecords(CoreSite.CONFIG_TABLE, { name });
+        await this.configTable.deleteByPrimaryKey({ name });
     }
 
     /**
@@ -1837,7 +1844,7 @@ export class CoreSite {
      */
     async getLocalSiteConfig<T extends number | string>(name: string, defaultValue?: T): Promise<T> {
         try {
-            const entry = await this.getDb().getRecord<CoreSiteConfigDBRecord>(CoreSite.CONFIG_TABLE, { name });
+            const entry = await this.configTable.getOneByPrimaryKey({ name });
 
             return <T> entry.value;
         } catch (error) {
@@ -1857,7 +1864,7 @@ export class CoreSite {
      * @return Promise resolved when done.
      */
     async setLocalSiteConfig(name: string, value: number | string): Promise<void> {
-        await this.getDb().insertRecord(CoreSite.CONFIG_TABLE, { name, value });
+        await this.configTable.insert({ name, value });
     }
 
     /**
