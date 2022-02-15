@@ -61,7 +61,10 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
                 if (params.userpassword) {
                     this.navigateToModuleWithPassword(parseInt(params.id, 10), courseId!, params.userpassword, siteId);
                 } else {
-                    CoreCourseHelper.navigateToModule(parseInt(params.id, 10), siteId, courseId);
+                    CoreCourseHelper.navigateToModule(parseInt(params.id, 10), {
+                        courseId,
+                        siteId,
+                    });
                 }
             },
         }];
@@ -94,10 +97,17 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
             // Store the password so it's automatically used.
             await CoreUtils.ignoreErrors(AddonModLesson.storePassword(module.instance, password, siteId));
 
-            await CoreCourseHelper.navigateToModule(moduleId, siteId, module.course, module.section);
+            await CoreCourseHelper.navigateToModule(moduleId, {
+                courseId: module.course,
+                sectionId: module.section,
+                siteId,
+            });
         } catch {
             // Error, go to index page.
-            await CoreCourseHelper.navigateToModule(moduleId, siteId, courseId);
+            await CoreCourseHelper.navigateToModule(moduleId, {
+                courseId,
+                siteId,
+            });
         } finally {
             modal.dismiss();
         }

@@ -55,7 +55,10 @@ export class AddonModFeedbackPushClickHandlerService implements CorePushNotifica
         if (notification.name == 'submission') {
             return AddonModFeedbackHelper.handleShowEntriesLink(contextUrlParams, notification.site);
         } else {
-            return CoreCourseHelper.navigateToModule(moduleId, notification.site, courseId);
+            return CoreCourseHelper.navigateToModule(moduleId, {
+                courseId,
+                siteId: notification.site,
+            });
         }
     }
 
