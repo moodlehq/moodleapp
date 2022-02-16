@@ -44,6 +44,13 @@ export class CoreDebugDatabaseTable<
     }
 
     /**
+     * Get underlying table instance.
+     */
+    getTarget(): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+        return this.target;
+    }
+
+    /**
      * @inheritdoc
      */
     initialize(): Promise<void> {

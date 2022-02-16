@@ -337,6 +337,23 @@ export class CoreDatabaseTable<
 }
 
 /**
+ * CoreDatabaseTable constructor.
+ */
+export type CoreDatabaseTableConstructor<
+    DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
+    PrimaryKeyColumn extends keyof DBRecord = 'id',
+    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
+> = {
+
+    new (
+        database: SQLiteDB,
+        tableName: string,
+        primaryKeyColumns?: PrimaryKeyColumn[]
+    ): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey>;
+
+};
+
+/**
  * Infer primary key type from database record and primary key column types.
  */
 export type GetDBRecordPrimaryKey<DBRecord extends SQLiteDBRecordValues, PrimaryKeyColumn extends keyof DBRecord> = {

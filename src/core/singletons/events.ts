@@ -56,6 +56,7 @@ export interface CoreEventsData {
     [CoreEvents.ACTIVITY_DATA_SENT]: CoreEventActivityDataSentData;
     [CoreEvents.IAB_LOAD_START]: InAppBrowserEvent;
     [CoreEvents.LOGIN_SITE_CHECKED]: CoreEventLoginSiteCheckedData;
+    [CoreEvents.LOGIN_SITE_UNCHECKED]: CoreEventLoginSiteUncheckedData;
     [CoreEvents.SEND_ON_ENTER_CHANGED]: CoreEventSendOnEnterChangedData;
     [CoreEvents.COMPONENT_FILE_ACTION]: CoreFilepoolComponentFileEventData;
     [CoreEvents.FILE_SHARED]: CoreEventFileSharedData;
@@ -398,6 +399,14 @@ export type CoreEventActivityDataSentData = {
  */
 export type CoreEventLoginSiteCheckedData = {
     config: CoreSitePublicConfigResponse;
+};
+
+/**
+ * Data passed to LOGIN_SITE_UNCHECKED event.
+ */
+export type CoreEventLoginSiteUncheckedData = {
+    config?: CoreSitePublicConfigResponse;
+    loginSuccessful: boolean;
 };
 
 /**
