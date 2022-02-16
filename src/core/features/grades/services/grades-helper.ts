@@ -35,7 +35,8 @@ import { CoreNavigator } from '@services/navigator';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { GRADES_PAGE_NAME } from '../grades.module';
+
+export const GRADES_PAGE_NAME = 'grades';
 
 /**
  * Service that provides some features regarding grades information.
@@ -497,9 +498,12 @@ export class CoreGradesHelperProvider {
             const gradeId = item.id;
 
             await CoreUtils.ignoreErrors(
-                CoreNavigator.navigateToSitePath(`/${GRADES_PAGE_NAME}/${courseId}/${gradeId}`, { siteId }),
+                CoreNavigator.navigateToSitePath(
+                    `/${GRADES_PAGE_NAME}/${courseId}`,
+                    { params: { gradeId }, siteId },
+                ),
             );
-        } catch (error) {
+        } catch {
             try {
                 // Cannot get grade items or there's no need to.
                 if (userId && userId != currentUserId) {
@@ -519,7 +523,7 @@ export class CoreGradesHelperProvider {
 
                 // Open the course with the grades tab selected.
                 await CoreCourseHelper.getAndOpenCourse(courseId, { selectedTab: 'CoreGrades' }, siteId);
-            } catch (error) {
+            } catch {
                 // Cannot get course for some reason, just open the grades page.
                 await CoreNavigator.navigateToSitePath(`/${GRADES_PAGE_NAME}/${courseId}`, { siteId });
             }

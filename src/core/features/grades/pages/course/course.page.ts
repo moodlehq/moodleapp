@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { ActivatedRoute } from '@angular/router';
-import { AfterViewInit, Component, ElementRef, OnDestroy } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
+import { AfterViewInit, Component, ElementRef, OnDestroy, Optional } from '@angular/core';
+import { IonContent, IonRefresher } from '@ionic/angular';
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreGrades } from '@features/grades/services/grades';
@@ -44,6 +44,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
     courseId!: number;
     userId!: number;
+    gradeId?: number;
     expandLabel!: string;
     collapseLabel!: string;
     title?: string;
@@ -53,10 +54,16 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     totalColumnsSpan?: number;
     withinSplitView?: boolean;
 
-    constructor(protected route: ActivatedRoute, protected element: ElementRef<HTMLElement>) {
+    constructor(
+        protected route: ActivatedRoute,
+        protected element: ElementRef<HTMLElement>,
+        @Optional() protected content?: IonContent,
+    ) {
         try {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId', { route });
             this.userId = CoreNavigator.getRouteNumberParam('userId', { route }) ?? CoreSites.getCurrentSiteUserId();
+            this.gradeId = CoreNavigator.getRouteNumberParam('gradeId', { route });
+
             this.expandLabel = Translate.instant('core.expand');
             this.collapseLabel = Translate.instant('core.collapse');
 
@@ -116,13 +123,14 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      * Toggle whether a row is expanded or collapsed.
      *
      * @param row Row.
+     * @param expand If defined, force expand or collapse.
      */
-    toggleRow(row: CoreGradesFormattedTableRow): void {
+    toggleRow(row: CoreGradesFormattedTableRow, expand?: boolean): void {
         if (!this.rows || !this.columns) {
             return;
         }
 
-        row.expanded = !row.expanded;
+        row.expanded = expand ?? !row.expanded;
 
         let colspan: number = this.columns.length + (row.colspan ?? 0) - 1;
         for (let i = this.rows.indexOf(row) - 1; i >= 0; i--) {
@@ -155,6 +163,22 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     private async fetchInitialGrades(): Promise<void> {
         try {
             await this.fetchGrades();
+
+            if (this.gradeId && this.rows) {
+                const row = this.rows.find((row) => row.id == this.gradeId);
+
+                if (row) {
+                    this.toggleRow(row, true);
+                    await CoreUtils.nextTick();
+
+                    CoreDomUtils.scrollToElementBySelector(
+                        this.element.nativeElement,
+                        this.content,
+                        '#grade-' + row.id,
+                    );
+                    this.gradeId = undefined;
+                }
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading course');
 
