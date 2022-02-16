@@ -46,6 +46,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     @Input() component = ''; // Component name.
     @Input() description = ''; // Module description.
     @Input() hasOffline = false; // If it has offline data to be synced.
+    @Input() displayOptions: CoreCourseModuleSummaryDisplayOptions = {};
 
     loaded = false; // If the component has been loaded.
     componentId?: number; // Component ID.
@@ -94,6 +95,15 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
 
             return;
         }
+
+        this.displayOptions = Object.assign({
+            displayOpenInBrowser: true,
+            displayDescription: true,
+            displayRefresh: true,
+            displayPrefetch: true,
+            displaySize: true,
+            displayBlog: true,
+        }, this.displayOptions);
 
         this.fetchContent();
 
@@ -306,6 +316,15 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
 
 }
 
-export type CoreCourseModuleSummaryResult =  {
+export type CoreCourseModuleSummaryResult = {
     action: 'sync'|'refresh';
+};
+
+export type CoreCourseModuleSummaryDisplayOptions = {
+    displayOpenInBrowser?: boolean;
+    displayDescription?: boolean;
+    displayRefresh?: boolean;
+    displayPrefetch?: boolean;
+    displaySize?: boolean;
+    displayBlog?: boolean;
 };

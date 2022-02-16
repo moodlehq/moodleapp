@@ -19,12 +19,12 @@
                     </core-format-text>
                 </h1>
             </ion-label>
-            <ion-button fill="clear" [href]="externalUrl" core-link [showBrowserWarning]="false" color="dark"
-                [attr.aria-label]="'core.openinbrowser' | translate" slot="end">
+            <ion-button fill="clear" *ngIf="displayOptions.displayOpenInBrowser" [href]="externalUrl" core-link [showBrowserWarning]="false"
+                color="dark" [attr.aria-label]="'core.openinbrowser' | translate" slot="end">
                 <ion-icon name="fas-external-link-alt" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="module && description">
+        <ion-item class="ion-text-wrap" *ngIf="module && description && displayOptions.displayDescription">
             <ion-label>
                 <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
                     [contextInstanceId]="module.id" [courseId]="courseId" [maxHeight]="120">
@@ -32,7 +32,7 @@
             </ion-label>
         </ion-item>
 
-        <ion-item button class="ion-margin" *ngIf="prefetchText" class="ion-text-wrap">
+        <ion-item button class="ion-margin" *ngIf="prefetchText && displayOptions.displayPrefetch" class="ion-text-wrap">
             <ion-label>
                 <p class="item-heading ion-text-wrap">{{ prefetchText }}</p>
                 <p *ngIf="downloadTimeReadable">{{ downloadTimeReadable }}</p>
@@ -45,7 +45,7 @@
             <ion-spinner *ngIf="prefetchStatusIcon == 'spinner'" slot="end" aria-hidden="true"></ion-spinner>
         </ion-item>
 
-        <ion-item button class="ion-margin" *ngIf="sizeReadable" class="ion-text-wrap">
+        <ion-item button class="ion-margin" *ngIf="sizeReadable && displayOptions.displaySize" class="ion-text-wrap">
             <ion-label>
                 <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
                 <ion-badge color="light">{{ sizeReadable | coreBytesToSize }}</ion-badge>
@@ -57,7 +57,7 @@
             <ion-spinner *ngIf="removeFilesLoading" slot="end" aria-hidden="true"></ion-spinner>
         </ion-item>
 
-        <ion-button *ngIf="blog" class="ion-margin" (click)="gotoBlog()" expand="block" fill="outline">
+        <ion-button *ngIf="blog && displayOptions.displayBlog" class="ion-margin" (click)="gotoBlog()" expand="block" fill="outline">
             <ion-icon name="far-newspaper" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 {{ 'addon.blog.blog' | translate }}
@@ -65,7 +65,7 @@
         </ion-button>
     </core-loading>
 </ion-content>
-<ion-footer *ngIf="loaded && isOnline">
+<ion-footer *ngIf="loaded && isOnline && displayOptions.displayRefresh">
     <ion-button class="ion-margin" *ngIf="!hasOffline" (click)="refresh()" expand="block">
         <ion-icon name="fas-redo-alt" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>

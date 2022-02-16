@@ -64,7 +64,6 @@ import { CoreFile } from '@services/file';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
@@ -474,23 +473,18 @@ export class CoreCourseHelperProvider {
      *
      * @param module Module to remove the files.
      * @param courseId Course ID the module belongs to.
-     * @param done Function to call when done. It will close the context menu.
      * @return Promise resolved when done.
      * @deprecated since 4.0
      */
-    async confirmAndRemoveFiles(module: CoreCourseModuleData, courseId: number, done?: () => void): Promise<void> {
+    async confirmAndRemoveFiles(module: CoreCourseModuleData, courseId: number): Promise<void> {
         let modal: CoreIonLoadingElement | undefined;
 
         try {
-
             await CoreDomUtils.showDeleteConfirm('addon.storagemanager.confirmdeletedatafrom', { name: module.name });
 
             modal = await CoreDomUtils.showModalLoading();
 
             await this.removeModuleStoredData(module, courseId);
-
-            done && done();
-
         } catch (error) {
             if (error) {
                 CoreDomUtils.showErrorModal(error);
@@ -553,45 +547,6 @@ export class CoreCourseHelperProvider {
 
         // Show confirm modal if needed.
         await CoreDomUtils.confirmDownloadSize(sizeSum, undefined, undefined, undefined, undefined, alwaysConfirm);
-    }
-
-    /**
-     * Helper function to prefetch a module, showing a confirmation modal if the size is big.
-     * This function is meant to be called from a context menu option. It will also modify some data like the prefetch icon.
-     *
-     * @param instance The component instance that has the context menu.
-     * @param module Module to be prefetched
-     * @param courseId Course ID the module belongs to.
-     * @param done Function to call when done. It will close the context menu.
-     * @return Promise resolved when done.
-     * @deprecated since 4.0
-     */
-    async contextMenuPrefetch(
-        instance: ComponentWithContextMenu,
-        module: CoreCourseModuleData,
-        courseId: number,
-        done?: () => void,
-    ): Promise<void> {
-        const initialIcon = instance.prefetchStatusIcon;
-        instance.prefetchStatusIcon = CoreConstants.ICON_DOWNLOADING; // Show spinner since this operation might take a while.
-
-        try {
-            // We need to call getDownloadSize, the package might have been updated.
-            const size = await CoreCourseModulePrefetchDelegate.getModuleDownloadSize(module, courseId, true);
-
-            await CoreDomUtils.confirmDownloadSize(size);
-
-            await CoreCourseModulePrefetchDelegate.prefetchModule(module, courseId, true);
-
-            // Success, close menu.
-            done && done();
-        } catch (error) {
-            instance.prefetchStatusIcon = initialIcon;
-
-            if (!instance.isDestroyed) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
-            }
-        }
     }
 
     /**
@@ -1028,87 +983,6 @@ export class CoreCourseHelperProvider {
         files = files || module.contents || [];
 
         await CoreFilepool.downloadOrPrefetchFiles(siteId, files, false, false, component, componentId);
-    }
-
-    /**
-     * Fill the Context Menu for a certain module.
-     *
-     * @param instance The component instance that has the context menu.
-     * @param module Module to be prefetched
-     * @param courseId Course ID the module belongs to.
-     * @param invalidateCache Invalidates the cache first.
-     * @param component Component of the module.
-     * @return Promise resolved when done.
-     */
-    async fillContextMenu(
-        instance: ComponentWithContextMenu,
-        module: CoreCourseModuleData,
-        courseId: number,
-        invalidateCache?: boolean,
-        component?: string,
-    ): Promise<void> {
-        const siteId = CoreSites.getCurrentSiteId();
-
-        const moduleInfo = await this.getModulePrefetchInfo(module, courseId, invalidateCache, component);
-
-        instance.size = moduleInfo.sizeReadable;
-        instance.prefetchStatusIcon = moduleInfo.statusIcon;
-        instance.prefetchStatus = moduleInfo.status;
-        instance.downloadTimeReadable = CoreTextUtils.ucFirst(moduleInfo.downloadTimeReadable);
-
-        if (moduleInfo.status != CoreConstants.NOT_DOWNLOADABLE) {
-            // Module is downloadable, get the text to display to prefetch.
-            if (moduleInfo.downloadTime && moduleInfo.downloadTime > 0) {
-                instance.prefetchText = Translate.instant('core.lastdownloaded') + ': ' + moduleInfo.downloadTimeReadable;
-            } else {
-                // Module not downloaded, show a default text.
-                instance.prefetchText = Translate.instant('core.download');
-            }
-        }
-
-        if (moduleInfo.status == CoreConstants.DOWNLOADING) {
-            // Set this to empty to prevent "remove file" option showing up while downloading.
-            instance.size = '';
-        }
-
-        if (!instance.contextMenuStatusObserver && component) {
-            instance.contextMenuStatusObserver = CoreEvents.on(
-                CoreEvents.PACKAGE_STATUS_CHANGED,
-                (data) => {
-                    if (data.componentId == module.id && data.component == component) {
-                        this.fillContextMenu(instance, module, courseId, false, component);
-                    }
-                },
-                siteId,
-            );
-        }
-
-        if (!instance.contextFileStatusObserver && component) {
-            // Debounce the update size function to prevent too many calls when downloading or deleting a whole activity.
-            const debouncedUpdateSize = CoreUtils.debounce(async () => {
-                const moduleSize = await CoreCourseModulePrefetchDelegate.getModuleStoredSize(module, courseId);
-
-                instance.size = moduleSize > 0 ? CoreTextUtils.bytesToSize(moduleSize, 2) : '';
-            }, 1000);
-
-            instance.contextFileStatusObserver = CoreEvents.on(
-                CoreEvents.COMPONENT_FILE_ACTION,
-                (data) => {
-                    if (data.component != component || data.componentId != module.id) {
-                        // The event doesn't belong to this component, ignore.
-                        return;
-                    }
-
-                    if (!CoreFilepool.isFileEventDownloadedOrDeleted(data)) {
-                        return;
-                    }
-
-                    // Update the module size.
-                    debouncedUpdateSize();
-                },
-                siteId,
-            );
-        }
     }
 
     /**
@@ -2224,15 +2098,4 @@ export type CoreCourseNavigateToModuleOptions = CoreCourseNavigateToModuleCommon
 export type CoreCourseOpenModuleOptions = {
     sectionId?: number; // Section the module belongs to.
     modNavOptions?: CoreNavigationOptions; // Navigation options to open the module, including params to pass to the module.
-};
-
-type ComponentWithContextMenu = {
-    prefetchStatusIcon?: string;
-    isDestroyed?: boolean;
-    size?: string;
-    prefetchStatus?: string;
-    prefetchText?: string;
-    downloadTimeReadable?: string;
-    contextMenuStatusObserver?: CoreEventObserver;
-    contextFileStatusObserver?: CoreEventObserver;
 };

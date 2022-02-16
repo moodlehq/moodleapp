@@ -58,7 +58,6 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     hasOffline = false; // Resources don't have any data to sync.
 
     description?: string; // Module description.
-    isDestroyed = false; // Whether the component is destroyed.
 
     protected fetchContentDefaultError = 'core.course.errorgetmodule'; // Default error to show when loading contents.
     protected isCurrentView = false; // Whether the component is in the current view.
@@ -72,6 +71,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected debouncedUpdateModule?: () => void; // Update the module after a certain time.
     protected showCompletion = false; // Whether to show completion inside the activity.
     protected displayDescription = true; // Wether to show Module description on module page, and not on summary or the contrary.
+    protected isDestroyed = false; // Whether the component is destroyed.
 
     constructor(
         @Optional() @Inject('') loggerName: string = 'CoreCourseModuleMainResourceComponent',
@@ -111,11 +111,10 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * Refresh the data.
      *
      * @param refresher Refresher.
-     * @param done Function to call when done. Never used.
      * @param showErrors If show errors to the user of hide them.
      * @return Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher | null, done?: () => void, showErrors: boolean = false): Promise<void> {
+    async doRefresh(refresher?: IonRefresher | null, showErrors = false): Promise<void> {
         if (!this.loaded || !this.module) {
             // Module can be undefined if course format changes from single activity to weekly/topics.
             return;
@@ -405,10 +404,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             componentProps: {
                 moduleId: this.module.id,
                 module: this.module,
-                description: !this.displayDescription ? this.description : '',
+                description: this.description,
                 component: this.component,
                 courseId: this.courseId,
                 hasOffline: this.hasOffline,
+                displayOptions: {
+                    // Show description on summary if not shown on the page.
+                    displayDescription: !this.displayDescription,
+                },
             },
         });
 
@@ -421,11 +424,11 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
                 } finally {
                     modal.dismiss();
                 }
-            } else if(data.action == 'sync') {
+            } else if (data.action == 'sync') {
                 const modal = await CoreDomUtils.showModalLoading();
 
                 try {
-                    await this.doRefresh( undefined, undefined, true);
+                    await this.doRefresh( undefined, true);
                 } finally {
                     modal.dismiss();
                 }
