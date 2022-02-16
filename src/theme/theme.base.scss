@@ -948,7 +948,12 @@ ion-searchbar {
         top: 4px;
     }
     .searchbar-search-icon.md {
-        top: 12px;
+    }
+
+    .searchbar-input,
+    .sc-ion-searchbar-md.searchbar-input,
+    .sc-ion-searchbar-ios.searchbar-input {
+        @include padding-horizontal(48px);
     }
 }
 
