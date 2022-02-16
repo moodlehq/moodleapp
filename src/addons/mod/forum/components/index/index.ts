@@ -89,6 +89,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         component: AddonModForumSortOrderSelectorComponent,
     };
 
+    protected fetchContentDefaultError = 'addon.mod_forum.errorgetforum';
     protected syncEventName = AddonModForumSyncProvider.AUTO_SYNCED;
     protected syncManualObserver?: CoreEventObserver; // It will observe the sync manual event.
     protected replyObserver?: CoreEventObserver;
@@ -325,17 +326,12 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 }),
             ]);
         } catch (error) {
-            if (refresh) {
-                CoreDomUtils.showErrorModalDefault(error, 'addon.mod_forum.errorgetforum', true);
+            this.fetchFailed = true; // Set to prevent infinite calls with infinite-loading.
 
-                this.fetchFailed = true; // Set to prevent infinite calls with infinite-loading.
-            } else {
-                // Get forum failed, retry without using cache since it might be a new activity.
-                await this.refreshContent(sync);
-            }
+            throw error; // Pass the error to the parent catch.
+        } finally {
+            this.fillContextMenu(refresh);
         }
-
-        this.fillContextMenu(refresh);
     }
 
     private async fetchForum(sync: boolean = false, showErrors: boolean = false): Promise<void> {

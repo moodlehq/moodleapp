@@ -17,6 +17,7 @@ import { AddonBlog } from '@addons/blog/services/blog';
 import { AddonBlogMainMenuHandlerService } from '@addons/blog/services/handlers/mainmenu';
 import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, Optional, Inject } from '@angular/core';
 import { Params } from '@angular/router';
+import { CoreAnyError } from '@classes/errors/error';
 import { IonRefresher } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
@@ -212,11 +213,26 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         try {
             await this.fetchContent(refresh);
         } catch (error) {
+            if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled() && this.isNotFoundError(error)) {
+                // Module not found, retry without using cache.
+                return await this.refreshContent();
+            }
+
             CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         } finally {
             this.loaded = true;
             this.refreshIcon = CoreConstants.ICON_REFRESH;
         }
+    }
+
+    /**
+     * Check if an error is a "module not found" error.
+     *
+     * @param error Error.
+     * @return Whether the error is a "module not found" error.
+     */
+    protected isNotFoundError(error: CoreAnyError): boolean {
+        return CoreTextUtils.getErrorMessageFromError(error) === Translate.instant('core.course.modulenotfound');
     }
 
     /**
