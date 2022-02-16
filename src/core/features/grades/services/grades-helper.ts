@@ -458,6 +458,38 @@ export class CoreGradesHelperProvider {
     }
 
     /**
+     * Get module grades to display.
+     *
+     * @param courseId Course Id.
+     * @param moduleId Module Id.
+     * @return Formatted table rows.
+     */
+    async getModuleGrades(courseId: number, moduleId: number): Promise<CoreGradesFormattedTableRow[] > {
+        const table = await CoreGrades.getCourseGradesTable(courseId);
+
+        if (!table.tabledata) {
+            return [];
+        }
+
+        // Find href containing "/mod/xxx/xxx.php".
+        const regex = /href="([^"]*\/mod\/[^"|^/]*\/[^"|^.]*\.php[^"]*)/;
+
+        return await Promise.all(table.tabledata.filter((row) => {
+            if (row.itemname && row.itemname.content) {
+                const matches = row.itemname.content.match(regex);
+
+                if (matches && matches.length) {
+                    const hrefParams = CoreUrlUtils.extractUrlParams(matches[1]);
+
+                    return hrefParams && parseInt(hrefParams.id) === moduleId;
+                }
+            }
+
+            return false;
+        }).map((row) => this.formatGradeRowForTable(row)));
+    }
+
+    /**
      * Go to view grades.
      *
      * @param courseId Course ID to view.

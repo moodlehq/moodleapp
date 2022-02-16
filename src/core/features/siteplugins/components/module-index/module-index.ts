@@ -90,6 +90,9 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     displayRefresh = true;
     displayPrefetch = true;
     displaySize = true;
+    displayGrades = false;
+    // @TODO:  // Currently display blogs is not an option since it may change soon adding new summary handlers.
+    displayBlog = false;
 
     ptrEnabled = true;
     isDestroyed = false;
@@ -128,6 +131,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
             this.displayRefresh = !CoreUtils.isFalseOrZero(handlerSchema.displayrefresh);
             this.displayPrefetch = !CoreUtils.isFalseOrZero(handlerSchema.displayprefetch);
             this.displaySize = !CoreUtils.isFalseOrZero(handlerSchema.displaysize);
+            this.displayGrades = CoreUtils.isTrueOrOne(handlerSchema.displaygrades); // False by default.
             this.ptrEnabled = !CoreUtils.isFalseOrZero(handlerSchema.ptrenabled);
         }
 
@@ -196,7 +200,8 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
                     displayRefresh: this.displayRefresh,
                     displayPrefetch: this.displayPrefetch,
                     displaySize: this.displaySize,
-                    displayBlog: false,
+                    displayBlog: this.displayBlog,
+                    displayGrades: this.displayGrades,
                 },
             },
         });

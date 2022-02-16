@@ -1741,6 +1741,7 @@
   "core.grades.fail": "grades",
   "core.grades.feedback": "grades",
   "core.grades.grade": "grades",
+  "core.grades.gradebook": "grades",
   "core.grades.gradeitem": "grades",
   "core.grades.gradepass": "grades",
   "core.grades.grades": "grades",

@@ -17,8 +17,12 @@ import { AddonBlog } from '@addons/blog/services/blog';
 import { AddonBlogMainMenuHandlerService } from '@addons/blog/services/handlers/mainmenu';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Params } from '@angular/router';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
+import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
+import { CoreGradesFormattedRow, CoreGradesFormattedTableRow, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
 import { CoreNavigator } from '@services/navigator';
@@ -61,13 +65,12 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     sizeReadable?: string;
     downloadTimeReadable?: string; // Last download time in a readable format.
     size = 0;
-
+    grades?: CoreGradesFormattedRow[];
     blog = false; // If blog is available.
-
     isOnline = false; // If the app is online or not.
+    course?: CoreEnrolledCourseData;
 
     protected onlineSubscription: Subscription; // It will observe the status of the network connection.
-
     protected packageStatusObserver?: CoreEventObserver; // Observer of package status.
     protected fileStatusObserver?: CoreEventObserver; // Observer of file status.
     protected siteId: string;
@@ -103,7 +106,14 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
             displayPrefetch: true,
             displaySize: true,
             displayBlog: true,
+            displayGrades: true,
         }, this.displayOptions);
+
+        this.displayOptions.displayGrades = this.displayOptions.displayGrades &&
+            CoreCourseModuleDelegate.supportsFeature(this.module.modname, CoreConstants.FEATURE_GRADE_HAS_GRADE, true);
+
+        this.displayOptions.displayDescription = this.displayOptions.displayDescription &&
+            CoreCourseModuleDelegate.supportsFeature(this.module.modname, CoreConstants.FEATURE_SHOW_DESCRIPTION, true);
 
         this.fetchContent();
 
@@ -164,7 +174,11 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
 
         this.blog = await AddonBlog.isPluginEnabled();
 
-        await this.getPackageStatus();
+        await Promise.all([
+            this.getPackageStatus(),
+            this.fetchGrades(),
+            this.fetchCourse(),
+        ]);
 
         this.loaded = true;
     }
@@ -174,7 +188,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
      *
      * @param refresh If prefetch info has to be refreshed.
      */
-    async getPackageStatus(refresh = false): Promise<void> {
+    protected async getPackageStatus(refresh = false): Promise<void> {
         if (!this.module) {
             return;
         }
@@ -212,6 +226,50 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         const params: Params = { cmId: this.moduleId };
 
         await CoreNavigator.navigateToSitePath(AddonBlogMainMenuHandlerService.PAGE_NAME, { params });
+    }
+
+    /**
+     * Fetch grade module info.
+     */
+    protected async fetchGrades(): Promise<void> {
+        if (!this.displayOptions.displayGrades) {
+            return;
+        }
+
+        this.grades = await CoreGradesHelper.getModuleGrades(this.courseId, this.moduleId);
+    }
+
+    /**
+     * Toggle grades expand.
+     *
+     * @param grade Row to expand.
+     */
+    toggleGrade(grade: CoreGradesFormattedTableRow): void {
+        grade.expanded = !grade.expanded;
+    }
+
+    /**
+     * Fetch course.
+     */
+    protected async fetchCourse(): Promise<void> {
+        this.course = await CoreCourses.getUserCourse(this.courseId, true);
+    }
+
+    /**
+     * Open course.
+     */
+    openCourse(): void {
+        if (!this.course) {
+            return;
+        }
+
+        CoreCourse.openCourse(
+            this.course,
+            {
+                replace: true,
+                animationDirection: 'back',
+            },
+        );
     }
 
     /**
@@ -327,4 +385,5 @@ export type CoreCourseModuleSummaryDisplayOptions = {
     displayPrefetch?: boolean;
     displaySize?: boolean;
     displayBlog?: boolean;
+    displayGrades?: boolean;
 };

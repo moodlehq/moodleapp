@@ -130,9 +130,13 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
         navOptions.params = navOptions.params || {};
         Object.assign(navOptions.params, { course: course });
 
-        // Don't return the .push promise, we don't want to display a loading modal during the page transition.
-        const currentTab = CoreNavigator.getCurrentMainMenuTab();
-        const routeDepth = CoreNavigator.getRouteDepth(`/main/${currentTab}/course/${course.id}`);
+        // When replace is true, disable route depth.
+        let routeDepth = 0;
+        if (!navOptions.replace) {
+            // Don't return the .push promise, we don't want to display a loading modal during the page transition.
+            const currentTab = CoreNavigator.getCurrentMainMenuTab();
+            routeDepth = CoreNavigator.getRouteDepth(`/main/${currentTab}/course/${course.id}`);
+        }
         const deepPath = '/deep'.repeat(routeDepth);
 
         CoreNavigator.navigateToSitePath(`course${deepPath}/${course.id}`, navOptions);

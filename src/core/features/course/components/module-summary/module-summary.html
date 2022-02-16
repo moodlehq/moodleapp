@@ -24,6 +24,17 @@
                 <ion-icon name="fas-external-link-alt" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-item>
+
+        <ion-item class="ion-text-wrap" *ngIf="course" (click)="openCourse()" button [detail]="true">
+            <ion-label>
+                <p class="item-heading">{{ 'core.course' | translate}}</p>
+                <p>
+                    <core-format-text [text]="course.displayname || course.fullname" contextLevel="course" [contextInstanceId]="courseId">
+                    </core-format-text>
+                </p>
+            </ion-label>
+        </ion-item>
+
         <ion-item class="ion-text-wrap" *ngIf="module && description && displayOptions.displayDescription">
             <ion-label>
                 <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
@@ -32,7 +43,7 @@
             </ion-label>
         </ion-item>
 
-        <ion-item button class="ion-margin" *ngIf="prefetchText && displayOptions.displayPrefetch" class="ion-text-wrap">
+        <ion-item button *ngIf="prefetchText && displayOptions.displayPrefetch" class="ion-text-wrap">
             <ion-label>
                 <p class="item-heading ion-text-wrap">{{ prefetchText }}</p>
                 <p *ngIf="downloadTimeReadable">{{ downloadTimeReadable }}</p>
@@ -45,7 +56,7 @@
             <ion-spinner *ngIf="prefetchStatusIcon == 'spinner'" slot="end" aria-hidden="true"></ion-spinner>
         </ion-item>
 
-        <ion-item button class="ion-margin" *ngIf="sizeReadable && displayOptions.displaySize" class="ion-text-wrap">
+        <ion-item button *ngIf="sizeReadable && displayOptions.displaySize" class="ion-text-wrap">
             <ion-label>
                 <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
                 <ion-badge color="light">{{ sizeReadable | coreBytesToSize }}</ion-badge>
@@ -57,7 +68,102 @@
             <ion-spinner *ngIf="removeFilesLoading" slot="end" aria-hidden="true"></ion-spinner>
         </ion-item>
 
-        <ion-button *ngIf="blog && displayOptions.displayBlog" class="ion-margin" (click)="gotoBlog()" expand="block" fill="outline">
+        <ion-card *ngIf="displayOptions.displayGrades && grades?.length > 0">
+            <ion-list>
+                <ion-item lines="full" class="ion-text-wrap">
+                    <ion-label>
+                        <h2>{{ 'core.grades.gradebook' | translate }}</h2>
+                    </ion-label>
+                </ion-item>
+                <ng-container *ngFor="let grade of grades">
+                    <ion-item button *ngIf="grade.gradeitem" class="ion-text-wrap divider" (click)="toggleGrade(grade)"
+                        [attr.aria-label]="(grade.expanded ? 'core.collapse' : 'core.expand') | translate"
+                        [attr.aria-expanded]="grade.expanded" [attr.aria-controls]="'grade-'+grade.id" role="heading" detail="false">
+                        <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
+                            [class.expandable-status-icon-expanded]="grade.expanded">
+                        </ion-icon>
+                        <ion-label>
+                            <p class="item-heading" *ngIf="!grade.itemmodule">
+                                <core-format-text [text]="grade.gradeitem" contextLevel="course" [contextInstanceId]="courseId">
+                                </core-format-text>
+                            </p>
+                            <p class="item-heading" *ngIf="grade.itemmodule">
+                                {{ 'core.grades.grade' | translate}}
+                            </p>
+                            <p *ngIf="grade.grade" [innerHTML]="grade.grade"></p>
+                        </ion-label>
+                        <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" slot="end" [attr.aria-label]="grade.iconAlt">
+                        </ion-icon>
+                        <img *ngIf="grade.image && !grade.itemmodule" [src]="grade.image" slot="end" [alt]="grade.iconAlt" />
+                        <ion-icon *ngIf="grade.image && grade.itemmodule" name="fas-chart-bar" slot="end" [attr.aria-label]="grade.iconAlt">
+                        </ion-icon>
+                    </ion-item>
+                    <div *ngIf="grade.expanded" [id]="'grade-'+grade.id">
+                        <ion-item class="ion-text-wrap" *ngIf="grade.weight?.length > 0 && grade.weight != '-'">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.grades.weight' | translate}}</p>
+                                <p [innerHTML]="grade.weight"></p>
+                            </ion-label>
+                        </ion-item>
+                        <ion-item class="ion-text-wrap" *ngIf="grade.range?.length > 0 && grade.range != '-'">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.grades.range' | translate}}</p>
+                                <p [innerHTML]="grade.range"></p>
+                            </ion-label>
+                        </ion-item>
+
+                        <ion-item class="ion-text-wrap" *ngIf="grade.percentage?.length > 0 && grade.percentage != '-'">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.grades.percentage' | translate}}</p>
+                                <p [innerHTML]="grade.percentage"></p>
+                            </ion-label>
+                        </ion-item>
+
+                        <ion-item class="ion-text-wrap" *ngIf="grade.lettergrade?.length > 0 && grade.lettergrade != '-'">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.grades.lettergrade' | translate}}</p>
+                                <p [innerHTML]="grade.lettergrade"></p>
+                            </ion-label>
+                        </ion-item>
+
+                        <ion-item class="ion-text-wrap" *ngIf="grade.rank?.length > 0 && grade.rank != '-'">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.grades.rank' | translate}}</p>
+                                <p [innerHTML]="grade.rank"></p>
+                            </ion-label>
+                        </ion-item>
+
+                        <ion-item class="ion-text-wrap" *ngIf="grade.average?.length > 0 && grade.average != '-'">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.grades.average' | translate}}</p>
+                                <p [innerHTML]="grade.average"></p>
+                            </ion-label>
+                        </ion-item>
+
+                        <ion-item class="ion-text-wrap" *ngIf="grade.feedback?.length > 0 && grade.feedback != '-'">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.grades.feedback' | translate}}</p>
+                                <p>
+                                    <core-format-text [maxHeight]="120" [text]="grade.feedback" contextLevel="course"
+                                        [contextInstanceId]="courseId">
+                                    </core-format-text>
+                                </p>
+                            </ion-label>
+                        </ion-item>
+
+                        <ion-item class="ion-text-wrap"
+                            *ngIf="grade.contributiontocoursetotal?.length > 0 && grade.contributiontocoursetotal != '-'">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.grades.contributiontocoursetotal' | translate}}</p>
+                                <p [innerHTML]="grade.contributiontocoursetotal"></p>
+                            </ion-label>
+                        </ion-item>
+                    </div>
+                </ng-container>
+            </ion-list>
+        </ion-card>
+
+        <ion-button *ngIf="blog && displayOptions.displayBlog" (click)="gotoBlog()" expand="block" fill="outline">
             <ion-icon name="far-newspaper" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 {{ 'addon.blog.blog' | translate }}
