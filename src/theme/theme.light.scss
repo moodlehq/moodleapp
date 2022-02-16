@@ -111,7 +111,7 @@
     --core-bottom-tabs-background-selected: transparent;
     --core-bottom-tabs-badge-color: var(--brand);
     --core-bottom-tabs-badge-text-color: var(--brand-contrast);
-    --bottom-tabs-size: 56px;
+    --bottom-tabs-size: 48px;
     ion-tab-bar.mainmenu-tabs {
         --background: var(--core-bottom-tabs-background);
         --color: var(--core-bottom-tabs-color);
@@ -126,12 +126,12 @@
 
     --core-header-toolbar-button-image-size: var(--a11y-min-target-size);
     --core-header-toolbar-background: var(--white);
-    --core-header-toolbar-border-width: 1px;
+    --core-header-toolbar-border-width: 0px;
     --core-header-toolbar-border-color: var(--stroke);
     --core-header-toolbar-color: var(--gray-900);
-    --core-header-toolbar-height: 56px;
+    --core-header-toolbar-height: 48px;
     html.ios {
-        --core-header-toolbar-height: 54px;
+        --core-header-toolbar-height: 48px;
     }
 
     ion-header ion-toolbar {
@@ -220,7 +220,7 @@
     --core-tab-color-active: var(--dark);
     --core-tab-border-color-active: var(--brand);
     --core-tab-font-weight-active: normal;
-    --core-tabs-height: 56px;
+    --core-tabs-height: 48px;
     core-tabs, core-tabs-outlet {
         ion-slide {
             --background: var(--core-tab-background);
@@ -362,5 +362,15 @@
     // Make activtity colours available for custom modules.
     @each $type, $value in $activity-icon-colors {
         --activity#{$type}: #{$value};
+    }
+
+    --core-mainpage-sitename-display: none;
+    --core-mainpage-headerlogo-display: none;
+    --core-mainpage-headerlogo-maxheight: calc(var(--core-header-toolbar-height) - 16px);
+
+    @if ($core-dashboard-logo) {
+        --core-mainpage-headerlogo-display: inline;
+    } @else {
+        --core-mainpage-sitename-display: inline;
     }
 }

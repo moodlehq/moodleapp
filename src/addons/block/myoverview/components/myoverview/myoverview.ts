@@ -39,6 +39,7 @@ const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] = ['all', 'inprogress',
 @Component({
     selector: 'addon-block-myoverview',
     templateUrl: 'addon-block-myoverview.html',
+    styleUrls: ['myoverview.scss'],
 })
 export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
 

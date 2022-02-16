@@ -22,19 +22,19 @@
 </ion-item-divider>
 <core-loading [hideUntil]="loaded" [fullscreen]="false">
 
-    <ion-row class="ion-no-padding ion-justify-content-between ion-align-items-center" *ngIf="hasCourses">
-        <ion-col size="auto" class="ion-no-padding" *ngIf="filters.enabled">
+    <ion-row class="ion-justify-content-between ion-align-items-center addon-block-myoverview-filter" *ngIf="hasCourses">
+        <ion-col size="auto" *ngIf="filters.enabled">
             <core-combobox interface="modal" [label]="'core.courses.filtermycourses' | translate" (onChange)="filterOptionsChanged($event)"
                 icon="fas-filter" [badge]="filters.count" [modalOptions]="filterModalOptions">
             </core-combobox>
         </ion-col>
-        <ion-col class="ion-no-padding">
+        <ion-col>
             <!-- Filter courses. -->
             <ion-searchbar class="ion-hide-md-down" [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
                 (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.filter' | translate">
             </ion-searchbar>
         </ion-col>
-        <ion-col size="auto" class="ion-no-padding" *ngIf="sort.enabled">
+        <ion-col size="auto" *ngIf="sort.enabled">
             <core-combobox [label]="'core.sortby' | translate" [selection]="sort.selected" (onChange)="sortCourses($event)"
                 icon="fas-sort-amount-down-alt">
                 <ion-select-option class="ion-text-wrap" value="fullname">
@@ -48,7 +48,7 @@
                 </ion-select-option>
             </core-combobox>
         </ion-col>
-        <ion-col size="auto" class="ion-no-padding" *ngIf="isLayoutSwitcherAvailable">
+        <ion-col size="auto" *ngIf="isLayoutSwitcherAvailable">
             <ion-button *ngIf="layout == 'card'" fill="outline" (click)="toggleLayout('list')"
                 [attr.aria-label]="'addon.block_myoverview.list' | translate">
                 <ion-icon slot="icon-only" name="fas-list"></ion-icon>
@@ -59,8 +59,8 @@
             </ion-button>
         </ion-col>
     </ion-row>
-    <ion-row class="ion-no-padding ion-hide-md-up" *ngIf="hasCourses">
-        <ion-col class="ion-no-padding">
+    <ion-row class="ion-hide-md-up addon-block-myoverview-filter" *ngIf="hasCourses">
+        <ion-col>
             <!-- Filter courses. -->
             <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
                 (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.filter' | translate">

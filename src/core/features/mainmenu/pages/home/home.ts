@@ -29,7 +29,6 @@ import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-lin
 @Component({
     selector: 'page-core-mainmenu-home',
     templateUrl: 'home.html',
-    styleUrls: ['home.scss'],
 })
 export class CoreMainMenuHomePage implements OnInit {
 

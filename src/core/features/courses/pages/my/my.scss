@@ -1,5 +1,3 @@
-@import "~theme/globals";
-
 :host ::ng-deep ion-item-divider {
     display: none !important;
 }
@@ -14,18 +12,5 @@
 core-block ::ng-deep ion-card.addon-block-myoverview {
     --border-width: 0;
     --background: transparent;
-}
-
-@if ($core-dashboard-logo) {
-    .in-toolbar h1 .core-header-logo {
-        max-height: calc(var(--core-header-toolbar-height) - 24px);
-    }
-
-    .in-toolbar h1 core-format-text {
-        display: none;
-    }
-} @else {
-    .in-toolbar h1 .core-header-logo {
-        display: none;
-    }
+    margin: 0;
 }

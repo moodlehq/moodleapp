@@ -1,0 +1,21 @@
+:host {
+    ion-row.addon-block-myoverview-filter {
+        padding: 4px 8px 0px 8px;
+
+        ion-col {
+            padding: 0 2px;
+        }
+
+        ion-button,
+        core-combobox ::ng-deep ion-button {
+            margin: 0;
+            ion-icon {
+                font-size: 20px;
+            }
+        }
+
+        ::ng-deep ion-searchbar {
+            padding: 0;
+        }
+    }
+}
