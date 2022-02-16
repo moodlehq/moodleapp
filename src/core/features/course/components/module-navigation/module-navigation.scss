@@ -25,6 +25,10 @@
         margin-top: var(--button-vertical-margin);
         margin-bottom: var(--button-vertical-margin);
     }
+
+    .core-course-module-navigation-arrow {
+        min-width: 48px;
+    }
 }
 
 :host-context(.core-iframe-fullscreen) {
