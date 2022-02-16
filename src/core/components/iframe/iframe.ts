@@ -58,7 +58,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     protected orientationObs?: CoreEventObserver;
     protected navSubscription?: Subscription;
 
-    constructor() {
+    constructor(protected elementRef: ElementRef<HTMLElement>) {
         this.loaded = new EventEmitter<HTMLIFrameElement>();
     }
 
@@ -104,6 +104,10 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                 this.toggleFullscreen(CoreScreen.isLandscape);
 
                 this.orientationObs = CoreEvents.on(CoreEvents.ORIENTATION_CHANGE, (data) => {
+                    if (this.isInHiddenPage()) {
+                        return;
+                    }
+
                     this.toggleFullscreen(data.orientation == CoreScreenOrientation.LANDSCAPE);
                 });
             }
@@ -129,6 +133,16 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                 this.loading = false;
             }, CoreIframeComponent.loadingTimeout);
         }
+    }
+
+    /**
+     * Check if the element is in a hidden page.
+     *
+     * @return Whether the element is in a hidden page.
+     */
+    protected isInHiddenPage(): boolean {
+        // If we can't find the parent ion-page, consider it to be hidden too.
+        return !this.elementRef.nativeElement.closest('.ion-page') || !!this.elementRef.nativeElement.closest('.ion-page-hidden');
     }
 
     /**
