@@ -19,6 +19,6 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <addon-mod-book-index [module]="module" [courseId]="courseId" [initialChapterId]="chapterId" (dataRetrieved)="updateData($event)">
+    <addon-mod-book-index [module]="module" [courseId]="courseId" (dataRetrieved)="updateData($event)">
     </addon-mod-book-index>
 </ion-content>

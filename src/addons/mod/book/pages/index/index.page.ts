@@ -12,30 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
-import { CoreNavigator } from '@services/navigator';
 import { AddonModBookIndexComponent } from '../../components/index/index';
 
 /**
- * Page that displays a book.
+ * Page that displays a book entry page.
  */
 @Component({
     selector: 'page-addon-mod-book-index',
     templateUrl: 'index.html',
 })
-export class AddonModBookIndexPage extends CoreCourseModuleMainActivityPage<AddonModBookIndexComponent> implements OnInit {
+export class AddonModBookIndexPage extends CoreCourseModuleMainActivityPage<AddonModBookIndexComponent> {
 
     @ViewChild(AddonModBookIndexComponent) activityComponent?: AddonModBookIndexComponent;
-
-    chapterId?: number;
-
-    /**
-     * Component being initialized.
-     */
-    ngOnInit(): void {
-        super.ngOnInit();
-        this.chapterId = CoreNavigator.getRouteNumberParam('chapterId');
-    }
 
 }

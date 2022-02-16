@@ -26,6 +26,11 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFile } from '@services/file';
 import { CoreError } from '@classes/errors/error';
+import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
+import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
+import { CoreDatabaseTable } from '@classes/database/database-table';
+import { AddonModBookLastChapterViewedDBRecord, LAST_CHAPTER_VIEWED_TABLE } from './database/book';
+import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
 
 /**
  * Constants to define how the chapters and subchapters of a book should be displayed in that table of contents.
@@ -55,6 +60,19 @@ const ROOT_CACHE_KEY = 'mmaModBook:';
 export class AddonModBookProvider {
 
     static readonly COMPONENT = 'mmaModBook';
+
+    protected lastChapterViewedTables: LazyMap<AsyncInstance<CoreDatabaseTable<AddonModBookLastChapterViewedDBRecord>>>;
+
+    constructor() {
+        this.lastChapterViewedTables = lazyMap(
+            siteId => asyncInstance(
+                () => CoreSites.getSiteTable(LAST_CHAPTER_VIEWED_TABLE, {
+                    siteId,
+                    config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                }),
+            ),
+        );
+    }
 
     /**
      * Get a book by course module ID.
@@ -217,6 +235,24 @@ export class AddonModBookProvider {
     }
 
     /**
+     * Get last chapter viewed in the app for a book.
+     *
+     * @param id Book instance ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with last chapter viewed, undefined if none.
+     */
+    async getLastChapterViewed(id: number, siteId?: string): Promise<number | undefined> {
+        try {
+            const site = await CoreSites.getSite(siteId);
+            const entry = await this.lastChapterViewedTables[site.getId()].getOneByPrimaryKey({ id });
+
+            return entry.chapterid;
+        } catch {
+            // No last chapter viewed.
+        }
+    }
+
+    /**
      * Get the book toc as an array.
      *
      * @param contents The module contents.
@@ -361,6 +397,20 @@ export class AddonModBookProvider {
             { chapterid: chapterId },
             siteId,
         );
+    }
+
+    /**
+     * Store last chapter viewed in the app for a book.
+     *
+     * @param id Book instance ID.
+     * @param chapterId Chapter ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with last chapter viewed, undefined if none.
+     */
+    async storeLastChapterViewed(id: number, chapterId: number, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+
+        await this.lastChapterViewedTables[site.getId()].insert({ id, chapterid: chapterId });
     }
 
 }

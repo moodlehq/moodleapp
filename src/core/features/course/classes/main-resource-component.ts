@@ -311,7 +311,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
                 error,
             ]);
         } else {
-            error = CoreTextUtils.getErrorMessageFromError(error) || error;
+            error = CoreTextUtils.getErrorMessageFromError(error) || '';
 
             return Translate.instant('core.errordownloadingsomefiles') + (error ? ' ' + error : '');
         }

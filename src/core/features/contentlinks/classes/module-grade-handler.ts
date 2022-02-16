@@ -78,10 +78,11 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
                     // No user specified or current user. Navigate to module.
                     CoreCourseHelper.navigateToModule(
                         Number(params.id),
-                        siteId,
-                        courseId,
-                        undefined,
-                        this.useModNameToGetModule ? this.modName : undefined,
+                        {
+                            courseId,
+                            modName: this.useModNameToGetModule ? this.modName : undefined,
+                            siteId,
+                        },
                     );
                 } else if (this.canReview) {
                     // Use the goToReview function.

@@ -1573,36 +1573,27 @@ export class CoreCourseHelperProvider {
      *
      * @param instanceId Activity instance ID.
      * @param modName Module name of the activity.
-     * @param siteId Site ID. If not defined, current site.
-     * @param courseId Course ID. If not defined we'll try to retrieve it from the site.
-     * @param sectionId Section the module belongs to. If not defined we'll try to retrieve it from the site.
-     * @param useModNameToGetModule If true, the app will retrieve all modules of this type with a single WS call. This reduces the
-     *                              number of WS calls, but it isn't recommended for modules that can return a lot of contents.
-     * @param modParams Params to pass to the module
+     * @param options Other options.
      * @return Promise resolved when done.
      */
     async navigateToModuleByInstance(
         instanceId: number,
         modName: string,
-        siteId?: string,
-        courseId?: number,
-        sectionId?: number,
-        useModNameToGetModule: boolean = false,
-        modParams?: Params,
+        options: CoreCourseNavigateToModuleByInstanceOptions = {},
     ): Promise<void> {
 
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const module = await CoreCourse.getModuleBasicInfoByInstance(instanceId, modName, { siteId });
+            const module = await CoreCourse.getModuleBasicInfoByInstance(instanceId, modName, { siteId: options.siteId });
 
             this.navigateToModule(
                 module.id,
-                siteId,
-                module.course,
-                sectionId,
-                useModNameToGetModule ? modName : undefined,
-                modParams,
+                {
+                    ...options,
+                    courseId: module.course,
+                    modName: options.useModNameToGetModule ? modName : undefined,
+                },
             );
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
@@ -1616,23 +1607,16 @@ export class CoreCourseHelperProvider {
      * Navigate to a module.
      *
      * @param moduleId Module's ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @param courseId Course ID. If not defined we'll try to retrieve it from the site.
-     * @param sectionId Section the module belongs to. If not defined we'll try to retrieve it from the site.
-     * @param modName If set, the app will retrieve all modules of this type with a single WS call. This reduces the
-     *                number of WS calls, but it isn't recommended for modules that can return a lot of contents.
-     * @param modParams Params to pass to the module
+     * @param options Other options.
      * @return Promise resolved when done.
      */
     async navigateToModule(
         moduleId: number,
-        siteId?: string,
-        courseId?: number,
-        sectionId?: number,
-        modName?: string,
-        modParams?: Params,
+        options: CoreCourseNavigateToModuleOptions = {},
     ): Promise<void> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
+        const siteId = options.siteId || CoreSites.getCurrentSiteId();
+        let courseId = options.courseId;
+        let sectionId = options.sectionId;
 
         const modal = await CoreDomUtils.showModalLoading();
 
@@ -1651,10 +1635,9 @@ export class CoreCourseHelperProvider {
             const site = await CoreSites.getSite(siteId);
 
             // Get the module.
-            const module =
-                await CoreCourse.getModule(moduleId, courseId, sectionId, false, false, siteId, modName);
+            const module = await CoreCourse.getModule(moduleId, courseId, sectionId, false, false, siteId, options.modName);
 
-            if (CoreSites.getCurrentSiteId() == site.getId()) {
+            if (CoreSites.getCurrentSiteId() === site.getId()) {
                 // Try to use the module's handler to navigate cleanly.
                 module.handlerData = await CoreCourseModuleDelegate.getModuleDataFor(
                     module.modname,
@@ -1667,7 +1650,7 @@ export class CoreCourseHelperProvider {
                 if (module.handlerData?.action) {
                     modal.dismiss();
 
-                    return module.handlerData.action(new Event('click'), module, courseId, { params: modParams });
+                    return module.handlerData.action(new Event('click'), module, courseId, options.modNavOptions);
                 }
             }
 
@@ -1675,7 +1658,7 @@ export class CoreCourseHelperProvider {
                 course: { id: courseId },
                 module,
                 sectionId,
-                modParams,
+                modNavOptions: options.modNavOptions,
             };
 
             if (courseId == site.getSiteHomeId()) {
@@ -1704,23 +1687,25 @@ export class CoreCourseHelperProvider {
      *
      * @param module The module to open.
      * @param courseId The course ID of the module.
-     * @param sectionId The section ID of the module.
-     * @param modParams Params to pass to the module
+     * @param options Other options.
      * @param True if module can be opened, false otherwise.
      */
-    async openModule(module: CoreCourseModuleData, courseId: number, sectionId?: number, modParams?: Params): Promise<boolean> {
+    async openModule(module: CoreCourseModuleData, courseId: number, options: CoreCourseOpenModuleOptions = {}): Promise<boolean> {
         if (!module.handlerData) {
             module.handlerData = await CoreCourseModuleDelegate.getModuleDataFor(
                 module.modname,
                 module,
                 courseId,
-                sectionId,
+                options.sectionId,
                 false,
             );
         }
 
         if (module.handlerData?.action) {
-            module.handlerData.action(new Event('click'), module, courseId, { animated: false, params: modParams });
+            module.handlerData.action(new Event('click'), module, courseId, {
+                animated: false,
+                ...options.modNavOptions,
+            });
 
             return true;
         }
@@ -2204,6 +2189,39 @@ export type CoreCoursePrefetchCoursesOptions = {
  */
 export type CoreCourseConfirmPrefetchCoursesOptions = CoreCoursePrefetchCoursesOptions & {
     onProgress?: (data: CoreCourseCoursesProgress) => void;
+};
+
+/**
+ * Common options for navigate to module functions.
+ */
+type CoreCourseNavigateToModuleCommonOptions = {
+    courseId?: number; // Course ID. If not defined we'll try to retrieve it from the site.
+    sectionId?: number; // Section the module belongs to. If not defined we'll try to retrieve it from the site.
+    modNavOptions?: CoreNavigationOptions; // Navigation options to open the module, including params to pass to the module.
+    siteId?: string; // Site ID. If not defined, current site.
+};
+
+/**
+ * Options for navigate to module by instance function.
+ */
+export type CoreCourseNavigateToModuleByInstanceOptions = CoreCourseNavigateToModuleCommonOptions & {
+    // True to retrieve all instances with a single WS call. Not recommended if can return a lot of contents.
+    useModNameToGetModule?: boolean;
+};
+
+/**
+ * Options for navigate to module function.
+ */
+export type CoreCourseNavigateToModuleOptions = CoreCourseNavigateToModuleCommonOptions & {
+    modName?: string; // To retrieve all instances with a single WS call. Not recommended if can return a lot of contents.
+};
+
+/**
+ * Options for open module function.
+ */
+export type CoreCourseOpenModuleOptions = {
+    sectionId?: number; // Section the module belongs to.
+    modNavOptions?: CoreNavigationOptions; // Navigation options to open the module, including params to pass to the module.
 };
 
 type ComponentWithContextMenu = {

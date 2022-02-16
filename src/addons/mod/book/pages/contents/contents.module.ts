@@ -14,18 +14,15 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModBookComponentsModule } from './components/components.module';
-import { AddonModBookIndexPage } from './pages/index/index.page';
+import { AddonModBookContentsPage } from './contents';
+import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 
 const routes: Routes = [
     {
-        path: ':courseId/:cmId',
-        component: AddonModBookIndexPage,
-    },
-    {
-        path: ':courseId/:cmId/contents',
-        loadChildren: () => import('./pages/contents/contents.module').then(m => m.AddonModBookContentsPageModule),
+        path: '',
+        component: AddonModBookContentsPage,
     },
 ];
 
@@ -33,10 +30,11 @@ const routes: Routes = [
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-        AddonModBookComponentsModule,
+        CoreTagComponentsModule,
     ],
     declarations: [
-        AddonModBookIndexPage,
+        AddonModBookContentsPage,
     ],
+    exports: [RouterModule],
 })
-export class AddonModBookLazyModule {}
+export class AddonModBookContentsPageModule {}

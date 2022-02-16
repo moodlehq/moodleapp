@@ -24,7 +24,7 @@ import { CoreCourse, CoreCourseModuleCompletionStatus, CoreCourseWSSection } fro
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CONTENTS_PAGE_NAME } from '@features/course/course.module';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCollapsibleHeaderDirective } from '@directives/collapsible-header';
@@ -57,7 +57,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     protected sections: CoreCourseWSSection[] = []; // List of course sections.
     protected firstTabName?: string;
     protected module?: CoreCourseModuleData;
-    protected modParams?: Params;
+    protected modNavOptions?: CoreNavigationOptions;
     protected isGuest = false;
     protected contentsTab: CoreTabsOutletTab & { pageParams: Params } = {
         page: CONTENTS_PAGE_NAME,
@@ -136,8 +136,15 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
         this.firstTabName = CoreNavigator.getRouteParam('selectedTab');
         this.module = CoreNavigator.getRouteParam<CoreCourseModuleData>('module');
-        this.modParams = CoreNavigator.getRouteParam<Params>('modParams');
         this.isGuest = !!CoreNavigator.getRouteBooleanParam('isGuest');
+        this.modNavOptions = CoreNavigator.getRouteParam<CoreNavigationOptions>('modNavOptions');
+        if (!this.modNavOptions) {
+            // Fallback to old way of passing params. @deprecated since 4.0.
+            const modParams = CoreNavigator.getRouteParam<Params>('modParams');
+            if (modParams) {
+                this.modNavOptions = { params: modParams };
+            }
+        }
 
         this.currentPagePath = CoreNavigator.getCurrentPath();
         this.contentsTab.page = CoreTextUtils.concatenatePaths(this.currentPagePath, this.contentsTab.page);
@@ -171,7 +178,10 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
             return;
         }
         // Now that the first tab has been selected we can load the module.
-        CoreCourseHelper.openModule(this.module, this.course.id, this.contentsTab.pageParams.sectionId, this.modParams);
+        CoreCourseHelper.openModule(this.module, this.course.id, {
+            sectionId: this.contentsTab.pageParams.sectionId,
+            modNavOptions: this.modNavOptions,
+        });
 
         delete this.module;
     }

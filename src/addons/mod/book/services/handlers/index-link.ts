@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
+import { CoreNavigationOptions } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonModBook } from '../book';
 
@@ -31,20 +32,32 @@ export class AddonModBookIndexLinkHandlerService extends CoreContentLinksModuleI
     }
 
     /**
-     * Get the mod params necessary to open an activity.
-     *
-     * @param url      The URL to treat.
-     * @param params   The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @return List of params to pass to navigateToModule / navigateToModuleByInstance.
+     * @inheritdoc
+     */
+    getModNavOptions(url: string, params: Record<string, string>): CoreNavigationOptions {
+        const chapterId = params.chapterid ? parseInt(params.chapterid, 10) : undefined;
+
+        return {
+            nextNavigation: {
+                path: 'contents',
+                options: {
+                    params: {
+                        chapterId,
+                    },
+                },
+            },
+        };
+    }
+
+    /**
+     * @inheritdoc
      */
     getPageParams(url: string, params: Record<string, string>): Params {
         return params.chapterid ? { chapterId: parseInt(params.chapterid, 10) } : {};
     }
 
     /**
-     * Check if the handler is enabled for a certain site (site + user) and a URL.
-     *
-     * @return Whether the handler is enabled for the URL and site.
+     * @inheritdoc
      */
     isEnabled(siteId: string): Promise<boolean> {
         return AddonModBook.isPluginEnabled(siteId);

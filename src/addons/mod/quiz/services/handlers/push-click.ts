@@ -72,7 +72,10 @@ export class AddonModQuizPushClickHandlerService implements CorePushNotification
 
         await CoreUtils.ignoreErrors(AddonModQuiz.invalidateContent(moduleId, courseId, notification.site));
 
-        return CoreCourseHelper.navigateToModule(moduleId, notification.site, courseId);
+        return CoreCourseHelper.navigateToModule(moduleId, {
+            courseId,
+            siteId: notification.site,
+        });
     }
 
 }
