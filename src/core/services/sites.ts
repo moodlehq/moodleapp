@@ -1823,6 +1823,8 @@ export class CoreSitesProvider {
             await CoreConfig.set(CORE_SITE_CURRENT_SITE_ID_CONFIG, siteId);
             await CoreApp.deleteTableSchema('current_site');
             await db.dropTable('current_site');
+        } catch {
+            // There was no current site, silence the error.
         } finally {
             await CoreConfig.set('current_site_migrated', 1);
         }
