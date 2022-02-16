@@ -208,8 +208,8 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
             await this.fetchContent(refresh, sync, showErrors);
         } catch (error) {
-            if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled()) {
-                // Some call failed, retry without using cache since it might be a new activity.
+            if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled() && this.isNotFoundError(error)) {
+                // Module not found, retry without using cache.
                 return await this.refreshContent(sync);
             }
 
