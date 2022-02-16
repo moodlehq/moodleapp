@@ -8,5 +8,5 @@ core-user-avatar {
 
 :host-context(ion-toolbar) core-user-avatar ::ng-deep img,
 :host-context(ion-tab-bar) core-user-avatar ::ng-deep img {
-    padding: 2px !important;
+    padding: 6px !important;
 }

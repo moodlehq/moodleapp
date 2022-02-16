@@ -214,8 +214,8 @@ ion-header ion-toolbar {
     .button.button-clear.button-has-icon-only,
     .button.button-solid.button-has-icon-only {
         --border-radius: var(--huge-radius);
-        width: 48px;
-        height: 48px;
+        width: var(--a11y-min-target-size);
+        height: var(--a11y-min-target-size);
     }
 
 
@@ -308,6 +308,10 @@ ion-button.ion-text-wrap {
 
 ion-button ion-spinner {
     --color: inherit !important;
+}
+
+ion-button.button-has-icon-only {
+    margin: 2px;
 }
 
 ion-button:not(.button-has-icon-only):not(.button-small) > ion-icon {
