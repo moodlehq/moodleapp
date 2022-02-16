@@ -121,6 +121,19 @@ export class CoreConfigProvider {
     }
 
     /**
+     * Get an app setting directly from the database, without using any optimizations..
+     *
+     * @param name The config name.
+     * @return Resolves upon success along with the config data. Reject on failure.
+     */
+    async getFromDB<T>(name: string): Promise<T> {
+        const db = CoreApp.getDB();
+        const record = await db.getRecord<ConfigDBEntry>(CONFIG_TABLE_NAME, { name });
+
+        return record.value;
+    }
+
+    /**
      * Check whether the given app setting exists.
      *
      * @param name The config name.
@@ -151,9 +164,14 @@ export class CoreConfigProvider {
      * Update config with the given values.
      *
      * @param config Config updates.
+     * @param reset Whether to reset environment before applying the patch.
      */
-    patchEnvironment(config: Partial<EnvironmentConfig>): void {
-        this.defaultEnvironment = this.defaultEnvironment ?? CoreConstants.CONFIG;
+    patchEnvironment(config: Partial<EnvironmentConfig>, reset: boolean = false): void {
+        this.defaultEnvironment = this.defaultEnvironment ?? { ...CoreConstants.CONFIG };
+
+        if (reset) {
+            this.resetEnvironmentSilently();
+        }
 
         Object.assign(CoreConstants.CONFIG, config);
         CoreEvents.trigger(CoreConfigProvider.ENVIRONMENT_UPDATED, CoreConstants.CONFIG);
@@ -169,8 +187,7 @@ export class CoreConfigProvider {
             return;
         }
 
-        Object.keys(CoreConstants.CONFIG).forEach(key => delete CoreConstants.CONFIG[key]);
-        Object.assign(CoreConstants.CONFIG, this.defaultEnvironment);
+        this.resetEnvironmentSilently();
         CoreEvents.trigger(CoreConfigProvider.ENVIRONMENT_UPDATED, CoreConstants.CONFIG);
     }
 
@@ -183,6 +200,20 @@ export class CoreConfigProvider {
         }
 
         this.patchEnvironment(JSON.parse(CoreUtils.getCookie('MoodleAppConfig') ?? '{}'));
+    }
+
+    /**
+     * Reset config values to its original state without emitting any events.
+     */
+    protected resetEnvironmentSilently(): void {
+        if (!this.defaultEnvironment) {
+            // The environment config hasn't been modified; there's not need to reset.
+
+            return;
+        }
+
+        Object.keys(CoreConstants.CONFIG).forEach(key => delete CoreConstants.CONFIG[key]);
+        Object.assign(CoreConstants.CONFIG, this.defaultEnvironment);
     }
 
 }

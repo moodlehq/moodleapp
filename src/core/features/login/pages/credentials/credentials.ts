@@ -333,7 +333,14 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.viewLeft = true;
-        CoreEvents.trigger(CoreEvents.LOGIN_SITE_UNCHECKED, { config: this.siteConfig }, this.siteId);
+        CoreEvents.trigger(
+            CoreEvents.LOGIN_SITE_UNCHECKED,
+            {
+                config: this.siteConfig,
+                loginSuccessful: !!this.siteId,
+            },
+            this.siteId,
+        );
         this.valueChangeSubscription?.unsubscribe();
     }
 

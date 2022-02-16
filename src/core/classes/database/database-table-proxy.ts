@@ -23,6 +23,7 @@ import {
     CoreDatabaseConditions,
     GetDBRecordPrimaryKey,
     CoreDatabaseQueryOptions,
+    CoreDatabaseTableConstructor,
 } from './database-table';
 import { CoreDebugDatabaseTable } from './debug-database-table';
 import { CoreEagerDatabaseTable } from './eager-database-table';
@@ -42,6 +43,14 @@ export class CoreDatabaseTableProxy<
     protected config: CoreDatabaseConfiguration;
     protected target = asyncInstance<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>>();
     protected environmentObserver?: CoreEventObserver;
+    protected targetConstructors: Record<
+        CoreDatabaseCachingStrategy,
+        CoreDatabaseTableConstructor<DBRecord, PrimaryKeyColumn, PrimaryKey>
+    > = {
+        [CoreDatabaseCachingStrategy.Eager]: CoreEagerDatabaseTable,
+        [CoreDatabaseCachingStrategy.Lazy]: CoreLazyDatabaseTable,
+        [CoreDatabaseCachingStrategy.None]: CoreDatabaseTable,
+    };
 
     constructor(
         config: Partial<CoreDatabaseConfiguration>,
@@ -58,7 +67,13 @@ export class CoreDatabaseTableProxy<
      * @inheritdoc
      */
     async initialize(): Promise<void> {
-        this.environmentObserver = CoreEvents.on(CoreConfigProvider.ENVIRONMENT_UPDATED, () => this.updateTarget());
+        this.environmentObserver = CoreEvents.on(CoreConfigProvider.ENVIRONMENT_UPDATED, async () => {
+            if (!(await this.shouldUpdateTarget())) {
+                return;
+            }
+
+            this.updateTarget();
+        });
 
         await this.updateTarget();
     }
@@ -203,6 +218,20 @@ export class CoreDatabaseTableProxy<
     }
 
     /**
+     * Check whether the underlying target should be updated.
+     *
+     * @returns Whether target should be updated.
+     */
+    protected async shouldUpdateTarget(): Promise<boolean> {
+        const config = await this.getRuntimeConfig();
+        const target = await this.target.getInstance();
+        const originalTarget = target instanceof CoreDebugDatabaseTable ? target.getTarget() : target;
+
+        return (config.debug && target === originalTarget)
+            || originalTarget?.constructor !== this.targetConstructors[config.cachingStrategy];
+    }
+
+    /**
      * Create proxy target.
      *
      * @returns Target instance.
@@ -221,14 +250,9 @@ export class CoreDatabaseTableProxy<
      * @returns Database table.
      */
     protected createTable(cachingStrategy: CoreDatabaseCachingStrategy): CoreDatabaseTable<DBRecord, PrimaryKeyColumn> {
-        switch (cachingStrategy) {
-            case CoreDatabaseCachingStrategy.Eager:
-                return new CoreEagerDatabaseTable(this.database, this.tableName, this.primaryKeyColumns);
-            case CoreDatabaseCachingStrategy.Lazy:
-                return new CoreLazyDatabaseTable(this.database, this.tableName, this.primaryKeyColumns);
-            case CoreDatabaseCachingStrategy.None:
-                return new CoreDatabaseTable(this.database, this.tableName, this.primaryKeyColumns);
-        }
+        const DatabaseTable = this.targetConstructors[cachingStrategy];
+
+        return new DatabaseTable(this.database, this.tableName, this.primaryKeyColumns);
     }
 
 }

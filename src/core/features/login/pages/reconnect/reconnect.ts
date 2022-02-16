@@ -57,6 +57,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     protected viewLeft = false;
     protected eventThrown = false;
     protected redirectData?: CoreRedirectPayload;
+    protected loginSuccessful = false;
 
     constructor(
         protected fb: FormBuilder,
@@ -117,7 +118,14 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.viewLeft = true;
-        CoreEvents.trigger(CoreEvents.LOGIN_SITE_UNCHECKED, { config: this.siteConfig }, this.siteId);
+        CoreEvents.trigger(
+            CoreEvents.LOGIN_SITE_UNCHECKED,
+            {
+                config: this.siteConfig,
+                loginSuccessful: this.loginSuccessful,
+            },
+            this.siteId,
+        );
     }
 
     /**
@@ -214,6 +222,8 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.credForm.controls['password'].reset();
 
             // Go to the site initial page.
+            this.loginSuccessful = true;
+
             await CoreNavigator.navigateToSiteHome({
                 params: this.redirectData,
             });

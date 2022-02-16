@@ -66,6 +66,7 @@ import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreConfig } from './config';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
+export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
 
 /*
  * Service to manage and interact with sites.
@@ -1032,10 +1033,28 @@ export class CoreSitesProvider {
             try {
                 const data = await this.sitesTable.getOneByPrimaryKey({ id: siteId });
 
-                return this.makeSiteFromSiteListEntry(data);
+                return this.addSiteFromSiteListEntry(data);
             } catch {
                 throw new CoreError('SiteId not found');
             }
+        }
+    }
+
+    /**
+     * Get a site directly from the database, without using any optimizations.
+     *
+     * @param siteId Site id.
+     * @return Site.
+     */
+    async getSiteFromDB(siteId: string): Promise<CoreSite> {
+        const db = CoreApp.getDB();
+
+        try {
+            const record = await db.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { id: siteId });
+
+            return this.makeSiteFromSiteListEntry(record);
+        } catch {
+            throw new CoreError('SiteId not found');
         }
     }
 
@@ -1052,7 +1071,7 @@ export class CoreSitesProvider {
             return this.sites[data.id];
         }
 
-        return this.makeSiteFromSiteListEntry(data);
+        return this.addSiteFromSiteListEntry(data);
     }
 
     /**
@@ -1061,8 +1080,25 @@ export class CoreSitesProvider {
      * @param entry Site list entry.
      * @return Promised resolved with the created site.
      */
-    makeSiteFromSiteListEntry(entry: SiteDBEntry): Promise<CoreSite> {
+    addSiteFromSiteListEntry(entry: SiteDBEntry): Promise<CoreSite> {
         // Parse info and config.
+        const site = this.makeSiteFromSiteListEntry(entry);
+
+        return this.migrateSiteSchemas(site).then(() => {
+            // Set site after migrating schemas, or a call to getSite could get the site while tables are being created.
+            this.sites[entry.id] = site;
+
+            return site;
+        });
+    }
+
+    /**
+     * Make a site instance from a database entry.
+     *
+     * @param entry Site database entry.
+     * @return Site.
+     */
+    makeSiteFromSiteListEntry(entry: SiteDBEntry): CoreSite {
         const info = entry.info ? <CoreSiteInfo> CoreTextUtils.parseJSON(entry.info) : undefined;
         const config = entry.config ? <CoreSiteConfig> CoreTextUtils.parseJSON(entry.config) : undefined;
 
@@ -1077,12 +1113,7 @@ export class CoreSitesProvider {
         );
         site.setOAuthId(entry.oauthId || undefined);
 
-        return this.migrateSiteSchemas(site).then(() => {
-            // Set site after migrating schemas, or a call to getSite could get the site while tables are being created.
-            this.sites[entry.id] = site;
-
-            return site;
-        });
+        return site;
     }
 
     /**
@@ -1231,7 +1262,7 @@ export class CoreSitesProvider {
      * @return Promise resolved when current site is stored.
      */
     async login(siteId: string): Promise<void> {
-        await CoreConfig.set('current_site_id', siteId);
+        await CoreConfig.set(CORE_SITE_CURRENT_SITE_ID_CONFIG, siteId);
 
         CoreEvents.trigger(CoreEvents.LOGIN, {}, siteId);
     }
@@ -1477,7 +1508,7 @@ export class CoreSitesProvider {
 
             siteEntries.forEach((site) => {
                 if (!this.sites[site.id]) {
-                    promises.push(this.makeSiteFromSiteListEntry(site));
+                    promises.push(this.addSiteFromSiteListEntry(site));
                 }
 
                 if (this.sites[site.id].containsUrl(url)) {
@@ -1504,7 +1535,7 @@ export class CoreSitesProvider {
     async getStoredCurrentSiteId(): Promise<string> {
         await this.migrateCurrentSiteLegacyTable();
 
-        return CoreConfig.get('current_site_id');
+        return CoreConfig.get(CORE_SITE_CURRENT_SITE_ID_CONFIG);
     }
 
     /**
@@ -1513,7 +1544,7 @@ export class CoreSitesProvider {
      * @return Promise resolved when done.
      */
     async removeStoredCurrentSite(): Promise<void> {
-        await CoreConfig.delete('current_site_id');
+        await CoreConfig.delete(CORE_SITE_CURRENT_SITE_ID_CONFIG);
     }
 
     /**
@@ -1789,7 +1820,7 @@ export class CoreSitesProvider {
 
             const { siteId } = await db.getRecord<{ siteId: string }>('current_site');
 
-            await CoreConfig.set('current_site_id', siteId);
+            await CoreConfig.set(CORE_SITE_CURRENT_SITE_ID_CONFIG, siteId);
             await CoreApp.deleteTableSchema('current_site');
             await db.dropTable('current_site');
         } finally {
