@@ -10,11 +10,11 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <div class="ion-padding-horizontal ion-text-wrap" *ngIf="downloadedCourses.length">
+        <div class="ion-padding-horizontal ion-text-wrap" *ngIf="spaceUsage">
             <h2>{{ 'addon.storagemanager.alldata' | translate }}</h2>
         </div>
-        <ion-card>
-            <ion-item class="ion-text-wrap total" *ngIf="spaceUsage">
+        <ion-card *ngIf="spaceUsage">
+            <ion-item class="ion-text-wrap total">
                 <ion-label>
                     <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
                     <ion-badge color="light" *ngIf="spaceUsage.spaceUsage">{{ spaceUsage.spaceUsage | coreBytesToSize }}</ion-badge>
@@ -27,7 +27,7 @@
             </ion-item>
         </ion-card>
 
-        <div class="ion-padding-horizontal ion-text-wrap" *ngIf="downloadedCourses.length">
+        <div class="ion-padding-horizontal ion-text-wrap">
             <h2>{{ 'addon.storagemanager.downloadedcourses' | translate }}</h2>
         </div>
         <ion-card>
