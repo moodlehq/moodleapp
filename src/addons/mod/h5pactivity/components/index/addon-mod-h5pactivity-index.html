@@ -2,10 +2,10 @@
 <core-navbar-buttons slot="end">
     <core-context-menu>
         <core-context-menu-item *ngIf="h5pActivity && h5pActivity.enabletracking && accessInfo && !accessInfo.canreviewattempts"
-            [priority]="1000" [content]="'addon.mod_h5pactivity.review_my_attempts' | translate" (action)="viewMyAttempts()"
+            [priority]="1000" [content]="'addon.mod_h5pactivity.attempts_report' | translate" (action)="viewMyAttempts()"
             iconAction="stats-chart">
         </core-context-menu-item>
-        <core-context-menu-item *ngIf="canViewAllAttempts" [priority]="1000" [content]="'addon.mod_h5pactivity.review_attempts' | translate"
+        <core-context-menu-item *ngIf="canViewAllAttempts" [priority]="1000" [content]="'addon.mod_h5pactivity.attempts_report' | translate"
             (action)="viewAllAttempts()" iconAction="stats-chart">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
