@@ -363,4 +363,14 @@
     @each $type, $value in $activity-icon-colors {
         --activity#{$type}: #{$value};
     }
+
+    --core-mainpage-sitename-display: none;
+    --core-mainpage-headerlogo-display: none;
+    --core-mainpage-headerlogo-maxheight: calc(var(--core-header-toolbar-height) - 16px);
+
+    @if ($core-dashboard-logo) {
+        --core-mainpage-headerlogo-display: inline;
+    } @else {
+        --core-mainpage-sitename-display: inline;
+    }
 }
