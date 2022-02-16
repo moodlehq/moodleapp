@@ -386,10 +386,10 @@ export class CoreFilepoolProvider {
             const file = await this.fixPluginfileURL(siteId, fileUrl);
 
             fileUrl = CoreFileHelper.getFileUrl(file);
-            timemodified = file.timemodified || timemodified;
+            timemodified = file.timemodified ?? timemodified;
         }
 
-        revision = revision || this.getRevisionFromUrl(fileUrl);
+        revision = revision ?? this.getRevisionFromUrl(fileUrl);
         const fileId = this.getFileIdByUrl(fileUrl);
 
         const primaryKey = { siteId, fileId };
@@ -1032,11 +1032,10 @@ export class CoreFilepoolProvider {
 
         const file = await this.fixPluginfileURL(siteId, fileUrl);
         fileUrl = CoreFileHelper.getFileUrl(file);
-        timemodified = file.timemodified || timemodified;
 
         options = Object.assign({}, options); // Create a copy to prevent modifying the original object.
-        options.timemodified = timemodified || 0;
-        options.revision = revision || this.getRevisionFromUrl(fileUrl);
+        options.timemodified = file.timemodified ?? timemodified ?? 0;
+        options.revision = revision ?? this.getRevisionFromUrl(fileUrl);
         const fileId = this.getFileIdByUrl(fileUrl);
 
         const links = this.createComponentLinks(component, componentId);
@@ -1506,8 +1505,8 @@ export class CoreFilepoolProvider {
         }
 
         fileUrl = CoreUrl.removeUrlAnchor(CoreFileHelper.getFileUrl(file));
-        timemodified = file.timemodified || timemodified;
-        revision = revision || this.getRevisionFromUrl(fileUrl);
+        timemodified = file.timemodified ?? timemodified;
+        revision = revision ?? this.getRevisionFromUrl(fileUrl);
         const fileId = this.getFileIdByUrl(fileUrl);
 
         try {
@@ -1592,8 +1591,8 @@ export class CoreFilepoolProvider {
         const file = await this.fixPluginfileURL(siteId, fileUrl, timemodified);
 
         fileUrl = CoreFileHelper.getFileUrl(file);
-        timemodified = file.timemodified || timemodified;
-        revision = revision || this.getRevisionFromUrl(fileUrl);
+        timemodified = file.timemodified ?? timemodified;
+        revision = revision ?? this.getRevisionFromUrl(fileUrl);
         const fileId = this.getFileIdByUrl(fileUrl);
 
         try {
@@ -2566,10 +2565,10 @@ export class CoreFilepoolProvider {
         const fileId = item.fileId;
         const fileUrl = item.url;
         const options = {
-            revision: item.revision || undefined,
-            timemodified: item.timemodified || undefined,
-            isexternalfile: item.isexternalfile || undefined,
-            repositorytype: item.repositorytype || undefined,
+            revision: item.revision ?? undefined,
+            timemodified: item.timemodified ?? undefined,
+            isexternalfile: item.isexternalfile ?? undefined,
+            repositorytype: item.repositorytype ?? undefined,
         };
         const filePath = item.path || undefined;
         const links = item.linksUnserialized || [];
