@@ -1,5 +1,4 @@
 {
-    "book:read": "View book",
     "errorchapter": "Error reading chapter of book.",
     "modulenameplural": "Books",
     "navnexttitle": "Next: {{$a}}",

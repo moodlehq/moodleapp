@@ -32,6 +32,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     addPadding = true;
     showBullets = false;
     chapters: AddonModBookTocChapter[] = [];
+    hasStartedBook = false;
 
     protected book?: AddonModBookBookWSData;
 
@@ -53,23 +54,43 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      */
     protected async fetchContent(refresh?: boolean): Promise<void> {
         try {
-            this.book = await AddonModBook.getBook(this.courseId, this.module.id);
-
-            if (this.book) {
-                this.dataRetrieved.emit(this.book);
-
-                this.description = this.book.intro;
-                this.showNumbers = this.book.numbering == AddonModBookNumbering.NUMBERS;
-                this.showBullets = this.book.numbering == AddonModBookNumbering.BULLETS;
-                this.addPadding = this.book.numbering != AddonModBookNumbering.NONE;
-            }
-
-            const contents = await CoreCourse.getModuleContents(this.module, this.courseId);
-
-            this.chapters = AddonModBook.getTocList(contents);
+            await Promise.all([
+                this.loadBook(),
+                this.loadTOC(),
+            ]);
         } finally {
             this.fillContextMenu(refresh);
         }
+    }
+
+    /**
+     * Load book data.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async loadBook(): Promise<void> {
+        this.book = await AddonModBook.getBook(this.courseId, this.module.id);
+
+        this.dataRetrieved.emit(this.book);
+
+        this.description = this.book.intro;
+        this.showNumbers = this.book.numbering == AddonModBookNumbering.NUMBERS;
+        this.showBullets = this.book.numbering == AddonModBookNumbering.BULLETS;
+        this.addPadding = this.book.numbering != AddonModBookNumbering.NONE;
+
+        const lastChapterViewed = await AddonModBook.getLastChapterViewed(this.book.id);
+        this.hasStartedBook = lastChapterViewed !== undefined;
+    }
+
+    /**
+     * Load book TOC.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async loadTOC(): Promise<void> {
+        const contents = await CoreCourse.getModuleContents(this.module, this.courseId);
+
+        this.chapters = AddonModBook.getTocList(contents);
     }
 
     /**
@@ -85,6 +106,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
                 chapterId,
             },
         });
+
+        this.hasStartedBook = true;
     }
 
     /**

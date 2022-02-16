@@ -45,7 +45,8 @@
         </ion-item>
 
         <ion-button class="ion-margin" expand="block" (click)="openBook()">
-            {{ 'addon.mod_book.book:read' | translate }}
+            <span *ngIf="!hasStartedBook">{{ 'core.start' | translate }}</span>
+            <span *ngIf="hasStartedBook">{{ 'core.resume' | translate }}</span>
         </ion-button>
 
     </ion-list>

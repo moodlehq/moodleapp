@@ -133,13 +133,9 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
 
             const downloadResult = await this.downloadResourceIfNeeded(module, refresh);
 
-            if (book) {
-                this.displayNavBar = book.navstyle != AddonModBookNavStyle.TOC_ONLY;
-                this.displayTitlesInNavBar = book.navstyle == AddonModBookNavStyle.TEXT;
-                this.title = book.name;
-            } else {
-                this.title = this.title || Translate.instant('addon.mod_book.book:read');
-            }
+            this.displayNavBar = book.navstyle != AddonModBookNavStyle.TOC_ONLY;
+            this.displayTitlesInNavBar = book.navstyle == AddonModBookNavStyle.TEXT;
+            this.title = book.name;
 
             // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
             await source.loadContents();
@@ -283,6 +279,10 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
             this.navigationItems = this.getNavigationItems(chapterId);
         }
 
+        if (this.book) {
+            AddonModBook.storeLastChapterViewed(this.book.id, chapterId);
+        }
+
         if (!this.module) {
             return;
         }
@@ -370,6 +370,15 @@ class AddonModBookSlidesItemsManagerSource extends CoreSwipeSlidesItemsManagerSo
     async loadBookData(): Promise<{ module: CoreCourseModuleData; book: AddonModBookBookWSData }> {
         this.module = await CoreCourse.getModule(this.CM_ID, this.COURSE_ID);
         this.book = await AddonModBook.getBook(this.COURSE_ID, this.CM_ID);
+
+        if (!this.initialItem) {
+            // No chapter ID specified. Calculate last viewed.
+            const lastViewed = await AddonModBook.getLastChapterViewed(this.book.id);
+
+            if (lastViewed) {
+                this.initialItem = { id: lastViewed };
+            }
+        }
 
         return {
             module: this.module,

@@ -19,7 +19,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { AddonCalendar, AddonCalendarEventType, AddonCalendarProvider } from '../calendar';
 
 /**
- * Database variables for AddonDatabase service.
+ * Database variables for AddonCalendarProvider service.
  */
 export const EVENTS_TABLE = 'addon_calendar_events_3';
 export const REMINDERS_TABLE = 'addon_calendar_reminders';
