@@ -298,11 +298,13 @@ button,
 ion-button {
     margin: 4px 8px;
 
-    ion-spinner[slot=start] {
+    ion-spinner[slot=start],
+    img[slot=start] {
         @include margin-horizontal(-0.3em, 0.3em);
     }
 
-    ion-spinner[slot=end] {
+    ion-spinner[slot=end],
+    img[slot=end] {
         @include margin-horizontal(-0.3em, 0.3em);
     }
 }
@@ -465,6 +467,14 @@ ion-alert {
     .alert-message {
         user-select: text;
         flex-shrink: 0;
+    }
+}
+
+ion-loading {
+    --border-radius: var(--huge-radius);
+
+    .loading-wrapper {
+        border-radius: var(--border-radius) !important;
     }
 }
 
