@@ -40,6 +40,8 @@ export class CoreEagerDatabaseTable<
      * @inheritdoc
      */
     async initialize(): Promise<void> {
+        await super.initialize();
+
         const records = await super.getMany();
 
         this.records = records.reduce((data, record) => {

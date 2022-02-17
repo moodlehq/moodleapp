@@ -13,12 +13,8 @@
 // limitations under the License.
 
 import { mock, mockSingleton } from '@/testing/utils';
-import { CoreDatabaseSorting, CoreDatabaseTable } from '@classes/database/database-table';
-import {
-    CoreDatabaseCachingStrategy,
-    CoreDatabaseConfiguration,
-    CoreDatabaseTableProxy,
-} from '@classes/database/database-table-proxy';
+import { CoreDatabaseConfiguration, CoreDatabaseSorting, CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreConfig } from '@services/config';
 

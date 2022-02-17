@@ -37,7 +37,7 @@ export class CoreDebugDatabaseTable<
     protected logger: CoreLogger;
 
     constructor(target: CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey>) {
-        super(target.getDatabase(), target.getTableName(), target.getPrimaryKeyColumns());
+        super(target.getConfig(), target.getDatabase(), target.getTableName(), target.getPrimaryKeyColumns());
 
         this.target = target;
         this.logger = CoreLogger.getInstance(`CoreDatabase[${this.tableName}]`);
@@ -53,7 +53,9 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
-    initialize(): Promise<void> {
+    async initialize(): Promise<void> {
+        await super.initialize();
+
         this.logger.log('initialize', this.target);
 
         return this.target.initialize();
@@ -62,7 +64,9 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
-    destroy(): Promise<void> {
+    async destroy(): Promise<void> {
+        await super.destroy();
+
         this.logger.log('destroy');
 
         return this.target.destroy();

@@ -56,12 +56,8 @@ import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreDatabaseTable } from '@classes/database/database-table';
-import {
-    CoreDatabaseCachingStrategy,
-    CoreDatabaseConfiguration,
-    CoreDatabaseTableProxy,
-} from '@classes/database/database-table-proxy';
+import { CoreDatabaseConfiguration, CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreConfig } from './config';
 

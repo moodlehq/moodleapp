@@ -17,7 +17,7 @@ import { CoreMainMenuLocalizedCustomItem } from '@features/mainmenu/services/mai
 import { CoreSitesDemoSiteData } from '@services/sites';
 import { OpenFileAction } from '@services/utils/utils';
 import { CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
-import { CoreDatabaseConfiguration } from '@classes/database/database-table-proxy';
+import { CoreDatabaseConfiguration } from '@classes/database/database-table';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
