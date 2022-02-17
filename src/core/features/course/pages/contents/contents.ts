@@ -63,6 +63,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
 
     protected formatOptions?: Record<string, unknown>;
     protected completionObserver?: CoreEventObserver;
+    protected manualCompletionObserver?: CoreEventObserver;
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected modulesHaveCompletion = false;
@@ -114,36 +115,40 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async initListeners(): Promise<void> {
+        if (this.completionObserver) {
+            return; // Already initialized.
+        }
+
         // Check if the course format requires the view to be refreshed when completion changes.
         const shouldRefresh = await CoreCourseFormatDelegate.shouldRefreshWhenCompletionChanges(this.course);
         if (!shouldRefresh) {
             return;
         }
 
-        if (!this.completionObserver) {
-            this.completionObserver = CoreEvents.on(
-                CoreEvents.COMPLETION_MODULE_VIEWED,
-                (data) => {
-                    if (data && data.courseId == this.course.id) {
-                        this.refreshAfterCompletionChange(true);
-                    }
-                },
-            );
-        }
-
-        if (!this.syncObserver) {
-            this.syncObserver = CoreEvents.on(CoreCourseSyncProvider.AUTO_SYNCED, (data) => {
-                if (!data || data.courseId != this.course.id) {
-                    return;
+        this.completionObserver = CoreEvents.on(
+            CoreEvents.COMPLETION_MODULE_VIEWED,
+            (data) => {
+                if (data && data.courseId == this.course.id) {
+                    this.refreshAfterCompletionChange(true);
                 }
+            },
+        );
 
-                this.refreshAfterCompletionChange(false);
+        this.manualCompletionObserver = CoreEvents.on(CoreEvents.MANUAL_COMPLETION_CHANGED, (data) => {
+            this.onCompletionChange(data.completion);
+        });
 
-                if (data.warnings && data.warnings[0]) {
-                    CoreDomUtils.showErrorModal(data.warnings[0]);
-                }
-            });
-        }
+        this.syncObserver = CoreEvents.on(CoreCourseSyncProvider.AUTO_SYNCED, (data) => {
+            if (!data || data.courseId != this.course.id) {
+                return;
+            }
+
+            this.refreshAfterCompletionChange(false);
+
+            if (data.warnings && data.warnings[0]) {
+                CoreDomUtils.showErrorModal(data.warnings[0]);
+            }
+        });
     }
 
     /**
@@ -369,6 +374,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.completionObserver?.off();
+        this.manualCompletionObserver?.off();
         this.syncObserver?.off();
     }
 

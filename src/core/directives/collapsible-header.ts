@@ -297,13 +297,16 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy {
         const collapsibleHeaderHeight = this.title.shadowRoot?.children[0].clientHeight ?? this.title.clientHeight;
         const scrollableHeight = this.contentScroll.scrollHeight - this.contentScroll.clientHeight;
         const collapsedHeight = collapsibleHeaderHeight - this.title.clientHeight;
-        const progress = CoreMath.clamp(
-            scrollableHeight + collapsedHeight <= 2 * collapsibleHeaderHeight
-                ? this.contentScroll.scrollTop / (this.contentScroll.scrollHeight - this.contentScroll.clientHeight)
-                : this.contentScroll.scrollTop / collapsibleHeaderHeight,
-            0,
-            1,
-        );
+        let progress = 0;
+        if (scrollableHeight !== 0) {
+            progress = CoreMath.clamp(
+                scrollableHeight + collapsedHeight <= 2 * collapsibleHeaderHeight
+                    ? this.contentScroll.scrollTop / scrollableHeight
+                    : this.contentScroll.scrollTop / collapsibleHeaderHeight,
+                0,
+                1,
+            );
+        }
         const collapsed = progress === 1;
 
         if (!this.inContent) {

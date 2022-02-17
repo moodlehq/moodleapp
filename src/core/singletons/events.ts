@@ -20,7 +20,6 @@ import { CoreFilepoolComponentFileEventData } from '@services/filepool';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreScreenOrientation } from '@services/screen';
-import { CoreCourseCompletionType } from '@features/course/services/course';
 
 /**
  * Observer instance to stop listening to an event.
@@ -51,7 +50,6 @@ export interface CoreEventsData {
     [CoreEvents.SELECT_COURSE_TAB]: CoreEventSelectCourseTabData;
     [CoreEvents.COMPLETION_MODULE_VIEWED]: CoreEventCompletionModuleViewedData;
     [CoreEvents.MANUAL_COMPLETION_CHANGED]: CoreEventManualCompletionChangedData;
-    [CoreEvents.COMPLETION_CHANGED]: CoreEventCompletionChangedData;
     [CoreEvents.SECTION_STATUS_CHANGED]: CoreEventSectionStatusChangedData;
     [CoreEvents.ACTIVITY_DATA_SENT]: CoreEventActivityDataSentData;
     [CoreEvents.IAB_LOAD_START]: InAppBrowserEvent;
@@ -369,14 +367,6 @@ export type CoreEventCompletionModuleViewedData = {
  */
 export type CoreEventManualCompletionChangedData = {
     completion: CoreCourseModuleCompletionData;
-};
-
-/**
- * Data passed to COMPLETION_CHANGED event.
- */
-export type CoreEventCompletionChangedData = {
-    completion: CoreCourseModuleCompletionData;
-    type: CoreCourseCompletionType;
 };
 
 /**

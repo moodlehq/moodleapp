@@ -16,7 +16,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreUser } from '@features/user/services/user';
 import {
-    CoreCourseCompletionType,
     CoreCourseModuleCompletionStatus,
     CoreCourseModuleCompletionTracking,
 } from '@features/course/services/course';
@@ -52,8 +51,8 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_CHANGED, (data) => {
-            if (!this.completion || this.completion.cmid != data.completion.cmid || data.type != CoreCourseCompletionType.MANUAL) {
+        this.completionObserver = CoreEvents.on(CoreEvents.MANUAL_COMPLETION_CHANGED, (data) => {
+            if (!this.completion || this.completion.cmid != data.completion.cmid) {
                 return;
             }
 
@@ -149,9 +148,7 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
 
         await CoreCourseHelper.changeManualCompletion(this.completion, event);
 
-        // @deprecated MANUAL_COMPLETION_CHANGED is deprecated since 4.0 use COMPLETION_CHANGED instead.
         CoreEvents.trigger(CoreEvents.MANUAL_COMPLETION_CHANGED, { completion: this.completion });
-        CoreEvents.trigger(CoreEvents.COMPLETION_CHANGED, { completion: this.completion, type: CoreCourseCompletionType.MANUAL });
     }
 
     /**

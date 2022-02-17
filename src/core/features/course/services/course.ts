@@ -75,11 +75,6 @@ export enum CoreCourseModuleCompletionStatus {
     COMPLETION_COMPLETE_FAIL = 3,
 }
 
-export enum CoreCourseCompletionType {
-    MANUAL = 0,
-    AUTO = 1,
-}
-
 export enum CoreCourseCompletionMode {
     FULL = 'full',
     BASIC = 'basic',
