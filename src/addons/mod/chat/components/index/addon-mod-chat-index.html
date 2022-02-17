@@ -21,6 +21,10 @@
             [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
         </core-context-menu-item>
     </core-context-menu>
+
+    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.course.modulesummary' | translate">
+        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
 </core-navbar-buttons>
 
 <!-- Content. -->

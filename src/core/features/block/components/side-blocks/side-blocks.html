@@ -1,8 +1,5 @@
-<ion-header>
+<ion-header class="no-title">
     <ion-toolbar>
-        <ion-title>
-            <h2>{{ 'core.block.blocks' | translate }}</h2>
-        </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
                 <ion-icon name="fas-times" slot="icon-only" aria-hidden=true></ion-icon>
@@ -10,7 +7,7 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content [fullscreen]="true">
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>

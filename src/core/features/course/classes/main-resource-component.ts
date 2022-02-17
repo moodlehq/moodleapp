@@ -29,6 +29,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
+import { CoreCourseModuleSummaryComponent, CoreCourseModuleSummaryResult } from '../components/module-summary/module-summary';
 import { CoreCourseContentsPage } from '../pages/contents/contents';
 import { CoreCourse } from '../services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '../services/course-helper';
@@ -58,6 +59,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     loaded = false; // If the component has been loaded.
     component?: string; // Component name.
     componentId?: number; // Component ID.
+    hasOffline = false; // Resources don't have any data to sync.
     blog?: boolean; // If blog is available.
 
     // Data for context menu.
@@ -253,16 +255,11 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
     /**
      * Expand the description.
+     *
+     * @deprecated Use openModuleSummary instead.
      */
     expandDescription(): void {
-        CoreTextUtils.viewText(Translate.instant('core.description'), this.description!, {
-            component: this.component,
-            componentId: this.module.id,
-            filter: true,
-            contextLevel: 'module',
-            instanceId: this.module.id,
-            courseId: this.courseId,
-        });
+        this.openModuleSummary();
     }
 
     /**
@@ -447,6 +444,48 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         await CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, module);
 
         this.module = module;
+    }
+
+    /**
+     * Opens a module summary page.
+     */
+    async openModuleSummary(): Promise<void> {
+        if (!this.module) {
+            return;
+        }
+
+        const data = await CoreDomUtils.openSideModal<CoreCourseModuleSummaryResult>({
+            component: CoreCourseModuleSummaryComponent,
+            componentProps: {
+                moduleId: this.module.id,
+                module: this.module,
+                description: this.description,
+                component: this.component,
+                courseId: this.courseId,
+                hasOffline: this.hasOffline,
+            },
+        });
+
+        if (data) {
+            if (data.action == 'refresh') {
+                const modal = await CoreDomUtils.showModalLoading();
+
+                try {
+                    await this.doRefresh();
+                } finally {
+                    modal.dismiss();
+                }
+            } else if(data.action == 'sync') {
+                const modal = await CoreDomUtils.showModalLoading();
+
+                try {
+                    await this.doRefresh( undefined, undefined, true);
+                } finally {
+                    modal.dismiss();
+                }
+            }
+
+        }
     }
 
     /**

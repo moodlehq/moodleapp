@@ -27,6 +27,7 @@ import { CoreCourseModuleCompletionLegacyComponent } from './module-completion-l
 import { CoreCourseModuleInfoComponent } from './module-info/module-info';
 import { CoreCourseModuleManualCompletionComponent } from './module-manual-completion/module-manual-completion';
 import { CoreCourseModuleNavigationComponent } from './module-navigation/module-navigation';
+import { CoreCourseModuleSummaryComponent } from './module-summary/module-summary';
 
 @NgModule({
     declarations: [
@@ -41,6 +42,7 @@ import { CoreCourseModuleNavigationComponent } from './module-navigation/module-
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,
+        CoreCourseModuleSummaryComponent,
     ],
     imports: [
         CoreBlockComponentsModule,
@@ -58,6 +60,7 @@ import { CoreCourseModuleNavigationComponent } from './module-navigation/module-
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,
+        CoreCourseModuleSummaryComponent,
     ],
 })
 export class CoreCourseComponentsModule {}

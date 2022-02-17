@@ -42,7 +42,6 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
     // Data for context menu.
     syncIcon?: string; // Sync icon.
-    hasOffline?: boolean; // If it has offline data to be synced.
     isOnline?: boolean; // If the app is online or not.
 
     protected syncObserver?: CoreEventObserver; // It will observe the sync auto event.

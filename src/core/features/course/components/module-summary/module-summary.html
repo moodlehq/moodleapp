@@ -1,0 +1,82 @@
+<ion-header class="no-title">
+    <ion-toolbar>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+    <!-- Content. -->
+    <core-loading [hideUntil]="loaded">
+        <!-- Activity info. -->
+        <ion-item class="ion-text-wrap" *ngIf="module">
+            <ion-label>
+                <h1>
+                    <core-format-text [text]="module.name" contextLevel="module" [component]="component" [componentId]="componentId"
+                        [contextInstanceId]="module.id" [courseId]="courseId">
+                    </core-format-text>
+                </h1>
+            </ion-label>
+            <ion-button fill="clear" [href]="externalUrl" core-link [showBrowserWarning]="false" color="dark"
+                [attr.aria-label]="'core.openinbrowser' | translate" slot="end">
+                <ion-icon name="fas-external-link-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-item>
+        <ion-item class="ion-text-wrap" *ngIf="module && description">
+            <ion-label>
+                <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
+                    [contextInstanceId]="module.id" [courseId]="courseId" [maxHeight]="120">
+                </core-format-text>
+            </ion-label>
+        </ion-item>
+
+        <ion-item button class="ion-margin" *ngIf="prefetchText" class="ion-text-wrap">
+            <ion-label>
+                <p class="item-heading ion-text-wrap">{{ prefetchText }}</p>
+                <p *ngIf="downloadTimeReadable">{{ downloadTimeReadable }}</p>
+            </ion-label>
+            <ion-button *ngIf="prefetchStatusIcon && prefetchStatusIcon != 'spinner'" (click)="prefetch()" color="primary" fill="outline"
+                [attr.aria-label]="'core.download' | translate" slot="end">
+                <ion-icon [name]="prefetchStatusIcon" slot="icon-only" aria-hidden="true">
+                </ion-icon>
+            </ion-button>
+            <ion-spinner *ngIf="prefetchStatusIcon == 'spinner'" slot="end" aria-hidden="true"></ion-spinner>
+        </ion-item>
+
+        <ion-item button class="ion-margin" *ngIf="sizeReadable" class="ion-text-wrap">
+            <ion-label>
+                <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
+                <ion-badge color="light">{{ sizeReadable | coreBytesToSize }}</ion-badge>
+            </ion-label>
+            <ion-button *ngIf="!removeFilesLoading && size > 0" (click)="removeFiles()" color="danger" fill="outline"
+                [attr.aria-label]="'core.clearstoreddata' | translate:{$a: sizeReadable}" slot="end">
+                <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+            <ion-spinner *ngIf="removeFilesLoading" slot="end" aria-hidden="true"></ion-spinner>
+        </ion-item>
+
+        <ion-button *ngIf="blog" class="ion-margin" (click)="gotoBlog()" expand="block" fill="outline">
+            <ion-icon name="far-newspaper" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                {{ 'addon.blog.blog' | translate }}
+            </ion-label>
+        </ion-button>
+    </core-loading>
+</ion-content>
+<ion-footer *ngIf="loaded && isOnline">
+    <ion-button class="ion-margin" *ngIf="!hasOffline" (click)="refresh()" expand="block">
+        <ion-icon name="fas-redo-alt" slot="start" aria-hidden="true"></ion-icon>
+        <ion-label>
+            {{ 'core.refresh' | translate }}
+        </ion-label>
+    </ion-button>
+
+    <ion-button class="ion-margin" *ngIf="hasOffline" (click)="sync()" expand="block">
+        <ion-icon name="fas-sync-alt" slot="start" aria-hidden="true"></ion-icon>
+        <ion-label>
+            {{ 'core.settings.synchronizenow' | translate }}
+        </ion-label>
+    </ion-button>
+</ion-footer>
