@@ -383,7 +383,7 @@ export class CoreFilepoolProvider {
 
         if (!alreadyFixed) {
             // Fix the URL and use the fixed data.
-            const file = await this.fixPluginfileURL(siteId, fileUrl);
+            const file = await this.fixPluginfileURL(siteId, fileUrl, timemodified);
 
             fileUrl = CoreFileHelper.getFileUrl(file);
             timemodified = file.timemodified ?? timemodified;
@@ -1030,11 +1030,11 @@ export class CoreFilepoolProvider {
             throw new CoreError('File system cannot be used.');
         }
 
-        const file = await this.fixPluginfileURL(siteId, fileUrl);
+        const file = await this.fixPluginfileURL(siteId, fileUrl, timemodified);
         fileUrl = CoreFileHelper.getFileUrl(file);
 
         options = Object.assign({}, options); // Create a copy to prevent modifying the original object.
-        options.timemodified = file.timemodified ?? timemodified ?? 0;
+        options.timemodified = file.timemodified ?? timemodified;
         options.revision = revision ?? this.getRevisionFromUrl(fileUrl);
         const fileId = this.getFileIdByUrl(fileUrl);
 
@@ -2340,10 +2340,12 @@ export class CoreFilepoolProvider {
      * @param timemodified The time this file was modified.
      * @param Whether the file is outdated.
      */
-    protected isFileOutdated(entry: CoreFilepoolFileEntry, revision?: number, timemodified?: number): boolean {
-        return !!entry.stale ||
-            (revision !== undefined && (entry.revision === undefined || revision > entry.revision)) ||
-            (timemodified !== undefined && (entry.timemodified === undefined || timemodified > entry.timemodified));
+    protected isFileOutdated(entry: CoreFilepoolFileEntry, revision = 0, timemodified = 0): boolean {
+        // Don't allow undefined values, convert them to 0.
+        const entryTimemodified = entry.timemodified ?? 0;
+        const entryRevision = entry.revision ?? 0;
+
+        return !!entry.stale || revision > entryRevision || timemodified > entryTimemodified;
     }
 
     /**
@@ -2565,8 +2567,8 @@ export class CoreFilepoolProvider {
         const fileId = item.fileId;
         const fileUrl = item.url;
         const options = {
-            revision: item.revision ?? undefined,
-            timemodified: item.timemodified ?? undefined,
+            revision: item.revision ?? 0,
+            timemodified: item.timemodified ?? 0,
             isexternalfile: item.isexternalfile ?? undefined,
             repositorytype: item.repositorytype ?? undefined,
         };
