@@ -32,7 +32,7 @@ export class CoreObject {
      * @param b Second object.
      * @return Whether objects are equal.
      */
-    static deepEquals(a: unknown, b: unknown): boolean {
+    static deepEquals<T=unknown>(a: T, b: T): boolean {
         return JSON.stringify(a) === JSON.stringify(b);
     }
 
