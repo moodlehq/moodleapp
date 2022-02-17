@@ -7,8 +7,7 @@
 
     <core-loading [hideUntil]="dataLoaded">
         <core-course-format [course]="course" [sections]="sections" [initialSectionId]="sectionId" [initialSectionNumber]="sectionNumber"
-            [moduleId]="moduleId" (completionChanged)="onCompletionChange($event)" class="core-course-format-{{course.format}}"
-            *ngIf="dataLoaded">
+            [moduleId]="moduleId" class="core-course-format-{{course.format}}" *ngIf="dataLoaded">
         </core-course-format>
     </core-loading>
 </ion-content>

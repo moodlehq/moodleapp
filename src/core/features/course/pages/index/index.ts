@@ -88,7 +88,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         });
 
         // The completion of any of the modules have changed.
-        this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_CHANGED, (data) => {
+        this.completionObserver = CoreEvents.on(CoreEvents.MANUAL_COMPLETION_CHANGED, (data) => {
             if (data.completion.courseId != this.course?.id) {
                 return;
             }
