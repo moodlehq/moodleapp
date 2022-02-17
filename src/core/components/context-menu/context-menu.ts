@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, OnDestroy, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { auditTime } from 'rxjs/operators';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -42,11 +42,12 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     protected itemsChangedStream: Subject<void>; // Stream to update the hideMenu boolean when items change.
     protected parentContextMenu?: CoreContextMenuComponent;
     protected expanded = false;
+    protected itemsSubscription: Subscription;
 
     constructor(elementRef: ElementRef, changeDetector: ChangeDetectorRef) {
         // Create the stream and subscribe to it. We ignore successive changes during 250ms.
         this.itemsChangedStream = new Subject<void>();
-        this.itemsChangedStream.pipe(auditTime(250)).subscribe(() => {
+        this.itemsSubscription = this.itemsChangedStream.pipe(auditTime(250)).subscribe(() => {
             // Hide the menu if all items are hidden.
             this.hideMenu = !this.items.some((item) => !item.hidden);
 
@@ -63,7 +64,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.icon = this.icon || 'ellipsis-vertical';
@@ -197,10 +198,11 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.removeMergedItems();
+        this.itemsSubscription.unsubscribe();
     }
 
 }

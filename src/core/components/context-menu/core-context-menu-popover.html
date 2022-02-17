@@ -6,8 +6,6 @@
         [href]="item.href" (click)="itemClicked($event, item)" [attr.aria-label]="item.ariaAction" [hidden]="item.hidden"
         [detail]="(item.href && !item.iconAction) || null" role="menuitem" [button]="(item.href && !item.iconAction)"
         [showBrowserWarning]="item.showBrowserWarning">
-        <ion-icon *ngIf="item.iconDescription" [name]="item.iconDescription" aria-hidden="true" slot="start">
-        </ion-icon>
         <ion-label>
             <p class="item-heading">
                 <core-format-text [clean]="true" [text]="item.content" [filter]="false"></core-format-text>
