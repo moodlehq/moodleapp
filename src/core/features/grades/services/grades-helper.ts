@@ -601,7 +601,7 @@ export class CoreGradesHelperProvider {
             row.iconAlt = Translate.instant('core.grades.aggregatesum');
         } else if (text.indexOf('/outcomes') > -1 || text.indexOf('fa-tasks') > -1) {
             row.itemtype = 'outcome';
-            row.icon = 'fas-chart-pie';
+            row.icon = 'fas-tasks';
             row.iconAlt = Translate.instant('core.grades.outcome');
         } else if (text.indexOf('i/folder') > -1 || text.indexOf('fa-folder') > -1) {
             row.itemtype = 'category';

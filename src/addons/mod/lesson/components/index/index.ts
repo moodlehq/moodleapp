@@ -73,7 +73,6 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     canManage?: boolean; // Whether the user can manage the lesson.
     canViewReports?: boolean; // Whether the user can view the lesson reports.
     showSpinner?: boolean; // Whether to display a spinner.
-    hasOffline?: boolean; // Whether there's offline data.
     retakeToReview?: AddonModLessonRetakeFinishedInSyncDBRecord; // A retake to review.
     preventReasons: AddonModLessonPreventAccessReason[] = []; // List of reasons that prevent the lesson from being seen.
     leftDuringTimed?: boolean; // Whether the user has started and left a retake.

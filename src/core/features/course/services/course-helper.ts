@@ -1426,8 +1426,6 @@ export class CoreCourseHelperProvider {
             downloadTimeReadable = moment(downloadTime * 1000).calendar();
         }
 
-        downloadTimeReadable = CoreTextUtils.ucFirst(downloadTimeReadable);
-
         return {
             downloadTime,
             downloadTimeReadable,

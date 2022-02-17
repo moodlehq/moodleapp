@@ -11,8 +11,13 @@
     <!-- Content. -->
     <core-loading [hideUntil]="loaded">
         <!-- Activity info. -->
-        <ion-item class="ion-text-wrap" *ngIf="module">
+        <ion-item class="ion-text-wrap" *ngIf="module" lines="full">
             <ion-label>
+                <p *ngIf="moduleNameTranslated" class="core-modulename">
+                    <core-mod-icon slot="start" [modicon]="modicon" [modname]="module.modname" [componentId]="module.instance">
+                    </core-mod-icon>
+                    {{moduleNameTranslated}}
+                </p>
                 <h1>
                     <core-format-text [text]="module.name" contextLevel="module" [component]="component" [componentId]="componentId"
                         [contextInstanceId]="module.id" [courseId]="courseId">
@@ -25,9 +30,12 @@
             </ion-button>
         </ion-item>
 
-        <ion-item class="ion-text-wrap" *ngIf="course" (click)="openCourse()" button [detail]="true">
+        <ion-item class="ion-text-wrap" *ngIf="course" (click)="openCourse()" button [detail]="true" lines="full">
             <ion-label>
-                <p class="item-heading">{{ 'core.course' | translate}}</p>
+                <p class="item-heading">
+                    <ion-icon name="fas-graduation-cap" aria-hidden="true"></ion-icon>
+                    {{ 'core.course' | translate}}
+                </p>
                 <p>
                     <core-format-text [text]="course.displayname || course.fullname" contextLevel="course" [contextInstanceId]="courseId">
                     </core-format-text>
@@ -35,44 +43,60 @@
             </ion-label>
         </ion-item>
 
-        <ion-item class="ion-text-wrap" *ngIf="module && description && displayOptions.displayDescription">
+        <ion-item class="ion-text-wrap" *ngIf="module && description && displayOptions.displayDescription" lines="full">
             <ion-label>
+                <p class="item-heading">
+                    {{ 'core.description' | translate}}
+                </p>
                 <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
                     [contextInstanceId]="module.id" [courseId]="courseId" [maxHeight]="120">
                 </core-format-text>
             </ion-label>
         </ion-item>
 
-        <ion-item button *ngIf="prefetchText && displayOptions.displayPrefetch" class="ion-text-wrap">
-            <ion-label>
-                <p class="item-heading ion-text-wrap">{{ prefetchText }}</p>
-                <p *ngIf="downloadTimeReadable">{{ downloadTimeReadable }}</p>
-            </ion-label>
-            <ion-button *ngIf="prefetchStatusIcon && prefetchStatusIcon != 'spinner'" (click)="prefetch()" color="primary" fill="outline"
-                [attr.aria-label]="'core.download' | translate" slot="end">
-                <ion-icon [name]="prefetchStatusIcon" slot="icon-only" aria-hidden="true">
-                </ion-icon>
+        <ion-card *ngIf="(canPrefetch && displayOptions.displayPrefetch) || (sizeReadable && displayOptions.displaySize)">
+            <ion-item lines="full" class="ion-text-wrap">
+                <ion-label>
+                    <h2>
+                        <ion-icon name="cloud-done" aria-hidden="true"></ion-icon>
+                        {{ 'addon.storagemanager.downloads' | translate }}
+                    </h2>
+                </ion-label>
+            </ion-item>
+            <ion-item *ngIf="sizeReadable && displayOptions.displaySize" class="ion-text-wrap">
+                <ion-label>
+                    <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
+                    <ion-badge color="light">{{ sizeReadable | coreBytesToSize }}</ion-badge>
+                </ion-label>
+                <ion-button *ngIf="!removeFilesLoading" [disabled]="prefetchLoading" (click)="removeFiles()" color="danger" fill="clear"
+                    [attr.aria-label]="'core.clearstoreddata' | translate:{$a: sizeReadable}" slot="end">
+                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+                <ion-spinner *ngIf="removeFilesLoading" slot="end" aria-hidden="true"></ion-spinner>
+            </ion-item>
+            <ion-item *ngIf="downloadTimeReadable" class="ion-text-wrap">
+                <ion-label>
+                    <p class="ion-text-wrap">{{ 'core.lastdownloaded' | translate }} {{ downloadTimeReadable }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-button fill="outline" expand="block" *ngIf="canPrefetch && displayOptions.displayPrefetch" class="ion-text-wrap"
+                (click)="prefetch()" color="primary" [disabled]="prefetchDisabled">
+                <ion-icon *ngIf="!prefetchLoading" name="cloud-done" slot="start" aria-hidden="true"></ion-icon>
+                <ion-spinner *ngIf="prefetchLoading" slot="start" aria-hidden="true"></ion-spinner>
+                <ion-label>
+                    {{ 'core.download' | translate }}
+                </ion-label>
             </ion-button>
-            <ion-spinner *ngIf="prefetchStatusIcon == 'spinner'" slot="end" aria-hidden="true"></ion-spinner>
-        </ion-item>
-
-        <ion-item button *ngIf="sizeReadable && displayOptions.displaySize" class="ion-text-wrap">
-            <ion-label>
-                <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
-                <ion-badge color="light">{{ sizeReadable | coreBytesToSize }}</ion-badge>
-            </ion-label>
-            <ion-button *ngIf="!removeFilesLoading && size > 0" (click)="removeFiles()" color="danger" fill="outline"
-                [attr.aria-label]="'core.clearstoreddata' | translate:{$a: sizeReadable}" slot="end">
-                <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
-            </ion-button>
-            <ion-spinner *ngIf="removeFilesLoading" slot="end" aria-hidden="true"></ion-spinner>
-        </ion-item>
+        </ion-card>
 
         <ion-card *ngIf="displayOptions.displayGrades && grades?.length > 0">
             <ion-list>
                 <ion-item lines="full" class="ion-text-wrap">
                     <ion-label>
-                        <h2>{{ 'core.grades.gradebook' | translate }}</h2>
+                        <h2>
+                            <ion-icon name="fas-chart-bar" slot="end" aria-hidden="true"></ion-icon>{{ 'core.grades.gradebook' | translate
+                            }}
+                        </h2>
                     </ion-label>
                 </ion-item>
                 <ng-container *ngFor="let grade of grades">
@@ -90,7 +114,8 @@
                             <p class="item-heading" *ngIf="grade.itemmodule">
                                 {{ 'core.grades.grade' | translate}}
                             </p>
-                            <p *ngIf="grade.grade" [innerHTML]="grade.grade"></p>
+                            <p *ngIf="grade.grade && grade.grade != '-'" [innerHTML]="grade.grade"></p>
+                            <ion-badge *ngIf="!grade.grade || grade.grade == '-'" color="light">Not graded</ion-badge>
                         </ion-label>
                         <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" slot="end" [attr.aria-label]="grade.iconAlt">
                         </ion-icon>
@@ -163,12 +188,12 @@
             </ion-list>
         </ion-card>
 
-        <ion-button *ngIf="blog && displayOptions.displayBlog" (click)="gotoBlog()" expand="block" fill="outline">
+        <ion-item button *ngIf="blog && displayOptions.displayBlog" (click)="gotoBlog()" [detail]="true">
             <ion-icon name="far-newspaper" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 {{ 'addon.blog.blog' | translate }}
             </ion-label>
-        </ion-button>
+        </ion-item>
     </core-loading>
 </ion-content>
 <ion-footer *ngIf="loaded && isOnline && displayOptions.displayRefresh">

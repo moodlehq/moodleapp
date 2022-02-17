@@ -307,6 +307,11 @@ ion-button {
     img[slot=end] {
         @include margin-horizontal(-0.3em, 0.3em);
     }
+
+    ion-spinner[slot] {
+        width: 20px;
+        color: inherit;
+    }
 }
 
 ion-button.button-outline {

@@ -1,3 +1,4 @@
+@import "~theme/globals";
 
 :host ::ng-deep .collapsible-title ion-label {
     margin-top: 12px;
@@ -5,4 +6,19 @@
 
 h1 {
     font-size: 20px;
+}
+
+.core-modulename {
+    text-transform: uppercase;
+    core-mod-icon {
+        padding: 3px;
+        --size: 10px;
+        margin: 0;
+    }
+}
+
+
+ion-item ion-label ion-icon {
+    @include margin-horizontal(0, 4px);
+    vertical-align: text-top;
 }

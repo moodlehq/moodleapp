@@ -30,7 +30,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { ModalController, Network, Translate, NgZone } from '@singletons';
+import { ModalController, Network, NgZone } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 
@@ -59,16 +59,17 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     externalUrl?: string; // External URL to open in browser.
 
     removeFilesLoading = false;
-    prefetchStatusIcon?: string;
-    prefetchStatus?: string;
-    prefetchText?: string;
-    sizeReadable?: string;
-    downloadTimeReadable?: string; // Last download time in a readable format.
-    size = 0;
+    prefetchLoading = false;
+    canPrefetch = false;;
+    prefetchDisabled = false;
+    sizeReadable = '';
+    downloadTimeReadable = ''; // Last download time in a readable format.
     grades?: CoreGradesFormattedRow[];
     blog = false; // If blog is available.
     isOnline = false; // If the app is online or not.
     course?: CoreEnrolledCourseData;
+    modicon = '';
+    moduleNameTranslated = '';
 
     protected onlineSubscription: Subscription; // It will observe the status of the network connection.
     protected packageStatusObserver?: CoreEventObserver; // Observer of package status.
@@ -172,6 +173,9 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         this.externalUrl = this.module.url;
         this.courseId = this.courseId || this.module.course;
 
+        this.modicon = await CoreCourseModuleDelegate.getModuleIconSrc(this.module.modname, this.module.modicon, this.module);
+        this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname || '');
+
         this.blog = await AddonBlog.isPluginEnabled();
 
         await Promise.all([
@@ -196,27 +200,20 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         const moduleInfo =
             await CoreCourseHelper.getModulePrefetchInfo(this.module, this.courseId, refresh, this.component);
 
-        this.prefetchStatusIcon = moduleInfo.statusIcon;
-        this.prefetchStatus = moduleInfo.status;
+        this.canPrefetch = moduleInfo.status != CoreConstants.NOT_DOWNLOADABLE;
         this.downloadTimeReadable = '';
 
-        if (moduleInfo.status != CoreConstants.NOT_DOWNLOADABLE) {
-            // Module is downloadable, get the text to display to prefetch.
+        if (this.canPrefetch) {
             if (moduleInfo.downloadTime && moduleInfo.downloadTime > 0) {
-                this.prefetchText = Translate.instant('core.lastdownloaded');
                 this.downloadTimeReadable = CoreTextUtils.ucFirst(moduleInfo.downloadTimeReadable);
-            } else {
-                // Module not downloaded, show a default text.
-                this.prefetchText = Translate.instant('core.download');
             }
+            this.prefetchLoading = moduleInfo.status == CoreConstants.DOWNLOADING;
+            this.prefetchDisabled = moduleInfo.status == CoreConstants.DOWNLOADED;
         }
 
-        this.sizeReadable = moduleInfo.sizeReadable;
-        this.size = moduleInfo.size;
-        if (moduleInfo.status == CoreConstants.DOWNLOADING) {
-            // Set this to empty to prevent "remove file" option showing up while downloading.
-            this.sizeReadable = '';
-        }
+        this.sizeReadable = moduleInfo.size && moduleInfo.size > 0
+            ? moduleInfo.sizeReadable
+            : '';
     }
 
     /**
@@ -280,8 +277,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const initialIcon = this.prefetchStatusIcon;
-        this.prefetchStatusIcon = CoreConstants.ICON_DOWNLOADING; // Show spinner since this operation might take a while.
+        this.prefetchLoading = true; // Show spinner since this operation might take a while.
 
         try {
             // We need to call getDownloadSize, the package might have been updated.
@@ -293,7 +289,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
 
             await this.getPackageStatus(true);
         } catch (error) {
-            this.prefetchStatusIcon = initialIcon;
+            this.prefetchLoading = false;
 
             if (!this.isDestroyed) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
@@ -309,7 +305,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (this.prefetchStatus == CoreConstants.DOWNLOADING) {
+        if (this.prefetchLoading) {
             CoreDomUtils.showAlertTranslated(undefined, 'core.course.cannotdeletewhiledownloading');
 
             return;

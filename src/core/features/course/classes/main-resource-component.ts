@@ -115,7 +115,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @return Promise resolved when done.
      */
     async doRefresh(refresher?: IonRefresher | null, showErrors = false): Promise<void> {
-        if (!this.loaded || !this.module) {
+        if (!this.module) {
             // Module can be undefined if course format changes from single activity to weekly/topics.
             return;
         }
@@ -224,7 +224,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         const lastDownloaded =
                 await CoreCourseHelper.getModulePackageLastDownloaded(this.module, this.component);
 
-        this.downloadTimeReadable = lastDownloaded.downloadTimeReadable;
+        this.downloadTimeReadable = CoreTextUtils.ucFirst(lastDownloaded.downloadTimeReadable);
     }
 
     /**
@@ -416,24 +416,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         });
 
         if (data) {
-            if (data.action == 'refresh') {
-                const modal = await CoreDomUtils.showModalLoading();
-
+            if (this.loaded && (data.action == 'refresh' || data.action == 'sync')) {
+                this.loaded = false;
                 try {
-                    await this.doRefresh();
+                    await this.doRefresh(undefined, data.action == 'sync');
                 } finally {
-                    modal.dismiss();
-                }
-            } else if (data.action == 'sync') {
-                const modal = await CoreDomUtils.showModalLoading();
-
-                try {
-                    await this.doRefresh( undefined, true);
-                } finally {
-                    modal.dismiss();
+                    this.loaded = true;
                 }
             }
-
         }
     }
 

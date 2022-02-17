@@ -296,7 +296,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         this.hasNextPage = numEntries >= AddonModDataProvider.PER_PAGE && ((this.search.page + 1) *
             AddonModDataProvider.PER_PAGE) < entries.totalcount;
 
-        this.hasOffline = entries.hasOfflineActions;
+        this.hasOffline = !!entries.hasOfflineActions;
 
         this.hasOfflineRatings = !!entries.hasOfflineRatings;
 
