@@ -18,6 +18,7 @@ import { SQLiteDB } from '@classes/sqlitedb';
 import { SQLiteDBMock } from '@features/emulator/classes/sqlitedb';
 import { makeSingleton, SQLite, Platform } from '@singletons';
 import { CoreAppProvider } from './app';
+import { CoreUtils } from './utils/utils';
 
 /**
  * This service allows interacting with the local database to store and retrieve data.
@@ -35,15 +36,21 @@ export class CoreDbProvider {
      * @returns Whether queries should be logged.
      */
     loggingEnabled(): boolean {
-        return CoreAppProvider.isAutomated();
+        return CoreUtils.hasCookie('MoodleAppDBLoggingEnabled') || CoreAppProvider.isAutomated();
     }
 
     /**
      * Print query history in console.
+     *
+     * @param format Log format, with the following substitutions: :sql, :duration, and :result.
      */
-    printHistory(): void {
-        const substituteParams = ({ sql, params }: CoreDbQueryLog) =>
-            Object.values(params ?? []).reduce((sql: string, param: string) => sql.replace('?', param), sql);
+    printHistory(format: string = ':sql | Duration: :duration | Result: :result'): void {
+        const substituteParams = ({ sql, params, duration, error }: CoreDbQueryLog) => format
+            .replace(':sql', Object
+                .values(params ?? [])
+                .reduce((sql: string, param: string) => sql.replace('?', param) as string, sql) as string)
+            .replace(':duration', `${Math.round(duration).toString().padStart(4, '0')}ms`)
+            .replace(':result', error?.message ?? 'Success');
 
         // eslint-disable-next-line no-console
         console.log(this.queryLogs.map(substituteParams).join('\n'));
@@ -52,11 +59,10 @@ export class CoreDbProvider {
     /**
      * Log a query.
      *
-     * @param sql Query SQL.
-     * @param params Query parameters.
+     * @param log Query log.
      */
-    logQuery(sql: string, duration: number, params?: unknown[]): void {
-        this.queryLogs.push({ sql, duration, params });
+    logQuery(log: CoreDbQueryLog): void {
+        this.queryLogs.push(log);
     }
 
     /**
@@ -121,5 +127,6 @@ export const CoreDB = makeSingleton(CoreDbProvider);
 export interface CoreDbQueryLog {
     sql: string;
     duration: number;
+    error?: Error;
     params?: unknown[];
 }
