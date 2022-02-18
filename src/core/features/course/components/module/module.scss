@@ -13,6 +13,7 @@
 
         .core-module-title .item-heading ion-icon {
             @include margin-horizontal(8px, null);
+            vertical-align: middle;
         }
 
         .core-module-buttons,

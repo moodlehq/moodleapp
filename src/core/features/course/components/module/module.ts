@@ -22,6 +22,12 @@ import {
 } from '@features/course/services/course-helper';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate, CoreCourseModuleHandlerButton } from '@features/course/services/module-delegate';
+import {
+    CoreCourseModulePrefetchDelegate,
+    CoreCourseModulePrefetchHandler,
+} from '@features/course/services/module-prefetch-delegate';
+import { CoreConstants } from '@/core/constants';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
  * Component to display a module entry in a list of modules.
@@ -47,11 +53,16 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     hasInfo = false;
     showLegacyCompletion = false; // Whether to show module completion in the old format.
     showManualCompletion = false; // Whether to show manual completion when completion conditions are disabled.
+    prefetchStatusIcon = ''; // Module prefetch status icon.
+    prefetchStatusText = ''; // Module prefetch status text.
+    protected prefetchHandler?: CoreCourseModulePrefetchHandler;
+
+    protected moduleStatusObserver?: CoreEventObserver;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname) || '';
         this.showLegacyCompletion = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
         this.checkShowManualCompletion();
@@ -70,6 +81,60 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
             (this.module.visible !== 0 && this.module.isStealth) ||
             (this.module.availabilityinfo)
         );
+
+        if (this.module.handlerData?.showDownloadButton) {
+            const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(this.module, this.module.course);
+            this.updateModuleStatus(status);
+
+            // Listen for changes on this module status, even if download isn't enabled.
+            this.prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(this.module.modname);
+            if (!this.prefetchHandler) {
+                return;
+            }
+
+            this.moduleStatusObserver = CoreEvents.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
+                if (this.module.id != data.componentId || data.component != this.prefetchHandler?.component) {
+                    return;
+                }
+
+                let status = data.status;
+                if (this.prefetchHandler.determineStatus) {
+                    // Call determineStatus to get the right status to display.
+                    status = this.prefetchHandler.determineStatus(this.module, status, true);
+                }
+
+                // Update the status.
+                this.updateModuleStatus(status);
+            }, CoreSites.getCurrentSiteId());
+        }
+    }
+
+    /**
+     * Show module status.
+     *
+     * @param prefetchstatus Module status.
+     */
+    protected updateModuleStatus(prefetchstatus: string): void {
+        if (!prefetchstatus) {
+            return;
+        }
+
+        switch (prefetchstatus) {
+            case CoreConstants.OUTDATED:
+                this.prefetchStatusIcon = CoreConstants.ICON_OUTDATED;
+                this.prefetchStatusText = 'core.outdated';
+                break;
+            case CoreConstants.DOWNLOADED:
+                this.prefetchStatusIcon = CoreConstants.ICON_DOWNLOADED;
+                this.prefetchStatusText = 'core.downloaded';
+                break;
+            default:
+                this.prefetchStatusIcon = '';
+                this.prefetchStatusText = '';
+                break;
+        }
+
+        this.module.handlerData?.updateStatus?.(prefetchstatus);
     }
 
     /**
@@ -109,10 +174,11 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.module.handlerData?.onDestroy?.();
+        this.moduleStatusObserver?.off();
     }
 
 }
