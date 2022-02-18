@@ -9,33 +9,9 @@
         <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 
-    <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
-            iconAction="fas-external-link-alt" [showBrowserWarning]="false">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
-            (action)="expandDescription()" iconAction="fas-arrow-right">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" iconAction="far-newspaper"
-            (action)="gotoBlog()">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="loaded && !(hasOffline || hasOfflineRatings) && isOnline" [priority]="700"
-            [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="loaded && (hasOffline || hasOfflineRatings) && isOnline" [priority]="600"
-            (action)="doRefresh(null, $event, true)" [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon"
-            [closeOnClick]="false">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="canAdd" [priority]="550" [content]="'addon.mod_glossary.addentry' | translate"
-            (action)="openNewEntry()" iconAction="fas-plus">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)"
-            [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}"
-            iconDescription="fas-archive" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
-        </core-context-menu-item>
-    </core-context-menu>
+    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
+        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
 </core-navbar-buttons>
 
 <!-- Content. -->

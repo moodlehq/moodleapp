@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { COURSE_PAGE_NAME } from '@features/course/course.module';
-import { GRADES_PAGE_NAME } from '@features/grades/grades.module';
 
 import { CoreGrades } from '@features/grades/services/grades';
 import { CoreUserProfile } from '@features/user/services/user';
@@ -29,6 +28,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
+import { GRADES_PAGE_NAME } from '../grades-helper';
 
 /**
  * Profile grades handler.

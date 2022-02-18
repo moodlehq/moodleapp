@@ -4,7 +4,7 @@
     <div *ngIf="layout == 'card' || layout == 'summarycard'" (click)="openCourse()" class="core-course-thumb"
         [class.core-course-color-img]="course.courseImage">
         <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt="" />
-        <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" class="course-icon">
+        <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" class="course-icon" aria-hidden="true">
         </ion-icon>
     </div>
 
@@ -31,7 +31,8 @@
         [class.item-disabled]="course.visible == 0">
 
         <ng-container *ngIf="layout == 'list' || layout == 'listwithenrol'">
-            <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb">
+            <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb"
+                aria-hidden="true">
             </ion-icon>
             <ion-avatar *ngIf="course.courseImage" slot="start" class="core-course-thumb">
                 <img [src]="course.courseImage" core-external-content alt="" />

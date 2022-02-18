@@ -14,8 +14,13 @@
 
 import { CoreConstants } from '@/core/constants';
 import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
+import { CoreIonLoadingElement } from '@classes/ion-loading';
 
 import { CoreSiteWSPreSets } from '@classes/site';
+import {
+    CoreCourseModuleSummaryResult,
+    CoreCourseModuleSummaryComponent,
+} from '@features/course/components/module-summary/module-summary';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import {
     CoreCourseModuleDelegate,
@@ -28,10 +33,8 @@ import {
     CoreSitePluginsCourseModuleHandlerData,
 } from '@features/siteplugins/services/siteplugins';
 import { IonRefresher } from '@ionic/angular';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { Translate } from '@singletons';
-import { CoreEventObserver } from '@singletons/events';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
 
 /**
@@ -55,22 +58,42 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     args?: Record<string, unknown>;
     initResult?: CoreSitePluginsContent | null;
     preSets?: CoreSiteWSPreSets;
-
-    // Data for context menu.
-    externalUrl?: string;
     description?: string;
-    refreshIcon?: string;
+
+    /**
+     * @deprecated since 4.0, use module.url instead.
+     */
+    externalUrl?: string;
+    /**
+     * @deprecated since 4.0. It won't be populated anymore.
+     */
+    refreshIcon = CoreConstants.ICON_REFRESH;
+    /**
+     * @deprecated since 4.0.. It won't be populated anymore.
+     */
     prefetchStatus?: string;
+    /**
+     * @deprecated since 4.0. It won't be populated anymore.
+     */
     prefetchStatusIcon?: string;
+    /**
+     * @deprecated since 4.0. It won't be populated anymore.
+     */
     prefetchText?: string;
+    /**
+     * @deprecated since 4.0. It won't be populated anymore.
+     */
     size?: string;
-    contextMenuStatusObserver?: CoreEventObserver;
-    contextFileStatusObserver?: CoreEventObserver;
+
     displayOpenInBrowser = true;
     displayDescription = true;
     displayRefresh = true;
     displayPrefetch = true;
     displaySize = true;
+    displayGrades = false;
+    // @TODO:  // Currently display blogs is not an option since it may change soon adding new summary handlers.
+    displayBlog = false;
+
     ptrEnabled = true;
     isDestroyed = false;
 
@@ -80,8 +103,6 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.refreshIcon = CoreConstants.ICON_LOADING;
-
         if (!this.module) {
             return;
         }
@@ -110,6 +131,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
             this.displayRefresh = !CoreUtils.isFalseOrZero(handlerSchema.displayrefresh);
             this.displayPrefetch = !CoreUtils.isFalseOrZero(handlerSchema.displayprefetch);
             this.displaySize = !CoreUtils.isFalseOrZero(handlerSchema.displaysize);
+            this.displayGrades = CoreUtils.isTrueOrOne(handlerSchema.displaygrades); // False by default.
             this.ptrEnabled = !CoreUtils.isFalseOrZero(handlerSchema.ptrenabled);
         }
 
@@ -122,71 +144,114 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
      * Refresh the data.
      *
      * @param refresher Refresher.
-     * @param done Function to call when done.
      * @return Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher | null, done?: () => void): Promise<void> {
-        if (this.content) {
-            this.refreshIcon = CoreConstants.ICON_LOADING;
-        }
-
+    async doRefresh(refresher?: IonRefresher | null): Promise<void> {
         try {
             await this.content?.refreshContent(false);
         } finally {
             refresher?.complete();
-            done && done();
         }
     }
 
     /**
      * Function called when the data of the site plugin content is loaded.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     contentLoaded(refresh: boolean): void {
-        this.refreshIcon = CoreConstants.ICON_REFRESH;
-
-        // Check if there is a prefetch handler for this type of module.
-        if (CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(this.module.modname)) {
-            CoreCourseHelper.fillContextMenu(this, this.module, this.courseId, refresh, this.component);
-        }
+        return;
     }
 
     /**
      * Function called when starting to load the data of the site plugin content.
      */
     contentLoading(): void {
-        this.refreshIcon = CoreConstants.ICON_LOADING;
+        return;
     }
 
     /**
      * Expand the description.
+     *
+     * @deprecated since 4.0
      */
     expandDescription(): void {
-        if (!this.description) {
+        this.openModuleSummary();
+    }
+
+    /**
+     * Opens a module summary page.
+     */
+    async openModuleSummary(): Promise<void> {
+        if (!this.module) {
             return;
         }
 
-        CoreTextUtils.viewText(Translate.instant('core.description'), this.description, {
-            component: this.component,
-            componentId: this.module.id,
-            filter: true,
-            contextLevel: 'module',
-            instanceId: this.module.id,
-            courseId: this.courseId,
+        const data = await CoreDomUtils.openSideModal<CoreCourseModuleSummaryResult>({
+            component: CoreCourseModuleSummaryComponent,
+            componentProps: {
+                moduleId: this.module.id,
+                module: this.module,
+                description: this.description,
+                component: this.component,
+                courseId: this.courseId,
+                displayOptions: {
+                    displayOpenInBrowser: this.displayOpenInBrowser,
+                    displayDescription: this.displayDescription,
+                    displayRefresh: this.displayRefresh,
+                    displayPrefetch: this.displayPrefetch,
+                    displaySize: this.displaySize,
+                    displayBlog: this.displayBlog,
+                    displayGrades: this.displayGrades,
+                },
+            },
         });
+
+        if (data && data.action == 'refresh' && this.content?.dataLoaded) {
+            this.content?.refreshContent(true);
+        }
     }
 
     /**
      * Prefetch the module.
+     *
+     * @deprecated since 4.0
      */
-    prefetch(): void {
-        CoreCourseHelper.contextMenuPrefetch(this, this.module, this.courseId);
+    async prefetch(): Promise<void> {
+        try {
+            // We need to call getDownloadSize, the package might have been updated.
+            const size = await CoreCourseModulePrefetchDelegate.getModuleDownloadSize(this.module, this.courseId, true);
+
+            await CoreDomUtils.confirmDownloadSize(size);
+
+            await CoreCourseModulePrefetchDelegate.prefetchModule(this.module, this.courseId, true);
+        } catch (error) {
+            if (!this.isDestroyed) {
+                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+            }
+        }
     }
 
     /**
      * Confirm and remove downloaded files.
+     *
+     * @deprecated since 4.0
      */
-    removeFiles(): void {
-        CoreCourseHelper.confirmAndRemoveFiles(this.module, this.courseId);
+    async removeFiles(): Promise<void> {
+        let modal: CoreIonLoadingElement | undefined;
+
+        try {
+            await CoreDomUtils.showDeleteConfirm('addon.storagemanager.confirmdeletedatafrom', { name: this.module.name });
+
+            modal = await CoreDomUtils.showModalLoading();
+
+            await CoreCourseHelper.removeModuleStoredData(this.module, this.courseId);
+        } catch (error) {
+            if (error) {
+                CoreDomUtils.showErrorModal(error);
+            }
+        } finally {
+            modal?.dismiss();
+        }
     }
 
     /**

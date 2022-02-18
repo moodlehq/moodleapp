@@ -180,82 +180,73 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Get the quiz data.
-     *
-     * @param refresh If it's refreshing content.
-     * @param sync If it should try to sync.
-     * @param showErrors If show errors to the user of hide them.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        try {
-            // First get the quiz instance.
-            const quiz = await AddonModQuiz.getQuiz(this.courseId, this.module.id);
+    protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
+        // First get the quiz instance.
+        const quiz = await AddonModQuiz.getQuiz(this.courseId, this.module.id);
 
-            this.gradeMethodReadable = AddonModQuiz.getQuizGradeMethod(quiz.grademethod);
-            this.now = Date.now();
-            this.dataRetrieved.emit(quiz);
-            this.description = quiz.intro || this.description;
-            this.candidateQuiz = quiz;
+        this.gradeMethodReadable = AddonModQuiz.getQuizGradeMethod(quiz.grademethod);
+        this.now = Date.now();
+        this.dataRetrieved.emit(quiz);
+        this.description = quiz.intro || this.description;
+        this.candidateQuiz = quiz;
 
-            // Try to get warnings from automatic sync.
-            const warnings = await AddonModQuizSync.getSyncWarnings(quiz.id);
+        // Try to get warnings from automatic sync.
+        const warnings = await AddonModQuizSync.getSyncWarnings(quiz.id);
 
-            if (warnings?.length) {
-                // Show warnings and delete them so they aren't shown again.
-                CoreDomUtils.showErrorModal(CoreTextUtils.buildMessage(warnings));
+        if (warnings?.length) {
+            // Show warnings and delete them so they aren't shown again.
+            CoreDomUtils.showErrorModal(CoreTextUtils.buildMessage(warnings));
 
-                await AddonModQuizSync.setSyncWarnings(quiz.id, []);
-            }
-
-            if (AddonModQuiz.isQuizOffline(quiz)) {
-                if (sync) {
-                    // Try to sync the quiz.
-                    try {
-                        await this.syncActivity(showErrors);
-                    } catch {
-                        // Ignore errors, keep getting data even if sync fails.
-                        this.autoReview = undefined;
-                    }
-                }
-            } else {
-                this.autoReview = undefined;
-                this.showStatusSpinner = false;
-            }
-
-            if (AddonModQuiz.isQuizOffline(quiz)) {
-                // Handle status.
-                this.setStatusListener();
-
-                // Get last synchronization time and check if sync button should be seen.
-                this.syncTime = await AddonModQuizSync.getReadableSyncTime(quiz.id);
-                this.hasOffline = await AddonModQuizSync.hasDataToSync(quiz.id);
-            }
-
-            // Get quiz access info.
-            this.quizAccessInfo = await AddonModQuiz.getQuizAccessInformation(quiz.id, { cmId: this.module.id });
-
-            this.showReviewColumn = this.quizAccessInfo.canreviewmyattempts;
-            this.accessRules = this.quizAccessInfo.accessrules;
-            this.unsupportedRules = AddonModQuiz.getUnsupportedRules(this.quizAccessInfo.activerulenames);
-
-            if (quiz.preferredbehaviour) {
-                this.behaviourSupported = CoreQuestionBehaviourDelegate.isBehaviourSupported(quiz.preferredbehaviour);
-            }
-
-            // Get question types in the quiz.
-            const types = await AddonModQuiz.getQuizRequiredQtypes(quiz.id, { cmId: this.module.id });
-
-            this.unsupportedQuestions = AddonModQuiz.getUnsupportedQuestions(types);
-            this.hasSupportedQuestions = !!types.find((type) => type != 'random' && this.unsupportedQuestions.indexOf(type) == -1);
-
-            await this.getAttempts(quiz);
-
-            // Quiz is ready to be shown, move it to the variable that is displayed.
-            this.quiz = quiz;
-        } finally {
-            this.fillContextMenu(refresh);
+            await AddonModQuizSync.setSyncWarnings(quiz.id, []);
         }
+
+        if (AddonModQuiz.isQuizOffline(quiz)) {
+            if (sync) {
+                // Try to sync the quiz.
+                try {
+                    await this.syncActivity(showErrors);
+                } catch {
+                    // Ignore errors, keep getting data even if sync fails.
+                    this.autoReview = undefined;
+                }
+            }
+        } else {
+            this.autoReview = undefined;
+            this.showStatusSpinner = false;
+        }
+
+        if (AddonModQuiz.isQuizOffline(quiz)) {
+            // Handle status.
+            this.setStatusListener();
+
+            // Get last synchronization time and check if sync button should be seen.
+            this.syncTime = await AddonModQuizSync.getReadableSyncTime(quiz.id);
+            this.hasOffline = await AddonModQuizSync.hasDataToSync(quiz.id);
+        }
+
+        // Get quiz access info.
+        this.quizAccessInfo = await AddonModQuiz.getQuizAccessInformation(quiz.id, { cmId: this.module.id });
+
+        this.showReviewColumn = this.quizAccessInfo.canreviewmyattempts;
+        this.accessRules = this.quizAccessInfo.accessrules;
+        this.unsupportedRules = AddonModQuiz.getUnsupportedRules(this.quizAccessInfo.activerulenames);
+
+        if (quiz.preferredbehaviour) {
+            this.behaviourSupported = CoreQuestionBehaviourDelegate.isBehaviourSupported(quiz.preferredbehaviour);
+        }
+
+        // Get question types in the quiz.
+        const types = await AddonModQuiz.getQuizRequiredQtypes(quiz.id, { cmId: this.module.id });
+
+        this.unsupportedQuestions = AddonModQuiz.getUnsupportedQuestions(types);
+        this.hasSupportedQuestions = !!types.find((type) => type != 'random' && this.unsupportedQuestions.indexOf(type) == -1);
+
+        await this.getAttempts(quiz);
+
+        // Quiz is ready to be shown, move it to the variable that is displayed.
+        this.quiz = quiz;
     }
 
     /**
@@ -465,16 +456,12 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
         // Refresh data.
         this.loaded = false;
-        this.refreshIcon = CoreConstants.ICON_LOADING;
-        this.syncIcon = CoreConstants.ICON_LOADING;
         this.content?.scrollToTop();
 
         await promise;
         await CoreUtils.ignoreErrors(this.refreshContent(true));
 
         this.loaded = true;
-        this.refreshIcon = CoreConstants.ICON_REFRESH;
-        this.syncIcon = CoreConstants.ICON_SYNC;
     }
 
     /**

@@ -202,14 +202,9 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Download data contents.
-     *
-     * @param refresh If it's refreshing content.
-     * @param sync If it should try to sync.
-     * @param showErrors If show errors to the user of hide them.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
         let canAdd = false;
         let canSearch = false;
 
@@ -270,7 +265,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         } finally {
             this.canAdd = canAdd;
             this.canSearch = canSearch;
-            this.fillContextMenu(refresh);
         }
     }
 
@@ -302,7 +296,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         this.hasNextPage = numEntries >= AddonModDataProvider.PER_PAGE && ((this.search.page + 1) *
             AddonModDataProvider.PER_PAGE) < entries.totalcount;
 
-        this.hasOffline = entries.hasOfflineActions;
+        this.hasOffline = !!entries.hasOfflineActions;
 
         this.hasOfflineRatings = !!entries.hasOfflineRatings;
 

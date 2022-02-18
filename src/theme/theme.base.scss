@@ -297,6 +297,21 @@ button,
 
 ion-button {
     margin: 4px 8px;
+
+    ion-spinner[slot=start],
+    img[slot=start] {
+        @include margin-horizontal(-0.3em, 0.3em);
+    }
+
+    ion-spinner[slot=end],
+    img[slot=end] {
+        @include margin-horizontal(-0.3em, 0.3em);
+    }
+
+    ion-spinner[slot] {
+        width: 20px;
+        color: inherit;
+    }
 }
 
 ion-button.button-outline {
@@ -457,6 +472,14 @@ ion-alert {
     .alert-message {
         user-select: text;
         flex-shrink: 0;
+    }
+}
+
+ion-loading {
+    --border-radius: var(--huge-radius);
+
+    .loading-wrapper {
+        border-radius: var(--border-radius) !important;
     }
 }
 
@@ -1462,6 +1485,16 @@ ion-grid.core-no-grid > ion-row {
                 transform: rotate(-90deg);
             }
         }
+    }
+}
+
+ion-header.no-title {
+    --core-header-toolbar-border-width: 0;
+    --core-header-toolbar-background: transparent;
+
+    ion-toolbar .button.button-clear,
+    ion-toolbar .button.button-solid {
+        --background: var(--ion-background-color);
     }
 }
 

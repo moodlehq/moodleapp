@@ -202,10 +202,10 @@ export interface CoreCourseModuleMainComponent {
      * Refresh the data.
      *
      * @param refresher Refresher.
-     * @param done Function to call when done.
+     * @param showErrors If show errors to the user of hide them.
      * @return Promise resolved when done.
      */
-    doRefresh(refresher?: IonRefresher, done?: () => void): Promise<void>;
+    doRefresh(refresher?: IonRefresher | null, showErrors?: boolean): Promise<void>;
 }
 
 /**

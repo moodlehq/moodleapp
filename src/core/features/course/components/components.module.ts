@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
-import { CoreCourseFormatComponent } from './format/format';
+import { CoreCourseFormatComponent } from './course-format/course-format';
 import { CoreCourseModuleComponent } from './module/module';
 import { CoreCourseModuleCompletionComponent } from './module-completion/module-completion';
 import { CoreCourseModuleDescriptionComponent } from './module-description/module-description';
@@ -27,6 +27,7 @@ import { CoreCourseModuleCompletionLegacyComponent } from './module-completion-l
 import { CoreCourseModuleInfoComponent } from './module-info/module-info';
 import { CoreCourseModuleManualCompletionComponent } from './module-manual-completion/module-manual-completion';
 import { CoreCourseModuleNavigationComponent } from './module-navigation/module-navigation';
+import { CoreCourseModuleSummaryComponent } from './module-summary/module-summary';
 
 @NgModule({
     declarations: [
@@ -41,6 +42,7 @@ import { CoreCourseModuleNavigationComponent } from './module-navigation/module-
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,
+        CoreCourseModuleSummaryComponent,
     ],
     imports: [
         CoreBlockComponentsModule,
@@ -58,6 +60,7 @@ import { CoreCourseModuleNavigationComponent } from './module-navigation/module-
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,
+        CoreCourseModuleSummaryComponent,
     ],
 })
 export class CoreCourseComponentsModule {}

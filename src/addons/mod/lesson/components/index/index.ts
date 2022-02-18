@@ -73,7 +73,6 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     canManage?: boolean; // Whether the user can manage the lesson.
     canViewReports?: boolean; // Whether the user can view the lesson reports.
     showSpinner?: boolean; // Whether to display a spinner.
-    hasOffline?: boolean; // Whether there's offline data.
     retakeToReview?: AddonModLessonRetakeFinishedInSyncDBRecord; // A retake to review.
     preventReasons: AddonModLessonPreventAccessReason[] = []; // List of reasons that prevent the lesson from being seen.
     leftDuringTimed?: boolean; // Whether the user has started and left a retake.
@@ -136,85 +135,76 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Get the lesson data.
-     *
-     * @param refresh If it's refreshing content.
-     * @param sync If it should try to sync.
-     * @param showErrors If show errors to the user of hide them.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        try {
-            let lessonReady = true;
-            this.askPassword = false;
+    protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
+        let lessonReady = true;
+        this.askPassword = false;
 
-            this.lesson = await AddonModLesson.getLesson(this.courseId, this.module.id);
+        this.lesson = await AddonModLesson.getLesson(this.courseId, this.module.id);
 
-            this.dataRetrieved.emit(this.lesson);
-            this.description = this.lesson.intro; // Show description only if intro is present.
+        this.dataRetrieved.emit(this.lesson);
+        this.description = this.lesson.intro; // Show description only if intro is present.
 
-            if (sync) {
-                // Try to synchronize the lesson.
-                await this.syncActivity(showErrors);
-            }
+        if (sync) {
+            // Try to synchronize the lesson.
+            await this.syncActivity(showErrors);
+        }
 
-            this.accessInfo = await AddonModLesson.getAccessInformation(this.lesson.id, { cmId: this.module.id });
-            this.canManage = this.accessInfo.canmanage;
-            this.canViewReports = this.accessInfo.canviewreports;
-            this.preventReasons = [];
-            const promises: Promise<void>[] = [];
+        this.accessInfo = await AddonModLesson.getAccessInformation(this.lesson.id, { cmId: this.module.id });
+        this.canManage = this.accessInfo.canmanage;
+        this.canViewReports = this.accessInfo.canviewreports;
+        this.preventReasons = [];
+        const promises: Promise<void>[] = [];
 
-            if (AddonModLesson.isLessonOffline(this.lesson)) {
-                // Handle status.
-                this.setStatusListener();
+        if (AddonModLesson.isLessonOffline(this.lesson)) {
+            // Handle status.
+            this.setStatusListener();
 
-                promises.push(this.loadOfflineData());
-            }
+            promises.push(this.loadOfflineData());
+        }
 
-            if (this.accessInfo.preventaccessreasons.length) {
-                let preventReason = AddonModLesson.getPreventAccessReason(this.accessInfo, false);
-                const askPassword = preventReason?.reason == 'passwordprotectedlesson';
+        if (this.accessInfo.preventaccessreasons.length) {
+            let preventReason = AddonModLesson.getPreventAccessReason(this.accessInfo, false);
+            const askPassword = preventReason?.reason == 'passwordprotectedlesson';
 
-                if (askPassword) {
-                    try {
-                        // The lesson requires a password. Check if there is one in memory or DB.
-                        const password = this.password ?
-                            this.password :
-                            await AddonModLesson.getStoredPassword(this.lesson.id);
+            if (askPassword) {
+                try {
+                    // The lesson requires a password. Check if there is one in memory or DB.
+                    const password = this.password ?
+                        this.password :
+                        await AddonModLesson.getStoredPassword(this.lesson.id);
 
-                        await this.validatePassword(password);
+                    await this.validatePassword(password);
 
-                        // Now that we have the password, get the access reason again ignoring the password.
-                        preventReason = AddonModLesson.getPreventAccessReason(this.accessInfo, true);
-                        if (preventReason) {
-                            this.preventReasons = [preventReason];
-                        }
-                    } catch {
-                        // No password or the validation failed. Show password form.
-                        this.askPassword = true;
-                        this.preventReasons = [preventReason!];
-                        lessonReady = false;
+                    // Now that we have the password, get the access reason again ignoring the password.
+                    preventReason = AddonModLesson.getPreventAccessReason(this.accessInfo, true);
+                    if (preventReason) {
+                        this.preventReasons = [preventReason];
                     }
-                } else {
-                    // Lesson cannot be started.
+                } catch {
+                    // No password or the validation failed. Show password form.
+                    this.askPassword = true;
                     this.preventReasons = [preventReason!];
                     lessonReady = false;
                 }
+            } else {
+                // Lesson cannot be started.
+                this.preventReasons = [preventReason!];
+                lessonReady = false;
             }
+        }
 
-            if (this.selectedTab == 1 && this.canViewReports) {
-                // Only fetch the report data if the tab is selected.
-                promises.push(this.fetchReportData());
-            }
+        if (this.selectedTab == 1 && this.canViewReports) {
+            // Only fetch the report data if the tab is selected.
+            promises.push(this.fetchReportData());
+        }
 
-            await Promise.all(promises);
+        await Promise.all(promises);
 
-            if (lessonReady) {
-                // Lesson can be started, don't ask the password and don't show prevent messages.
-                this.lessonReady();
-            }
-        } finally {
-            this.fillContextMenu(refresh);
+        if (lessonReady) {
+            // Lesson can be started, don't ask the password and don't show prevent messages.
+            this.lessonReady();
         }
     }
 
@@ -567,13 +557,9 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Displays some data based on the current status.
-     *
-     * @param status The current status.
-     * @param previousStatus The previous status. If not defined, there is no previous status.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected showStatus(status: string, previousStatus?: string): void {
+    protected showStatus(status: string): void {
         this.showSpinner = status == CoreConstants.DOWNLOADING;
     }
 
@@ -633,8 +619,6 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         this.loaded = false;
-        this.refreshIcon = CoreConstants.ICON_LOADING;
-        this.syncIcon = CoreConstants.ICON_LOADING;
 
         try {
             await this.validatePassword(<string> password);
@@ -652,8 +636,6 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             CoreDomUtils.showErrorModal(error);
         } finally {
             this.loaded = true;
-            this.refreshIcon = CoreConstants.ICON_REFRESH;
-            this.syncIcon = CoreConstants.ICON_SYNC;
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, true, this.siteId);
         }

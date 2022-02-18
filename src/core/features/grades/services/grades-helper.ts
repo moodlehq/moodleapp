@@ -35,7 +35,8 @@ import { CoreNavigator } from '@services/navigator';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { GRADES_PAGE_NAME } from '../grades.module';
+
+export const GRADES_PAGE_NAME = 'grades';
 
 /**
  * Service that provides some features regarding grades information.
@@ -457,6 +458,38 @@ export class CoreGradesHelperProvider {
     }
 
     /**
+     * Get module grades to display.
+     *
+     * @param courseId Course Id.
+     * @param moduleId Module Id.
+     * @return Formatted table rows.
+     */
+    async getModuleGrades(courseId: number, moduleId: number): Promise<CoreGradesFormattedTableRow[] > {
+        const table = await CoreGrades.getCourseGradesTable(courseId);
+
+        if (!table.tabledata) {
+            return [];
+        }
+
+        // Find href containing "/mod/xxx/xxx.php".
+        const regex = /href="([^"]*\/mod\/[^"|^/]*\/[^"|^.]*\.php[^"]*)/;
+
+        return await Promise.all(table.tabledata.filter((row) => {
+            if (row.itemname && row.itemname.content) {
+                const matches = row.itemname.content.match(regex);
+
+                if (matches && matches.length) {
+                    const hrefParams = CoreUrlUtils.extractUrlParams(matches[1]);
+
+                    return hrefParams && parseInt(hrefParams.id) === moduleId;
+                }
+            }
+
+            return false;
+        }).map((row) => this.formatGradeRowForTable(row)));
+    }
+
+    /**
      * Go to view grades.
      *
      * @param courseId Course ID to view.
@@ -497,9 +530,12 @@ export class CoreGradesHelperProvider {
             const gradeId = item.id;
 
             await CoreUtils.ignoreErrors(
-                CoreNavigator.navigateToSitePath(`/${GRADES_PAGE_NAME}/${courseId}/${gradeId}`, { siteId }),
+                CoreNavigator.navigateToSitePath(
+                    `/${GRADES_PAGE_NAME}/${courseId}`,
+                    { params: { gradeId }, siteId },
+                ),
             );
-        } catch (error) {
+        } catch {
             try {
                 // Cannot get grade items or there's no need to.
                 if (userId && userId != currentUserId) {
@@ -519,7 +555,7 @@ export class CoreGradesHelperProvider {
 
                 // Open the course with the grades tab selected.
                 await CoreCourseHelper.getAndOpenCourse(courseId, { selectedTab: 'CoreGrades' }, siteId);
-            } catch (error) {
+            } catch {
                 // Cannot get course for some reason, just open the grades page.
                 await CoreNavigator.navigateToSitePath(`/${GRADES_PAGE_NAME}/${courseId}`, { siteId });
             }
@@ -565,7 +601,7 @@ export class CoreGradesHelperProvider {
             row.iconAlt = Translate.instant('core.grades.aggregatesum');
         } else if (text.indexOf('/outcomes') > -1 || text.indexOf('fa-tasks') > -1) {
             row.itemtype = 'outcome';
-            row.icon = 'fas-chart-pie';
+            row.icon = 'fas-tasks';
             row.iconAlt = Translate.instant('core.grades.outcome');
         } else if (text.indexOf('i/folder') > -1 || text.indexOf('fa-folder') > -1) {
             row.itemtype = 'category';

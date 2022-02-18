@@ -216,55 +216,45 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     }
 
     /**
-     * Download feedback contents.
-     *
-     * @param refresh If it's refreshing content.
-     * @param sync If it should try to sync.
-     * @param showErrors If show errors to the user of hide them.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async fetchContent(refresh = false, sync = false, showErrors = false): Promise<void> {
-        try {
-            this.workshop = await AddonModWorkshop.getWorkshop(this.courseId, this.module.id);
+    protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
+        this.workshop = await AddonModWorkshop.getWorkshop(this.courseId, this.module.id);
 
-            this.description = this.workshop.intro;
-            this.dataRetrieved.emit(this.workshop);
+        this.description = this.workshop.intro;
+        this.dataRetrieved.emit(this.workshop);
 
-            if (sync) {
-                // Try to synchronize the feedback.
-                await this.syncActivity(showErrors);
-            }
-
-            // Check if there are answers stored in offline.
-            this.access = await AddonModWorkshop.getWorkshopAccessInformation(this.workshop.id, { cmId: this.module.id });
-
-            if (this.access.canviewallsubmissions) {
-                this.groupInfo = await CoreGroups.getActivityGroupInfo(this.workshop.coursemodule);
-                this.group = CoreGroups.validateGroupId(this.group, this.groupInfo);
-            }
-
-            this.phases = await AddonModWorkshop.getUserPlanPhases(this.workshop.id, { cmId: this.module.id });
-
-            this.phases[this.workshop.phase].tasks.forEach((task) => {
-                if (!task.link && (task.code == 'examples' || task.code == 'prepareexamples')) {
-                    // Add links to manage examples.
-                    task.link = this.externalUrl!;
-                }
-            });
-
-            // Check if there are info stored in offline.
-            this.hasOffline = await AddonModWorkshopOffline.hasWorkshopOfflineData(this.workshop.id);
-            if (this.hasOffline) {
-                this.offlineSubmissions = await AddonModWorkshopOffline.getSubmissions(this.workshop.id);
-            } else {
-                this.offlineSubmissions = [];
-            }
-
-            await this.setPhaseInfo();
-
-        } finally {
-            this.fillContextMenu(refresh);
+        if (sync) {
+            // Try to synchronize the feedback.
+            await this.syncActivity(showErrors);
         }
+
+        // Check if there are answers stored in offline.
+        this.access = await AddonModWorkshop.getWorkshopAccessInformation(this.workshop.id, { cmId: this.module.id });
+
+        if (this.access.canviewallsubmissions) {
+            this.groupInfo = await CoreGroups.getActivityGroupInfo(this.workshop.coursemodule);
+            this.group = CoreGroups.validateGroupId(this.group, this.groupInfo);
+        }
+
+        this.phases = await AddonModWorkshop.getUserPlanPhases(this.workshop.id, { cmId: this.module.id });
+
+        this.phases[this.workshop.phase].tasks.forEach((task) => {
+            if (!task.link && (task.code == 'examples' || task.code == 'prepareexamples')) {
+                // Add links to manage examples.
+                task.link = this.module.url || '';
+            }
+        });
+
+        // Check if there are info stored in offline.
+        this.hasOffline = await AddonModWorkshopOffline.hasWorkshopOfflineData(this.workshop.id);
+        if (this.hasOffline) {
+            this.offlineSubmissions = await AddonModWorkshopOffline.getSubmissions(this.workshop.id);
+        } else {
+            this.offlineSubmissions = [];
+        }
+
+        await this.setPhaseInfo();
     }
 
     /**
@@ -394,7 +384,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
                 componentProps: {
                     phases: CoreUtils.objectToArray(this.phases),
                     workshopPhase: this.workshop!.phase,
-                    externalUrl: this.externalUrl,
+                    externalUrl: this.module.url,
                     showSubmit: this.showSubmit,
                 },
             });

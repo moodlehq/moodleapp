@@ -11,11 +11,10 @@
         </ion-title>
 
         <ion-buttons slot="end">
-            <core-context-menu>
-                <core-context-menu-item [priority]="900" *ngIf="module.url" [href]="module!.url"
-                    [content]="'core.openinbrowser' | translate" iconAction="fas-external-link-alt">
-                </core-context-menu-item>
-            </core-context-menu>
+            <ion-button fill="clear" *ngIf="module.url" [href]="module.url" core-link [showBrowserWarning]="false" color="dark"
+                [attr.aria-label]="'core.openinbrowser' | translate">
+                <ion-icon name="fas-external-link-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>

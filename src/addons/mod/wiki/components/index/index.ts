@@ -21,14 +21,16 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreTag, CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
 import { IonContent } from '@ionic/angular';
+import { CoreApp } from '@services/app';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { Translate } from '@singletons';
+import { Network, Translate, NgZone } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { Subscription } from 'rxjs';
 import { Md5 } from 'ts-md5';
 import { AddonModWikiPageDBRecord } from '../../services/database/wiki';
 import { AddonModWikiModuleHandlerService } from '../../services/handlers/module';
@@ -76,6 +78,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     moduleName = 'wiki';
     groupWiki = false;
 
+    isOnline = false;
+
     wiki?: AddonModWikiWiki; // The wiki instance.
     isMainPage = false; // Whether the user is viewing wiki's main page (just entered the wiki).
     canEdit = false; // Whether user can edit the page.
@@ -104,12 +108,23 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     protected ignoreManualSyncEvent = false; // Whether manual sync event should be ignored.
     protected currentUserId?: number; // Current user ID.
     protected currentPath!: string;
+    protected onlineSubscription: Subscription; // It will observe the status of the network connection.
 
     constructor(
         protected content?: IonContent,
         @Optional() courseContentsPage?: CoreCourseContentsPage,
     ) {
         super('AddonModLessonIndexComponent', content, courseContentsPage);
+
+        this.isOnline = CoreApp.isOnline();
+
+        // Refresh online status when changes.
+        this.onlineSubscription = Network.onChange().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            NgZone.run(() => {
+                this.isOnline = CoreApp.isOnline();
+            });
+        });
     }
 
     /**
@@ -212,7 +227,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * @inheritdoc
      */
-    protected async fetchContent(refresh = false, sync = false, showErrors = false): Promise<void> {
+    protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
         try {
             // Get the wiki instance.
             this.wiki = await AddonModWiki.getWiki(this.courseId, this.module.id);
@@ -240,7 +255,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             this.description = this.wiki.intro || this.module.description;
-            this.externalUrl = this.module.url;
             this.componentId = this.module.id;
 
             await this.fetchSubwikis(this.wiki.id);
@@ -278,8 +292,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             throw error;
-        } finally {
-            this.fillContextMenu(refresh);
         }
     }
 
@@ -835,6 +847,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
         this.manualSyncObserver?.off();
         this.newPageObserver?.off();
+        this.onlineSubscription.unsubscribe();
         if (this.wiki) {
             AddonModWiki.wikiPageClosed(this.wiki.id, this.currentPath);
         }

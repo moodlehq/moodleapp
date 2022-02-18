@@ -64,7 +64,6 @@ import { CoreFile } from '@services/file';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
@@ -75,36 +74,19 @@ import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 /**
  * Prefetch info of a module.
  */
-export type CoreCourseModulePrefetchInfo = {
-    /**
-     * Downloaded size.
-     */
-    size: number;
+export type CoreCourseModulePrefetchInfo = CoreCourseModulePackageLastDownloaded & {
+    size: number; // Downloaded size.
+    sizeReadable: string; // Downloadable size in a readable format.
+    status: string; // Module status.
+    statusIcon?: string; // Icon's name of the module status.
+};
 
-    /**
-     * Downloadable size in a readable format.
-     */
-    sizeReadable: string;
-
-    /**
-     * Module status.
-     */
-    status: string;
-
-    /**
-     * Icon's name of the module status.
-     */
-    statusIcon?: string;
-
-    /**
-     * Time when the module was last downloaded.
-     */
-    downloadTime: number;
-
-    /**
-     * Download time in a readable format.
-     */
-    downloadTimeReadable: string;
+/**
+ * Prefetch info of a module.
+ */
+export type CoreCourseModulePackageLastDownloaded = {
+    downloadTime: number; // Time when the module was last downloaded.
+    downloadTimeReadable: string; // Download time in a readable format.
 };
 
 /**
@@ -491,22 +473,18 @@ export class CoreCourseHelperProvider {
      *
      * @param module Module to remove the files.
      * @param courseId Course ID the module belongs to.
-     * @param done Function to call when done. It will close the context menu.
      * @return Promise resolved when done.
+     * @deprecated since 4.0
      */
-    async confirmAndRemoveFiles(module: CoreCourseModuleData, courseId: number, done?: () => void): Promise<void> {
+    async confirmAndRemoveFiles(module: CoreCourseModuleData, courseId: number): Promise<void> {
         let modal: CoreIonLoadingElement | undefined;
 
         try {
-
             await CoreDomUtils.showDeleteConfirm('addon.storagemanager.confirmdeletedatafrom', { name: module.name });
 
             modal = await CoreDomUtils.showModalLoading();
 
             await this.removeModuleStoredData(module, courseId);
-
-            done && done();
-
         } catch (error) {
             if (error) {
                 CoreDomUtils.showErrorModal(error);
@@ -569,44 +547,6 @@ export class CoreCourseHelperProvider {
 
         // Show confirm modal if needed.
         await CoreDomUtils.confirmDownloadSize(sizeSum, undefined, undefined, undefined, undefined, alwaysConfirm);
-    }
-
-    /**
-     * Helper function to prefetch a module, showing a confirmation modal if the size is big.
-     * This function is meant to be called from a context menu option. It will also modify some data like the prefetch icon.
-     *
-     * @param instance The component instance that has the context menu.
-     * @param module Module to be prefetched
-     * @param courseId Course ID the module belongs to.
-     * @param done Function to call when done. It will close the context menu.
-     * @return Promise resolved when done.
-     */
-    async contextMenuPrefetch(
-        instance: ComponentWithContextMenu,
-        module: CoreCourseModuleData,
-        courseId: number,
-        done?: () => void,
-    ): Promise<void> {
-        const initialIcon = instance.prefetchStatusIcon;
-        instance.prefetchStatusIcon = CoreConstants.ICON_DOWNLOADING; // Show spinner since this operation might take a while.
-
-        try {
-            // We need to call getDownloadSize, the package might have been updated.
-            const size = await CoreCourseModulePrefetchDelegate.getModuleDownloadSize(module, courseId, true);
-
-            await CoreDomUtils.confirmDownloadSize(size);
-
-            await CoreCourseModulePrefetchDelegate.prefetchModule(module, courseId, true);
-
-            // Success, close menu.
-            done && done();
-        } catch (error) {
-            instance.prefetchStatusIcon = initialIcon;
-
-            if (!instance.isDestroyed) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
-            }
-        }
     }
 
     /**
@@ -1046,87 +986,6 @@ export class CoreCourseHelperProvider {
     }
 
     /**
-     * Fill the Context Menu for a certain module.
-     *
-     * @param instance The component instance that has the context menu.
-     * @param module Module to be prefetched
-     * @param courseId Course ID the module belongs to.
-     * @param invalidateCache Invalidates the cache first.
-     * @param component Component of the module.
-     * @return Promise resolved when done.
-     */
-    async fillContextMenu(
-        instance: ComponentWithContextMenu,
-        module: CoreCourseModuleData,
-        courseId: number,
-        invalidateCache?: boolean,
-        component?: string,
-    ): Promise<void> {
-        const siteId = CoreSites.getCurrentSiteId();
-
-        const moduleInfo = await this.getModulePrefetchInfo(module, courseId, invalidateCache, component);
-
-        instance.size = moduleInfo.sizeReadable;
-        instance.prefetchStatusIcon = moduleInfo.statusIcon;
-        instance.prefetchStatus = moduleInfo.status;
-        instance.downloadTimeReadable = CoreTextUtils.ucFirst(moduleInfo.downloadTimeReadable);
-
-        if (moduleInfo.status != CoreConstants.NOT_DOWNLOADABLE) {
-            // Module is downloadable, get the text to display to prefetch.
-            if (moduleInfo.downloadTime && moduleInfo.downloadTime > 0) {
-                instance.prefetchText = Translate.instant('core.lastdownloaded') + ': ' + moduleInfo.downloadTimeReadable;
-            } else {
-                // Module not downloaded, show a default text.
-                instance.prefetchText = Translate.instant('core.download');
-            }
-        }
-
-        if (moduleInfo.status == CoreConstants.DOWNLOADING) {
-            // Set this to empty to prevent "remove file" option showing up while downloading.
-            instance.size = '';
-        }
-
-        if (!instance.contextMenuStatusObserver && component) {
-            instance.contextMenuStatusObserver = CoreEvents.on(
-                CoreEvents.PACKAGE_STATUS_CHANGED,
-                (data) => {
-                    if (data.componentId == module.id && data.component == component) {
-                        this.fillContextMenu(instance, module, courseId, false, component);
-                    }
-                },
-                siteId,
-            );
-        }
-
-        if (!instance.contextFileStatusObserver && component) {
-            // Debounce the update size function to prevent too many calls when downloading or deleting a whole activity.
-            const debouncedUpdateSize = CoreUtils.debounce(async () => {
-                const moduleSize = await CoreCourseModulePrefetchDelegate.getModuleStoredSize(module, courseId);
-
-                instance.size = moduleSize > 0 ? CoreTextUtils.bytesToSize(moduleSize, 2) : '';
-            }, 1000);
-
-            instance.contextFileStatusObserver = CoreEvents.on(
-                CoreEvents.COMPONENT_FILE_ACTION,
-                (data) => {
-                    if (data.component != component || data.componentId != module.id) {
-                        // The event doesn't belong to this component, ignore.
-                        return;
-                    }
-
-                    if (!CoreFilepool.isFileEventDownloadedOrDeleted(data)) {
-                        return;
-                    }
-
-                    // Update the module size.
-                    debouncedUpdateSize();
-                },
-                siteId,
-            );
-        }
-    }
-
-    /**
      * Get a course. It will first check the user courses, and fallback to another WS if not enrolled.
      *
      * @param courseId Course ID.
@@ -1482,12 +1341,9 @@ export class CoreCourseHelperProvider {
     async getModulePrefetchInfo(
         module: CoreCourseModuleData,
         courseId: number,
-        invalidateCache?: boolean,
-        component?: string,
+        invalidateCache = false,
+        component = '',
     ): Promise<CoreCourseModulePrefetchInfo> {
-
-        const siteId = CoreSites.getCurrentSiteId();
-
         if (invalidateCache) {
             // Currently, some modules pass invalidateCache=false because they already invalidate data in downloadResourceIfNeeded.
             // If this function is changed to do more actions if invalidateCache=true, please review those modules.
@@ -1499,7 +1355,7 @@ export class CoreCourseHelperProvider {
         const results = await Promise.all([
             CoreCourseModulePrefetchDelegate.getModuleStoredSize(module, courseId),
             CoreCourseModulePrefetchDelegate.getModuleStatus(module, courseId),
-            CoreUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component || '', module.id)),
+            this.getModulePackageLastDownloaded(module, component),
         ]);
 
         // Treat stored size.
@@ -1526,33 +1382,51 @@ export class CoreCourseHelperProvider {
                 break;
         }
 
-        // Treat download time.
-        if (!results[2] || !results[2].downloadTime || !CoreFileHelper.isStateDownloaded(results[2].status || '')) {
-            // Not downloaded.
-            return {
-                size,
-                sizeReadable,
-                status,
-                statusIcon,
-                downloadTime: 0,
-                downloadTimeReadable: '',
-            };
-        }
-
-        const now = CoreTimeUtils.timestamp();
-        const downloadTime = results[2].downloadTime;
-        let downloadTimeReadable = '';
-        if (now - results[2].downloadTime < 7 * 86400) {
-            downloadTimeReadable = moment(results[2].downloadTime * 1000).fromNow();
-        } else {
-            downloadTimeReadable = moment(results[2].downloadTime * 1000).calendar();
-        }
+        const packageData = results[2];
 
         return {
             size,
             sizeReadable,
             status,
             statusIcon,
+            downloadTime: packageData.downloadTime,
+            downloadTimeReadable: packageData.downloadTimeReadable,
+        };
+    }
+
+    /**
+     * Get prefetch info for a module.
+     *
+     * @param module Module to get the info from.
+     * @param component Component of the module.
+     * @return Promise resolved with the info.
+     */
+    async getModulePackageLastDownloaded(
+        module: CoreCourseModuleData,
+        component = '',
+    ): Promise<CoreCourseModulePackageLastDownloaded> {
+        const siteId = CoreSites.getCurrentSiteId();
+        const packageData = await CoreUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component, module.id));
+
+        // Treat download time.
+        if (!packageData || !packageData.downloadTime || !CoreFileHelper.isStateDownloaded(packageData.status || '')) {
+            // Not downloaded.
+            return {
+                downloadTime: 0,
+                downloadTimeReadable: '',
+            };
+        }
+
+        const now = CoreTimeUtils.timestamp();
+        const downloadTime = packageData.downloadTime;
+        let downloadTimeReadable = '';
+        if (now - downloadTime < 7 * 86400) {
+            downloadTimeReadable = moment(downloadTime * 1000).fromNow();
+        } else {
+            downloadTimeReadable = moment(downloadTime * 1000).calendar();
+        }
+
+        return {
             downloadTime,
             downloadTimeReadable,
         };
@@ -2222,15 +2096,4 @@ export type CoreCourseNavigateToModuleOptions = CoreCourseNavigateToModuleCommon
 export type CoreCourseOpenModuleOptions = {
     sectionId?: number; // Section the module belongs to.
     modNavOptions?: CoreNavigationOptions; // Navigation options to open the module, including params to pass to the module.
-};
-
-type ComponentWithContextMenu = {
-    prefetchStatusIcon?: string;
-    isDestroyed?: boolean;
-    size?: string;
-    prefetchStatus?: string;
-    prefetchText?: string;
-    downloadTimeReadable?: string;
-    contextMenuStatusObserver?: CoreEventObserver;
-    contextFileStatusObserver?: CoreEventObserver;
 };

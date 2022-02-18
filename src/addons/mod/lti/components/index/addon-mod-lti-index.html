@@ -1,26 +1,15 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
-    <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
-            iconAction="fas-external-link-alt" [showBrowserWarning]="false">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
-            (action)="expandDescription()" iconAction="fas-arrow-right">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}" iconAction="far-newspaper"
-            (action)="gotoBlog()">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="loaded && isOnline" [priority]="700" [content]="'core.refresh' | translate"
-            (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
-        </core-context-menu-item>
-    </core-context-menu>
+    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
+        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
 </core-navbar-buttons>
 
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="safe-area-padding">
 
     <!-- Activity info. -->
-    <core-course-module-info [module]="module" [description]="lti && lti.showdescriptionlaunch && description" [component]="component"
+    <core-course-module-info [module]="module" [description]="displayDescription && description" [component]="component"
         [componentId]="componentId" [courseId]="courseId">
     </core-course-module-info>
 

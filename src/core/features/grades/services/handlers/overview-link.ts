@@ -15,10 +15,10 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { GRADES_PAGE_NAME } from '@features/grades/grades.module';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { CoreGrades } from '../grades';
+import { GRADES_PAGE_NAME } from '../grades-helper';
 
 /**
  * Handler to treat links to overview courses grades.

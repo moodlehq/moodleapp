@@ -39,6 +39,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
 
     protected items: AddonModImscpTocItem[] = [];
     protected currentHref?: string;
+    protected displayDescription = false;
 
     constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
         super('AddonModImscpIndexComponent', courseContentsPage);
@@ -70,42 +71,33 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     }
 
     /**
-     * Download imscp contents.
-     *
-     * @param refresh Whether we're refreshing data.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
     protected async fetchContent(refresh = false): Promise<void> {
-        try {
-            const downloadResult = await this.downloadResourceIfNeeded(refresh);
+        const downloadResult = await this.downloadResourceIfNeeded(refresh);
 
-            const imscp = await AddonModImscp.getImscp(this.courseId, this.module.id);
-            this.description = imscp.intro;
-            this.dataRetrieved.emit(imscp);
+        const imscp = await AddonModImscp.getImscp(this.courseId, this.module.id);
+        this.description = imscp.intro;
+        this.dataRetrieved.emit(imscp);
 
-            // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
-            const contents = await CoreCourse.getModuleContents(this.module);
+        // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
+        const contents = await CoreCourse.getModuleContents(this.module);
 
-            this.items = AddonModImscp.createItemList(contents);
+        this.items = AddonModImscp.createItemList(contents);
 
-            if (this.items.length && this.currentHref === undefined) {
-                this.currentHref = this.items[0].href;
-            }
-
-            try {
-                await this.loadItemHref(this.currentHref);
-            } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'addon.mod_imscp.deploymenterror', true);
-
-                throw new CoreSilentError(error);
-            }
-
-            this.warning = downloadResult.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
-
-        } finally {
-            // Pass false because downloadResourceIfNeeded already invalidates and refresh data if refresh=true.
-            this.fillContextMenu(false);
+        if (this.items.length && this.currentHref === undefined) {
+            this.currentHref = this.items[0].href;
         }
+
+        try {
+            await this.loadItemHref(this.currentHref);
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_imscp.deploymenterror', true);
+
+            throw new CoreSilentError(error);
+        }
+
+        this.warning = downloadResult.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
     }
 
     /**

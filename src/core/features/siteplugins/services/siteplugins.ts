@@ -871,6 +871,7 @@ export type CoreSitePluginsCourseModuleHandlerData = CoreSitePluginsHandlerCommo
     displayrefresh?: boolean;
     displayprefetch?: boolean;
     displaysize?: boolean;
+    displaygrades?: boolean;
     coursepagemethod?: string;
     ptrenabled?: boolean;
     supportedfeatures?: Record<string, unknown>;

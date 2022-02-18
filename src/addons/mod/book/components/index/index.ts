@@ -52,15 +52,11 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * @inheritdoc
      */
-    protected async fetchContent(refresh?: boolean): Promise<void> {
-        try {
-            await Promise.all([
-                this.loadBook(),
-                this.loadTOC(),
-            ]);
-        } finally {
-            this.fillContextMenu(refresh);
-        }
+    protected async fetchContent(): Promise<void> {
+        await Promise.all([
+            this.loadBook(),
+            this.loadTOC(),
+        ]);
     }
 
     /**

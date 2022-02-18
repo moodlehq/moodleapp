@@ -115,39 +115,30 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Download survey contents.
-     *
-     * @param refresh If it's refreshing content.
-     * @param sync If it should try to sync.
-     * @param showErrors If show errors to the user of hide them.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        try {
-            this.survey = await AddonModSurvey.getSurvey(this.courseId, this.module.id);
+    protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
+        this.survey = await AddonModSurvey.getSurvey(this.courseId, this.module.id);
 
-            this.description = this.survey.intro;
-            this.dataRetrieved.emit(this.survey);
+        this.description = this.survey.intro;
+        this.dataRetrieved.emit(this.survey);
 
-            if (sync) {
-                // Try to synchronize the survey.
-                const answersSent = await this.syncActivity(showErrors);
-                if (answersSent) {
-                    // Answers were sent, update the survey.
-                    this.survey = await AddonModSurvey.getSurvey(this.courseId, this.module.id);
-                }
+        if (sync) {
+            // Try to synchronize the survey.
+            const answersSent = await this.syncActivity(showErrors);
+            if (answersSent) {
+                // Answers were sent, update the survey.
+                this.survey = await AddonModSurvey.getSurvey(this.courseId, this.module.id);
             }
+        }
 
-            // Check if there are answers stored in offline.
-            this.hasOffline = this.survey.surveydone
-                ? false
-                : await AddonModSurveyOffline.hasAnswers(this.survey.id);
+        // Check if there are answers stored in offline.
+        this.hasOffline = this.survey.surveydone
+            ? false
+            : await AddonModSurveyOffline.hasAnswers(this.survey.id);
 
-            if (!this.survey.surveydone && !this.hasOffline) {
-                await this.fetchQuestions();
-            }
-        } finally {
-            this.fillContextMenu(refresh);
+        if (!this.survey.surveydone && !this.hasOffline) {
+            await this.fetchQuestions();
         }
     }
 

@@ -20,6 +20,10 @@ information provided here is intended especially for developers.
 - Most of the functions or callbacks that handle redirects/deeplinks have been modified to accept an object instead of just path + options. E.g.: CoreLoginHelper.isSiteLoggedOut, CoreLoginHelper.openBrowserForSSOLogin, CoreLoginHelper.openBrowserForOAuthLogin, CoreLoginHelper.prepareForSSOLogin, CoreApp.storeRedirect, CoreSites.loadSite.
 - Course preview page route has changed from course/:courseId/preview to course/:courseId/summary to match with the page name and characteristics.
 - The parameters of the following functions in CoreCourseHelper have changed: navigateToModuleByInstance, navigateToModule, openModule.
+- fillContextMenu, expandDescription, gotoBlog, prefetch and removeFiles functions have been removed from CoreCourseModuleMainResourceComponent.
+- contextMenuPrefetch and fillContextMenu have been removed from CoreCourseHelper.
+
+
 
 === 3.9.5 ===
 
