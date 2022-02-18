@@ -16,15 +16,37 @@
         align-self: flex-start;
     }
 
-    .core-module-dates {
+    h1 ion-icon {
+        color: var(--medium);
+        @include margin-horizontal(8px, null);
+        font-size: 80%;
+
+    }
+
+    .core-module-dates-availabilityinfo {
         background: var(--light);
         border-radius: var(--small-radius);
         padding: 8px;
-
+        margin: 8px;
+        font-size: 90%;
         ion-icon {
+            position: static;
             @include margin-horizontal(null, 8px);
         }
+
+        p,
+        ul {
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
     }
+
+    .core-module-dates + .core-module-availabilityinfo {
+        border-top: 1px solid var(--stroke);
+        padding-top: 8px;
+    }
+
+
 
 }
 

@@ -11,8 +11,8 @@
         </ion-title>
 
         <ion-buttons slot="end">
-            <ion-button fill="clear" *ngIf="module.url" [href]="module.url" core-link [showBrowserWarning]="false" color="dark"
-                [attr.aria-label]="'core.openinbrowser' | translate">
+            <ion-button fill="clear" *ngIf="module.url && module.uservisible && !unsupported" [href]="module.url" core-link
+                [showBrowserWarning]="false" color="dark" [attr.aria-label]="'core.openinbrowser' | translate">
                 <ion-icon name="fas-external-link-alt" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
@@ -24,44 +24,24 @@
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <core-course-module-info [module]="module" [courseId]="courseId" [description]="module.description" [component]="module.modname"
-            [componentId]="module.id" [expandDescription]="true">
+            [componentId]="module.id" [expandDescription]="true" [showAvailabilityInfo]="true">
+            <div class="core-module-additional-info" title>
+                <ion-chip *ngIf="module.handlerData?.extraBadge" [color]="module.handlerData?.extraBadgeColor"
+                    class="ion-text-wrap ion-text-start" [outline]="true">
+                    <ion-label><span [innerHTML]="module.handlerData?.extraBadge"></span></ion-label>
+                </ion-chip>
 
-            <ion-item class="ion-text-wrap" *ngIf="module.handlerData?.extraBadge ||
-                (module.visible === 0 && (!section || section.visible)) ||
-                    (module.visible !== 0 && module.isStealth) ||
-                    module.availabilityinfo">
-                <ion-label>
-                    <div class="ion-padding" *ngIf="module.handlerData?.extraBadge">
-                        <ion-chip *ngIf="module.handlerData?.extraBadge" [color]="module.handlerData?.extraBadgeColor"
-                            class="ion-text-wrap ion-text-start" [outline]="true">
-                            <ion-label><span [innerHTML]="module.handlerData?.extraBadge"></span></ion-label>
-                        </ion-chip>
-                    </div>
-
-                    <!-- Hidden badges -->
-                    <div *ngIf="module.visible === 0 && (!section || section.visible)">
-                        <ion-badge color="warning">
-                            {{ 'core.course.hiddenfromstudents' | translate }}
-                        </ion-badge>
-                    </div>
-                    <div *ngIf="module.visible !== 0 && module.isStealth">
-                        <ion-badge color="warning">
-                            {{ 'core.course.hiddenoncoursepage' | translate }}
-                        </ion-badge>
-                    </div>
-
-                    <!-- Availability info -->
-                    <div *ngIf="module.availabilityinfo" class="core-module-availabilityinfo">
-                        <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
-                        <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
-                            [courseId]="module.course">
-                        </core-format-text>
-                    </div>
-                </ion-label>
-            </ion-item>
-
-            <core-course-unsupported-module *ngIf="unsupported" [module]="module" [courseId]="courseId"></core-course-unsupported-module>
+                <!-- Hidden badges -->
+                <ion-badge color="warning" *ngIf="module.visible === 0">
+                    {{ 'core.course.hiddenfromstudents' | translate }}
+                </ion-badge>
+                <ion-badge color="warning" *ngIf="module.visible !== 0 && module.isStealth">
+                    {{ 'core.course.hiddenoncoursepage' | translate }}
+                </ion-badge>
+            </div>
         </core-course-module-info>
+
+        <core-course-unsupported-module *ngIf="unsupported" [module]="module"></core-course-unsupported-module>
     </core-loading>
 
     <core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module"

@@ -44,6 +44,8 @@ export class CoreCourseModuleInfoComponent implements OnInit {
     @Input() description?: string | false; // The description to display. If false, no description will be shown.
     @Input() expandDescription = false; // If the description should be expanded by default.
 
+    @Input() showAvailabilityInfo = false; // If show availability info on the box.
+
     @Input() hasDataToSync = false; // If the activity has any data to be synced.
 
     modicon = '';
