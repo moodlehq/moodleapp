@@ -133,20 +133,10 @@
         margin-right: 1px;
         margin-left: 1px;
 
-        &.calendar_event_category {
-            background-color: var(--addon-calendar-event-category-color);
-        }
-        &.calendar_event_course {
-            background-color: var(--addon-calendar-event-course-color);
-        }
-        &.calendar_event_group {
-            background-color: var(--addon-calendar-event-group-color);
-        }
-        &.calendar_event_user {
-            background-color: var(--addon-calendar-event-user-color);
-        }
-        &.calendar_event_site {
-            background-color: var(--addon-calendar-event-site-color);
+        @each $category, $value in $calendar-event-category-colors {
+            &.calendar_event_#{$category} {
+                background-color: $value;
+            }
         }
     }
 
