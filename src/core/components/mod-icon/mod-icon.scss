@@ -6,6 +6,7 @@
     --margin-end: 0px;
     --margin-vertical: 0px;
     --icon-radius: var(--small-radius);
+    --filter: brightness(0) invert(1);
 
     margin-top: var(--margin-vertical);
     margin-bottom: var(--margin-vertical);
@@ -20,7 +21,7 @@
         &.#{$type} {
             background-color: var(--activity#{$type});
             img {
-                filter: brightness(0) invert(1);
+                filter: var(--filter);
             }
         }
     }
