@@ -1581,3 +1581,14 @@ ion-app.md .collapsible-title h1 {
 body.core-iframe-fullscreen ion-content {
     --offset-top: 0px !important;
 }
+
+// To make core-swipe-slides fill the remaining height.
+.core-swipe-slides-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    core-swipe-slides {
+        flex-grow: 1;
+    }
+}

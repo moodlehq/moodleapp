@@ -3,6 +3,11 @@
 :host {
     --addon-calendar-blank-day-background-color: var(--light);
 
+    .core-swipe-slides-container ion-grid {
+        flex: none;
+        width: 100%;
+    }
+
     .addon-calendar-navigation {
         padding-top: 5px;
         padding-left: 10px;

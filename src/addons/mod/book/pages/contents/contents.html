@@ -21,16 +21,16 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" class="core-loading-full-height">
+        <div class="safe-area-padding-horizontal core-swipe-slides-container">
 
-        <ion-card class="core-warning-card" *ngIf="warning">
-            <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label><span [innerHTML]="warning"></span></ion-label>
-            </ion-item>
-        </ion-card>
+            <ion-card class="core-warning-card" *ngIf="warning">
+                <ion-item>
+                    <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label><span [innerHTML]="warning"></span></ion-label>
+                </ion-item>
+            </ion-card>
 
-        <div class="safe-area-padding-horizontal">
             <core-navigation-bar *ngIf="displayNavBar" [items]="navigationItems" [showTitles]="displayTitlesInNavBar"
                 previousTranslate="addon.mod_book.navprevtitle" nextTranslate="addon.mod_book.navnexttitle"
                 (action)="changeChapter($event.id)">

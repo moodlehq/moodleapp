@@ -71,6 +71,10 @@
         }
     }
 
+    &.core-loading-full-height .core-loading-content {
+        height: 100%;
+    }
+
     &.safe-area-padding:not(.core-loading-inline) .core-loading-content,
     &.safe-area-padding-horizontal:not(.core-loading-inline) .core-loading-content {
         @include safe-area-padding-horizontal(0px, 0px);

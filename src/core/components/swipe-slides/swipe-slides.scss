@@ -1,8 +1,6 @@
 :host {
-    --swipe-slides-min-height: auto;
-
     ion-slides {
-        min-height: var(--swipe-slides-min-height);
+        height: 100%;
     }
 
     ion-slide {
