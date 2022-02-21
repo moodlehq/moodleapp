@@ -47,6 +47,7 @@ import {
 @Component({
     selector: 'page-addon-mod-book-contents',
     templateUrl: 'contents.html',
+    styleUrls: ['contents.scss'],
 })
 export class AddonModBookContentsPage implements OnInit, OnDestroy {
 
