@@ -740,7 +740,7 @@ body.core-iframe-fullscreen ion-router-outlet {
         ion-label {
             white-space: normal !important;
         }
-        ion-icon {
+        ion-item > ion-icon {
             color: var(--color-shade);
             @include margin-horizontal(null, 16px);
         }
