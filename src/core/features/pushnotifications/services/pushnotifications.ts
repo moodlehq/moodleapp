@@ -74,6 +74,7 @@ export class CorePushNotificationsProvider {
                         siteId,
                         config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
                         primaryKeyColumns: ['appid', 'uuid'],
+                        onDestroy: () => delete this.registeredDevicesTables[siteId],
                     },
                 ),
             ),

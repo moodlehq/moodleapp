@@ -28,6 +28,7 @@ export class CoreDatabaseTable<
     protected database: SQLiteDB;
     protected tableName: string;
     protected primaryKeyColumns: PrimaryKeyColumn[];
+    protected listeners: CoreDatabaseTableListener[] = [];
 
     constructor(
         config: Partial<CoreDatabaseConfiguration>,
@@ -86,7 +87,16 @@ export class CoreDatabaseTable<
      * Destroy.
      */
     async destroy(): Promise<void> {
-        // Nothing to destroy by default, override this method if necessary.
+        this.listeners.forEach(listener => listener.onDestroy?.());
+    }
+
+    /**
+     * Add listener.
+     *
+     * @param listener Listener.
+     */
+    addListener(listener: CoreDatabaseTableListener): void {
+        this.listeners.push(listener);
     }
 
     /**
@@ -366,6 +376,13 @@ export class CoreDatabaseTable<
  */
 export interface CoreDatabaseConfiguration {
     // This definition is augmented in subclasses.
+}
+
+/**
+ * Database table listener.
+ */
+export interface CoreDatabaseTableListener {
+    onDestroy?(): void;
 }
 
 /**

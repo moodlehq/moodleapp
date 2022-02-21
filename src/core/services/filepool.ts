@@ -113,6 +113,7 @@ export class CoreFilepoolProvider {
                     siteId,
                     config: { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
                     primaryKeyColumns: ['fileId'],
+                    onDestroy: () => delete this.filesTables[siteId],
                 }),
             ),
         );
@@ -122,6 +123,7 @@ export class CoreFilepoolProvider {
                     siteId,
                     config: { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
                     primaryKeyColumns: ['fileId', 'component', 'componentId'],
+                    onDestroy: () => delete this.linksTables[siteId],
                 }),
             ),
         );
@@ -130,6 +132,7 @@ export class CoreFilepoolProvider {
                 () => CoreSites.getSiteTable<CoreFilepoolPackageEntry, 'id'>(PACKAGES_TABLE_NAME, {
                     siteId,
                     config: { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
+                    onDestroy: () => delete this.packagesTables[siteId],
                 }),
             ),
         );
@@ -148,16 +151,6 @@ export class CoreFilepoolProvider {
                 // Execute the callback in the Angular zone, so change detection doesn't stop working.
                 NgZone.run(() => this.checkQueueProcessing());
             });
-        });
-
-        CoreEvents.on(CoreEvents.SITE_DELETED, async ({ siteId }) => {
-            if (!siteId || !(siteId in this.filesTables)) {
-                return;
-            }
-
-            await this.filesTables[siteId].destroy();
-
-            delete this.filesTables[siteId];
         });
     }
 

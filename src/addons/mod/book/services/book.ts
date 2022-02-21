@@ -69,6 +69,7 @@ export class AddonModBookProvider {
                 () => CoreSites.getSiteTable(LAST_CHAPTER_VIEWED_TABLE, {
                     siteId,
                     config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                    onDestroy: () => delete this.lastChapterViewedTables[siteId],
                 }),
             ),
         );
