@@ -17,6 +17,8 @@
                     </core-format-text>
                     <ion-icon name="fas-lock" *ngIf="module.visible === 0 || module.uservisible === false"
                         [attr.aria-label]="'core.restricted' | translate"></ion-icon>
+                    <ion-icon [name]="prefetchStatusIcon" *ngIf="prefetchStatusIcon" color="success"
+                        [attr.aria-label]="prefetchStatusText | translate"></ion-icon>
                 </p>
 
                 <div class="core-module-additional-info">

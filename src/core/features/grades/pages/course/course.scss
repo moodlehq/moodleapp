@@ -3,11 +3,12 @@
 :host {
     --header-background: var(--white);
     --odd-cell-background: var(--light);
-    --even-cell-background: var(--white);
     --odd-cell-hover: var(--gray-200);
+    --even-cell-background: var(--white);
     --even-cell-hover: var(--light);
     --icon-color: var(--gray-500);
     --border-color: var(--stroke);
+    --mod-icon-filter: brightness(0);
 
     .odd {
         --cell-background: var(--odd-cell-background);
@@ -23,11 +24,12 @@
 
 :host-context(body.dark) {
     --header-background: var(--gray-900);
-    --odd-cell-background: var(--medium);
+    --odd-cell-background: var(--gray-800);
+    --odd-cell-hover: var(--gray-600);
     --even-cell-background: var(--gray-900);
-    --odd-cell-hover: var(--gray-500);
-    --even-cell-hover: var(--medium);
+    --even-cell-hover: var(--gray-700);
     --icon-color: var(--gray-200);
+    --mod-icon-filter: brightness(0) invert(1);
 }
 
 .core-grades-table {
@@ -80,8 +82,10 @@
         }
 
         core-mod-icon {
-            padding: 3px;
-            --size: 10px;
+            padding: 0px;
+            --size: 16px;
+            background: transparent;
+            --filter: var(--mod-icon-filter);
         }
 
 

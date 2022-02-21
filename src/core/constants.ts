@@ -93,10 +93,10 @@ export class CoreConstants {
     static readonly NOT_DOWNLOADABLE = 'notdownloadable';
 
     // Download / prefetch status icon.
-    static readonly ICON_DOWNLOADED = 'cloud-done';
+    static readonly ICON_DOWNLOADED = 'fam-cloud-done';
     static readonly ICON_DOWNLOADING = 'spinner';
-    static readonly ICON_NOT_DOWNLOADED = 'cloud-download';
-    static readonly ICON_OUTDATED = 'fas-redo-alt';
+    static readonly ICON_NOT_DOWNLOADED = 'fas-cloud-download-alt';
+    static readonly ICON_OUTDATED = 'fam-cloud-refresh';
     static readonly ICON_NOT_DOWNLOADABLE = '';
 
     // General download and sync icons.

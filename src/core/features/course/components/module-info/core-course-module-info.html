@@ -7,6 +7,8 @@
             <core-format-text [text]="module.name" contextLevel="module" [component]="component" [componentId]="componentId"
                 [contextInstanceId]="module.id" [courseId]="courseId">
             </core-format-text>
+            <ion-icon name="fas-lock" *ngIf="module.visible === 0 || module.uservisible === false"
+                [attr.aria-label]="'core.restricted' | translate"></ion-icon>
         </h1>
         <ng-content select="[title]"></ng-content>
     </ion-label>
@@ -20,22 +22,33 @@
 </ion-item>
 <ng-content select="[description]"></ng-content>
 
-<ion-item class="ion-text-wrap" *ngIf="showCompletion && (module.dates?.length ||
-(module.completiondata && module.completiondata.isautomatic && module.uservisible))">
+<!-- Module completion. -->
+<ion-item class="ion-text-wrap" *ngIf="showCompletion && module.completiondata && module.completiondata.isautomatic">
     <ion-label>
-        <!-- Activity dates. -->
-        <div *ngIf="module.dates?.length" class="core-module-dates">
-            <p *ngFor="let date of module.dates">
-                <ion-icon name="fas-calendar" aria-hidden="true"></ion-icon><strong>{{ date.label }}</strong> {{ date.timestamp * 1000 |
-                coreFormatDate:'strftimedatetime' }}
-            </p>
-        </div>
-        <!-- Module completion. -->
         <core-course-module-completion [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
             [showCompletionConditions]="true">
         </core-course-module-completion>
     </ion-label>
 </ion-item>
+
+<div class="core-module-dates-availabilityinfo"
+    *ngIf="(module.dates && module.dates.length) || (showAvailabilityInfo && module.availabilityinfo)">
+    <!-- Activity dates. -->
+    <div *ngIf="module.dates && module.dates.length" class="core-module-dates">
+        <p *ngFor="let date of module.dates">
+            <ion-icon name="fas-calendar" aria-hidden="true"></ion-icon><strong>{{ date.label }}</strong> {{ date.timestamp
+            *
+            1000 | coreFormatDate:'strftimedatetime' }}
+        </p>
+    </div>
+    <!-- Availability info space. -->
+    <div class="core-module-availabilityinfo" *ngIf="showAvailabilityInfo">
+        <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
+        <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id" [courseId]="module.course">
+        </core-format-text>
+    </div>
+</div>
+
 <ng-content></ng-content>
 
 <!-- Activity has something offline. -->

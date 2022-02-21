@@ -37,6 +37,7 @@ export class CoreCourseModulePreviewPage implements OnInit {
     courseId!: number;
     loaded = false;
     unsupported = false;
+    isDisabledInSite = false;
     showManualCompletion = false;
 
     protected debouncedUpdateModule?: () => void; // Update the module after a certain time.
@@ -80,6 +81,8 @@ export class CoreCourseModulePreviewPage implements OnInit {
         if (!this.unsupported) {
             this.module.handlerData =
                 await CoreCourseModuleDelegate.getModuleDataFor(this.module.modname, this.module, this.courseId);
+        } else {
+            this.isDisabledInSite = CoreCourseModuleDelegate.isModuleDisabledInSite(this.module.modname);
         }
 
         this.title = this.module.name;
