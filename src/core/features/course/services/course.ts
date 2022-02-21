@@ -148,6 +148,7 @@ export class CoreCourseProvider {
                 () => CoreSites.getSiteTable(COURSE_STATUS_TABLE, {
                     siteId,
                     config: { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
+                    onDestroy: () => delete this.statusTables[siteId],
                 }),
             ),
         );

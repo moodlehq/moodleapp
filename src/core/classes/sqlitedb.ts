@@ -1170,27 +1170,54 @@ export class SQLiteDB {
      */
     protected getDatabaseSpies(db: SQLiteObject): Partial<SQLiteObject> {
         return {
-            executeSql(statement, params) {
+            async executeSql(statement, params) {
                 const start = performance.now();
 
-                return db.executeSql(statement, params).then(result => {
-                    CoreDB.logQuery(statement, performance.now() - start, params);
+                try {
+                    const result = await db.executeSql(statement, params);
+
+                    CoreDB.logQuery({
+                        params,
+                        sql: statement,
+                        duration:  performance.now() - start,
+                    });
 
                     return result;
-                });
+                } catch (error) {
+                    CoreDB.logQuery({
+                        params,
+                        error,
+                        sql: statement,
+                        duration:  performance.now() - start,
+                    });
+
+                    throw error;
+                }
             },
-            sqlBatch(statements) {
+            async sqlBatch(statements) {
                 const start = performance.now();
+                const sql = Array.isArray(statements)
+                    ? statements.join(' | ')
+                    : String(statements);
 
-                return db.sqlBatch(statements).then(result => {
-                    const sql = Array.isArray(statements)
-                        ? statements.join(' | ')
-                        : String(statements);
+                try {
+                    const result = await db.sqlBatch(statements);
 
-                    CoreDB.logQuery(sql, performance.now() - start);
+                    CoreDB.logQuery({
+                        sql,
+                        duration: performance.now() - start,
+                    });
 
                     return result;
-                });
+                } catch (error) {
+                    CoreDB.logQuery({
+                        sql,
+                        error,
+                        duration: performance.now() - start,
+                    });
+
+                    throw error;
+                }
             },
         };
     }

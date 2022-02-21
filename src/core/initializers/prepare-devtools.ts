@@ -13,14 +13,20 @@
 // limitations under the License.
 
 import { CoreConfig, CoreConfigProvider } from '@services/config';
+import { CoreDB, CoreDbProvider } from '@services/db';
+import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
 import { CoreConstants } from '../constants';
 
 type DevelopmentWindow = Window & {
     configProvider?: CoreConfigProvider;
+    dbProvider?: CoreDbProvider;
+    urlSchemes?: CoreCustomURLSchemesProvider;
 };
 
 function initializeDevelopmentWindow(window: DevelopmentWindow) {
     window.configProvider = CoreConfig.instance;
+    window.dbProvider = CoreDB.instance;
+    window.urlSchemes = CoreCustomURLSchemes.instance;
 }
 
 export default function(): void {

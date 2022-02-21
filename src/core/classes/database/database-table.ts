@@ -24,14 +24,29 @@ export class CoreDatabaseTable<
     PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
 > {
 
+    protected config: Partial<CoreDatabaseConfiguration>;
     protected database: SQLiteDB;
     protected tableName: string;
     protected primaryKeyColumns: PrimaryKeyColumn[];
+    protected listeners: CoreDatabaseTableListener[] = [];
 
-    constructor(database: SQLiteDB, tableName: string, primaryKeyColumns?: PrimaryKeyColumn[]) {
+    constructor(
+        config: Partial<CoreDatabaseConfiguration>,
+        database: SQLiteDB,
+        tableName: string,
+        primaryKeyColumns?: PrimaryKeyColumn[],
+    ) {
+        this.config = config;
         this.database = database;
         this.tableName = tableName;
         this.primaryKeyColumns = primaryKeyColumns ?? ['id'] as PrimaryKeyColumn[];
+    }
+
+    /**
+     * Get database configuration.
+     */
+    getConfig(): Partial<CoreDatabaseConfiguration> {
+        return this.config;
     }
 
     /**
@@ -72,7 +87,27 @@ export class CoreDatabaseTable<
      * Destroy.
      */
     async destroy(): Promise<void> {
-        // Nothing to destroy by default, override this method if necessary.
+        this.listeners.forEach(listener => listener.onDestroy?.());
+    }
+
+    /**
+     * Add listener.
+     *
+     * @param listener Listener.
+     */
+    addListener(listener: CoreDatabaseTableListener): void {
+        this.listeners.push(listener);
+    }
+
+    /**
+     * Check whether the table matches the given configuration for the values that concern it.
+     *
+     * @param config Database config.
+     * @returns Whether the table matches the given configuration.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    matchesConfig(config: Partial<CoreDatabaseConfiguration>): boolean {
+        return true;
     }
 
     /**
@@ -337,6 +372,20 @@ export class CoreDatabaseTable<
 }
 
 /**
+ * Database configuration.
+ */
+export interface CoreDatabaseConfiguration {
+    // This definition is augmented in subclasses.
+}
+
+/**
+ * Database table listener.
+ */
+export interface CoreDatabaseTableListener {
+    onDestroy?(): void;
+}
+
+/**
  * CoreDatabaseTable constructor.
  */
 export type CoreDatabaseTableConstructor<
@@ -346,6 +395,7 @@ export type CoreDatabaseTableConstructor<
 > = {
 
     new (
+        config: Partial<CoreDatabaseConfiguration>,
         database: SQLiteDB,
         tableName: string,
         primaryKeyColumns?: PrimaryKeyColumn[]

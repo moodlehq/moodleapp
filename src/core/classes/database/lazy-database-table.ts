@@ -14,7 +14,13 @@
 
 import { CoreError } from '@classes/errors/error';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
-import { CoreDatabaseTable, CoreDatabaseConditions, GetDBRecordPrimaryKey, CoreDatabaseQueryOptions } from './database-table';
+import {
+    CoreDatabaseConfiguration,
+    CoreDatabaseTable,
+    CoreDatabaseConditions,
+    GetDBRecordPrimaryKey,
+    CoreDatabaseQueryOptions,
+} from './database-table';
 
 /**
  * Wrapper used to improve performance by caching records that are used often for faster read operations.
@@ -28,7 +34,38 @@ export class CoreLazyDatabaseTable<
     PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
 > extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
 
+    protected readonly DEFAULT_CACHE_LIFETIME = 60000;
+
     protected records: Record<string, DBRecord | null> = {};
+    protected interval?: number;
+
+    /**
+     * @inheritdoc
+     */
+    async initialize(): Promise<void> {
+        await super.initialize();
+
+        this.interval = window.setInterval(() => (this.records = {}), this.config.lazyCacheLifetime ?? this.DEFAULT_CACHE_LIFETIME);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async destroy(): Promise<void> {
+        await super.destroy();
+
+        this.interval && window.clearInterval(this.interval);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    matchesConfig(config: Partial<CoreDatabaseConfiguration>): boolean {
+        const thisCacheLifetime = this.config.lazyCacheLifetime ?? this.DEFAULT_CACHE_LIFETIME;
+        const otherCacheLifetime = config.lazyCacheLifetime ?? this.DEFAULT_CACHE_LIFETIME;
+
+        return super.matchesConfig(config) && thisCacheLifetime === otherCacheLifetime;
+    }
 
     /**
      * @inheritdoc
@@ -149,6 +186,19 @@ export class CoreLazyDatabaseTable<
         await super.deleteByPrimaryKey(primaryKey);
 
         this.records[this.serializePrimaryKey(primaryKey)] = null;
+    }
+
+}
+
+declare module '@classes/database/database-table' {
+
+    /**
+     * Augment CoreDatabaseConfiguration interface with data specific to this table.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreDatabaseConfiguration {
+        lazyCacheLifetime: number;
     }
 
 }

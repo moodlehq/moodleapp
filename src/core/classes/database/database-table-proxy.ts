@@ -14,10 +14,11 @@
 
 import { CoreConstants } from '@/core/constants';
 import { asyncInstance } from '@/core/utils/async-instance';
-import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
+import { SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreConfig, CoreConfigProvider } from '@services/config';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
+    CoreDatabaseConfiguration,
     CoreDatabaseReducer,
     CoreDatabaseTable,
     CoreDatabaseConditions,
@@ -40,7 +41,8 @@ export class CoreDatabaseTableProxy<
     PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
 > extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
 
-    protected config: CoreDatabaseConfiguration;
+    protected readonly DEFAULT_CACHING_STRATEGY = CoreDatabaseCachingStrategy.None;
+
     protected target = asyncInstance<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>>();
     protected environmentObserver?: CoreEventObserver;
     protected targetConstructors: Record<
@@ -52,21 +54,12 @@ export class CoreDatabaseTableProxy<
         [CoreDatabaseCachingStrategy.None]: CoreDatabaseTable,
     };
 
-    constructor(
-        config: Partial<CoreDatabaseConfiguration>,
-        database: SQLiteDB,
-        tableName: string,
-        primaryKeyColumns?: PrimaryKeyColumn[],
-    ) {
-        super(database, tableName, primaryKeyColumns);
-
-        this.config = { ...this.getConfigDefaults(), ...config };
-    }
-
     /**
      * @inheritdoc
      */
     async initialize(): Promise<void> {
+        await super.initialize();
+
         this.environmentObserver = CoreEvents.on(CoreConfigProvider.ENVIRONMENT_UPDATED, async () => {
             if (!(await this.shouldUpdateTarget())) {
                 return;
@@ -82,7 +75,21 @@ export class CoreDatabaseTableProxy<
      * @inheritdoc
      */
     async destroy(): Promise<void> {
+        await super.destroy();
+
         this.environmentObserver?.off();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    matchesConfig(config: Partial<CoreDatabaseConfiguration>): boolean {
+        const thisDebug = this.config.debug ?? false;
+        const thisCachingStrategy = this.config.cachingStrategy ?? this.DEFAULT_CACHING_STRATEGY;
+        const otherDebug = config.debug ?? false;
+        const otherCachingStrategy = config.cachingStrategy ?? this.DEFAULT_CACHING_STRATEGY;
+
+        return super.matchesConfig(config) && thisDebug === otherDebug && thisCachingStrategy === otherCachingStrategy;
     }
 
     /**
@@ -173,23 +180,11 @@ export class CoreDatabaseTableProxy<
     }
 
     /**
-     * Get default configuration values.
-     *
-     * @returns Config defaults.
-     */
-    protected getConfigDefaults(): CoreDatabaseConfiguration {
-        return {
-            cachingStrategy: CoreDatabaseCachingStrategy.None,
-            debug: false,
-        };
-    }
-
-    /**
      * Get database configuration to use at runtime.
      *
      * @returns Database configuration.
      */
-    protected async getRuntimeConfig(): Promise<CoreDatabaseConfiguration> {
+    protected async getRuntimeConfig(): Promise<Partial<CoreDatabaseConfiguration>> {
         await CoreConfig.ready();
 
         return {
@@ -228,7 +223,8 @@ export class CoreDatabaseTableProxy<
         const originalTarget = target instanceof CoreDebugDatabaseTable ? target.getTarget() : target;
 
         return (config.debug && target === originalTarget)
-            || originalTarget?.constructor !== this.targetConstructors[config.cachingStrategy];
+            || originalTarget?.constructor !== this.targetConstructors[config.cachingStrategy ?? this.DEFAULT_CACHING_STRATEGY]
+            || !originalTarget.matchesConfig(config);
     }
 
     /**
@@ -238,7 +234,7 @@ export class CoreDatabaseTableProxy<
      */
     protected async createTarget(): Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>> {
         const config = await this.getRuntimeConfig();
-        const table = this.createTable(config.cachingStrategy);
+        const table = this.createTable(config);
 
         return config.debug ? new CoreDebugDatabaseTable(table) : table;
     }
@@ -246,23 +242,29 @@ export class CoreDatabaseTableProxy<
     /**
      * Create a database table using the given caching strategy.
      *
-     * @param cachingStrategy Caching strategy.
+     * @param config Database configuration.
      * @returns Database table.
      */
-    protected createTable(cachingStrategy: CoreDatabaseCachingStrategy): CoreDatabaseTable<DBRecord, PrimaryKeyColumn> {
-        const DatabaseTable = this.targetConstructors[cachingStrategy];
+    protected createTable(config: Partial<CoreDatabaseConfiguration>): CoreDatabaseTable<DBRecord, PrimaryKeyColumn> {
+        const DatabaseTable = this.targetConstructors[config.cachingStrategy ?? this.DEFAULT_CACHING_STRATEGY];
 
-        return new DatabaseTable(this.database, this.tableName, this.primaryKeyColumns);
+        return new DatabaseTable(config, this.database, this.tableName, this.primaryKeyColumns);
     }
 
 }
 
-/**
- * Database proxy configuration.
- */
-export interface CoreDatabaseConfiguration {
-    cachingStrategy: CoreDatabaseCachingStrategy;
-    debug: boolean;
+declare module '@classes/database/database-table' {
+
+    /**
+     * Augment CoreDatabaseConfiguration interface with data specific to this class.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreDatabaseConfiguration {
+        cachingStrategy: CoreDatabaseCachingStrategy;
+        debug: boolean;
+    }
+
 }
 
 /**

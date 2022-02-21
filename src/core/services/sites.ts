@@ -56,12 +56,8 @@ import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreDatabaseTable } from '@classes/database/database-table';
-import {
-    CoreDatabaseCachingStrategy,
-    CoreDatabaseConfiguration,
-    CoreDatabaseTableProxy,
-} from '@classes/database/database-table-proxy';
+import { CoreDatabaseConfiguration, CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreConfig } from './config';
 
@@ -162,6 +158,7 @@ export class CoreSitesProvider {
             config: Partial<CoreDatabaseConfiguration>;
             database: SQLiteDB;
             primaryKeyColumns: PrimaryKeyColumn[];
+            onDestroy(): void;
         }> = {},
     ): Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>> {
         const siteId = options.siteId ?? this.getCurrentSiteId();
@@ -179,6 +176,8 @@ export class CoreSitesProvider {
                 tableName,
                 options.primaryKeyColumns,
             );
+
+            options.onDestroy && table.addListener({ onDestroy: options.onDestroy });
 
             await table.initialize();
 
@@ -1837,16 +1836,19 @@ export class CoreSitesProvider {
      * @returns Scehmas Table.
      */
     protected getSiteSchemasTable(site: CoreSite): AsyncInstance<CoreDatabaseTable<SchemaVersionsDBEntry, 'name'>> {
-        this.schemasTables[site.getId()] = this.schemasTables[site.getId()] ?? asyncInstance(
+        const siteId = site.getId();
+
+        this.schemasTables[siteId] = this.schemasTables[siteId] ?? asyncInstance(
             () => this.getSiteTable(SCHEMA_VERSIONS_TABLE_NAME, {
-                siteId: site.getId(),
+                siteId: siteId,
                 database: site.getDb(),
                 config: { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
                 primaryKeyColumns: ['name'],
+                onDestroy: () => delete this.schemasTables[siteId],
             }),
         );
 
-        return this.schemasTables[site.getId()];
+        return this.schemasTables[siteId];
     }
 
 }
