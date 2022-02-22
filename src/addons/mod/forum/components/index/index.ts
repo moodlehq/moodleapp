@@ -174,7 +174,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 // Check if there are replies for discussions stored in offline.
                 const hasOffline = await AddonModForumOffline.hasForumReplies(this.forum.id);
 
-                this.hasOffline = this.hasOffline || hasOffline;
+                this.hasOffline = this.hasOffline || hasOffline || this.hasOfflineRatings;
 
                 if (hasOffline) {
                     // Only update new fetched discussions.
@@ -258,6 +258,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             if (this.forum && data.component == 'mod_forum' && data.ratingArea == 'post' &&
                     data.contextLevel == ContextLevel.MODULE && data.instanceId == this.forum.cmid) {
                 this.hasOfflineRatings = true;
+                this.hasOffline = true;
             }
         });
 
@@ -266,6 +267,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     data.contextLevel == ContextLevel.MODULE && data.instanceId == this.forum.cmid) {
                 this.hasOfflineRatings =
                     await CoreRatingOffline.hasRatings('mod_forum', 'post', ContextLevel.MODULE, this.forum.cmid);
+                this.hasOffline = this.hasOffline || this.hasOfflineRatings;
             }
         });
     }
