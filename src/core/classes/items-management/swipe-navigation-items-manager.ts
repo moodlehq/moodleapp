@@ -39,21 +39,21 @@ export class CoreSwipeNavigationItemsManager<
      * Navigate to the next item.
      */
     async navigateToNextItem(): Promise<void> {
-        await this.navigateToItemBy(-1, 'back');
+        await this.navigateToItemBy(1, 'forward');
     }
 
     /**
      * Navigate to the previous item.
      */
     async navigateToPreviousItem(): Promise<void> {
-        await this.navigateToItemBy(1, 'forward');
+        await this.navigateToItemBy(-1, 'back');
     }
 
     /**
      * Has a next item.
      */
     async hasNextItem(): Promise<boolean> {
-        const item = await this.getItemBy(-1);
+        const item = await this.getItemBy(1);
 
         return !!item;
     }
@@ -62,7 +62,7 @@ export class CoreSwipeNavigationItemsManager<
      * Has a previous item.
      */
     async hasPreviousItem(): Promise<boolean> {
-        const item = await this.getItemBy(1);
+        const item = await this.getItemBy(-1);
 
         return !!item;
     }
@@ -100,13 +100,7 @@ export class CoreSwipeNavigationItemsManager<
      * @param animationDirection Animation direction.
      */
     protected async navigateToItemBy(delta: number, animationDirection: 'forward' | 'back'): Promise<void> {
-        let item: Item | null;
-
-        do {
-            item = await this.getItemBy(delta);
-
-            delta += delta > 0 ? 1 : -1;
-        } while (item && this.skipItemInSwipe(item));
+        const item = await this.getItemBy(delta);
 
         if (!item) {
             return;
@@ -122,25 +116,41 @@ export class CoreSwipeNavigationItemsManager<
      */
     protected async getItemBy(delta: number): Promise<Item | null> {
         const items = this.getSource().getItems();
-
-        // Get selected item.
         const selectedIndex = (this.selectedItem && items?.indexOf(this.selectedItem)) ?? -1;
-        const nextIndex = selectedIndex + delta;
 
-        if (selectedIndex === -1 || nextIndex < 0) {
+        if (selectedIndex === -1 || items === null) {
             return null;
         }
 
-        // Get item by delta.
-        const item = items?.[nextIndex] ?? null;
+        const deltaStep = delta > 0 ? 1 : -1;
+        let nextIndex = selectedIndex;
+        let deltaMoved = 0;
 
-        if (!item && !this.getSource().isCompleted()) {
+        while (deltaMoved !== delta) {
+            nextIndex += deltaStep;
+
+            if (nextIndex < 0 || nextIndex >= items.length) {
+                break;
+            }
+
+            if (this.skipItemInSwipe(items[nextIndex])) {
+                continue;
+            }
+
+            deltaMoved += deltaStep;
+        }
+
+        if (deltaMoved === delta) {
+            return items[nextIndex];
+        }
+
+        if (!this.getSource().isCompleted()) {
             await this.getSource().load();
 
             return this.getItemBy(delta);
         }
 
-        return item;
+        return null;
     }
 
     /**
