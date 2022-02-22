@@ -483,6 +483,16 @@ ion-loading {
     }
 }
 
+// Toasts.
+ion-toast {
+    --button-color: var(--primary-tint);
+    @include media-breakpoint-down(sm) {
+        &::part(container) {
+            flex-direction: column;
+        }
+    }
+}
+
 // Ionic list.
 ion-list {
     padding: 0 !important;
