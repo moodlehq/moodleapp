@@ -31,7 +31,7 @@
                         </core-user-avatar>
                         <div class="addon-mod-forum-post-author">
                             <span *ngIf="post.author && post.author.fullname">{{post.author.fullname}}</span>
-                            <p *ngIf="post.author && post.author.groups">
+                            <p *ngIf="post.author && post.author.groups" class="core-groupname">
                                 <ng-container *ngFor="let group of post.author.groups">
                                     <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate">
                                     </ion-icon> {{ group.name }}

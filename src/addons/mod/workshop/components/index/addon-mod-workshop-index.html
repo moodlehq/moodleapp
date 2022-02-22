@@ -192,7 +192,7 @@
                     <h2 *ngIf="workshop!.phase > PHASE_SUBMISSION">{{ 'addon.mod_workshop.gradesreport' | translate }}</h2>
                 </ion-label>
             </ion-item-divider>
-            <ion-item class="ion-text-wrap" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+            <ion-item class="ion-text-wrap core-group-selector" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
                 <ion-label id="addon-workshop-groupslabel" *ngIf="groupInfo.separateGroups">
                     {{ 'core.groupsseparate' | translate }}
                 </ion-label>

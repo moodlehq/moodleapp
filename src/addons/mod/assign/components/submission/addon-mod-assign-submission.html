@@ -372,7 +372,9 @@
 <!-- Template to render some data regarding the submission status. -->
 <ng-template #submissionStatus>
     <ng-container *ngIf="assign && assign!.teamsubmission && lastAttempt">
-        <p *ngIf="lastAttempt!.submissiongroup && lastAttempt!.submissiongroupname">{{lastAttempt!.submissiongroupname}}</p>
+        <p *ngIf="lastAttempt!.submissiongroup && lastAttempt!.submissiongroupname" class="core-groupname">
+            {{lastAttempt!.submissiongroupname}}
+        </p>
         <ng-container *ngIf="assign!.preventsubmissionnotingroup &&
             !lastAttempt!.submissiongroup &&
             (!lastAttempt!.usergroups || lastAttempt!.usergroups.length <= 0)">

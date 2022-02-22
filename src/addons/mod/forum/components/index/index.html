@@ -67,7 +67,7 @@
                         </core-user-avatar>
                         <div class="addon-mod-forum-discussion-author">
                             <span *ngIf="discussion.userfullname">{{discussion.userfullname}}</span>
-                            <p *ngIf="discussion.groupname">
+                            <p *ngIf="discussion.groupname" class="core-groupname">
                                 <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate">
                                 </ion-icon> {{ discussion.groupname }}
                             </p>
