@@ -40,13 +40,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
      * @inheritdoc
      */
     getCourseTitle(course: CoreCourseAnyCourseData): string {
-        if (course.displayname) {
-            return course.displayname;
-        } else if (course.fullname) {
-            return course.fullname;
-        }
-
-        return '';
+        return course.fullname || '';
     }
 
     /**
