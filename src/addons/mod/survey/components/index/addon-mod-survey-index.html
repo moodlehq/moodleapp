@@ -14,9 +14,14 @@
     </core-course-module-info>
 
     <!-- Survey already done -->
-    <ion-card class="ion-padding" *ngIf="survey && survey.surveydone">
-        <p class="ion-padding">{{ 'addon.mod_survey.surveycompletednograph' | translate }}</p>
-        <ion-button expand="block" [href]="module.url" core-link>
+    <ion-card class="core-success-card" *ngIf="survey && survey.surveydone">
+        <ion-item>
+            <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                {{ 'addon.mod_survey.surveycompletednograph' | translate }}
+            </ion-label>
+        </ion-item>
+        <ion-button class="ion-margin" expand="block" [href]="module.url" core-link>
             <ion-icon name="fas-external-link-alt" slot="start" aria-hidden="true"></ion-icon>
             {{ 'addon.mod_survey.results' | translate }}
         </ion-button>
