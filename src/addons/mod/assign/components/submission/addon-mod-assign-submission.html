@@ -391,10 +391,10 @@
         </p>
     </ng-container>
     <p>
-        <ion-badge *ngIf="statusTranslated" [color]="statusColor">
+        <ion-badge *ngIf="statusTranslated" [color]="statusColor" class="ion-text-wrap ion-text-start">
             {{ statusTranslated }}
         </ion-badge>
-        <ion-badge class="ion-margin-start" *ngIf="gradingStatusTranslationId" [color]="gradingColor">
+        <ion-badge class="ion-text-wrap ion-text-start" *ngIf="gradingStatusTranslationId" [color]="gradingColor">
             {{ gradingStatusTranslationId | translate }}
         </ion-badge>
     </p>
